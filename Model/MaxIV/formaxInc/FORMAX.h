@@ -69,14 +69,11 @@ class FORMAX : public R3Beamline
 {
  private:
 
-  /// Front end cave volume
-  std::shared_ptr<R3FrontEndCave> ringCaveA;
-  // Joining front cave
-  std::shared_ptr<R3FrontEndCave> ringCaveB;
-
   /// the components in the front end
   std::shared_ptr<formaxFrontEnd> frontBeam;
-  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
+
+  /// lead in beam wall
+  std::shared_ptr<WallLead> wallLead;       
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;

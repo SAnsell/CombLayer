@@ -58,6 +58,15 @@ namespace xraySystem
 
 namespace xrayConstruct
 {
+/* template <typename R, */
+/*   bool result = std::is_same */
+/*   <decltype(((R*)nullptr)->setFront */
+/* 	    (attachSystem::FixedComp&,const std::string&)), void>::value> */
+/*   constexpr */
+  
+/*   bool hasSetFrontHelper(int) {  */
+/*     return result; */
+/* } */
 
 template<typename T>
 int constructUnit(Simulation&,attachSystem::InnerZone&,

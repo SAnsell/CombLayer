@@ -198,7 +198,7 @@ splitterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);
 
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
   GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
 
@@ -365,7 +365,7 @@ monoVariables(FuncDataBase& Control,
 
   // joined and open
   GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,monoKey+"GateC",0.0,0);
   
   BellowGen.setCF<setVariable::CF63>();
@@ -447,7 +447,7 @@ slitPackageVariables(FuncDataBase& Control,
 
   // joined and open
   GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,slitKey+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -511,7 +511,7 @@ m1MirrorVariables(FuncDataBase& Control,
   
   // joined and open
   GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,mirrorKey+"GateA",0.0,0);
 
   return;
@@ -557,7 +557,7 @@ opticsBeamVariables(FuncDataBase& Control,
 
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
   
   // will be rotated vertical
@@ -862,7 +862,7 @@ shutterTable(FuncDataBase& Control,
     
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();

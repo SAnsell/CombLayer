@@ -519,7 +519,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateB,"back",*bellowE);
   
-
   constructMono(System,masterCell,*bellowE,"back");
   
   xrayConstruct::constructUnit
@@ -528,6 +527,16 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructViewScreen(System,masterCell,*gateC,"back");
 
   constructMirrorMono(System,masterCell,*bellowF,"back");
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*MLMVessel,"back",*bellowG);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowG,"back",*gateE);
+
+  // constructBeamStopTube
+  //   (System,buildZone,masterCell,*bellowF,"back");
+
 
 
   lastComp=bellowF;

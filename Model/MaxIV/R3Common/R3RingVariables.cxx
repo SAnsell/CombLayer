@@ -189,7 +189,7 @@ shutterTable(FuncDataBase& Control,
     
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();

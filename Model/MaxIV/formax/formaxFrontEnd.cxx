@@ -78,23 +78,6 @@
 #include "generateSurf.h"
 #include "ModelSupport.h"
 
-#include "VacuumPipe.h"
-#include "insertObject.h"
-#include "insertCylinder.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LCollimator.h"
-#include "GateValveCube.h"
-#include "OffsetFlangePipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-#include "CrossPipe.h"
-#include "Wiggler.h"
-#include "SqrCollimator.h"
-#include "BeamMount.h"
-#include "HeatDump.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
@@ -129,6 +112,16 @@ formaxFrontEnd::~formaxFrontEnd()
    */
 {}
 
+void
+formaxFrontEnd::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+  setLinkSignedCopy(0,*undulator,1);
+  setLinkSignedCopy(1,*lastComp,2);
+  return;
+}
 
 const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
@@ -160,24 +153,10 @@ formaxFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  dipolePipe->setFront(*undulatorPipe,2);
-  dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
 
-  return *dipolePipe;
+  return *undulatorPipe;
 }
 
-void
-formaxFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  setLinkSignedCopy(0,*undulator,1);
-  setLinkSignedCopy(1,*lastComp,2);
-  return;
-}
   
 }   // NAMESPACE xraySystem
 

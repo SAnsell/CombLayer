@@ -384,9 +384,7 @@ GateValveCube::createLinks()
 {
   ELog::RegMethod RegA("GateValveCube","createLinks");
 
-  //stufff for intersection
-
-
+  //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   return;

@@ -97,13 +97,14 @@ GateValveGenerator::setCylCF()
 
 template<typename CF>
 void
-GateValveGenerator::setCF()
+GateValveGenerator::setCubeCF()
   /*!
     Set pipe/flange to CF format
   */
 {
   setAPortCF<CF>();
   setBPortCF<CF>();
+  radius=-1.0;
   depth=1.1*CF::flangeRadius;
   height=3.5*CF::flangeRadius;
   width=2.1*CF::flangeRadius;
@@ -269,9 +270,9 @@ template void GateValveGenerator::setCylCF<CF40>();
 template void GateValveGenerator::setCylCF<CF63>();
 template void GateValveGenerator::setCylCF<CF100>();
 
-template void GateValveGenerator::setCF<CF40>();
-template void GateValveGenerator::setCF<CF63>();
-template void GateValveGenerator::setCF<CF100>();
+template void GateValveGenerator::setCubeCF<CF40>();
+template void GateValveGenerator::setCubeCF<CF63>();
+template void GateValveGenerator::setCubeCF<CF100>();
 
 template void GateValveGenerator::setAPortCF<CF40>();
 template void GateValveGenerator::setAPortCF<CF63>();

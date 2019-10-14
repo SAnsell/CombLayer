@@ -167,6 +167,9 @@ class danmaxOpticsLine :
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
   
+  void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
+			     const attachSystem::FixedComp&,const std::string&);
+
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
      const attachSystem::FixedComp&,const long int);

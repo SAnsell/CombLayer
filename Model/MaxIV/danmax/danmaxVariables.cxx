@@ -493,7 +493,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
 
     // joined and open
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCylCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
   return;
 }

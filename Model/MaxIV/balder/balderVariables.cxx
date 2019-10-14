@@ -315,7 +315,7 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
 
     // joined and open
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
   return;
 }
@@ -531,7 +531,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowB",0,10.0);    
 
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
     
   VBoxGen.setMat("Stainless304");
@@ -572,7 +572,7 @@ opticsVariables(FuncDataBase& Control,
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
   
   // joined and open
-  GateGen.setCF<setVariable::CF100>();
+  GateGen.setCubeCF<setVariable::CF100>();
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
 
   // [length is 54.4cm total]
@@ -624,7 +624,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowD",0,10.0);    
 
   // joined and open
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
 
   VBoxGen.setCF<CF40>();

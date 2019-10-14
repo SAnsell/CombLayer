@@ -165,7 +165,7 @@ shutterTable(FuncDataBase& Control,
     
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();
@@ -939,7 +939,7 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -978,12 +978,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
   
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   micromaxVar::monoVariables(Control,preName);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -995,12 +995,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
   
   micromaxVar::mirrorBox(Control,preName+"MirrorA");
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -1011,12 +1011,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   micromaxVar::mirrorBox(Control,preName+"MirrorB");
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();

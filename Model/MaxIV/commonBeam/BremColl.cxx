@@ -191,7 +191,6 @@ BremColl::populate(const FuncDataBase& Control)
   holeMidWidth=Control.EvalVar<double>(keyName+"HoleMidWidth");
   holeBHeight=Control.EvalVar<double>(keyName+"HoleBHeight");
   holeBWidth=Control.EvalVar<double>(keyName+"HoleBWidth");
-
   extLength=Control.EvalVar<double>(keyName+"ExtLength");
   extRadius=Control.EvalVar<double>(keyName+"ExtRadius");
 
