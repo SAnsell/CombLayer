@@ -439,7 +439,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
@@ -505,10 +504,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateA,"back",*bellowC);
-
+  
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowC,"back",*lauePipe);
-
   
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*lauePipe,"back",*bellowD);
