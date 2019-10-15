@@ -59,6 +59,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "DoublePortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
@@ -361,6 +362,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::FlangeMountGenerator FlangeGen;
   

@@ -421,6 +421,54 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 }
 
   
+void
+danmaxOpticsLine::constructBeamStopTube(Simulation& System,
+					MonteCarlo::Object* masterCell,
+					const attachSystem::FixedComp& initFC, 
+					const std::string& sideName)
+/*!
+    Sub build of the beamstoptube
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","constructBeamStopTube");
+
+  // FAKE insertcell: required
+  beamStopTube->addAllInsertCell(masterCell->getName());
+  beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  beamStopTube->createAll(System,initFC,sideName);
+  //  beamStopTube->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& VPA=beamStopTube->getPort(0);
+  const constructSystem::portItem& VPB=beamStopTube->getPort(1);
+  int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  beamStopTube->insertAllInCell(System,outerCell);
+  return;
+  
+  /*VPA.insertInCell(System,this->getCell("OuterVoid"));
+  
+  //  beamStopTube->insertPortInCell(System,{cellN,cellM,cellX});
+  beamStopTube->insertPortInCell
+    (System,{{outerCell},{outerCell+1},{outerCell+2}});
+  cellIndex+=2;
+
+  
+  beamStopTubeScreen->addInsertCell("Body",beamStopTube->getCell("Void"));
+  beamStopTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
+  beamStopTubeScreen->setBladeCentre(*beamStopTube,0);
+  beamStopTubeScreen->createAll(System,VPC,"-InnerPlate");
+
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,VPB,"OuterPlate",*bellowF);
+  VPC.insertInCell(System,outerCell);
+  */  
+  return;
+}
 
 void
 danmaxOpticsLine::buildObjects(Simulation& System)
@@ -535,8 +583,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowG,"back",*gateE);
 
-  // constructBeamStopTube
-  //   (System,buildZone,masterCell,*bellowF,"back");
+  constructBeamStopTube(System,masterCell,*bellowG,"back");
 
 
 

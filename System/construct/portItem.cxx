@@ -94,6 +94,7 @@ portItem::portItem(const std::string& baseKey,
   voidMat(0),wallMat(0),capMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param baseKey :: Base name
     \param Key :: KeyName
   */
 {}
