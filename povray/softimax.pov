@@ -6,11 +6,11 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 101;
+#declare view = 7;
 #declare omnimaxOK = 0;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -83,6 +83,10 @@ global_settings {
   #case(6) // Monochromator
     #declare cameraLocation = <2560, 8550, 50>;
     #declare cameraLookAt   = <2560, 8400, 0>;
+  #break
+  #case(7) // PumpTubeM3
+    #declare cameraLocation = <2770, 8450, 10>;
+    #declare cameraLookAt   = <2790, 8400, 0>;
   #break
   #case(101) // Front beam Undulator
     #declare cameraLocation = <-350, 8450, 10>;
