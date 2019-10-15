@@ -868,6 +868,9 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.generateMount(Control,preName+"PumpTubeM3Baffle",0);
   ///////////////////////////////////////////////////////////////////
 
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
@@ -957,8 +960,6 @@ opticsVariables(FuncDataBase& Control,
 
   // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateG",0.0,0);

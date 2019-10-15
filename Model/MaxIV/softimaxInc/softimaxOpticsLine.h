@@ -110,6 +110,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowF;
   std::shared_ptr<constructSystem::PipeTube> pumpTubeM3;
   std::shared_ptr<xraySystem::FlangeMount> pumpTubeM3Baffle;
+  // Bellow to mirror M3
+  std::shared_ptr<constructSystem::Bellows> bellowG;
 
 
   // /// Vacuum pipe for collimator
@@ -159,8 +161,6 @@ class softimaxOpticsLine :
   // /// Diag Box B :: Jaw units
   // std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompB;
 
-  // /// Bellow to mirror B
-  // std::shared_ptr<constructSystem::Bellows> bellowG;
   // // Gate valve
   // std::shared_ptr<constructSystem::GateValveCube> gateG;
   // /// Mirror box B
