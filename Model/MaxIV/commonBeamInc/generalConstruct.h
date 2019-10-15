@@ -58,21 +58,28 @@ namespace xraySystem
 
 namespace xrayConstruct
 {
-/* template <typename R, */
-/*   bool result = std::is_same */
-/*   <decltype(((R*)nullptr)->setFront */
-/* 	    (attachSystem::FixedComp&,const std::string&)), void>::value> */
-/*   constexpr */
-  
-/*   bool hasSetFrontHelper(int) {  */
-/*     return result; */
-/* } */
 
+int
+internalUnit(Simulation&,
+	     attachSystem::InnerZone&,
+	     MonteCarlo::Object*,
+	     const attachSystem::FixedComp&,
+	     const std::string&,
+	     attachSystem::FixedComp&,
+	     attachSystem::FrontBackCut&,
+	     attachSystem::ContainedComp&);
+  
 template<typename T>
-int constructUnit(Simulation&,attachSystem::InnerZone&,
-		  MonteCarlo::Object*,
-		  const attachSystem::FixedComp&,
-		  const std::string&,T&);
+int constructUnit(Simulation& System,
+		  attachSystem::InnerZone& buildZone,
+		  MonteCarlo::Object* masterCell,
+		  const attachSystem::FixedComp& linkUnit,
+		  const std::string& sideName,
+		  T& buildUnit)
+{
+  return internalUnit(System,buildZone,masterCell,linkUnit,sideName,
+		 buildUnit,buildUnit,buildUnit);
+}
 
 }  // NAMEPSACE xrayConstruct
 

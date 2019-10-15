@@ -78,7 +78,6 @@
 #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
-#include "generalConstruct.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -108,7 +107,9 @@
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
+#include "generalConstruct.h"
 #include "danmaxOpticsLine.h"
+
 
 namespace xraySystem
 {
@@ -335,9 +336,9 @@ danmaxOpticsLine::constructMono(Simulation& System,
   //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   mbXstals->createAll(System,*monoVessel,0);
 
-
   return;
 }
+
 void
 danmaxOpticsLine::constructMirrorMono(Simulation& System,
 				      MonteCarlo::Object* masterCell,
