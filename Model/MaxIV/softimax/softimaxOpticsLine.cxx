@@ -155,7 +155,11 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   pumpTubeM3(new constructSystem::PipeTube(newName+"PumpTubeM3")),
   pumpTubeM3Baffle(new xraySystem::FlangeMount(newName+"PumpTubeM3Baffle")),
-  bellowG(new constructSystem::Bellows(newName+"BellowG"))
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
+  M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
+  M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -234,6 +238,10 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pumpTubeM3);
   OR.addObject(pumpTubeM3Baffle);
   OR.addObject(bellowG);
+  OR.addObject(M3Tube);
+  OR.addObject(M3Mirror);
+  OR.addObject(M3Stand);
+  OR.addObject(bellowH);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -442,6 +450,55 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Stand->setCutSurf("back",*M1Tube,-2);
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
+
+  // gateA->createAll(System,*offPipeB,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  // gateA->insertInCell(System,outerCell);
+  // gateA->setCell("OuterVoid",outerCell);
+
+  // pipeC->createAll(System,*gateA,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
+  // pipeC->insertInCell(System,outerCell);
+
+  // screenA->addAllInsertCell(outerCell);
+  // screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
+  // screenA->createAll(System,*pipeC,0);
+  // screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
+  // screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
+
+  return;
+}
+
+void
+softimaxOpticsLine::buildM3Mirror(Simulation& System,
+				     MonteCarlo::Object* masterCell,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the m1-mirror package
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("softimaxOpticsBeamline","buildM3Mirror");
+
+  int outerCell;
+
+  M3Tube->setFront(initFC,sideIndex);
+  M3Tube->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M3Tube,2);
+  M3Tube->insertAllInCell(System,outerCell);
+
+  M3Mirror->addInsertCell(M3Tube->getCell("Void"));
+  M3Mirror->createAll(System,*M3Tube,0);
+
+  M3Stand->setCutSurf("floor",this->getRule("floor"));
+  M3Stand->setCutSurf("front",*M3Tube,-1);
+  M3Stand->setCutSurf("back",*M3Tube,-2);
+  M3Stand->addInsertCell(outerCell);
+  M3Stand->createAll(System,*M3Tube,0);
 
   // gateA->createAll(System,*offPipeB,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
@@ -717,6 +774,10 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,GPI,"OuterPlate",*bellowG);
 
+  buildM3Mirror(System,masterCell,*bellowG,2);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*M3Tube,"back",*bellowH);
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);

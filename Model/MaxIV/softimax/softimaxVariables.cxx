@@ -609,6 +609,43 @@ m1MirrorVariables(FuncDataBase& Control,
 }
 
 void
+m3MirrorVariables(FuncDataBase& Control,
+		  const std::string& mirrorKey)
+/*!
+  Builds the variables for the M3 Mirror
+  \param Control :: Database
+  \param mirrorKey :: prename
+*/
+{
+  ELog::RegMethod RegA("softimaxVariables[F]","m3MirrorVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::MirrorGenerator MirrGen;
+
+  const std::string mName=mirrorKey+"M3Tube";
+  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  Control.addVariable(mName+"XStep",centreOffset);
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  // mirror in M3Tube
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  // y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  Control.addVariable(mirrorKey+"M3MirrorYAngle",90.0);
+
+  Control.addVariable(mirrorKey+"M3StandHeight",110.0);
+  Control.addVariable(mirrorKey+"M3StandWidth",30.0);
+  Control.addVariable(mirrorKey+"M3StandLength",30.0);
+  Control.addVariable(mirrorKey+"M3StandMat","SiO2");
+
+  return;
+}
+
+void
 opticsSlitPackage(FuncDataBase& Control,
 		  const std::string& opticsName)
   /*!
@@ -870,6 +907,11 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+
+  m3MirrorVariables(Control,preName);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();

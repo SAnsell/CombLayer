@@ -79,7 +79,6 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
-  /// Pipe exiting slit section
   std::shared_ptr<xraySystem::BlockStand> M1Stand;
   std::shared_ptr<constructSystem::Bellows> bellowC;
   // Pumping tube for the ion pump
@@ -112,6 +111,11 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::FlangeMount> pumpTubeM3Baffle;
   // Bellow to mirror M3
   std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// M3 Mirror
+  std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  std::shared_ptr<xraySystem::Mirror> M3Mirror;
+  std::shared_ptr<xraySystem::BlockStand> M3Stand;
+  std::shared_ptr<constructSystem::Bellows> bellowH;
 
 
   // /// Vacuum pipe for collimator
@@ -212,6 +216,8 @@ class softimaxOpticsLine :
      const long int);
 
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const long int);
+  void buildM3Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const std::string&);
