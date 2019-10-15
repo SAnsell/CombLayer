@@ -561,18 +561,8 @@ m1MirrorVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","m1MirrorVariables");
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::MirrorGenerator MirrGen;
-
-  PipeGen.setMat("Stainless304");
-  PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",0,6.8);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -580,14 +570,6 @@ m1MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
   Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(mName+"NPorts",0);   // beam ports
-
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,13.8);
-  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
-  Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
-
-
 
   // mirror in M1Tube
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
@@ -599,11 +581,6 @@ m1MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
   Control.addVariable(mirrorKey+"M1StandMat","SiO2");
-
-  // joined and open
-  GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,mirrorKey+"GateA",0.0,0);
 
   return;
 }
@@ -619,9 +596,7 @@ m3MirrorVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","m3MirrorVariables");
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::MirrorGenerator MirrGen;
 
   const std::string mName=mirrorKey+"M3Tube";
@@ -804,8 +779,8 @@ opticsVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),-pAngVec6);
 
   // Gate valve A
-  GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setLength(7.5);
+  GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
