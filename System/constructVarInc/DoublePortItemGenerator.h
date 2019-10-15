@@ -48,7 +48,9 @@ class DoublePortItemGenerator : public PortItemGenerator
   DoublePortItemGenerator(const DoublePortItemGenerator&);
   DoublePortItemGenerator& operator=(const DoublePortItemGenerator&);
   ~DoublePortItemGenerator();
-  
+
+  template<typename DF,typename CF>
+    void setDCF(const double,const double);
   virtual void generatePort(FuncDataBase&,const std::string&,
 		    const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 

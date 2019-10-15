@@ -99,10 +99,10 @@ internalUnit(Simulation& System,
   ELog::RegMethod RegA("generalConstruct[F]","constructUnit");
 
   FCut.setFront(linkUnit,sideName);
-
+  FC.createAll(System,linkUnit,"back");
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
-  FC.createAll(System,linkUnit,"back");
+
   CC.insertInCell(System,outerCell);
   return  outerCell;
 }

@@ -93,12 +93,27 @@ DoublePortItemGenerator::operator=(const DoublePortItemGenerator& A)
   return *this;
 }
 
-
 DoublePortItemGenerator::~DoublePortItemGenerator() 
  /*!
    Destructor
  */
 {}
+
+template<typename DF,typename CF>
+void
+DoublePortItemGenerator::setDCF(const double LFirst,
+				const double LSecond)
+  /*!
+    Set pipe/flange to CF-X format
+    \param LFirst :: length of first piece
+    \param LSecon :: length of second piece
+  */
+{
+  partLength=DF::innerRadius;
+  radiusB=DF::innerRadius;
+  PortItemGenerator::setCF<CF>(LFirst+LSecond);  
+  return;
+}
 
 void
 DoublePortItemGenerator::generatePort(FuncDataBase& Control,
@@ -124,7 +139,14 @@ DoublePortItemGenerator::generatePort(FuncDataBase& Control,
 
 }
 
+///\cond TEMPLATE
 
+template void
+DoublePortItemGenerator::setDCF<CF63,CF40>(const double,const double);
+
+  
+///\endcond TEMPLATE
+  
   
 
 }  // NAMESPACE setVariable

@@ -368,23 +368,26 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap();
-  // up 15cm / 32.5cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
-
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,1);
+  // up 15cm / 38.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
-  PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,8.75,0),
+  // BOTH PORTS COMPLETLEY NON-STANDARD:
+  DItemGen.setDCF<CF63,CF40>(6.5,2.5);
+  DItemGen.setPlate(0.0,"Void");  
+
+  DItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
 			Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF63>(12.5);  // needs to be CF75
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,11.75,0),
 			Geometry::Vec3D(0,0,-1));
-  PItemGen.setCF<setVariable::CF40>(8.0);
 
   return;
 }

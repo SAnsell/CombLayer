@@ -526,7 +526,8 @@ PipeTube::applyPortRotation()
   // create extra link:
   nameSideIndex(7,"OrgOrigin");
   const Geometry::Vec3D YOriginal=Y;
-  
+
+	
   Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {

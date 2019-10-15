@@ -244,7 +244,7 @@ sub writeHeader
 
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
-  print $DX "set(CMAKE_CXX_CLANG_TIDY clang-tidy; -checks=*)\n";
+#  print $DX "set(CMAKE_CXX_CLANG_TIDY clang-tidy; -checks=*)\n";
   print $DX "set(CMAKE_CXX_FLAGS \"",$self->{cflag}.$self->{optimise}.$self->{debug},"\")\n";
   print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
   
