@@ -74,8 +74,8 @@ class portItem :
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
  
-  void populate(const FuncDataBase&);
-  void createSurfaces();
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
 

@@ -149,7 +149,6 @@ doublePortItem::createSurfaces()
   ELog::RegMethod RegA("doublePortItem","createSurfaces");
 
   portItem::createSurfaces();
-
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,radiusB);
   ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,radiusB+wall);
   
@@ -216,7 +215,7 @@ doublePortItem::constructOuterFlange(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -17 7 -2 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 1012 -1017 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -1012 -1017 17 ");
   makeCell("MidWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
@@ -228,22 +227,30 @@ doublePortItem::constructOuterFlange(Simulation& System,
       makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
     }
 
-
   if (outerFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1012 1017 -27 -102 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1012 -1017 17 -102");
       makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+      if (radiusB>flangeRadius+Geometry::zeroTol)  
+	{
+	  Out= (capThick>Geometry::zeroTol) ?
+	    ModelSupport::getComposite(SMap,buildIndex," 102 27 -1017 -202") :
+	    ModelSupport::getComposite(SMap,buildIndex," 102 27 -1017 -2");
+	  makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
 
-      // currently radiusB > radius
-      if (radiusB>=radius)
-	Out= (capThick>Geometry::zeroTol) ?
-	  ModelSupport::getComposite(SMap,buildIndex," -202 -1017  1 ") :
-	  ModelSupport::getComposite(SMap,buildIndex," -2 -1017  1 ");
+	  Out= (capThick>Geometry::zeroTol) ?
+	    ModelSupport::getComposite(SMap,buildIndex," -202 -1017  1 ") :
+	    ModelSupport::getComposite(SMap,buildIndex," -2 -1017  1 ");
+	}
       else
-	Out= (capThick>Geometry::zeroTol) ?
-	  ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
-	  ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
-      addOuterSurf(Out+midSurf);
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -102 -27 1017 1 ");
+	  makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out+midSurf);
+	  Out= (capThick>Geometry::zeroTol) ?
+	    ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
+	    ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
+	}
+      addOuterSurf(Out);
     }
   else  // no outer system
     {

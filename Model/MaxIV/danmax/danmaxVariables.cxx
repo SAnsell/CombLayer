@@ -358,13 +358,13 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
     \param viewKey :: prename
   */
 {
-  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+  ELog::RegMethod RegA("speciesVariables[F]","beamStopPackage");
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::DoublePortItemGenerator DItemGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::BremBlockGenerator BremGen;
   
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
@@ -389,6 +389,12 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,11.75,0),
 			Geometry::Vec3D(0,0,-1));
 
+  BremGen.centre();
+  BremGen.setCube(10.0,10.0);
+  BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
+  BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
+
+  
   return;
 }
 

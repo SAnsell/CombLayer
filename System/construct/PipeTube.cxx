@@ -224,7 +224,6 @@ PipeTube::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-
 void
 PipeTube::createSurfaces()
   /*!
