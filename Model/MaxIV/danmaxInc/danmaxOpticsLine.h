@@ -40,6 +40,7 @@ namespace constructSystem
   class GateValveCube;
   class GateValveCylinder;
   class JawValveCube;
+  class JawValveTube;
   class JawFlange;
 
 }
@@ -152,6 +153,10 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCylinder> gateE;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> beamStopTube;
+  /// BeamStopBlock
+  std::shared_ptr<xraySystem::BremBlock> beamStop;
+  /// Slits after beamstop
+  std::shared_ptr<constructSystem::JawValveTube> slitsA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

@@ -98,6 +98,8 @@
 #include "GateValveCylinder.h"
 #include "JawUnit.h"
 #include "JawFlange.h"
+#include "JawValveBase.h"
+#include "JawValveTube.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoBox.h"
@@ -157,7 +159,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   MLM(new xraySystem::MLMono(newName+"MLM")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValveCylinder(newName+"GateE")),
-  beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube"))
+  beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
+  beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
+  slitsA(new constructSystem::JawValveTube(newName+"SlitsA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -201,6 +205,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowG);
   OR.addObject(gateE);
   OR.addObject(beamStopTube);
+  OR.addObject(beamStop);
+  OR.addObject(slitsA);
   
 }
   
@@ -442,12 +448,21 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
   beamStopTube->createAll(System,initFC,sideName);
   //  beamStopTube->intersectPorts(System,1,2);
 
-  const constructSystem::portItem& VPA=beamStopTube->getPort(0);
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
   int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   beamStopTube->insertAllInCell(System,outerCell);
+  
+  beamStop->addInsertCell(beamStopTube->getCell("Void"));
+  beamStop->createAll(System,*beamStopTube,"OrgOrigin");
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,VPB,"OuterPlate",*slitsA);
+  
+  
+  
   return;
+
   
   /*VPA.insertInCell(System,this->getCell("OuterVoid"));
   

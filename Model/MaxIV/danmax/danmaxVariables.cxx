@@ -365,9 +365,11 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::DoublePortItemGenerator DItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremBlockGenerator BremGen;
-  
+  setVariable::JawValveGenerator JawGen;
+    
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
+
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   // up 15cm / 38.5cm down : Measured
@@ -393,8 +395,15 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
   BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
+  Control.addVariable(viewKey+"BeamStopZStep",11.750);
 
-  
+   // Single slit pair
+  JawGen.setCF<setVariable::CF63>();
+  JawGen.setLength(4.0);
+  JawGen.setRadius(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
+
   return;
 }
 
