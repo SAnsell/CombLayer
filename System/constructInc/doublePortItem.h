@@ -68,6 +68,7 @@ class doublePortItem :
   doublePortItem& operator=(const doublePortItem&);
   ~doublePortItem();
 
+  void setLarge(const double,const double);
 };
   
 

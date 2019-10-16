@@ -111,6 +111,19 @@ doublePortItem::~doublePortItem()
 {}
 
 void
+doublePortItem::setLarge(const double L,const double R)
+  /*!
+    Set the port first radius part
+    \param L :: Length of externPart
+    \param R :: Main radius
+   */
+{
+  externPartLen=L;
+  radiusB=R;
+  return;
+}
+  
+void
 doublePortItem::populate(const FuncDataBase& Control)
   /*!
     Populate variables

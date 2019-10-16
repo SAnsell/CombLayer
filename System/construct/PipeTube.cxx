@@ -81,6 +81,7 @@
 #include "FrontBackCut.h"
 
 #include "portItem.h"
+#include "doublePortItem.h"
 #include "PipeTube.h"
 
 namespace constructSystem
@@ -152,13 +153,12 @@ PipeTube::populate(const FuncDataBase& Control)
     
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,CT;
+  double L,R,W,FR,FT,CT,LExt,RB;
   int CMat;
   int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
-      std::shared_ptr<portItem> windowPort(new portItem(portName));
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
@@ -174,6 +174,23 @@ PipeTube::populate(const FuncDataBase& Control)
 	(Control,portName+"CapMat",portBase+"CapMat",capMat);
 
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
+      // Key two variables to get a DoublePort:
+      LExt=Control.EvalDefTail<double>
+	(portName,portBase,"ExternPartLength",-1.0);      
+      RB=Control.EvalDefTail<double>
+	(portName,portBase,"RadiusB",-1.0);      
+
+      std::shared_ptr<portItem> windowPort;
+
+      if (LExt>Geometry::zeroTol && RB>R+Geometry::zeroTol)
+	{
+	  std::shared_ptr<doublePortItem> doublePort
+	    =std::make_shared<doublePortItem>(portName);
+	  doublePort->setLarge(LExt,RB);
+	  windowPort=doublePort;
+	}
+      else
+	windowPort=std::make_shared<portItem>(portName);
 
       if (OFlag) windowPort->setWrapVolume();
       windowPort->setMain(L,R,W);
