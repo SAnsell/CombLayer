@@ -266,7 +266,6 @@ JawValveBase::createLinks()
 
   //stufff for intersection
 
-
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   return;

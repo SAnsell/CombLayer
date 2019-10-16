@@ -449,15 +449,17 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
   //  beamStopTube->intersectPorts(System,1,2);
 
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
-  int outerCell=buildZone.createOuterVoidUnit
+  const int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   beamStopTube->insertAllInCell(System,outerCell);
   
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
   beamStop->createAll(System,*beamStopTube,"OrgOrigin");
 
+  ELog::EM<<"HERE "<<ELog::endDiag;
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VPB,"OuterPlate",*slitsA);
+  ELog::EM<<"VPB == "<<slitsA->getLinkPt("back")<<ELog::endDiag;
   
   
   

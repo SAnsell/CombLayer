@@ -140,6 +140,14 @@ JawValveTube::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  // set values to zero:
+  portARadius=0.0;
+  portAThick=0.0;
+  portALen=0.0;
+  portBRadius=0.0;
+  portBThick=0.0;
+  portBLen=0.0;
+
   return;
 }
 
@@ -155,8 +163,18 @@ JawValveTube::createSurfaces()
 {
   ELog::RegMethod RegA("JawValveTube","createSurfaces");
 
-  JawValveBase::createSurfaces();
-  
+  //  JawValveBase::createSurfaces();
+
+  if (!frontActive())
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+    }
+  if (!backActive())
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+    }
 
   ModelSupport::buildCylinder 
     (SMap,buildIndex+7,Origin,Y,innerRadius);
@@ -178,17 +196,19 @@ JawValveTube::createObjects(Simulation& System)
 
   std::string Out;
 
+  const std::string fbSurf=
+    FrontBackCut::frontRule()+FrontBackCut::backRule();
   // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbSurf);
 
   // Main body
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 7 ");
-  makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 7 ");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,Out+fbSurf);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ");
+  addOuterSurf(Out+fbSurf);
 
   return;
 }

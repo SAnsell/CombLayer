@@ -74,6 +74,7 @@ class JawValveGenerator
   ~JawValveGenerator();
 
   template<typename CF> void setCF();
+  template<typename CF> void setCylCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
 

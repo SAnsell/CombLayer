@@ -256,9 +256,26 @@ JawValveGenerator::setCF()
 {
   setAPortCF<CF>();
   setBPortCF<CF>();
+
   depth=1.1*CF::flangeRadius;
   height=2.5*CF::flangeRadius;
   width=2.1*CF::flangeRadius;
+  
+  return;
+}
+
+template<typename CF>
+void
+JawValveGenerator::setCylCF()
+  /*!
+    Set pipe/flange to CF format
+    for a cylinder
+  */
+{
+  setAPortCF<CF>();
+  setBPortCF<CF>();
+
+  innerRadius=CF::innerRadius;
   
   return;
 }
@@ -337,6 +354,10 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   template void JawValveGenerator::setCF<CF40>();
   template void JawValveGenerator::setCF<CF63>();
   template void JawValveGenerator::setCF<CF100>();
+
+  template void JawValveGenerator::setCylCF<CF40>();
+  template void JawValveGenerator::setCylCF<CF63>();
+  template void JawValveGenerator::setCylCF<CF100>();
 
   template void JawValveGenerator::setAPortCF<CF40>();
   template void JawValveGenerator::setAPortCF<CF63>();

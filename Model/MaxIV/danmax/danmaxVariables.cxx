@@ -398,9 +398,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   Control.addVariable(viewKey+"BeamStopZStep",11.750);
 
    // Single slit pair
-  JawGen.setCF<setVariable::CF63>();
+  JawGen.setCylCF<setVariable::CF63>();
   JawGen.setLength(4.0);
-  JawGen.setRadius(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
 
