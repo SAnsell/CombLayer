@@ -157,6 +157,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> beamStop;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsA;
+  /// Flange convert
+  std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

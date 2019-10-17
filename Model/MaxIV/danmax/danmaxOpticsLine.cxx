@@ -161,7 +161,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateE(new constructSystem::GateValveCylinder(newName+"GateE")),
   beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
   beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
-  slitsA(new constructSystem::JawValveTube(newName+"SlitsA"))
+  slitsA(new constructSystem::JawValveTube(newName+"SlitsA")),
+  slitsAOut(new constructSystem::VacuumPipe(newName+"SlitsAOut"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -207,6 +208,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(beamStopTube);
   OR.addObject(beamStop);
   OR.addObject(slitsA);
+  OR.addObject(slitsAOut);
   
 }
   
@@ -456,10 +458,12 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
   beamStop->createAll(System,*beamStopTube,"OrgOrigin");
 
-  ELog::EM<<"HERE "<<ELog::endDiag;
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VPB,"OuterPlate",*slitsA);
-  ELog::EM<<"VPB == "<<slitsA->getLinkPt("back")<<ELog::endDiag;
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*slitsA,"back",*slitsAOut);
+
   
   
   

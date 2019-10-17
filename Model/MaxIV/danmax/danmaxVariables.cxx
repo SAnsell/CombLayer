@@ -360,10 +360,10 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 {
   ELog::RegMethod RegA("speciesVariables[F]","beamStopPackage");
 
+  setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::DoublePortItemGenerator DItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremBlockGenerator BremGen;
   setVariable::JawValveGenerator JawGen;
     
@@ -378,14 +378,15 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
   // BOTH PORTS COMPLETLEY NON-STANDARD:
-  DItemGen.setDCF<CF63,CF40>(6.5,2.5);
+  // Ports 11cm + 15(inner)cm + 10cm   ==> 36.0
+  DItemGen.setDCF<CF63,CF40>(6.5,4.0);  
   DItemGen.setPlate(0.0,"Void");  
 
   DItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
 			Geometry::Vec3D(0,0,1));
 
-  PItemGen.setCF<setVariable::CF63>(12.5);  // needs to be CF75
+  PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,11.75,0),
@@ -398,10 +399,17 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   Control.addVariable(viewKey+"BeamStopZStep",11.750);
 
    // Single slit pair
-  JawGen.setCylCF<setVariable::CF63>();
-  JawGen.setLength(4.0);
+  JawGen.setRadius(8.0);
+  JawGen.setWallThick(2.0);
+  JawGen.setLength(10.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF150>(); 
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",0,2.0);
 
   return;
 }
