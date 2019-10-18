@@ -159,6 +159,14 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::JawValveTube> slitsA;
   /// Flange convert
   std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
+  /// Connector to next beam view
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// Beam viewer 2
+  std::shared_ptr<constructSystem::PortTube> viewTubeB;
+  /// Beam viewer [item]
+  std::shared_ptr<xraySystem::FlangeMount> viewTubeBScreen;
+  /// Connector to next beam view
+  std::shared_ptr<constructSystem::Bellows> bellowI;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -171,9 +179,12 @@ class danmaxOpticsLine :
 		     const attachSystem::FixedComp&,const std::string&);
   void constructMirrorMono(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
+
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
-			   const attachSystem::FixedComp&,const std::string&);
-  
+			const attachSystem::FixedComp&,const std::string&);
+  void constructViewScreenB(Simulation&,MonteCarlo::Object*,
+			const attachSystem::FixedComp&,const std::string&);
+
   void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
 			     const attachSystem::FixedComp&,const std::string&);
 

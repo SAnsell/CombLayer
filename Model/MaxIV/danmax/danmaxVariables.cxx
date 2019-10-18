@@ -94,6 +94,7 @@ void exptHutVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
+void viewBPackage(FuncDataBase&,const std::string&);
 void beamStopPackage(FuncDataBase&,const std::string&);
 
 void
@@ -304,9 +305,9 @@ exptHutVariables(FuncDataBase& Control,
 void
 viewPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
-    Builds the variables for the ViewTube 2
+    Builds the variables for the ViewTube 
     \param Control :: Database
-    \param viewKey :: prename
+    \param viewKey :: prename including view
   */
 {
   ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
@@ -314,10 +315,11 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::FlangeMountGenerator FlangeGen;
   
   // will be rotated vertical
-  const std::string pipeName=viewKey+"ViewTube";
+  const std::string pipeName=viewKey+"Tube";
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   // up 15cm / 32.5cm down : Measured
@@ -341,11 +343,54 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
-  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+  FlangeGen.generateMount(Control,viewKey+"TubeScreen",1);  // in beam
 
-  // bellows on shield block
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
+  return;
+}
+
+void
+viewBPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 
+    \param Control :: Database
+    \param viewKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","viewBPackage");
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+
+  const std::string pipeName=viewKey+"ViewTubeB";
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setPipeCF<CF150>();
+  PTubeGen.setPortCF<CF40>();
+  PTubeGen.setPortLength(3.0,3.0);
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,pipeName,0.0,30.0);
+
+
+  // will be rotated vertical
+
+  Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF100>(5.0);
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,-9,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.setCF<setVariable::CF100>(7.0);
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,9,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.generatePort(Control,pipeName+"Port2",
+			Geometry::Vec3D(0,4.5,0),
+			Geometry::Vec3D(-1,-1,0));
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
+  FlangeGen.generateMount(Control,pipeName+"Screen",1);  // in beam
 
   return;
 }
@@ -732,15 +777,23 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
 
-  viewPackage(Control,opticsName);   // bellowF
+  viewPackage(Control,opticsName+"View");
 
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
+  BellowGen.generateBellow(Control,opticsName+"BellowF",0,10.0);    
+
   mirrorMonoPackage(Control,opticsName);
   BellowGen.generateBellow(Control,opticsName+"BellowG",0,16.0);
   
   GateGen.generateValve(Control,opticsName+"GateE",0.0,0);  
 
   beamStopPackage(Control,opticsName); 
+
+  BellowGen.generateBellow(Control,opticsName+"BellowH",0,10.0);    
+
+  viewBPackage(Control,opticsName);
+
+  BellowGen.generateBellow(Control,opticsName+"BellowI",0,10.0);    
 
   return;
 }

@@ -60,7 +60,7 @@ class PipeTube :
   int capMat;                 ///< flange cap material layer
 
   bool delayPortBuild;        ///< Delay port to manual construct
-  size_t portConnectIndex;    ///< Port to connect to
+  size_t portConnectIndex;    ///< Port to connect for new-origin
   Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
 
   std::set<int> portCells;               ///< Extra cells for the port
