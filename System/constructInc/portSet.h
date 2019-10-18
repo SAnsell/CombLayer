@@ -76,12 +76,12 @@ class portSet
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void createPorts(Simulation&,const std::vector<int>&);
-
   void insertAllInCell(Simulation&,const int);
   void insertAllInCell(Simulation&,const std::vector<int>&);
   void insertPortInCell(Simulation&,
 				const std::vector<std::set<int>>&);
+
+  void createPorts(Simulation&,const std::vector<int>&);
 };
 
 }

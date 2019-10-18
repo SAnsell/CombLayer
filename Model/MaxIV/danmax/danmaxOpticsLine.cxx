@@ -678,9 +678,10 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,*bellowI,"back",*lensBox);
 
   constructSystem::portSet lensBoxPort(*lensBox);
-  
-  
 
+  lensBoxPort.createPorts(System,lensBox->getInsertCells());
+  
+  
   lastComp=bellowI;
   return;
 

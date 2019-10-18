@@ -72,7 +72,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -87,14 +86,15 @@
 namespace constructSystem
 {
 
-portSet::portSet(attachSystem::FixedComp& FC) :
+portSet::portSet(attachSystem::FixedComp& FC)  :
   FUnit(FC)
   /*!
-    Constructor 
-    \param FC :: FixedComp
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: KeyName
   */
 {}
-  
+
+
 portSet::~portSet() 
   /*!
     Destructor
@@ -110,17 +110,14 @@ portSet::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("portSet","populate");
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-    
+
+  const std::string keyName(FUnit.getKeyName());
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT,LExt,RB;
-  int CMat,VMat,WMat;
+  int WMat,CMat,VMat;
   int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
@@ -136,12 +133,13 @@ portSet::populate(const FuncDataBase& Control)
       FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
       CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
+
       VMat=ModelSupport::EvalDefMat<int>
 	(Control,portName+"VoidMat",portBase+"VoidMat",0);
       WMat=ModelSupport::EvalMat<int>
 	(Control,portName+"WallMat",portBase+"WallMat");
       CMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",wallMat);
+	(Control,portName+"CapMat",portBase+"CapMat",WMat);
 
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
       // Key two variables to get a DoublePort:
@@ -176,29 +174,6 @@ portSet::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-portSet::createPorts(Simulation& System,const std::vector<int>& CCVec)
-  /*!
-    Simple function to create ports
-    \param System :: Simulation to use
-    \param CCVec :: Cells from CC.getInsertCells()
-   */
-{
-  ELog::RegMethod RegA("portSet","createPorts");
-  
-  for(size_t i=0;i<Ports.size();i++)
-    {
-      for(const int CN : CCVec)
-	Ports[i]->addOuterCell(CN);
-
-      for(const int CN : portCells)
-	Ports[i]->addOuterCell(CN);
-
-      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
-    }
-  return;
-}
 
 const portItem&
 portSet::getPort(const size_t index) const
@@ -282,91 +257,16 @@ portSet::intersectVoidPorts(Simulation& System,
 }
 
 
-void
-portSet::setPortRotation(const size_t index,
-			  const Geometry::Vec3D& RAxis)
-  /*!
-    Set Port rotation 
-    \param index 
-        -0 : No rotation / no shift
-        - 1,2 : main ports 
-        - 3-N+2 : Extra Ports
-    \param RAxis :: Rotation axis expresses in local X,Y,Z
-  */
-{
-  ELog::RegMethod RegA("portSet","setPortRotation");
-  
-  portConnectIndex=index;
-  if (portConnectIndex>1)
-    rotAxis=RAxis.unit();
-  
-  return;
-}
-
-void
-portSet::applyPortRotation()
-  /*!
-    Apply a rotation to all the PCentre and the 
-    PAxis of the ports
-  */
-{
-  ELog::RegMethod RegA("portSet","applyPortRotation");
-
-  if (!portConnectIndex) return;
-  if (portConnectIndex>Ports.size()+3)
-    throw ColErr::IndexError<size_t>
-      (portConnectIndex,Ports.size()+3,"PI exceeds number of Ports+3");
-
-  // create extra link:
-  nameSideIndex(7,"OrgOrigin");
-  const Geometry::Vec3D YOriginal=Y;
-
-	
-  Geometry::Vec3D YPrime(0,-1,0);
-  if (portConnectIndex<3)
-    {
-      Origin+=Y*(length/2.0);
-      if (portConnectIndex==2)
-	{
-	  Y*=1;
-	  X*=-1;
-	}
-      FixedComp::setConnect(7,Origin,YOriginal);
-
-      return;
-    }
-  else
-    {
-      const size_t pIndex=portConnectIndex-3;
-      YPrime=PAxis[pIndex].unit();
-      const Geometry::Quaternion QV=
-	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
-      // Now move QV into the main basis set origin:
-      const Geometry::Vec3D& QVvec=QV.getVec();
-      const Geometry::Vec3D QAxis=X*QVvec.X()+
-	Y*QVvec.Y()+Z*QVvec.Z();
-
-      const Geometry::Quaternion QVmain(QV[0],QAxis);  
-      QVmain.rotate(X);
-      QVmain.rotate(Y);
-      QVmain.rotate(Z);
-
-      // This moves in the new Y direction
-      const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
-      Origin+=offset;
-      FixedComp::setConnect(7,Origin,YOriginal);
-    }
-
-  return;
-}
 
 Geometry::Vec3D
-portSet::calcCylinderDistance(const size_t pIndex) const
+portSet::calcCylinderDistance(const size_t pIndex,const double R) const
   /*!
     Calculate the shift vector
     \param pIndex :: Port index [0-NPorts]
+    \param pIndex :: Port index [0-NPorts]
     \return the directional vector from the port origin
     to the pipetube surface
+
    */
 {
   ELog::RegMethod RegA("portSet","calcCylinderDistance");
@@ -375,6 +275,10 @@ portSet::calcCylinderDistance(const size_t pIndex) const
     throw ColErr::IndexError<size_t>
       (pIndex,Ports.size(),"PI exceeds number of Ports");
 
+  const Geometry::Vec3D& X=FUnit.getX();
+  const Geometry::Vec3D& Y=FUnit.getY();
+  const Geometry::Vec3D& Z=FUnit.getZ();
+  
   // No Y point so no displacement
   const Geometry::Vec3D PC=
     X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
@@ -387,9 +291,8 @@ portSet::calcCylinderDistance(const size_t pIndex) const
   Geometry::Vec3D CPoint;
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
-
-
-  const double R=radius+wallThick;
+  
+  //  const double R=radius+wallThick;
   const double ELen=Ports[pIndex]->getExternalLength();
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
   
@@ -399,6 +302,33 @@ portSet::calcCylinderDistance(const size_t pIndex) const
   return RPoint-PA*ELen - PC*2.0;
 }
 
+template<typename T>
+int
+portSet::procSplit(Simulation& System,const std::string& splitName,
+		   const int offsetCN,const int CN,
+		   const T& SplitOrg,
+		   const T& SplitAxis)
+  /*!
+    Process split
+    \param System ::Simulation
+   */
+{
+  ELog::RegMethod RegA("portSet","procSplit");
+
+  const std::vector<int> cells=
+    FUnit.splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
+
+  attachSystem::CellMap* CPtr=
+    dynamic_cast<attachSystem::CellMap*>(&FUnit);
+  if (CPtr)
+    {
+      if (!splitName.empty())
+	for(const int CN : cells)
+	  CPtr->addCell(splitName,CN);
+    }
+
+  return (cells.empty()) ? CN : cells.back()+1;
+}
 
 int
 portSet::splitVoidPorts(Simulation& System,
@@ -428,7 +358,7 @@ portSet::splitVoidPorts(Simulation& System,
       if (AIndex==BIndex || AIndex>=PCentre.size() ||
 	  BIndex>=PCentre.size())
 	throw ColErr::IndexError<size_t>
-	  (AIndex,BIndex,"Port number too large for"+keyName);
+	  (AIndex,BIndex,"Port number too large for"+FUnit.getKeyName());
       
       const Geometry::Vec3D CPt=
 	(PCentre[AIndex]+PCentre[BIndex])/2.0;
@@ -436,15 +366,10 @@ portSet::splitVoidPorts(Simulation& System,
       SplitAxis.push_back(Geometry::Vec3D(0,1,0));
     }
 
-  const std::vector<int> cells=
-    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
-  
-  if (!splitName.empty())
-    for(const int CN : cells)
-      CellMap::addCell(splitName,CN);
-
-  return (cells.empty()) ? CN : cells.back()+1;
+  return procSplit(System,splitName,offsetCN,CN,SplitOrg,SplitAxis);
 }
+
+
 
 int
 portSet::splitVoidPorts(Simulation& System,
@@ -463,6 +388,10 @@ portSet::splitVoidPorts(Simulation& System,
    */
 {
   ELog::RegMethod RegA("portSet","splitVoidPorts");
+
+  const Geometry::Vec3D& X=FUnit.getX();
+  const Geometry::Vec3D& Y=FUnit.getY();
+  const Geometry::Vec3D& Z=FUnit.getZ();
 
   const Geometry::Vec3D Axis=(X*inobjAxis[0]+
 			      Y*inobjAxis[1]+
@@ -488,15 +417,7 @@ portSet::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
-  const std::vector<int> cells=
-    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
-
-  if (!splitName.empty())
-    for(const int CN : cells)
-      CellMap::addCell(splitName,CN);
-
-
-  return (cells.empty()) ? CN : cells.back()+1;
+  return procSplit(System,splitName,offsetCN,CN,SplitOrg,SplitAxis);  
 }
 
 int
@@ -518,6 +439,9 @@ portSet::splitVoidPorts(Simulation& System,
   std::vector<Geometry::Vec3D> SplitOrg;
   std::vector<Geometry::Vec3D> SplitAxis;
 
+
+  const Geometry::Vec3D& Y=FUnit.getY();
+
   size_t preFlag(0);
   for(size_t i=0;i<PCentre.size();i++)
     {
@@ -533,19 +457,13 @@ portSet::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
-  
-  const std::vector<int> cells=
-    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
-  if (!splitName.empty())
-    for(const int CN : cells)
-      CellMap::addCell(splitName,CN);
-  
-  return (cells.empty()) ? CN : cells.back()+1;
+  return procSplit(System,splitName,offsetCN,CN,SplitOrg,SplitAxis);
 }
 
 void
-portSet::insertAllInCell(Simulation& System,const int cellN)
+portSet::insertAllInCell(Simulation& System,
+			 const int cellN)
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -553,18 +471,15 @@ portSet::insertAllInCell(Simulation& System,const int cellN)
     \param cellN :: Cell for insert
   */
 {
-  ContainedGroup::insertAllInCell(System,cellN);
-  if (!delayPortBuild)
-    {
-      for(const std::shared_ptr<portItem>& PC : Ports)
-	PC->insertInCell(System,cellN);
-    }
+  //  ContainedGroup::insertAllInCell(System,cellN);
+  for(const std::shared_ptr<portItem>& PC : Ports)
+    PC->insertInCell(System,cellN);
   return;
 }
 
 void
 portSet::insertAllInCell(Simulation& System,
-			  const std::vector<int>& cellVec)
+			 const std::vector<int>& cellVec)
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -572,43 +487,16 @@ portSet::insertAllInCell(Simulation& System,
     \param cellVec :: Cells for insert
   */
 {
-  ContainedGroup::insertAllInCell(System,cellVec);
-  if (!delayPortBuild)
-    {
-      for(const std::shared_ptr<portItem>& PC : Ports)
-	PC->insertInCell(System,cellVec);
-    }
+  
+  for(const std::shared_ptr<portItem>& PC : Ports)
+    PC->insertInCell(System,cellVec);
   return;
 }
 
-void
-portSet::insertMainInCell(Simulation& System,const int cellN)
-  /*!
-    Fix of insertInAllCells to only do main body without ports
-    \param System :: Simulation to use    
-    \param cellN :: Cell of insert
-  */
-{
-  ContainedGroup::insertAllInCell(System,cellN);
-  return;
-}
-
-void
-portSet::insertMainInCell(Simulation& System,
-			   const std::vector<int>& cellVec)
-  /*!
-    Fix of insertInAllCells to only do main body without ports
-    \param System :: Simulation to use    
-    \param cellVec :: Cells of insert
-  */
-{
-  ContainedGroup::insertAllInCell(System,cellVec);
-  return;
-}
 
 void
 portSet::insertPortInCell(Simulation& System,
-			   const std::vector<std::set<int>>& cellVec)
+			  const std::vector<std::set<int>>& cellVec)
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use    
@@ -627,32 +515,46 @@ portSet::insertPortInCell(Simulation& System,
   return;
 }
 
-  
 void
-portSet::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
+portSet::createPorts(Simulation& System,
+		     const std::vector<int>& CCVec)
   /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param CC :: Insert cells [from CC.getInsertCell()]			
+   */
 {
-  ELog::RegMethod RegA("portSet","createAll(FC)");
+  ELog::RegMethod RegA("portSet","createPorts");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);
-  
-  createLinks();
+  ELog::EM<<"Number of ports == "<<Ports.size()<<ELog::endDiag;
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      for(const int CN : CCVec)
+	  Ports[i]->addOuterCell(CN);
 
-  insertObjects(System);
-  if (!delayPortBuild)
-    createPorts(System);
+      for(const int CN : portCells)
+	Ports[i]->addOuterCell(CN);
 
+      Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
+      Ports[i]->constructTrack(System);
+    }
   return;
 }
+
+
+
+///\cond TEMPLATE
+template
+int
+portSet::procSplit(Simulation&,const std::string&,const int,const int,
+	  const Geometry::Vec3D&,const Geometry::Vec3D&);
+
+template
+int
+portSet::procSplit(Simulation&,const std::string&,const int,const int,
+	  const std::vector<Geometry::Vec3D>&,
+	  const std::vector<Geometry::Vec3D>&);
+
+///\endcond TEMPLATE
   
 }  // NAMESPACE constructSystem
