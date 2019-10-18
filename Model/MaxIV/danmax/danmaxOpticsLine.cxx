@@ -112,6 +112,8 @@
 #include "generalConstruct.h"
 #include "danmaxOpticsLine.h"
 
+#include "portSet.h"
+
 
 namespace xraySystem
 {
@@ -166,7 +168,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
   viewTubeBScreen(new xraySystem::FlangeMount(newName+"ViewTubeBScreen")),
-  bellowI(new constructSystem::Bellows(newName+"BellowI"))
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  lensBox(new xraySystem::MonoBox(newName+"LensBox"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -217,6 +220,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTubeB);
   OR.addObject(viewTubeBScreen);
   OR.addObject(bellowI);
+  OR.addObject(lensBox);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -342,6 +346,7 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewTubeB,2);
   viewTubeB->insertAllInCell(System,outerCell);
 
+  // Two port -- 3 splits
   viewTubeB->splitVoidPorts(System,"SplitVoid",1001,
 			    viewTubeB->getCell("Void"),
 			    Geometry::Vec3D(0,1,0));
@@ -351,10 +356,9 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 			Geometry::Vec3D(0,1,0));
   cellIndex++;  // remember creates an extra cell in  primary
 
-
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
-  viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("SplitVoid",1));
+  viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("SplitVoid",2));
   viewTubeBScreen->setBladeCentre(*viewTubeB,0);
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
@@ -508,6 +512,7 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*slitsA,"back",*slitsAOut);
+
 
   
   
@@ -666,6 +671,14 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructViewScreenB(System,masterCell,*bellowH,"back");
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*viewTubeB,"back",*bellowI);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowI,"back",*lensBox);
+
+  constructSystem::portSet lensBoxPort(*lensBox);
+  
   
 
   lastComp=bellowI;

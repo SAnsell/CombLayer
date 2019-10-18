@@ -67,6 +67,7 @@ namespace xraySystem
   class DCMTank;
   class MLMono;
   class MLMVessel;
+  class MonoBox;
 
   
   /*!
@@ -167,6 +168,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::FlangeMount> viewTubeBScreen;
   /// Connector to next beam view
   std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// Connector to next beam view
+  std::shared_ptr<xraySystem::MonoBox> lensBox;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

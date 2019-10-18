@@ -61,6 +61,7 @@
 #include "PortItemGenerator.h"
 #include "DoublePortItemGenerator.h"
 #include "VacBoxGenerator.h"
+#include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
@@ -91,6 +92,7 @@ void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
+void lensPackage(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
@@ -348,6 +350,25 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   return;
 }
 
+void
+lensPackage(FuncDataBase& Control,const std::string& lensKey)
+  /*!
+    Builds the variables for the ViewTube 
+    \param Control :: Database
+    \param lensKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","lensPackage");
+
+  setVariable::MonoBoxGenerator MBoxGen;
+  
+  MBoxGen.generateBox(Control,lensKey+"LensBox",0.0,
+		      45.0,15.0,20.0,90.0);
+  
+  
+  return;
+}
+  
 void
 viewBPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
@@ -795,6 +816,8 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,opticsName+"BellowI",0,10.0);    
 
+  lensPackage(Control,opticsName);
+  
   return;
 }
 

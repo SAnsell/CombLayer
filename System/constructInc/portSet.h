@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/PipeSet.h
+ * File:   constructInc/portSet.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
