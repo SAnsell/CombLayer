@@ -112,8 +112,9 @@ portSet::populate(const FuncDataBase& Control)
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   const std::string keyName(FUnit.getKeyName());
+  ELog::EM<<"KeyName == "<<keyName<<ELog::endDiag;
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT,LExt,RB;
@@ -526,6 +527,7 @@ portSet::createPorts(Simulation& System,
 {
   ELog::RegMethod RegA("portSet","createPorts");
 
+  populate(System.getDataBase());
   ELog::EM<<"Number of ports == "<<Ports.size()<<ELog::endDiag;
   for(size_t i=0;i<Ports.size();i++)
     {

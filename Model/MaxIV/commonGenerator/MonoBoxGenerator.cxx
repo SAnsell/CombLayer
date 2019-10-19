@@ -88,8 +88,7 @@ MonoBoxGenerator::setLids(const double OH,
   baseThick=BT;
   roofThick=RT;
   return;
-}
-  
+}  
 
 void
 MonoBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
