@@ -8,8 +8,8 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
-		"sns","reactor","t1MarkII","essBeamline","bilbau",
-		"filter","singleItem","maxiv","testMain"); 
+		"sns","saxs","reactor","t1MarkII","essBeamline","bilbau",
+		"singleItem","maxiv","testMain"); 
 
 
 
@@ -199,6 +199,11 @@ $gM->addDepUnit("muBeam", [@muBeam]);
 my @gamma = qw( gammaBuild ) ;
 push(@gamma,@mainLib);
 $gM->addDepUnit("gamma", [@gamma]);
+
+my @saxs = qw( saxs d4cModel instrument );
+push(@saxs,@mainLib);
+$gM->addDepUnit("saxs", [@saxs]),
+			   
 
 my @testMain = qw( test ) ;
 push(@testMain,@mainLib);

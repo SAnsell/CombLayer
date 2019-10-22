@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/flukaSourceSelector.h
+ * File:   essBuildInc/DefUnitsMaxIV.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,23 +12,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_flukaSourceSelector_h
-#define SDef_flukaSourceSelector_h
+#ifndef mainSystem_DefUnitsMaxIV_h
+#define mainSystem_DefUnitsMaxIV_h
 
 class Simulation;
+class FuncDataBase;
 
-namespace SDef
+namespace mainSystem
 {
-  void flukaSourceSelection(Simulation&,const mainSystem::inputParam&);
-  void processPolarization(const mainSystem::MITYPE&,const std::string&);
+  class defaultConfig;
+  class inputParam;
+
+  void setDefUnits(FuncDataBase&,inputParam&);
+
 }
+
 
 #endif
  

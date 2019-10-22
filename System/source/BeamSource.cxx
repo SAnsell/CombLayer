@@ -324,6 +324,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx<<"BEAMPOS "<<MW.Num(Origin);
   StrFunc::writeFLUKA(cx.str(),OX);
 
+  SourceBase::writeFLUKA(OX);
   return;
 }
   

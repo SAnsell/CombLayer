@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   pipeBuild/DefUnitsPipe.cxx
+ * File:   monte/photon.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -25,69 +25,76 @@
 #include <sstream>
 #include <cmath>
 #include <complex>
-#include <vector>
-#include <set>
 #include <list>
+#include <vector>
 #include <map>
 #include <string>
 
 #include "Exception.h"
+#include "RefCon.h"
 #include "FileReport.h"
 #include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "InputControl.h"
-#include "inputParam.h"
-#include "support.h"
-#include "defaultConfig.h"
-#include "DefUnitsPipe.h"
+#include "particleConv.h"
+#include "particle.h"
+#include "photon.h"
 
-namespace mainSystem
+namespace MonteCarlo
 {
 
-void 
-setDefUnits(FuncDataBase& Control,
-	    inputParam& IParam)
+photon::photon(const double W,const Geometry::Vec3D& Pt,
+	       const Geometry::Vec3D& D) :
+  particle("photon",Pt,D,particleConv::Instance().mcplWavelengthKE(22,W))
   /*!
-    Based on the defaultConf set up the model
-    \param Control :: FuncDataBase
-    \param IParam :: input system
+    Constructor 
+    \param W :: Wavelength [Angstrom]
+-    \param Pt :: Position
+    \param D :: Direction vector
+  */
+{}
+
+photon::photon(const Geometry::Vec3D& Pt,
+	       const Geometry::Vec3D& D,
+	       const double E) :
+  particle("photon",Pt,D,E)
+  /*!
+    Constructor 
+    \param Pt :: Position
+    \param D :: Direction vector
+    \param E :: energy [keV]
+  */
+{}
+  
+photon::photon(const photon& A) :
+  particle(A)
+  /*!
+    Copy constructor
+    \param A :: photon to copy
+  */
+{}
+
+photon&
+photon::operator=(const photon& A)
+  /*!
+    Assignment operator
+    \param A :: photon to copy
+    \return *this
   */
 {
-  ELog::RegMethod RegA("DefUnitsPipe[F]","setDefUnits");
-
-  defaultConfig A("");
-  if (IParam.flag("defaultConfig"))
+  if (this!=&A)
     {
-      const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      if (Key=="None")
-	return;
-      else if (Key=="help")
-	{
-	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  NO OPTIONS SET  "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
-	}
-      else 
-	{
-	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");
-	}
+      particle::operator=(A);
     }
-
-  A.setOption("sdefType","Point");  
-  A.process(Control,IParam);
-      
-  return;
+  return *this;
 }
-  
-} // NAMESPACE mainSystem
+
+
+
+
+
+}  // NAMESPACE MonteCarlo

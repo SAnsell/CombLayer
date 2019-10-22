@@ -175,21 +175,6 @@ FlukaSource::populate(const ITYPE& inputMap)
   return;
 }
 
-void
-FlukaSource::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
-  /*!
-    Create the unit vector
-    \param FC :: Fixed Component
-    \param linkIndex :: Link index [signed for opposite side]
-   */
-{
-  ELog::RegMethod RegA("FlukaSource","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
-  return;
-}
 
 void
 FlukaSource::rotate(const localRotate& LR)
@@ -229,14 +214,13 @@ FlukaSource::createAll(const attachSystem::FixedComp& FC,
   createUnitVector(FC,linkIndex);
   return;
 }
-
   
 void
 FlukaSource::createAll(const ITYPE& inputMap,
-		      const attachSystem::FixedComp& FC,
-		      const long int linkIndex)
+		       const attachSystem::FixedComp& FC,
+		       const long int linkIndex)
 
-  /*!
+ /*!
     Create all the source
     \param Control :: DataBase for variables
     \param FC :: Fixed Point for origin/axis of beam
@@ -305,7 +289,8 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
   cx<<X<<" "<<Y;
   cx<<" &";
   StrFunc::writeFLUKA(cx.str(),OX);
-  
+
+  SourceBase::writeFLUKA(OX);
   return;
 }
 

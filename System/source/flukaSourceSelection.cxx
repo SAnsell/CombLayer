@@ -61,6 +61,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "groupRange.h"
@@ -71,7 +72,9 @@
 #include "objectRegister.h"
 #include "particleConv.h"
 #include "SourceBase.h"
+#include "FlukaSource.h"
 #include "World.h"
+#include "sourceDataBase.h"
 #include "flukaSourceSelector.h"
 
 namespace SDef
@@ -87,7 +90,7 @@ flukaSourceSelection(Simulation& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("SourceSelector[F]","flukaSourceSelection");
+  ELog::RegMethod RegA("flukaSourceSelector[F]","flukaSourceSelection");
   
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
@@ -135,12 +138,16 @@ flukaSourceSelection(Simulation& System,
 	  ELog::EM<<"sdefType :\n"
 	    "Beam :: Test Beam [Radial] source \n"
 	    "Wiggler :: Wiggler Source for balder \n"
-	    "External/Sourece :: External source from source.f \n"
+	    "External/Source :: External source from source.f \n"
 		  <<ELog::endBasic;
 	}
     }
-  ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
 
+  ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
+  processPolarization(inputMap,sName);
+  
+
+  
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
   if (!eName.empty())
@@ -148,7 +155,41 @@ flukaSourceSelection(Simulation& System,
   
   return;
 }
-  
+
+
+void
+processPolarization(const mainSystem::MITYPE& inputMap,
+		    const std::string& sourceName)
+/*!
+    Process the polarization vector
+*/
+{
+  ELog::RegMethod RegA("SourceSelector[F]","processPolarization");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  SDef::SourceBase* SPtr=SDB.getSource<SDef::SourceBase>(sourceName);
+  if (SPtr)
+    {
+      mainSystem::MITYPE::const_iterator mc=inputMap.find("polarization");
+      if (mc!=inputMap.end())
+	{
+	  ELog::EM<<"POLAR"<<ELog::endDiag;
+	  Geometry::Vec3D PVec;
+
+	  const std::vector<std::string>& IVec=mc->second;
+	  if (!IVec.empty() && StrFunc::convert(IVec.front(),PVec))
+	    {
+	      double Pfrac(1.0);
+	      if (IVec.size()>1)
+		StrFunc::convert(IVec[1],Pfrac);
+
+	      SPtr->setPolarization(PVec,Pfrac);		  
+	    }
+	}
+    }
+  return;
+}
   
 
   

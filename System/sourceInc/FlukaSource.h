@@ -3,7 +3,7 @@
  
  * File:   sourceInc/FlukaSource.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,10 @@ class FlukaSource :
 
   std::string sourceName;            ///< Additional card for source
   std::array<unitTYPE,12> sValues;   ///< Main values
+
   
   void populate(const ITYPE&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+  
   
  public:
 

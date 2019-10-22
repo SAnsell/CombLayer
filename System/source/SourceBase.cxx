@@ -3,7 +3,7 @@
  
  * File:   source/SourceBase.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "writeSupport.h"
 
 #include "inputSupport.h"
 #include "particleConv.h"
@@ -69,7 +70,7 @@ namespace SDef
 SourceBase::SourceBase() : 
   particleType("neutron"),cutEnergy(0.0),
   Energy({14}),EWeight({1.0}),weight(1.0),
-  TransPtr(0)
+  TransPtr(0),polarFrac(0.0)
   /*!
     Constructor 
   */
@@ -79,7 +80,8 @@ SourceBase::SourceBase(const SourceBase& A) :
   particleType(A.particleType),cutEnergy(A.cutEnergy),
   Energy(A.Energy),EWeight(A.EWeight),
   weight(A.weight),
-  TransPtr((A.TransPtr) ? new Geometry::Transform(*A.TransPtr) : 0)
+  TransPtr((A.TransPtr) ? new Geometry::Transform(*A.TransPtr) : 0),
+  polarVec(A.polarVec),polarFrac(A.polarFrac)
   /*!
     Copy constructor
     \param A :: SourceBase to copy
@@ -103,6 +105,8 @@ SourceBase::operator=(const SourceBase& A)
       weight=A.weight;
       delete TransPtr;
       TransPtr=(A.TransPtr) ? new Geometry::Transform(*A.TransPtr) : 0;
+      polarVec=A.polarVec;
+      polarFrac=A.polarFrac;
     }
   return *this;
 }
@@ -405,6 +409,21 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
 }  
 
 void
+SourceBase::setPolarization(const Geometry::Vec3D& PValue,
+			    const double PFrac)
+  /*!
+    Set the polarization vector
+    \param PValue :: Polarization vector
+    \param PFrac :: Fraction which is polarized
+  */
+{
+  polarVec=PValue.unit();
+  polarFrac=PFrac;
+  return;
+}
+
+
+void
 SourceBase::writePHITS(std::ostream& OX) const
   /*!
     Write out common part of PHITS source
@@ -431,6 +450,27 @@ SourceBase::writePHITS(std::ostream& OX) const
 	  eStart=Energy[i];
 	}
       OX<<"    "<<eStart<<std::endl;
+    }
+  return;
+}
+
+void
+SourceBase::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out common part of FLUKA source
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SourceBase","writeFLUKA");
+
+  
+  if (polarFrac>Geometry::zeroTol &&
+      polarVec.abs()>Geometry::zeroTol)
+    {
+      std::ostringstream cx;
+      cx<<"POLARIZA ";  
+      cx<<polarVec<<" 0 "<<polarFrac<<" 0.0 ";
+      StrFunc::writeFLUKA(cx.str(),OX);
     }
   return;
 }
