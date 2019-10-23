@@ -36,7 +36,8 @@ namespace flukaSystem
   class flukaPhysics;
 
   void setModelPhysics(SimFLUKA&, const mainSystem::inputParam&);
-    
+
+  void setUserFlags(SimFLUKA&,const mainSystem::inputParam&);
   void setXrayPhysics(SimFLUKA&,const mainSystem::inputParam&);
 }
 

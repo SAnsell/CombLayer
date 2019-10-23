@@ -90,10 +90,31 @@
 namespace flukaSystem
 {  
 
-void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
-
-
+  void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
   
+void
+setUserFlags(SimFLUKA& System,
+	      const mainSystem::inputParam& IParam)
+   /*!
+    Currently very simple system to get additional flag
+    \param System :: Simulation
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod RegA("flukaDefPhysics[F]","setUserFlags");
+
+
+  if (IParam.flag("userWeight"))  // only one
+    {
+      const size_t NIndex=IParam.itemCnt("userWeight");
+
+      const std::string extra = (NIndex) ?
+	IParam.getValue<std::string>("userWeight") : "3";
+      System.addUserFlags("userWeight",extra);
+    }
+  return;
+}
+
 void
 setMagneticPhysics(SimFLUKA& System,
 		   const mainSystem::inputParam& IParam)
@@ -208,6 +229,7 @@ setModelPhysics(SimFLUKA& System,
   
   setXrayPhysics(System,IParam);
   setMagneticPhysics(System,IParam);
+  setUserFlags(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
   if (nSet)

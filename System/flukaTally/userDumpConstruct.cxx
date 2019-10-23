@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userDumpConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "support.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -132,7 +131,7 @@ userDumpConstruct::processDump(SimFLUKA& System,
 			       const size_t Index) 
 /*!
     Add mesh tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */

@@ -48,6 +48,8 @@ class SimFLUKA : public Simulation
   /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<flukaSystem::magnetUnit>> MagTYPE;
+  /// Name : Flag active 
+  typedef std::map<std::string,std::string> FlagTYPE;
   
  private:
 
@@ -63,6 +65,8 @@ class SimFLUKA : public Simulation
   std::string sourceExtraName;    ///< Extra name if using combined sources
 
 
+  FlagTYPE FlagItem;              ///< Fluka user flag items
+  
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   MagTYPE MagItem;                ///< Fluka magnetic map 
@@ -74,6 +78,9 @@ class SimFLUKA : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeMagField(std::ostream&) const;
+  void writeFlags(std::ostream&) const;
+
+  // general stuff [from Simulation]
   void writeMaterial(std::ostream&) const;
   void writeElements(std::ostream&) const;
   void writeWeights(std::ostream&) const;
@@ -93,11 +100,14 @@ class SimFLUKA : public Simulation
   SimFLUKA(const SimFLUKA&);
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
-
+  
   /// get Physics ptr
   flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
   /// get RadDecay ptr
   flukaSystem::radDecay* getRadDecay() { return RadDecayPtr; }
+
+  // FLag processing
+  void addUserFlags(const std::string&,const std::string&);
     
   // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);

@@ -270,6 +270,15 @@ SimFLUKA::setExtraSourceName(const std::string& S)
 }
 
 void
+SimFLUKA::addUserFlags(const std::string& Key,const std::string& Extra)
+{
+  // replace with insert_or_assign in C++17
+  FlagItem[Key]=Extra;
+  return;
+}
+
+
+void
 SimFLUKA::writeTally(std::ostream& OX) const
   /*!
     Writes out the tallies using a nice boost binding
@@ -288,6 +297,61 @@ SimFLUKA::writeTally(std::ostream& OX) const
 
   return;
 }
+
+void
+SimFLUKA::writeFlags(std::ostream& OX) const
+  /*!
+    Writes out the flags using a look-up stack.
+    Bascially an ultra primative method to get something
+    into the fluka file, if nothing else fits.
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimFluka","writeFlags");
+
+    
+  const static std::map<std::string,int> indexMap(
+    {
+      {"before",1},
+      {"shiftBefore",2},
+      {"beforeShift",2},
+      {"after",3},
+      {"afterShift",4},
+      {"shiftAfter",4}
+    });
+  
+  std::ostringstream cx;
+  for(const FlagTYPE::value_type& fPair : FlagItem)
+    {
+      if (fPair.first=="userWeight")
+	{
+	  int index(0);
+	  double VIndex;
+	  if (!StrFunc::convert(fPair.second,VIndex))
+	    {
+	      std::map<std::string,int>::const_iterator mc=
+		indexMap.find(fPair.second);
+	      index=(mc!=indexMap.end()) ? mc->second : 0;
+	    }
+	  else
+	    {
+	      index=static_cast<int>(VIndex);
+	    }
+	      
+	  if (index==0)
+	    ELog::EM<<"WARNING userWeight set to zero"<<ELog::endWarn;
+	  
+	  cx<<"USERWEIG - - "<<index<<" - -";
+	  StrFunc::writeFLUKA(cx.str(),OX);
+	}
+      else
+	throw ColErr::InContainerError<std::string>
+	  (fPair.first,"FlagItem key");
+    }
+
+  return;
+}
+
 
 void
 SimFLUKA::writeMagField(std::ostream& OX) const
@@ -498,6 +562,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
   std::ostringstream cx;
 
+  writeFlags(OX);
   cx<<"START "<<static_cast<double>(nps);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
@@ -505,6 +570,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
   // Remaining Physics cards           
   PhysPtr->writeFLUKA(OX);
+
   return;
 }
 
@@ -601,7 +667,7 @@ SimFLUKA::getLowMatName(const size_t Z) const
 }
 
 std::string
-SimFLUKA::getLowMat(const size_t Z,const size_t A,
+SimFLUKA::getLowMat(const size_t Z,const size_t,
 		    const std::string& mat) const
   /*!
     Return the LOW-MAT card definition for the given Element
