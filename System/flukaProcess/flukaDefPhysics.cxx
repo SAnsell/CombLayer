@@ -322,7 +322,7 @@ setXrayPhysics(SimFLUKA& System,
       // Turn off multiple scattering [not a good idea]
       //      PC.setTHR("mulsopt",MN,"0","0","3");
 
-      // Production Cut for e/e+ photon 
+      // Production Cut for e/e+ and photon 
       PC.setEMF("prodcut",MN,"1","1e-3");
       // Rayleigh photonuc-iteratcion
       PC.setEMF("pho2thr",MN,"1e-3","1");

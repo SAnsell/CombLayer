@@ -65,10 +65,15 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "World.h"
+
+#include "insertObject.h"
+#include "insertCylinder.h"
 #include "CylSample.h"
 #include "Capillary.h"
 #include "AreaPlate.h"
@@ -81,7 +86,8 @@ makeSAXS::makeSAXS() :
   sampleObj(new Capillary("SampleCap")),
   waterObj(new Capillary("WaterCap")),
   energyObj(new Capillary("EnergyCap")),
-  areaPlate(new AreaPlate("AreaPlate"))
+  areaPlate(new AreaPlate("AreaPlate")),
+  eCutDisk(new insertSystem::insertCylinder("ECutDisk"))
   /*!
     Constructor
   */
@@ -93,6 +99,7 @@ makeSAXS::makeSAXS() :
   OR.addObject(waterObj);
   OR.addObject(energyObj);
   OR.addObject(areaPlate);
+  OR.addObject(eCutDisk);
     
 }
 
@@ -130,6 +137,9 @@ makeSAXS::build(Simulation& System,
   areaPlate->setInsertCell(voidCell);
   areaPlate->createAll(System,*sampleObj,0);
 
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(voidCell);
+  eCutDisk->createAll(System,World::masterOrigin(),0);
 
   return;
 }

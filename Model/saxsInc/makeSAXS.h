@@ -22,6 +22,12 @@
 #ifndef saxsSystem_makeSAXS_h
 #define saxsSystem_makeSAXS_h
 
+namespace insertSystem
+{
+  class insertPlate;
+  class insertCylinder;
+}
+
 namespace instrumentSystem
 {
   class CylSample;
@@ -62,6 +68,9 @@ class makeSAXS
 
   /// Area detector plate
   std::shared_ptr<AreaPlate> areaPlate;
+
+  /// beam stop
+  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;  
 
  public:
   

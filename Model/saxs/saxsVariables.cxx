@@ -95,6 +95,25 @@ SAXSModel(FuncDataBase& Control)
   Control.addVariable("EnergyCapWallMat","Void");       
   Control.addVariable("EnergyCapLength",10.0);
 
+  
+  // ------------
+  // DETECTORS
+  // -----------
+
+  Control.addVariable("AreaPlateYStep",100.0);       //
+  Control.addVariable("AreaPlateNWBin",40);       // 
+  Control.addVariable("AreaPlateNHBin",40);       //
+  Control.addVariable("AreaPlateWidth",40.0);     // 10 cm (real)
+  Control.addVariable("AreaPlateHeight",40.0);    // 10 cm (real)
+  Control.addVariable("AreaPlateThick",0.5);       //
+
+  Control.addVariable("AreaPlateMainMat","Void");       //
+
+
+  Control.addVariable("ECutDiskYStep",5.0);
+  Control.addVariable("ECutDiskLength",0.1);
+  Control.addVariable("ECutDiskRadius",0.002);
+  Control.addVariable("ECutDiskMat","H2Gas#0.1");
 
 
 // ------------
@@ -145,19 +164,6 @@ SAXSModel(FuncDataBase& Control)
   Control.addVariable("detectorWallThick",0.2);       //
   Control.addVariable("detectorWallMat","Aluminium");       //
   Control.addVariable("detectorDetMat",0);       //  
-
-  // ------------
-  // DETECTORS
-  // -----------
-
-  Control.addVariable("AreaPlateYStep",100.0);       //
-  Control.addVariable("AreaPlateNWBin",40);       // 
-  Control.addVariable("AreaPlateNHBin",40);       //
-  Control.addVariable("AreaPlateWidth",40.0);     // 10 cm (real)
-  Control.addVariable("AreaPlateHeight",40.0);    // 10 cm (real)
-  Control.addVariable("AreaPlateThick",0.5);       //
-
-  Control.addVariable("AreaPlateMainMat","Void");       //
 
   return;
 }
