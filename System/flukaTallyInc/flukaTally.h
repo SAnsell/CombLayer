@@ -46,6 +46,8 @@ class flukaTally
 
   std::string auxParticle;          ///< Auxillary particles
   std::string doseType;             ///< Auxillary dose type if used
+
+  std::string userName;             ///< Selected for fluscw treatment
   
  public:
   
@@ -60,6 +62,9 @@ class flukaTally
   virtual std::string getType() const { return "VOID"; }
 
   void setKeyName(const std::string&);
+  /// Simple assignment to userName
+  void setUserName(const std::string& A)
+    { userName=A;} 
   void setBinary();
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
@@ -68,6 +73,7 @@ class flukaTally
   virtual void setAngle(const bool,const double,const double,const size_t);
 
   const std::string& getKeyName() const;
+  const std::string& getUserName() const { return userName; }
   /// access out unit
   int getOutUnit() const { return outputUnit; }
 

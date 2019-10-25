@@ -83,7 +83,7 @@ tallySelection(SimFLUKA& System,
   
   System.populateCells();
   System.createObjSurfMap();
-
+  
   for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=
@@ -112,7 +112,6 @@ tallySelection(SimFLUKA& System,
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
     }
-
   //if (IParam.flag("Txml"))
     //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
       

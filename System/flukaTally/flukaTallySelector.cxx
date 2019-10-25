@@ -90,6 +90,7 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
+	    "  -- userName :: tallyName/Number ExternalaName \n"
 	    "  -- binary :: tallyName/Number \n"
 	    "  -- particle ::tallyName/Number particle \n"
 	    "  -- auxParticle tallyName/Number particle \n"
@@ -110,12 +111,20 @@ tallyModification(SimFLUKA& System,
       else if(key=="doseType")
         {
 	  const std::string tName=IParam.getValueError<std::string>
-	    ("TMod",i,1,"No tally name for doseType");
+	    ("TMod",i,1,"No tally name for "+key);
 	  const std::string PT=IParam.getValueError<std::string>
-	    ("TMod",i,2,"No particle for doseType");
+	    ("TMod",i,2,"No particle for "+key);
 	  const std::string DT=IParam.getValueError<std::string>
-	    ("TMod",i,3,"No standard for doseType");
+	    ("TMod",i,3,"No standard for "+key);
           flukaSystem::setDoseType(System,tName,PT,DT);
+        }
+      else if(key=="userName")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+	  const std::string externalName=IParam.getValueError<std::string>
+	    ("TMod",i,2,"No external for "+key);
+          flukaSystem::setUserName(System,tName,externalName);
         }
       else if(key=="auxParticle")
         {

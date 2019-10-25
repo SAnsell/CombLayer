@@ -48,6 +48,8 @@ namespace flukaSystem
 	       const double,const double,
 	       const size_t,const bool);
   
+  int setUserName(SimFLUKA&,const std::string&,
+		  const std::string&);
 
   int setBinaryOutput(SimFLUKA&,const int);
 

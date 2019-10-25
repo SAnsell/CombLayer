@@ -85,7 +85,7 @@ flukaTally::flukaTally(const int ID)  :
 flukaTally::flukaTally(const flukaTally& A)  :
   keyName(A.keyName),outputUnit(A.outputUnit),
   comments(A.comments),auxParticle(A.auxParticle),
-  doseType(A.doseType)
+  doseType(A.doseType),userName(A.userName)
   /*!
     Copy constructor
     \param A :: flukaTally object to copy
@@ -117,6 +117,7 @@ flukaTally::operator=(const flukaTally& A)
       comments=A.comments;
       auxParticle=A.auxParticle;
       doseType=A.doseType;
+      userName=A.userName;
     }
   return *this;
 }
@@ -157,6 +158,7 @@ flukaTally::getKeyName() const
 {
   return keyName;
 }
+
 
 void
 flukaTally::setAuxParticles(const std::string& P)
@@ -237,13 +239,16 @@ flukaTally::writeAuxScore(std::ostream&) const
 }
 
 void
-flukaTally::write(std::ostream&) const
+flukaTally::write(std::ostream& OX) const
   /*!
     Writes out the flukaTally depending on the 
     fields that have been set.
     \param OX :: Output Stream
   */
 {
+  if (!userName.empty())
+    StrFunc::writeFLUKA("USRICALL "+keyName+" - "+userName,OX);
+
   return;
 }
 

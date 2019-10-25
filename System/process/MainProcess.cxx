@@ -542,6 +542,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   ModelSupport::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
+
   //
   SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
@@ -688,7 +689,8 @@ buildFullSimulation(Simulation* SimPtr,
 
   ModelSupport::objectAddition(*SimPtr,IParam);
   ModelSupport::materialUpdate(*SimPtr,IParam);
-  
+
+
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
   
@@ -697,6 +699,7 @@ buildFullSimulation(Simulation* SimPtr,
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
+
 
   if (createVTK(IParam,SimPtr,OName))
     return;
@@ -711,7 +714,7 @@ buildFullSimulation(Simulation* SimPtr,
   
   SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
   if (SimFLUKAPtr)
-    {      
+    {
       buildFullSimFLUKA(SimFLUKAPtr,IParam,OName);
       return;
     }

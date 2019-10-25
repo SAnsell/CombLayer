@@ -75,7 +75,6 @@
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
 
-
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 #include "cellValueSet.h"
@@ -108,8 +107,9 @@ setUserFlags(SimFLUKA& System,
     {
       const size_t NIndex=IParam.itemCnt("userWeight");
 
-      const std::string extra = (NIndex) ?
-	IParam.getValue<std::string>("userWeight") : "3";
+      const std::string extra =
+	IParam.getDefValue<std::string>("3","userWeight");
+
       System.addUserFlags("userWeight",extra);
     }
   return;
