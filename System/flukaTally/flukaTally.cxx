@@ -247,7 +247,11 @@ flukaTally::write(std::ostream& OX) const
   */
 {
   if (!userName.empty())
-    StrFunc::writeFLUKA("USRICALL "+keyName+" - "+userName,OX);
+    {
+      std::ostringstream cx;
+      cx<<"USRICALL "<<outputUnit<<" - - - - -  "<<userName;
+      StrFunc::writeFLUKA(cx.str(),OX);
+    }
 
   return;
 }
