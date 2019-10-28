@@ -169,8 +169,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
   viewTubeBScreen(new xraySystem::FlangeMount(newName+"ViewTubeBScreen")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  lensBox(new xraySystem::MonoBox(newName+"LensBox"))
-  /*!
+  lensBox(new xraySystem::MonoBox(newName+"LensBox")),
+  gateF(new constructSystem::GateValveCylinder(newName+"GateF")),
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  slitsBOut(new constructSystem::VacuumPipe(newName+"SlitsBOut")),
+  revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
+  revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
+  slitsB(new constructSystem::JawValveTube(newName+"SlitsB"))
+/*!
     Constructor
     \param Key :: Name of construction key
   */
@@ -221,6 +227,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTubeBScreen);
   OR.addObject(bellowI);
   OR.addObject(lensBox);
+  OR.addObject(gateF);
+  OR.addObject(bellowJ);
+  OR.addObject(revBeamStopTube);
+  OR.addObject(revBeamStop);
+  OR.addObject(slitsB);
+  OR.addObject(slitsBOut);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -362,6 +374,42 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   viewTubeBScreen->setBladeCentre(*viewTubeB,0);
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
+  return;
+}
+
+void
+danmaxOpticsLine::constructRevBeamStopTube
+(Simulation& System,MonteCarlo::Object* masterCell,
+ const attachSystem::FixedComp& initFC,const std::string& sideName)
+/*!
+    Sub build of the beamstop tube [reversed]
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","constructRevBeamStopTube");
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,initFC,sideName,*slitsBOut);
+  
+  // FAKE insertcell: required
+  revBeamStopTube->addAllInsertCell(masterCell->getName());
+  revBeamStopTube->setPortRotation(4,Geometry::Vec3D(1,0,0));
+  revBeamStopTube->createAll(System,*slitsBOut,2);
+  //  beamStopTube->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& VPB=revBeamStopTube->getPort(2);
+  const int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  revBeamStopTube->insertAllInCell(System,outerCell);
+  
+  beamStop->addInsertCell(beamStopTube->getCell("Void"));
+  beamStop->createAll(System,*beamStopTube,"OrgOrigin");
+
+
+  
   return;
 }
 
@@ -603,8 +651,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*pipeA,"back",*bellowB);
 
-
-
   // brem:
   // FAKE insertcell: required
   collTubeA->addAllInsertCell(masterCell->getName());
@@ -677,12 +723,19 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowI,"back",*lensBox);
 
+  // adds a portset to an object:
   constructSystem::portSet lensBoxPort(*lensBox);
-
   lensBoxPort.createPorts(System,lensBox->getInsertCells());
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*lensBox,"back",*gateF);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateF,"back",*bellowJ);
+
+  constructRevBeamStopTube(System,masterCell,*bellowJ,"back");
+
   
-  
-  lastComp=bellowI;
+  lastComp=bellowJ;
   return;
 
   /*

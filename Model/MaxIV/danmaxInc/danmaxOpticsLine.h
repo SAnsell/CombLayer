@@ -158,7 +158,7 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> beamStop;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsA;
-  /// Flange convert
+  /// Flange converter
   std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
   /// Connector to next beam view
   std::shared_ptr<constructSystem::Bellows> bellowH;
@@ -170,6 +170,23 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// Connector to next beam view
   std::shared_ptr<xraySystem::MonoBox> lensBox;
+
+  /// gate valve from focus box
+  std::shared_ptr<constructSystem::GateValveCylinder> gateF;
+  /// Connector to review beamstop
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+
+    /// Flange convert
+  std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
+  
+  /// BeamStopTube
+  std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
+  /// BeamStopBlock
+  std::shared_ptr<xraySystem::BremBlock> revBeamStop;
+  /// Slits after beamstop
+  std::shared_ptr<constructSystem::JawValveTube> slitsB;
+
+  
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -190,6 +207,9 @@ class danmaxOpticsLine :
 
   void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
 			     const attachSystem::FixedComp&,const std::string&);
+  void constructRevBeamStopTube(Simulation&,MonteCarlo::Object*,
+				const attachSystem::FixedComp&,
+				const std::string&);
 
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
