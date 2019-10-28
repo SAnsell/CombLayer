@@ -134,8 +134,6 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),    
-  bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collTubeA(new constructSystem::PipeTube(newName+"CollTubeA")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   filterPipe(new constructSystem::VacuumPipe(newName+"FilterPipe")),
@@ -192,8 +190,6 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeAItem);
 
   OR.addObject(bellowA);
-  OR.addObject(pipeA);
-  OR.addObject(bellowB);
   OR.addObject(collTubeA);
   OR.addObject(bremColl);
   OR.addObject(filterPipe);
@@ -400,13 +396,13 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStopTube->createAll(System,*slitsBOut,2);
   //  beamStopTube->intersectPorts(System,1,2);
 
-  const constructSystem::portItem& VPB=revBeamStopTube->getPort(2);
+  const constructSystem::portItem& VPB=revBeamStopTube->getPort(0);
+
   const int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   revBeamStopTube->insertAllInCell(System,outerCell);
-  
-  beamStop->addInsertCell(beamStopTube->getCell("Void"));
-  beamStop->createAll(System,*beamStopTube,"OrgOrigin");
+  revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
+  revBeamStop->createAll(System,*revBeamStopTube,"OrgOrigin");
 
 
   
@@ -645,17 +641,12 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,GPI,"OuterPlate",*bellowA);
 
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
-  
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*bellowB);
 
   // brem:
   // FAKE insertcell: required
   collTubeA->addAllInsertCell(masterCell->getName());
   collTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  collTubeA->createAll(System,*bellowB,"back");
+  collTubeA->createAll(System,*bellowA,"back");
   
   const constructSystem::portItem& CPI=collTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit

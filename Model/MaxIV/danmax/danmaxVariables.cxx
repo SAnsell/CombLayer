@@ -503,7 +503,7 @@ void
 revBeamStopPackage(FuncDataBase& Control,
 		   const std::string& viewKey)
   /*!
-    Builds the variables for the ViewTube 2
+    Builds the variables for the reversed slit tube/beamstop
     \param Control :: Database
     \param viewKey :: prename
   */
@@ -869,9 +869,9 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
 
   // laue monochromator
-  BellowGen.generateBellow(Control,opticsName+"BellowC",0,16.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,300.0);
-  BellowGen.generateBellow(Control,opticsName+"BellowD",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,244.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
 
   opticsSlitPackage(Control,opticsName);
 
