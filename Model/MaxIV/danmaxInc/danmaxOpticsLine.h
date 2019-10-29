@@ -185,6 +185,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> revBeamStop;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsB;
+  /// bellows from second mono
+  std::shared_ptr<constructSystem::Bellows> bellowG;  
 
   
 

@@ -173,7 +173,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   slitsBOut(new constructSystem::VacuumPipe(newName+"SlitsBOut")),
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
   revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
-  slitsB(new constructSystem::JawValveTube(newName+"SlitsB"))
+  slitsB(new constructSystem::JawValveTube(newName+"SlitsB")),
+  bellowK(new constructSystem::Bellows(newName+"BellowK")),
+  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter"))
 /*!
     Constructor
     \param Key :: Name of construction key
