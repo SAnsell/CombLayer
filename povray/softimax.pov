@@ -6,11 +6,16 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 7;
-#declare omnimaxOK = 0;
+#declare view = 1000;
+// PROJECTION:
+// 0=perspective
+// 1=panoramic - good to display whole beam line
+// 2=omnimax
+// 3=cylindrical
+#declare projection = 2;
 #declare cameraAngle = 90;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -101,6 +106,11 @@ global_settings {
     #declare cameraLocation = <2670, 8450, 10>;
     #declare cameraLookAt   = <2628, 8409, 3.2>;
   #break
+  #case(1000) // whole optics line side view
+    #declare cameraLocation = <2400, 8600, 10>;
+    #declare cameraLookAt   = <2400, 8408, 0>;
+    #declare cameraAngle = 170;
+  #break
   #else // whole optics line top view
     #declare cameraLocation = <2400, 8450, 160>;
     #declare cameraLookAt   = <2400, 8408, 0>;
@@ -131,14 +141,27 @@ global_settings {
 #end
 
 camera {
-  #if (omnimaxOK=1)
-    omnimax
+  #switch ( projection )
+    #case(0)
+      perspective
+    #break
+    #case(1)
+      panoramic // angle 180 constant
+    #break
+    #case(2)
+      omnimax
+    #break
+    #case(3)
+      cylinder 1
+    #break
   #end
   location cameraLocation
   look_at  cameraLookAt
   angle    cameraAngle
   sky z
-  right -4/3*x
+  right -x*image_width/image_height
 }
+
+background { color White }
 
 #include "b.inc"
