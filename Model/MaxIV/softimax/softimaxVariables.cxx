@@ -911,6 +911,13 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
 
+  const std::string mName=preName+"VacPiece";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  //Control.addVariable(mName+"XStep",0.0);
+  Control.addVariable(mName+"NPorts",0);
+
+
 
 
   // GateGen.setLength(2.5);

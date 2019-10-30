@@ -121,6 +121,9 @@ class softimaxOpticsLine :
   // M3 Middle pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeC;
   std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// Vacuum piece
+  std::shared_ptr<constructSystem::PipeTube> vacPiece;
+
 
 
   // /// Vacuum pipe for collimator

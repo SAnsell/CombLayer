@@ -162,7 +162,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
-  bellowI(new constructSystem::Bellows(newName+"BellowI"))
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  vacPiece(new constructSystem::PipeTube(newName+"VacPiece"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -245,6 +246,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowH);
   OR.addObject(gateE);
   OR.addObject(pumpTubeC);
+  OR.addObject(vacPiece);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -800,6 +802,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
+
+  vacPiece->setFront(*bellowI,2);
+  vacPiece->createAll(System,*bellowI,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*vacPiece,2);
+  vacPiece->insertAllInCell(System,outerCell);
 
 
 
