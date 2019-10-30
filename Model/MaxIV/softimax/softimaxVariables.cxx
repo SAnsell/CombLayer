@@ -888,6 +888,9 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
 
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
@@ -966,9 +969,6 @@ opticsVariables(FuncDataBase& Control,
 
   // softimaxVar::diagUnit(Control,preName+"DiagBoxA");
   // BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
-
-  // GateGen.setCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
   // softimaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
 

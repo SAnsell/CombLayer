@@ -116,6 +116,8 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::Mirror> M3Mirror;
   std::shared_ptr<xraySystem::BlockStand> M3Stand;
   std::shared_ptr<constructSystem::Bellows> bellowH;
+  // Gate valve for M3
+  std::shared_ptr<constructSystem::GateValveCube> gateE;
 
 
   // /// Vacuum pipe for collimator
@@ -147,8 +149,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::PortTube> diagBoxA;
   // /// Mono-Collimator for collimator
   // std::shared_ptr<xraySystem::BremMonoColl> bremMonoCollA;
-  // // Gate for first mirror
-  // std::shared_ptr<constructSystem::GateValveCube> gateE;
 
   // /// Mirror box
   // std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;

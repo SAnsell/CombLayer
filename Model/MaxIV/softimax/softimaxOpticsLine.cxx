@@ -159,7 +159,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
   M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
-  bellowH(new constructSystem::Bellows(newName+"BellowH"))
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  gateE(new constructSystem::GateValveCube(newName+"GateE"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -174,7 +175,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   // bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
   // bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  // gateE(new constructSystem::GateValveCube(newName+"GateE")),
   // mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   // mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   // mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
@@ -242,6 +242,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Mirror);
   OR.addObject(M3Stand);
   OR.addObject(bellowH);
+  OR.addObject(gateE);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -252,7 +253,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(monoBox);
   // OR.addObject(diagBoxA);
   // OR.addObject(bremMonoCollA);
-  // OR.addObject(gateE);
   // OR.addObject(mirrorBoxA);
   // OR.addObject(mirrorFrontA);
   // OR.addObject(mirrorBackA);
@@ -779,6 +779,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*M3Tube,"back",*bellowH);
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowH,"back",*gateE);
+
+
+
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
   // filterBoxA->createAll(System,*bremCollA,2);
@@ -875,10 +880,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
 
 
-  // gateE->setFront(*bellowE,2);
-  // gateE->createAll(System,*bellowE,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateE,2);
-  // gateE->insertInCell(System,outerCell);
 
   // mirrorBoxA->setFront(*gateE,2);
   // mirrorBoxA->createAll(System,*gateE,2);
