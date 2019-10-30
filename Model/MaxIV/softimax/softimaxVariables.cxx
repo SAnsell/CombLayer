@@ -908,6 +908,10 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
+
+
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
@@ -1011,9 +1015,6 @@ opticsVariables(FuncDataBase& Control,
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateI",0.0,0);
-
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
 
   // softimaxVar::monoShutterVariables(Control,preName);
 

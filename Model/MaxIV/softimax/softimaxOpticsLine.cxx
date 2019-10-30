@@ -161,7 +161,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
-  pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC"))
+  pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
+  bellowI(new constructSystem::Bellows(newName+"BellowI"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -197,7 +198,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
   // 	}),
-  // bellowI(new constructSystem::Bellows(newName+"BellowI")),
   // gateI(new constructSystem::GateValveCube(newName+"GateI")),
   // monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
 
@@ -798,6 +798,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  pumpTubeC->intersectPorts(System,1,2);
   ///////////////////////////////////////////////
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
+
 
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
@@ -948,11 +951,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // bellowH->insertInCell(System,outerCell);
 
   // constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
-
-  // bellowI->setFront(*diagBoxC,2);
-  // bellowI->createAll(System,*diagBoxC,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowI,2);
-  // bellowI->insertInCell(System,outerCell);
 
   // constructMonoShutter(System,&masterCell,*bellowI,2);
 

@@ -118,7 +118,9 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowH;
   // Gate valve for M3
   std::shared_ptr<constructSystem::GateValveCube> gateE;
+  // M3 Middle pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeC;
+  std::shared_ptr<constructSystem::Bellows> bellowI;
 
 
   // /// Vacuum pipe for collimator
@@ -183,9 +185,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::PortTube> diagBoxC;
   // /// Diag Box C :: Jaw units
   // std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
-
-  // /// Bellow to end station
-  // std::shared_ptr<constructSystem::Bellows> bellowI;
 
   // /// Gate valve before mono shutter
   // std::shared_ptr<constructSystem::GateValveCube> gateI;
