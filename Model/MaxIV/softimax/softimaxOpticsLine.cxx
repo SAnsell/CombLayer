@@ -164,7 +164,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   vacPiece(new constructSystem::PipeTube(newName+"VacPiece")),
-  gateF(new constructSystem::GateValveCube(newName+"GateF"))
+  gateF(new constructSystem::GateValveCube(newName+"GateF")),
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -202,7 +203,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // gateI(new constructSystem::GateValveCube(newName+"GateI")),
   // monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
 
-  // bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   // gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
     Constructor
@@ -248,6 +248,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pumpTubeC);
   OR.addObject(vacPiece);
   OR.addObject(gateF);
+  OR.addObject(bellowJ);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -271,7 +272,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(diagBoxC);
   // OR.addObject(gateI);
   // OR.addObject(monoShutter);
-  // OR.addObject(bellowJ);
   // OR.addObject(gateJ);
 }
 
@@ -355,11 +355,6 @@ softimaxOpticsLine::constructMonoShutter
   // monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
   // monoShutter->splitObject(System,"PortBCut",outerCell);
   // cellIndex+=3;
-
-  // bellowJ->setFront(*monoShutter,2);
-  // bellowJ->createAll(System,*monoShutter,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*bellowJ,2);
-  // bellowJ->insertInCell(System,outerCell);
 
 
   // gateJ->setFront(*bellowJ,2);
@@ -815,6 +810,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*vacPiece,"back",*gateF);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateF,"back",*bellowJ);
 
 
 
