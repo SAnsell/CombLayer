@@ -917,6 +917,8 @@ opticsVariables(FuncDataBase& Control,
   //Control.addVariable(mName+"XStep",0.0);
   Control.addVariable(mName+"NPorts",0);
 
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
 
 
@@ -1001,8 +1003,6 @@ opticsVariables(FuncDataBase& Control,
 
   // softimaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
 
-  // GateGen.setCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
 

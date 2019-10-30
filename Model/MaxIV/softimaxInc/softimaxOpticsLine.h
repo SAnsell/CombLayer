@@ -123,6 +123,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// Vacuum piece
   std::shared_ptr<constructSystem::PipeTube> vacPiece;
+  std::shared_ptr<constructSystem::GateValveCube> gateF;
 
 
 
@@ -162,8 +163,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
   // /// Mirror back
   // std::shared_ptr<xraySystem::Mirror> mirrorBackA;
-  // // Gate fro first mirror
-  // std::shared_ptr<constructSystem::GateValveCube> gateF;
   // /// Bellow to diagnositics
   // std::shared_ptr<constructSystem::Bellows> bellowF;
   // /// Diagnostic unit 2:

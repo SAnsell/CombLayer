@@ -163,7 +163,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  vacPiece(new constructSystem::PipeTube(newName+"VacPiece"))
+  vacPiece(new constructSystem::PipeTube(newName+"VacPiece")),
+  gateF(new constructSystem::GateValveCube(newName+"GateF"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -181,7 +182,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   // mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   // mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-  // gateF(new constructSystem::GateValveCube(newName+"GateF")),
   // diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   // jawCompB({
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
@@ -247,6 +247,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gateE);
   OR.addObject(pumpTubeC);
   OR.addObject(vacPiece);
+  OR.addObject(gateF);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -260,7 +261,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(mirrorBoxA);
   // OR.addObject(mirrorFrontA);
   // OR.addObject(mirrorBackA);
-  // OR.addObject(gateF);
   // OR.addObject(diagBoxB);
   // OR.addObject(gateG);
   // OR.addObject(mirrorBoxB);
@@ -807,6 +807,14 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   vacPiece->createAll(System,*bellowI,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*vacPiece,2);
   vacPiece->insertAllInCell(System,outerCell);
+  // TODO: since PipeTube has insertAllInCell but other classes have
+  // insertInCell I can't use constructUnit with PipeTube.
+  // why dont' fix method names for PipeTube? so we could use next 2 lines:
+  // xrayConstruct::constructUnit
+  //   (System,buildZone,masterCell,*bellowI,"back",*);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*vacPiece,"back",*gateF);
 
 
 
@@ -920,11 +928,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   // mirrorBackA->createAll(System,*mirrorBoxA,0);
-
-  // gateF->setFront(*mirrorBoxA,2);
-  // gateF->createAll(System,*mirrorBoxA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateF,2);
-  // gateF->insertInCell(System,outerCell);
 
   // constructDiag(System,&masterCell,*diagBoxB,jawCompB,*bellowF,2);
 
