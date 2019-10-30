@@ -891,6 +891,24 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
+
+  //////////// pumpTubeC
+    // will be rotated vertical
+  const std::string pumpTubeCname=preName+"PumpTubeC";
+  SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,pumpTubeCname,0.0,40.0);
+  Control.addVariable(pumpTubeCname+"NPorts",2);   // beam ports
+
+  PItemGen.setCF<setVariable::CF63>(5.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpTubeCname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);

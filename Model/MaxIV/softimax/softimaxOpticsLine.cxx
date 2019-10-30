@@ -160,7 +160,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  gateE(new constructSystem::GateValveCube(newName+"GateE"))
+  gateE(new constructSystem::GateValveCube(newName+"GateE")),
+  pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC"))
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -243,6 +244,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Stand);
   OR.addObject(bellowH);
   OR.addObject(gateE);
+  OR.addObject(pumpTubeC);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -781,6 +783,20 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowH,"back",*gateE);
+
+
+  //// pumpTubeC
+  // FAKE insertcell: required
+  pumpTubeC->addAllInsertCell(masterCell->getName());
+  pumpTubeC->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeC->createAll(System,*gateE,2);
+
+  const constructSystem::portItem& pumpTubeCCPI=pumpTubeC->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,pumpTubeCCPI,pumpTubeCCPI.getSideIndex("OuterPlate"));
+  pumpTubeC->insertAllInCell(System,outerCell);
+  //  pumpTubeC->intersectPorts(System,1,2);
+  ///////////////////////////////////////////////
 
 
 

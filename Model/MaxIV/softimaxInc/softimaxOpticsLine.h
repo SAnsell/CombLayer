@@ -118,6 +118,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowH;
   // Gate valve for M3
   std::shared_ptr<constructSystem::GateValveCube> gateE;
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeC;
 
 
   // /// Vacuum pipe for collimator
