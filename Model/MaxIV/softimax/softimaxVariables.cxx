@@ -77,6 +77,7 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "TwinPipeGenerator.h"
 
 // #include "PreDipoleGenerator.h"
 // #include "DipoleChamberGenerator.h"
@@ -586,6 +587,72 @@ m1MirrorVariables(FuncDataBase& Control,
 }
 
 void
+splitterVariables(FuncDataBase& Control,
+		  const std::string& splitKey)
+  /*!
+    Builds the variables for the splitter at
+    the end of the opticsHut/opticsBeam
+    \param Control :: Database
+    \param splitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("softimaxVariables[F]","splitVariables");
+  setVariable::TwinPipeGenerator TwinGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeShieldGenerator ShieldGen;
+
+
+  TwinGen.setCF<CF40>();
+  TwinGen.setJoinFlangeCF<CF100>();
+  TwinGen.setAPos(-2.7,0);
+  TwinGen.setBPos(2.7,0);
+  TwinGen.setXYAngle(4.0,-4.0);
+  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);
+
+  // BellowGen.setCF<setVariable::CF40>();
+  // BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
+  // BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);
+
+  // GateGen.setLength(3.5);
+  // GateGen.setCF<setVariable::CF40>();
+  // GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
+  // GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
+
+  // PTubeGen.setMat("Stainless304");
+  // PTubeGen.setPipeCF<CF63>();
+  // PTubeGen.setPortCF<CF40>();
+  // PTubeGen.setPortLength(2.5,2.5);
+
+  // const std::string pumpNameA=splitKey+"PumpTubeAA";
+  // const std::string pumpNameB=splitKey+"PumpTubeBA";
+  // const Geometry::Vec3D zVec(0,0,1);
+  // const Geometry::Vec3D centPoint(0,0,0);
+  // PTubeGen.generateTube(Control,pumpNameA,0.0,20.0);
+  // Control.addVariable(pumpNameA+"NPorts",1);
+  // PTubeGen.generateTube(Control,pumpNameB,0.0,20.0);
+  // Control.addVariable(pumpNameB+"NPorts",1);
+
+  // PItemGen.setCF<setVariable::CF63>(14.95);
+  // PItemGen.generatePort(Control,pumpNameA+"Port0",centPoint,zVec);
+  // PItemGen.generatePort(Control,pumpNameB+"Port0",centPoint,zVec);
+
+  // PipeGen.setMat("Stainless304");
+  // PipeGen.setNoWindow();   // no window
+  // PipeGen.setCF<setVariable::CF40>();
+  // PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
+  // PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
+
+  // ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
+
+  return;
+}
+
+
+void
 m3MirrorVariables(FuncDataBase& Control,
 		  const std::string& mirrorKey)
 /*!
@@ -934,6 +1001,8 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowJ",0,18.0);
+
+  splitterVariables(Control,preName);
 
 
   // GateGen.setLength(2.5);

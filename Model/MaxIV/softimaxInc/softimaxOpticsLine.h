@@ -36,7 +36,7 @@ namespace xraySystem
   class TankMonoVessel;
   class GratingUnit;
   class FlangeMount;
-
+  class TwinPipe;
 
   /*!
     \class softimaxOpticsLine
@@ -129,7 +129,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> M3STXMTube;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
-
+  /// Splitter
+  std::shared_ptr<xraySystem::TwinPipe> splitter;
 
 
 

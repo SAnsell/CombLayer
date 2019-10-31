@@ -107,6 +107,7 @@
 #include "GratingUnit.h"
 #include "Mirror.h"
 #include "BeamPair.h"
+#include "TwinPipe.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
 // #include "DiffPumpXIADP03.h"
@@ -168,7 +169,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
-  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD"))
+  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
+  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
 
 
 
@@ -255,6 +257,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowJ);
   OR.addObject(M3STXMTube);
   OR.addObject(offPipeD);
+  OR.addObject(splitter);
+
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -659,26 +663,26 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   cellA=buildZone.createOuterVoidUnit(System,masterCellA,*offPipeD,2);
   offPipeD->insertInCell(System,cellA);
 
-  // buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
 
 
-  // attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
-  // attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
+  attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
+  attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
 
-  // // No need for insert -- note removal of old master cell
-  // System.removeCell(masterCellA->getName());
+  // No need for insert -- note removal of old master cell
+  System.removeCell(masterCellA->getName());
 
-  // masterCellA=leftZone.constructMasterCell(System);
-  // masterCellB=rightZone.constructMasterCell(System);
-  // splitter->createAll(System,*offPipeD,2);
-  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+  masterCellA=leftZone.constructMasterCell(System);
+  masterCellB=rightZone.constructMasterCell(System);
+  splitter->createAll(System,*offPipeD,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
 
-  // splitter->insertInCell("Flange",System,cellA);
-  // splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("PipeA",System,cellA);
 
-  // splitter->insertInCell("Flange",System,cellB);
-  // splitter->insertInCell("PipeB",System,cellB);
+  splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeB",System,cellB);
 
 
   // // now build left/ right
