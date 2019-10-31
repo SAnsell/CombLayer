@@ -85,6 +85,7 @@
 // #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
+#include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
 // #include "VacuumBox.h"
@@ -166,7 +167,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   vacPiece(new constructSystem::PipeTube(newName+"VacPiece")),
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube"))
+  M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
+  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD"))
+
 
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -251,6 +254,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gateF);
   OR.addObject(bellowJ);
   OR.addObject(M3STXMTube);
+  OR.addObject(offPipeD);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -631,6 +635,91 @@ softimaxOpticsLine::buildMono(Simulation& System,
   return;
 }
 
+void
+softimaxOpticsLine::buildSplitter(Simulation& System,
+				     MonteCarlo::Object* masterCellA,
+				     MonteCarlo::Object* masterCellB,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the spliter package
+    \param System :: Simulation to use
+    \param masterCellA :: Current master cell
+    \param masterCellB :: Secondary master cell
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
+
+  int cellA(0),cellB(0);
+
+  offPipeD->createAll(System,initFC,sideIndex);
+  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*offPipeD,2);
+  offPipeD->insertInCell(System,cellA);
+
+  // buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+
+
+  // attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
+  // attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
+
+  // // No need for insert -- note removal of old master cell
+  // System.removeCell(masterCellA->getName());
+
+  // masterCellA=leftZone.constructMasterCell(System);
+  // masterCellB=rightZone.constructMasterCell(System);
+  // splitter->createAll(System,*offPipeD,2);
+  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+
+  // splitter->insertInCell("Flange",System,cellA);
+  // splitter->insertInCell("PipeA",System,cellA);
+
+  // splitter->insertInCell("Flange",System,cellB);
+  // splitter->insertInCell("PipeB",System,cellB);
+
+
+  // // now build left/ right
+  // // LEFT
+  // bellowAA->createAll(System,*splitter,2);
+  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*bellowAA,2);
+  // bellowAA->insertInCell(System,cellA);
+
+  // gateAA->createAll(System,*bellowAA,2);
+  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAA,2);
+  // gateAA->insertInCell(System,cellA);
+
+  // // make build necessary
+  // pumpTubeAA->addAllInsertCell(masterCellA->getName());
+  // pumpTubeAA->createAll(System,*gateAA,2);
+  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*pumpTubeAA,2);
+  // pumpTubeAA->insertAllInCell(System,cellA);
+
+
+  // // RIGHT
+  // bellowBA->createAll(System,*splitter,3);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBA,2);
+  // bellowBA->insertInCell(System,cellB);
+
+  // gateBA->createAll(System,*bellowBA,2);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*gateBA,2);
+  // gateBA->insertInCell(System,cellB);
+
+  // pumpTubeBA->addAllInsertCell(masterCellB->getName());
+  // pumpTubeBA->createAll(System,*gateBA,2);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*pumpTubeBA,2);
+  // pumpTubeBA->insertAllInCell(System,cellB);
+
+  //   // Get last two cells
+  // setCell("LeftVoid",masterCellA->getName());
+  // setCell("RightVoid",masterCellB->getName());
+
+  return;
+}
+
+
 
 void
 softimaxOpticsLine::buildObjects(Simulation& System)
@@ -842,6 +931,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
 
   buildM3STXMMirror(System,masterCell,*bellowJ,2);
+
+  MonteCarlo::Object* masterCellB(0);
+  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
 
 
 

@@ -598,6 +598,7 @@ m3MirrorVariables(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
+  setVariable::PipeGenerator PipeGen;
 
   const std::string mName=mirrorKey+"M3Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -624,6 +625,9 @@ m3MirrorVariables(FuncDataBase& Control,
   Control.addVariable(stxmName+"XStep",0.0);
   Control.addVariable(stxmName+"NPorts",0);
 
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeD",0,20.6);
 
   return;
 }
