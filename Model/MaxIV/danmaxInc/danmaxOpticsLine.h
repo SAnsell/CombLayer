@@ -177,7 +177,7 @@ class danmaxOpticsLine :
   /// Connector to review beamstop
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
-    /// Flange convert
+  /// Flange convert
   std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
   
   /// BeamStopTube
@@ -188,8 +188,14 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::JawValveTube> slitsB;
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;  
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;  
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  /// bellows from second mono
+  std::shared_ptr<constructSystem::Bellows> bellowL;  
 
   
 
@@ -200,25 +206,29 @@ class danmaxOpticsLine :
 
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const std::string&);
+
   void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
+
   void constructMirrorMono(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
 
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
 			const attachSystem::FixedComp&,const std::string&);
+
   void constructViewScreenB(Simulation&,MonteCarlo::Object*,
 			const attachSystem::FixedComp&,const std::string&);
 
   void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
 			     const attachSystem::FixedComp&,const std::string&);
+
   void constructRevBeamStopTube(Simulation&,MonteCarlo::Object*,
 				const attachSystem::FixedComp&,
 				const std::string&);
 
-  int constructMonoShutter
-    (Simulation&,MonteCarlo::Object**,
-     const attachSystem::FixedComp&,const long int);
+  void constructMonoShutter(Simulation&,MonteCarlo::Object*,
+			    const attachSystem::FixedComp&,
+			    const std::string&);
 
   
   void populate(const FuncDataBase&);

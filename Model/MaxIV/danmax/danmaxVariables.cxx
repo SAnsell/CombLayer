@@ -558,7 +558,7 @@ revBeamStopPackage(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setAFlangeCF<setVariable::CF150>(); 
+  PipeGen.setBFlangeCF<setVariable::CF150>(); 
   PipeGen.generatePipe(Control,viewKey+"SlitsBOut",0,2.0);
 
   return;
@@ -657,21 +657,29 @@ monoShutterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables","monoShutterVariables");
 
-  setVariable::GateValveGenerator GateGen;
+  setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
   
   // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF63>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",0,2.0);
+  PipeGen.setAFlangeCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",0,2.0);
+
   
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowL",0,10.0);    
 
-    // joined and open
-  GateGen.setCylCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+  
   return;
 }
 
@@ -906,6 +914,10 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowJ",0,10.0);
   
   revBeamStopPackage(Control,opticsName);
+
+  BellowGen.generateBellow(Control,opticsName+"BellowK",0,10.0);
+
+  monoShutterVariables(Control,opticsName);
   
   return;
 }
