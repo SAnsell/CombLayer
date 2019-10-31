@@ -64,6 +64,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class MonoBlockXstals;
+  class MonoShutter;
   class DCMTank;
   class MLMono;
   class MLMVessel;
@@ -186,7 +187,9 @@ class danmaxOpticsLine :
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsB;
   /// bellows from second mono
-  std::shared_ptr<constructSystem::Bellows> bellowG;  
+  std::shared_ptr<constructSystem::Bellows> bellowK;  
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;  
 
   
 
