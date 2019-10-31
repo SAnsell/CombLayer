@@ -162,7 +162,6 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UndulatorSupportMat","Copper");
   Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
 
-    
   return;
 }
 
@@ -227,7 +226,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
   ShieldGen.setPlate(150.0,100.0,10.0);
-  ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenB",-4.0,0.0);
   
   return;
 }

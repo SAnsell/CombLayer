@@ -205,7 +205,7 @@ class Simulation : public objectGroups
   void renumberAll();
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
-  int splitObject(const int,const int);
+  int splitObject(const int,const int,const int);
   int minimizeObject(const std::string&);
   int minimizeObject(const int);
   void makeObjectsDNForCNF();

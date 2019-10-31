@@ -114,7 +114,7 @@ portSet::populate(const FuncDataBase& Control)
     ModelSupport::objectRegister::Instance();
   
   const std::string keyName(FUnit.getKeyName());
-  ELog::EM<<"KeyName == "<<keyName<<ELog::endDiag;
+
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT,LExt,RB;
@@ -307,11 +307,15 @@ template<typename T>
 int
 portSet::procSplit(Simulation& System,const std::string& splitName,
 		   const int offsetCN,const int CN,
-		   const T& SplitOrg,
-		   const T& SplitAxis)
+		   const T& SplitOrg,const T& SplitAxis)
   /*!
     Process split
     \param System ::Simulation
+    \param splitName :: 
+    \param offsetCN :: New cell numbers 
+    \param CN :: Cell to split
+    \param SplitOrg :: Vec3D / container of Vec3D for origin(s)
+    \param SplitAxis :: Vec3D / container of Vec3D for plane-normal(s)
    */
 {
   ELog::RegMethod RegA("portSet","procSplit");
@@ -337,7 +341,7 @@ portSet::splitVoidPorts(Simulation& System,
 			 const int offsetCN,const int CN,
 			 const std::vector<size_t>& portVec)
   /*!
-    Split the void cell and store divition planes
+    Split the void cell and store division planes
     Only use those port that a close to orthogonal with Y axis
     \param System :: Simulation to use
     \param splitName :: Name for cell output  [new]
@@ -418,6 +422,7 @@ portSet::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
+
   return procSplit(System,splitName,offsetCN,CN,SplitOrg,SplitAxis);  
 }
 
@@ -427,7 +432,7 @@ portSet::splitVoidPorts(Simulation& System,
 			 const int offsetCN,
 			 const int CN)
   /*!
-    Split the void cell and store divition planes
+    Split the void cell and store division planes
     Only use those port that a close to orthogonal with Y axis
     \param System :: Simulation to use
     \param splitName :: Name for cell output
@@ -440,13 +445,13 @@ portSet::splitVoidPorts(Simulation& System,
   std::vector<Geometry::Vec3D> SplitOrg;
   std::vector<Geometry::Vec3D> SplitAxis;
 
-
   const Geometry::Vec3D& Y=FUnit.getY();
 
   size_t preFlag(0);
   for(size_t i=0;i<PCentre.size();i++)
     {
-      if (Ports[i]->getY().dotProd(Y)<Geometry::zeroTol)
+      if (std::abs(Ports[i]->getY().dotProd(Y))
+	  <Geometry::zeroTol)
 	{
 	  if (preFlag)
 	    {
@@ -458,7 +463,6 @@ portSet::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
-
   return procSplit(System,splitName,offsetCN,CN,SplitOrg,SplitAxis);
 }
 
@@ -528,7 +532,6 @@ portSet::createPorts(Simulation& System,
   ELog::RegMethod RegA("portSet","createPorts");
 
   populate(System.getDataBase());
-  ELog::EM<<"Number of ports == "<<Ports.size()<<ELog::endDiag;
   for(size_t i=0;i<Ports.size();i++)
     {
       for(const int CN : CCVec)
@@ -549,13 +552,13 @@ portSet::createPorts(Simulation& System,
 template
 int
 portSet::procSplit(Simulation&,const std::string&,const int,const int,
-	  const Geometry::Vec3D&,const Geometry::Vec3D&);
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 
 template
 int
 portSet::procSplit(Simulation&,const std::string&,const int,const int,
-	  const std::vector<Geometry::Vec3D>&,
-	  const std::vector<Geometry::Vec3D>&);
+		   const std::vector<Geometry::Vec3D>&,
+		   const std::vector<Geometry::Vec3D>&);
 
 ///\endcond TEMPLATE
   

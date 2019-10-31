@@ -612,20 +612,6 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
     (System,buildZone,masterCell,*monoShutter,"back",*monoAdaptorB);
 
   return;
-
-  /*
-  bellowJ->setFront(*monoShutter,2);
-  bellowJ->createAll(System,*monoShutter,2);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*bellowJ,2);
-  bellowJ->insertInCell(System,outerCell);
-
-
-  gateJ->setFront(*bellowJ,2);
-  gateJ->createAll(System,*bellowJ,2);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
-  gateJ->insertInCell(System,outerCell);
-  */
-  return;
 }
 
 void
@@ -758,9 +744,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,*bellowI,"back",*lensBox);
 
   // adds a portset to an object:
+  const int CN = CellMap::getLastCell("OuterVoid");
   constructSystem::portSet lensBoxPort(*lensBox);
   lensBoxPort.createPorts(System,lensBox->getInsertCells());
-
+  lensBoxPort.splitVoidPorts(System,"OuterVoid",1501,CN);
+    
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*lensBox,"back",*gateF);
   xrayConstruct::constructUnit

@@ -331,7 +331,7 @@ testSimulation::testSplitCell()
       initSim();
       SurI.createSurface(1001,std::get<0>(tc));
 
-      ASim.splitObject(std::get<1>(tc),1001);
+      ASim.splitObject(std::get<1>(tc),std::get<1>(tc)+100,1001);
       ModelSupport::setGenericPhysics(ASim,"CEM03");
       ASim.prepareWrite();
       ASim.write(std::get<2>(tc));
