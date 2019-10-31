@@ -125,6 +125,9 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> vacPiece;
   std::shared_ptr<constructSystem::GateValveCube> gateF;
   std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// M3 STXM
+  std::shared_ptr<constructSystem::PipeTube> M3STXMTube;
+
 
 
 
@@ -221,6 +224,8 @@ class softimaxOpticsLine :
 		     const attachSystem::FixedComp&,const long int);
   void buildM3Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
+  void buildM3STXMMirror(Simulation&,MonteCarlo::Object*,
+			 const attachSystem::FixedComp&,const long int);
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const std::string&);
   void buildMono(Simulation&,MonteCarlo::Object*,

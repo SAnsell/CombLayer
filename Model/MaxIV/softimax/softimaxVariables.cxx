@@ -617,6 +617,14 @@ m3MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mirrorKey+"M3StandLength",30.0);
   Control.addVariable(mirrorKey+"M3StandMat","SiO2");
 
+  // M3 STXM part
+  const std::string stxmName=mirrorKey+"M3STXMTube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,stxmName,0.0,36.0);
+  Control.addVariable(stxmName+"XStep",0.0);
+  Control.addVariable(stxmName+"NPorts",0);
+
+
   return;
 }
 
