@@ -75,7 +75,6 @@
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
 
-
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 #include "cellValueSet.h"
@@ -90,10 +89,32 @@
 namespace flukaSystem
 {  
 
-void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
-
-
+  void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
   
+void
+setUserFlags(SimFLUKA& System,
+	      const mainSystem::inputParam& IParam)
+   /*!
+    Currently very simple system to get additional flag
+    \param System :: Simulation
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod RegA("flukaDefPhysics[F]","setUserFlags");
+
+
+  if (IParam.flag("userWeight"))  // only one
+    {
+      const size_t NIndex=IParam.itemCnt("userWeight");
+
+      const std::string extra =
+	IParam.getDefValue<std::string>("3","userWeight");
+
+      System.addUserFlags("userWeight",extra);
+    }
+  return;
+}
+
 void
 setMagneticPhysics(SimFLUKA& System,
 		   const mainSystem::inputParam& IParam)
@@ -208,6 +229,7 @@ setModelPhysics(SimFLUKA& System,
   
   setXrayPhysics(System,IParam);
   setMagneticPhysics(System,IParam);
+  setUserFlags(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
   if (nSet)
@@ -300,7 +322,7 @@ setXrayPhysics(SimFLUKA& System,
       // Turn off multiple scattering [not a good idea]
       //      PC.setTHR("mulsopt",MN,"0","0","3");
 
-      // Production Cut for e/e+ photon 
+      // Production Cut for e/e+ and photon 
       PC.setEMF("prodcut",MN,"1","1e-3");
       // Rayleigh photonuc-iteratcion
       PC.setEMF("pho2thr",MN,"1e-3","1");

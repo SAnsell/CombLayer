@@ -56,7 +56,6 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -138,7 +137,6 @@ sourceDataBase::getInternalSource(const std::string& Name) const
   ELog::RegMethod RegA("sourceDataBase","getInternalSource() const");
 
   SMAP::const_iterator mc=Components.find(Name);
-  ELog::EM<<"Get item == "<<Name<<ELog::endDiag;
   return (mc!=Components.end()) ? mc->second.get() : 0;
 }
 

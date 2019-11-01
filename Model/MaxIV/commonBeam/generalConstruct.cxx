@@ -73,42 +73,20 @@
 #include "ExternalCut.h"
 #include "InnerZone.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
-#include "World.h"
-#include "AttachSupport.h"
-#include "ModelSupport.h"
-#include "generateSurf.h"
-
-#include "insertObject.h"
-#include "insertPlate.h"
-#include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-
-#include "MonoVessel.h"
-#include "GateValveCube.h"
-#include "GateValveCylinder.h"
-#include "FlangeMount.h"
-#include "MonoBox.h"
-#include "MonoShutter.h"
-#include "BeamMount.h"
-#include "DCMTank.h"
 
 namespace xrayConstruct
 {
 
-template<typename T>
 int
-constructUnit(Simulation& System,
-	      attachSystem::InnerZone& buildZone,
-	      MonteCarlo::Object* masterCell,
-	      const attachSystem::FixedComp& linkUnit,
-	      const std::string& sideName,
-	      T& buildUnit)
+internalUnit(Simulation& System,
+	     attachSystem::InnerZone& buildZone,
+	     MonteCarlo::Object* masterCell,
+	     const attachSystem::FixedComp& linkUnit,
+	     const std::string& sideName,
+	     attachSystem::FixedComp& FC,
+	     attachSystem::FrontBackCut& FCut,
+	     attachSystem::ContainedComp& CC)
+
   /*!
     Construct a unit in a simgle component
     \param System :: Simulation to use
@@ -120,30 +98,16 @@ constructUnit(Simulation& System,
 {
   ELog::RegMethod RegA("generalConstruct[F]","constructUnit");
 
-  buildUnit.setFront(linkUnit,sideName);
-  buildUnit.createAll(System,linkUnit,"back");
+  FCut.setFront(linkUnit,sideName);
+  FC.createAll(System,linkUnit,"back");
   const int outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,buildUnit,2);
-  buildUnit.insertInCell(System,outerCell);
-  return outerCell;
+    buildZone.createOuterVoidUnit(System,masterCell,FC,2);
+
+  CC.insertInCell(System,outerCell);
+  return  outerCell;
 }
 
-///\cond TEMPLATE
   
-template int
-constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
-	      const attachSystem::FixedComp&,const std::string&,
-	      constructSystem::Bellows&);
-template int
-constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
-	      const attachSystem::FixedComp&,const std::string&,
-	      constructSystem::GateValveCylinder&);
-template int
-constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
-	      const attachSystem::FixedComp&,const std::string&,
-	      constructSystem::VacuumPipe&);
-
-///\endcond TEMPLATE
   
 }   // NAMESPACE xrayConstruct
 

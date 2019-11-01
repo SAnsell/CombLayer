@@ -457,6 +457,7 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
     ({
       { "cut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
       { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "emfray",emfTYPE(0,0,"emfray") },   // cell: [type 4]
       { "elecnucl",emfTYPE(1,1,"elecnucl") },     // mat
       { "mupair",emfTYPE(1,1,"mupair") },        // mat
       { "prodcut",emfTYPE(2,1,"prodcut") }, 
@@ -618,6 +619,7 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
   OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
       "    prodcut - e+/e-prod  gamma-prod  MAT \n"
       "    emffluo - (state) turns off/on x-ray fluorescence MAT \n"
+      "    emfray - (state) turns off/on full rayleigh/compton CELL \n"
       "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"
       "    photthr - compton photoelec gamma-pair MAT \n"
       "    pho2thr - rayliegh gamma-photonuc MAT \n"

@@ -40,6 +40,7 @@ namespace constructSystem
   class GateValveCube;
   class GateValveCylinder;
   class JawValveCube;
+  class JawValveTube;
   class JawFlange;
 
 }
@@ -63,9 +64,11 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class MonoBlockXstals;
+  class MonoShutter;
   class DCMTank;
   class MLMono;
   class MLMVessel;
+  class MonoBox;
 
   
   /*!
@@ -152,6 +155,49 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCylinder> gateE;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> beamStopTube;
+  /// BeamStopBlock
+  std::shared_ptr<xraySystem::BremBlock> beamStop;
+  /// Slits after beamstop
+  std::shared_ptr<constructSystem::JawValveTube> slitsA;
+  /// Flange converter
+  std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
+  /// Connector to next beam view
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// Beam viewer 2
+  std::shared_ptr<constructSystem::PortTube> viewTubeB;
+  /// Beam viewer [item]
+  std::shared_ptr<xraySystem::FlangeMount> viewTubeBScreen;
+  /// Connector to next beam view
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// Connector to next beam view
+  std::shared_ptr<xraySystem::MonoBox> lensBox;
+
+  /// gate valve from focus box
+  std::shared_ptr<constructSystem::GateValveCylinder> gateF;
+  /// Connector to review beamstop
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+
+  /// Flange convert
+  std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
+  
+  /// BeamStopTube
+  std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
+  /// BeamStopBlock
+  std::shared_ptr<xraySystem::BremBlock> revBeamStop;
+  /// Slits after beamstop
+  std::shared_ptr<constructSystem::JawValveTube> slitsB;
+  /// bellows from second mono
+  std::shared_ptr<constructSystem::Bellows> bellowK;  
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  /// bellows from second mono
+  std::shared_ptr<constructSystem::Bellows> bellowL;  
+
+  
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -160,16 +206,29 @@ class danmaxOpticsLine :
 
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const std::string&);
+
   void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
+
   void constructMirrorMono(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
+
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
-			   const attachSystem::FixedComp&,const std::string&);
-  
-  int constructMonoShutter
-    (Simulation&,MonteCarlo::Object**,
-     const attachSystem::FixedComp&,const long int);
+			const attachSystem::FixedComp&,const std::string&);
+
+  void constructViewScreenB(Simulation&,MonteCarlo::Object*,
+			const attachSystem::FixedComp&,const std::string&);
+
+  void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
+			     const attachSystem::FixedComp&,const std::string&);
+
+  void constructRevBeamStopTube(Simulation&,MonteCarlo::Object*,
+				const attachSystem::FixedComp&,
+				const std::string&);
+
+  void constructMonoShutter(Simulation&,MonteCarlo::Object*,
+			    const attachSystem::FixedComp&,
+			    const std::string&);
 
   
   void populate(const FuncDataBase&);

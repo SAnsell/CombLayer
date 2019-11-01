@@ -82,7 +82,6 @@ void heatDumpVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
-
   
 void
 collimatorVariables(FuncDataBase& Control,
@@ -93,7 +92,7 @@ collimatorVariables(FuncDataBase& Control,
     \param collKey :: prename
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","collimatorVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","collimatorVariables");
 
   Control.addVariable(collKey+"Width",4.0);
   Control.addVariable(collKey+"Height",4.0);
@@ -178,7 +177,7 @@ shutterTable(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","shutterTable");
+  ELog::RegMethod RegA("R3RingVariables[F]","shutterTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -189,7 +188,7 @@ shutterTable(FuncDataBase& Control,
     
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();
@@ -338,7 +337,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
     \param frontKey :: prename
    */
 {
-  ELog::RegMethod RegA("R3RingVariables","heatDumpVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariables");
   
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;

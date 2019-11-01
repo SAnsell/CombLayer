@@ -70,7 +70,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -139,6 +138,7 @@ JawValveCube::populate(const FuncDataBase& Control)
   JawValveBase::populate(Control);
 
   // Void + Fe special:
+  depth=Control.EvalVar<double>(keyName+"Depth");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
 
@@ -210,42 +210,5 @@ JawValveCube::createObjects(Simulation& System)
   return;
 }
   
-void
-JawValveCube::createLinks()
-  /*!
-    Determines the link point on the outgoing plane.
-    It must follow the beamline, but exit at the plane
-  */
-{
-  ELog::RegMethod RegA("JawValveCube","createLinks");
-
-  JawValveBase::createLinks();
-
-  return;
-}
-  
-void
-JawValveCube::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
- /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("JawValveCube","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);
-  createLinks();
-  insertObjects(System);   
-  createJaws(System);
-  
-  return;
-}
   
 }  // NAMESPACE constructSystem

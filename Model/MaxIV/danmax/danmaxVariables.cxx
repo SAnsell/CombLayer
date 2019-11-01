@@ -59,7 +59,9 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "DoublePortItemGenerator.h"
 #include "VacBoxGenerator.h"
+#include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
@@ -90,10 +92,13 @@ void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
+void lensPackage(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
+void viewBPackage(FuncDataBase&,const std::string&);
 void beamStopPackage(FuncDataBase&,const std::string&);
+void revBeamStopPackage(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -303,9 +308,9 @@ exptHutVariables(FuncDataBase& Control,
 void
 viewPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
-    Builds the variables for the ViewTube 2
+    Builds the variables for the ViewTube 
     \param Control :: Database
-    \param viewKey :: prename
+    \param viewKey :: prename including view
   */
 {
   ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
@@ -313,10 +318,11 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::FlangeMountGenerator FlangeGen;
   
   // will be rotated vertical
-  const std::string pipeName=viewKey+"ViewTube";
+  const std::string pipeName=viewKey+"Tube";
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   // up 15cm / 32.5cm down : Measured
@@ -340,11 +346,91 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
-  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+  FlangeGen.generateMount(Control,viewKey+"TubeScreen",1);  // in beam
 
-  // bellows on shield block
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
+  return;
+}
+
+void
+lensPackage(FuncDataBase& Control,const std::string& lensKey)
+  /*!
+    Builds the variables for the ViewTube 
+    \param Control :: Database
+    \param lensKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","lensPackage");
+
+  setVariable::MonoBoxGenerator MBoxGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  const std::string lensName=lensKey+"LensBox";
+
+  MBoxGen.setCF<CF40>();
+  // ys/W/H/D/
+  
+  MBoxGen.generateBox(Control,lensName,0.0,20.0,12.5,8.0,48.0);
+  
+
+  const size_t NPorts(6);
+  Control.addVariable(lensName+"NPorts",NPorts);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF40>(0.5);
+  const Geometry::Vec3D Z(0,0,1);
+  const Geometry::Vec3D YStep(0,48.0/7.0,0);
+  Geometry::Vec3D Pt(-YStep*2.5);
+  for(size_t i=0;i<NPorts;i++)
+    {
+      const std::string portName("Port"+std::to_string(i));
+      PItemGen.generatePort(Control,lensName+portName,Pt,Z);
+      Pt+=YStep;
+    }  
+  return;
+}
+  
+void
+viewBPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 
+    \param Control :: Database
+    \param viewKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","viewBPackage");
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+
+  const std::string pipeName=viewKey+"ViewTubeB";
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setPipeCF<CF150>();
+  PTubeGen.setPortCF<CF40>();
+  PTubeGen.setPortLength(3.0,3.0);
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,pipeName,0.0,30.0);
+
+
+  // will be rotated vertical
+
+  Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF100>(5.0);
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,-9,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.setCF<setVariable::CF100>(7.0);
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,9,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.generatePort(Control,pipeName+"Port2",
+			Geometry::Vec3D(0,4.5,0),
+			Geometry::Vec3D(-1,-1,0));
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
+  FlangeGen.generateMount(Control,pipeName+"Screen",1);  // in beam
 
   return;
 }
@@ -357,32 +443,123 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
     \param viewKey :: prename
   */
 {
-  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+  ELog::RegMethod RegA("speciesVariables[F]","beamStopPackage");
 
+  setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::FlangeMountGenerator FlangeGen;
-  
+  setVariable::DoublePortItemGenerator DItemGen;
+  setVariable::BremBlockGenerator BremGen;
+  setVariable::JawValveGenerator JawGen;
+    
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap();
-  // up 15cm / 32.5cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
 
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,1);
+  // up 15cm / 38.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
-  PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,8.75,0),
+  // BOTH PORTS COMPLETLEY NON-STANDARD:
+  // Ports 11cm + 15(inner)cm + 10cm   ==> 36.0
+  DItemGen.setDCF<CF63,CF40>(6.5,4.0);  
+  DItemGen.setPlate(0.0,"Void");  
+
+  DItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
 			Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,11.75,0),
 			Geometry::Vec3D(0,0,-1));
-  PItemGen.setCF<setVariable::CF40>(8.0);
+
+  BremGen.centre();
+  BremGen.setCube(10.0,10.0);
+  BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
+  BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
+  Control.addVariable(viewKey+"BeamStopZStep",11.750);
+
+   // Single slit pair
+  JawGen.setRadius(8.0);
+  JawGen.setWallThick(2.0);
+  JawGen.setLength(10.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF150>(); 
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",0,2.0);
+
+  return;
+}
+
+void
+revBeamStopPackage(FuncDataBase& Control,
+		   const std::string& viewKey)
+  /*!
+    Builds the variables for the reversed slit tube/beamstop
+    \param Control :: Database
+    \param viewKey :: prename
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","revBeamStopPackage");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::DoublePortItemGenerator DItemGen;
+  setVariable::BremBlockGenerator BremGen;
+  setVariable::JawValveGenerator JawGen;
+    
+  // will be rotated vertical
+  const std::string pipeName=viewKey+"RevBeamStopTube";
+
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,1);
+  // up 15cm / 38.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
+
+  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
+
+  // BOTH PORTS COMPLETLEY NON-STANDARD:
+  // Ports 11cm + 15(inner)cm + 10cm   ==> 36.0
+  DItemGen.setDCF<CF63,CF40>(6.5,4.0);  
+  DItemGen.setPlate(0.0,"Void");  
+
+  DItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
+			Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,11.75,0),
+			Geometry::Vec3D(0,0,-1));
+
+  BremGen.centre();
+  BremGen.setCube(10.0,10.0);
+  BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
+  BremGen.generateBlock(Control,viewKey+"RevBeamStop",0.0,8.0);
+  Control.addVariable(viewKey+"RevBeamStopZStep",11.750);
+
+   // Single slit pair
+  JawGen.setRadius(8.0);
+  JawGen.setWallThick(2.0);
+  JawGen.setLength(10.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,viewKey+"SlitsB",0.0,0.8,0.8);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF150>(); 
+  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",0,2.0);
 
   return;
 }
@@ -480,21 +657,29 @@ monoShutterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables","monoShutterVariables");
 
-  setVariable::GateValveGenerator GateGen;
+  setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
   
   // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF63>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",0,2.0);
+  PipeGen.setAFlangeCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",0,2.0);
+
   
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowL",0,10.0);    
 
-    // joined and open
-  GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+  
   return;
 }
 
@@ -692,9 +877,9 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
 
   // laue monochromator
-  BellowGen.generateBellow(Control,opticsName+"BellowC",0,16.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,300.0);
-  BellowGen.generateBellow(Control,opticsName+"BellowD",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,244.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
 
   opticsSlitPackage(Control,opticsName);
 
@@ -705,9 +890,11 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
 
-  viewPackage(Control,opticsName);   // bellowF
+  viewPackage(Control,opticsName+"View");
 
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
+  BellowGen.generateBellow(Control,opticsName+"BellowF",0,10.0);    
+
   mirrorMonoPackage(Control,opticsName);
   BellowGen.generateBellow(Control,opticsName+"BellowG",0,16.0);
   
@@ -715,6 +902,23 @@ opticsVariables(FuncDataBase& Control,
 
   beamStopPackage(Control,opticsName); 
 
+  BellowGen.generateBellow(Control,opticsName+"BellowH",0,10.0);    
+
+  viewBPackage(Control,opticsName);
+
+  BellowGen.generateBellow(Control,opticsName+"BellowI",0,10.0);    
+
+  lensPackage(Control,opticsName);
+
+  GateGen.generateValve(Control,opticsName+"GateF",0.0,0);  
+  BellowGen.generateBellow(Control,opticsName+"BellowJ",0,10.0);
+  
+  revBeamStopPackage(Control,opticsName);
+
+  BellowGen.generateBellow(Control,opticsName+"BellowK",0,10.0);
+
+  monoShutterVariables(Control,opticsName);
+  
   return;
 }
 

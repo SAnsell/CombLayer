@@ -246,7 +246,25 @@ FixedRotate::setOffset(const double XS,const double YS,const double ZS)
   zStep=ZS;
   return;
 }
+
+void
+FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector");
+
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+    
+  return;
+}
   
+
 void
 FixedRotate::applyOffset()
   /*!
@@ -254,10 +272,12 @@ FixedRotate::applyOffset()
   */
 {
   ELog::RegMethod RegA("FixedRotate","applyOffset");
+  
   FixedComp::applyAngleRotate(preXAngle,preYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);
   FixedComp::reOrientate();      // this might still be active
+
   return;
 }
 

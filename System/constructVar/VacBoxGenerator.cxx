@@ -64,7 +64,7 @@ VacBoxGenerator::VacBoxGenerator() :
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
   portBXStep(0.0),portBZStep(0.0),
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
-  flangeALen(1.0),flangeARadius(1.0),flangeBLen(1.0),flangeBRadius(1.0),
+  flangeALen(1.0),flangeARadius(6.0),flangeBLen(1.0),flangeBRadius(6.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults

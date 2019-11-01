@@ -228,6 +228,8 @@ userBin::write(std::ostream& OX) const
   cx<<"  & ";
   StrFunc::writeFLUKA(cx.str(),OX);  
   writeAuxScore(OX);
+
+  flukaTally::write(OX);
   return;
 }
 

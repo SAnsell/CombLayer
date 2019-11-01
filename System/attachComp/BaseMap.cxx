@@ -305,6 +305,24 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
   return mc->second[Index];
 }
 
+int
+BaseMap::getLastItem(const std::string& Key) const
+  /*!
+    Get the last cell number in vector
+    \param Key :: Keyname
+    \return cell number
+  */
+{
+  ELog::RegMethod RegA("BaseMap","getItem(s,index)");
+
+  LCTYPE::const_iterator mc=Items.find(Key);
+  if (mc==Items.end() || mc->second.empty())
+    throw ColErr::InContainerError<std::string>
+      (Key,"Object:"+getFCKeyName()+":Key not present");
+  
+  return mc->second.back();
+}
+
 std::vector<std::string>
 BaseMap::getNames() const
   /*!

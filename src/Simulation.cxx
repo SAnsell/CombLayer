@@ -1530,7 +1530,7 @@ Simulation::voidObject(const std::string& ObjName)
 }
 
 int
-Simulation::splitObject(const int CA,const int SN)
+Simulation::splitObject(const int CA,const int newCN,const int SN)
   /*!
     Split a cell into two based on surface. Does not do 
     any optimizatoin of the new cells. Uses the Shannon derivative
@@ -1549,7 +1549,7 @@ Simulation::splitObject(const int CA,const int SN)
   CPtr->populate();
 
   // get next cell
-  const int CB=getNextCell(CA);
+  const int CB=getNextCell(newCN);
   
   // headrules +/- surface
   HeadRule CHead=CPtr->getHeadRule();

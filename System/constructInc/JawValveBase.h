@@ -45,7 +45,6 @@ class JawValveBase :
  protected:
   
   double length;                ///< Void length
-  double depth;                 ///< thickness of inner void
   
   double wallThick;             ///< Wall thickness
 
@@ -65,6 +64,7 @@ class JawValveBase :
   virtual void populate(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
   virtual void createSurfaces();
+  virtual void createObjects(Simulation&) =0;
   void createOuterObjects(Simulation&);
   virtual void createLinks();
 
@@ -77,6 +77,10 @@ class JawValveBase :
   JawValveBase& operator=(const JawValveBase&);
   virtual ~JawValveBase();
 
+  using FixedComp::createAll;
+  void createAll(Simulation& System,
+		 const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

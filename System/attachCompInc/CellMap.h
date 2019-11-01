@@ -86,6 +86,10 @@ class CellMap  : public BaseMap
   int getCell(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
+  /// Rename function
+  int getLastCell(const std::string& K) const
+    { return BaseMap::getLastItem(K); }
+
   /// return all cells found
   size_t getNCells(const std::string& K) const
     { return BaseMap::getNItems(K); }

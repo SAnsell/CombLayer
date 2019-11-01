@@ -62,6 +62,7 @@ flukaPhysics::flukaPhysics() :
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
+      { "emfray",cellValueSet<0>("emfray","EMFRAY","") },
       { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
       { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
       { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") },
@@ -122,6 +123,7 @@ flukaPhysics::flukaPhysics() :
       { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+      { "emfray", unitTYPE(0,"4.0 R0 R1 1.0 - - ") },
 
       { "coalescence", unitTYPE(1,"1.0 - - - - - ") },
       { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
@@ -156,6 +158,7 @@ flukaPhysics::flukaPhysics() :
       { "stepsize", unitTYPE(0,"%2 %3 M0 M1 1.0 - ") }
 
     })
+
   /*!
     Constructor
   */
@@ -166,7 +169,6 @@ flukaPhysics::flukaPhysics(const flukaPhysics& A) :
   flagValue(A.flagValue),impValue(A.impValue),
   emfFlag(A.emfFlag),threeFlag(A.threeFlag),
   lamPair(A.lamPair),formatMap(A.formatMap)
-  
   /*!
     Copy constructor
     \param A :: flukaPhysics to copy
@@ -191,6 +193,8 @@ flukaPhysics::operator=(const flukaPhysics& A)
       threeFlag=A.threeFlag;
       lamPair=A.lamPair;
       formatMap=A.formatMap;
+      polarVec=A.polarVec;
+      polarFrac=A.polarFrac;
     }
   return *this;
 }
@@ -221,6 +225,8 @@ flukaPhysics::clearAll()
 
   for(std::map<std::string,cellValueSet<3>>::value_type& mc : threeFlag)
     mc.second.clearAll();
+
+  polarVec=Geometry::Vec3D(0,0,0);
   
   return;
 }
@@ -550,7 +556,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       const std::string& fmtSTR(std::get<1>(mc->second));
       lamV.second.writeFLUKA(OX,fmtSTR);
     }
-  
+
   return;
 }
 

@@ -80,8 +80,6 @@
 namespace attachSystem
 {
 
-void createAddition(const int,Rule*,Rule*&);
-
 long int
 getLinkNumber(const std::string& Name)
   /*!

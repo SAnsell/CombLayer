@@ -3,7 +3,7 @@
  
  * File:   constructInc/JawValveCube.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@ class JawValveCube :
 
   double width;          ///< width of innt void [full]
   double height;         ///< height of inner void [full]
+  double depth;          ///< Depth of inner void
   
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
-  virtual void createLinks();
   
  public:
 
@@ -54,9 +54,6 @@ class JawValveCube :
   JawValveCube(const JawValveCube&);
   JawValveCube& operator=(const JawValveCube&);
   virtual ~JawValveCube();
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
 
 };
 

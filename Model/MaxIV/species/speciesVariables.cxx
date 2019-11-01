@@ -218,7 +218,7 @@ splitterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,splitKey+"BellowBB",0,10.0);
 
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
   GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
 
@@ -226,7 +226,7 @@ splitterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,splitKey+"BellowBC",0,10.0);
 
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,splitKey+"GateAB",0.0,0);
   GateGen.generateValve(Control,splitKey+"GateBB",0.0,0);
   
@@ -276,7 +276,7 @@ preOpticsVariables(FuncDataBase& Control,
 
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateRing",0.0,0);
   
   // will be rotated vertical
@@ -388,7 +388,7 @@ slitPackageVariables(FuncDataBase& Control,
 
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,slitKey+"GateA",0.0,0);
 
   PipeGen.setMat("Stainless304");
@@ -818,7 +818,7 @@ shutterTable(FuncDataBase& Control,
     
   // joined and open
   GateGen.setLength(3.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();

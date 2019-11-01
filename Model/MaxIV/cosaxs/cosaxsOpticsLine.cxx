@@ -423,12 +423,10 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
-
   bremCollA->setCutSurf("front",*gateA,2);
   bremCollA->createAll(System,*gateA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
   bremCollA->insertInCell("Main",System,outerCell);
-
 
   filterBoxA->addAllInsertCell(masterCell->getName());
   filterBoxA->setFront(*bremCollA,2);

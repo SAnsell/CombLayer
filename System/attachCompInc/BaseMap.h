@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/BaseMap.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ class BaseMap
 
   int getItem(const std::string&) const;
   int getItem(const std::string&,const size_t) const;
+  int getLastItem(const std::string&) const;
   const std::string& getName(const int) const;
 
   std::vector<std::string> getNames() const;

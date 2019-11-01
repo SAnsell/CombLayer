@@ -58,7 +58,6 @@ namespace xraySystem
   class SquareFMask;
   class UTubePipe;
   class Undulator;
-  class Wiggler;
 
     
   /*!
@@ -83,8 +82,6 @@ class formaxFrontEnd :
     buildUndulator(Simulation&,MonteCarlo::Object*,
 		   const attachSystem::FixedComp&,const long int);
 			      
-  void createSurfaces();
-  void buildObjects(Simulation&);
   virtual void createLinks();
   
  public:

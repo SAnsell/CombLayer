@@ -75,7 +75,7 @@ class GateValveGenerator
   ~GateValveGenerator();
 
   template<typename CF> void setCylCF();
-  template<typename CF> void setCF();
+  template<typename CF> void setCubeCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
 

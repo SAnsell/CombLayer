@@ -50,7 +50,7 @@ class portItem :
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
- private:
+ protected:
 
   const std::string portBase;  ///< Base key name
   bool statusFlag;             ///< Flag to check object correct
@@ -73,15 +73,15 @@ class portItem :
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
-
-  void populate(const FuncDataBase&);
-  void createSurfaces();
+ 
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
 
-  void constructOuterFlange(Simulation&,
-			    const ModelSupport::LineTrack&,
-			    const size_t,const size_t);
+  virtual void constructOuterFlange(Simulation&,
+				    const ModelSupport::LineTrack&,
+				    const size_t,const size_t);
   void calcBoundaryCrossing(const objectGroups&,
 			    const ModelSupport::LineTrack&,
 			    size_t&,size_t&) const;
@@ -112,7 +112,9 @@ class portItem :
   
   void intersectPair(Simulation&,portItem&) const;
   void intersectVoidPair(Simulation&,const portItem&) const;
-  void createAll(Simulation&,
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 				       

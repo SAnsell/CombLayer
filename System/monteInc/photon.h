@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/MonoBoxGenerator.h
+ * File:   monteInc/photon.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,46 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_MonoBoxGenerator_h
-#define setVariable_MonoBoxGenerator_h
+#ifndef MonteCarlo_photon_h
+#define MonteCarlo_photon_h
 
-class FuncDataBase;
-
-namespace setVariable
-{
 
 /*!
-  \class MonoBoxGenerator
+  \namespace moderatorSystem
   \version 1.0
   \author S. Ansell
-  \date May 2018
-  \brief MonoBoxGenerator for variables
+  \date April 2012
+  \brief CompLayer internal transport
 */
 
-class MonoBoxGenerator : public VacBoxGenerator
+namespace MonteCarlo
+{
+
+  class Object;
+/*!  
+  \class photon
+  \brief Defines single point photon [special case]
+  \version 2.0
+  \author S. Ansell
+  \date March 2019
+*/
+
+class photon : public particle
 {
  private:
 
-  double overHang;      ///< Roof/base overhang
-  double baseThick;     ///< Base thickness [half]
-  double roofThick;     ///< Roof thickness [half]
-   
+
  public:
 
-  MonoBoxGenerator();
-  MonoBoxGenerator(const MonoBoxGenerator&);
-  MonoBoxGenerator& operator=(const MonoBoxGenerator&);
-  virtual ~MonoBoxGenerator();
-
-  void setLids(const double,const double,const double);
+  photon(const double,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  photon(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
+  photon(const photon&);
+  photon& operator=(const photon&);
+  virtual ~photon() {}  ///< Destructor
   
-  virtual void generateBox(FuncDataBase&,const std::string&,
-			   const double,const double,const double,
-			   const double,const double) const;
-
 };
 
-}
+
+}  // NAMESPACE MonteCarlo
 
 #endif
- 

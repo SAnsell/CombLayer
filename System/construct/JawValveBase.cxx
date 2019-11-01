@@ -100,8 +100,7 @@ JawValveBase::JawValveBase(const JawValveBase& A) :
   attachSystem::FixedOffset(A),
   attachSystem::ContainedComp(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),  
-  length(A.length),
-  depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
+  length(A.length),wallThick(A.wallThick),portARadius(A.portARadius),
   portAThick(A.portAThick),portALen(A.portALen),
   portBRadius(A.portBRadius),portBThick(A.portBThick),
   portBLen(A.portBLen),JItem(A.JItem),voidMat(A.voidMat),
@@ -128,7 +127,6 @@ JawValveBase::operator=(const JawValveBase& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      depth=A.depth;
       wallThick=A.wallThick;
       portARadius=A.portARadius;
       portAThick=A.portAThick;
@@ -163,8 +161,6 @@ JawValveBase::populate(const FuncDataBase& Control)
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
-  depth=Control.EvalVar<double>(keyName+"Depth");
-
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   portARadius=Control.EvalPair<double>(keyName+"PortARadius",
@@ -270,7 +266,6 @@ JawValveBase::createLinks()
 
   //stufff for intersection
 
-
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   return;
@@ -352,5 +347,28 @@ JawValveBase::createJaws(Simulation& System)
   return;
 }
   
+void
+JawValveBase::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int FIndex)
+ /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("JawValveTube","createAll(FC)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
+  createSurfaces();    
+  createObjects(System);
+  createLinks();
+  insertObjects(System);   
+  createJaws(System);
+  
+  return;
+}
 
 }  // NAMESPACE constructSystem

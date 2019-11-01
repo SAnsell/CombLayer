@@ -646,11 +646,10 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
-
   buildHeatTable(System,masterCell,*collExitPipe,2);
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
-
+  
   exitPipe->createAll(System,*bellowK,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*exitPipe,2);
   exitPipe->insertInCell(System,outerCell);

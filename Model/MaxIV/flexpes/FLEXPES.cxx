@@ -146,8 +146,6 @@ FLEXPES::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("FLEXPES","build");
   
-  const int voidCell(74123);
-
   frontBeam->setStopPoint(stopPoint);
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);

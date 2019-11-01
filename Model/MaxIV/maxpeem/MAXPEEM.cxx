@@ -142,8 +142,6 @@ MAXPEEM::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("MAXPEEM","build");
 
-  const int voidCell(74123);
-
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");

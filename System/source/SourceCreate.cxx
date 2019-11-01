@@ -463,7 +463,6 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,sideIndex);
   SDB.registerSource(GX.getKeyName(),GX);
-  ELog::EM<<"Axis = "<<FC.getLinkAxis(sideIndex)<<ELog::endDiag;
 
   return GX.getKeyName();      
 }

@@ -282,7 +282,7 @@ monoVariables(FuncDataBase& Control,
 //   BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);
 
 //     // joined and open
-//   GateGen.setCF<setVariable::CF40>();
+//   GateGen.setCubeCF<setVariable::CF40>();
 //   GateGen.generateValve(Control,preName+"GateJ",0.0,0);
 //   return;
 // }
@@ -618,7 +618,7 @@ splitterVariables(FuncDataBase& Control,
   // BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);
 
   // GateGen.setLength(3.5);
-  // GateGen.setCF<setVariable::CF40>();
+  // GateGen.setCubeCF<setVariable::CF40>();
   // GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
   // GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
 
@@ -859,7 +859,7 @@ opticsVariables(FuncDataBase& Control,
 
   // Gate valve A
   GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -896,7 +896,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BremCollAHoleMidDist", 3.78);
 
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -909,7 +909,7 @@ opticsVariables(FuncDataBase& Control,
   monoVariables(Control,preName);
 
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -930,7 +930,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeBname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
   PipeGen.setMat("Stainless304");
@@ -967,7 +967,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
 
@@ -996,7 +996,7 @@ opticsVariables(FuncDataBase& Control,
   //Control.addVariable(mName+"XStep",0.0);
   Control.addVariable(mName+"NPorts",0);
 
-  GateGen.setCF<setVariable::CF63>();
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -1006,7 +1006,7 @@ opticsVariables(FuncDataBase& Control,
 
 
   // GateGen.setLength(2.5);
-  // GateGen.setCF<setVariable::CF40>();
+  // GateGen.setCubeCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
   // PTubeGen.setMat("Stainless304");
@@ -1074,7 +1074,7 @@ opticsVariables(FuncDataBase& Control,
   // VBoxGen.generateBox(Control,preName+"PrimeJawBox",
   // 		      0.0,30.0,15.0,15.0,53.15);
 
-  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.setCubeCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
 
@@ -1090,12 +1090,12 @@ opticsVariables(FuncDataBase& Control,
   // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
 
-  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.setCubeCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
   // softimaxVar::mirrorBox(Control,preName,"B","Vertial",-0.2,0);
 
-  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.setCubeCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateH",0.0,0);
 
   // BellowGen.setCF<setVariable::CF63>();
@@ -1103,7 +1103,7 @@ opticsVariables(FuncDataBase& Control,
 
   // softimaxVar::diagUnit2(Control,preName+"DiagBoxC");
 
-  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.setCubeCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateI",0.0,0);
 
   // softimaxVar::monoShutterVariables(Control,preName);
@@ -1140,7 +1140,7 @@ exptVariables(FuncDataBase& Control,
 
   // Gate valve A - round
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
    // Double slits A and B
@@ -1196,7 +1196,7 @@ exptVariables(FuncDataBase& Control,
 
   // Gate valve B - flat
   GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
@@ -1254,7 +1254,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(noseName+"WindowMat","Graphite");
 
   GateGen.setLength(10.0);
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,tubeName+"GateA",0.0,0);
   Control.addVariable(tubeName+"GateARadius",17.0); // measured
 

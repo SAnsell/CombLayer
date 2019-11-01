@@ -89,6 +89,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("Mag","MAG",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
+  IParam.regMulti("userWeight","userWeight",1000,0);
   IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("cellDNF","cellDNF");
@@ -275,6 +276,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
+  IParam.setDesc("userWeight","Set userWeight flag for FLUKA: [value]");
   IParam.setDesc("TMod","Modify tally [help for description]");
   IParam.setDesc("OAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");

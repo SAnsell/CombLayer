@@ -45,7 +45,6 @@ class JawValveCylinder :
   virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
-  virtual void createLinks();
 
   
  public:
@@ -55,8 +54,6 @@ class JawValveCylinder :
   JawValveCylinder& operator=(const JawValveCylinder&);
   virtual ~JawValveCylinder();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
 
 };
 

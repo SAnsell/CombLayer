@@ -94,6 +94,7 @@ portItem::portItem(const std::string& baseKey,
   voidMat(0),wallMat(0),capMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param baseKey :: Base name
     \param Key :: KeyName
   */
 {}
@@ -317,6 +318,7 @@ portItem::createSurfaces()
 {
   ELog::RegMethod RegA("portItem","createSurfaces");
   // divider surface if needeed :
+
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   if (flangeRadius-Geometry::zeroTol<=radius+wall)
@@ -612,7 +614,9 @@ portItem::constructTrack(Simulation& System)
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;
     }
-  
+  if (keyName=="DanmaxOpticsLineBeamStopTubePort0")
+    ELog::EM<<"keyname == "<<keyName<<ELog::endDiag;
+
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();

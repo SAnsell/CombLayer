@@ -174,6 +174,28 @@ setAuxParticle(SimFLUKA& Sim,const std::string& tName,
 
   return static_cast<int>(ATallySet.size());
 }
+
+int
+setUserName(SimFLUKA& Sim,const std::string& tName,
+	    const std::string& userName)
+/*!
+    Get the last tally point based on the tallynumber
+    \param Sim :: System to access tally tables
+    \param tName :: Tally number [0 for all]
+    \param userName :: Auxillary name
+    \return tally number size
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setUserName");
+
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  for(flukaTally* mc: ATallySet)
+    mc->setUserName(userName);
+
+  return static_cast<int>(ATallySet.size());
+}
   
 
 int

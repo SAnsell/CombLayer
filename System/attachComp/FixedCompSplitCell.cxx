@@ -105,7 +105,7 @@ FixedComp::splitObject(Simulation& System,
     
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
   const int cellExtra=
-    System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
+    System.splitObject(cellN,cellIndex++,SMap.realSurf(buildIndex+SNoffset));
 
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
@@ -142,7 +142,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
     
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,Org,Axis);
   const int cellExtra=
-    System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
+    System.splitObject(cellN,cellIndex++,SMap.realSurf(buildIndex+SNoffset));
 
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
@@ -177,6 +177,7 @@ FixedComp::splitObject(Simulation& System,
 {
   ELog::RegMethod RegA("FixedComp","splitObject(vec)");
 
+
   int SN(SNoffset);
   int CN(cellN);
   std::vector<int> OutCell({cellN});
@@ -190,15 +191,16 @@ FixedComp::splitObject(Simulation& System,
       Axis.makeUnit();
 
       ModelSupport::buildPlane(SMap,buildIndex+SN,O,Axis);
-      CN=System.splitObject(CN,SMap.realSurf(buildIndex+SN));
+      CN=System.splitObject(CN,cellIndex++,SMap.realSurf(buildIndex+SN));
       OutCell.push_back(CN);
-      
+
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
       if (CMapPtr)	
 	CMapPtr->registerExtra(cellN,CN);
       SN++;
     }
-  
+
+
   return OutCell;  
 }
 
@@ -232,7 +234,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
       const Geometry::Vec3D Axis=XYZVec[i].unit();
 
       ModelSupport::buildPlane(SMap,buildIndex+SN,O,Axis);
-      CN=System.splitObject(CN,SMap.realSurf(buildIndex+SN));
+      CN=System.splitObject(CN,cellIndex++,SMap.realSurf(buildIndex+SN));
       OutCell.push_back(CN);
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
@@ -266,7 +268,7 @@ FixedComp::splitObject(Simulation& System,
   const int trueSN= (ASN<100000) ?
     signSN*SMap.realSurf(buildIndex+ASN) : SN;
 
-  const int cellExtra=System.splitObject(cellN,trueSN);
+  const int cellExtra=System.splitObject(cellN,cellIndex++,trueSN);
       
   
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
@@ -277,7 +279,8 @@ FixedComp::splitObject(Simulation& System,
 }
 
 std::vector<int>
-FixedComp::splitObject(Simulation& System,const std::string& SName,
+FixedComp::splitObject(Simulation& System,
+		       const std::string& SName,
 		       const int cellN)
   /*!
     Carries out a splitObject function -- not 100% sure
