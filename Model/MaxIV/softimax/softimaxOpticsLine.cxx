@@ -346,7 +346,7 @@ softimaxOpticsLine::constructMonoShutter
 {
   ELog::RegMethod RegA("softimaxOpticsLine","constructMonoShutter");
 
-  int outerCell;
+  int outerCell(0);
 
   // gateI->setFront(FC,linkPt);
   // gateI->createAll(System,FC,linkPt);
@@ -663,26 +663,41 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   cellA=buildZone.createOuterVoidUnit(System,masterCellA,*offPipeD,2);
   offPipeD->insertInCell(System,cellA);
 
-  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
 
-
-  attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
-  attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
-
-  // No need for insert -- note removal of old master cell
-  System.removeCell(masterCellA->getName());
-
-  masterCellA=leftZone.constructMasterCell(System);
-  masterCellB=rightZone.constructMasterCell(System);
+  //////////////////// 1: build splitter without creating two outer void units
   splitter->createAll(System,*offPipeD,2);
-  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
-  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
-
+  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("PipeB",System,cellA);
 
-  splitter->insertInCell("Flange",System,cellB);
-  splitter->insertInCell("PipeB",System,cellB);
+
+  //////////////////// 2: build splitter with creating two outer void units
+  ////////////////////////////////////////////////////////////////////////////////////
+  // buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+
+  // attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
+  // attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
+
+  // // No need for insert -- note removal of old master cell
+  // System.removeCell(masterCellA->getName());
+
+  // masterCellA=leftZone.constructMasterCell(System);
+  // masterCellB=rightZone.constructMasterCell(System);
+  // splitter->createAll(System,*offPipeD,2);
+  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+
+  // splitter->insertInCell("Flange",System,cellA);
+  // splitter->insertInCell("PipeA",System,cellA);
+
+  // splitter->insertInCell("Flange",System,cellB);
+  // splitter->insertInCell("PipeB",System,cellB);
+  ////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
   // // now build left/ right
