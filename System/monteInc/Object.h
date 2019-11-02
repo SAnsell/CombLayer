@@ -48,10 +48,10 @@ class Object
   int ObjName;       ///< Number for the object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
-  int MatN;          ///< Material Number 
+  Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
   int imp;           ///< importance / 0 
-  double density;    ///< Density
+
   int placehold;     ///< Is cell virtual (ie not in output)
   int populated;     ///< Full population
 
@@ -117,8 +117,8 @@ class Object
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
   int procHeadRule(const HeadRule&);
-  void setDensity(const double D) { density=D; }       ///< Set Density [Atom/A^3]
-  void setMaterial(const int M) { MatN=M; }            ///< Set Material number
+
+  void setMaterial(const int);  // to be written
   void setPlaceHold(const int P) { placehold=P; }      ///< Set placeholder
   int isPlaceHold() const { return placehold; }        ///< Get placeholder
 
@@ -127,12 +127,12 @@ class Object
   int isPopulated() const { return populated; }        ///< Is populated   
 
   /// accessor to FCName
-  std::string getFCUnit() const  { return FCUnit; }
+  const std::string& getFCUnit() const { return FCUnit; }
   int getName() const  { return ObjName; }             ///< Get Name
   int getCreate() const  { return listNum; }           ///< Get Creation point
-  int getMat() const { return MatN; }                  ///< Get Material ID
+  int getMatID() const;
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
-  double getDensity() const { return density; }        ///< Get Density [Atom/A^3]
+  double getDensity() const;                           ///< to be written
   int getImp() const { return imp; }                   ///< Get importance
 
   /// Return the top rule

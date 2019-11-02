@@ -399,7 +399,7 @@ LineTrack::createMatPath(std::vector<int>& mVec,
   
   for(size_t i=0;i<Cells.size();i++)
     {
-      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMatID();
       mVec.push_back(matN);
       aVec.push_back(segmentLen[i]);
     }

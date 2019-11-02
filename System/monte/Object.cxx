@@ -87,89 +87,9 @@ operator<<(std::ostream& OX,const Object& A)
   return OX;
 }
 
-bool
-Object::keyUnit(std::string& Ln,std::string& Key,
-		std::string& value)
-/*!
-    Given a string extract the first XXX = YYY parts
-    \param Ln :: Line to extract and cut
-    \param Key :: Key component [left side/xxx]
-    \param value :: Value component [right side/yyy]
-    \return true if unit found.
-   */
-{
-  std::string::size_type posA=Ln.find('=');
-  std::string::size_type posB(posA);
-  if (posA==std::string::npos)
-    return 0;
-
-  Key.clear();
-  int spc(0);
-  for(;posA!=0 && spc!=2;posA--)
-    {
-      if (isspace(Ln[posA-1]))
-	spc=(Key.empty()) ? 1 : 2;
-      else
-	Key+=Ln[posA-1];
-    }
-  if (Key.empty())
-    return 0;
-  std::reverse(Key.begin(),Key.end());
-  std::transform(Key.begin(),Key.end(),
-		 Key.begin(),::tolower);
-  if (spc==2) posA++;
-  
-  value.clear();
-  spc=0;
-  for(posB++;posB!=Ln.size() && spc!=2;posB++)
-    {
-      if (isspace(Ln[posB]))
-	spc=(value.empty()) ? 1 : 2;
-      else
-	value+=Ln[posB];
-    }
-  if (value.empty())
-    return 0;
-
-  Ln.erase(posA,posB-posA);  
-  return 1;
-}
-
-int
-Object::startLine(const std::string& Line) 
-  /*!
-    Static object to deterimine if the
-    input string 'Line' starts an object 
-    \param Line :: Object to test
-    \retval 1 :: Start
-    \retval 0 :: Not the start of aline
-  */
-{
-  int n,matN;
-  double rho;
-  // Need line of type id matNumber
-  std::string Tst=Line;
-  if (StrFunc::section(Tst,n) && n>0 &&           // must start id + matN
-      StrFunc::section(Tst,matN) && matN>=0)      
-    {
-      if (matN==0)
-	return 1;
-
-      std::string A;
-      if (StrFunc::section(Tst,A) &&  StrFunc::convert(A,rho))
-	{
-	  if (A.find('.')!=std::string::npos &&    // avoid problem of 0.0
-	      rho<10.0)
-	    return 1;
-	}
-    }
-
-  return 0;         
-}
-
 Object::Object() :
-  ObjName(0),listNum(-1),Tmp(300),MatN(-1),trcl(0),
-  imp(1),density(0.0),placehold(0),populated(0),
+  ObjName(0),listNum(-1),Tmp(300),matPtr(0),trcl(0),
+  imp(1),placehold(0),populated(0),
   activeMag(0),objSurfValid(0)
    /*!
      Defaut constuctor, set temperature to 300C and material to vacuum
@@ -178,9 +98,9 @@ Object::Object() :
 
 Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
-  ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
-  imp(1),density(0.0),placehold(0),
-  populated(0),activeMag(0),objSurfValid(0)
+  ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),imp(1),placehold(0),populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -194,8 +114,9 @@ Object::Object(const int N,const int M,
 
 Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
-  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
-  imp(1),density(0.0),placehold(0),
+  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),imp(1),placehold(0),
   populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -210,9 +131,8 @@ Object::Object(const std::string& FCName,const int N,const int M,
 
 Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
-  listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
-  trcl(A.trcl),imp(A.imp),
-  density(A.density),placehold(A.placehold),populated(A.populated),
+  listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
+  trcl(A.trcl),imp(A.imp),placehold(A.placehold),populated(A.populated),
   activeMag(A.activeMag),magVec(A.magVec),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -235,10 +155,9 @@ Object::operator=(const Object& A)
       ObjName=A.ObjName;
       listNum=A.listNum;
       Tmp=A.Tmp;
-      MatN=A.MatN;
+      matPtr=A.matPtr;
       trcl=A.trcl;
       imp=A.imp;
-      density=A.density;
       placehold=A.placehold;
       populated=A.populated;
       activeMag=A.activeMag;
@@ -267,6 +186,17 @@ Object::clone() const
   return new Object(*this);
 }
 
+int
+Object::getMatID() const
+  /*!
+    Get Material ID
+    \return ID number
+  */
+{
+ return matPtr->getID();
+}
+
+  
 int
 Object::complementaryObject(const int Cnum,std::string& Ln)
   /*!

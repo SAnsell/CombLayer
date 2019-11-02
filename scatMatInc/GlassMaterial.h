@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   scatMatInc/GlassMaterial.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,14 +53,6 @@ class GlassMaterial : public neutMaterial
   GlassMaterial& operator=(const GlassMaterial&);
   virtual ~GlassMaterial();  
   
-  /// Effective typeid
-  virtual std::string className() const { return "GlassMaterial"; }
-  /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    { A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    {  A.Accept(*this); }
 
   void setRefIndex(const double R) { refIndex=R; }
 

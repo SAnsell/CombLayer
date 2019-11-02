@@ -48,6 +48,7 @@
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
+#include "Material.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -133,7 +134,7 @@ DBNeutMaterial::initMaterial()
 		(DB.getIndex("Li7ClD2O6Mol"),Li7Cl6DMol.clone()));
   MStore.insert(MTYPE::value_type(DB.getIndex("B4C"),B4C.clone()));
 
-  // Set MNCPX numbers:
+  // Set MCNPX numbers:
   for(MTYPE::value_type& MItem : MStore)
     MItem.second->setNumber(MItem.first);
   

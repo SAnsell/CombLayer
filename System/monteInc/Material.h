@@ -37,18 +37,22 @@ namespace MonteCarlo
 */
 
 class Material 
-{ 
+{  
+ protected:
+ 
+  int matID;                        ///< Material Number (Necessary)  
+  std::string Name;                ///< Material Name (un-necessary)
+  double atomDensity;               ///< Calculated atom density
+  
  private:
   
-  int Mnum;                        ///< Material Number (Necessary)  
-  std::string Name;                ///< Material Name (un-necessary)
   std::vector<Zaid> zaidVec;       ///< vector of zaids
   std::map<std::string,MXcards> mxCards;     ///< particle:MX card
   
   std::vector<std::string> Libs;    ///< Library extra
   std::vector<std::string> SQW;     ///< s(q,w) 
 
-  double atomDensity;               ///< Calculated atom density 
+
   int getExtraType(std::string&,std::string&);
   void calcAtomicDensity();
 
@@ -58,6 +62,7 @@ class Material
  public:
   
   Material();
+  Material(const int,const std::string,const double D);
   Material(const Material&);
   Material& operator=(const Material&);
   /// Clone function
@@ -67,17 +72,6 @@ class Material
   Material& operator*=(const double);
   Material& operator+=(const Material&);
 
-  /// Effective TYPENAME 
-  static std::string classType() { return "Material"; }
-  /// Effective typeid
-  virtual std::string className() const { return "Material"; }
-  /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const 
-    {  A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    { A.Accept(*this); }
-
   static int lineType(std::string&);
 
   /// Set the material name
@@ -85,10 +79,8 @@ class Material
   /// Get the material name
   const std::string& getName() const { return Name; } 
 
-  /// set the Material number
-  void setNumber(const int nA) { Mnum=nA; } 
   /// Assesor function to Number
-  int getNumber() const { return Mnum; }
+  int getID() const { return matID; }
 
   int setMaterial(const std::vector<std::string>&);
   int setMaterial(const int,const std::string&,
@@ -105,6 +97,7 @@ class Material
   double getMeanA() const;
   void setENDF7();
   void setDensity(const double);
+
   bool hasZaid(const size_t,const size_t,const char) const;
   std::vector<Zaid> getZaidVec() const { return zaidVec; }
 
@@ -117,6 +110,8 @@ class Material
 
   void listComponent() const;
   void print() const;
+
+
   void write(std::ostream&) const;               
   void writeCinder(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
