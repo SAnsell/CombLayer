@@ -131,6 +131,9 @@ class Object
   int getName() const  { return ObjName; }             ///< Get Name
   int getCreate() const  { return listNum; }           ///< Get Creation point
   int getMatID() const;
+  /// Main accessor to material
+  const Material* getMatPtr() const { return matPtr; }
+  
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
   double getDensity() const;                           ///< to be written
   int getImp() const { return imp; }                   ///< Get importance

@@ -432,19 +432,15 @@ LineTrack::createAttenPath(std::vector<long int>& cVec,
     \param aVec :: Attenuation 
   */
 {
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
-  for(size_t i=0;i<Cells.size();i++)
+  for(const MonteCarlo::Object* OPtr : ObjVec)
     {
-      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
-      if (matN>0)
+      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+      if (!MPtr->isVoid())
 	{
-	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
-	  const double density=matInfo.getAtomDensity();
-	  const double A=matInfo.getMeanA();
+	  const double density=MPtr->getDensity();
+	  const double A=MPtr->getMeanA();
 	  const double sigma=segmentLen[i]*density*std::pow(A,0.66);
-	  cVec.push_back(ObjVec[i]->getName());
+	  cVec.push_back(OPtr->getName());
 	  aVec.push_back(sigma);
 	}
     }

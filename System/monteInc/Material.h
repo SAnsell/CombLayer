@@ -74,6 +74,10 @@ class Material
 
   static int lineType(std::string&);
 
+  /// Special to decide if void
+  bool isVoid() const { return (matID==0); }
+  
+
   /// Set the material name
   void setName(const std::string& A) { Name=A; }  
   /// Get the material name
@@ -81,7 +85,7 @@ class Material
 
   /// Assesor function to Number
   int getID() const { return matID; }
-
+  
   int setMaterial(const std::vector<std::string>&);
   int setMaterial(const int,const std::string&,
 		  const std::string&,const std::string&,
