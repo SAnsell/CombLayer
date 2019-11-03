@@ -133,19 +133,22 @@ ObjectTrackAct::getMatSum(const long int objN) const
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
   
   // Get Two Paired Vectors
-  const std::vector<MonteCarlo::Object*>& OVec=
-    mc->second.getObjVec();
-  const std::vector<double>& TVec=
-    mc->second.getSegmentLen();
+  const std::vector<MonteCarlo::Object*>& ObjVec= mc->second.getObjVec();
+  const std::vector<double>& TVec= mc->second.getSegmentLen();
+
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)
-    if (OVec[i]->getMat()!=0)
-      sum+=TVec[i];
+    {
+      const MonteCarlo::Object* OPtr=ObjVec[i];
+      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+      if (!MPtr->isVoid())
+	sum+=TVec[i];
+    }
   return sum;
 }
   
 double
-ObjectTrackAct::getAttnSum(const long int objN) const
+ObjectTrackAct::getAttnSum(const long int objN,const double Epsilon) const
   /*!
     Calculate the sum in the material
     \param objN :: Cell number to use
@@ -154,72 +157,32 @@ ObjectTrackAct::getAttnSum(const long int objN) const
 {
   ELog::RegMethod RegA("ObjectTrackAct","getAttnSum");
 
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
 
   std::map<long int,LineTrack>::const_iterator mc=Items.find(objN);
   if (mc==Items.end())
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
-  
+
+
   // Get Two Paired Vectors
-  const std::vector<MonteCarlo::Object*>& OVec=
-    mc->second.getObjVec();
+  const std::vector<MonteCarlo::Object*>& ObjVec= mc->second.getObjVec();
   const std::vector<double>& TVec=mc->second.getSegmentLen();
-  
+
   double sum(0.0);
-  for(size_t i=0;i<TVec.size();i++)
+  for(size_t i=0;i<ObjVec.size();i++)
     {
-      const long int matN=OVec[i]->getMat();
-      if (matN)
+      const MonteCarlo::Object* OPtr=ObjVec[i];
+      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+      if (!MPtr->isVoid())
 	{
-	  const MonteCarlo::Material& matInfo=
-	    DB.getMaterial(static_cast<int>(matN));
-	  const double density=matInfo.getAtomDensity();
-	  const double AMean=matInfo.getMeanA();
+	  const double density=MPtr->getAtomDensity();
+	  const double AMean=MPtr->getMeanA();
 	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
 	}
     }
+  // currently no use for epsilon
   return sum;
 }
 
-double
-ObjectTrackAct::getAttnSum(const long int objN,const double E) const
-  /*!
-    Calculate the sum in the material
-    \param objN :: Cell number to use
-    \return sum of distance in non-void
-  */
-{
-  ELog::RegMethod RegA("ObjectTrackAct","getAttnSum(E)");
-
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
-  std::map<long int,LineTrack>::const_iterator mc=Items.find(objN);
-  if (mc==Items.end())
-    throw ColErr::InContainerError<long int>(objN,"objN in Items");
-  
-  // Get Two Paired Vectors
-  const std::vector<MonteCarlo::Object*>& OVec=
-    mc->second.getObjVec();
-  const std::vector<double>& TVec=mc->second.getSegmentLen();
-  
-  double sum(0.0);
-  for(size_t i=0;i<TVec.size();i++)
-    {
-      const long int matN=OVec[i]->getMat();
-      if (matN)
-	{
-	  const MonteCarlo::Material& matInfo=
-	    DB.getMaterial(static_cast<int>(matN));
-	  const double density=matInfo.getAtomDensity();
-	  const double AMean=matInfo.getMeanA();
-	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
-	}
-    }
-  
-  return (E>Geometry::zeroTol) ? sum : sum;
-}
 
 double
 ObjectTrackAct::getDistance(const long int objN) const

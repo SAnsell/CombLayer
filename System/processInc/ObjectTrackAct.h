@@ -3,7 +3,7 @@
  
  * File:   processInc/ObjectTrackAct.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,11 +53,14 @@ namespace ModelSupport
 */
 
 
+// NOTE REMOVE FOR JUST LineTrack
+// Plane was to take direction changes but doesn't get used
+  
 class ObjectTrackAct
 {
  protected:
 
-  /// Storage type for line units
+  /// Storage type for [cellNumber : line units]
   typedef std::map<long int,LineTrack> itemTYPE;
   /// Main data information set [Object : ItemTrack]
   itemTYPE Items; 
@@ -74,8 +77,7 @@ class ObjectTrackAct
 
   double getMatSum(const long int) const;
 
-  double getAttnSum(const long int) const;
-  double getAttnSum(const long int,const double) const;
+  double getAttnSum(const long int,const double =1e-6) const;
   double getDistance(const long int) const;
 
   /// Debug function effectivley

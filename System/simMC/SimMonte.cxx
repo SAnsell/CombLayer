@@ -177,7 +177,7 @@ SimMonte::setDetector(const Transport::Detector& DObj)
 void
 SimMonte::attenPath(const MonteCarlo::Object* startObj,
 		    const double Dist,
-		    MonteCarlo::particle& N) const
+		    MonteCarlo::neutron& N) const
   /*!
     Calculate and update the particle path staring
     from N through a distance 
@@ -187,21 +187,17 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
    */
 {
   ELog::RegMethod RegA("SimMonte","attenPath");
-  const scatterSystem::DBNeutMaterial& NDB=
-		      scatterSystem::DBNeutMaterial::Instance();
 
   ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
   LT.calculate(*this);
 
   const std::vector<double>& tLen=LT.getSegmentLen();
-  const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
-
-  for(size_t i=0;i<oVec.size();i++)
+  const std::vector<MonteCarlo::Object*>& objVec=LT.getObjVec();
+  for(size_t i=0;i<objVec.size();i++)
     {
-      const scatterSystem::neutMaterial* nMatPtr=
-	NDB.getMat(oVec[i]->getMat());
-      if (nMatPtr)
-	N.weight*=nMatPtr->calcAtten(N.wavelength,tLen[i]);
+      const MonteCarlo::Object* OPtr=objVec[i];
+      const MonteCarlo::Material* matPtr=OPtr->getMat();
+      N.weight*=Ptr->calcAtten(N,tLen[i]);
       else if (oVec[i]->getMat())
 	ELog::EM<<"Failed for mat "<<oVec[i]->getMat()<<ELog::endDiag;
     }

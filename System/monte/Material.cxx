@@ -716,7 +716,6 @@ Material::listComponent() const
   return;
 }
 
-
 void 
 Material::print() const
   /*!

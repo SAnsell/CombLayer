@@ -3,7 +3,7 @@
  
  * File:   include/SimMonte.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 namespace MonteCarlo
 {
   class particle;
+  class neturon;
+  class photon;
 }
 
 namespace Transport
@@ -68,7 +70,9 @@ class SimMonte : public Simulation
   void setMS(const int M) { MSActive=M; }
 
   void attenPath(const MonteCarlo::Object*,const double,
-		 MonteCarlo::particle&) const;
+		 MonteCarlo::neutron&) const;
+  void attenPath(const MonteCarlo::Object*,const double,
+		 MonteCarlo::photon&) const;
 
   Transport::Beam* getBeam() const { return B; }
 

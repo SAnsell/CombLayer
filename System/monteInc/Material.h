@@ -115,7 +115,10 @@ class Material
   void listComponent() const;
   void print() const;
 
-
+  // stuff for tracking [default void]
+  virtual double calcAtten(MonteCarlo::particle&,const double) const
+  { return 1.0; } 
+  
   void write(std::ostream&) const;               
   void writeCinder(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;

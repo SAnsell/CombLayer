@@ -87,7 +87,7 @@ namespace scatterSystem
   virtual double TotalCross(const double) const;
 
   virtual double calcRefIndex(const double) const;
-  virtual double calcAtten(const double,const double) const;
+  virtual double calcAtten(const MonteCarlo::Particle&,const double) const;
   
   virtual void scatterNeutron(MonteCarlo::neutron&) const;
   
