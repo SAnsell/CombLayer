@@ -1057,14 +1057,13 @@ Object::calcInOut(const int pAB,const int N) const
 
 int
 Object::trackCell(const MonteCarlo::particle& N,double& D,
-		  const int direction,
-		  const Geometry::Surface*& surfPtr,
+		  const int direction,const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param direction :: direction to track [+1/-1 : in/out ] 
+    \param direction :: direction to track [+1/-1 : into cell /out of cell ] 
     \param surfPtr :: Surface at exit
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   transport/ObjComponent.cxx
+ * File:   transport/ParticleInObj.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -54,6 +54,7 @@
 #include "Rules.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Zaid.h"
@@ -61,28 +62,16 @@
 #include "Material.h"
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"
-#include "ObjComponent.h"
+#include "ParticleInObj.h"
 
 extern MTRand RNG;
 
 namespace Transport
 {
 
-const scatterSystem::neutMaterial*
-ObjComponent::neutMat(const int matN) 
-  /*!
-    Static function to get the neutMaterial based on the MCNPX
-    material number
-    \param matN :: Material number
-  */
-{
-  ELog::RegMethod RegA("ObjComponent","neutMat");
-  
-  return scatterSystem::DBNeutMaterial::Instance().getMat(matN);
-}
-
+template<typename PTYPE>
 std::ostream&
-operator<<(std::ostream& OX,const ObjComponent& A)
+operator<<(std::ostream& OX,const ParticleInObj<PTYPE>& A)
 /*!
   Standard Output stream
   \param OX :: Output stream
@@ -95,24 +84,25 @@ operator<<(std::ostream& OX,const ObjComponent& A)
   return OX;
 }
 
-ObjComponent::ObjComponent(const MonteCarlo::Object* OP) : 
+template<typename PTYPE>
+ParticleInObj<PTYPE>::ParticleInObj(const MonteCarlo::Object* OP) : 
   ObjPtr(OP),MatPtr(neutMat(OP->getMat()))
   /*!
    Constructor
  */
 {}
 
-
-ObjComponent::~ObjComponent()
+template<typename PTYPE>
+ParticleInObj<PTYPE>::~ParticleInObj()
 /*!
   Destructor
 */
 {}
 
 
-
+template<typename PTYPE>
 int
-ObjComponent::hasIntercept(const MonteCarlo::particle& N) const
+ParticleInObj<PTYPE>::hasIntercept(const MonteCarlo::particle& N) const
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects)
@@ -125,7 +115,8 @@ ObjComponent::hasIntercept(const MonteCarlo::particle& N) const
 }
 
 void
-ObjComponent::attenuate(const double D,MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::attenuate
+(const double D,PTYPE& N) const
   /*!
     Attenuate the Neutron in the material over the 
     distance					
@@ -133,37 +124,38 @@ ObjComponent::attenuate(const double D,MonteCarlo::neutron& N) const
     \param N :: Neutron point
   */
 {
-  if (!MatPtr) return;
   N.weight*=MatPtr->calcAtten(N.wavelength,D);
   return;
 }  
 
-
+template<typename PTYPE>
 double 
-ObjComponent::getRefractive(const MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::getRefractive(const MonteCarlo::particle& N) const
   /*!
     Get the real refractive index
     \param N :: Neutron
     \return  n : the refractive index 
   */
 { 
-  return (MatPtr) ? MatPtr->calcRefIndex(N.wavelength) : 1.0; 
+  return MatPtr->calcRefIndex(N.wavelength);
 }
 
+template<typename PTYPE>
 double 
-ObjComponent::getRefractive(const double W) const
+ParticleInObj<PTYPE>::getRefractive(const double W) const
   /*!
     Get the real refractive index
     \param W :: Wavelength [Angstrom]
     \return n : the refractive index 
   */
 { 
-  return (MatPtr) ? MatPtr->calcRefIndex(W) : 1.0; 
+  return MatPtr->calcRefIndex(W);
 }
 
 
+template<typename PTYPE>
 void
-ObjComponent::scatterNeutron(MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::scatterNeutron(MonteCarlo::neutron& N) const
   /*!
     Scatter the neutron into a new direction + energy
     Random scatter.
@@ -175,8 +167,9 @@ ObjComponent::scatterNeutron(MonteCarlo::neutron& N) const
   return;
 }
 
+template<typename PTYPE>
 double
-ObjComponent::ScatTotalRatio(const MonteCarlo::neutron& NIn,
+ParticleInObj<PTYPE>::ScatTotalRatio(const MonteCarlo::neutron& NIn,
 			     const MonteCarlo::neutron&) const
   /*!
     Get the scattering / Total ratio
@@ -188,8 +181,9 @@ ObjComponent::ScatTotalRatio(const MonteCarlo::neutron& NIn,
   return (MatPtr) ? MatPtr->ScatTotalRatio(NIn.wavelength) : 0.0;
 }
 
+template<typename PTYPE>
 double
-ObjComponent::TotalCross(const MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::TotalCross(const MonteCarlo::neutron& N) const
   /*!
     Get the total scatterin cross section
     \param N :: neutron to obtain wavelength
@@ -199,14 +193,15 @@ ObjComponent::TotalCross(const MonteCarlo::neutron& N) const
   return (MatPtr) ? MatPtr->TotalCross(N.wavelength) : 0.0;
 }
   
+template<typename PTYPE>
 int
-ObjComponent::trackOutCell(const MonteCarlo::neutron& N,
-			   double& aDist,
-			   const Geometry::Surface*& surfPtr) const
+ParticleInObj<PTYPE>::trackOutCell
+(const MonteCarlo::particle& N,double& aDist,
+ const Geometry::Surface*& surfPtr) const
   /*!
     This tracks a neutron to an object and determines the 
     minimum distance that the object has to travel from the object
-    \param N :: neutron to obtain track from
+    \param N :: particle to obtain track from
     \param aDist :: primary distance
     \param surfPtr ;: surface  on exit
     \return true/false if neutron intersects object    
@@ -215,26 +210,27 @@ ObjComponent::trackOutCell(const MonteCarlo::neutron& N,
   return ObjPtr->trackOutCell(N,aDist,surfPtr);
 }
 
+template<typename PTYPE>
 int
-ObjComponent::trackIntoCell(const MonteCarlo::neutron& N,
-			    double& aDist,
-			    const Geometry::Surface*& surfPtr) const
+ParticleInObj<PTYPE>::trackIntoCell
+(const MonteCarlo::particle& N,double& aDist,
+ const Geometry::Surface*& surfPtr) const
   /*!
     This tracks a neutron to an object and determines the 
     minimum distance that the object has to travel to the object
     \param N :: neutron to obtain track from
     \param aDist :: primary distance
     \param surfPtr ;: surface  on exit
-    \return true/false if neutron intersects object    
+    \return true/false if particle intersects/misses the object    
   */
 {
   return ObjPtr->trackIntoCell(N,aDist,surfPtr);
 }
 
+template<typename PTYPE>
 int
-ObjComponent::trackWeight(MonteCarlo::neutron& N,
-			  double& R,
-			  const Geometry::Surface*& surfPtr) const
+ParticleInObj<PTYPE>::trackWeight(MonteCarlo::neutron& N,
+			  double& R,const Geometry::Surface*& surfPtr) const
   /*!
     This tracks a neutron through object and determines the 
     the track modification to a scattering point.
@@ -244,11 +240,11 @@ ObjComponent::trackWeight(MonteCarlo::neutron& N,
     \return surface number that it exited at /  0
   */
 {
-  ELog::RegMethod RegA("ObjComponent","trackWeight");
+  ELog::RegMethod RegA("ParticleInObj","trackWeight");
   double aDist(0);
       
   const int SN=ObjPtr->trackOutCell(N,aDist,surfPtr);
-  //  ELog::EM<<"Nutron Track"<<N.weight<<ELog::endDiag;
+  //  ELog::EM<<"Neutron Track"<<N.weight<<ELog::endDiag;
   if (MatPtr)    // not-void
     {
       // Material to attenuate beam:
@@ -274,9 +270,10 @@ ObjComponent::trackWeight(MonteCarlo::neutron& N,
   return SN;
 }
 
+template<typename PTYPE>
 int
-ObjComponent::trackAttn(MonteCarlo::neutron& N,
-			const Geometry::Surface*& SPtr) const
+ParticleInObj<PTYPE>::trackAttn(MonteCarlo::neutron& N,
+					const Geometry::Surface*& SPtr) const
   /*!
     This tracks a neutron through object and determines the 
     the track modification to an exit
@@ -285,7 +282,7 @@ ObjComponent::trackAttn(MonteCarlo::neutron& N,
     \return surface number that it exited [Signed].
   */
 {
-  ELog::RegMethod RegA("ObjComponent","trackAttn");
+  ELog::RegMethod RegA("ParticleInObj","trackAttn");
   double aDist(0);
       
   // Signed number
@@ -305,14 +302,14 @@ ObjComponent::trackAttn(MonteCarlo::neutron& N,
 
 
 void
-ObjComponent::selectEnergy(const MonteCarlo::neutron& NIn,
+ParticleInObj<PTYPE>::selectEnergy(const MonteCarlo::neutron& NIn,
 			   MonteCarlo::neutron& NOut) const
   /*!
     Given a incomming neutron select an outgoing energy for
     the neutron based on the cross section.
   */
 {
-  ELog::RegMethod RegA("ObjComponent","selectEnergy");  
+  ELog::RegMethod RegA("ParticleInObj","selectEnergy");  
   NOut=NIn;
   if (MatPtr)
     {
@@ -326,8 +323,9 @@ ObjComponent::selectEnergy(const MonteCarlo::neutron& NIn,
   return;
 }
 			      
+template<typename PTYPE>
 void
-ObjComponent::write(std::ostream& OX) const
+ParticleInObj<PTYPE>::write(std::ostream& OX) const
   /*!
     Writes out to a stream
     \param OX :: output stream
@@ -337,16 +335,5 @@ ObjComponent::write(std::ostream& OX) const
   return;
 }
 
-void
-ObjComponent::writeMCNPX(std::ostream& OX) const
-  /*!
-    Write out the MCNPX component
-    \param OX :: Output stream
-  */
-{
-  OX<<"c ObjComponent "<<std::endl;
-  ObjPtr->write(OX);
-  return;
-}
 
-} // Namespace MonteCarlo
+} // Namespace Transport

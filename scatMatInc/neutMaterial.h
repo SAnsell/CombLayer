@@ -44,7 +44,7 @@ namespace scatterSystem
     \todo This class needs to have a base class.
   */
   
-  class neutMaterial : public MonteCarlo::Material
+class neutMaterial : public MonteCarlo::Material
 {
  protected:
   
@@ -87,7 +87,7 @@ namespace scatterSystem
   virtual double TotalCross(const double) const;
 
   virtual double calcRefIndex(const double) const;
-  virtual double calcAtten(const MonteCarlo::Particle&,const double) const;
+  virtual double calcAtten(const MonteCarlo::particle&,const double) const;
   
   virtual void scatterNeutron(MonteCarlo::neutron&) const;
   

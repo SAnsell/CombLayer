@@ -176,14 +176,13 @@ SimMonte::setDetector(const Transport::Detector& DObj)
 
 void
 SimMonte::attenPath(const MonteCarlo::Object* startObj,
-		    const double Dist,
-		    MonteCarlo::neutron& N) const
+		    const double Dist,MonteCarlo::neutron& N) const
   /*!
     Calculate and update the particle path staring
     from N through a distance 
     \param startObj :: Initial object [for recording track]
     \param Dist :: Distance to travel
-    \param N :: Particle
+    \param N :: Particle to track
    */
 {
   ELog::RegMethod RegA("SimMonte","attenPath");
@@ -193,13 +192,12 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
 
   const std::vector<double>& tLen=LT.getSegmentLen();
   const std::vector<MonteCarlo::Object*>& objVec=LT.getObjVec();
+  
   for(size_t i=0;i<objVec.size();i++)
     {
       const MonteCarlo::Object* OPtr=objVec[i];
-      const MonteCarlo::Material* matPtr=OPtr->getMat();
-      N.weight*=Ptr->calcAtten(N,tLen[i]);
-      else if (oVec[i]->getMat())
-	ELog::EM<<"Failed for mat "<<oVec[i]->getMat()<<ELog::endDiag;
+      const MonteCarlo::Material* matPtr=OPtr->getMatPtr();
+      N.weight*=matPtr->calcAtten(N,tLen[i]);
     }
   N.setObject(startObj);
   N.moveForward(Dist);
@@ -249,9 +247,11 @@ SimMonte::runMonte(const size_t Npts)
 	  //    -- B to track to track length point [inner]
 
 	  const MonteCarlo::Object* OPtr=this->findCell(n.Pos,defObj);
+	  
 	  while (OPtr && OPtr->getImp())
 	    {
-	      Transport::ObjComponent Cell(OPtr);
+
+	      //	      Transport::ObjComponent Cell(OPtr);
 	      double R=RNG.randExc();
 	      // Calculate forward Track:
 	      int surfN;
@@ -262,7 +262,7 @@ SimMonte::runMonte(const size_t Npts)
 	      else         // Internal scatter : Get new R
 		{
 		  const scatterSystem::neutMaterial* nMat=
-		    NDB.getMat(OPtr->getMat());
+		    NDB.getMat(OPtr->getMatPtr());
 		  if (!nMat)
 		    throw ColErr::InContainerError<int>
 		      (OPtr->getMat(),"Material not found");
