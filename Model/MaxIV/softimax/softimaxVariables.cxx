@@ -613,6 +613,14 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.setXYAngle(4.0,-4.0);
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);
 
+
+  Control.addVariable(splitKey+"M3PumpLength",10.0);
+  Control.addVariable(splitKey+"M3PumpWidth",10.0);
+  Control.addVariable(splitKey+"M3PumpHeight",10.0);
+  Control.addVariable(splitKey+"M3PumpWallThick",1.0);
+  Control.addVariable(splitKey+"M3PumpMainMat","Void");
+  Control.addVariable(splitKey+"M3PumpWallMat","Aluminium");
+
   // BellowGen.setCF<setVariable::CF40>();
   // BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
   // BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);

@@ -108,6 +108,7 @@
 #include "Mirror.h"
 #include "BeamPair.h"
 #include "TwinPipe.h"
+#include "BiPortTube.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
 // #include "DiffPumpXIADP03.h"
@@ -170,7 +171,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
-  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
+  splitter(new xraySystem::TwinPipe(newName+"Splitter")),
+  M3Pump(new xraySystem::BiPortTube(newName+"M3Pump"))
 
 
 
@@ -258,6 +260,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3STXMTube);
   OR.addObject(offPipeD);
   OR.addObject(splitter);
+  OR.addObject(M3Pump);
 
 
   // OR.addObject(filterBoxA);
@@ -696,6 +699,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
+  // M3Pump->createAll(System,*splitter,2);
+  // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3Pump,2);
+  // M3Pump->insertInCell(System,cellA);
 
 
 
@@ -952,8 +958,12 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   buildM3STXMMirror(System,masterCell,*bellowJ,2);
 
   MonteCarlo::Object* masterCellB(0);
-  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
+  //  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
 
+  M3Pump->setFront(*M3STXMTube,2);
+  M3Pump->createAll(System,*M3STXMTube,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M3Pump,2);
+  M3Pump->insertInCell(System,outerCell);
 
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
