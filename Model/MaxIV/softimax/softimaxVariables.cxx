@@ -604,6 +604,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeShieldGenerator ShieldGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
 
 
   TwinGen.setCF<CF40>();
@@ -614,12 +615,18 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);
 
 
-  Control.addVariable(splitKey+"M3PumpLength",10.0);
-  Control.addVariable(splitKey+"M3PumpWidth",10.0);
-  Control.addVariable(splitKey+"M3PumpHeight",10.0);
-  Control.addVariable(splitKey+"M3PumpWallThick",1.0);
-  Control.addVariable(splitKey+"M3PumpMainMat","Void");
-  Control.addVariable(splitKey+"M3PumpWallMat","Aluminium");
+  const std::string m3PumpName=splitKey+"M3Pump";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
+  //  Control.addVariable(mName+"XStep",centreOffset);
+  Control.addVariable(m3PumpName+"NPorts",0);   // beam ports
+
+  // Control.addVariable(splitKey+"M3PumpLength",10.0);
+  // Control.addVariable(splitKey+"M3PumpWidth",10.0);
+  // Control.addVariable(splitKey+"M3PumpHeight",10.0);
+  // Control.addVariable(splitKey+"M3PumpWallThick",1.0);
+  // Control.addVariable(splitKey+"M3PumpMainMat","Void");
+  // Control.addVariable(splitKey+"M3PumpWallMat","Aluminium");
 
   // BellowGen.setCF<setVariable::CF40>();
   // BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);

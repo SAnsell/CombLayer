@@ -25,6 +25,7 @@
 namespace constructSystem
 {
   class PortTube;
+  class BiPortTube;
 }
 
 namespace xraySystem
@@ -37,7 +38,6 @@ namespace xraySystem
   class GratingUnit;
   class FlangeMount;
   class TwinPipe;
-  class BiPortTube;
 
   /*!
     \class softimaxOpticsLine
@@ -132,7 +132,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
-  std::shared_ptr<xraySystem::BiPortTube> M3Pump;
+  std::shared_ptr<constructSystem::BiPortTube> M3Pump;
 
 
 

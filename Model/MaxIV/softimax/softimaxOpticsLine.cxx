@@ -172,7 +172,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
-  M3Pump(new xraySystem::BiPortTube(newName+"M3Pump"))
+  M3Pump(new constructSystem::BiPortTube(newName+"M3Pump"))
 
 
 
@@ -699,11 +699,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
-  M3Pump->setFront(*splitter,2);
-  M3Pump->createAll(System,*splitter,2);
+  M3Pump->setFront(*splitter,sideIndex);
+  M3Pump->createAll(System,*splitter,sideIndex);
   cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3Pump,2);
-  M3Pump->insertInCell(System,cellA);
-
+  M3Pump->insertAllInCell(System,cellA);
 
   // // now build left/ right
   // // LEFT
