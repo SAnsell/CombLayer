@@ -73,10 +73,12 @@
 #include "Material.h"
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"
-#include "ObjComponent.h"
+
 #include "Beam.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
+#include "ParticleInObj.h"
 #include "Detector.h"
 #include "DetGroup.h"
 #include "groupRange.h"
@@ -206,7 +208,7 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
 
  
 void
-SimMonte::runMonte(const size_t Npts)
+SimMonte::runMonteNeutron(const size_t Npts)
   /*!
     Run a specific number 
     \param Npts :: number of points
@@ -215,13 +217,10 @@ SimMonte::runMonte(const size_t Npts)
   static MonteCarlo::Object* defObj(0);
 
   ELog::RegMethod RegA("SimMonte","runMonte");
-
-
-  const scatterSystem::DBNeutMaterial& NDB=
-		      scatterSystem::DBNeutMaterial::Instance();
-    
+  
   //  const int aim((Npts>10) ? Npts/10 : 1);
   const Geometry::Surface* surfPtr;
+
   MonteCarlo::neutron Nout(0.0,Geometry::Vec3D(0,0,0),
 			       Geometry::Vec3D(1,0,0));
   const ModelSupport::ObjSurfMap* OSMPtr =getOSM();
@@ -239,19 +238,14 @@ SimMonte::runMonte(const size_t Npts)
 	{
 	  // No material info at this point:
 	  MonteCarlo::neutron n=B->generateNeutron();
-	  //      if (!DUnit.calcCell(n,testA,testB))
-	  //	ELog::EM<<"Failed on hit with "<<n<<ELog::endErr;
-	  
-	  // Note teh double loop : 
+	  // Note the double loop : 
 	  //    -- A to track to scatter point [outer]
 	  //    -- B to track to track length point [inner]
 
 	  const MonteCarlo::Object* OPtr=this->findCell(n.Pos,defObj);
-	  
 	  while (OPtr && OPtr->getImp())
 	    {
-
-	      //	      Transport::ObjComponent Cell(OPtr);
+	      Transport::ParticleInObj<MonteCarlo::neutron> Cell(OPtr);
 	      double R=RNG.randExc();
 	      // Calculate forward Track:
 	      int surfN;
@@ -261,11 +255,6 @@ SimMonte::runMonte(const size_t Npts)
 					    OPtr->getName());
 	      else         // Internal scatter : Get new R
 		{
-		  const scatterSystem::neutMaterial* nMat=
-		    NDB.getMat(OPtr->getMatPtr());
-		  if (!nMat)
-		    throw ColErr::InContainerError<int>
-		      (OPtr->getMat(),"Material not found");
 		  //Cell.selectEnergy(n,Nout);		  
 		  // Internal scatter : process fraction to detector
 		  if (!MSActive || (MSActive<0 && n.nCollision==0)
@@ -286,7 +275,7 @@ SimMonte::runMonte(const size_t Npts)
 			}
 		    }
 		  n.weight*=Cell.ScatTotalRatio(n,Nout);
-		  nMat->scatterNeutron(n);
+		  //		  nMat->scatterNeutron(n);
 		}
 	    }
 	}

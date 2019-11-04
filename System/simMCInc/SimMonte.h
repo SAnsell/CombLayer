@@ -26,7 +26,7 @@
 namespace MonteCarlo
 {
   class particle;
-  class neturon;
+  class neutron;
   class photon;
 }
 
@@ -34,7 +34,7 @@ namespace Transport
 {
   class Detector;
   class DetGroup;
-  class Beam;
+  class Beam;    
 }
 
 /*!
@@ -64,7 +64,8 @@ class SimMonte : public Simulation
 
   void clearAll();
   // MAIN RUN:
-  void runMonte(const size_t);
+  void runMonteNeutron(const size_t);
+  void runMontePhoton(const size_t);
   void setBeam(const Transport::Beam&);
   void setDetector(const Transport::Detector&);
   void setMS(const int M) { MSActive=M; }

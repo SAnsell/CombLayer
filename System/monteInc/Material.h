@@ -24,6 +24,7 @@
 
 namespace MonteCarlo
 {
+  class particle;
 
 /*!
   \class Material

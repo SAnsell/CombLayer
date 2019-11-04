@@ -31,8 +31,7 @@ namespace MonteCarlo
 }
 
 namespace Transport
-{
-
+{  
   /*!
     \class ParticleInObj 
     \author S. Ansell
@@ -44,16 +43,12 @@ namespace Transport
     of the component to the positioning and geometry tree.
   */
 
-template<typename PTYPE,typename MatTYPE>
+template<typename PTYPE>
 class ParticleInObj 
 {  
  private: 
   
   const MonteCarlo::Object* ObjPtr;         ///< The phyical geometry 
-
-  const MatTYPE* MatPtr;                    ///< Material Pointer 
-
-  static const scatterSystem::neutMaterial* neutMat(const int);
 
  public:
 
@@ -92,7 +87,8 @@ class ParticleInObj
   
 };
 
-std::ostream& operator<<(std::ostream&,const ParticleInObj&);
+template<typename PTYPE>
+std::ostream& operator<<(std::ostream&,const ParticleInObj<PTYPE>&);
 
 } // Namespace MonteCarlo
 
