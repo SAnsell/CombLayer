@@ -699,11 +699,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
-  // M3Pump->createAll(System,*splitter,2);
-  // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3Pump,2);
-  // M3Pump->insertInCell(System,cellA);
-
-
+  M3Pump->setFront(*splitter,2);
+  M3Pump->createAll(System,*splitter,2);
+  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3Pump,2);
+  M3Pump->insertInCell(System,cellA);
 
 
   // // now build left/ right
@@ -958,12 +957,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   buildM3STXMMirror(System,masterCell,*bellowJ,2);
 
   MonteCarlo::Object* masterCellB(0);
-  //  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
-
-  M3Pump->setFront(*M3STXMTube,2);
-  M3Pump->createAll(System,*M3STXMTube,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M3Pump,2);
-  M3Pump->insertInCell(System,outerCell);
+  buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
 
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
