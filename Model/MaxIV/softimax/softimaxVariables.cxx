@@ -616,10 +616,20 @@ splitterVariables(FuncDataBase& Control,
 
 
   const std::string m3PumpName=splitKey+"M3Pump";
-  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCF<CF200>();
   SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
   //  Control.addVariable(mName+"XStep",centreOffset);
-  Control.addVariable(m3PumpName+"NPorts",0);   // beam ports
+  Control.addVariable(m3PumpName+"NPorts",2);   // beam ports
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(5.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF40>(4.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
 
   // Control.addVariable(splitKey+"M3PumpLength",10.0);
   // Control.addVariable(splitKey+"M3PumpWidth",10.0);
