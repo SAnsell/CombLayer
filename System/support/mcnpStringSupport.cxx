@@ -46,7 +46,7 @@
   \file mcnpStringSupport.cxx 
 */
 
-namespace mcnpStr
+namespace mcnpFunc
 {
 
 bool

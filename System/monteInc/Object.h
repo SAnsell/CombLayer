@@ -80,8 +80,6 @@ class Object
   int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
  public:
-  
-  static int startLine(const std::string& Line);
 
   Object();
   Object(const std::string&,const int,const int,

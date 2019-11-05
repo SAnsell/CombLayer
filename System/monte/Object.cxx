@@ -205,7 +205,22 @@ Object::getDensity() const
 {
   return matPtr->getAtomDensity();
 }
-  
+
+void
+Object::setMaterial(const int matID)
+  /*!
+    Given a material id , set the new(?) material pointer
+    This function should not be called under most cases.
+    \param matID :: Material id
+   */
+{
+  ELog::RegMethod RegA("Object","setMaterial");
+
+  matPtr=ModelSupport::DBMaterial::Instance().getMaterialPtr(matID);
+  return;
+}
+
+
 int
 Object::complementaryObject(const int Cnum,std::string& Ln)
   /*!
