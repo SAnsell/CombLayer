@@ -137,6 +137,9 @@ class softimaxOpticsLine :
   // Left branch
   std::shared_ptr<constructSystem::Bellows> bellowAA;
 
+  // Right branch
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+
 
 
   // /// Vacuum pipe for collimator

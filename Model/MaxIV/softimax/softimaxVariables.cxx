@@ -618,6 +618,7 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,splitLength);
 
   const std::string m3PumpName=splitKey+"M3Pump";
+  ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
   SimpleTubeGen.setCF<CF200>();
   SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
   //  Control.addVariable(mName+"XStep",centreOffset);
@@ -631,7 +632,7 @@ splitterVariables(FuncDataBase& Control,
 
   // vertical offset at the border b/w splitter and M3Pump
   const double x = splitXStep + splitLength*sin(splitAngle*M_PI/180);
-  ELog::EM << "x: " << x << ELog::endDiag;
+  //  ELog::EM << "x: " << x << ELog::endDiag;
 
   const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
   PItemGen.setCF<setVariable::CF40>(port0Length*cos(splitAngle*4*M_PI/180)+0.75);
@@ -648,6 +649,9 @@ splitterVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAA",0,18.0);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,splitKey+"BellowBA",0,18.0);
 
 
 
