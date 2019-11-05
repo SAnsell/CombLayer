@@ -134,6 +134,9 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::BiPortTube> M3Pump;
 
+  // Left branch
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+
 
 
   // /// Vacuum pipe for collimator

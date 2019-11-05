@@ -646,6 +646,10 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,18.0);
+
+
 
 
   // Control.addVariable(splitKey+"M3PumpLength",10.0);
