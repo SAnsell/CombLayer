@@ -658,7 +658,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   */
 
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
+  ELog::RegMethod RegA("softimaxOpticsBeamLine","buildSplitter");
 
   int cellA(0),cellB(0);
 
@@ -667,48 +667,54 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   offPipeD->insertInCell(System,cellA);
 
 
-  //////////////////// 1: build splitter without creating two outer void units
-  splitter->createAll(System,*offPipeD,2);
-  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
-  splitter->insertInCell("Flange",System,cellA);
-  splitter->insertInCell("PipeA",System,cellA);
-  splitter->insertInCell("Flange",System,cellA);
-  splitter->insertInCell("PipeB",System,cellA);
+  // /////////  1: build splitter without creating two outer void units
+  // splitter->createAll(System,*offPipeD,2);
+  // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  // splitter->insertInCell("Flange",System,cellA);
+  // splitter->insertInCell("PipeA",System,cellA);
+  // splitter->insertInCell("Flange",System,cellA);
+  // splitter->insertInCell("PipeB",System,cellA);
 
 
   //////////////////// 2: build splitter with creating two outer void units
   ////////////////////////////////////////////////////////////////////////////////////
-  // buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
 
-  // attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
-  // attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
+  attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
+  attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
 
-  // // No need for insert -- note removal of old master cell
-  // System.removeCell(masterCellA->getName());
+  // No need for insert -- note removal of old master cell
+  System.removeCell(masterCellA->getName());
 
-  // masterCellA=leftZone.constructMasterCell(System);
-  // masterCellB=rightZone.constructMasterCell(System);
-  // splitter->createAll(System,*offPipeD,2);
-  // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+  masterCellA=leftZone.constructMasterCell(System);
+  masterCellB=rightZone.constructMasterCell(System);
+  splitter->createAll(System,*offPipeD,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
 
-  // splitter->insertInCell("Flange",System,cellA);
-  // splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("PipeA",System,cellA);
 
-  // splitter->insertInCell("Flange",System,cellB);
-  // splitter->insertInCell("PipeB",System,cellB);
+  splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
+  // TODO: optimize
   M3Pump->addAllInsertCell(masterCellA->getName());
+  M3Pump->addAllInsertCell(masterCellB->getName());
   M3Pump->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  M3Pump->createAll(System,*splitter,sideIndex);
-  //  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3Pump,2);
-  //  M3Pump->insertAllInCell(System,cellA);
+  M3Pump->createAll(System,*splitter,2);
 
   const constructSystem::portItem& CPI1=M3Pump->getPort(1);
-  cellA=buildZone.createOuterVoidUnit
-    (System,masterCellA,CPI1,CPI1.getSideIndex("OuterPlate"));
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,CPI1,CPI1.getSideIndex("OuterPlate"));
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,CPI1,CPI1.getSideIndex("OuterPlate"));
   M3Pump->insertAllInCell(System,cellA);
+  M3Pump->insertAllInCell(System,cellB);
+
+
+
+
+
 
 
 
