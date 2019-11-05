@@ -6,13 +6,13 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 1000;
+#declare view = 8;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
 // 2=omnimax
 // 3=cylindrical
-#declare projection = 2;
+#declare projection = 0;
 #declare cameraAngle = 90;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
@@ -92,6 +92,10 @@ global_settings {
   #case(7) // PumpTubeM3
     #declare cameraLocation = <2770, 8450, 10>;
     #declare cameraLookAt   = <2790, 8400, 0>;
+  #break
+  #case(8) // M3 CTXM Mirror
+    #declare cameraLocation = <3070, 8450, 50>;
+    #declare cameraLookAt   = <3070, 8400, 0>;
   #break
   #case(101) // Front beam Undulator
     #declare cameraLocation = <-350, 8450, 10>;
