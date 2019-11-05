@@ -629,10 +629,6 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-4,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF40>(4.95);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
   // vertical offset at the border b/w splitter and M3Pump
   const double x = splitXStep + splitLength*sin(splitAngle*M_PI/180);
   ELog::EM << "x: " << x << ELog::endDiag;
@@ -640,7 +636,12 @@ splitterVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
   PItemGen.setCF<setVariable::CF40>(port0Length*cos(splitAngle*4*M_PI/180)+0.75);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(5.5,0,0),ZVec2);
+  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(5.5,0,0),ZVec2);
+
+  PItemGen.setCF<setVariable::CF40>(4.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(0,0,0),-ZVec);
+
 
 
   // Control.addVariable(splitKey+"M3PumpLength",10.0);

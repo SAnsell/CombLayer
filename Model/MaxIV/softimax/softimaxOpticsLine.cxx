@@ -705,9 +705,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   M3Pump->setPortRotation(3,Geometry::Vec3D(1,0,0));
   M3Pump->createAll(System,*splitter,2);
 
-  const constructSystem::portItem& CPI1=M3Pump->getPort(1);
-  cellA=leftZone.createOuterVoidUnit(System,masterCellA,CPI1,CPI1.getSideIndex("OuterPlate"));
-  cellB=rightZone.createOuterVoidUnit(System,masterCellB,CPI1,CPI1.getSideIndex("OuterPlate"));
+  const constructSystem::portItem& CPI2=M3Pump->getPort(2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,CPI2,CPI2.getSideIndex("OuterPlate"));
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,CPI2,CPI2.getSideIndex("OuterPlate"));
   M3Pump->insertAllInCell(System,cellA);
   M3Pump->insertAllInCell(System,cellB);
 
