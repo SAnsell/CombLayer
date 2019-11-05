@@ -268,13 +268,13 @@ SimMonte::runMonteNeutron(const size_t Npts)
 			  const double RDist=
 			    DPtr->project(n,Nout);   
 			  // Object
-			  Nout.weight*=Cell.ScatTotalRatio(n,Nout);
+			  Nout.weight*=Cell.scatTotalRatio(n,Nout);
 			  // ATTENUATE:
 			  attenPath(OPtr,RDist,Nout);
 			  DPtr->addEvent(Nout);
 			}
 		    }
-		  n.weight*=Cell.ScatTotalRatio(n,Nout);
+		  n.weight*=Cell.scatTotalRatio(n,Nout);
 		  //		  nMat->scatterNeutron(n);
 		}
 	    }

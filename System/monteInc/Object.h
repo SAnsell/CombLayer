@@ -48,11 +48,10 @@ class Object
   int ObjName;       ///< Number for the object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
-  Material* matPtr;  ///< Material Number 
+  const Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
   int imp;           ///< importance / 0 
 
-  int placehold;     ///< Is cell virtual (ie not in output)
   int populated;     ///< Full population
 
   bool activeMag;         ///< Magnetic field active
@@ -79,8 +78,6 @@ class Object
   std::set<int> SurSet;              ///< set of surfaces in cell [signed]
 
   int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-
-  bool keyUnit(std::string&,std::string&,std::string&);
 
  public:
   
@@ -119,8 +116,6 @@ class Object
   int procHeadRule(const HeadRule&);
 
   void setMaterial(const int);  // to be written
-  void setPlaceHold(const int P) { placehold=P; }      ///< Set placeholder
-  int isPlaceHold() const { return placehold; }        ///< Get placeholder
 
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
@@ -133,6 +128,8 @@ class Object
   int getMatID() const;
   /// Main accessor to material
   const Material* getMatPtr() const { return matPtr; }
+  /// is material void
+  bool isVoid() const;
   
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
   double getDensity() const;                           ///< to be written

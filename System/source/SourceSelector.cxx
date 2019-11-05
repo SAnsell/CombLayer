@@ -124,10 +124,8 @@ getCellsContainingZaid(Simulation& System,
       MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr)
 	{
-	  const int matN=OPtr->getMat();
-	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
-	  
-	  if (cellMat.hasZaid(zaid,0,0))
+	  const MonteCarlo::Material* cellMat=OPtr->getMatPtr();
+	  if (cellMat->hasZaid(zaid,0,0))
 	    {
 	      const Geometry::Vec3D CofM=
 		ModelSupport::calcCOFM(*OPtr);

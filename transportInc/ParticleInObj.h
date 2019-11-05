@@ -24,7 +24,7 @@
 
 namespace MonteCarlo
 {
-  class partcile;
+  class particle;
   class neutron;
   class photon;
   class Track;
@@ -57,15 +57,13 @@ class ParticleInObj
   ParticleInObj& operator=(const ParticleInObj&);
   ~ParticleInObj();
 
-  double ScatTotalRatio(const MonteCarlo::neutron&,
-			const MonteCarlo::neutron&) const;
-  double TotalCross(const MonteCarlo::neutron&) const;
+  double totalXSection(const MonteCarlo::particle&) const;
 
-  int trackIntoCell(const MonteCarlo::neutron&,
+  int trackIntoCell(const MonteCarlo::particle&,
 		    double&,const Geometry::Surface*&) const;
 
-  int trackOutCell(const MonteCarlo::partcile&,double&,
-		   const Geometry::Surface*&) const;
+  int trackOutCell(const MonteCarlo::particle&,double&,
+  		   const Geometry::Surface*&) const;
   int trackCell(const MonteCarlo::particle&,double&,double&) const;
   
   int trackWeight(MonteCarlo::neutron&,double&,
@@ -75,13 +73,13 @@ class ParticleInObj
   void attenuate(const double,MonteCarlo::particle&) const;
   double getRefractive(const MonteCarlo::particle&) const;
   double getRefractive(const double) const;
+  double scatTotalRatio(const MonteCarlo::particle&,
+			const MonteCarlo::particle&) const;
 
+  
   int isValid(const Geometry::Vec3D&) const;       
   int hasIntercept(const MonteCarlo::particle&) const;
-  void scatterNeutron(MonteCarlo::neutron&) const;
-
-  virtual void selectEnergy(const MonteCarlo::neutron&,
-			    MonteCarlo::neutron&) const;
+  void scatterParticle(MonteCarlo::particle&) const;
   
   virtual void write(std::ostream&) const;
   

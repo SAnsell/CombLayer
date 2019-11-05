@@ -645,7 +645,6 @@ ReactorGrid::getFuelCells(const Simulation& System,
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getFuelCells");
-  const ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
   std::vector<int> cellOut;
   for(long int i=0;i<static_cast<long int>(NX);i++)
@@ -660,9 +659,8 @@ ReactorGrid::getFuelCells(const Simulation& System,
 		System.findObject(index);
 	      if (OPtr)
 		{
-		  const int matN=OPtr->getMat();
-		  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
-		  if (cellMat.hasZaid(zaid,0,0))
+		  const MonteCarlo::Material* matPtr=OPtr->getMatPtr();
+		  if (matPtr->hasZaid(zaid,0,0))
 		    cellOut.push_back(index);
 		}
 	    }

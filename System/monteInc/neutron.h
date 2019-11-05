@@ -35,6 +35,7 @@ namespace MonteCarlo
 {
 
   class Object;
+  
 /*!  
   \class neutron
   \brief Defines single point neutron [special case]

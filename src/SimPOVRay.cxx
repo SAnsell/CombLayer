@@ -3,7 +3,7 @@
  
  * File:   src/SimPOVRay.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov/Stuart Ansell
+ * Copyright (c) 2004-2019 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,14 +144,18 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
-
-  DB.writePOVRay(OX);
+  std::set<int> writtenMat;      ///< set of written materials
+  for(const auto& [cellNum,objPtr]  : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID && writtenMat.find(ID)!=writtenMat.end())
+	{
+	  mPtr->writePOVRay(OX);
+	  writtenMat.emplace(ID);
+	}
+    }
   
   // Overwrite textures by a user-provided file
   OX << "#if (file_exists(\"povray/materials.inc\"))" << std::endl;

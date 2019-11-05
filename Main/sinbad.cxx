@@ -137,8 +137,7 @@ main(int argc,char* argv[])
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
-	  //  SimPtr->removeDeadCells();            // Generic
-	  SimPtr->removeDeadSurfaces(0);         
+	  SimPtr->removeDeadSurfaces();         
 
 	  //ALB SimPtr->removeOppositeSurfaces();
 

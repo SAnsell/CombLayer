@@ -460,18 +460,16 @@ SimFLUKA::writeElements(std::ostream& OX) const
 
   OX<<"* ELEMENTS "<<std::endl;
   OX<<alignment<<std::endl;
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   std::set<MonteCarlo::Zaid> setZA;
 
-  for(const OTYPE::value_type& mp : OList)
+  for(const auto& [ cellNum,objPtr]  : OList)  // 
     {
-      const MonteCarlo::Material& m = DB.getMaterial(mp.second->getMat());
-      const std::vector<MonteCarlo::Zaid>& zaidVec = m.getZaidVec();
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const std::vector<MonteCarlo::Zaid>& zaidVec = mPtr->getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
-	{
-	  setZA.insert(ZC);
-	}
+	setZA.insert(ZC);
     }
 
   std::ostringstream cx,lowmat;
@@ -511,18 +509,21 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
       if (mp.second->hasMagField())
 	magField=1;
     }
-    
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
 
   writeElements(OX);
 
-  DB.writeFLUKA(OX);
-
+  std::set<int> writtenMat;      ///< set of written materials
+  for(const auto& [cellNum,objPtr]  : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID && writtenMat.find(ID)!=writtenMat.end())
+	{
+	  mPtr->writeFLUKA(OX);
+	  writtenMat.emplace(ID);
+	}
+    }
   OX<<alignment<<std::endl;
   if (magField)
     writeMagField(OX);

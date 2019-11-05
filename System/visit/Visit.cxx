@@ -174,7 +174,7 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
     case VISITenum::cellID:
       return ObjPtr->getName();
     case VISITenum::material:
-      return ObjPtr->getMat();
+      return ObjPtr->getMatID();
     case VISITenum::density:
       return ObjPtr->getDensity();
     case VISITenum::weight:

@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,9 +263,9 @@ ActivationSource::createFluxVolumes(const Simulation& System)
       if (!cellPtr)
 	throw ColErr::InContainerError<Geometry::Vec3D>
 	  (testPt,"Point not in cell");
-      const int matN=cellPtr->getMat();
+
       // test for Material / cellFlux / volume.
-      if (matN!=0)
+      if (!cellPtr->isVoid())
 	{
 	  const int cellN=cellPtr->getName();
           if (cellFlux.find(cellN)!=cellFlux.end())

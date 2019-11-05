@@ -81,15 +81,17 @@ class neutMaterial : public MonteCarlo::Material
   double getAbs() const { return sabs; }        ///< Absorption x-section
 
   // get Scattering prob
-  virtual double ScatTotalRatio(const double) const;
-  virtual double ScatCross(const double) const;
+  virtual double scatXSection(const MonteCarlo::particle&) const;
+  virtual double totalXSection(const MonteCarlo::particle&) const;
+
+  virtual double scatTotalRatio(const MonteCarlo::particle&) const;
   virtual double ElasticTotalRatio(const double) const;
-  virtual double TotalCross(const double) const;
+
 
   virtual double calcRefIndex(const double) const;
   virtual double calcAtten(const MonteCarlo::particle&,const double) const;
   
-  virtual void scatterNeutron(MonteCarlo::neutron&) const;
+  virtual void scatterNeutron(MonteCarlo::particle&) const;
   
   virtual double dSdOdE(const MonteCarlo::neutron&,
 			const MonteCarlo::neutron&) const;

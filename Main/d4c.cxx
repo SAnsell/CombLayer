@@ -154,7 +154,7 @@ main(int argc,char* argv[])
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
+	  SimPtr->removeDeadSurfaces();         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  const int renumCellWork(0); // =beamTallySelection(*SimPtr,IParam);
 

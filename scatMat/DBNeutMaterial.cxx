@@ -135,8 +135,8 @@ DBNeutMaterial::initMaterial()
   MStore.insert(MTYPE::value_type(DB.getIndex("B4C"),B4C.clone()));
 
   // Set MCNPX numbers:
-  for(MTYPE::value_type& MItem : MStore)
-    MItem.second->setNumber(MItem.first);
+  for(const auto& [matN , matPtr] : MStore)
+    matPtr->setID(matN);
   
   return;
 }

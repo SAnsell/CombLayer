@@ -25,7 +25,7 @@
 namespace mcnpFunc
 {
 
-  bool keyUnit(std::string&,std::string);
+  bool keyUnit(std::string&,std::string&,std::string&);
 
   bool startMaterial(const std::string&);
 

@@ -153,17 +153,16 @@ PointDetector::addEvent(const MonteCarlo::particle& N)
     Add a point to the detector
     Tracks from the point to the detector.
     Added correction for solid angle
-    \param N :: Neutron
+    \param N :: Particle
   */
 {
   ELog::RegMethod RegA("PointDetector","addEvent");
   
   if (N.OPtr)
     {
-      const int matNum=(N.OPtr) ? N.OPtr->getMat() : -1;
+      const int matNum=N.OPtr->getMatID();
       const double W=N.weight/(N.travel*N.travel);   // r^2 term +
                                                      // weight
-      
       std::map<int,double>::iterator mc=cnt.find(matNum);
       if (mc==cnt.end())
 	cnt.emplace(matNum,W);

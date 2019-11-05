@@ -153,7 +153,7 @@ main(int argc,char* argv[])
 	  SimPtr->readMaster(Fname);
 	  
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
+	  SimPtr->removeDeadSurfaces();         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);

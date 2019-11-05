@@ -312,18 +312,19 @@ SimPHITS::writeMaterial(std::ostream& OX) const
 {
   OX<<"[ Material ]"<<std::endl;
 
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
+  std::set<int> writtenMat;      ///< set of written materials
+  for(const auto& [cellNum,objPtr]  : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID && writtenMat.find(ID)!=writtenMat.end())
+	{
+	  mPtr->writePHITS(OX);
+	  writtenMat.emplace(ID);
+	}
+    }
 
-  //  if (!PhysPtr->getMode().hasElm("h"))
-  //    DB.deactivateParticle("h");
-  
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
-  
-  ModelSupport::DBMaterial::Instance().writePHITS(OX);
-  
   return;
 }
 

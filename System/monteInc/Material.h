@@ -42,7 +42,7 @@ class Material
  protected:
  
   int matID;                        ///< Material Number (Necessary)  
-  std::string Name;                ///< Material Name (un-necessary)
+  std::string Name;                 ///< Material Name (un-necessary)
   double atomDensity;               ///< Calculated atom density
   
  private:
@@ -76,17 +76,19 @@ class Material
   static int lineType(std::string&);
 
   /// Special to decide if void
-  bool isVoid() const { return (matID==0); }
+  bool isVoid() const { return (atomDensity<1e-7); }
   
 
   /// Set the material name
   void setName(const std::string& A) { Name=A; }  
   /// Get the material name
   const std::string& getName() const { return Name; } 
-
+ 
   /// Assesor function to Number
   int getID() const { return matID; }
-  
+  /// Assesor function to Number
+  void setID(const int ID) { matID=ID; }
+ 
   int setMaterial(const std::vector<std::string>&);
   int setMaterial(const int,const std::string&,
 		  const std::string&,const std::string&,

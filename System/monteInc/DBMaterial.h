@@ -85,13 +85,14 @@ class DBMaterial
   /// Get neutron material list
   const NTYPE& getNeutMat() const { return NStore; }
 
+  // to be deprecated:
   const MonteCarlo::Material& getMaterial(const int) const;
   const MonteCarlo::Material& getMaterial(const std::string&) const;
 
   const MonteCarlo::Material* getMaterialPtr(const int) const;
   const MonteCarlo::Material* getMaterialPtr(const std::string&) const;
 
-
+  const MonteCarlo::Material* getVoidPtr() const;
 
   void resetMaterial(const MonteCarlo::Material&);
   void setMaterial(const MonteCarlo::Material&);

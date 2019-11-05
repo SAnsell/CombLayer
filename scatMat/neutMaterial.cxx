@@ -164,21 +164,21 @@ neutMaterial::setScat(const double S,const double I,const double A)
 }
   
 double
-neutMaterial::TotalCross(const double Wave) const
+neutMaterial::totalXSection(const MonteCarlo::particle& n0) const
   /*!
     Given Wavelength get the attenuation coefficient.
-    \param Wave :: Wavelength [Angstrom]
+    \param n0 :: neutron for Wavelength [Angstrom]
     \return Attenuation (including atomDensity)
   */
 {
-  return atomDensity*(scoh+sinc+Wave*sabs/1.798);
+  return atomDensity*(scoh+sinc+n0.wavelength*sabs/1.798);
 }
 
 double
-neutMaterial::ScatCross(const double) const
+neutMaterial::scatXSection(const MonteCarlo::particle&) const
   /*!
     Given wavelength get the scattering cross section
-    \param :: Wavelength [Angstrom]
+    \param  :: particle 
     \return Attenuation (including atomDensity)
   */
 {
@@ -186,7 +186,8 @@ neutMaterial::ScatCross(const double) const
 }
 
 double
-neutMaterial::calcAtten(const double Wave,const double Length) const
+neutMaterial::calcAtten(const MonteCarlo::particle& N,
+			const double Length) const
   /*!
     Calculate the attenuation factor coefficient.
     \param Wave :: Wavelength [Angstrom]
@@ -194,14 +195,14 @@ neutMaterial::calcAtten(const double Wave,const double Length) const
     \return Attenuation (including atomDensity)
   */
 {
-  return exp(-Length*atomDensity*(scoh+sinc+Wave*sabs/1.798));
+  return exp(-Length*atomDensity*(scoh+sinc+N.wavelength*sabs/1.798));
 }
 
 void
-neutMaterial::scatterNeutron(MonteCarlo::neutron& N) const
+neutMaterial::scatterNeutron(MonteCarlo::particle& N) const
   /*!
     Calculate the new angle and energy of the neutron
-    that is scattered.
+    that is scattered. Full isotropic scattering
     Doesn't change energy:
     \param N :: neutron to scatter
   */
@@ -219,16 +220,16 @@ neutMaterial::scatterNeutron(MonteCarlo::neutron& N) const
 }
 
 double
-neutMaterial::ScatTotalRatio(const double Wave) const
+neutMaterial::scatTotalRatio(const MonteCarlo::particle& N) const
   /*!
-    Given a scatter return the ratio in scattering cross section
-    against total.
+    Return the ratio of scattering / total crosssection
+    [for scaling by absorption coefficient]
     \param Wave :: Wavelength [Angstrom]
     \return sigma_scatter/sigma_total
   */
 {
   return (atomDensity>0) ? 
-    (scoh+sinc)/(scoh+sinc+Wave*sabs/1.798) : 1.0;
+    (scoh+sinc)/(scoh+sinc+N.wavelength*sabs/1.798) : 1.0;
 }
 
 double

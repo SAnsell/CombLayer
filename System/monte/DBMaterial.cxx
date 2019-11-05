@@ -214,10 +214,10 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   ELog::RegMethod RegA("DBMaterial","setMaterial");
 
   const std::string& MName=MO.getName();
-  const int MIndex=MO.getNumber();
+  const int MIndex=MO.getID();
   checkNameIndex(MIndex,MName);
-  MStore.insert(MTYPE::value_type(MIndex,MO));
-  IndexMap.insert(SCTYPE::value_type(MName,MIndex));
+  MStore.emplace(MIndex,MO);
+  IndexMap.emplace(MName,MIndex);
   return;
 }
   
@@ -233,7 +233,6 @@ DBMaterial::createMaterial(const std::string& MName)
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
-  
   // Now key found
   // can be a new density or a new mix:
   std::string::size_type pos=MName.find('#');
@@ -356,7 +355,7 @@ DBMaterial::createMix(const std::string& Name,
   MA*=PFrac;
   MB*=(1.0-PFrac);
   MA+=MB;
-  MA.setNumber(matNum);
+  MA.setID(matNum);
   MA.setName(Name);
 
   setMaterial(MA);
@@ -384,13 +383,14 @@ DBMaterial::createNewDensity(const std::string& Name,
   if (std::abs(densityFrac)<1e-5)
     {
       MonteCarlo::Material MA=getMaterial("Void");
-      MA.setNumber(matNum);
+      MA.setID(matNum);
       MA.setName(Name);
+      setMaterial(MA);
       return matNum;
     }
   
   MonteCarlo::Material MA=getMaterial(MatA);
-  MA.setNumber(matNum);
+  MA.setID(matNum);
   MA.setName(Name);
 
 	  
@@ -453,15 +453,15 @@ DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
   ELog::RegMethod RegA("DBMaterial","resetMaterial");
 
   const std::string& MName=MO.getName();
-  const int MIndex=MO.getNumber();
-
+  const int MIndex=MO.getID();
+ 
   MTYPE::iterator mc=MStore.find(MIndex);
   if (mc!=MStore.end()) MStore.erase(mc);
   SCTYPE::iterator sc=IndexMap.find(MName);
   if (sc!=IndexMap.end()) IndexMap.erase(sc);
 
-  MStore.insert(MTYPE::value_type(MIndex,MO));
-  IndexMap.insert(SCTYPE::value_type(MName,MIndex));
+  MStore.emplace(MIndex,MO);
+  IndexMap.emplace(MName,MIndex);
   return;
 }
 
@@ -507,6 +507,49 @@ DBMaterial::initMXUnits()
     }
   return;
 }
+
+const MonteCarlo::Material*
+DBMaterial::getMaterialPtr(const int MIndex) const
+  /*!
+    Get the material based on the index value
+    \param MIndex :: Material 
+    \return Material Ptr
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","getMaterial<int>");
+
+  MTYPE::const_iterator mc=MStore.find(MIndex);
+  if (mc==MStore.end())
+    throw ColErr::InContainerError<int>(MIndex,"MIndex in MStore");
+  return &mc->second;
+}
+
+const MonteCarlo::Material*
+DBMaterial::getVoidPtr() const
+  /*!
+    Get the material of the void
+    \return Material Ptr 
+   */
+{
+  static const MonteCarlo::Material* VPtr(getMaterialPtr(0));
+  return VPtr;
+}
+
+const MonteCarlo::Material*
+DBMaterial::getMaterialPtr(const std::string& MName) const
+  /*!
+    Get the material based on the name value
+    \param MName :: Material name
+    \return Material Pointer
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","getMaterialPtr<string>");
+
+  SCTYPE::const_iterator mc=IndexMap.find(MName);
+  if (mc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>(MName,"IndexMap");
+  return getMaterialPtr(mc->second);
+} 
 
 const MonteCarlo::Material&
 DBMaterial::getMaterial(const int MIndex) const

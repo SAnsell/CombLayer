@@ -3,7 +3,7 @@
  
  * File:   weights/TempWeights.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,22 +94,21 @@ scaleTempWeights(Simulation& System,double factor)
 
   
   const Simulation::OTYPE& Cells=System.getCells();
-  Simulation::OTYPE::const_iterator vc;
-  for(vc=Cells.begin();vc!=Cells.end();vc++)
+  
+  for(const auto& [cellNum,objPtr] : Cells)
     {
       // Keep currently masked cells:
-      if (!vc->second->isPlaceHold() && 
-	  !WF->isMasked(vc->first) &&
-	  vc->second->getImp())
+      if (!WF->isMasked(cellNum) &&
+	  objPtr->getImp())
         {
-	  const double T=vc->second->getTemp();
+	  const double T=objPtr->getTemp();
 	  if (T<275.0)
 	    {
 	      const double Df=1.0/(factor*(1.0-T/275));
-	      std::vector<double> Eval=WF->getWeights(vc->first);
+	      std::vector<double> Eval=WF->getWeights(cellNum);
 	      for(size_t i=0;i<Eval.size();i++)
 		Eval[i]*=Df;
-	      WF->setWeights(vc->first,Eval);
+	      WF->setWeights(cellNum,Eval);
 	    }
 	}
     }

@@ -44,6 +44,7 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "mcnpStringSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -88,8 +89,9 @@ operator<<(std::ostream& OX,const Object& A)
 }
 
 Object::Object() :
-  ObjName(0),listNum(-1),Tmp(300),matPtr(0),trcl(0),
-  imp(1),placehold(0),populated(0),
+  ObjName(0),listNum(-1),Tmp(300.0),
+  matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
+  trcl(0),imp(1),populated(0),
   activeMag(0),objSurfValid(0)
    /*!
      Defaut constuctor, set temperature to 300C and material to vacuum
@@ -100,7 +102,7 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),placehold(0),populated(0),activeMag(0),objSurfValid(0)
+  trcl(0),imp(1),populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -116,8 +118,7 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),placehold(0),
-  populated(0),activeMag(0),objSurfValid(0)
+  trcl(0),imp(1),populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -132,7 +133,7 @@ Object::Object(const std::string& FCName,const int N,const int M,
 Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
-  trcl(A.trcl),imp(A.imp),placehold(A.placehold),populated(A.populated),
+  trcl(A.trcl),imp(A.imp),populated(A.populated),
   activeMag(A.activeMag),magVec(A.magVec),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -158,7 +159,6 @@ Object::operator=(const Object& A)
       matPtr=A.matPtr;
       trcl=A.trcl;
       imp=A.imp;
-      placehold=A.placehold;
       populated=A.populated;
       activeMag=A.activeMag;
       magVec=A.magVec;
@@ -196,13 +196,22 @@ Object::getMatID() const
  return matPtr->getID();
 }
 
+double
+Object::getDensity() const
+  /*!
+    Accessor to denstiy
+    \return Density [Atom/A3]
+   */
+{
+  return matPtr->getAtomDensity();
+}
   
 int
 Object::complementaryObject(const int Cnum,std::string& Ln)
   /*!
     Calcluate if there are any complementary components in
     the object. That is lines with #(....)
-    \throws ColErr::ExBase :: Error with processing
+    \throws ColErr::InvalidLine :: Error with processing
     \param Cnum :: Number for cell since we don't have one
     \param Ln :: Input string must:  ID Mat {Density}  {rules}
     \retval 0 on no work to do
@@ -238,10 +247,8 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
   std::string Part=Ln.substr(posA,posB-(posA+1));
 
   ObjName=Cnum;
-  MatN=0;
-  density=0.0;
   if (!HRule.procString(Part))
-    throw ColErr::ExBase(0,RegA.getFull()+"\n"+Part);
+    throw ColErr::InvalidLine(0,Part);
 
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
@@ -286,70 +293,59 @@ Object::setObject(std::string Ln)
     }
 
   // Material (0 == vacuum)
-  if (!StrFunc::section(Ln,MatN) || MatN<0) 
-    {
-      ELog::EM<<"MatN not valid"<<MatN<<std::endl;
-      ELog::EM<<"Line == "<<Ln<<ELog::endErr;
-      return 0;
-    }
+  int matN(0);
+  if (!StrFunc::section(Ln,matN) || matN<0)
+    throw ColErr::InvalidLine("Material Index",Ln);
   
-  // Density 
-  if (MatN>0)
+  // Density
+  double density;
+  if (matN>0 && !StrFunc::section(Ln,density))
+    throw ColErr::InvalidLine("density read",Ln);
+  
+  // Check is we can strip and remove [allows a density to be
+  // set with a variable material that can go to zero]
+  if (matN==0)
     {
-      if (!StrFunc::section(Ln,density))
-        throw ColErr::InvalidLine("density read",Ln,0);
-    }
-
-  else
-    {
-      // Check is we can strip and remove [allows a density to be
-      // set with a variable material that can go to zero]
       if (StrFunc::convert(Ln,density) && 
 	  density<1.0 && density>0.0)
 	StrFunc::section(Ln,density);  // dump. phantom density
-      density=0.0;          // Vacuum
     }
 
   std::string Extract;
   std::string Value;
-  double tval;
-  int iVal;
-  while(keyUnit(Ln,Extract,Value))
+  double lineTemp(0.0);
+  int lineTRCL(0);
+  int lineIMP(0);
+  while(mcnpFunc::keyUnit(Ln,Extract,Value))
     {
-      if (Extract=="tmp" && 
-	  StrFunc::convert(Value,tval) && tval>=0.0)
-	Tmp=tval;
-      else if (Extract=="trcl" && 
-	       StrFunc::convert(Value,iVal))
-	trcl=iVal;
-      else if (Extract=="imp:n" && 
-	       StrFunc::convert(Value,iVal))
-	imp=iVal;
+      if ((Extract=="tmp" && 
+	   StrFunc::convert(Value,lineTemp) && lineTemp>=0.0)  ||
+
+	  (Extract=="trcl" && 
+	   StrFunc::convert(Value,lineTRCL) && lineTRCL>=0)  ||
+
+	  (Extract=="imp:n" && 
+	   StrFunc::convert(Value,lineTRCL) && lineIMP>=0)  )
+	{ } 
       else
-	{
-	  ELog::EM<<"Failed due to non understood key = value"<<ELog::endErr;
-	  return 0;
-	}
+	throw ColErr::InvalidLine("Invalid key :: ",Extract+":"+Value);
+      
     }
   if (std::find_if(Ln.begin(), Ln.end(),
                    [](char c) { return std::isalpha(c); }) != Ln.end())
-    {
-      ELog::EM<<"Junk letters in cell definition:"<<Ln<<ELog::endErr;
-      return 0;
-    }
+    ColErr::InvalidLine("Junk letters in line ",Ln);
 
-  populated=0;
-  if (HRule.procString(Ln))   // fails on empty
-    {
-      SurList.clear();
-      SurSet.erase(SurSet.begin(),SurSet.end());
-      objSurfValid=0;
-      return 1;
-    }
+  if (!HRule.procString(Ln))   // fails on empty
+    throw ColErr::InvalidLine("procString failure :: ",Ln);
 
-  // failure
-  ELog::EM<<"Failed to process:"<<Ln<<ELog::endErr;
-  return 0;
+  SurList.clear();
+  SurSet.erase(SurSet.begin(),SurSet.end());
+  objSurfValid=0;
+  Tmp=lineTemp;
+  imp=lineIMP;
+  trcl=lineTRCL;
+  
+  return 1;   // SUCCESS
 }
 
 int
@@ -393,25 +389,19 @@ Object::setObject(const int N,const int matNum,
   ELog::RegMethod RegA("Object","setObject");
   
   ObjName=N;
-  MatN=matNum;
-  density=0.0;
+  matPtr=ModelSupport::DBMaterial::Instance().getMaterialPtr(matNum);
 
-  std::vector<Token>::const_iterator mc;
   std::ostringstream cx;
-  for(mc=TVec.begin();mc!=TVec.end();mc++)
-    mc->write(cx);
+  for(const Token& tItem : TVec)
+    tItem.write(cx);
 
-  if (HRule.procString(cx.str()))     // this currently does not fail:
-    {
-      SurList.clear();
-      SurSet.erase(SurSet.begin(),SurSet.end());
-      objSurfValid=0;
-      return 1;
-    }
+  if (!HRule.procString(cx.str()))
+    throw ColErr::InvalidLine("Token string",cx.str());
 
-  // failure
-  ELog::EM<<"Failed to process:"<<cx.str()<<ELog::endErr;
-  return 0;
+  SurList.clear();
+  SurSet.erase(SurSet.begin(),SurSet.end());
+  objSurfValid=0;
+  return 1;
 }
 
 void
@@ -825,6 +815,16 @@ Object::createSurfaceList()
   return 1;
 }
 
+bool
+Object::isVoid() const
+  /*!
+    Is the material a void material
+    \return true if void
+  */
+{
+  return matPtr->isVoid();
+}
+
 void
 Object::createLogicOpp()
   /*!
@@ -1218,9 +1218,9 @@ Object::headStr() const
   */
 {
   std::ostringstream cx;
-  cx<<ObjName<<" "<<MatN;
-  if (MatN!=0)
-    cx<<" "<<density;
+  cx<<ObjName<<" "<<matPtr->getID();
+  if (!matPtr->isVoid())
+    cx<<" "<<matPtr->getAtomDensity()<<" ";
   return cx.str();
 }
 
@@ -1260,16 +1260,16 @@ Object::str() const
   cx<<ObjName<<" ";
   if (imp)
     {
-      cx<<MatN;
-      if (MatN!=0)
-	cx<<" "<<density;
+      cx<<matPtr->getID();
+      if (!matPtr->isVoid())
+	cx<<" "<<matPtr->getAtomDensity()<<" ";
     }
   else
     {
       cx<<"0 ";
     }
   
-  cx<<" "<<HRule.display();
+  cx<<HRule.display();
   return cx.str();
 }
 
@@ -1345,10 +1345,7 @@ Object::write(std::ostream& OX) const
   if (trcl)
     cx<<" "<<"trcl="<<trcl;
 
-  if (placehold)
-    StrFunc::writeMCNPXcomment(cx.str(),OX);
-  else
-    StrFunc::writeMCNPX(cx.str(),OX);
+  StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
 
@@ -1362,25 +1359,23 @@ Object::writeFLUKAmat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKAmat");
 
-  if (!placehold)
-    {
-      std::ostringstream cx;
-      cx<<"ASSIGNMAT ";
+  std::ostringstream cx;
+  cx<<"ASSIGNMAT ";
 
-      if (!imp)
-	cx<<"BLCKHOLE";
-      else if (MatN)
-	cx<<"M"+std::to_string(MatN);
-      else
-	cx<<"VACUUM";
-
-      cx<<" R"+std::to_string(ObjName);
-      if (imp && activeMag)
-	cx<<" - - 1 ";
-
-      
-      StrFunc::writeFLUKA(cx.str(),OX);
-    }
+  const int matID=matPtr->getID();
+  if (!imp)
+    cx<<"BLCKHOLE";
+  else if (matID>0)
+    cx<<"M"+std::to_string(matID);
+  else
+    cx<<"VACUUM";
+  
+  cx<<" R"+std::to_string(ObjName);
+  if (imp && activeMag)
+    cx<<" - - 1 ";
+  
+  
+  StrFunc::writeFLUKA(cx.str(),OX);
   
   return;
 }
@@ -1395,14 +1390,11 @@ Object::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKA");
 
-  if (!placehold)
-    {
-      std::ostringstream cx;
-      cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
-      cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
-      cx<<HRule.displayFluka()<<std::endl;
-      StrFunc::writeMCNPX(cx.str(),OX);
-    }
+  std::ostringstream cx;
+  cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
+  cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
+  cx<<HRule.displayFluka()<<std::endl;
+  StrFunc::writeMCNPX(cx.str(),OX);
   
   return;
 }
@@ -1419,10 +1411,7 @@ Object::writePOVRay(std::ostream& OX) const
 
   masterWrite& MW=masterWrite::Instance();
   
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
-  if (!placehold && MatN>0)
+  if (!isVoid())
     {
       // do not render global objects (outer void and black hole)
       //      if (objName.empty())
@@ -1430,7 +1419,7 @@ Object::writePOVRay(std::ostream& OX) const
       OX<<"// Cell "<<FCUnit<<" "<<ObjName<<"\n";
       OX<<"intersection{\n"
 	<<HRule.displayPOVRay()<<"\n"
-	<< " texture {mat" <<MW.NameNoDot(DB.getKey(MatN)) <<"}\n"
+	<< " texture {mat" <<MW.NameNoDot(matPtr->getName()) <<"}\n"
 	<< "}"<<std::endl;
     }
   
@@ -1448,12 +1437,7 @@ Object::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
 
   cx.precision(10);
-  if (placehold)
-    {
-      cx<<str();
-      StrFunc::writeMCNPXcomment(cx.str(),OX);
-    }
-  else if (ObjName==1 && imp==0)
+  if (ObjName==1 && imp==0)
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);

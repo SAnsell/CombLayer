@@ -3,7 +3,7 @@
  
  * File:   weights/WCellControl.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -281,7 +281,7 @@ WCellControl::scaleObject(const Simulation& System,
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(cellN);
-      if (CellPtr && CellPtr->getMat())
+      if (CellPtr && !CellPtr->isVoid())
         WF->scaleWeights(cellN,WEng);
     }
   return;
@@ -341,7 +341,7 @@ WCellControl::findMax(const Simulation& System,
   for(const int CN : cellRange)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(CN);
-      if (CellPtr && CellPtr->getMat())
+      if (CellPtr && !CellPtr->isVoid())
 	{
           foundCellCnt++;
 	  const std::vector<double> WVec=WF->getWeights(CN);
@@ -451,7 +451,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(cellN);
-      if (CellPtr && CellPtr->getMat())
+      if (CellPtr && !CellPtr->isVoid())
 	{
 	  index.push_back(CellPtr->getName());  // this should be cellN ??
 	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
@@ -483,7 +483,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(cellN);
-      if (CellPtr && CellPtr->getMat())
+      if (CellPtr && !CellPtr->isVoid())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
 	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
@@ -515,7 +515,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Object* CellPtr=System.findObject(cellN);
-      if (CellPtr && CellPtr->getMat())
+      if (CellPtr && !CellPtr->isVoid())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
 	  //          Pts.push_back(CellPtr->getCofM());

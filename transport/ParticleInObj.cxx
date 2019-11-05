@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transport/ParticleInObj.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ operator<<(std::ostream& OX,const ParticleInObj<PTYPE>& A)
 
 template<typename PTYPE>
 ParticleInObj<PTYPE>::ParticleInObj(const MonteCarlo::Object* OP) : 
-  ObjPtr(OP),MatPtr(neutMat(OP->getMat()))
+  ObjPtr(OP)
   /*!
    Constructor
  */
@@ -114,17 +114,19 @@ ParticleInObj<PTYPE>::hasIntercept(const MonteCarlo::particle& N) const
   return ObjPtr->hasIntercept(N.Pos,N.uVec);
 }
 
+template<typename PTYPE>  
 void
-ParticleInObj<PTYPE>::attenuate
-(const double D,PTYPE& N) const
+ParticleInObj<PTYPE>::attenuate(const double D,
+				MonteCarlo::particle& N) const
   /*!
     Attenuate the Neutron in the material over the 
     distance					
     \param D :: Distance to travel
-    \param N :: Neutron point
+    \param N :: Neutron/Photon point
   */
 {
-  N.weight*=MatPtr->calcAtten(N.wavelength,D);
+  const MonteCarlo::Material* matPtr=ObjPtr->getMatPtr();
+  N.weight *= matPtr->calcAtten(N,D);
   return;
 }  
 
@@ -136,70 +138,93 @@ ParticleInObj<PTYPE>::getRefractive(const MonteCarlo::particle& N) const
     \param N :: Neutron
     \return  n : the refractive index 
   */
-{ 
-  return MatPtr->calcRefIndex(N.wavelength);
-}
-
-template<typename PTYPE>
-double 
-ParticleInObj<PTYPE>::getRefractive(const double W) const
-  /*!
-    Get the real refractive index
-    \param W :: Wavelength [Angstrom]
-    \return n : the refractive index 
-  */
-{ 
-  return MatPtr->calcRefIndex(W);
+{
+  if constexpr (std::is_same<PTYPE,MonteCarlo::neutron>::value)
+    {
+      const scatterSystem::neutMaterial* matPtr=
+	dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+      if (matPtr)
+	return matPtr->calcRefIndex(N.wavelength);
+    }
+  return 1.0;
 }
 
 
 template<typename PTYPE>
 void
-ParticleInObj<PTYPE>::scatterNeutron(MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::scatterParticle(MonteCarlo::particle& N) const
   /*!
     Scatter the neutron into a new direction + energy
     Random scatter.
     \param N :: Neutron to scatter
   */
 {
-  if (MatPtr)
-    MatPtr->scatterNeutron(N);
+  if constexpr (std::is_same<PTYPE,MonteCarlo::neutron>::value)
+    {
+      const scatterSystem::neutMaterial* matPtr=
+	dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+      if (matPtr)
+	matPtr->scatterNeutron(N);
+    }
   return;
 }
 
 template<typename PTYPE>
 double
-ParticleInObj<PTYPE>::ScatTotalRatio(const MonteCarlo::neutron& NIn,
-			     const MonteCarlo::neutron&) const
+ParticleInObj<PTYPE>::scatTotalRatio(const MonteCarlo::particle& n0,
+				     const MonteCarlo::particle& n1) const
   /*!
     Get the scattering / Total ratio
-    \param NIn :: Input neutron 
+    \param n0 :: Input particle
+    \param n1 :: Ouput particle
     \param :: Output neutron (After scatter)
     \return new neutron weight
   */
 {
-  return (MatPtr) ? MatPtr->ScatTotalRatio(NIn.wavelength) : 0.0;
+  if constexpr (std::is_same<PTYPE,MonteCarlo::neutron>::value)
+    {
+      const scatterSystem::neutMaterial* matPtr=
+	dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+      if (matPtr)
+	matPtr->scatTotalRatio(n0);
+    }
+  else
+    {
+      ELog::EM<<"Photon part of scatAbsRatio not written"<<ELog::endCrit;
+    }
+  return 1.0;
 }
 
 template<typename PTYPE>
 double
-ParticleInObj<PTYPE>::TotalCross(const MonteCarlo::neutron& N) const
+ParticleInObj<PTYPE>::totalXSection(const MonteCarlo::particle& n0) const
   /*!
-    Get the total scatterin cross section
-    \param N :: neutron to obtain wavelength
+    Get the total scattering cross section
+    \param n0 :: particle to obtain wavelength
     \return sigma_total * density
-   */
+  */
 {
-  return (MatPtr) ? MatPtr->TotalCross(N.wavelength) : 0.0;
+  if constexpr (std::is_same<PTYPE,MonteCarlo::neutron>::value)
+    {
+      const scatterSystem::neutMaterial* matPtr=
+	dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+      if (matPtr)
+	return matPtr->totalXSection(n0);
+    }
+  else
+    {
+      ELog::EM<<"Photon part of totalXSection not written"<<ELog::endCrit;
+    }
+  return 0.0;
 }
-  
+
 template<typename PTYPE>
 int
 ParticleInObj<PTYPE>::trackOutCell
 (const MonteCarlo::particle& N,double& aDist,
  const Geometry::Surface*& surfPtr) const
-  /*!
-    This tracks a neutron to an object and determines the 
+ /*!
+    Tracks a particle to the object boundary and determines the 
     minimum distance that the object has to travel from the object
     \param N :: particle to obtain track from
     \param aDist :: primary distance
@@ -227,30 +252,34 @@ ParticleInObj<PTYPE>::trackIntoCell
   return ObjPtr->trackIntoCell(N,aDist,surfPtr);
 }
 
-template<typename PTYPE>
+template<>
 int
-ParticleInObj<PTYPE>::trackWeight(MonteCarlo::neutron& N,
-			  double& R,const Geometry::Surface*& surfPtr) const
+ParticleInObj<MonteCarlo::neutron>::trackWeight
+(MonteCarlo::neutron& N,double& R,const Geometry::Surface*& surfPtr) const
   /*!
-    This tracks a neutron through object and determines the 
+    This tracks a particle through object and determines the 
     the track modification to a scattering point.
     \param N :: neutron to move forward:change weight:new direction
     \param R :: Random number exponent step
     \param surfPtr :: surface that track ended on
     \return surface number that it exited at /  0
+    \todo TRACK TO START SURFACE 
   */
 {
-  ELog::RegMethod RegA("ParticleInObj","trackWeight");
-  double aDist(0);
+  ELog::RegMethod RegA("ParticleInObj<neutron>","trackWeight");
+
+  double aDist(0.0);
       
   const int SN=ObjPtr->trackOutCell(N,aDist,surfPtr);
   //  ELog::EM<<"Neutron Track"<<N.weight<<ELog::endDiag;
-  if (MatPtr)    // not-void
+  const scatterSystem::neutMaterial* matPtr=
+    dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+  if (!matPtr->isVoid())
     {
       // Material to attenuate beam:
-      const double sXsec=MatPtr->ScatCross(N.wavelength);
-      const double aXsec=MatPtr->TotalCross(N.wavelength)-sXsec;
-
+      const double sXsec=matPtr->scatXSection(N);
+      const double aXsec=matPtr->totalXSection(N)-sXsec;
+      
       const double DV= -log(R)/sXsec;
       // Neutron did not reach other size
       if (DV<aDist-Geometry::shiftTol)
@@ -263,6 +292,7 @@ ParticleInObj<PTYPE>::trackWeight(MonteCarlo::neutron& N,
       R=exp(-sXsec*(Geometry::shiftTol+DV-aDist));
       N.weight*=exp(-aDist*aXsec);
     }
+
   N.moveForward(aDist);
   // Now step over 
   Geometry::Vec3D XX(N.Pos);
@@ -270,10 +300,10 @@ ParticleInObj<PTYPE>::trackWeight(MonteCarlo::neutron& N,
   return SN;
 }
 
-template<typename PTYPE>
+template<>
 int
-ParticleInObj<PTYPE>::trackAttn(MonteCarlo::neutron& N,
-					const Geometry::Surface*& SPtr) const
+ParticleInObj<MonteCarlo::neutron>::trackAttn(MonteCarlo::neutron& N,
+					      const Geometry::Surface*& SPtr) const
   /*!
     This tracks a neutron through object and determines the 
     the track modification to an exit
@@ -287,12 +317,13 @@ ParticleInObj<PTYPE>::trackAttn(MonteCarlo::neutron& N,
       
   // Signed number
   const int SN=ObjPtr->trackOutCell(N,aDist,SPtr);
-  if (MatPtr)    // not-void
-    {
-      // Material to attenuate beam:
-      const double tXsec=MatPtr->TotalCross(N.wavelength);
-      N.weight*=exp(-aDist*tXsec);
-    }
+  const scatterSystem::neutMaterial* matPtr=
+    dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
+  
+  // Material to attenuate beam:
+  const double tXsec=matPtr->totalXSection(N);
+  N.weight*=exp(-aDist*tXsec);
+
   // Micro extra to avoid surface boundary
   N.moveForward(aDist);
   N.Pos-=SPtr->surfaceNormal(N.Pos)*(sign(SN)*Geometry::shiftTol);
@@ -301,27 +332,6 @@ ParticleInObj<PTYPE>::trackAttn(MonteCarlo::neutron& N,
 }
 
 
-void
-ParticleInObj<PTYPE>::selectEnergy(const MonteCarlo::neutron& NIn,
-			   MonteCarlo::neutron& NOut) const
-  /*!
-    Given a incomming neutron select an outgoing energy for
-    the neutron based on the cross section.
-  */
-{
-  ELog::RegMethod RegA("ParticleInObj","selectEnergy");  
-  NOut=NIn;
-  if (MatPtr)
-    {
-      // Choise between elastic and inelastic scattering:
-      const double R=RNG.rand();
-      const double elasticRatio=MatPtr->ElasticTotalRatio(NIn.wavelength);
-      if (R<elasticRatio)
-	return;      
-      //     NOut.wavelength=MatPtr->incEnergy(NIn.wavelength);
-    }
-  return;
-}
 			      
 template<typename PTYPE>
 void
@@ -335,5 +345,6 @@ ParticleInObj<PTYPE>::write(std::ostream& OX) const
   return;
 }
 
+template class ParticleInObj<MonteCarlo::neutron>;
 
 } // Namespace Transport
