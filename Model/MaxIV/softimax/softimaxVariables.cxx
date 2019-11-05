@@ -621,7 +621,7 @@ splitterVariables(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF200>();
   SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
   //  Control.addVariable(mName+"XStep",centreOffset);
-  Control.addVariable(m3PumpName+"NPorts",3);   // beam ports
+  Control.addVariable(m3PumpName+"NPorts",4);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
   const double port0Length(5.95);
@@ -640,7 +640,11 @@ splitterVariables(FuncDataBase& Control,
 
   PItemGen.setCF<setVariable::CF40>(4.95);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(-4,0,0),-ZVec);
+
+  PItemGen.setCF<setVariable::CF40>(4.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
 
 
