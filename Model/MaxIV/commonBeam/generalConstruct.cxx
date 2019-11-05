@@ -96,7 +96,7 @@ internalUnit(Simulation& System,
     \param buildUnit :: New unit to construct
   */
 {
-  ELog::RegMethod RegA("generalConstruct[F]","constructUnit");
+  ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
 
   FCut.setFront(linkUnit,sideName);
   FC.createAll(System,linkUnit,"back");
@@ -107,7 +107,5 @@ internalUnit(Simulation& System,
   return  outerCell;
 }
 
-  
-  
 }   // NAMESPACE xrayConstruct
 
