@@ -174,6 +174,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA"))
 
 
@@ -264,6 +265,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(splitter);
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
+  OR.addObject(joinPipeAA);
   OR.addObject(bellowBA);
 
 
@@ -720,6 +722,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // LEFT
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAA);
+  xrayConstruct::constructUnit
+    (System,leftZone,masterCellA,*bellowAA,"back",*joinPipeAA);
+
 
   // RIGHT
   xrayConstruct::constructUnit

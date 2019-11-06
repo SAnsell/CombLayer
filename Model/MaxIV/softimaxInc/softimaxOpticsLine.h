@@ -134,10 +134,12 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::BiPortTube> M3Pump;
 
-  // Left branch
+  // Left branch STXM
   std::shared_ptr<constructSystem::Bellows> bellowAA;
+  //  std::shared_ptr<xraySystem::SqrCollimator> collA;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeAA;
 
-  // Right branch
+  // Right branch CXI
   std::shared_ptr<constructSystem::Bellows> bellowBA;
 
 

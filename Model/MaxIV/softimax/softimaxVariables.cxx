@@ -650,6 +650,12 @@ splitterVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAA",0,18.0);
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.setBFlangeCF<CF40>();
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,100.0);
+
+
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowBA",0,18.0);
 
