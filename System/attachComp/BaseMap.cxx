@@ -438,11 +438,10 @@ BaseMap::registerExtra(const int prevCN,const int extraCN)
     \return true if insert possible
    */
 {
-  ELog::RegMethod RegA("CellMap","registerExtra");
+  ELog::RegMethod RegA("BaseMap","registerExtra");
 
   const std::string Unit=findCell(prevCN);
   if (Unit.empty()) return 0;
-
   BaseMap::addItem(Unit,extraCN);
   return 1;
 }
