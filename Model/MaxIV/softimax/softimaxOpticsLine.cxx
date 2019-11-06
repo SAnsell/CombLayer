@@ -178,6 +178,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
   collTubeAA(new constructSystem::PipeTube(newName+"CollimatorTubeAA")),
   collAA(new xraySystem::SqrCollimator(newName+"CollAA")),
+  joinPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA"))
 
 
@@ -271,6 +272,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(joinPipeAA);
   OR.addObject(collTubeAA);
   OR.addObject(collAA);
+  OR.addObject(joinPipeAB);
   OR.addObject(bellowBA);
 
 
@@ -740,6 +742,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   collAA->addInsertCell(collTubeAA->getCell("Void"));
   collAA->createAll(System,*collTubeAA,0);
+
+  xrayConstruct::constructUnit
+    (System,leftZone,masterCellA,*collTubeAA,"back",*joinPipeAB);
 
 
 

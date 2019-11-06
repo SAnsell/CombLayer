@@ -667,8 +667,10 @@ splitterVariables(FuncDataBase& Control,
   CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);
   CollGen.generateColl(Control,splitKey+"CollAA",0.0,34.0);
 
-
-
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.setBFlangeCF<CF40>();
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,70.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowBA",0,18.0);
