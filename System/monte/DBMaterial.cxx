@@ -677,39 +677,6 @@ DBMaterial::getIndex(const std::string& Key) const
   return sc->second;
 }
 
-
-void
-DBMaterial::setActive(const int M)
-  /*!
-    Set a item in the active list
-    \param M :: Material number
-   */
-{
-  active.insert(M);
-  return;
-}
-
-void
-DBMaterial::resetActive()
-  /*!
-    Reset the active list
-  */
-{
-  active.erase(active.begin(),active.end());
-  return;
-}
-
-bool
-DBMaterial::isActive(const int matN) const
-  /*!
-    Determine if material is active or not
-    \param matN :: Material number
-    \return true is active is set.
-   */
-{
-  return (active.find(matN)!=active.end()) ? 1 : 0;
-}
-
 void
 DBMaterial::setENDF7()
   /*!
@@ -721,32 +688,6 @@ DBMaterial::setENDF7()
   MTYPE::iterator mc;
   for(mc=MStore.begin();mc!=MStore.end();mc++)
     mc->second.setENDF7();
-  return;
-}
-
-void
-DBMaterial::writeCinder(std::ostream& OX) const
-  /*!
-    Write out a material stream for Cinder
-    -- Note the format is format(a6,i4,e10.0):
-    mat N::index:Number density 
-    There is not space between the number and the number density
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeCinder");
-
-  std::set<int>::const_iterator sc;
-  for(sc=active.begin();sc!=active.end();sc++)
-    {
-      if (*sc)
-	{
-	  MTYPE::const_iterator mx=MStore.find(*sc);
-	  if (mx==MStore.end())
-	    throw ColErr::InContainerError<int>(*sc,"MStore");	  
-	  mx->second.writeCinder(OX);
-	}
-    }
   return;
 }
 
@@ -770,101 +711,6 @@ DBMaterial::deactivateParticle(const std::string& P)
         }
     }
 
-  return;
-}
-
-  
-void
-DBMaterial::writeMCNPX(std::ostream& OX) const
-  /*!
-    Write everything out to the stream
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
-	  mp->second.write(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writePHITS(std::ostream& OX) const
-  /*!
-    Write everything out to the stream
-    for the phits output
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writePHITS");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-              (sActive,"MStore find(active item)");
-          
-	  mp->second.writePHITS(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writeFLUKA(std::ostream& OX) const
-  /*!
-    Write everything out to the fluka system
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeFLUKA");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
-	  
-	  mp->second.writeFLUKA(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writePOVRay(std::ostream& OX) const
-  /*!
-    Write materials out to the POV-Ray system
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writePOVRay");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
-	  
-	  mp->second.writePOVRay(OX);
-	}
-    }
   return;
 }
 

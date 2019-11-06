@@ -53,9 +53,6 @@ class DBMaterial
   MTYPE  MStore;     ///< Store of materials
   NTYPE  NStore;     ///< Store of neutron materials [if exist]
 
-  /// Active list
-  std::set<int> active;
-
   DBMaterial();
 
   ///\cond SINGLETON
@@ -114,20 +111,9 @@ class DBMaterial
 
   void deactivateParticle(const std::string&);
   
-  void resetActive();
-  void setActive(const int);
-  bool isActive(const int) const;
-  /// accessor
-  const std::set<int> getActive() const { return active; }
   void setENDF7();
 
   void readFile(const std::string&);
-  
-  void writeCinder(std::ostream&) const;
-  void writeMCNPX(std::ostream&) const;
-  void writeFLUKA(std::ostream&) const;
-  void writePHITS(std::ostream&) const;
-  void writePOVRay(std::ostream&) const;
 };
 
 }

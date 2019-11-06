@@ -83,27 +83,30 @@ namespace flukaSystem
 {
 
 std::set<int>
-getActiveUnit(const objectGroups& OGrp,
+getActiveUnit(const Simulation& System,
 	      const int typeFlag,
 	      const std::string& cellM)
   /*!
     Based on the typeFlag get the cell/material/particle set
-    \param OGrp :: Active Group
+    \param System :: Active Group
     \param typeFlag :: -1 : partilce / cell /material 
     \param cellM :: string to use as id
     \return set of index(s0
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveUnit");
-  
+
+  if (typeFlag==1)
+    const std::set<int> Item=getActiveMaterial(System,cellM);
+
   switch (typeFlag)
     {
     case -1:
       return getActiveParticle(cellM);
     case 0:
-      return getActiveCell(OGrp,cellM);
+      return getActiveCell(System,cellM);
     }
-  return getActiveMaterial(cellM);
+  return getActiveMaterial(System,cellM);
 }
   
 std::set<int>
@@ -124,7 +127,7 @@ getActiveParticle(const std::string& particle)
 }
 
 std::set<int>
-getActiveMaterial(std::string material)
+getActiveMaterial(const Simulation& System,std::string material)
   /*!
     Given a material find the active cells
     \param material : material name to use
@@ -135,9 +138,9 @@ getActiveMaterial(std::string material)
 
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
-    
-  const std::set<int>& activeMat=DB.getActive();
   
+    
+  std::set<int> activeMat=System.getActiveMaterial();
   if (material=="All" || material=="all")
     return activeMat;
   
@@ -150,18 +153,20 @@ getActiveMaterial(std::string material)
   
   if (!DB.hasKey(material))
     throw ColErr::InContainerError<std::string>
-      (material,"Material no present");
-
-  const int MatNum=DB.getIndex(material);
+      (material,"Material not in material database");
+  const int matID=DB.getIndex(material);
 
   if (negKey)
     {
-      std::set<int> activeOut(activeMat);
-      activeOut.erase(MatNum);
-      return activeOut;
+      activeMat.erase(matID);
+      return activeMat;
     }
+  if (activeMat.find(matID)==activeMat.end())
+    throw ColErr::InContainerError<std::string>
+      (material,"Not present in model");
+  
   std::set<int> activeOut;
-  activeOut.insert(MatNum);
+  activeOut.insert(matID);
   return activeOut;
 }
 

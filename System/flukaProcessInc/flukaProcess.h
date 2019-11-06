@@ -34,8 +34,8 @@ namespace mainSystem
 
 namespace flukaSystem
 {
-  std::set<int> getActiveUnit(const objectGroups&,const int,const std::string&);
-  std::set<int> getActiveMaterial(std::string);
+  std::set<int> getActiveUnit(const Simulation&,const int,const std::string&);
+  std::set<int> getActiveMaterial(const Simulation&,std::string);
   std::set<int> getActiveCell(const objectGroups&,const std::string&);
   std::set<int> getActiveParticle(const std::string&);
   void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);

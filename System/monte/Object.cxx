@@ -330,7 +330,7 @@ Object::setObject(std::string Ln)
   std::string Value;
   double lineTemp(0.0);
   int lineTRCL(0);
-  int lineIMP(0);
+  int lineIMP(1);
   while(mcnpFunc::keyUnit(Ln,Extract,Value))
     {
       if ((Extract=="tmp" && 
@@ -1277,11 +1277,11 @@ Object::str() const
     {
       cx<<matPtr->getID();
       if (!matPtr->isVoid())
-	cx<<" "<<matPtr->getAtomDensity()<<" ";
+	cx<<" "<<matPtr->getAtomDensity();
     }
   else
     {
-      cx<<"0 ";
+      cx<<"0";
     }
   
   cx<<HRule.display();

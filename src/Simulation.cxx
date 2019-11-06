@@ -495,6 +495,46 @@ Simulation::substituteAllSurface(const int oldSurfN,const int newSurfN)
   return;
 }
 
+std::set<int>
+Simulation::getActiveMaterial() const
+{
+  ELog::RegMethod RegA("Simulation","getActiveMaterial");
+  
+  std::set<int> activeMat;
+  for(const auto& [id,objPtr] : OList)
+    activeMat.insert(objPtr->getMatID());
+
+  // remove the special cases:
+  activeMat.erase(-2);
+  activeMat.erase(-1);
+  activeMat.erase(0);
+  
+  return activeMat;
+}
+
+
+std::map<int,const MonteCarlo::Material*>
+Simulation::getOrderedMaterial() const
+  /*!
+    Generate an ordered material map 
+    \return map : 
+  */
+{
+  ELog::RegMethod RegA("Simulation","getOrdereMaterial");
+  
+  // set ordered otherwize output random [which is annoying]
+  std::map<int,const MonteCarlo::Material*> orderedMat;
+  for(const auto& [cellNum,objPtr] : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID>0 && orderedMat.find(ID)==orderedMat.end())
+	orderedMat.emplace(ID,mPtr);
+    }
+
+  return orderedMat;
+}
 
 
 
@@ -509,10 +549,10 @@ Simulation::getCellImp() const
 
   std::vector<std::pair<int,int>> cellImp;
 
-  for(const OTYPE::value_type& VC: OList)
+  for(const auto& [cellNum,objPtr] : OList)
     {
       cellImp.push_back
-	(std::pair<int,int>(VC.first,(VC.second->getImp()>0) ? 1 : 0));
+	(std::pair<int,int>(cellNum,(objPtr->getImp()>0 ? 1 : 0)));
     }
   return cellImp;
 }

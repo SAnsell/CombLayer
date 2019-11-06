@@ -183,7 +183,11 @@ class Simulation : public objectGroups
   std::vector<int> getCellWithZaid(const size_t) const;
 
   std::vector<std::pair<int,int>> getCellImp() const;            
+  std::set<int> getActiveMaterial() const;
+  std::map<int,const MonteCarlo::Material*>
+    getOrderedMaterial() const;
 
+  
   int removeDeadSurfaces(); 
   virtual void removeCell(const int);
   int removeAllSurface(const int);

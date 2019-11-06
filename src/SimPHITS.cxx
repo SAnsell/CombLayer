@@ -312,17 +312,14 @@ SimPHITS::writeMaterial(std::ostream& OX) const
 {
   OX<<"[ Material ]"<<std::endl;
 
-  std::set<int> writtenMat;      ///< set of written materials
-  for(const auto& [cellNum,objPtr]  : OList)
+  // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
+
+  for(const auto& [matID,matPtr] : orderedMat)
     {
-      (void) cellNum;        // avoid warning -- fixed c++20
-      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
-      const int ID=mPtr->getID();
-      if (ID && writtenMat.find(ID)!=writtenMat.end())
-	{
-	  mPtr->writePHITS(OX);
-	  writtenMat.emplace(ID);
-	}
+      (void) matID; 
+      matPtr->writePHITS(OX);
     }
 
   return;

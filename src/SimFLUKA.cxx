@@ -512,18 +512,13 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 
   writeElements(OX);
 
-  std::set<int> writtenMat;      ///< set of written materials
-  for(const auto& [cellNum,objPtr]  : OList)
-    {
-      (void) cellNum;        // avoid warning -- fixed c++20
-      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
-      const int ID=mPtr->getID();
-      if (ID && writtenMat.find(ID)!=writtenMat.end())
-	{
-	  mPtr->writeFLUKA(OX);
-	  writtenMat.emplace(ID);
-	}
-    }
+  // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
+
+  for(const auto& [matID,matPtr] : orderedMat)
+    matPtr->writeFLUKA(OX);
+
   OX<<alignment<<std::endl;
   if (magField)
     writeMagField(OX);
@@ -704,12 +699,10 @@ SimFLUKA::prepareWrite()
    */
 {
   ELog::RegMethod RegA("SimFLUKA","prepareWrite");
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();  
   Simulation::prepareWrite();
 
   PhysPtr->setCellNumbers(cellOutOrder);
-  std::set<int> matActive=DB.getActive();
+  std::set<int> matActive=getActiveMaterial();
   matActive.erase(0);
   PhysPtr->setMatNumbers(matActive);
 

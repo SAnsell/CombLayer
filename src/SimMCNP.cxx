@@ -505,7 +505,6 @@ SimMCNP::writeMaterial(std::ostream& OX) const
     type.
     \param OX :: Output stream
   */
-
 {
   OX<<"c -------------------------------------------------------"<<std::endl;
   OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
@@ -515,18 +514,14 @@ SimMCNP::writeMaterial(std::ostream& OX) const
   if (!PhysPtr->getMode().hasElm("h"))
     DB.deactivateParticle("h");
 
-  std::set<int> writtenMat;      ///< set of written materials
-  for(const auto& [cellNum,objPtr]  : OList)
-    {
-      (void) cellNum;        // avoid warning -- fixed c++20
-      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
-      const int ID=mPtr->getID();
-      if (ID && writtenMat.find(ID)!=writtenMat.end())
-	{
-	  mPtr->write(OX);
-	  writtenMat.emplace(ID);
-	}
-    }
+
+    // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
+
+  for(const auto& [matID,matPtr] : orderedMat)
+    matPtr->write(OX);
+  
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
