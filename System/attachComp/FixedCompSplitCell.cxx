@@ -113,6 +113,7 @@ FixedComp::splitObject(Simulation& System,
   
   OutCell.push_back(cellN);
   OutCell.push_back(cellExtra);
+    
   return OutCell;  
 }
 

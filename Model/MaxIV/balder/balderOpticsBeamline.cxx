@@ -381,6 +381,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBox,2);
   mirrorBox->insertInCell(System,outerCell);
   mirrorBox->setCell("OuterVoid",outerCell);
+
   
   mirrorBox->splitObject(System,-11,outerCell);
   mirrorBox->splitObject(System,12,outerCell);
@@ -520,23 +521,22 @@ balderOpticsBeamline::buildObjects(Simulation& System)
 
   const constructSystem::portItem& CPI=viewPipe->getPort(3);
   CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
-		   
+
   // split the object into four
   const int cNumOffset(outerCell);
+  viewPipe->addCell("OuterVoid",outerCell);
   viewPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   viewPipe->splitObject(System,2001,outerCell,
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-
-  viewPipe->splitObject(System,2002,cNumOffset+1,
+  viewPipe->splitObject(System,2002,viewPipe->getCell("OuterVoid",1),
   			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-  cellIndex+=3;
 
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
-      viewMount[i]->addInsertCell("Flange",cNumOffset+1);
-      viewMount[i]->addInsertCell("Flange",cNumOffset+3);
+      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",1));
+      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",3));
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
       viewMount[i]->setBladeCentre(PI,0);
