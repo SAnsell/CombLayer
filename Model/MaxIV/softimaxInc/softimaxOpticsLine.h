@@ -38,6 +38,7 @@ namespace xraySystem
   class GratingUnit;
   class FlangeMount;
   class TwinPipe;
+  class SqrCollimator;
 
   /*!
     \class softimaxOpticsLine
@@ -136,8 +137,10 @@ class softimaxOpticsLine :
 
   // Left branch STXM
   std::shared_ptr<constructSystem::Bellows> bellowAA;
-  //  std::shared_ptr<xraySystem::SqrCollimator> collA;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeAA;
+  /// box for collimator
+  std::shared_ptr<constructSystem::PipeTube> collTubeAA;
+  std::shared_ptr<xraySystem::SqrCollimator> collAA;
 
   // Right branch CXI
   std::shared_ptr<constructSystem::Bellows> bellowBA;

@@ -109,6 +109,7 @@
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
+#include "SqrCollimator.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
 // #include "DiffPumpXIADP03.h"
@@ -175,6 +176,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
+  collTubeAA(new constructSystem::PipeTube(newName+"CollimatorTubeAA")),
+  collAA(new xraySystem::SqrCollimator(newName+"CollAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA"))
 
 
@@ -266,6 +269,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
   OR.addObject(joinPipeAA);
+  OR.addObject(collTubeAA);
+  OR.addObject(collAA);
   OR.addObject(bellowBA);
 
 
@@ -724,6 +729,18 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
     (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAA);
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,*bellowAA,"back",*joinPipeAA);
+
+  // xrayConstruct::constructUnit
+  //   (System,leftZone,masterCellA,*joinPipeAA,"back",*collTubeAA);
+
+  collTubeAA->setFront(*joinPipeAA,2);
+  collTubeAA->createAll(System,*joinPipeAA,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*collTubeAA,2);
+  collTubeAA->insertAllInCell(System,cellA);
+
+  collAA->addInsertCell(collTubeAA->getCell("Void"));
+  collAA->createAll(System,*collTubeAA,0);
+
 
 
   // RIGHT

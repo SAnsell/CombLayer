@@ -605,6 +605,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeShieldGenerator ShieldGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::CollGenerator CollGen;
 
 
   const double splitAngle(2.0);
@@ -654,6 +655,19 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,100.0);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,splitKey+"CollimatorTubeAA",0.0,36.0);
+  Control.addVariable(splitKey+"CollimatorTubeAANPorts",0);
+
+  CollGen.setFrontGap(2.62,1.86);       //1033.8
+  CollGen.setBackGap(1.54,1.42);
+  //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
+  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);
+  CollGen.generateColl(Control,splitKey+"CollAA",0.0,34.0);
+
+
 
 
   BellowGen.setCF<setVariable::CF40>();
