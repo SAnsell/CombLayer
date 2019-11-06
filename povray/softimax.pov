@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 8;
+#declare view = 9;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -96,6 +96,10 @@ global_settings {
   #case(8) // M3 CTXM Mirror
     #declare cameraLocation = <3070, 8450, 50>;
     #declare cameraLookAt   = <3070, 8400, 0>;
+  #break
+  #case(9) // Tungsten collimators towards back wall
+    #declare cameraLocation = <3170, 8400, 20>;
+    #declare cameraLookAt   = <3270, 8400, 0>;
   #break
   #case(101) // Front beam Undulator
     #declare cameraLocation = <-350, 8450, 10>;
