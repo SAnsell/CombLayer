@@ -194,6 +194,7 @@ wallVariables(FuncDataBase& Control,
   LGen.setWidth(70,140.0);
   LGen.generateWall(Control,wallKey,2.0);
 
+
   return;
 }
 
@@ -890,16 +891,16 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();   // no window
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+  BellowGen.setCF<setVariable::CFInch150>();
+  BellowGen.generateBellow(Control,preName+"InitBellow",0,11.0-1.4);
 
   // TODO:
   // use PortTubeGenerator instead
   // and set FlangeLength to 1.27 cm (instead of 0.5)
   Name=preName+"TriggerPipe";
   CrossGen.setPlates(0.3,2.0,2.0);  // wall/Top/base ???
-  CrossGen.setPorts(-9.7,-9.7);     // len of ports - measured in the STEP file
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+  CrossGen.setPorts(-9.7,-10.7);     // len of ports - measured in the STEP file
+  CrossGen.generateDoubleCF<setVariable::CFInch150,setVariable::CF100>
     (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
 
   CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
@@ -1229,9 +1230,6 @@ exptVariables(FuncDataBase& Control,
   setVariable::DiffPumpGenerator DiffGen;
   setVariable::PortItemGenerator PItemGen;
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
-
   // Gate valve A - round
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
@@ -1556,8 +1554,10 @@ SOFTIMAXvariables(FuncDataBase& Control)
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126.0);
+  PipeGen.setCF<setVariable::CF40>(); // CFInch150 was 2cm (why?)
+  PipeGen.setAFlange(2.7,0.5);
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126);
+
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   softimaxVar::opticsVariables(Control,"SoftiMAX");
