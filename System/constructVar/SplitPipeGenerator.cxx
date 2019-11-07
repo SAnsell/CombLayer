@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/SplitPipeGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,7 +67,7 @@ SplitPipeGenerator::SplitPipeGenerator() :
   */
 {}
 
-SplitPipeGenerator::~SplitPipeGenerator() 
+SplitPipeGenerator::~SplitPipeGenerator()
  /*!
    Destructor
  */
@@ -107,7 +107,7 @@ SplitPipeGenerator::setCF()
   pipeRadius=CF::innerRadius;
   pipeThick=CF::wallThick;
   setAFlangeCF<CF>();
-  setBFlangeCF<CF>();  
+  setBFlangeCF<CF>();
   return;
 }
 
@@ -139,7 +139,7 @@ SplitPipeGenerator::setFlange(const double R,const double L)
   flangeBLen=L;
   return;
 }
-  
+
 void
 SplitPipeGenerator::setFlangePair(const double AR,const double AL,
 			       const double BR,const double BL)
@@ -170,7 +170,7 @@ SplitPipeGenerator::setMat(const std::string& M)
   pipeMat=M;
   return;
 }
-  
+
 void
 SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 				const std::string& keyName,
@@ -178,9 +178,9 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 				const double length) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param length :: length of pipe
   */
 {
@@ -205,7 +205,7 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 
   Control.addVariable(keyName+"FeMat",pipeMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-      
+
   return;
 
 }
@@ -215,13 +215,14 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
   template void SplitPipeGenerator::setCF<CF40>();
   template void SplitPipeGenerator::setCF<CF63>();
   template void SplitPipeGenerator::setCF<CF100>();
+  template void SplitPipeGenerator::setCF<CFInch150>();
   template void SplitPipeGenerator::setAFlangeCF<CF40>();
   template void SplitPipeGenerator::setAFlangeCF<CF63>();
   template void SplitPipeGenerator::setAFlangeCF<CF100>();
   template void SplitPipeGenerator::setBFlangeCF<CF40>();
   template void SplitPipeGenerator::setBFlangeCF<CF63>();
   template void SplitPipeGenerator::setBFlangeCF<CF100>();
-  
+
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

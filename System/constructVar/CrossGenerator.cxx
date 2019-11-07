@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/CrossGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -79,7 +79,7 @@ CrossGenerator::CrossGenerator() :
   */
 {}
 
-CrossGenerator::CrossGenerator(const CrossGenerator& A) : 
+CrossGenerator::CrossGenerator(const CrossGenerator& A) :
   wallThick(A.wallThick),topThick(A.topThick),baseThick(A.baseThick),
   frontLen(A.frontLen),backLen(A.backLen),flangeRadius(A.flangeRadius),
   flangeLen(A.flangeLen),voidMat(A.voidMat),wallMat(A.wallMat)
@@ -112,7 +112,7 @@ CrossGenerator::operator=(const CrossGenerator& A)
   return *this;
 }
 
-CrossGenerator::~CrossGenerator() 
+CrossGenerator::~CrossGenerator()
  /*!
    Destructor
  */
@@ -181,12 +181,12 @@ void
 CrossGenerator::generateCF
     (FuncDataBase& Control,const std::string& keyName,
      const double yStep,const double VRad,
-     const double height,const double depth) 
+     const double height,const double depth)
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param VRad :: vertical radius
     \param height :: height of box
     \param depth :: depth of box
@@ -207,12 +207,12 @@ template<typename HCF,typename VCF>
 void
 CrossGenerator::generateDoubleCF
     (FuncDataBase& Control,const std::string& keyName,
-     const double yStep, const double height,const double depth) 
+     const double yStep, const double height,const double depth)
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param height :: height of box
     \param depth :: depth of box
     \param width :: width of box (full)
@@ -226,7 +226,7 @@ CrossGenerator::generateDoubleCF
 		VCF::innerRadius,height,depth);
   return;
 }
-  
+
 void
 CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 			      const double yStep,const double HRad,
@@ -234,9 +234,9 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 			      const double depth) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param HRad :: horrizontal radius
     \param VRad :: vertical radius
     \param height :: height of box
@@ -245,12 +245,12 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("CrossGenerator","generatorCross");
-  
+
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"HorrRadius",HRad);
   Control.addVariable(keyName+"VertRadius",VRad);
-  
+
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
   const double FL=(frontLen<0.0) ? VRad-frontLen : frontLen;
@@ -268,7 +268,7 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"FeMat",wallMat);
-       
+
   return;
 
 }
@@ -284,18 +284,20 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   template void CrossGenerator::generateCF<CF100>
   (FuncDataBase&,const std::string&,const double,const double,
    const double,const double);
-  
+
   template void CrossGenerator::generateDoubleCF<CF40,CF40>
   (FuncDataBase&,const std::string&,const double,const double,const double);
   template void CrossGenerator::generateDoubleCF<CF40,CF63>
   (FuncDataBase&,const std::string&,const double,const double,const double);
   template void CrossGenerator::generateDoubleCF<CF40,CF100>
   (FuncDataBase&,const std::string&,const double,const double,const double);
-  
+  template void CrossGenerator::generateDoubleCF<CFInch150,CF100>
+  (FuncDataBase&,const std::string&,const double,const double,const double);
+
   template void CrossGenerator::generateDoubleCF<CF63,CF100>
   (FuncDataBase&,const std::string&,const double,const double,const double);
 
-  
+
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

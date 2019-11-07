@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/BellowGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@ BellowGenerator::BellowGenerator() :
   */
 {}
 
-BellowGenerator::~BellowGenerator() 
+BellowGenerator::~BellowGenerator()
  /*!
    Destructor
  */
@@ -81,7 +81,7 @@ BellowGenerator::setCF()
 {
   ELog::RegMethod RegA("BellowGenerator","setCF");
   SplitPipeGenerator::setCF<CF>();
-  
+
   bellowStep=CF::bellowStep;
   bellowThick=CF::bellowThick;
 
@@ -137,7 +137,7 @@ BellowGenerator::setMat(const std::string& PMat,
   bellowMat=CMat;
   return;
 }
-  
+
 void
 BellowGenerator::generateBellow(FuncDataBase& Control,
 				const std::string& keyName,
@@ -145,9 +145,9 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 				const double length) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param length :: length of pipe
   */
 {
@@ -158,7 +158,7 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
   Control.addVariable(keyName+"BellowThick",bellowThick);
   Control.addVariable(keyName+"BellowStep",bellowStep);
   Control.addVariable(keyName+"BellowMat",bellowMat);
-      
+
   return;
 
 }
@@ -168,9 +168,10 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
   template void BellowGenerator::setCF<CF40>();
   template void BellowGenerator::setCF<CF63>();
   template void BellowGenerator::setCF<CF100>();
-  
+  template void BellowGenerator::setCF<CFInch150>();
+
 ///\endcond TEMPLATE
 
 
-  
+
 }  // NAMESPACE setVariable

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVarInc/CFFlanges.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_CFFlanges_h
@@ -55,7 +55,7 @@ struct CF40
   \date January 2018
   \brief CFFlanges for CF50
 */
- 
+
 struct CF50
 {
   static constexpr double innerRadius=2.55;
@@ -122,7 +122,7 @@ struct CF120
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
   static constexpr size_t nBolts=18;
-  
+
 };
 
 /*!
@@ -142,6 +142,26 @@ struct CF150
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
   static constexpr size_t nBolts=20;
+};
+
+/*!
+  \struct CFInch150
+  \version 1.0
+  \date November 2019
+  \brief CFFlanges for CF150
+  275-150N
+  page 35 in https://www.n-c.com/App_Themes/Nor-cal/pdf/catalogs/flangefittings.pdf
+*/
+
+struct CFInch150
+{
+  static constexpr double innerRadius=1.9175-0.2; // B=38.35 mm
+  static constexpr double wallThick=0.2; // ? measured in CAD
+  static constexpr double flangeRadius=3.467; // 69.34/2
+  static constexpr double flangeLength=1.27;
+  static constexpr double bellowStep=1.0;
+  static constexpr double bellowThick=1.5;
+  static constexpr size_t nBolts=6;
 };
 
 /*!
@@ -186,4 +206,3 @@ struct CF350
 }
 
 #endif
- 
