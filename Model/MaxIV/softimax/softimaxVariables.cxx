@@ -192,7 +192,7 @@ wallVariables(FuncDataBase& Control,
 
   WallLeadGenerator LGen;
   LGen.setWidth(70,140.0);
-  LGen.generateWall(Control,wallKey,2.0);
+  LGen.generateWall(Control,wallKey,2.1);
 
 
   return;
@@ -1552,16 +1552,15 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,724.0,40.0);
+    (Control,"SoftiMAXFrontBeam",141.0,724.0,37);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CFInch150 was 2cm (why?)
-  PipeGen.setAFlange(2.7,0.5);
+  PipeGen.setBFlange(3.5,0.5);
   PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126);
-
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   softimaxVar::opticsVariables(Control,"SoftiMAX");
