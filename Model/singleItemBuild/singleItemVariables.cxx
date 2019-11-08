@@ -168,7 +168,7 @@ SingleItemVariables(FuncDataBase& Control)
 
 
   setVariable::EPSeparatorGenerator EPSGen;
-  EPSGen.generatePipe(Control,"EPSeparator",0.0);
+  EPSGen.generatePipe(Control,"EPSeparator");
 
   setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"DipoleChamber",0.0);

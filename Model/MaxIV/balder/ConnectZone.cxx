@@ -241,7 +241,7 @@ ConnectZone::buildObjects(Simulation& System,
   bellowA->createAll(System,FC,sideIndex);
 
 
-
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;  
   // SKIP :: pipe B is placed and the ion pump bridges
   pipeB->createAll(System,*pipeA,2);
 
@@ -252,13 +252,14 @@ ConnectZone::buildObjects(Simulation& System,
   pumpBoxA->setCutSurf("portCutB",*pipeB,"pipeWall");
   pumpBoxA->setCutSurf("leadRadiusA",*pipeA,"outerPipe");
   pumpBoxA->setCutSurf("leadRadiusB",*pipeB,"outerPipe");
-  pumpBoxA->createAll(System,*pipeA,2);    
+  pumpBoxA->createAll(System,*pipeA,2);
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;  
   pumpBoxA->splitObjectAbsolute
     (System,1001,
      pumpBoxA->getCell("Void"),
      {{pipeA->getLinkPt(2),pipeB->getLinkPt(1)}},
      {{pipeA->getLinkAxis(2),pipeB->getLinkAxis(-1)}});
-
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;  
 
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,-1);
@@ -281,7 +282,7 @@ ConnectZone::buildObjects(Simulation& System,
 
   // SKIP PIPE
   pipeC->createAll(System,*pipeB,2);
-
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;
   // Now build lead box
   boxB->addInsertCell("FrontWall",pipeB->getCell("BackSpaceVoid"));
   boxB->addInsertCell("BackWall",pipeC->getCell("FrontSpaceVoid"));
@@ -289,7 +290,7 @@ ConnectZone::buildObjects(Simulation& System,
   boxB->setCutSurf("portCutB",*pipeC,"pipeWall");
   boxB->setCutSurf("leadRadiusA",*pipeB,"outerPipe");
   boxB->setCutSurf("leadRadiusB",*pipeC,"outerPipe");
-  
+
   boxB->createAll(System,*pipeB,2);
   boxB->splitObjectAbsolute(System,1001,
 		    boxB->getCell("Void"),

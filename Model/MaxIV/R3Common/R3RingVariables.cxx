@@ -421,7 +421,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
-  ESGen.generatePipe(Control,frontKey+"EPSeparator",0.0);
+  ESGen.generatePipe(Control,frontKey+"EPSeparator");
   
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 

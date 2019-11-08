@@ -68,8 +68,7 @@ class EPSeparatorGenerator
   virtual ~EPSeparatorGenerator();
   
   
-  virtual void generatePipe(FuncDataBase&,const std::string&,
-			    const double) const;
+  virtual void generatePipe(FuncDataBase&,const std::string&) const;
 
 };
 
