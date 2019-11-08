@@ -69,6 +69,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "BaseMap.h"
@@ -85,7 +86,7 @@ namespace constructSystem
 {
 
 GateValveCylinder::GateValveCylinder(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   closed(0)
@@ -96,7 +97,7 @@ GateValveCylinder::GateValveCylinder(const std::string& Key) :
 {}
 
 GateValveCylinder::GateValveCylinder(const GateValveCylinder& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),radius(A.radius),wallThick(A.wallThick),
@@ -122,7 +123,7 @@ GateValveCylinder::operator=(const GateValveCylinder& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -163,7 +164,7 @@ GateValveCylinder::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GateValveCylinder","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");

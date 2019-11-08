@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class GateValveCube :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

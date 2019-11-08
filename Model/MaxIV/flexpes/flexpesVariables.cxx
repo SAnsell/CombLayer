@@ -772,7 +772,7 @@ heatDumpTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowC",0,10.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,113.0);
 
   heatDumpVariables(Control,frontKey);
 
