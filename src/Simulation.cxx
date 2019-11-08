@@ -1528,11 +1528,23 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   AX.setFunctionObjStr(CHead.display());
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    CPtr->procString(AX.writeMCNPX());
+    {
+      if (AX.isEmpty())
+	throw ColErr::EmptyContainer
+	  ("Cell Pair has empty cell:"+
+	   std::to_string(CA)+"/"+std::to_string(CB));
+      CPtr->procString(AX.writeMCNPX());
+    }
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    DPtr->procString(AX.writeMCNPX());
+    {
+      if (AX.isEmpty())
+	throw ColErr::EmptyContainer
+	  ("Cell Pair has empty cell:"+
+	   std::to_string(CA)+"/"+std::to_string(CB));
+      DPtr->procString(AX.writeMCNPX());
+    }
   
   return CB;
 }

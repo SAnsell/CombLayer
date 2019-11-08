@@ -178,7 +178,6 @@ FixedComp::splitObject(Simulation& System,
 {
   ELog::RegMethod RegA("FixedComp","splitObject(vec)");
 
-
   int SN(SNoffset);
   int CN(cellN);
   std::vector<int> OutCell({cellN});
