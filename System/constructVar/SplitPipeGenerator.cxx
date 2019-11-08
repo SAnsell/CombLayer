@@ -219,9 +219,11 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
   template void SplitPipeGenerator::setAFlangeCF<CF40>();
   template void SplitPipeGenerator::setAFlangeCF<CF63>();
   template void SplitPipeGenerator::setAFlangeCF<CF100>();
+  template void SplitPipeGenerator::setAFlangeCF<CFInch150>();
   template void SplitPipeGenerator::setBFlangeCF<CF40>();
   template void SplitPipeGenerator::setBFlangeCF<CF63>();
   template void SplitPipeGenerator::setBFlangeCF<CF100>();
+  template void SplitPipeGenerator::setBFlangeCF<CFInch150>();
 
 ///\endcond TEMPLATE
 

@@ -911,9 +911,9 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"GaugeABackLength",3.7);
 
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
+  BellowGen.setCF<setVariable::CFInch150>();
+  //  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowA",0,26.4);
 
   // will be rotated vertical
   const std::string pumpName=preName+"PumpM1";
@@ -922,7 +922,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,pumpName,0.0,39.2); // full length (+caps)
   Control.addVariable(pumpName+"NPorts",7);
 
-  PItemGen.setCF<setVariable::CF40>(5.3); // port length
+  PItemGen.setCF<setVariable::CFInch150>(5.3); // port length
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
