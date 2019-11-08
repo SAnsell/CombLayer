@@ -890,7 +890,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  VP0.insertInCell(System,this->getCell("OuterVoid"));
 
   pumpM1->insertPortInCell
-    (System,{{outerCell+4},{outerCell},{outerCell+3},{outerCell},
+    (System,{{outerCell+4,outerCell},{outerCell},{outerCell+3},{outerCell},
 	     {outerCell+2},{outerCell+1},
 	     {outerCell+4}});
 
