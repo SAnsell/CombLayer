@@ -271,7 +271,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     {
       // special class because must give regions
       itemIndex+=2;
-      ELog::EM<<"HERER "<<ELog::endDiag;
+
       const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
       const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
 
