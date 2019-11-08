@@ -28,7 +28,7 @@ namespace setVariable
 
 /*!
   \struct CF40
-  \version 1.0
+  \version 2.0
   \author S. Ansell
   \date January 2018
   \brief CFFlanges for CF40
@@ -36,14 +36,14 @@ namespace setVariable
 
 struct CF40
 {
-  static constexpr double innerRadius=1.25;
-  static constexpr double wallThick=0.2;
-  static constexpr double flangeRadius=2.7;
-  static constexpr double flangeLength=0.5;
+  static constexpr double innerRadius=1.9;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
   static constexpr double gasketRadius=1.0;
-  static constexpr double gasketThick=1.0;
+  static constexpr double gasketThick=1.3;
   static constexpr double boltRadius=1.0;
   static constexpr size_t nBolts=6;
 };
@@ -80,7 +80,7 @@ struct CF63
   static constexpr double innerRadius=3.2;
   static constexpr double wallThick=0.4;
   static constexpr double flangeRadius=5.7;
-  static constexpr double flangeLength=0.8;
+  static constexpr double flangeLength=1.7;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
   static constexpr size_t nBolts=8;
@@ -99,7 +99,7 @@ struct CF100
   static constexpr double innerRadius=5.1;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=7.7;
-  static constexpr double flangeLength=1.0;
+  static constexpr double flangeLength=2.0;
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
   static constexpr size_t nBolts=16;
@@ -118,7 +118,7 @@ struct CF120
   static constexpr double innerRadius=6.1;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=8.925;
-  static constexpr double flangeLength=1.25;
+  static constexpr double flangeLength=2.25;
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
   static constexpr size_t nBolts=18;
@@ -138,7 +138,7 @@ struct CF150
   static constexpr double innerRadius=7.55;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=10.15;
-  static constexpr double flangeLength=1.5;
+  static constexpr double flangeLength=2.5;
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
   static constexpr size_t nBolts=20;
@@ -157,7 +157,7 @@ struct CF200
   static constexpr double innerRadius=10.0;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=12.65;
-  static constexpr double flangeLength=2.45;
+  static constexpr double flangeLength=3.45;
   static constexpr double bellowStep=2.5;
   static constexpr double bellowThick=2.5;
   static constexpr size_t nBolts=24;
@@ -177,7 +177,7 @@ struct CF350
   static constexpr double innerRadius=33.0;
   static constexpr double wallThick=0.6;
   static constexpr double flangeRadius=41.15;  //
-  static constexpr double flangeLength=2.5;
+  static constexpr double flangeLength=3.5;
   static constexpr double bellowStep=2.5;
   static constexpr double bellowThick=3.5;
   static constexpr size_t nBolts=30;
