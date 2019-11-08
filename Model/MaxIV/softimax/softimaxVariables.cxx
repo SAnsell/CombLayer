@@ -903,9 +903,13 @@ opticsVariables(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CFInch150,setVariable::CF100>
     (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
 
-  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+  CrossGen.setPorts(1,1);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CFInch150,setVariable::CF63>
     (Control,preName+"GaugeA",0.0,10.6,8.0);  // ystep/height/depth
+  Control.addVariable(preName+"GaugeAFlangeLength",0.1);
+  Control.addVariable(preName+"GaugeAFrontLength",3.7);
+  Control.addVariable(preName+"GaugeABackLength",3.7);
+
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
