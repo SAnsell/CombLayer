@@ -891,7 +891,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();   // no window
 
-  BellowGen.setCF<setVariable::CFInch150>();
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,11.0-1.4);
 
   // TODO:
@@ -900,18 +900,18 @@ opticsVariables(FuncDataBase& Control,
   Name=preName+"TriggerPipe";
   CrossGen.setPlates(0.3,2.0,2.0);  // wall/Top/base ???
   CrossGen.setPorts(-9.7,-10.7);     // len of ports - measured in the STEP file
-  CrossGen.generateDoubleCF<setVariable::CFInch150,setVariable::CF100>
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
 
   CrossGen.setPorts(1,1);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CFInch150,setVariable::CF63>
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
     (Control,preName+"GaugeA",0.0,10.6,8.0);  // ystep/height/depth
   Control.addVariable(preName+"GaugeAFlangeLength",0.1);
   Control.addVariable(preName+"GaugeAFrontLength",3.7);
   Control.addVariable(preName+"GaugeABackLength",3.7);
 
 
-  BellowGen.setCF<setVariable::CFInch150>();
+  BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,26.4);
 
@@ -922,7 +922,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,pumpName,0.0,39.2); // full length (+caps)
   Control.addVariable(pumpName+"NPorts",7);
 
-  PItemGen.setCF<setVariable::CFInch150>(5.3); // port length
+  PItemGen.setCF<setVariable::CF40>(5.3); // port length
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
@@ -1558,7 +1558,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); // CFInch150 was 2cm (why?)
+  PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.5);
   PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126);
 
