@@ -145,7 +145,7 @@ wallVariables(FuncDataBase& Control,
 
   WallLeadGenerator LGen;
   LGen.setWidth(70,140.0);
-  LGen.generateWall(Control,wallKey,2.0);
+  LGen.generateWall(Control,wallKey,3.0);
 
   return;
 }
@@ -215,6 +215,8 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);    
 
     // joined and open
+
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateJ",0.0,0);
   return;
@@ -581,9 +583,9 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
+  BellowGen.generateBellow(Control,preName+"BellowA",0,13.6);
 
-  GateGen.setLength(2.5);
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
   
@@ -623,7 +625,7 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
   FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
-  GateGen.setLength(2.5);
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
@@ -671,12 +673,14 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
-  
+
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   cosaxsVar::monoVariables(Control);
 
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
@@ -689,11 +693,13 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
   cosaxsVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
 
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
@@ -704,7 +710,8 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
-
+  
+  GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
@@ -1075,7 +1082,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"CosaxsFrontBeam",310.0,724.0,40.0);
+    (Control,"CosaxsFrontBeam",310.0,724.0,37.0);
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
     
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");

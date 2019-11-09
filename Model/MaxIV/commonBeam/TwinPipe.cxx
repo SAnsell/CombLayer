@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/TwinPipe.cxx
+ * File:   commonBeam/TwinPipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -265,10 +265,11 @@ TwinPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 207 -217 ");
   makeCell("PipeBWall",System,cellIndex++,feMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -201 217 -227 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -201 217 -227 127 ");
   makeCell("PipeBFlange",System,cellIndex++,feMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -211 217 -227 ");
+  // insert pipe A void:
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -211 217 -227 127 ");
   makeCell("PipeBOutVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // outer boundary [flange front]

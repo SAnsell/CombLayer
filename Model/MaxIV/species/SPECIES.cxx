@@ -153,14 +153,11 @@ SPECIES::build(Simulation& System,
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-
-
   
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
-
 
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
@@ -175,6 +172,8 @@ SPECIES::build(Simulation& System,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
+
+
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
   
   std::vector<int> cells(opticsHut->getCells("Back"));

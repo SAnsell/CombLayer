@@ -541,6 +541,7 @@ speciesOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeE,2);
   pipeE->insertInCell(System,outerCell);
 
+
   bellowE->createAll(System,*pipeE,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
   bellowE->insertInCell(System,outerCell);
@@ -553,10 +554,12 @@ speciesOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorJaws,2);
   mirrorJaws->insertInCell(System,outerCell);
 
+
   // FAKE insertcell: reqruired
   M3Tube->addAllInsertCell(masterCell->getName());
   M3Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   M3Tube->createAll(System,*mirrorJaws,2);
+
 
   const constructSystem::portItem& API=M3Tube->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
@@ -585,7 +588,6 @@ speciesOpticsBeamline::buildSplitter(Simulation& System,
 
   int cellA(0),cellB(0);
   
-  
   buildZone.constructMiddleSurface(SMap,buildIndex+10,initFC,sideIndex);
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
@@ -595,15 +597,14 @@ speciesOpticsBeamline::buildSplitter(Simulation& System,
   System.removeCell(masterCell->getName());
 
 
-  MonteCarlo::Object* masterCellA=
-    leftZone.constructMasterCell(System);
-  MonteCarlo::Object* masterCellB=
-    rightZone.constructMasterCell(System);
+  MonteCarlo::Object* masterCellA=leftZone.constructMasterCell(System);
+  MonteCarlo::Object* masterCellB=rightZone.constructMasterCell(System);
   
   splitter->createAll(System,initFC,sideIndex);
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
-
+  ELog::EM<<"Cell A == "<<cellA<<ELog::endDiag;
+  ELog::EM<<"Cell B == "<<cellB<<ELog::endDiag;
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("PipeA",System,cellA);
 
@@ -741,9 +742,9 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
   addLeadBrick(System);
-  
-  buildMono(System,masterCellA,*pipeD,2);
 
+
+  buildMono(System,masterCellA,*pipeD,2);
   buildM3Mirror(System,masterCellA,*offPipeB,2);
 
   MonteCarlo::Object* masterCellB(0);

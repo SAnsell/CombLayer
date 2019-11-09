@@ -224,7 +224,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
-  ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenB",-10.0,0.0);
   
   return;
 }
@@ -768,7 +768,7 @@ heatDumpTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowC",0,10.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,113.0);
 
   heatDumpVariables(Control,frontKey);
 
