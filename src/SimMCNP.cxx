@@ -361,17 +361,11 @@ SimMCNP::renumberCells(const std::vector<int>& cOffset,
 
   // CARE HERE: RMap is the old number. The objects themselve
   //  have already been updated
-  for(const std::map<int,int>::value_type& RMItem : RMap)
+  for(const auto& [cNum,nNum] : RMap)
     {
-      const int cNum=RMItem.first;
-      const int nNum=RMItem.second;
-      MonteCarlo::Object* oPtr=Simulation::findObject(nNum);   // NOTE new number
-      if (!oPtr->isPlaceHold())
-	{
-	  PhysPtr->substituteCell(cNum,nNum);
-	  for(TallyTYPE::value_type& TI : TItem)
-	    TI.second->renumberCell(cNum,nNum);
-	}
+      PhysPtr->substituteCell(cNum,nNum);
+      for(TallyTYPE::value_type& TI : TItem)
+	TI.second->renumberCell(cNum,nNum);
     }
   return RMap;
 }
@@ -511,25 +505,23 @@ SimMCNP::writeMaterial(std::ostream& OX) const
     type.
     \param OX :: Output stream
   */
-
 {
   OX<<"c -------------------------------------------------------"<<std::endl;
   OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
 
   if (!PhysPtr->getMode().hasElm("h"))
     DB.deactivateParticle("h");
-  
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    {
-      DB.setActive(mp->second->getMat());
-    }
 
-  DB.writeMCNPX(OX);
+
+    // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
+
+  for(const auto& [matID,matPtr] : orderedMat)
+    matPtr->write(OX);
+  
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
@@ -632,10 +624,10 @@ SimMCNP::writePhysics(std::ostream& OX) const
     }
 
   std::set<int> voidCells;
-  for(const OTYPE::value_type& OVal : OList)
+  for(const auto& [cellNum,objPtr]  : OList)
     {
-      if (!OVal.second->getMat())
-	voidCells.insert(OVal.first);
+      if (objPtr->isVoid())
+	voidCells.emplace(cellNum);
     }
 
   // Remaining Physics cards
@@ -669,14 +661,18 @@ SimMCNP::writeCinderMat() const
   std::ofstream OX("material");  
   // Get used material list
 
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
-
-  DB.writeCinder(OX);
+  std::set<int> writtenMat;      ///< set of written materials
+  for(const auto& [cellNum,objPtr]  : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID && writtenMat.find(ID)!=writtenMat.end())
+	{
+	  mPtr->writeCinder(OX);
+	  writtenMat.emplace(ID);
+	}
+    }
   OX.close();
   return;
 }

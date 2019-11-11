@@ -42,7 +42,7 @@ class ENDFmaterial
  private:
 
   int mat;            ///< Mat number
-  size_t tmpIndex;       ///< Temperature index
+  size_t tmpIndex;    ///< Temperature index
   double tempActual;  ///< Real temperature
   
   int ZA;             ///< Zaid number 

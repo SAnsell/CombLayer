@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   scatMatInc/neutMaterial.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
 
 namespace MonteCarlo
 {
+  class Material;
+  class MXcards;
+  class Zaid;
   class neutron;
 }
 
@@ -41,15 +44,11 @@ namespace scatterSystem
     \todo This class needs to have a base class.
   */
   
-class neutMaterial
+class neutMaterial : public MonteCarlo::Material
 {
  protected:
   
-  std::string Name;      ///< Name 
-  int mcnpxNum;          ///< MCNPXnumber
-
   double Amass;          ///< Mean Atomic Mass
-  double density;        ///< number density [atom/A^3]
   double realTemp;       ///< Temperature [K]
   double bcoh;           ///< b [fm]
   double scoh;           ///< scattering cross section 
@@ -69,28 +68,12 @@ class neutMaterial
   neutMaterial& operator=(const neutMaterial&);
   virtual ~neutMaterial();
   
-  /// Effective typeid
-  virtual std::string className() const { return "neutMaterial"; }
-  /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
-    { A.Accept(*this); }
-  /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
-    {  A.Accept(*this); }
-
-  /// Name accessor
-  const std::string& getName() const { return Name; }  
-  /// Number accessor
-  int getNumber() const { return mcnpxNum; }  
-
-  void setName(const std::string& N) { Name=N; }  ///< Set Name
-  void setNumber(const int N) { mcnpxNum=N; }  ///< Set Number
-  void setDensity(const double);
   virtual void setMass(const double M) { Amass=M; }  ///< Set Mass
-  void setTmp(const double T) { realTemp=T; }  ///< Set Temperature [Kelvin]
+
+  /// Set Temperature [Kelvin]
+  void setTmp(const double T) { realTemp=T; }         
   void setScat(const double,const double,const double);
 
-  double getAtomDensity() const { return density; }   ///< Density accessor
   double getScat() const { return scoh+sinc; }  ///< Scattering cross-section
   double getBCoh() const { return bcoh; }       ///< Coherrent scattering length
   double getCoh() const { return scoh; }        ///< Coherrent x-sec
@@ -98,15 +81,17 @@ class neutMaterial
   double getAbs() const { return sabs; }        ///< Absorption x-section
 
   // get Scattering prob
-  virtual double ScatTotalRatio(const double) const;
-  virtual double ScatCross(const double) const;
+  virtual double scatXSection(const MonteCarlo::particle&) const;
+  virtual double totalXSection(const MonteCarlo::particle&) const;
+
+  virtual double scatTotalRatio(const MonteCarlo::particle&) const;
   virtual double ElasticTotalRatio(const double) const;
-  virtual double TotalCross(const double) const;
+
 
   virtual double calcRefIndex(const double) const;
-  virtual double calcAtten(const double,const double) const;
+  virtual double calcAtten(const MonteCarlo::particle&,const double) const;
   
-  virtual void scatterNeutron(MonteCarlo::neutron&) const;
+  virtual void scatterNeutron(MonteCarlo::particle&) const;
   
   virtual double dSdOdE(const MonteCarlo::neutron&,
 			const MonteCarlo::neutron&) const;

@@ -3,7 +3,7 @@
  
  * File:   monteInc/Track.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ struct TUnits
   Geometry::Vec3D InitPt;        ///< initial point 
   Geometry::Vec3D ExitPt;        ///< Final point
   double length;                 ///< track unit length
-  const Object* OCPtr;      ///< Object Found
+  const Object* OCPtr;           ///< Object Found
   
   TUnits(const Geometry::Vec3D&,const Geometry::Vec3D&,const Object*);
   TUnits(const TUnits&);
@@ -65,7 +65,7 @@ class Track
  private:
 
   Geometry::Vec3D iPt;              ///< Start Point
-  const Object* iObj;         ///< Initial object
+  const Object* iObj;               ///< Initial object
 
   std::vector<TUnits> Items;        ///< Items found
 
@@ -82,6 +82,7 @@ class Track
   void setFirst(const Geometry::Vec3D&);
   /// access Track units
   std::vector<TUnits>& getTLine() { return Items; }
+  const std::vector<TUnits>& getTLine() const { return Items; }
 
 };
 

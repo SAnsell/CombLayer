@@ -3,7 +3,7 @@
  
  * File:   attachComp/SpaceCut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -576,7 +576,7 @@ SpaceCut::buildWrapCell(Simulation& System,
       if (!outerObj)
 	throw ColErr::InContainerError<int>
 	  (pCell,"Primary cell does not exist");
-      matN=outerObj->getMat();
+      matN=outerObj->getMatID();
       matTemp=outerObj->getTemp();
     }
 

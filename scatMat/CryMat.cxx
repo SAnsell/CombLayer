@@ -3,7 +3,7 @@
  
  * File:   scatMat/CryMat.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,9 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
 #include "neutMaterial.h"
 #include "SymUnit.h"
 #include "AtomPos.h"
@@ -300,7 +303,7 @@ CryMat::TotalCross(const double Wave) const
 {
   // Energy [eV]
   const double E=(0.5*RefCon::h2_mneV*1e20)/(Wave*Wave);  
-  return density*(Wave*sabs/1.798+sigmaSph(E)+
+  return atomDensity*(Wave*sabs/1.798+sigmaSph(E)+
 		  sigmaMph(E));
 }
 
@@ -313,7 +316,7 @@ CryMat::ScatCross(const double Wave) const
   */
 {
   const double E=(0.5*RefCon::h2_mneV*1e20)/(Wave*Wave);  
-  return density*(sigmaSph(E)+sigmaMph(E));
+  return atomDensity*(sigmaSph(E)+sigmaMph(E));
 }
 
 double
@@ -325,7 +328,7 @@ CryMat::calcAtten(const double Wave,const double Length) const
     \return Attenuation (including density)
   */
 {
-  return exp(-Length*density*TotalCross(Wave));
+  return exp(-Length*atomDensity*TotalCross(Wave));
 }
 
 double
@@ -337,7 +340,7 @@ CryMat::ScatTotalRatio(const double Wave) const
     \return sigma_scatter/sigma_total
   */
 {
-  if (density>0)
+  if (atomDensity>0.0)
     {
       const double SC=ScatCross(Wave);
       const double AB=Wave*sabs/1.798;

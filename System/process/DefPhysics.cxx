@@ -502,7 +502,8 @@ setGenericPhysics(SimMCNP& System,
 
   PC.setMode("n");
   setPhysicsModel(lea,PModel);
-  const std::vector<std::pair<int,int>> cellImp=System.getCellImp();
+  const std::vector<std::pair<int,int>> cellImp=
+    System.getCellImp();
   PC.setCellNumbers(cellImp);
   PC.setCells("imp",1,0);            // Set a zero cell 
 

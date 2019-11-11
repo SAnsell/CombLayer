@@ -3,7 +3,7 @@
  
  * File:   src/SimMonte.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,12 +67,18 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "ObjSurfMap.h"
+
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"
-#include "ObjComponent.h"
+
 #include "Beam.h"
 #include "particle.h"
 #include "neutron.h"
+#include "photon.h"
+#include "ParticleInObj.h"
 #include "Detector.h"
 #include "DetGroup.h"
 #include "groupRange.h"
@@ -172,34 +178,28 @@ SimMonte::setDetector(const Transport::Detector& DObj)
 
 void
 SimMonte::attenPath(const MonteCarlo::Object* startObj,
-		    const double Dist,
-		    MonteCarlo::particle& N) const
+		    const double Dist,MonteCarlo::neutron& N) const
   /*!
     Calculate and update the particle path staring
     from N through a distance 
     \param startObj :: Initial object [for recording track]
     \param Dist :: Distance to travel
-    \param N :: Particle
+    \param N :: Particle to track
    */
 {
   ELog::RegMethod RegA("SimMonte","attenPath");
-  const scatterSystem::DBNeutMaterial& NDB=
-		      scatterSystem::DBNeutMaterial::Instance();
 
   ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
   LT.calculate(*this);
 
   const std::vector<double>& tLen=LT.getSegmentLen();
-  const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
-
-  for(size_t i=0;i<oVec.size();i++)
+  const std::vector<MonteCarlo::Object*>& objVec=LT.getObjVec();
+  
+  for(size_t i=0;i<objVec.size();i++)
     {
-      const scatterSystem::neutMaterial* nMatPtr=
-	NDB.getMat(oVec[i]->getMat());
-      if (nMatPtr)
-	N.weight*=nMatPtr->calcAtten(N.wavelength,tLen[i]);
-      else if (oVec[i]->getMat())
-	ELog::EM<<"Failed for mat "<<oVec[i]->getMat()<<ELog::endDiag;
+      const MonteCarlo::Object* OPtr=objVec[i];
+      const MonteCarlo::Material* matPtr=OPtr->getMatPtr();
+      N.weight*=matPtr->calcAtten(N,tLen[i]);
     }
   N.setObject(startObj);
   N.moveForward(Dist);
@@ -208,7 +208,7 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
 
  
 void
-SimMonte::runMonte(const size_t Npts)
+SimMonte::runMonteNeutron(const size_t Npts)
   /*!
     Run a specific number 
     \param Npts :: number of points
@@ -217,13 +217,10 @@ SimMonte::runMonte(const size_t Npts)
   static MonteCarlo::Object* defObj(0);
 
   ELog::RegMethod RegA("SimMonte","runMonte");
-
-
-  const scatterSystem::DBNeutMaterial& NDB=
-		      scatterSystem::DBNeutMaterial::Instance();
-    
+  
   //  const int aim((Npts>10) ? Npts/10 : 1);
   const Geometry::Surface* surfPtr;
+
   MonteCarlo::neutron Nout(0.0,Geometry::Vec3D(0,0,0),
 			       Geometry::Vec3D(1,0,0));
   const ModelSupport::ObjSurfMap* OSMPtr =getOSM();
@@ -241,17 +238,14 @@ SimMonte::runMonte(const size_t Npts)
 	{
 	  // No material info at this point:
 	  MonteCarlo::neutron n=B->generateNeutron();
-	  //      if (!DUnit.calcCell(n,testA,testB))
-	  //	ELog::EM<<"Failed on hit with "<<n<<ELog::endErr;
-	  
-	  // Note teh double loop : 
+	  // Note the double loop : 
 	  //    -- A to track to scatter point [outer]
 	  //    -- B to track to track length point [inner]
 
 	  const MonteCarlo::Object* OPtr=this->findCell(n.Pos,defObj);
 	  while (OPtr && OPtr->getImp())
 	    {
-	      Transport::ObjComponent Cell(OPtr);
+	      Transport::ParticleInObj<MonteCarlo::neutron> Cell(OPtr);
 	      double R=RNG.randExc();
 	      // Calculate forward Track:
 	      int surfN;
@@ -261,11 +255,6 @@ SimMonte::runMonte(const size_t Npts)
 					    OPtr->getName());
 	      else         // Internal scatter : Get new R
 		{
-		  const scatterSystem::neutMaterial* nMat=
-		    NDB.getMat(OPtr->getMat());
-		  if (!nMat)
-		    throw ColErr::InContainerError<int>
-		      (OPtr->getMat(),"Material not found");
 		  //Cell.selectEnergy(n,Nout);		  
 		  // Internal scatter : process fraction to detector
 		  if (!MSActive || (MSActive<0 && n.nCollision==0)
@@ -279,14 +268,14 @@ SimMonte::runMonte(const size_t Npts)
 			  const double RDist=
 			    DPtr->project(n,Nout);   
 			  // Object
-			  Nout.weight*=Cell.ScatTotalRatio(n,Nout);
+			  Nout.weight*=Cell.scatTotalRatio(n,Nout);
 			  // ATTENUATE:
 			  attenPath(OPtr,RDist,Nout);
 			  DPtr->addEvent(Nout);
 			}
 		    }
-		  n.weight*=Cell.ScatTotalRatio(n,Nout);
-		  nMat->scatterNeutron(n);
+		  n.weight*=Cell.scatTotalRatio(n,Nout);
+		  //		  nMat->scatterNeutron(n);
 		}
 	    }
 	}

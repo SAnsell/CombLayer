@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   scatMat/GlassMaterial.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
 #include "neutMaterial.h"
 #include "GlassMaterial.h"
 

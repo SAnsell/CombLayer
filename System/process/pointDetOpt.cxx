@@ -115,15 +115,11 @@ pointDetOpt::createObjAct(const Simulation& ASim)
   ELog::RegMethod RegA("pointDetOpt","createObjAct");
 
   const Simulation::OTYPE& Cells=ASim.getCells();
-  Simulation::OTYPE::const_iterator vc;
-  for(vc=Cells.begin();vc!=Cells.end();vc++)
+  for(const auto& [cellNum,objPtr] : Cells)
     {
-      if (!vc->second->isPlaceHold())
-	{
-	  const Geometry::Vec3D CofM=
-	    ModelSupport::calcCOFM(*(vc->second));
-          OA.addUnit(ASim,vc->first,CofM);
-         }
+      const Geometry::Vec3D CofM=
+	ModelSupport::calcCOFM(*objPtr);
+      OA.addUnit(ASim,cellNum,CofM);
     }
   return;
 }
@@ -148,38 +144,33 @@ pointDetOpt::addTallyOpt(const int tallyN,
   cx<<"pd"<<tallyN;
   physicsSystem::PhysImp& PD=PC.addPhysImp(cx.str(),"");
 
-  const Simulation::OTYPE& OCells=ASim.getCells(); 
-  Simulation::OTYPE::const_iterator mc;
-
   // First loop to find minimum distance:
   double minV(1e38);
   double D;
-  for(mc=OCells.begin();mc!=OCells.end();mc++)
+
+  const Simulation::OTYPE& Cells=ASim.getCells();
+  for(const auto& [cellNum,objPtr] : Cells)
     {
-      if (!mc->second->isPlaceHold())
+      (void) objPtr;
+      D=OA.getMatSum(cellNum);
+      if (D<minV && D>0.0)
 	{
-	  D=OA.getMatSum(mc->first);
-	  if (D<minV && D>0.0)
-	    {
-	      minV=D;
-	      if (minV<1.0)
-		break;
-	    }
+	  minV=D;
+	  if (minV<1.0)
+	    break;
 	}
     }
 
   // Second loop to create Pd values [in an importance card]
   const double scale((minV<1.0) ? 1.0 : minV);
-  for(mc=OCells.begin();mc!=OCells.end();mc++)
+  for(const auto& [cellNum,objPtr] : Cells)
     {
-      if (!mc->second->isPlaceHold())
-	{
-	  const double D=OA.getMatSum(mc->first);
-	  if (D>1.0)
-	    PD.setValue(mc->first,scale/D);
-	  else
-	    PD.setValue(mc->first,1.0);
-	}
+      (void) objPtr;
+      const double D=OA.getMatSum(cellNum);
+      if (D>1.0)
+	PD.setValue(cellNum,scale/D);
+      else
+	PD.setValue(cellNum,1.0);
     }
   return;
 }

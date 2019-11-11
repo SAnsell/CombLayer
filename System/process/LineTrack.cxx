@@ -399,7 +399,7 @@ LineTrack::createMatPath(std::vector<int>& mVec,
   
   for(size_t i=0;i<Cells.size();i++)
     {
-      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMatID();
       mVec.push_back(matN);
       aVec.push_back(segmentLen[i]);
     }
@@ -432,19 +432,17 @@ LineTrack::createAttenPath(std::vector<long int>& cVec,
     \param aVec :: Attenuation 
   */
 {
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
 
-  for(size_t i=0;i<Cells.size();i++)
+  for(size_t i=0;i<ObjVec.size();i++)
     {
-      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
-      if (matN>0)
+      const MonteCarlo::Object* OPtr=ObjVec[i];
+      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+      if (!MPtr->isVoid())
 	{
-	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
-	  const double density=matInfo.getAtomDensity();
-	  const double A=matInfo.getMeanA();
+	  const double density=MPtr->getAtomDensity();
+	  const double A=MPtr->getMeanA();
 	  const double sigma=segmentLen[i]*density*std::pow(A,0.66);
-	  cVec.push_back(ObjVec[i]->getName());
+	  cVec.push_back(OPtr->getName());
 	  aVec.push_back(sigma);
 	}
     }
@@ -458,21 +456,19 @@ LineTrack::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
 
   OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
 
   double sumSigma(0.0);
   for(size_t i=0;i<Cells.size();i++)
     {
-      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
-      const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
-      const double density=matInfo.getAtomDensity();
-      const double A=matInfo.getMeanA();
+      const MonteCarlo::Object* OPtr=ObjVec[i];
+      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+      const double density=MPtr->getAtomDensity();
+      const double A=MPtr->getMeanA();
       const double sigma=segmentLen[i]*density*std::pow(A,0.66);
       OX<<"  "<<Cells[i]<<" : "<<segmentLen[i]<<" "<<
-	matN<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
+	MPtr->getID()<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
     }
   OX<<"Len == "<<TDist<<" "<<sumSigma<<std::endl;

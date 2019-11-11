@@ -3,7 +3,7 @@
  
  * File:   weights/WCells.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,24 +144,16 @@ WCells::populateCells(const std::map<int,MonteCarlo::Object*>& ObjMap)
       const MonteCarlo::Object& ORef(*(objUnit.second));
 
       ItemTYPE::iterator ac=WVal.find(cellN);
-      if (ORef.isPlaceHold())      // IF virtual remove
-        {
-	  if (ac!=WVal.end())
-	    WVal.erase(ac);
+      if (ac!=WVal.end())
+	ac->second=WItem(cellN,ORef.getDensity(),ORef.getTemp());
+      else
+	{
+	  WVal.emplace
+	    (cellN,WItem(cellN,ORef.getDensity(),ORef.getTemp()));
 	}
-      else         // Good particle
-        {
-	  if (ac!=WVal.end())
-	    ac->second=WItem(cellN,ORef.getDensity(),ORef.getTemp());
-	  else
-	    {
-	      WVal.emplace
-		(cellN,WItem(cellN,ORef.getDensity(),ORef.getTemp()));
-	    }
-	  
-	  if (!ORef.getImp())
-	    maskCell(cellN);
-	}
+      
+      if (!ORef.getImp())
+	maskCell(cellN);
     }
   return;
 }

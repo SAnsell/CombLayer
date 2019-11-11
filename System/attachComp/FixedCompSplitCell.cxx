@@ -113,6 +113,7 @@ FixedComp::splitObject(Simulation& System,
   
   OutCell.push_back(cellN);
   OutCell.push_back(cellExtra);
+    
   return OutCell;  
 }
 
@@ -176,7 +177,6 @@ FixedComp::splitObject(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FixedComp","splitObject(vec)");
-
 
   int SN(SNoffset);
   int CN(cellN);

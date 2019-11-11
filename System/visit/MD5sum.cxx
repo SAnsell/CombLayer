@@ -3,7 +3,7 @@
  
  * File:   visit/MD5sum.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,7 +194,7 @@ MD5sum::populate(const Simulation* SimPtr)
 	      
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
-	      const size_t matN=static_cast<size_t>(ObjPtr->getMat());
+	      const size_t matN=static_cast<size_t>(ObjPtr->getMatID());
 	      if (matN>=RSize)
 		{
 		  throw ColErr::IndexError<size_t>

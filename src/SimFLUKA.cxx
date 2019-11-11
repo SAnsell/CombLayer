@@ -460,18 +460,16 @@ SimFLUKA::writeElements(std::ostream& OX) const
 
   OX<<"* ELEMENTS "<<std::endl;
   OX<<alignment<<std::endl;
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   std::set<MonteCarlo::Zaid> setZA;
 
-  for(const OTYPE::value_type& mp : OList)
+  for(const auto& [ cellNum,objPtr]  : OList)  // 
     {
-      const MonteCarlo::Material& m = DB.getMaterial(mp.second->getMat());
-      const std::vector<MonteCarlo::Zaid>& zaidVec = m.getZaidVec();
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const std::vector<MonteCarlo::Zaid>& zaidVec = mPtr->getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
-	{
-	  setZA.insert(ZC);
-	}
+	setZA.insert(ZC);
     }
 
   std::ostringstream cx,lowmat;
@@ -511,17 +509,15 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
       if (mp.second->hasMagField())
 	magField=1;
     }
-    
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
 
   writeElements(OX);
 
-  DB.writeFLUKA(OX);
+  // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
+
+  for(const auto& [matID,matPtr] : orderedMat)
+    matPtr->writeFLUKA(OX);
 
   OX<<alignment<<std::endl;
   if (magField)
@@ -703,12 +699,10 @@ SimFLUKA::prepareWrite()
    */
 {
   ELog::RegMethod RegA("SimFLUKA","prepareWrite");
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();  
   Simulation::prepareWrite();
 
   PhysPtr->setCellNumbers(cellOutOrder);
-  std::set<int> matActive=DB.getActive();
+  std::set<int> matActive=getActiveMaterial();
   matActive.erase(0);
   PhysPtr->setMatNumbers(matActive);
 

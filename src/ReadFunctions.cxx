@@ -75,6 +75,7 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "mcnpStringSupport.h"
 #include "ReadFunctions.h"
 
 namespace ReadFunc
@@ -370,7 +371,7 @@ readCells(FuncDataBase& DB,std::istream& IX,
       else if (!ignore)
         {
 	  ReadFunc::processDollarString(DB,Line);          // Process variables
-	  if (MonteCarlo::Object::startLine(Line))        // Start of a line
+	  if (mcnpFunc::startMaterial(Line))        // Start of a line
 	    endActive=2;
 	  else
 	    {

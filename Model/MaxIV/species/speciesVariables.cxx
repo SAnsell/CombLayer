@@ -191,8 +191,8 @@ splitterVariables(FuncDataBase& Control,
 
   TwinGen.setCF<CF40>();
   TwinGen.setJoinFlangeCF<CF100>();
-  TwinGen.setAPos(-2.7,0);
-  TwinGen.setBPos(2.7,0);
+  TwinGen.setAPos(-3.0,0);
+  TwinGen.setBPos(3.0,0);
   TwinGen.setXYAngle(4.0,-4.0);
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,8.0);  
 
@@ -237,7 +237,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,102.5);
 
   ShieldGen.setPlate(120.0,60.0,7.0);
-  ShieldGen.generateShield(Control,splitKey+"ScreenC",32.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenC",20.0,0.0);
 
   return;
 }
@@ -352,7 +352,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,mirrorKey+"PipeB",0,15.5);
 
   // ystep : wing
-  ShieldGen.generateShield(Control,mirrorKey+"ScreenA",0.0,0.0);
+  ShieldGen.generateShield(Control,mirrorKey+"ScreenA",-2.0,0.0);
 
   // Extra lead brick
   Control.addVariable(mirrorKey+"LeadBrickXStep",12.0);
@@ -545,7 +545,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string mName=preKey+"M3Tube";
   SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,00.0,36.0);
 
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);

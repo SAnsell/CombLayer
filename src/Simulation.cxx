@@ -267,18 +267,10 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Object& A)
       ELog::EM<<"Cell Exists Object ::"<<cellNumber<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
-  OList.insert(OTYPE::value_type(cellNumber,A.clone()));
+  OList.emplace(cellNumber,A.clone());
   MonteCarlo::Object* QHptr=OList[cellNumber];
 
   QHptr->setName(cellNumber);
-
-   if (setMaterialDensity(cellNumber))
-    {
-      ELog::EM<<"No material in found:"<<cellNumber<<ELog::endCrit;
-      throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
-    }
-
-
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -375,10 +367,9 @@ Simulation::setENDF7()
 
 
 int
-Simulation::removeDeadSurfaces(const int placeFlag)
+Simulation::removeDeadSurfaces()
   /*!
     Object is to remove all un-used surfaces
-    \param placeFlag :: Exclude placeholder cells
     \return number of surfaces removed
   */
 {
@@ -393,12 +384,9 @@ Simulation::removeDeadSurfaces(const int placeFlag)
   OTYPE::iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
-      if (!placeFlag || !mc->second->isPlaceHold())
-	{
-	  const std::vector<int> MX=(mc->second)->getSurfaceIndex();
-	  copy(MX.begin(),MX.end(),
-	       std::insert_iterator<std::set<int> >(SFound,SFound.begin()));
-	}
+      const std::vector<int> MX=(mc->second)->getSurfaceIndex();
+      copy(MX.begin(),MX.end(),
+	   std::insert_iterator<std::set<int> >(SFound,SFound.begin()));
     }
   // KEEP Surfaces:
   const std::vector<int> keepVec=SI.keepVector();
@@ -507,57 +495,48 @@ Simulation::substituteAllSurface(const int oldSurfN,const int newSurfN)
   return;
 }
 
-
-int
-Simulation::setMaterialDensity(OTYPE& ObjGroup)
-  /*!
-    Sets the density of the material in the cells
-    \param ObjGroup :: Object stack to set materials
-    \retval 0 :: success
-    \retval -1 :: failure
-   */
+std::set<int>
+Simulation::getActiveMaterial() const
 {
-  ELog::RegMethod RegA("Simulation","setMaterialDensity");
-  OTYPE::iterator vc;
-
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  std::map<int,MonteCarlo::Material>::const_iterator mc;
-
-  for(vc=ObjGroup.begin();vc!=ObjGroup.end();vc++)
-    {
-      const int matN=vc->second->getMat();
-      if (matN!=0)
-        {
-	  const MonteCarlo::Material& MC=DB.getMaterial(matN);
-	  vc->second->setDensity(MC.getAtomDensity());
-	}
-    }
-  return 0;
-}
-
-int
-Simulation::setMaterialDensity(const int cellNum)
-  /*!
-    Sets the density of the material for cellNum
-    \param cellNum :: cell nubmer to get proper density
-    \throw InContainer on material List: Object material mismatch
-    \retval 0 :: success
-   */
-{
-  ELog::RegMethod RegA("Simulation","setMaterialDensity(int)");
-
-  OTYPE ObjSet;
-  OTYPE::iterator vc;
-  std::map<int,MonteCarlo::Material>::const_iterator mc;
-  vc=OList.find(cellNum);
-  if (vc==OList.end())
-    return -1;
+  ELog::RegMethod RegA("Simulation","getActiveMaterial");
   
-  // Passes a single object to the objset.
-  ObjSet.insert(*vc);
-  setMaterialDensity(ObjSet);
-  return 0;
+  std::set<int> activeMat;
+  for(const auto& [id,objPtr] : OList)
+    activeMat.insert(objPtr->getMatID());
+
+  // remove the special cases:
+  activeMat.erase(-2);
+  activeMat.erase(-1);
+  activeMat.erase(0);
+  
+  return activeMat;
 }
+
+
+std::map<int,const MonteCarlo::Material*>
+Simulation::getOrderedMaterial() const
+  /*!
+    Generate an ordered material map 
+    \return map : 
+  */
+{
+  ELog::RegMethod RegA("Simulation","getOrdereMaterial");
+  
+  // set ordered otherwize output random [which is annoying]
+  std::map<int,const MonteCarlo::Material*> orderedMat;
+  for(const auto& [cellNum,objPtr] : OList)
+    {
+      (void) cellNum;        // avoid warning -- fixed c++20
+      const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
+      const int ID=mPtr->getID();
+      if (ID>0 && orderedMat.find(ID)==orderedMat.end())
+	orderedMat.emplace(ID,mPtr);
+    }
+
+  return orderedMat;
+}
+
+
 
 std::vector<std::pair<int,int>>
 Simulation::getCellImp() const
@@ -570,13 +549,10 @@ Simulation::getCellImp() const
 
   std::vector<std::pair<int,int>> cellImp;
 
-  for(const OTYPE::value_type& VC: OList)
+  for(const auto& [cellNum,objPtr] : OList)
     {
-      if (!VC.second->isPlaceHold())
-	{
-	  cellImp.push_back
-	    (std::pair<int,int>(VC.first,(VC.second->getImp()>0) ? 1 : 0));
-	}
+      cellImp.push_back
+	(std::pair<int,int>(cellNum,(objPtr->getImp()>0 ? 1 : 0)));
     }
   return cellImp;
 }
@@ -997,7 +973,7 @@ Simulation::getCellMaterial(const int cellNumber) const
   if (!QH) 
     return -1;
 
-  return QH->getMat();
+  return QH->getMatID();
 }
 
 std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
@@ -1027,8 +1003,7 @@ Simulation::findCellPair(const int surfN,
   size_t nCount(0);
   for(const MonteCarlo::Object* OPtr : negType)
     {
-      if (!OPtr->isPlaceHold() &&
-	  activeGroup.valid(OPtr->getName()))
+      if (activeGroup.valid(OPtr->getName()))
 	{
 	  if (nCount==indexA)
 	    {
@@ -1042,15 +1017,12 @@ Simulation::findCellPair(const int surfN,
   nCount=0;
   for(const MonteCarlo::Object* OPtr : plusType)
     {
-      if (!OPtr->isPlaceHold())
+      if (nCount==indexB)
 	{
-	  if (nCount==indexB)
-	    {
-	      Out.second=OPtr;
-	      break;
-	    }
-	  nCount++;
+	  Out.second=OPtr;
+	  break;
 	}
+      nCount++;
     }
   return Out;
 }
@@ -1074,8 +1046,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : negType)
     {
-      if (!OPtr->isPlaceHold() &&
-	  OPtr->isDirectionValid(Pt,-SN))
+      if (OPtr->isDirectionValid(Pt,-SN))
 	{
 	  Out.first=OPtr;
 	  break;
@@ -1084,8 +1055,7 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 
   for(const MonteCarlo::Object* OPtr : plusType)
     {
-      if (!OPtr->isPlaceHold() &&
-	  OPtr->isDirectionValid(Pt,SN))
+      if (OPtr->isDirectionValid(Pt,SN))
 	{
 	  Out.second=OPtr;
 	  break;
@@ -1165,8 +1135,7 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   OTYPE::const_iterator mpc;
   for(mpc=OList.begin();mpc!=OList.end();mpc++)
     {
-      if (!mpc->second->isPlaceHold() &&
-	  mpc->second->isValid(Pt))
+      if (mpc->second->isValid(Pt))
         {
 	  ST.setCell(this,mpc->second);
 	  return mpc->second;
@@ -1193,12 +1162,9 @@ Simulation::getCellTempRange(const double LT,const double HT) const
   OTYPE::const_iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
-      if (!mc->second->isPlaceHold())
-        {
-	  const double T=mc->second->getTemp();
-	  if (T>LT && T<HT)
-	    cellOrder.push_back(mc->first);
-	}
+      const double T=mc->second->getTemp();
+      if (T>LT && T<HT)
+	cellOrder.push_back(mc->first);
     }
   return cellOrder;
 }
@@ -1214,10 +1180,8 @@ Simulation::getCellVector() const
   std::vector<int> cellOrder;
   OTYPE::const_iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
-    {
-      if (!mc->second->isPlaceHold())
-	cellOrder.push_back(mc->first);
-    }
+    cellOrder.push_back(mc->first);
+
   sort(cellOrder.begin(),cellOrder.end());
   return cellOrder;
 }
@@ -1236,11 +1200,8 @@ Simulation::getCellInputVector() const
   
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
-      if (!mc->second->isPlaceHold())
-        {
-	  cellOrder.push_back(mc->first);
-	  index.push_back(mc->second->getCreate());
-	}
+      cellOrder.push_back(mc->first);
+      index.push_back(mc->second->getCreate());
     }
   mathFunc::crossSort(index,cellOrder);
   return cellOrder;
@@ -1263,10 +1224,9 @@ Simulation::getCellWithMaterial(const int matN) const
   for(const OTYPE::value_type& cellItem : OList)
     {
       const MonteCarlo::Object* QPtr=cellItem.second;
-      if (!QPtr->isPlaceHold() &&
-          (matN==-2 ||                            // all
-          (matN==-1 && QPtr->getMat()) ||         // not void
-           (QPtr->getMat()==matN) ) )             // match
+      if (matN==-2 ||                              // all
+          (matN==-1 && !QPtr->isVoid()) ||         // not void
+	  (QPtr->getMatID()==matN)  )             // match
         {
           cellOrder.push_back(cellItem.first);
         }
@@ -1282,37 +1242,27 @@ Simulation::getCellWithZaid(const size_t zaidNum) const
     vector of cells with a particular zaid type
     \param zaidNum :: Material zaid number
     \return vector of cell numbers (ordered)
-    \todo Make this with a transform, not a loop.
   */
 {
   ELog::RegMethod RegA("Simulation","getCellWithZaid");
 
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
   std::vector<int> cellOrder;
-  std::map<int,int> matZaidCache;
+  std::map<int,int> matZaidCache;  // cell : 0 / 1
 
-  OTYPE::const_iterator mc;
+
   std::map<int,int>::const_iterator mz;
-
-  for(mc=OList.begin();mc!=OList.end();mc++)
+  for(const auto& [cellNum,objPtr] : OList)
     {
-      if (!mc->second->isPlaceHold())
+      const int matID=objPtr->getMatID();
+      mz=matZaidCache.find(matID);
+      if (mz==matZaidCache.end())
 	{
-	  const int matN=mc->second->getMat();
-	  mz=matZaidCache.find(matN);
-	  if (mz==matZaidCache.end())
-	    {
-	      // does this return a valid iterator?
-	      matZaidCache.insert
-		(std::map<int,int>::value_type
-		 (matN,DB.getMaterial(matN).hasZaid(zaidNum,0,0)));
-	      mz=matZaidCache.find(matN);
-	    }
-	  if (mz->second)
-	    cellOrder.push_back(mc->first);
+	  matZaidCache.emplace
+	    (matID,objPtr->getMatPtr()->hasZaid(zaidNum,0,0));
+	  cellOrder.push_back(cellNum);
 	}
+      else if (mz->second)
+	cellOrder.push_back(cellNum);
     }
 
   sort(cellOrder.begin(),cellOrder.end());
@@ -1328,12 +1278,10 @@ Simulation::getNonVoidCellVector() const
   */
 {
   std::vector<int> cellOrder;
-  OTYPE::const_iterator mc;
-  for(mc=OList.begin();mc!=OList.end();mc++)
-    {
-      if (mc->second->getMat() && !mc->second->isPlaceHold())
-	cellOrder.push_back(mc->first);
-    }
+  for(const auto& [cellNum,objPtr] : OList)
+    if (!objPtr->isVoid())
+      cellOrder.push_back(cellNum);
+
   sort(cellOrder.begin(),cellOrder.end());
   return cellOrder;
 }
@@ -1354,7 +1302,7 @@ Simulation::getCellVectorRange(const int RA,const int RB) const
   OTYPE::const_iterator mc=OList.lower_bound(RA);
   while(mc!=OList.end() && mc->first<RA+RB)
     {
-      if (mc->second->getMat() && !mc->second->isPlaceHold())
+      if (!mc->second->isVoid())
 	cellOrder.push_back(mc->first);
     }
   return cellOrder;
@@ -1506,7 +1454,7 @@ Simulation::renumberSurfaces(const std::vector<int>& rLow,
 }
 
 void
-Simulation::voidObject(const std::string& ObjName)
+Simulation::setObjectVoid(const std::string& ObjName)
   /*!
     Given an object set the material void
     \param ObjName :: Object to void
@@ -1519,6 +1467,7 @@ Simulation::voidObject(const std::string& ObjName)
   //   (b) Number - Number
   //   (c) All
   //   (d) Object
+  
   const std::vector<int> cellRange=getObjectRange(ObjName);
   for(const int cellN : cellRange)
     {
@@ -1558,7 +1507,7 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   CHead.addIntersection(-SN);
   DHead.addIntersection(SN);
 
-  addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
+  addCell(CB,CPtr->getMatID(),CPtr->getTemp(),DHead);
   CPtr->procHeadRule(CHead);
 
   MonteCarlo::Object* DPtr = findObject(CB);  
@@ -1579,11 +1528,23 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   AX.setFunctionObjStr(CHead.display());
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    CPtr->procString(AX.writeMCNPX());
+    {
+      if (AX.isEmpty())
+	throw ColErr::EmptyContainer
+	  ("Cell Pair has empty cell:"+
+	   std::to_string(CA)+"/"+std::to_string(CB));
+      CPtr->procString(AX.writeMCNPX());
+    }
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    DPtr->procString(AX.writeMCNPX());
+    {
+      if (AX.isEmpty())
+	throw ColErr::EmptyContainer
+	  ("Cell Pair has empty cell:"+
+	   std::to_string(CA)+"/"+std::to_string(CB));
+      DPtr->procString(AX.writeMCNPX());
+    }
   
   return CB;
 }
@@ -1627,8 +1588,6 @@ Simulation::minimizeObject(const int CN)
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   
-  if (CPtr->isPlaceHold()) return 0;
-  
   CPtr->populate();
   CPtr->createSurfaceList();
   
@@ -1671,42 +1630,39 @@ Simulation::makeObjectsDNForCNF()
       for(OTYPE::value_type& OC : OList)
 	{
 	  MonteCarlo::Object* CPtr = OC.second;
-	  if (!CPtr->isPlaceHold())
+	  MonteCarlo::Algebra AX;
+	  AX.setFunctionObjStr(CPtr->cellCompStr());
+	  const size_t NL=AX.countLiterals();
+	  if (NL<=cellDNF || NL<=cellCNF)
 	    {
-	      MonteCarlo::Algebra AX;
-	      AX.setFunctionObjStr(CPtr->cellCompStr());
-	      const size_t NL=AX.countLiterals();
-	      if (NL<=cellDNF || NL<=cellCNF)
+	      // Note both together possible
+	      if (NL<=cellDNF)
+		AX.expandBracket();
+	      if (NL<=cellCNF)
+		AX.expandCNFBracket();
+	      
+	      if (!CPtr->procString(AX.writeMCNPX()))
 		{
-		  // Note both together possible
-		  if (NL<=cellDNF)
-		      AX.expandBracket();
-		  if (NL<=cellCNF)
-		    AX.expandCNFBracket();
-
-		  if (!CPtr->procString(AX.writeMCNPX()))
-		    {
-		      ELog::EM<<ELog::endDiag;
-		      throw ColErr::InvalidLine(AX.writeMCNPX(),
-						"Algebra ExpandD/CNFBracket");
-		    }
-		  const size_t NLX=AX.countLiterals();
-		  if (NLX !=NL)
-		    {
-		      ELog::EM<<CPtr->getName()<<"["<<NL<<","<<NLX<<"] ";
-		      cellIndex++;
-		      if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
-		    }
-		  
+		  ELog::EM<<ELog::endDiag;
+		  throw ColErr::InvalidLine(AX.writeMCNPX(),
+					    "Algebra ExpandD/CNFBracket");
 		}
-	      else
+	      const size_t NLX=AX.countLiterals();
+	      if (NLX !=NL)
 		{
-		  if (cellIndex % 8) ELog::EM<<ELog::endDiag;
-		  ELog::EM<<"\nNOT Cell "<<CPtr->getName()
+		  ELog::EM<<CPtr->getName()<<"["<<NL<<","<<NLX<<"] ";
+		  cellIndex++;
+		  if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
+		}
+	      
+	    }
+	  else
+	    {
+	      if (cellIndex % 8) ELog::EM<<ELog::endDiag;
+	      ELog::EM<<"\nNOT Cell "<<CPtr->getName()
 			  <<"["<<NL<<"]"<<ELog::endCrit;
-		  ELog::EM<<"\n";
-		  cellIndex=0;
-		}
+	      ELog::EM<<"\n";
+	      cellIndex=0;
 	    }
 	}
       ELog::EM<<"\n END DNF/CNF "<<ELog::endDiag;
@@ -1714,23 +1670,6 @@ Simulation::makeObjectsDNForCNF()
   validateObjSurfMap();
   return;
 }
-
-void
-Simulation::processActiveMaterials() const
-  /*!
-    Set materials as active in DBMaterail Database
-  */
-{
-  ELog::RegMethod RegA("Simulation","processActiveMaterials");
-
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  for(const OTYPE::value_type& mc : OList)
-    DB.setActive(mc.second->getMat());
-  return;
-}
-
 
 void
 Simulation::prepareWrite() 
@@ -1745,14 +1684,10 @@ Simulation::prepareWrite()
 
   for(const std::pair<int,MonteCarlo::Object*>& OVal : OList)
     {
-      if (!OVal.second->isPlaceHold())
-	{
-	  cellOutOrder.push_back(OVal.first);
-	}
+      cellOutOrder.push_back(OVal.first);
     }
   return;
 }
-
 
 void
 Simulation::masterRotation() 

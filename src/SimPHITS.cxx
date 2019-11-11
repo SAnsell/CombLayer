@@ -312,18 +312,16 @@ SimPHITS::writeMaterial(std::ostream& OX) const
 {
   OX<<"[ Material ]"<<std::endl;
 
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
+  // set ordered otherwize output random [which is annoying]
+  const std::map<int,const MonteCarlo::Material*> orderedMat=
+    getOrderedMaterial();
 
-  //  if (!PhysPtr->getMode().hasElm("h"))
-  //    DB.deactivateParticle("h");
-  
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
-  
-  ModelSupport::DBMaterial::Instance().writePHITS(OX);
-  
+  for(const auto& [matID,matPtr] : orderedMat)
+    {
+      (void) matID; 
+      matPtr->writePHITS(OX);
+    }
+
   return;
 }
 

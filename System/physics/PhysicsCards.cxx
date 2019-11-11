@@ -610,12 +610,13 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
   */
 
 {
-  ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
+  ELog::RegMethod RegA("PhysicsCards","setCellNumbers<Vec>");
   
   if(cellInfo.size()!=impValue.size())
     throw ColErr::MisMatch<size_t>(cellInfo.size(),
 				   impValue.size(),
 				   "cellInfo != impValue");
+
   for(PhysImp& PI : ImpCards)
     PI.setAllCells(cellInfo,impValue);
 
@@ -635,10 +636,10 @@ PhysicsCards::setCellNumbers(const std::vector<std::pair<int,int>>& cellInfo)
 
 {
   ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
-  
-  for(PhysImp& PI : ImpCards)
-    PI.setAllCells(cellInfo);
 
+  for(PhysImp& PI : ImpCards)
+    PI.setAllCells(cellInfo);  
+  
   Volume.setAllCells(cellInfo);
   Volume.setAllCells(1.0);
   return;

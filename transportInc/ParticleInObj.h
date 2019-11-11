@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   transportInc/ObjComponent.h
+ * File:   transportInc/ParticleInObj.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -22,72 +22,71 @@
 #ifndef Transport_ObjCompnent_h
 #define Transport_ObjCompnent_h
 
-namespace Transport
+namespace MonteCarlo
 {
-  //forward declaration
+  class particle;
   class neutron;
+  class photon;
   class Track;
+}
 
+namespace Transport
+{  
   /*!
-    \class ObjComponent 
+    \class ParticleInObj 
     \author S. Ansell
     \date October 2012  
-    \version 2.0
-    \brief Second light-weight version of Object
+    \version 3.0
+    \brief Method of tracking a particle with an object
 
     Object Component class, this class brings together the physical attributes 
     of the component to the positioning and geometry tree.
   */
 
-class ObjComponent 
+template<typename PTYPE>
+class ParticleInObj 
 {  
  private: 
   
   const MonteCarlo::Object* ObjPtr;         ///< The phyical geometry 
-  /// Material Pointer 
-  const scatterSystem::neutMaterial* MatPtr;
-
-  static const scatterSystem::neutMaterial* neutMat(const int);
 
  public:
 
-  explicit ObjComponent(const  MonteCarlo::Object* ObjPtr);
-  ObjComponent(const ObjComponent&);
-  ObjComponent& operator=(const ObjComponent&);
-  ~ObjComponent();
+  explicit ParticleInObj(const  MonteCarlo::Object* ObjPtr);
+  ParticleInObj(const ParticleInObj&);
+  ParticleInObj& operator=(const ParticleInObj&);
+  ~ParticleInObj();
 
-  double ScatTotalRatio(const MonteCarlo::neutron&,
-			const MonteCarlo::neutron&) const;
-  double TotalCross(const MonteCarlo::neutron&) const;
+  double totalXSection(const MonteCarlo::particle&) const;
 
-  int trackIntoCell(const MonteCarlo::neutron&,
+  int trackIntoCell(const MonteCarlo::particle&,
 		    double&,const Geometry::Surface*&) const;
 
-  int trackOutCell(const MonteCarlo::neutron&,double&,
-			   const Geometry::Surface*&) const;
-  int trackCell(const MonteCarlo::neutron&,double&,double&) const;
-
+  int trackOutCell(const MonteCarlo::particle&,double&,
+  		   const Geometry::Surface*&) const;
+  int trackCell(const MonteCarlo::particle&,double&,double&) const;
+  
   int trackWeight(MonteCarlo::neutron&,double&,
 		  const Geometry::Surface*&) const;
   int trackAttn(MonteCarlo::neutron&,const Geometry::Surface*&) const;
 
-  void attenuate(const double,MonteCarlo::neutron&) const;
-  double getRefractive(const MonteCarlo::neutron&) const;
+  void attenuate(const double,MonteCarlo::particle&) const;
+  double getRefractive(const MonteCarlo::particle&) const;
   double getRefractive(const double) const;
+  double scatTotalRatio(const MonteCarlo::particle&,
+			const MonteCarlo::particle&) const;
 
+  
   int isValid(const Geometry::Vec3D&) const;       
   int hasIntercept(const MonteCarlo::particle&) const;
-  void scatterNeutron(MonteCarlo::neutron&) const;
-
-  virtual void selectEnergy(const MonteCarlo::neutron&,
-			    MonteCarlo::neutron&) const;
-
+  void scatterParticle(MonteCarlo::particle&) const;
+  
   virtual void write(std::ostream&) const;
-  virtual void writeMCNPX(std::ostream&) const;
   
 };
 
-std::ostream& operator<<(std::ostream&,const ObjComponent&);
+template<typename PTYPE>
+std::ostream& operator<<(std::ostream&,const ParticleInObj<PTYPE>&);
 
 } // Namespace MonteCarlo
 

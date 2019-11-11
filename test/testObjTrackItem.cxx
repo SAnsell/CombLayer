@@ -271,7 +271,7 @@ testObjTrackItem::testTrackNeutron()
 	      ELog::EM<<"No object for point "<<i<<ELog::endDiag;
 	      return -1;
 	    }
-	  OA.addDistance(OPtr->getMat(),TVec[i]);
+	  OA.addDistance(OPtr->getMatID(),TVec[i]);
 	}
 
       const int errFlag=

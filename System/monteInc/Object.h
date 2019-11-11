@@ -48,11 +48,10 @@ class Object
   int ObjName;       ///< Number for the object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
-  int MatN;          ///< Material Number 
+  const Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
   int imp;           ///< importance / 0 
-  double density;    ///< Density
-  int placehold;     ///< Is cell virtual (ie not in output)
+
   int populated;     ///< Full population
 
   bool activeMag;         ///< Magnetic field active
@@ -80,11 +79,7 @@ class Object
 
   int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  bool keyUnit(std::string&,std::string&,std::string&);
-
  public:
-  
-  static int startLine(const std::string& Line);
 
   Object();
   Object(const std::string&,const int,const int,
@@ -117,22 +112,25 @@ class Object
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
   int procHeadRule(const HeadRule&);
-  void setDensity(const double D) { density=D; }       ///< Set Density [Atom/A^3]
-  void setMaterial(const int M) { MatN=M; }            ///< Set Material number
-  void setPlaceHold(const int P) { placehold=P; }      ///< Set placeholder
-  int isPlaceHold() const { return placehold; }        ///< Get placeholder
+
+  void setMaterial(const int);  // to be written
 
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
   int isPopulated() const { return populated; }        ///< Is populated   
 
   /// accessor to FCName
-  std::string getFCUnit() const  { return FCUnit; }
+  const std::string& getFCUnit() const { return FCUnit; }
   int getName() const  { return ObjName; }             ///< Get Name
   int getCreate() const  { return listNum; }           ///< Get Creation point
-  int getMat() const { return MatN; }                  ///< Get Material ID
+  int getMatID() const;
+  /// Main accessor to material
+  const Material* getMatPtr() const { return matPtr; }
+  /// is material void
+  bool isVoid() const;
+  
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
-  double getDensity() const { return density; }        ///< Get Density [Atom/A^3]
+  double getDensity() const;                           ///< to be written
   int getImp() const { return imp; }                   ///< Get importance
 
   /// Return the top rule

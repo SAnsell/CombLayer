@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,10 +214,10 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   ELog::RegMethod RegA("DBMaterial","setMaterial");
 
   const std::string& MName=MO.getName();
-  const int MIndex=MO.getNumber();
+  const int MIndex=MO.getID();
   checkNameIndex(MIndex,MName);
-  MStore.insert(MTYPE::value_type(MIndex,MO));
-  IndexMap.insert(SCTYPE::value_type(MName,MIndex));
+  MStore.emplace(MIndex,MO);
+  IndexMap.emplace(MName,MIndex);
   return;
 }
   
@@ -233,7 +233,6 @@ DBMaterial::createMaterial(const std::string& MName)
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
-  
   // Now key found
   // can be a new density or a new mix:
   std::string::size_type pos=MName.find('#');
@@ -356,7 +355,7 @@ DBMaterial::createMix(const std::string& Name,
   MA*=PFrac;
   MB*=(1.0-PFrac);
   MA+=MB;
-  MA.setNumber(matNum);
+  MA.setID(matNum);
   MA.setName(Name);
 
   setMaterial(MA);
@@ -384,13 +383,14 @@ DBMaterial::createNewDensity(const std::string& Name,
   if (std::abs(densityFrac)<1e-5)
     {
       MonteCarlo::Material MA=getMaterial("Void");
-      MA.setNumber(matNum);
+      MA.setID(matNum);
       MA.setName(Name);
+      setMaterial(MA);
       return matNum;
     }
   
   MonteCarlo::Material MA=getMaterial(MatA);
-  MA.setNumber(matNum);
+  MA.setID(matNum);
   MA.setName(Name);
 
 	  
@@ -453,15 +453,15 @@ DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
   ELog::RegMethod RegA("DBMaterial","resetMaterial");
 
   const std::string& MName=MO.getName();
-  const int MIndex=MO.getNumber();
-
+  const int MIndex=MO.getID();
+ 
   MTYPE::iterator mc=MStore.find(MIndex);
   if (mc!=MStore.end()) MStore.erase(mc);
   SCTYPE::iterator sc=IndexMap.find(MName);
   if (sc!=IndexMap.end()) IndexMap.erase(sc);
 
-  MStore.insert(MTYPE::value_type(MIndex,MO));
-  IndexMap.insert(SCTYPE::value_type(MName,MIndex));
+  MStore.emplace(MIndex,MO);
+  IndexMap.emplace(MName,MIndex);
   return;
 }
 
@@ -507,6 +507,49 @@ DBMaterial::initMXUnits()
     }
   return;
 }
+
+const MonteCarlo::Material*
+DBMaterial::getMaterialPtr(const int MIndex) const
+  /*!
+    Get the material based on the index value
+    \param MIndex :: Material 
+    \return Material Ptr
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","getMaterial<int>");
+
+  MTYPE::const_iterator mc=MStore.find(MIndex);
+  if (mc==MStore.end())
+    throw ColErr::InContainerError<int>(MIndex,"MIndex in MStore");
+  return &mc->second;
+}
+
+const MonteCarlo::Material*
+DBMaterial::getVoidPtr() const
+  /*!
+    Get the material of the void
+    \return Material Ptr 
+   */
+{
+  static const MonteCarlo::Material* VPtr(getMaterialPtr(0));
+  return VPtr;
+}
+
+const MonteCarlo::Material*
+DBMaterial::getMaterialPtr(const std::string& MName) const
+  /*!
+    Get the material based on the name value
+    \param MName :: Material name
+    \return Material Pointer
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","getMaterialPtr<string>");
+
+  SCTYPE::const_iterator mc=IndexMap.find(MName);
+  if (mc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>(MName,"IndexMap");
+  return getMaterialPtr(mc->second);
+} 
 
 const MonteCarlo::Material&
 DBMaterial::getMaterial(const int MIndex) const
@@ -634,39 +677,6 @@ DBMaterial::getIndex(const std::string& Key) const
   return sc->second;
 }
 
-
-void
-DBMaterial::setActive(const int M)
-  /*!
-    Set a item in the active list
-    \param M :: Material number
-   */
-{
-  active.insert(M);
-  return;
-}
-
-void
-DBMaterial::resetActive()
-  /*!
-    Reset the active list
-  */
-{
-  active.erase(active.begin(),active.end());
-  return;
-}
-
-bool
-DBMaterial::isActive(const int matN) const
-  /*!
-    Determine if material is active or not
-    \param matN :: Material number
-    \return true is active is set.
-   */
-{
-  return (active.find(matN)!=active.end()) ? 1 : 0;
-}
-
 void
 DBMaterial::setENDF7()
   /*!
@@ -678,32 +688,6 @@ DBMaterial::setENDF7()
   MTYPE::iterator mc;
   for(mc=MStore.begin();mc!=MStore.end();mc++)
     mc->second.setENDF7();
-  return;
-}
-
-void
-DBMaterial::writeCinder(std::ostream& OX) const
-  /*!
-    Write out a material stream for Cinder
-    -- Note the format is format(a6,i4,e10.0):
-    mat N::index:Number density 
-    There is not space between the number and the number density
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeCinder");
-
-  std::set<int>::const_iterator sc;
-  for(sc=active.begin();sc!=active.end();sc++)
-    {
-      if (*sc)
-	{
-	  MTYPE::const_iterator mx=MStore.find(*sc);
-	  if (mx==MStore.end())
-	    throw ColErr::InContainerError<int>(*sc,"MStore");	  
-	  mx->second.writeCinder(OX);
-	}
-    }
   return;
 }
 
@@ -727,101 +711,6 @@ DBMaterial::deactivateParticle(const std::string& P)
         }
     }
 
-  return;
-}
-
-  
-void
-DBMaterial::writeMCNPX(std::ostream& OX) const
-  /*!
-    Write everything out to the stream
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
-	  mp->second.write(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writePHITS(std::ostream& OX) const
-  /*!
-    Write everything out to the stream
-    for the phits output
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writePHITS");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-              (sActive,"MStore find(active item)");
-          
-	  mp->second.writePHITS(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writeFLUKA(std::ostream& OX) const
-  /*!
-    Write everything out to the fluka system
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writeFLUKA");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
-	  
-	  mp->second.writeFLUKA(OX);
-	}
-    }
-  return;
-}
-
-void
-DBMaterial::writePOVRay(std::ostream& OX) const
-  /*!
-    Write materials out to the POV-Ray system
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("DBMaterial","writePOVRay");
-
-  for(const int sActive : active)
-    {
-      if (sActive)
-	{
-	  MTYPE::const_iterator mp=MStore.find(sActive);
-	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
-	  
-	  mp->second.writePOVRay(OX);
-	}
-    }
   return;
 }
 

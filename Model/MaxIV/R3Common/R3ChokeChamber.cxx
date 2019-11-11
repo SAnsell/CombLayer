@@ -495,7 +495,7 @@ R3ChokeChamber::createObjects(Simulation& System)
   makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -427 417 412 27 -3 ");
+    (SMap,buildIndex," -427 417 412 27 -3 227 ");
   makeCell("SideOuterVoid",System,cellIndex++,0,0.0,Out);
 
   // External

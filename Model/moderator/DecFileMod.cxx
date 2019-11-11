@@ -3,7 +3,7 @@
  
  * File:   moderator/DecFileMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "localRotate.h"
@@ -190,10 +189,10 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
   ELog::EM<<"Read "<<surfCnt<<" extra surfaces for "<<keyName<<ELog::endDebug;
  
   // REBASE and recentre
-  ModelSupport::surfIndex& SI=
-    ModelSupport::surfIndex::Instance();
+  ModelSupport::surfIndex& SI=ModelSupport::surfIndex::Instance();
   const ModelSupport::surfIndex::STYPE& SMap
     =ModelSupport::surfIndex::Instance().surMap();
+
   ModelSupport::surfIndex::STYPE::const_iterator sc;
   for(sc=SMap.begin();sc!=SMap.end();sc++)
     {
@@ -206,7 +205,6 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
   reMapSurf(OMap);
 
   // RE-ADJUST 
-  System.setMaterialDensity(OMap);
   std::map<int,Geometry::Surface*> EQMap;
   if (SI.findEqualSurf(buildIndex,buildIndex+10000,EQMap))
     ModelSupport::ObjSurfMap::removeEqualSurf(EQMap,OMap);

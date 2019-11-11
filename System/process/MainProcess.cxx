@@ -544,7 +544,6 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
 
   //
-  SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
@@ -586,7 +585,6 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   SimPHITSPtr->prepareWrite();  // this can be deleteted??
   
   phitsSystem::tallySelection(*SimPHITSPtr,IParam);
-  SimPHITSPtr->processActiveMaterials();
     
   SimProcess::importanceSim(*SimPHITSPtr,IParam);
 
@@ -692,7 +690,7 @@ buildFullSimulation(Simulation* SimPtr,
 
 
   SimPtr->removeComplements();
-  SimPtr->removeDeadSurfaces(0);
+  SimPtr->removeDeadSurfaces();
   
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();

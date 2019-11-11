@@ -219,7 +219,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
 
   Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleZStep",4.0);
   Control.addVariable(hutName+"HoleRadius",3.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
@@ -566,7 +566,7 @@ opticsVariables(FuncDataBase& Control,
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]
   PipeGen.setCF<setVariable::CF100>();    
-  PipeGen.generatePipe(Control,opticsName+"DriftB",119.1,72.5); 
+  PipeGen.generatePipe(Control,opticsName+"DriftB",119.1,62.5); 
   Control.addVariable(opticsName+"DriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
@@ -594,9 +594,9 @@ opticsVariables(FuncDataBase& Control,
 
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF100>();
-  PTubeGen.setPortLength(1.0,1.0);
+  PTubeGen.setPortLength(2.0,2.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,54.0);
+  PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,52.0);
 
   Control.addVariable(opticsName+"ShieldPipeNPorts",4);
 
@@ -645,9 +645,9 @@ opticsVariables(FuncDataBase& Control,
 
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF100>();
-  PTubeGen.setPortLength(1.0,1.0);
+  PTubeGen.setPortLength(2.3,2.3);
   // ystep/radius/length
-  PTubeGen.generateTube(Control,opticsName+"ViewTube",0.0,39.0);
+  PTubeGen.generateTube(Control,opticsName+"ViewTube",0.0,34.8);
 
   Control.addVariable(opticsName+"ViewTubeNPorts",4);
 
@@ -694,7 +694,7 @@ opticsVariables(FuncDataBase& Control,
       Control.addVariable(NStr+"WallMat","Stainless304");
       Control.addVariable(NStr+"Mat","Poly");
     }
-  Control.addVariable(opticsName+"NShield0YStep",1.0);
+  Control.addVariable(opticsName+"NShield0YStep",1.5);
   Control.addVariable(opticsName+"NShield1YStep",3.0);
   Control.addVariable(opticsName+"NShield2YStep",1.0);
   return;
@@ -726,51 +726,50 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowA",0,8.0);
 
   LBGen.setPlate(15.0,15.0,0.6);
-  LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
+  LBGen.generateBox(Control,baseName+"LeadA",4.5,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",9.0,152.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipeCF<CF40>();
   PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
   // ystep/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,4.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,3.0);
   Control.addVariable(baseName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
-
-
+  
   // temp offset
   LBGen.setPlate(15.0,15.0,0.6);
-  LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
+  LBGen.generateBox(Control,baseName+"PumpBoxA",4.50,12.0);
   //  PSGen.generateShield(Control,baseName+"PumpBoxAFShield",0.0,0.0);
 
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
-			       PTubeGen.getTotalLength(4.0),188.0);
+			       PTubeGen.getTotalLength(0.5),188.0);
   
   BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
+  LBGen.generateBox(Control,baseName+"LeadB",4.5,12.0);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",9.0,188.0);
 
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,2.8);
+  LBGen.generateBox(Control,baseName+"PumpBoxB",4.5,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
-			       PTubeGen.getTotalLength(4.0),172.0);
+			       PTubeGen.getTotalLength(0.5),172.0);
 
 
-  BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
+  BellowGen.generateBellow(Control,baseName+"BellowC",0,8.0);
+  LBGen.generateBox(Control,baseName+"LeadC",4.5,12.0);
   
   return;
 }
@@ -797,7 +796,7 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",30.0,624,40);
+    (Control,"BalderFrontBeam",30.0,624,38.0);
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");
     
   balderVar::wallVariables(Control,"BalderWallLead");
@@ -811,13 +810,13 @@ BALDERvariables(FuncDataBase& Control)
 
   LeadPipeGen.setCF<setVariable::CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,54.0);
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,54.5);
 
   balderVar::shieldVariables(Control);
   balderVar::connectingVariables(Control);
 
   // note bellow skip
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",10.0,80.0);
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",9.0,81.0);
 
 
   balderVar::exptHutVariables(Control,"BalderExpt");

@@ -501,7 +501,7 @@ CellMap::deleteCellWithData(Simulation& System,
   if (!ObjPtr)
     throw ColErr::InContainerError<int>(CN,"Cell Ptr zero");
 
-  std::pair<int,double> Out(ObjPtr->getMat(),ObjPtr->getTemp());
+  std::pair<int,double> Out(ObjPtr->getMatID(),ObjPtr->getTemp());
   System.removeCell(CN);  // too complex to handle from ObjPtr
   return Out;
 }

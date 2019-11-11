@@ -365,7 +365,7 @@ makeT1Eng::build(Simulation& System,
   if (IParam.flag("exclude") &&
       IParam.compValue("E",std::string("Reflector")))
     {
-      System.voidObject(RefObj->getKeyName());
+      System.setObjectVoid(RefObj->getKeyName());
       return;
     }
   

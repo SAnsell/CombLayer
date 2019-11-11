@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/flukaProcess.h
+ * File:   supportInc/mcnpStringSupport.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_flukaProcess_h
-#define flukaSystem_flukaProcess_h
+#ifndef StrFunc_mcnpStringSupport_h
+#define StrFunc_mcnpStringSupport_h
 
-class objectGroups;
-class Simulation;
-class SimFLUKA;
-class FuncDataBase;
-
-namespace mainSystem
+namespace mcnpFunc
 {
-  class inputParam;
-}
 
-namespace flukaSystem
-{
-  std::set<int> getActiveUnit(const Simulation&,const int,const std::string&);
-  std::set<int> getActiveMaterial(const Simulation&,std::string);
-  std::set<int> getActiveCell(const objectGroups&,const std::string&);
-  std::set<int> getActiveParticle(const std::string&);
-  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-}
+  bool keyUnit(std::string&,std::string&,std::string&);
 
+  bool startMaterial(const std::string&);
+
+}  // NAMESPACE mcnpFunc
 
 #endif
- 
+

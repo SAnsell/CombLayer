@@ -351,7 +351,7 @@ GuideBay::outerMerge(Simulation& System,
     }
 
   // Delete common stuff and build object
-  const int mat=AB->getMat();
+  const int mat=AB->getMatID();
   const double temp=AB->getTemp();
   System.removeCell(AB->getName());
   System.removeCell(BB->getName());

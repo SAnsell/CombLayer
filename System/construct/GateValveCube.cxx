@@ -69,6 +69,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "BaseMap.h"
@@ -85,7 +86,7 @@ namespace constructSystem
 {
 
 GateValveCube::GateValveCube(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   closed(0)
@@ -96,7 +97,7 @@ GateValveCube::GateValveCube(const std::string& Key) :
 {}
 
 GateValveCube::GateValveCube(const GateValveCube& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
@@ -122,7 +123,7 @@ GateValveCube::operator=(const GateValveCube& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -165,7 +166,7 @@ GateValveCube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GateValveCube","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");

@@ -138,7 +138,6 @@ class Simulation : public objectGroups
 
   int existCell(const int) const;              ///< check if cell exist
   int getCellMaterial(const int) const;        ///< return cell material
-  int setMaterialDensity(OTYPE&);
   int setMaterialDensity(const int);
 
   /// Gets the data base
@@ -184,12 +183,16 @@ class Simulation : public objectGroups
   std::vector<int> getCellWithZaid(const size_t) const;
 
   std::vector<std::pair<int,int>> getCellImp() const;            
+  std::set<int> getActiveMaterial() const;
+  std::map<int,const MonteCarlo::Material*>
+    getOrderedMaterial() const;
 
-  int removeDeadSurfaces(const int); 
+  
+  int removeDeadSurfaces(); 
   virtual void removeCell(const int);
   int removeAllSurface(const int);
 
-  void voidObject(const std::string&);
+  void setObjectVoid(const std::string&);
   void updateSurface(const int,const std::string&);
 
   void createObjSurfMap();
@@ -215,8 +218,6 @@ class Simulation : public objectGroups
   virtual std::map<int,int> renumberCells(const std::vector<int>&,
 					  const std::vector<int>&);
 
-  // MATERIALS:
-  void processActiveMaterials() const;
 
   
   /// no-op call
