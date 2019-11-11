@@ -991,7 +991,7 @@ opticsVariables(FuncDataBase& Control,
   // TODO: ask about geometry
   BremGen.setCF<CF63>();
   BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
-  Control.addVariable(preName+"BremCollAExtLength", 0.8); // !!! UGLY
+  Control.addVariable(preName+"BremCollAExtLength", 1.7); // !!! UGLY
   Control.addVariable(preName+"BremCollAHoleMidDist", 3.78);
 
   GateGen.setLength(2.5);
