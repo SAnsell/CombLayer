@@ -668,10 +668,10 @@ monoShutterVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF63>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",0,2.0);
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",0,4.0);
   PipeGen.setAFlangeCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",0,2.0);
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",0,4.0);
 
   
   // bellows on shield block
