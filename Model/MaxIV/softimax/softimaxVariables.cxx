@@ -112,7 +112,7 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L+7.0);
+  PipeGen.generatePipe(Control,undKey+"UPipe",0,L+8.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -1552,14 +1552,14 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,724.0,37);
+    (Control,"SoftiMAXFrontBeam",141.0,724.0,36);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
-  PipeGen.setBFlange(3.5,0.5);
+  PipeGen.setBFlange(3.5,0.3);
   PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126);
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
