@@ -457,7 +457,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
-  // up 15cm / 38.5cm down : Measured
+  // up 16cm / 37.5cm down : Measured +1cm up for clearance
   SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
@@ -468,13 +468,13 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   DItemGen.setPlate(0.0,"Void");  
 
   DItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
+			Geometry::Vec3D(0,10.75,0),  // 53.5/2-16.0
 			Geometry::Vec3D(0,0,1));
 
   PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,11.75,0),
+			Geometry::Vec3D(0,10.75,0),
 			Geometry::Vec3D(0,0,-1));
 
   BremGen.centre();
@@ -522,9 +522,9 @@ revBeamStopPackage(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
-  // up 15cm / 38.5cm down : Measured
+  // up 15cm / 38.5cm down : Measured +1up clearance
   SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
-
+  Control.addVariable(pipeName+"YAngle",180.0);  // rotate
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
   // BOTH PORTS COMPLETLEY NON-STANDARD:
@@ -533,13 +533,13 @@ revBeamStopPackage(FuncDataBase& Control,
   DItemGen.setPlate(0.0,"Void");  
 
   DItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,11.75,0),  // 53.5/2-15.0
+			Geometry::Vec3D(0,10.75,0),  // 53.5/2-15.0
 			Geometry::Vec3D(0,0,1));
 
   PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,11.75,0),
+			Geometry::Vec3D(0,10.75,0),
 			Geometry::Vec3D(0,0,-1));
 
   BremGen.centre();
@@ -559,7 +559,7 @@ revBeamStopPackage(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>(); 
-  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",0,2.0);
+  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",0,4.0);
 
   return;
 }

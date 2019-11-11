@@ -460,7 +460,7 @@ R3ChokeChamber::createObjects(Simulation& System)
 
   // cut by electron flange
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 217 -227 -212 27 1 (302:-312:327)");
+    (SMap,buildIndex," 217 -227 -212 27 1 (302:-312:327) 427 ");
   makeCell("PhotonOuterVoid",System,cellIndex++,0,0.0,Out);
 
 
@@ -495,7 +495,7 @@ R3ChokeChamber::createObjects(Simulation& System)
   makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -427 417 412 27 -3 227 ");
+    (SMap,buildIndex," -427 417 412 27 -3 ");
   makeCell("SideOuterVoid",System,cellIndex++,0,0.0,Out);
 
   // External
