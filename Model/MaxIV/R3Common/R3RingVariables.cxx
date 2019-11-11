@@ -456,7 +456,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
   // note: CF40::innerRadius is some complex template type 
   Control.addVariable
-    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF40::innerRadius));
+    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
   Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF63>();
