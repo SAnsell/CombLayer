@@ -209,7 +209,7 @@ opticsHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
   
   Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1034.6);
+  Control.addVariable(hutName+"Length",999.6);
   Control.addVariable(hutName+"OutWidth",200.0);
   Control.addVariable(hutName+"RingWidth",110.0);
   Control.addVariable(hutName+"RingWallLen",105.0);
@@ -494,7 +494,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>(); 
-  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",0,2.0);
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",0,4.0);
 
   return;
 }
@@ -878,7 +878,7 @@ opticsVariables(FuncDataBase& Control,
 
   // laue monochromator
   BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,244.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,247.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
 
   opticsSlitPackage(Control,opticsName);
@@ -1019,14 +1019,14 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",30.0,624,5);
+    (Control,"DanmaxFrontBeam",30.0,620,5);
   danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
     
   danmaxVar::wallVariables(Control,"DanmaxWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,125.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,127.0);
 
   danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
   danmaxVar::opticsVariables(Control,"Danmax");

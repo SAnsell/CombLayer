@@ -27,6 +27,51 @@ namespace setVariable
 {
 
 /*!
+  \struct CF16
+  \version 1.0
+  \author S. Ansell
+  \date November 2019
+  \brief CFFlanges for CF16
+*/
+
+struct CF16
+{
+  static constexpr double innerRadius=0.8;
+  static constexpr double wallThick=0.10;
+  static constexpr double flangeRadius=1.7;
+  static constexpr double flangeLength=0.65;
+  static constexpr double bellowStep=0.5;
+  static constexpr double bellowThick=0.5;
+  static constexpr double gasketRadius=0.5;
+  static constexpr double gasketThick=0.7;
+  static constexpr double boltRadius=0.4;
+  static constexpr size_t nBolts=6;
+};
+
+/*!
+  \struct CF25
+  \version 1.0
+  \author S. Ansell
+  \date November 2019
+  \brief CFFlanges for CF25
+*/
+
+struct CF25
+{
+  static constexpr double innerRadius=1.25;
+  static constexpr double wallThick=0.12;
+  static constexpr double flangeRadius=2.7;
+  static constexpr double flangeLength=1.15;
+  static constexpr double bellowStep=0.9;
+  static constexpr double bellowThick=0.8;
+  static constexpr double gasketRadius=1.65;
+  static constexpr double gasketThick=0.7;
+  static constexpr double boltRadius=0.3;
+  static constexpr size_t nBolts=4;
+};
+
+  
+/*!
   \struct CF40
   \version 2.0
   \author S. Ansell
@@ -44,7 +89,7 @@ struct CF40
   static constexpr double bellowThick=1.0;
   static constexpr double gasketRadius=1.0;
   static constexpr double gasketThick=1.3;
-  static constexpr double boltRadius=1.0;
+  static constexpr double boltRadius=0.3;
   static constexpr size_t nBolts=6;
 };
 

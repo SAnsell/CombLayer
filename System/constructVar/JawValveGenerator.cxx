@@ -60,8 +60,8 @@ namespace setVariable
 JawValveGenerator::JawValveGenerator() :
   length(7.0),innerRadius(-1.0),
   width(24.0),height(46.0),depth(10.5),
-  wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.0),
-  portBRadius(5.0),portBThick(1.0),portBLen(1.0),
+  wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.5),
+  portBRadius(5.0),portBThick(1.0),portBLen(1.5),
   voidMat("Void"),wallMat("Stainless304"),jawWidth(2.0),
   jawHeight(1.0),jawThick(0.2),jawGap(0.1)
   /*!
@@ -176,7 +176,7 @@ JawValveGenerator::setPort(const double R,const double L,
   /*!
     Set both the ports
     \param R :: radius of port tube
-    \param L :: lenght of port tube
+    \param L :: length of port tube
     \param T :: Thickness of port tube (outer radius extention)
    */
 {
