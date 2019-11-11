@@ -141,8 +141,8 @@ moveApertureTable(FuncDataBase& Control,
 
   // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
   CrossGen.setMat("Stainless304");
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
+  CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
+  CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
     (Control,frontKey+"IonPC",52.0,15.74,28.70);   // height/depth
 
@@ -262,7 +262,7 @@ shutterTable(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,21.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,20.0);
   Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
