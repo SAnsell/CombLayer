@@ -860,7 +860,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->createAll(System,*bellowA,"back");
-  pumpM1->intersectPorts(System,1,2);
+  //  pumpM1->intersectPorts(System,1,2);
 
   ///////////// split for FLUKA
   const constructSystem::portItem& VP0=pumpM1->getPort(0);
@@ -892,7 +892,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  VP0.insertInCell(System,this->getCell("OuterVoid"));
 
   pumpM1->insertPortInCell
-    (System,{{outerCell+4,outerCell},{outerCell},{outerCell+3},{outerCell},
+    (System,{{outerCell+4,outerCell},{outerCell,outerCell+1,outerCell+2},{outerCell+3},{outerCell},
 	     {outerCell+2},{outerCell+1},
 	     {outerCell+4}});
 

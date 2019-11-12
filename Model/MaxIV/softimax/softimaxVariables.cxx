@@ -926,12 +926,12 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF40>(5.4); // port length, CF63 does not work
-  ELog::EM << "Use CF63 here" << ELog::endDiag;
+  PItemGen.setCF<setVariable::CF63>(5.4); // port length, CF63 does not work
   PItemGen.setPlate(0.0,"Void");
+  PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
-  const Geometry::Vec3D pAngVec(0.75,0.0,cos(M_PI*37.0/180.0));
+  const Geometry::Vec3D pAngVec(0.75,0.0,cos(M_PI*60.0/180.0));
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
   PItemGen.setCF<setVariable::CF40>(PLen);
   PItemGen.setOuterVoid(1);
