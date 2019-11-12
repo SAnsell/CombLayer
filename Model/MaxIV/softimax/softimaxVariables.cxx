@@ -577,7 +577,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,mName,0.0,49);
   Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -596,7 +596,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,7.6);
+  PipeGen.generatePipe(Control,backName,0.0,3.5);
   Control.addVariable(backName+"WindowActive",0);
 
 
@@ -973,9 +973,10 @@ opticsVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),-pAngVec6);
 
   // Gate valve A
-  GateGen.setLength(7.5);
+  GateGen.setLength(6.3);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
+  Control.addVariable(preName+"GateAPortALen",0.8);
 
   BellowGen.setCF<setVariable::CF63>();
   //  BellowGen.setBFlangeCF<setVariable::CF150>();
@@ -983,10 +984,10 @@ opticsVariables(FuncDataBase& Control,
 
   m1MirrorVariables(Control,preName);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.setAFlangeCF<setVariable::CF63>();
+  // BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowC",0,19.7);
 
   // will be rotated vertical
   const std::string collName=preName+"PumpTubeA";
