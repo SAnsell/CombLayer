@@ -136,6 +136,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  M1TubeFront(new constructSystem::VacuumPipe(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
@@ -238,6 +239,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pumpM1);
   OR.addObject(gateA);
   OR.addObject(bellowB);
+  OR.addObject(M1TubeFront);
   OR.addObject(M1Tube);
   OR.addObject(M1Mirror);
   OR.addObject(M1Stand);
@@ -470,8 +472,11 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   int outerCell;
 
-  M1Tube->setFront(initFC,sideIndex);
-  M1Tube->createAll(System,initFC,sideIndex);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,initFC,"back",*M1TubeFront);
+
+  M1Tube->setFront(*M1TubeFront,2);
+  M1Tube->createAll(System,*M1TubeFront,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M1Tube,2);
   M1Tube->insertAllInCell(System,outerCell);
 

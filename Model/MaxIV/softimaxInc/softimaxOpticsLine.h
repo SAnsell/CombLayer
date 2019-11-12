@@ -80,6 +80,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// M1 - Mirror box
+  std::shared_ptr<constructSystem::VacuumPipe> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
@@ -166,7 +167,6 @@ class softimaxOpticsLine :
   // /// View/something(?)/Ion pump
   // std::shared_ptr<constructSystem::PipeTube> screenPipeB;
   // /// Addaptor to connect from pumpint point to diffuser
-  // std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
   // /// Diffusion pump
   // std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
 
