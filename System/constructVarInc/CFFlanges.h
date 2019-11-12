@@ -190,26 +190,6 @@ struct CF150
 };
 
 /*!
-  \struct CFInch150
-  \version 1.0
-  \date November 2019
-  \brief CFFlanges for CF150
-  275-150N
-  page 35 in https://www.n-c.com/App_Themes/Nor-cal/pdf/catalogs/flangefittings.pdf
-*/
-
-struct CFInch150
-{
-  static constexpr double innerRadius=1.9175-0.2; // B=38.35 mm
-  static constexpr double wallThick=0.2; // ? measured in CAD
-  static constexpr double flangeRadius=3.467; // 69.34/2
-  static constexpr double flangeLength=1.27;
-  static constexpr double bellowStep=1.0;
-  static constexpr double bellowThick=1.5;
-  static constexpr size_t nBolts=6;
-};
-
-/*!
   \struct CF200
   \version 1.0
   \author S. Ansell

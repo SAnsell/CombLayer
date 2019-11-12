@@ -168,7 +168,6 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
   template void BellowGenerator::setCF<CF40>();
   template void BellowGenerator::setCF<CF63>();
   template void BellowGenerator::setCF<CF100>();
-  template void BellowGenerator::setCF<CFInch150>();
 
 ///\endcond TEMPLATE
 
