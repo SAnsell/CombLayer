@@ -60,6 +60,8 @@ class softimaxOpticsLine :
   /// construction space for main object
   attachSystem::InnerZone buildZone;
 
+  /// string for pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedComp> preInsert;
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -267,6 +269,8 @@ class softimaxOpticsLine :
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
 
+  void setPreInsert
+  (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

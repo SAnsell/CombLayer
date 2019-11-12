@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
   * File: softimax/SOFTIMAX.cxx
   *
   * Copyright (c) 2004-2019 by Konstantin Batkov
@@ -16,7 +16,7 @@
   * GNU General Public License for more details.
   *
   * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   *
   ****************************************************************************/
 // #include <fstream>
@@ -128,7 +128,7 @@ namespace xraySystem
   */
   {}
 
-  void 
+  void
   SOFTIMAX::build(Simulation& System,
 		  const attachSystem::FixedComp& FCOrigin,
 		  const long int sideIndex)
@@ -193,13 +193,11 @@ namespace xraySystem
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
-
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   return;
   }
 
 
 }   // NAMESPACE xraySystem
-
