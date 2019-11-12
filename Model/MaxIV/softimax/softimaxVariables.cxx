@@ -671,7 +671,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,70.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,50.0);
 
   // RIGHT BRANCH
   BellowGen.setCF<setVariable::CF40>();
@@ -696,7 +696,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeBB",0.0,70.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeBB",0.0,50.0);
 
 
 
