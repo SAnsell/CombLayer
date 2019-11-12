@@ -175,6 +175,8 @@ frontMaskVariables(FuncDataBase& Control,
   // approx for 40uRad x 40uRad
   CollGen.setMinAngleSize(12.0,1600.0,40.0,40.0);
   CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  Control.addVariable(preName+"CollCMat","Void"); // CollimatorTubeC is still needed
+
 
   return;
 }
