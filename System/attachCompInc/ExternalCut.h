@@ -23,6 +23,10 @@
 #define attachSystem_ExternalCut_h
 
 class Simulation;
+namespace  ModelSupport
+{
+  class surfRegister;
+}
 
 namespace attachSystem
 {
