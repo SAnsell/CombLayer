@@ -899,7 +899,7 @@ opticsVariables(FuncDataBase& Control,
   // and set FlangeLength to 1.27 cm (instead of 0.5)
   Name=preName+"TriggerPipe";
   CrossGen.setPlates(0.3,2.0,2.0);  // wall/Top/base ???
-  CrossGen.setPorts(-9.7,-10.7);     // len of ports - measured in the STEP file
+  CrossGen.setPorts(-10.2,-10.2);     // len of ports - measured in the STEP file
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
 
@@ -913,7 +913,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,26.4);
+  BellowGen.generateBellow(Control,preName+"BellowA",0,26.9);
 
   // will be rotated vertical
   const std::string pumpName=preName+"PumpM1";
