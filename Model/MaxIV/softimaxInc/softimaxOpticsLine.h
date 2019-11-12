@@ -82,6 +82,7 @@ class softimaxOpticsLine :
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::VacuumPipe> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
+  std::shared_ptr<constructSystem::VacuumPipe> M1TubeBack;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
   std::shared_ptr<xraySystem::BlockStand> M1Stand;

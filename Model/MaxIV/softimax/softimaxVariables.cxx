@@ -570,7 +570,6 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string frontName=mirrorKey+"M1TubeFront";
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
-  //  PipeGen.setBFlangeCF<CF120>();
   PipeGen.setBFlange(8.05,0.3);
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
@@ -592,6 +591,14 @@ m1MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
   Control.addVariable(mirrorKey+"M1StandMat","SiO2");
+
+  const std::string backName=mirrorKey+"M1TubeBack";
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setAFlange(8.05,0.3);
+  PipeGen.generatePipe(Control,backName,0.0,7.6);
+  Control.addVariable(backName+"WindowActive",0);
+
 
   return;
 }
@@ -680,7 +687,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,50.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,30.0);
 
   // RIGHT BRANCH
   BellowGen.setCF<setVariable::CF40>();
@@ -705,7 +712,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeBB",0.0,50.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeBB",0.0,30.0);
 
 
 
