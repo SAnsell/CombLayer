@@ -257,7 +257,7 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
     \param sideIndexB :: link axis
    */
 {
-  ELog::RegMethod RegA("InnerZone","constructMiddleSurface");
+  ELog::RegMethod RegA("InnerZone","constructMiddleSurface(FC,FC)");
 
   attachSystem::FixedComp DUnit("Dunit",0,0);
   DUnit.createPairVector(FCA,sideIndexA,FCB,sideIndexB);
@@ -265,7 +265,6 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
   const Geometry::Vec3D DPoint(DUnit.getCentre());
 
   Geometry::Vec3D crossX,crossY,crossZ;
-
   DUnit.selectAltAxis(0,crossX,crossY,crossZ);
   ModelSupport::buildPlane(SMap,surfID,DPoint,crossX);
   

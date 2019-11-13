@@ -548,7 +548,7 @@ groupRange::getCellIndex(const size_t cellIndex) const
 	return LA+static_cast<int>(cellIndex-indexPoint);
     }
 
-  throw ColErr::RangeError<int>(cellIndex,0,indexPoint,
+  throw ColErr::RangeError<size_t>(cellIndex,0,indexPoint,
 				"cellIndex out of groupRange");
 }
 
