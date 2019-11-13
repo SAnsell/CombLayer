@@ -231,7 +231,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setBFlange(17.8,1.0);
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
-  Control.addVariable(monoKey+"MonoVesselOuterSize",65);
+  Control.addVariable(monoKey+"MonoVesselOuterSize",62);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
@@ -600,6 +600,8 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setAFlange(8.05,0.3);
   PipeGen.generatePipe(Control,backName,0.0,3.5);
   Control.addVariable(backName+"WindowActive",0);
+  Control.addVariable(backName+"XYAngle",-2);
+  ELog::EM << "XYAngle = -2   is it correct?????" << ELog::endWarn;
 
 
   return;
@@ -889,8 +891,8 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,1);
   std::string Name;
 
-  Control.addVariable(preName+"OuterLeft",70.0);
-  Control.addVariable(preName+"OuterRight",70.0);
+  Control.addVariable(preName+"OuterLeft",74.0);
+  Control.addVariable(preName+"OuterRight",74.0);
   Control.addVariable(preName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
@@ -987,22 +989,20 @@ opticsVariables(FuncDataBase& Control,
   m1MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.setAFlangeCF<setVariable::CF63>();
-  // BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",0,19.7);
 
   // will be rotated vertical
   const std::string collName=preName+"PumpTubeA";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,collName,0.0,30.8);
   Control.addVariable(collName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF63>(5.95);
+  PItemGen.setCF<setVariable::CF63>(4.15);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setCF<setVariable::CF63>(3.65);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
