@@ -713,6 +713,8 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   // No need for insert -- note removal of old master cell
 
+  const int deadCell=masterCellA->getName();
+  
   splitter->createAll(System,*offPipeD,2);
 
   //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
@@ -720,19 +722,21 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
   attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
-
+  
   masterCellA=leftZone.constructMasterCell(System);
   masterCellB=rightZone.constructMasterCell(System);
 
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
-
-  System.removeCell(masterCellA->getName());
+    
+  System.removeCell(deadCell);
 
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("PipeB",System,cellA);
 
   splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeA",System,cellB);
   splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 

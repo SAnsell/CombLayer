@@ -379,13 +379,13 @@ FixedComp::createPairVector(const FixedComp& FCA,
   */
 {
   ELog::RegMethod RegA("FixedComp","createPairVector");
-  FixedComp tmpFC("tmp",0,0);
+  FixedComp tmpFC("tmp",0);
   createUnitVector(FCA,sideIndexA,sideIndexA);
   tmpFC.createUnitVector(FCB,sideIndexB,sideIndexB);
   X+=tmpFC.X;
   Y+=tmpFC.Y;
   Z+=tmpFC.Z;
-  Origin+=Origin;
+  Origin+=tmpFC.Origin;
   X/=2.0;
   Y/=2.0;
   Z/=2.0;
