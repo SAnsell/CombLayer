@@ -52,7 +52,6 @@
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
-#include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
@@ -938,7 +937,7 @@ connectingVariables(FuncDataBase& Control)
   Control.addVariable(baseName+"OuterRadius",60.0);
   
   setVariable::BellowGenerator BellowGen;
-  setVariable::LeadPipeGenerator LeadPipeGen;
+  setVariable::PipeGenerator LeadPipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::LeadBoxGenerator LBGen;
@@ -946,7 +945,7 @@ connectingVariables(FuncDataBase& Control)
   
   PItemGen.setCF<setVariable::CF40>(3.0);
   PItemGen.setPlate(0.0,"Void");  
-  
+  /*
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
 
@@ -993,7 +992,7 @@ connectingVariables(FuncDataBase& Control)
 
   BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
   LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
-  
+  */  
   return;
 }
 
@@ -1012,7 +1011,7 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
 
   setVariable::PipeGenerator PipeGen;
-  setVariable::LeadPipeGenerator LeadPipeGen;
+  //  setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -1031,15 +1030,14 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
   danmaxVar::opticsVariables(Control,"Danmax");
 
-  LeadPipeGen.setCF<setVariable::CF40>();
-  LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,"DanmaxJoinPipeB",0,54.0);
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
 
   danmaxVar::shieldVariables(Control);
   danmaxVar::connectingVariables(Control);
 
   // note bellow skip
-  LeadPipeGen.generateCladPipe(Control,"DanmaxJoinPipeC",10.0,80.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
 
   danmaxVar::exptHutVariables(Control,"DanmaxExpt");
 

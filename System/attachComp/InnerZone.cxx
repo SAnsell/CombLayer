@@ -238,6 +238,41 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
   return;
 }
 
+void
+InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
+				  const int surfID,
+				  const attachSystem::FixedComp& FCA,
+				  const long int sideIndexA,
+				  const attachSystem::FixedComp& FCB,
+				  const long int sideIndexB)
+  /*!
+    Construct a middle surface based on a link point
+    The surfaces normal is orthogonal to the y axis of the link point
+    and the Z axis of the FixedComp
+    \param SMap :: Surface register
+    \param surfID :: new surface number
+    \param FCA :: Fixed point for axis
+    \param sideIndexA :: link axis
+    \param FCB :: Fixed point for axis
+    \param sideIndexB :: link axis
+   */
+{
+  ELog::RegMethod RegA("InnerZone","constructMiddleSurface");
+
+  attachSystem::FixedComp DUnit("Dunit",0,0);
+  DUnit.createPairVector(FCA,sideIndexA,FCB,sideIndexB);
+
+  const Geometry::Vec3D DPoint(DUnit.getCentre());
+
+  Geometry::Vec3D crossX,crossY,crossZ;
+
+  DUnit.selectAltAxis(0,crossX,crossY,crossZ);
+  ModelSupport::buildPlane(SMap,surfID,DPoint,crossX);
+  
+  middleHR=HeadRule(SMap.realSurf(surfID));
+  return;
+}
+
 int
 InnerZone::triVoidUnit(Simulation& System,
 		       MonteCarlo::Object* masterCell,

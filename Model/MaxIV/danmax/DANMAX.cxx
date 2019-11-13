@@ -75,8 +75,6 @@
 
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
-#include "FlangeMount.h"
-#include "BeamMount.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
@@ -99,7 +97,7 @@ DANMAX::DANMAX(const std::string& KN) :
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
-  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe"))
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -114,6 +112,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(joinPipe);
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(joinPipeB);
 }
 
 DANMAX::~DANMAX()

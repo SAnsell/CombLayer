@@ -760,15 +760,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructRevBeamStopTube(System,masterCell,*bellowJ,"back");
 
   constructMonoShutter(System,masterCell,*bellowK,"back");
-  
+
+  setCell("LastVoid",masterCell->getName());
   lastComp=bellowJ;
   return;
 
-  /*
-  setCell("LastVoid",masterCell->getName());
-  lastComp=gateJ;
-  */
-  return;
 }
 
 void

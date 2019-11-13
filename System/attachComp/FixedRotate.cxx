@@ -122,6 +122,8 @@ FixedRotate::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("FixedRotate","populate");
 
   // defaults used to fixedoffset can be used in a setting class.
+  // note extra so can use a fixedoffset angle system if over-step
+  preXAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preXAngle);
   preXAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preXAngle);
   preYAngle=Control.EvalDefVar<double>(keyName+"PreYAngle",preYAngle);
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
@@ -136,7 +138,9 @@ FixedRotate::populate(const FuncDataBase& Control)
   xStep=Control.EvalDefVar<double>(keyName+"XStep",xStep);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",yStep);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zStep);
-  
+
+  // note extra so can use a fixedoffset angle system if over-step
+  xAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xAngle);
   xAngle=Control.EvalDefVar<double>(keyName+"XAngle",xAngle);
   yAngle=Control.EvalDefVar<double>(keyName+"YAngle",yAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
@@ -155,17 +159,19 @@ FixedRotate::populate(const std::map<std::string,
 {
   ELog::RegMethod RegA("FixedRotate","populate(map)");
 
+  mainSystem::findInput(inputMap,"preXYAngle",0,preXAngle);
   mainSystem::findInput(inputMap,"preXAngle",0,preXAngle);
   mainSystem::findInput(inputMap,"preYAngle",0,preYAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
+  mainSystem::findInput(inputMap,"xyAngle",0,xAngle);
   mainSystem::findInput(inputMap,"xAngle",0,xAngle);
   mainSystem::findInput(inputMap,"yAngle",0,yAngle);
   mainSystem::findInput(inputMap,"zAngle",0,zAngle);
   mainSystem::findInput(inputMap,"xStep",0,xStep);
   mainSystem::findInput(inputMap,"yStep",0,yStep);
   mainSystem::findInput(inputMap,"zStep",0,zStep);
+
   return;
-  
 }
 
 void

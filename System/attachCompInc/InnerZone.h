@@ -89,6 +89,9 @@ class InnerZone
   void constructMiddleSurface(ModelSupport::surfRegister&,
 			      const int,const attachSystem::FixedComp&,
 			      const long int);
+  void constructMiddleSurface(ModelSupport::surfRegister&,const int,
+			      const attachSystem::FixedComp&,const long int,
+			      const attachSystem::FixedComp&,const long int);
 
   // split leaving middle section
   int triVoidUnit(Simulation&, MonteCarlo::Object*,
