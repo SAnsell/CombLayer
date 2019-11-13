@@ -123,6 +123,8 @@ class objectGroups
   
   void reset();
   void rotateMaster();
+
+  void removeObject(const std::string&);
   
   void write(const std::string&) const;
 

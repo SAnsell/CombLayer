@@ -187,9 +187,9 @@ class Simulation : public objectGroups
   std::map<int,const MonteCarlo::Material*>
     getOrderedMaterial() const;
 
-  
   int removeDeadSurfaces(); 
   virtual void removeCell(const int);
+  virtual void removeCell(const attachSystem::FixedComp&);
   int removeAllSurface(const int);
 
   void setObjectVoid(const std::string&);
