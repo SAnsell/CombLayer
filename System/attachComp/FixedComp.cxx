@@ -229,6 +229,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   return;
 }
 
+  
 void
 FixedComp::createUnitVector(const FixedComp& FC,
 			    const long int orgIndex,
@@ -361,6 +362,35 @@ FixedComp::makeOrthogonal()
   Z=(Y*X).unit();
   if (ZDir.dotProd(Z)<0.0)
     Z*=-1;
+  return;
+}
+
+void
+FixedComp::createPairVector(const FixedComp& FCA,
+			    const long int sideIndexA,
+			    const FixedComp& FCB,
+			    const long int sideIndexB)
+  /*!
+    Creates a merged pair between two link points
+    \param FCA :: Fixed unit for link points
+    \param sideIndexA :: SIGNED +1 side index
+    \param FCB :: Fixed unit for link points
+    \param sideIndexB :: SIGNED +1 side index
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createPairVector");
+  FixedComp tmpFC("tmp",0,0);
+  createUnitVector(FCA,sideIndexA,sideIndexA);
+  tmpFC.createUnitVector(FCB,sideIndexB,sideIndexB);
+  X+=tmpFC.X;
+  Y+=tmpFC.Y;
+  Z+=tmpFC.Z;
+  Origin+=Origin;
+  X/=2.0;
+  Y/=2.0;
+  Z/=2.0;
+  Origin/=2.0;
+  makeOrthogonal();
   return;
 }
 

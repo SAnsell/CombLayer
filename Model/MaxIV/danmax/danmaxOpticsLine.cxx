@@ -638,6 +638,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
   // dump cell for joinPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  if (preInsert)
+    preInsert->insertInCell(System,outerCell);
+
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
@@ -757,15 +760,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructRevBeamStopTube(System,masterCell,*bellowJ,"back");
 
   constructMonoShutter(System,masterCell,*bellowK,"back");
-  
+
+  setCell("LastVoid",masterCell->getName());
   lastComp=bellowJ;
   return;
 
-  /*
-  setCell("LastVoid",masterCell->getName());
-  lastComp=gateJ;
-  */
-  return;
 }
 
 void

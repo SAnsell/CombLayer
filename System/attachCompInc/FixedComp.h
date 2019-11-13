@@ -109,6 +109,9 @@ class FixedComp
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  void createPairVector(const FixedComp&,const long int,
+			const FixedComp&,const long int);
+
   void setCentre(const Geometry::Vec3D&);
   void applyShift(const double,const double,const double);
 

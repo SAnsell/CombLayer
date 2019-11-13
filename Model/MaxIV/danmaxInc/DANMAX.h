@@ -81,14 +81,7 @@ class DANMAX : public R3Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;
 
   /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
-
-
-  /// Pipe shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> pShield;
-
-  /// Neutron shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> nShield;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
 
   /// Pipe shield on inner of optics hutch
   std::shared_ptr<xraySystem::PipeShield> outerShield;

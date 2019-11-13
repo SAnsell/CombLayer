@@ -71,8 +71,8 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -88,7 +88,7 @@ namespace constructSystem
 {
 
 PipeTube::PipeTube(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -121,7 +121,7 @@ PipeTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PipeTube","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");

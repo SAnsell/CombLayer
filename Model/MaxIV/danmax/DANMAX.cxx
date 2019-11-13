@@ -42,26 +42,15 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -73,7 +62,6 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
@@ -87,8 +75,6 @@
 
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
-#include "FlangeMount.h"
-#include "BeamMount.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
@@ -110,7 +96,8 @@ DANMAX::DANMAX(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new danmaxOpticsLine(newName+"OpticsLine"))
+  opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -125,6 +112,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(joinPipe);
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(joinPipeB);
 }
 
 DANMAX::~DANMAX()
@@ -198,15 +186,17 @@ DANMAX::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
-  /*
+
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+  /*
   //  exptHut->addInsertCell(voidCell);
   //  exptHut->addInsertCell(voidCell);
 
