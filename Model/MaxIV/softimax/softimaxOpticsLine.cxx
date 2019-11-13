@@ -709,19 +709,25 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   //////////////////// 2: build splitter with creating two outer void units
   ////////////////////////////////////////////////////////////////////////////////////
-  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+
+  // No need for insert -- note removal of old master cell
+
+  splitter->createAll(System,*offPipeD,2);
+
+  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,*splitter,2,*splitter,3);
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
   attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
 
-  // No need for insert -- note removal of old master cell
-  System.removeCell(masterCellA->getName());
-
   masterCellA=leftZone.constructMasterCell(System);
   masterCellB=rightZone.constructMasterCell(System);
-  splitter->createAll(System,*offPipeD,2);
+
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+
+  System.removeCell(masterCellA->getName());
 
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("PipeA",System,cellA);
