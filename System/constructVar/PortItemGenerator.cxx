@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/PortItemGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -69,7 +69,7 @@ PortItemGenerator::PortItemGenerator() :
   */
 {}
 
-PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
+PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) :
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
   capThick(A.capThick),wallMat(A.wallMat),
@@ -104,7 +104,7 @@ PortItemGenerator::operator=(const PortItemGenerator& A)
 }
 
 
-PortItemGenerator::~PortItemGenerator() 
+PortItemGenerator::~PortItemGenerator()
  /*!
    Destructor
  */
@@ -124,11 +124,11 @@ PortItemGenerator::setCF(const double L)
   flangeLen=CF::flangeLength;
   flangeRadius=CF::flangeRadius;
   capThick=CF::flangeLength;
-  
+
   return;
 }
 
-  
+
 void
 PortItemGenerator::setPort(const double L,const double R,
 			   const double T)
@@ -144,7 +144,7 @@ PortItemGenerator::setPort(const double L,const double R,
   wallThick=T;
   return;
 }
-  
+
 void
 PortItemGenerator::setFlange(const double R,const double L)
   /*!
@@ -162,7 +162,7 @@ void
 PortItemGenerator::setPlate(const double T,const std::string& PM)
   /*!
     Set the support flange (top) plate thickness and material
-    \param T :: Plate thickness 
+    \param T :: Plate thickness
     \param PM :: material for plate
    */
 {
@@ -170,18 +170,18 @@ PortItemGenerator::setPlate(const double T,const std::string& PM)
   capMat=PM;
   return;
 }
-  
+
 
 void
 PortItemGenerator::generatePort(FuncDataBase& Control,
 				const std::string& keyName,
 				const Geometry::Vec3D& C,
-				const Geometry::Vec3D& A) const 
+				const Geometry::Vec3D& A) const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param C :: centre 
+    \param C :: centre
     \param A :: axis
   */
 {
@@ -201,7 +201,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterVoid",static_cast<int>(outerVoid));
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"CapMat",capMat);
-  
+
   return;
 
 }
@@ -218,6 +218,6 @@ template void PortItemGenerator::setCF<CF150>(const double);
 template void PortItemGenerator::setCF<CF350>(const double);
 
 ///\endcond  TEMPLATE
-  
+
 
 }  // NAMESPACE setVariable

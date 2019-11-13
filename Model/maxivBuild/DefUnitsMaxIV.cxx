@@ -112,6 +112,7 @@ setMaxIVSingle(defaultConfig& A,
     {
       { "BALDER", "World 0"},
       { "COSAXS", "World 0"},
+      { "SOFTIMAX", "World 0"},
       { "DANMAX", "World 0"},
       { "FLEXPES", "World 0"},
       { "FORMAX", "World 0"},

@@ -2,9 +2,8 @@
 // automatically generated colours.
 // Feel free to edit this file according to your taste.
 
-#declare matAluminium    = texture { pigment{color rgb <0.89, 0.91, 0.91> }};
 #declare matB4C          = texture { pigment{color rgb <0.1, 0.1, 0.1> }};
-#declare matConcrete     = texture {T_Wood8};
+//#declare matConcrete     = texture {T_Wood8};
 
 // http://news.povray.org/povray.general/thread/%3C35D92C3C.AD869B36%40pacbell.net%3E/
 #declare matHDConcrete =
@@ -21,5 +20,121 @@
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
     dents .5 scale .5 }}
 
-#declare matLead         = texture { pigment{color rgb <0.61, 0.59, 0.54> }};
-#declare matStainless304 = texture { Silver_Metal };
+////////////////////// LEAD
+// http://www.oyonale.com/modeles.php?lang=en&page=45
+
+#declare N_Lead=normal{
+//    bump_map{jpeg "povray/stone09.jpg"}
+    bump_map{jpeg "povray/optics-hutch-ratchet-wall.jpg"}
+//    bump_size -5
+//    rotate x*90
+//    scale 200
+}
+
+#declare matLead1=texture{
+    pigment{
+        gradient x
+        pigment_map{
+            [0.9 wrinkles turbulence 1 lambda 3
+	      color_map{
+		[0 rgb <0.9,0.93,0.91>*0.7][1 rgb <0.64,0.62,0.59>*0.5]
+	      }
+	    ]
+//	  [0.9 color rgb <0.85,0.7,0.1>] // vertical yellow line
+	}
+        scale 100
+    }
+    normal{N_Lead}
+    finish{
+        ambient 0
+        diffuse 1
+    }
+//    rotate -y*20
+}
+
+#declare matLead=texture{
+  pigment
+  { image_map
+    { png "povray/optics-hutch-ratchet-wall-small.png"
+      map_type 1 interpolate 2 once
+    }
+  }
+}
+
+#declare matConcrete=texture{
+  pigment
+  { image_map
+    { png "povray/optics-hutch-floor-small.png"
+      map_type 1 interpolate 2 once
+    }
+  }
+}
+
+
+
+///////////////////// RUSTY METAL
+// http://www.oyonale.com/modeles.php?lang=en&page=45
+
+#declare T_Shiny=texture{
+    pigment {color rgb 0.1}
+    finish{ambient 0 diffuse 1 metallic brilliance 4 specular 1 roughness 0.02 reflection {0.8,1}}
+}
+#declare T_Rusty=texture{
+    pigment {bozo turbulence 1 color_map{[0.3 DarkWood*0.5][0.5 DarkBrown*0.5]}}
+    normal{bozo turbulence 1 lambda 4 bump_size 1 scale 1/50}
+    finish{ambient 0 diffuse 1 specular 0.01 roughness 0.1}
+}
+
+#declare matStainless304=texture{
+    bozo turbulence 1 lambda 4
+    texture_map{
+        [0.3 T_Shiny]
+        [0.7 T_Rusty]
+//        [0.5 pigment{Red}]
+//        [0.5 pigment{Blue}]
+    }
+    scale 50
+}
+//////////////////////// ALUMINIUM
+
+// T_Pan_Interior from
+// http://www.oyonale.com/modeles.php?lang=en&page=41
+#declare matAluminium = texture{
+    pigment{White*0.9}
+        finish{
+	  ambient 0
+	  diffuse 1
+	  specular 1
+	  roughness 0.015
+	  metallic
+	  brilliance 6
+	  reflection{
+	    0,1 fresnel on metallic
+	  }
+	}
+}
+
+//////////////////////////////// SiO2 ~ Granite /////////
+
+// stone ground from
+// http://www.oyonale.com/modeles.php?lang=en&page=41
+#declare matSiO2a =  texture{
+  pigment{
+    image_map{jpeg "povray/stone04.jpg"}
+  }
+  normal{
+    bump_map{jpeg "povray/stone04.jpg"}
+    bump_size 5
+  }
+  finish{
+    ambient 0
+    diffuse 1
+  }
+//  rotate x*90
+  scale 160
+}
+
+#declare matSiO2= texture{
+    pigment{rgb 0.1}
+    finish{ambient 0 diffuse 1 specular 0.5 roughness 0.07 reflection{0,0.2 fresnel on}}
+}

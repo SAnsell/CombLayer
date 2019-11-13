@@ -93,7 +93,12 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SimTrack.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "groupRange.h"
+
 #include "objectGroups.h"
 #include "Simulation.h"
 
@@ -409,6 +414,25 @@ Simulation::removeDeadSurfaces()
     SurI.deleteSurface(DSurf);
   
   return 0;
+}
+
+void
+Simulation::removeCell(const attachSystem::FixedComp& FC)
+  /*!
+    Removes all the cell associated with a FixedComp
+    \param FC :: FixedComp to remove
+  */
+{
+  ELog::RegMethod RegItem("Simulation","removeCell(FC)");
+  const std::vector<int> ACells=getObjectRange(FC.getKeyName());
+  for(const int CN : ACells)
+    {
+      removeCell(CN);
+    }
+  // now remove FC from objectGroups
+  objectGroups::removeObject(FC.getKeyName());
+  
+  return;
 }
 
 void

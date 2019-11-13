@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/PipeGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,7 +71,7 @@ PipeGenerator::PipeGenerator() :
   */
 {}
 
-PipeGenerator::PipeGenerator(const PipeGenerator& A) : 
+PipeGenerator::PipeGenerator(const PipeGenerator& A) :
   pipeType(A.pipeType),pipeRadius(A.pipeRadius),
   pipeHeight(A.pipeHeight),pipeWidth(A.pipeWidth),
   pipeThick(A.pipeThick),claddingThick(A.claddingThick),
@@ -118,7 +118,7 @@ PipeGenerator::operator=(const PipeGenerator& A)
   return *this;
 }
 
-PipeGenerator::~PipeGenerator() 
+PipeGenerator::~PipeGenerator()
  /*!
    Destructor
  */
@@ -219,7 +219,7 @@ PipeGenerator::setBFlange(const double R,const double L)
   flangeBLen=L;
   return;
 }
-  
+
 void
 PipeGenerator::setFlangePair(const double AR,const double AL,
 			     const double BR,const double BL)
@@ -290,7 +290,7 @@ PipeGenerator::setCF()
   pipeThick=CF::wallThick;
   setAFlangeCF<CF>();
   setBFlangeCF<CF>();
-  
+
   return;
 }
 
@@ -324,9 +324,9 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
                             const double yStep,const double length) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param length :: length of pipe
   */
 {
@@ -346,7 +346,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   realWindowRadius=std::min(realWindowRadius,realFlangeARadius*0.95);
   realWindowRadius=std::min(realWindowRadius,realFlangeBRadius*0.95);
   const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
-    
+
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)
@@ -368,7 +368,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowActive",activeWFlag);
 
   Control.addVariable(keyName+"WindowRadius",realWindowRadius);
-  
+
   Control.addVariable(keyName+"WindowThick",windowThick);
   Control.addVariable(keyName+"WindowFrontMat",frontWindowMat);
   Control.addVariable(keyName+"WindowBackMat",backWindowMat);
@@ -376,7 +376,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"CladdingThick",claddingThick);
   Control.addVariable(keyName+"CladdingMat",claddingMat);
-      
+
   return;
 
 }
@@ -397,7 +397,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setBFlangeCF<CF100>();
   template void PipeGenerator::setBFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF150>();
-  
+
 ///\endcond TEMPLATE
 
 

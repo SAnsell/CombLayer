@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/PipeTubeGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -69,7 +69,7 @@ PipeTubeGenerator::PipeTubeGenerator() :
   */
 {}
 
-PipeTubeGenerator::PipeTubeGenerator(const PipeTubeGenerator& A) : 
+PipeTubeGenerator::PipeTubeGenerator(const PipeTubeGenerator& A) :
   radius(A.radius),wallThick(A.wallThick),flangeALen(A.flangeALen),
   flangeARadius(A.flangeARadius),flangeBLen(A.flangeBLen),
   flangeBRadius(A.flangeBRadius),ACap(A.ACap),BCap(A.BCap),
@@ -105,8 +105,8 @@ PipeTubeGenerator::operator=(const PipeTubeGenerator& A)
   return *this;
 }
 
-  
-PipeTubeGenerator::~PipeTubeGenerator() 
+
+PipeTubeGenerator::~PipeTubeGenerator()
  /*!
    Destructor
  */
@@ -133,7 +133,7 @@ PipeTubeGenerator::setPipe(const double R,const double W,
   BCap=0.0;
   return;
 }
-  
+
 template<typename CF>
 void
 PipeTubeGenerator::setCF()
@@ -227,7 +227,7 @@ PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
   return;
 }
 
-   
+
 void
 PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
@@ -235,21 +235,21 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const double length) const
  /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param length :: length of box - ports
   */
 {
   ELog::RegMethod RegA("PipeTubeGenerator","generatorTube");
-  
+
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
-	
+
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
   Control.addVariable(keyName+"FlangeALength",flangeALen);
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
@@ -261,7 +261,7 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-       
+
   return;
 
 }
@@ -272,6 +272,8 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   template void PipeTubeGenerator::setCF<CF100>();
   template void PipeTubeGenerator::setCF<CF120>();
   template void PipeTubeGenerator::setCF<CF150>();
+  template void PipeTubeGenerator::setCF<CF200>();
+  template void PipeTubeGenerator::setCF<CF350>();
   template void PipeTubeGenerator::setAFlangeCF<CF40>();
   template void PipeTubeGenerator::setAFlangeCF<CF63>();
   template void PipeTubeGenerator::setAFlangeCF<CF100>();
@@ -282,7 +284,7 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   template void PipeTubeGenerator::setBFlangeCF<CF100>();
   template void PipeTubeGenerator::setBFlangeCF<CF120>();
   template void PipeTubeGenerator::setBFlangeCF<CF150>();
-  
+
 ///\endcond TEMPLATE
 
 }  // NAMESPACE setVariable

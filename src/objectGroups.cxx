@@ -406,6 +406,32 @@ objectGroups::cell(const std::string& Name,const size_t size)
 }
 
 void
+objectGroups::removeObject(const std::string& FCName)
+  /*! 
+    Remove the cells an component from the object
+    \param FCname :: Cell name
+  */
+{
+  ELog::RegMethod RegA("objectGroups","removeObject");
+
+  MTYPE::iterator gMC=regionMap.find(FCName);
+  if (gMC==regionMap.end())
+    throw ColErr::InContainerError<std::string>(FCName,"FC not found");
+
+  cMapTYPE::iterator fcIter=Components.find(FCName);
+  if (fcIter==Components.end())
+    throw ColErr::InContainerError<std::string>(FCName,"FC not found in cMap");
+
+  const std::vector<int> allCells=gMC->second.getAllCells();
+  for(const int CN : allCells)
+    rangeMap.erase(CN);
+  
+  Components.erase(fcIter);
+  regionMap.erase(gMC);
+  return;
+}
+
+void
 objectGroups::addObject(const CTYPE& Ptr)
   /*! 
     Register a shared_ptr of an object. 

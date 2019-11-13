@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: balder/balderExptBeamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -87,7 +88,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 balderExptBeamline::balderExptBeamline(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -99,7 +100,7 @@ balderExptBeamline::balderExptBeamline(const std::string& Key) :
     \param Index :: Index number
   */
 {}
-  
+
 balderExptBeamline::~balderExptBeamline()
   /*!
     Destructor
@@ -125,7 +126,7 @@ balderExptBeamline::populate(const FuncDataBase& Control)
 
   sampleMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SampleMat",0);
   beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
-  
+
   return;
 }
 
@@ -185,9 +186,9 @@ balderExptBeamline::createLinks()
    */
 {
   return;
-} 
-  
-void 
+}
+
+void
 balderExptBeamline::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -202,15 +203,14 @@ balderExptBeamline::createAll(Simulation& System,
   ELog::RegMethod RControl("balderExptBeamline","build");
 
   populate(System.getDataBase());
-  
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   buildObjects(System);
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
   return;
 }
 
 
 }   // NAMESPACE xraySystem
-

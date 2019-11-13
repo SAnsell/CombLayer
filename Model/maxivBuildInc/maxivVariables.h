@@ -44,6 +44,7 @@ namespace setVariable
   void R3RingVariables(FuncDataBase&);
   void BALDERvariables(FuncDataBase&);
   void COSAXSvariables(FuncDataBase&);
+  void SOFTIMAXvariables(FuncDataBase&);
   void DANMAXvariables(FuncDataBase&);
   void FORMAXvariables(FuncDataBase&);
 

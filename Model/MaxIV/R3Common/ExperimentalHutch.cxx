@@ -68,6 +68,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
