@@ -76,7 +76,7 @@ class MirrorGenerator
   
   
   void generateMirror(FuncDataBase&,const std::string&,
-		      const double,const double,
+		      const double,const double,const double,
 		      const double,const double,
 		      const double) const;
 
