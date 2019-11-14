@@ -762,7 +762,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructMonoShutter(System,masterCell,*bellowK,"back");
 
   setCell("LastVoid",masterCell->getName());
-  lastComp=bellowJ;
+  lastComp=monoAdaptorB;
   return;
 
 }
