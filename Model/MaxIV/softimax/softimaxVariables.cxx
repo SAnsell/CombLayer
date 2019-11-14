@@ -575,6 +575,15 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlange(8.05,0.3);
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
+  ////////////////////////
+  const double theta = -1.0; // beam angle in deg
+  const double phi = 0.0;   // rotation angle in deg
+  const double normialAngle=0.2;
+  const double vAngle=0.0;
+  const double centreDist(0.0);
+  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
+  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
+  ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -585,8 +594,15 @@ m1MirrorVariables(FuncDataBase& Control,
 
   // mirror in M1Tube
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
-  // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  //  MirrGen.setPrimaryAngle(0,vAngle,0);
+  // x/y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
+			 0.0,
+			 -centreDist/2.0,
+			 0.0,
+			 theta,
+			 phi,
+			 0.0);
   Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
 
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
@@ -792,7 +808,13 @@ m3MirrorVariables(FuncDataBase& Control,
   // mirror in M3Tube
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",
+			 -1.0, // x
+			 0.0, // y
+			 0.0, // z
+			 -1.0, // theta
+			 0.0, // phi
+			 0.0); //radius
   Control.addVariable(mirrorKey+"M3MirrorYAngle",90.0);
 
   Control.addVariable(mirrorKey+"M3StandHeight",110.0);
