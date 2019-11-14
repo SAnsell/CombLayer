@@ -320,7 +320,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
   MirrGen.setPrimaryAngle(0,vAngle,0);  
   // ystep : zstep : theta : phi : radius
   MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
-			 -centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
+			 0.0,-centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
   MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
   // x/y/z/theta/phi/
   MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
