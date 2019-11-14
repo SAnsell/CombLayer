@@ -338,8 +338,8 @@ m1MirrorVariables(FuncDataBase& Control,
 
   // mirror in M1Tube 
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
-  // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, -2.0, 0.0,0.0);
+  // x/y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0,0.0, 0.0, -2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
   Control.addVariable(mirrorKey+"M1MirrorZAngle",-90.0);
 

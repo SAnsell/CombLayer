@@ -542,11 +542,11 @@ opticsVariables(FuncDataBase& Control,
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,opticsName+"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
-  // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,opticsName+"Mirror",0.0, 0.0, -0.5, 0.0,0.0);
+  // x/y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,opticsName+"Mirror",0.0,0.0, 0.0, -0.5, 0.0,0.0);
 
-  // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,opticsName+"MirrorB",0.0, 0.0, 0.5, 0.0,0.0);
+  // x/y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,opticsName+"MirrorB",0.0,0.0, 0.0, 0.5, 0.0,0.0);
 
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
 

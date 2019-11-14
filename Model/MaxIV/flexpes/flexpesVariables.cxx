@@ -310,8 +310,8 @@ m3MirrorVariables(FuncDataBase& Control,
 
   // mirror in M3Tube 
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
-  // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  // x/y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0,0.0, 0.0, 2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M3MirrorYAngle",90.0);
 
   PipeGen.setCF<setVariable::CF100>();
@@ -500,7 +500,7 @@ m1MirrorVariables(FuncDataBase& Control,
   // mirror in M1Tube 
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0,0.0, 0.0, 2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
 
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);

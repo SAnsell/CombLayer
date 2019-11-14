@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MirrorGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,6 +198,7 @@ MirrorGenerator::setPrimaryAngle(const double XA,
 void
 MirrorGenerator::generateMirror(FuncDataBase& Control,
 				const std::string& keyName,
+				const double xStep,
 				const double yStep,
 				const double zStep,
 				const double theta,
@@ -207,6 +208,7 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param xStep :: Cross step
     \param yStep :: Step along beam centre
     \param zStep :: Vertical lift from beamCentre
     \param theta :: theta angle
@@ -219,6 +221,7 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
   Control.addVariable(keyName+"PreXAngle",xAngle);
   Control.addVariable(keyName+"PreYAngle",yAngle);
   Control.addVariable(keyName+"PreZAngle",zAngle);
+  Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"ZStep",zStep);
 

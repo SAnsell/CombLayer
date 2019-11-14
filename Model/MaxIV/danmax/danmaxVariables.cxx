@@ -807,7 +807,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
 
   setVariable::GateValveGenerator GateGen;
-  setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setNoWindow();   // no window
   BellowGen.setCF<setVariable::CF40>();
