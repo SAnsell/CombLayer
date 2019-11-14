@@ -957,6 +957,12 @@ opticsVariables(FuncDataBase& Control,
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,26.9);
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,preName+"PipeA",0.0,10.9);
+  Control.addVariable(preName+"PipeAWindowActive",0);
+
+
   // will be rotated vertical
   const std::string pumpName=preName+"PumpM1";
   SimpleTubeGen.setCF<CF150>();

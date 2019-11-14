@@ -133,6 +133,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -237,6 +238,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(triggerPipe);
   OR.addObject(gaugeA);
   OR.addObject(bellowA);
+  OR.addObject(pipeA);
   OR.addObject(pumpM1);
   OR.addObject(gateA);
   OR.addObject(bellowB);
@@ -714,7 +716,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // No need for insert -- note removal of old master cell
 
   const int deadCell=masterCellA->getName();
-  
+
   splitter->createAll(System,*offPipeD,2);
 
   //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
@@ -722,13 +724,13 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
   attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
-  
+
   masterCellA=leftZone.constructMasterCell(System);
   masterCellB=rightZone.constructMasterCell(System);
 
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
-    
+
   System.removeCell(deadCell);
 
   splitter->insertInCell("Flange",System,cellA);
@@ -876,10 +878,13 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gaugeA,"back",*bellowA);
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpM1->createAll(System,*bellowA,"back");
+  pumpM1->createAll(System,*pipeA,"back");
   //  pumpM1->intersectPorts(System,1,2);
 
   ///////////// split for FLUKA
