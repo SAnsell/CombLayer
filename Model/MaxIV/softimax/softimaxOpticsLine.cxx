@@ -88,6 +88,7 @@
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
+#include "BremOpticsColl.h"
 // #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
@@ -144,7 +145,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
-  bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
+  bremCollA(new xraySystem::BremOpticsColl(newName+"BremCollA")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   slitTube(new constructSystem::PortTube(newName+"SlitTube")),
@@ -946,15 +947,17 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpTubeA->insertAllInCell(System,outerCell);
   //  pumpTubeA->intersectPorts(System,1,2);
 
-  bremCollA->setCutSurf("front",CPI1,CPI1.getSideIndex("OuterPlate"));
-  bremCollA->createAll(System,CPI1,CPI1.getSideIndex("OuterPlate"));
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
-  bremCollA->insertInCell("Main",System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,CPI1,"OuterPlate",*bremCollA);
+
+  setCell("LastVoid",masterCell->getName());
+  lastComp=bellowA; //gateJ;
+  return;
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bremCollA,"back",*gateB);
 
-  bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
+  //  bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateB,"back",*bellowD);

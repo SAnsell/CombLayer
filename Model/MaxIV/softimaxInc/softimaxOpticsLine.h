@@ -39,6 +39,7 @@ namespace xraySystem
   class FlangeMount;
   class TwinPipe;
   class SqrCollimator;
+  class BremOpticsColl;
 
   /*!
     \class softimaxOpticsLine
@@ -91,7 +92,7 @@ class softimaxOpticsLine :
   // Pumping tube for the ion pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
   /// Tungsten bremsstrahlung collimator
-  std::shared_ptr<xraySystem::BremColl> bremCollA;
+  std::shared_ptr<xraySystem::BremOpticsColl> bremCollA;
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   std::shared_ptr<constructSystem::Bellows> bellowD;

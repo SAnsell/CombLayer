@@ -53,6 +53,7 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremCollGenerator.h"
+#include "BremOpticsCollGenerator.h"
 #include "BremMonoCollGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
@@ -1036,10 +1037,19 @@ opticsVariables(FuncDataBase& Control,
 
   // Absolutely dummy Tungsten collimator.
   // TODO: ask about geometry
-  BremGen.setCF<CF63>();
-  BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
-  Control.addVariable(preName+"BremCollAExtLength", 1.7); // !!! UGLY
-  Control.addVariable(preName+"BremCollAHoleMidDist", 3.78);
+  // setVariable::CollGenerator CollGen;
+  // CollGen.setFrontGap(2.62,1.86);       //1033.8
+  // CollGen.setBackGap(1.54,1.42);
+  // //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
+  // CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);
+  // CollGen.generateColl(Control,preName+"BremCollA",0.0,34.0);
+
+  setVariable::BremOpticsCollGenerator OpticsCollGen;
+  OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 34.0);
+  OpticsCollGen.setCF<setVariable::CF63>();
+  Control.addVariable(preName+"BremCollAWidth", 10);
+  Control.addVariable(preName+"BremCollAHeight", 10);
+
 
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
