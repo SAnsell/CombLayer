@@ -229,13 +229,12 @@ BremOpticsColl::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
 				      SMap.realPtr<Geometry::Plane>(buildIndex+11),
-				      -flangeALength);
-      //      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0-flangeALength),Y);
+				      flangeALength);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
@@ -245,10 +244,12 @@ BremOpticsColl::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
+				      SMap.realPtr<Geometry::Plane>(buildIndex+12),
+				      -flangeBLength);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
@@ -268,10 +269,6 @@ BremOpticsColl::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
   ////
-
-  ModelSupport::buildPlane(SMap,buildIndex+101, Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102, Origin+Y*(length/2.0),Y);
-
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,innerRadius+wallThick);

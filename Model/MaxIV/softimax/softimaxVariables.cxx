@@ -1045,8 +1045,8 @@ opticsVariables(FuncDataBase& Control,
   // CollGen.generateColl(Control,preName+"BremCollA",0.0,34.0);
 
   setVariable::BremOpticsCollGenerator OpticsCollGen;
-  OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 34.0);
   OpticsCollGen.setCF<setVariable::CF63>();
+  OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 34.0);
   Control.addVariable(preName+"BremCollAWidth", 10);
   Control.addVariable(preName+"BremCollAHeight", 10);
 
