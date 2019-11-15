@@ -45,8 +45,8 @@ class BremOpticsColl :
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double extWidth;                 ///< External part Width
+  double extHeight;                ///< External part Height
   double wallThick;             ///< Wall thickness
   double holeXStep; ///< X-offset of the hole
   double holeZStep; ///< Z-offset of the hole
@@ -55,6 +55,7 @@ class BremOpticsColl :
 
   double colYStep; ///< absorber y offset
   double colLength; ///< absorber length
+  int extActive; ///< true if external part should be built
 
   double innerRadius;          ///< Inner radius of hole
   double flangeARadius;        ///< Joining Flange radius

@@ -106,7 +106,7 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),extWidth(A.extWidth),extHeight(A.extHeight),
   wallThick(A.wallThick),
   holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),
@@ -114,6 +114,7 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   holeHeight(A.holeHeight),
   colYStep(A.colYStep),
   colLength(A.colLength),
+  extActive(A.extActive),
   innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),
   flangeALength(A.flangeALength),
@@ -143,8 +144,8 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
+      extWidth=A.extWidth;
+      extHeight=A.extHeight;
       wallThick=A.wallThick;
       holeXStep=A.holeXStep;
       holeZStep=A.holeZStep;
@@ -152,6 +153,7 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       holeWidth=A.holeWidth;
       holeHeight=A.holeHeight;
       colLength=A.colLength;
+      extActive=A.extActive;
       innerRadius=A.innerRadius;
       flangeARadius=A.flangeARadius;
       flangeALength=A.flangeALength;
@@ -192,8 +194,8 @@ BremOpticsColl::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  extWidth=Control.EvalVar<double>(keyName+"ExtWidth");
+  extHeight=Control.EvalVar<double>(keyName+"ExtHeight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
@@ -203,6 +205,7 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 
   colYStep=Control.EvalDefVar<double>(keyName+"ColYStep",0.0);
   colLength=Control.EvalVar<double>(keyName+"ColLength");
+  extActive=Control.EvalDefVar<int>(keyName+"ExternalActive", 1);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
@@ -363,16 +366,16 @@ BremOpticsColl::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(extWidth/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(extWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(extHeight/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(extHeight/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

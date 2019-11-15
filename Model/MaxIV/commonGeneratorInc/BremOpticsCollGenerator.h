@@ -40,8 +40,8 @@ class BremOpticsCollGenerator
  private:
 
 
-  double width;               ///< Width of W block
-  double height;              ///< Height of W block
+  double extWidth;               ///< Width of W block
+  double extHeight;              ///< Height of W block
   double length;              ///< Main length
   double wallThick;           ///< wall thickness of main tube
 
@@ -56,11 +56,11 @@ class BremOpticsCollGenerator
   double colYStep;         ///< absorber y offset
   double holeWidth;           ///< width of hole
   double holeHeight;          ///< height of hole
-
   double colLength;           ///< Length of absorber
 
+  int extActive;        ///< true if external part should be built
 
-  double holeMidHeight;        ///< Mid height of hole
+
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
 
