@@ -1035,18 +1035,9 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
-  // Absolutely dummy Tungsten collimator.
-  // TODO: ask about geometry
-  // setVariable::CollGenerator CollGen;
-  // CollGen.setFrontGap(2.62,1.86);       //1033.8
-  // CollGen.setBackGap(1.54,1.42);
-  // //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
-  // CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);
-  // CollGen.generateColl(Control,preName+"BremCollA",0.0,34.0);
-
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   OpticsCollGen.setCF<setVariable::CF63>();
-  OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 34.0);
+  OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 12.0); // measured: 12 cm total length
   Control.addVariable(preName+"BremCollAWidth", 10);
   Control.addVariable(preName+"BremCollAHeight", 10);
 
