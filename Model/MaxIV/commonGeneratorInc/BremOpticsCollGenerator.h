@@ -53,10 +53,13 @@ class BremOpticsCollGenerator
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
-  double holeAWidth;           ///< Front width of hole
-  double holeAHeight;          ///< Front height of hole
-  double holeMidDist;          ///< Mid distance [-ve for fraction of length]
-  double holeMidWidth;         ///< Mid width of hole
+  double colYStep;         ///< absorber y offset
+  double holeWidth;           ///< width of hole
+  double holeHeight;          ///< height of hole
+
+  double colLength;           ///< Length of absorber
+
+
   double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
@@ -72,7 +75,7 @@ class BremOpticsCollGenerator
   double pipeMidGap;          ///< Gap between top halves
 
   std::string voidMat;                ///< void material
-  std::string innerMat;               ///< void material
+  std::string colMat;               ///< absorber material
   std::string wallMat;                ///< Fe material layer
   std::string waterMat;               ///< water cooling material
   std::string pipeMat;                ///< pipe outer material
@@ -87,8 +90,7 @@ class BremOpticsCollGenerator
 
   template<typename CF> void setCF();
 
-  void setAperature(const double,const double,const double,const double,
-		    const double,const double);
+  void setAperature(const double,const double);
   void setMaterial(const std::string&,const std::string&);
 
   void generateColl(FuncDataBase&,const std::string&,

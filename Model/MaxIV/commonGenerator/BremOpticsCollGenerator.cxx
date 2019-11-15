@@ -60,13 +60,14 @@ namespace setVariable
 BremOpticsCollGenerator::BremOpticsCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
   holeXStep(0.0),holeZStep(0.0),
-  holeAWidth(3.0),holeAHeight(1.5),
-  holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
+  holeWidth(1.0),holeHeight(1.2),
+  colLength(8.4),
+  colYStep(0.0),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
   pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
 
-  voidMat("Void"),innerMat("Tungsten"),
+  voidMat("Void"),colMat("Tungsten"),
   wallMat("Stainless304"),waterMat("H2O"),
   pipeMat("Copper")
   /*!
@@ -107,31 +108,21 @@ BremOpticsCollGenerator::setMaterial(const std::string& IMat,
     \param BMat :: Blade Material
   */
 {
-  innerMat=IMat;
+  colMat=IMat;
   wallMat=WMat;
   return;
 }
 
 void
-BremOpticsCollGenerator::setAperature(const double frontW,const double frontH,
-				const double midW,const double midH,
-				const double backW,const double backH)
+BremOpticsCollGenerator::setAperature(const double W,const double H)
   /*!
     Set the widths
-    \param frontW :: Front width
-    \param frontH :: Front height
-    \param midW :: min width
-    \param midH :: min height
-    \param backW :: back width
-    \param backH :: back height
+    \param W :: width
+    \param H :: height
   */
 {
-  holeAWidth=frontW;
-  holeAHeight=frontH;
-  holeMidWidth=midW;
-  holeMidHeight=midH;
-  holeBWidth=backW;
-  holeBHeight=backH;
+  holeWidth=W;
+  holeHeight=H;
   return;
 }
 
@@ -158,7 +149,6 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  const double MD(holeMidDist<0.0 ? -length*holeMidDist : holeMidDist);
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
   Control.addVariable(keyName+"FlangeALength",flangeALength);
@@ -167,10 +157,13 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
 
   Control.addVariable(keyName+"HoleXStep",holeXStep);
   Control.addVariable(keyName+"HoleZStep",holeZStep);
-  Control.addVariable(keyName+"HoleAWidth",holeAWidth);
-  Control.addVariable(keyName+"HoleAHeight",holeAHeight);
-  Control.addVariable(keyName+"HoleMidDist",MD);
-  Control.addVariable(keyName+"HoleMidWidth",holeMidWidth);
+  Control.addVariable(keyName+"ColYStep",colYStep);
+  Control.addVariable(keyName+"HoleWidth",holeWidth);
+  Control.addVariable(keyName+"HoleHeight",holeHeight);
+
+  Control.addVariable(keyName+"ColLength",colLength);
+
+
   Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);
   Control.addVariable(keyName+"HoleBHeight",holeBHeight);
@@ -186,7 +179,7 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"PipeWidth",pipeWidth);
   Control.addVariable(keyName+"PipeMidGap",pipeMidGap);
 
-  Control.addVariable(keyName+"InnerMat",innerMat);
+  Control.addVariable(keyName+"ColMat",colMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WaterMat",waterMat);

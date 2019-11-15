@@ -108,12 +108,19 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
+  holeXStep(A.holeXStep),
+  holeZStep(A.holeZStep),
+  holeWidth(A.holeWidth),
+  holeHeight(A.holeHeight),
+  colYStep(A.colYStep),
+  colLength(A.colLength),
   innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),
   flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),
   flangeBLength(A.flangeBLength),
-  voidMat(A.voidMat),wallMat(A.wallMat)
+  voidMat(A.voidMat),wallMat(A.wallMat),
+  colMat(A.colMat)
   /*!
     Copy constructor
     \param A :: BremOpticsColl to copy
@@ -139,6 +146,12 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
+      holeXStep=A.holeXStep;
+      holeZStep=A.holeZStep;
+      colYStep=A.colYStep;
+      holeWidth=A.holeWidth;
+      holeHeight=A.holeHeight;
+      colLength=A.colLength;
       innerRadius=A.innerRadius;
       flangeARadius=A.flangeARadius;
       flangeALength=A.flangeALength;
@@ -146,6 +159,7 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       flangeBLength=A.flangeBLength;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
+      colMat=A.colMat;
     }
   return *this;
 }
@@ -182,6 +196,14 @@ BremOpticsColl::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
+  holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
+  holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
+  holeWidth=Control.EvalVar<double>(keyName+"HoleWidth");
+  holeHeight=Control.EvalVar<double>(keyName+"HoleHeight");
+
+  colYStep=Control.EvalDefVar<double>(keyName+"ColYStep",0.0);
+  colLength=Control.EvalVar<double>(keyName+"ColLength");
+
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
@@ -198,6 +220,7 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  colMat=ModelSupport::EvalMat<int>(Control,keyName+"ColMat");
 
   return;
 }
@@ -257,13 +280,23 @@ BremOpticsColl::createSurfaces()
 				      -flangeBLength);
     }
 
-  ////
+  //// pipe
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,innerRadius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,flangeBRadius);
 
+  // absorber
+  /// inner part
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*((length-colLength)/2.0+colYStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*((length+colLength)/2.0+colYStep),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(holeWidth/2.0-holeXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(holeWidth/2.0+holeXStep),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(holeHeight/2.0-holeZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(holeHeight/2.0+holeZStep),Z);
 
   return;
 }
@@ -287,14 +320,25 @@ BremOpticsColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 7 2 ");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+back);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out+front+back);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -101 ");
+  makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,Out+front);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -7 (-103:104:-105:106) ");
+  makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  makeCell("Hole",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 ");
+  makeCell("InnerVoidBack",System,cellIndex++,voidMat,0.0,Out+back);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 17 -27 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
 
   // outer boundary
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -27 -1 ");
@@ -338,7 +382,7 @@ void
 BremOpticsColl::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
-  /*!
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin

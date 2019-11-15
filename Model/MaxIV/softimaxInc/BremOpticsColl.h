@@ -48,6 +48,13 @@ class BremOpticsColl :
   double width;                 ///< Width
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
+  double holeXStep; ///< X-offset of the hole
+  double holeZStep; ///< Z-offset of the hole
+  double holeWidth; ///< width of the hole
+  double holeHeight; ///< height of the hole
+
+  double colYStep; ///< absorber y offset
+  double colLength; ///< absorber length
 
   double innerRadius;          ///< Inner radius of hole
   double flangeARadius;        ///< Joining Flange radius
@@ -57,6 +64,7 @@ class BremOpticsColl :
 
   int voidMat;                  ///< Main material
   int wallMat;                  ///< Wall material
+  int colMat; ///< absorber material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
