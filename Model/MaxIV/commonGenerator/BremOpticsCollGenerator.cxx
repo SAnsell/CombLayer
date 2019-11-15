@@ -63,7 +63,7 @@ BremOpticsCollGenerator::BremOpticsCollGenerator() :
   holeWidth(1.0),holeHeight(1.2),
   colLength(8.4),
   colYStep(0.0),extActive(1),
-  holeBWidth(1.0),holeBHeight(1.0),
+  extXStep(0.0),extZStep(0.0),
   extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
   pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
 
@@ -162,11 +162,11 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"HoleHeight",holeHeight);
   Control.addVariable(keyName+"ColLength",colLength);
 
-  Control.addVariable(keyName+"ExternalActive",extActive);
+  Control.addVariable(keyName+"ExtActive",extActive);
+  Control.addVariable(keyName+"ExtXStep",extXStep);
+  Control.addVariable(keyName+"ExtZStep",extZStep);
 
 
-  Control.addVariable(keyName+"HoleBWidth",holeBWidth);
-  Control.addVariable(keyName+"HoleBHeight",holeBHeight);
 
   Control.addVariable(keyName+"ExtLength",extLength);
   Control.addVariable(keyName+"ExtRadius",extRadius);

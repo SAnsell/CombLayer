@@ -115,6 +115,8 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   colYStep(A.colYStep),
   colLength(A.colLength),
   extActive(A.extActive),
+  extXStep(A.extXStep),
+  extZStep(A.extZStep),
   innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),
   flangeALength(A.flangeALength),
@@ -154,6 +156,8 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       holeHeight=A.holeHeight;
       colLength=A.colLength;
       extActive=A.extActive;
+      extXStep=A.extXStep;
+      extZStep=A.extZStep;
       innerRadius=A.innerRadius;
       flangeARadius=A.flangeARadius;
       flangeALength=A.flangeALength;
@@ -205,7 +209,10 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 
   colYStep=Control.EvalDefVar<double>(keyName+"ColYStep",0.0);
   colLength=Control.EvalVar<double>(keyName+"ColLength");
-  extActive=Control.EvalDefVar<int>(keyName+"ExternalActive", 1);
+
+  extActive=Control.EvalDefVar<int>(keyName+"ExtActive", 1);
+  extXStep=Control.EvalDefVar<double>(keyName+"ExtXStep", 0.0);
+  extZStep=Control.EvalDefVar<double>(keyName+"ExtZStep", 0.0);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
@@ -301,6 +308,13 @@ BremOpticsColl::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(holeHeight/2.0-holeZStep),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(holeHeight/2.0+holeZStep),Z);
 
+  // external part
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(extWidth/2.0-extXStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(extWidth/2.0+extXStep),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(extHeight/2.0-extZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(extHeight/2.0+extZStep),Z);
+
   return;
 }
 
@@ -338,10 +352,6 @@ BremOpticsColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 17 -27 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-
-
 
   // outer boundary
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -27 -1 ");
@@ -349,7 +359,15 @@ BremOpticsColl::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -37 2 ");
   addOuterUnionSurf(Out+back);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -27");
+  if (extActive)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 203 -204 205 -206 17 ");
+      makeCell("External",System,cellIndex++,colMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 203 -204 205 -206 ");
+      addOuterUnionSurf(Out);
+    }
+
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -17");
   addOuterUnionSurf(Out);
 
   return;

@@ -59,10 +59,8 @@ class BremOpticsCollGenerator
   double colLength;           ///< Length of absorber
 
   int extActive;        ///< true if external part should be built
-
-
-  double holeBWidth;           ///< Back width of hole
-  double holeBHeight;          ///< Back height of hole
+  double extXStep;          ///< x offset of external part
+  double extZStep;          ///< z offset of external part
 
   double extLength;            ///< Extent unit length
   double extRadius;            ///< Extent unit radius

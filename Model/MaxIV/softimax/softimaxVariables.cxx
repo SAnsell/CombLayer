@@ -1038,8 +1038,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   OpticsCollGen.setCF<setVariable::CF63>();
   OpticsCollGen.generateColl(Control,preName+"BremCollA",0.0, 12.0); // measured: 12 cm total length
-  Control.addVariable(preName+"BremCollAWidth", 10);
-  Control.addVariable(preName+"BremCollAHeight", 10);
+  Control.addVariable(preName+"BremCollAExtXStep", 2.3);
 
 
   GateGen.setLength(2.5);
