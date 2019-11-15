@@ -64,7 +64,7 @@ BremOpticsCollGenerator::BremOpticsCollGenerator() :
   colLength(8.4),
   colYStep(0.0),extActive(1),
   extXStep(0.0),extZStep(0.0),
-  extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
+  extLength(5.0),extRadius(2.5),colRadius(2.0),pipeXSec(0.9),
   pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
 
   voidMat("Void"),colMat("Tungsten"),
@@ -91,6 +91,7 @@ BremOpticsCollGenerator::setCF()
   */
 {
   innerRadius=CF::innerRadius;
+  colRadius=innerRadius;
   flangeARadius=CF::flangeRadius;
   flangeBRadius=CF::flangeRadius;
   flangeALength=CF::flangeLength;
@@ -161,6 +162,7 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"HoleWidth",holeWidth);
   Control.addVariable(keyName+"HoleHeight",holeHeight);
   Control.addVariable(keyName+"ColLength",colLength);
+  Control.addVariable(keyName+"ColRadius",colRadius);
 
   Control.addVariable(keyName+"ExtActive",extActive);
   Control.addVariable(keyName+"ExtXStep",extXStep);
@@ -172,7 +174,6 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtRadius",extRadius);
 
 
-  Control.addVariable(keyName+"PipeDepth",pipeDepth);
   Control.addVariable(keyName+"PipeXSec",pipeXSec);
   Control.addVariable(keyName+"PipeYStep",pipeYStep);
   Control.addVariable(keyName+"PipeZStep",pipeZStep);

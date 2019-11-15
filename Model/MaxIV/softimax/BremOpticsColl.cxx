@@ -114,6 +114,7 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   holeHeight(A.holeHeight),
   colYStep(A.colYStep),
   colLength(A.colLength),
+  colRadius(A.colRadius),
   extActive(A.extActive),
   extXStep(A.extXStep),
   extZStep(A.extZStep),
@@ -155,6 +156,7 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       holeWidth=A.holeWidth;
       holeHeight=A.holeHeight;
       colLength=A.colLength;
+      colRadius=A.colRadius;
       extActive=A.extActive;
       extXStep=A.extXStep;
       extZStep=A.extZStep;
@@ -215,6 +217,11 @@ BremOpticsColl::populate(const FuncDataBase& Control)
   extZStep=Control.EvalDefVar<double>(keyName+"ExtZStep", 0.0);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+  colRadius=Control.EvalVar<double>(keyName+"ColRadius");
+
+  if (colRadius>innerRadius)
+    throw ColErr::RangeError<double>(colRadius, 0, innerRadius,
+				   "ColRadius must be <= InnerRadius");
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
                                          keyName+"FlangeRadius");
@@ -296,6 +303,7 @@ BremOpticsColl::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,innerRadius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,colRadius);
 
   // absorber
   /// inner part
@@ -340,8 +348,17 @@ BremOpticsColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -101 ");
   makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,Out+front);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -7 (-103:104:-105:106) ");
-  makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
+  if (colRadius<innerRadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -107 (-103:104:-105:106) ");
+      makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -7 (-103:104:-105:106) ");
+      makeCell("OutsideAbsorber",System,cellIndex++,voidMat,0.0,Out);
+    } else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -7 (-103:104:-105:106) ");
+      makeCell("Absorber",System,cellIndex++,colMat,0.0,Out);
+    }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Hole",System,cellIndex++,voidMat,0.0,Out);

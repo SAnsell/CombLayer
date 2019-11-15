@@ -57,6 +57,7 @@ class BremOpticsCollGenerator
   double holeWidth;           ///< width of hole
   double holeHeight;          ///< height of hole
   double colLength;           ///< Length of absorber
+  double colRadius;           ///< Absorber radius
 
   int extActive;        ///< true if external part should be built
   double extXStep;          ///< x offset of external part
@@ -65,7 +66,7 @@ class BremOpticsCollGenerator
   double extLength;            ///< Extent unit length
   double extRadius;            ///< Extent unit radius
 
-  double pipeDepth;           ///< Pipe Y depth
+
   double pipeXSec;            ///< Pipe X/Z width
   double pipeYStep;           ///< Pipe step down block
   double pipeZStep;           ///< Pipe under step

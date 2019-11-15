@@ -55,6 +55,7 @@ class BremOpticsColl :
 
   double colYStep; ///< absorber y offset
   double colLength; ///< absorber length
+  double colRadius; ///< absorber radius
   int extActive; ///< true if external part should be built
   double extXStep; ///< x offset of external part
   double extZStep; ///< z offset of external part
