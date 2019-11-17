@@ -65,7 +65,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -147,7 +146,6 @@ shortODIN::shortODIN(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.cell("shortOdinAxis");
   OR.addObject(odinAxis);
   
   OR.addObject(BladeChopper);

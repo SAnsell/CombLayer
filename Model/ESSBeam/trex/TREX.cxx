@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREX.cxx
  *
- * Copyright (c) 2004-2018 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,8 +194,6 @@ TREX::TREX(const std::string& keyName):
   ELog::RegMethod RegA("TREX","TREX");
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-  OR.cell(newName+"Axis");
-
   OR.addObject(trexAxis);
   
   OR.addObject(FocusMono);

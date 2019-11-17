@@ -68,7 +68,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -182,8 +181,6 @@ LOKI::registerObjects()
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  // This necessary:
-  OR.cell(newName+"Axis");
   OR.addObject(lokiAxis);
 
   OR.addObject(BendA);

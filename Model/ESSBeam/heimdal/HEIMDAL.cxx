@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -68,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -157,8 +155,6 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(heimdalAxis);
 
   OR.addObject(FocusTA);

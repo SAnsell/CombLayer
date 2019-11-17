@@ -3,7 +3,7 @@
  
  * File:   essBuild/MAGIC.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,7 +167,6 @@ MAGIC::MAGIC(const std::string& keyName) :
 
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(magicAxis);
 
   OR.addObject(FocusA);

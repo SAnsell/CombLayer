@@ -182,8 +182,6 @@ SKADI::SKADI(const std::string& keyName):
   ELog::RegMethod RegA("SKADI","SKADI");
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-  OR.cell(newName+"Axis");
-
   OR.addObject(skadiAxis);
 
   OR.addObject(BendA);

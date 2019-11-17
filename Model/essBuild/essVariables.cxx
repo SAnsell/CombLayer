@@ -3,7 +3,7 @@
  
  * File:   essBuild/essVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,7 +276,7 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TSMainBuildingXYAngle", 0.0);
   Control.addVariable("TSMainBuildingZAngle", 0.0);
   Control.addVariable("TSMainBuildingLength", 2200*2.0);
-  Control.addVariable("TSMainBuildingWidth",  1090*2.0);
+  Control.addVariable("TSMainBuildingWidth",  890*2.0);  // from 1090
   Control.addVariable("TSMainBuildingHeight", 1000.0);
   Control.addVariable("TSMainBuildingDepth",  750.0);
   Control.addVariable("TSMainBuildingMainMat",  "Concrete");

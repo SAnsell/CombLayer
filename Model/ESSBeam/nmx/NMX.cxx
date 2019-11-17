@@ -66,7 +66,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -127,8 +126,6 @@ NMX::NMX(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // This necessary:
-  OR.cell(newName+"Axis");
   OR.addObject(nmxAxis);
 
   OR.addObject(FocusA);

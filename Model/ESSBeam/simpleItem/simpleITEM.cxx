@@ -103,7 +103,6 @@ simpleITEM::simpleITEM(const std::string& keyN) :
     ModelSupport::objectRegister::Instance();
 
   // This necessary:
-  OR.cell(newName+"Axis");
   OR.addObject(simpleAxis);
   OR.addObject(Plate);
 }

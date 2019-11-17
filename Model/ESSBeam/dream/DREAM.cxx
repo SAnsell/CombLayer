@@ -3,7 +3,7 @@
  
  * File:   essBuild/DREAM.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -179,7 +178,6 @@ DREAM::DREAM(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
