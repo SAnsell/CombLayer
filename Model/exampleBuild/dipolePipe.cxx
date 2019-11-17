@@ -80,13 +80,13 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "Dipole.h"
+#include "dipolePipe.h"
 
-namespace xraySystem
+namespace exampleSystem
 {
 
-Dipole::Dipole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,7),
+dipolePipe::dipolePipe(const std::string& Key) :
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -100,7 +100,7 @@ Dipole::Dipole(const std::string& Key) :
   FixedComp::nameSideIndex(6,"Centre");
 }
 
-Dipole::Dipole(const std::string& Base,
+dipolePipe::dipolePipe(const std::string& Base,
 	       const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
@@ -116,20 +116,20 @@ Dipole::Dipole(const std::string& Base,
 {}
 
 
-Dipole::~Dipole() 
+dipolePipe::~dipolePipe() 
   /*!
     Destructor
   */
 {}
 
 void
-Dipole::populate(const FuncDataBase& Control)
+dipolePipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("Dipole","populate");
+  ELog::RegMethod RegA("dipolePipe","populate");
 
   FixedRotate::populate(Control);
 
@@ -152,7 +152,7 @@ Dipole::populate(const FuncDataBase& Control)
 }
 
 void
-Dipole::createUnitVector(const attachSystem::FixedComp& FC,
+dipolePipe::createUnitVector(const attachSystem::FixedComp& FC,
     	                     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -160,7 +160,7 @@ Dipole::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point
   */
 {
-  ELog::RegMethod RegA("Dipole","createUnitVector");
+  ELog::RegMethod RegA("dipolePipe","createUnitVector");
 
   // origin from start point
   FixedComp::createUnitVector(FC,sideIndex);
@@ -169,12 +169,12 @@ Dipole::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-Dipole::createSurfaces()
+dipolePipe::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("Dipole","createSurfaces");
+  ELog::RegMethod RegA("dipolePipe","createSurfaces");
 
   // pole pieces  
   const Geometry::Quaternion QR=
@@ -248,13 +248,13 @@ Dipole::createSurfaces()
 }
 
 void
-Dipole::createObjects(Simulation& System)
+dipolePipe::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("Dipole","createObjects");
+  ELog::RegMethod RegA("dipolePipe","createObjects");
 
 
   std::string Out;
@@ -328,12 +328,12 @@ Dipole::createObjects(Simulation& System)
 }
 
 void 
-Dipole::createLinks()
+dipolePipe::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("Dipole","createLinks");
+  ELog::RegMethod RegA("dipolePipe","createLinks");
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
@@ -342,7 +342,7 @@ Dipole::createLinks()
 }
 
 void
-Dipole::createAll(Simulation& System,
+dipolePipe::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -352,7 +352,7 @@ Dipole::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("Dipole","createAll");
+  ELog::RegMethod RegA("dipolePipe","createAll");
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
@@ -364,5 +364,4 @@ Dipole::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
-z
+}  // NAMESPACE exampleSystem
