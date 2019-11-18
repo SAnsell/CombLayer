@@ -180,11 +180,11 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
-  collAA(new xraySystem::BremOpticsColl(newName+"CollAA")),
+  bremCollAA(new xraySystem::BremOpticsColl(newName+"BremCollAA")),
   joinPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   joinPipeBA(new constructSystem::VacuumPipe(newName+"JoinPipeBA")),
-  collBA(new xraySystem::BremOpticsColl(newName+"CollBA")),
+  bremCollBA(new xraySystem::BremOpticsColl(newName+"BremCollBA")),
   joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB"))
 
 
@@ -279,11 +279,11 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
   OR.addObject(joinPipeAA);
-  OR.addObject(collAA);
+  OR.addObject(bremCollAA);
   OR.addObject(joinPipeAB);
   OR.addObject(bellowBA);
   OR.addObject(joinPipeBA);
-  OR.addObject(collBA);
+  OR.addObject(bremCollBA);
   OR.addObject(joinPipeBB);
 
 
@@ -760,10 +760,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
     (System,leftZone,masterCellA,*bellowAA,"back",*joinPipeAA);
 
   xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,*joinPipeAA,"back",*collAA);
+    (System,leftZone,masterCellA,*joinPipeAA,"back",*bremCollAA);
 
   xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,*collAA,"back",*joinPipeAB);
+    (System,leftZone,masterCellA,*bremCollAA,"back",*joinPipeAB);
 
 
 
@@ -775,10 +775,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
     (System,rightZone,masterCellB,*bellowBA,"back",*joinPipeBA);
 
   xrayConstruct::constructUnit
-    (System,rightZone,masterCellB,*joinPipeBA,"back",*collBA);
+    (System,rightZone,masterCellB,*joinPipeBA,"back",*bremCollBA);
 
   xrayConstruct::constructUnit
-    (System,rightZone,masterCellB,*collBA,"back",*joinPipeBB);
+    (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
 
 
   // gateAA->createAll(System,*bellowAA,2);

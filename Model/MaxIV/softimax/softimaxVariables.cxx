@@ -696,8 +696,8 @@ splitterVariables(FuncDataBase& Control,
 
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   OpticsCollGen.setCF<setVariable::CF63>();
-  OpticsCollGen.generateColl(Control,splitKey+"CollAA",0.0, 12.0); // ???
-  Control.addVariable(splitKey+"CollAAExtActive", 0);
+  OpticsCollGen.generateColl(Control,splitKey+"BremCollAA",0.0, 12.0); // ???
+  Control.addVariable(splitKey+"BremCollAAExtActive", 0);
 
 
   PipeGen.setMat("Stainless304");
@@ -715,8 +715,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"JoinPipeBA",0.0,100.0);
 
   OpticsCollGen.setCF<setVariable::CF63>();
-  OpticsCollGen.generateColl(Control,splitKey+"CollBA",0.0, 12.0); // ???
-  Control.addVariable(splitKey+"CollBAExtActive", 0);
+  OpticsCollGen.generateColl(Control,splitKey+"BremCollBA",0.0, 12.0); // ???
+  Control.addVariable(splitKey+"BremCollBAExtActive", 0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
