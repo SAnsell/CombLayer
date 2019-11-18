@@ -694,15 +694,10 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,100.0);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,splitKey+"CollimatorTubeAA",0.0,36.0);
-  Control.addVariable(splitKey+"CollimatorTubeAANPorts",0);
-
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   OpticsCollGen.setCF<setVariable::CF63>();
   OpticsCollGen.generateColl(Control,splitKey+"CollAA",0.0, 12.0); // ???
-  Control.addVariable(splitKey+"BremCollAExtActive", 0);
+  Control.addVariable(splitKey+"CollAAExtActive", 0);
 
 
   PipeGen.setMat("Stainless304");
@@ -719,16 +714,9 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeBA",0.0,100.0);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,splitKey+"CollimatorTubeBA",0.0,36.0);
-  Control.addVariable(splitKey+"CollimatorTubeBANPorts",0);
-
-  CollGen.setFrontGap(2.62,1.86);       //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);
-  CollGen.generateColl(Control,splitKey+"CollBA",0.0,34.0);
+  OpticsCollGen.setCF<setVariable::CF63>();
+  OpticsCollGen.generateColl(Control,splitKey+"CollBA",0.0, 12.0); // ???
+  Control.addVariable(splitKey+"CollBAExtActive", 0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
