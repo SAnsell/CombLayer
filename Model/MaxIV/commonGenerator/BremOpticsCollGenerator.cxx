@@ -19,33 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
-#include <list>
+// #include <fstream>
+// #include <iomanip>
+// #include <iostream>
+// #include <sstream>
+// #include <cmath>
+// #include <complex>
+// #include <list>
 #include <vector>
-#include <stack>
-#include <set>
+// #include <stack>
+// #include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <numeric>
-#include <memory>
+// #include <string>
+// #include <algorithm>
+// #include <numeric>
+// #include <memory>
 
-#include "Exception.h"
-#include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
