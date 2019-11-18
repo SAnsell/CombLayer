@@ -24,6 +24,14 @@
 
 class SimFLUKA;
 
+bool constructLinkRegion(const Simulation&,const std::string&,
+			 const std::string&,int&,int&);
+
+bool constructSurfRegion(const Simulation&,const std::string&,
+			 const std::string&,const size_t,
+			 const size_t,int&,int&);
+
+bool checkLinkCells(const Simulation&,const int,const int);
 
 void tallyModification(SimFLUKA&,const mainSystem::inputParam&);
 

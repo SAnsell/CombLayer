@@ -68,6 +68,7 @@
 #include "particleConv.h"
 #include "flukaGenParticle.h"
 #include "TallySelector.h"
+#include "flukaTallySelector.h"
 #include "flukaTally.h"
 #include "userBdx.h"
 #include "userBdxConstruct.h" 
@@ -76,118 +77,6 @@
 namespace flukaSystem
 {
 
-bool
-userBdxConstruct::checkLinkCells(const Simulation& System,
-				 const int cellA,
-				 const int cellB)
-  /*!
-    Determine if two cells are connected via a common surface
-    \param System :: Simulation for objects
-    \param cellA :: Cell A 
-    \param cellB :: Cell B
-    \return true if cellA-cellB share common surf
-  */
-{
-  ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
-  
-  const MonteCarlo::Object* APtr=System.findObject(cellA);
-  const MonteCarlo::Object* BPtr=System.findObject(cellB);
-  if (!APtr || !BPtr)
-    return 0;
-
-  const std::set<int>& ASurf=APtr->getSurfSet();
-  const std::set<int>& BSurf=BPtr->getSurfSet();
-
-  for(const int CN : ASurf)
-    if (BSurf.find(-CN)!=BSurf.end())
-      return 1;
-
-  return 0;
-}
-
-bool
-userBdxConstruct::constructLinkRegion(const Simulation& System,
-				      const std::string& FCname,
-				      const std::string& FCindex,
-				      int& cellA,int& cellB)
-  /*!
-    Construct a link region exiting the FixedComp link unit
-    \param System :: Simulation to use	
-    \param FCname :: name of fixed comp
-    \param FCindex :: name of link point
-    \param cellA :: Cell from the -ve side
-    \param cellB :: Cell from the +ve side
-    \return true if constructed correctly
-  */
-{
-  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
-  
-  const attachSystem::FixedComp* FCPtr=
-    System.getObject<attachSystem::FixedComp>(FCname);
-
-  if (!FCPtr) return 0;
-
-  if (!FCPtr->hasSideIndex(FCindex)) return 0;
-  const long int FCI=FCPtr->getSideIndex(FCindex);
-  const int surfN=FCPtr->getLinkSurf(FCI);
-  if (!surfN) return 0;
-
-  const std::pair<const MonteCarlo::Object*,
-	    const MonteCarlo::Object*> RefPair=
-    System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
-  
-  if (RefPair.first && RefPair.second)
-    {
-      cellA=RefPair.first->getName();
-      cellB=RefPair.second->getName();
-      return 1;
-    }
-  return 0;
-}
-
-bool
-userBdxConstruct::constructSurfRegion(const Simulation& System,
-				      const std::string& FCname,
-				      const std::string& surfName,
-				      const size_t indexA,
-				      const size_t indexB,
-				      int& cellA,int& cellB)
-  /*!
-    Construct a link region exiting the SurfMap link unit
-    FCname also names a groupRange which is used 
-    to ensure that cellA is part of the groupRange
-    \param System :: Simulation to use	
-    \param FCname :: name of SurfMap
-    \param surfName :: name of surface [signed]
-    \param indexA :: Index of region found in primary
-    \param indexB :: Index region found in secondary
-    \param cellA :: Primary region cell number
-    \param cellB :: Secondary region cell number
-  */
-{
-  ELog::RegMethod RegA("userBdxConstruct","constructSurfRegion");
-  
-  const attachSystem::SurfMap* SMPtr=
-    System.getObject<attachSystem::SurfMap>(FCname);
-
-  if (!SMPtr || surfName.empty()) return 0;
-  
-  const int surfN=SMPtr->getSignedSurf(surfName);
-  if (!surfN) return 0;
-  // throws on error [unlikely because SurfMap is good]
-  const groupRange& activeGrp=System.getGroup(FCname);
-  const std::pair<const MonteCarlo::Object*,
-	    const MonteCarlo::Object*> RefPair=
-    System.findCellPair(surfN,activeGrp,indexA,indexB);
-  
-  if (RefPair.first && RefPair.second)
-    {
-      cellA=RefPair.first->getName();
-      cellB=RefPair.second->getName();
-      return 1;
-    }
-  return 0;
-}
 
 void 
 userBdxConstruct::createTally(SimFLUKA& System,

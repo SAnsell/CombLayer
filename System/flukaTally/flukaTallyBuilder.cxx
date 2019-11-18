@@ -63,6 +63,7 @@
 #include "userBdxConstruct.h"
 #include "userRadDecayConstruct.h"
 #include "userTrackConstruct.h"
+#include "userYieldConstruct.h"
 #include "resnucConstruct.h"
 #include "flukaTallyBuilder.h"
 
@@ -108,6 +109,8 @@ tallySelection(SimFLUKA& System,
 	userTrackConstruct::processTrack(System,IParam,i);
       else if (TType=="resnuc")
 	resnucConstruct::processResNuc(System,IParam,i);
+      else if (TType=="yield")
+	userYieldConstruct::processYield(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
