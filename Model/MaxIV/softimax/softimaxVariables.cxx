@@ -806,7 +806,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const double tLen(48.2);
   PortTubeGen.setPipeCF<CF200>();
 
-  PortTubeGen.setPortCF<CF40>();
+  PortTubeGen.setPortCF<CF63>();
   PortTubeGen.setPortLength(-5.0,-5.0);
   PortTubeGen.generateTube(Control,sName,0.0,tLen);
 
@@ -990,14 +990,12 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BremCollAExtXStep", 2.3);
 
 
-  GateGen.setLength(2.5);
-  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.setLength(3.5);
+  GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowD",0,21.5);
 
   opticsSlitPackage(Control,preName);
 
