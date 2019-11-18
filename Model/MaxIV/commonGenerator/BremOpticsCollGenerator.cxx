@@ -64,12 +64,9 @@ BremOpticsCollGenerator::BremOpticsCollGenerator() :
   colLength(8.4),
   colYStep(0.0),extActive(1),
   extXStep(0.0),extZStep(0.0),
-  extLength(5.0),extRadius(2.5),colRadius(2.0),pipeXSec(0.9),
-  pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
-
+  extLength(5.0),extRadius(2.5),colRadius(2.0),
   voidMat("Void"),colMat("Tungsten"),
-  wallMat("Stainless304"),waterMat("H2O"),
-  pipeMat("Copper")
+  wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -115,7 +112,7 @@ BremOpticsCollGenerator::setMaterial(const std::string& IMat,
 }
 
 void
-BremOpticsCollGenerator::setAperature(const double W,const double H)
+BremOpticsCollGenerator::setAperture(const double W,const double H)
   /*!
     Set the widths
     \param W :: width
@@ -168,23 +165,12 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtXStep",extXStep);
   Control.addVariable(keyName+"ExtZStep",extZStep);
 
-
-
   Control.addVariable(keyName+"ExtLength",extLength);
   Control.addVariable(keyName+"ExtRadius",extRadius);
-
-
-  Control.addVariable(keyName+"PipeXSec",pipeXSec);
-  Control.addVariable(keyName+"PipeYStep",pipeYStep);
-  Control.addVariable(keyName+"PipeZStep",pipeZStep);
-  Control.addVariable(keyName+"PipeWidth",pipeWidth);
-  Control.addVariable(keyName+"PipeMidGap",pipeMidGap);
 
   Control.addVariable(keyName+"ColMat",colMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"WaterMat",waterMat);
-  Control.addVariable(keyName+"PipeMat",pipeMat);
 
   return;
 

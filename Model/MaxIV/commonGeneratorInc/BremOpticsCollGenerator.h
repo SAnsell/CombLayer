@@ -66,19 +66,9 @@ class BremOpticsCollGenerator
   double extLength;            ///< Extent unit length
   double extRadius;            ///< Extent unit radius
 
-
-  double pipeXSec;            ///< Pipe X/Z width
-  double pipeYStep;           ///< Pipe step down block
-  double pipeZStep;           ///< Pipe under step
-  double pipeWidth;           ///< Centre-centre width
-  double pipeMidGap;          ///< Gap between top halves
-
   std::string voidMat;                ///< void material
   std::string colMat;               ///< absorber material
   std::string wallMat;                ///< Fe material layer
-  std::string waterMat;               ///< water cooling material
-  std::string pipeMat;                ///< pipe outer material
-
 
  public:
 
@@ -89,7 +79,7 @@ class BremOpticsCollGenerator
 
   template<typename CF> void setCF();
 
-  void setAperature(const double,const double);
+  void setAperture(const double,const double);
   void setMaterial(const std::string&,const std::string&);
 
   void generateColl(FuncDataBase&,const std::string&,
