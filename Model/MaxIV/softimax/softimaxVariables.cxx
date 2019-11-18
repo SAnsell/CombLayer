@@ -229,14 +229,14 @@ monoVariables(FuncDataBase& Control,
   //
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(10.2,1.0);
-  MBoxGen.setBFlange(10.2,1.0);
-  MBoxGen.setPortLength(2.3,7.5); // La/Lb
+  MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
+  MBoxGen.setPortLength(2.3,7.5-2.5);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
   Control.addVariable(monoKey+"MonoVesselOuterSize",62);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",1.4);      // from primary
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
 
@@ -579,11 +579,11 @@ m1MirrorVariables(FuncDataBase& Control,
   ////////////////////////
   const double theta = -1.0; // beam angle in deg
   const double phi = 0.0;   // rotation angle in deg
-  const double normialAngle=0.2;
-  const double vAngle=0.0;
+  //  const double normialAngle=0.2;
+  //  const double vAngle=0.0;
   const double centreDist(0.0);
-  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
+  //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
+  //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
@@ -668,10 +668,6 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF40>(port0Length);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-4,0,0),ZVec);
-
-  // vertical offset at the border b/w splitter and M3Pump
-  const double x = splitXStep + splitLength*sin(splitAngle*M_PI/180);
-  //  ELog::EM << "x: " << x << ELog::endDiag;
 
   const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
   PItemGen.setCF<setVariable::CF40>(port0Length*cos(splitAngle*4*M_PI/180)+0.75);
@@ -1009,6 +1005,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
+  //  Control.addVariable(preName+"GateCXYAngle",1);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
