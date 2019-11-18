@@ -46,7 +46,6 @@
 #include "InputControl.h"
 #include "inputParam.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsExample.h"
 
@@ -87,8 +86,9 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");
 	}
-      A.process(Control,IParam);
     }
+  A.setOption("sdefType","Point");        
+  A.process(Control,IParam);
   return;
 }
 

@@ -133,38 +133,17 @@ dipolePipe::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  angle=Control.EvalVar<double>(keyName+"Angle");
  
-  poleAngle=Control.EvalVar<double>(keyName+"PoleAngle");
-  poleGap=Control.EvalVar<double>(keyName+"PoleGap");
-  poleWidth=Control.EvalVar<double>(keyName+"PoleWidth");
 
-  coilGap=Control.EvalVar<double>(keyName+"CoilGap");
-  coilLength=Control.EvalVar<double>(keyName+"CoilLength");
-  coilWidth=Control.EvalVar<double>(keyName+"CoilWidth");
+  outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
+  outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
 
-  poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat");
-  coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
-  
-  poleRadius=length/(M_PI*poleAngle/180.0);
-  return;
-}
+  outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
 
-void
-dipolePipe::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("dipolePipe","createUnitVector");
-
-  // origin from start point
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
 
@@ -177,72 +156,43 @@ dipolePipe::createSurfaces()
   ELog::RegMethod RegA("dipolePipe","createSurfaces");
 
   // pole pieces  
-  const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQRotDeg(-poleAngle,Z);
 
-  const Geometry::Vec3D XPole=QR.makeRotate(X);
-  const Geometry::Vec3D YPole=QR.makeRotate(Y);
+  const Geometry::Vec3D endAxis=
+    X*sin(angle*M_PI/180.0)+Y*cos(angle*M_PI/180.0);
+  const Geometry::Vec3D midAxis=
+    X*sin(angle*M_PI/360.0)+Y*cos(angle*M_PI/360.0);
+
   
-  const Geometry::Vec3D cylCentre=Origin+X*poleRadius;
+  const Geometry::Vec3D cylCentre=Origin+X*radius;
 
   // END plane
-  const double xDisp=(1.0-cos(M_PI*poleAngle/180.0))*poleRadius;
-  const double yDisp=sin(M_PI*poleAngle/180.0)*poleRadius;
-  const Geometry::Vec3D cylEnd=Origin+X*xDisp+Y*yDisp;
+  const Geometry::Vec3D cylEnd=cylCentre
+    -X*(radius*cos(M_PI*angle/180.0))
+    +Y*(radius*sin(M_PI*angle/180.0));
+
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,cylEnd,YPole);
+  ModelSupport::buildPlane(SMap,buildIndex+2,cylEnd,endAxis);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+15,Origin-Z*(poleGap/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+16,Origin+Z*(poleGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(outerHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+100,cylCentre,Y);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,cylCentre-X*(poleWidth/2.0),Z,poleRadius);
+    (SMap,buildIndex+17,cylCentre+X*(width/2.0),Z,radius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+27,cylCentre+X*(poleWidth/2.0),Z,poleRadius);
+    (SMap,buildIndex+27,cylCentre-X*(width/2.0),Z,radius);
 
-  
-  // COILS:
-  //coil angle is currently half of radius angle:
-  const Geometry::Quaternion QCR=
-    Geometry::Quaternion::calcQRotDeg(-poleAngle/2.0,Z);
-
-  const Geometry::Vec3D XCoil=QCR.makeRotate(X);
-  const Geometry::Vec3D YCoil=QCR.makeRotate(Y);
-  
-  const Geometry::Vec3D coilOrg=Origin+YCoil*(length/2.0);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+101,coilOrg-YCoil*(coilLength/2.0),YCoil);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+102,coilOrg+YCoil*(coilLength/2.0),YCoil);
-
-  ModelSupport::buildPlane(SMap,buildIndex+103,coilOrg-X*coilWidth,XCoil);
-  ModelSupport::buildPlane(SMap,buildIndex+104,coilOrg+X*coilWidth,XCoil);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+105,coilOrg-Z*(coilGap/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+106,coilOrg+Z*(coilGap/2.0),Z);
-  
-  // Coil end cylinders
   ModelSupport::buildCylinder
-    (SMap,buildIndex+107,coilOrg-YCoil*(coilLength/2.0),Z,coilWidth);
+    (SMap,buildIndex+117,cylCentre+X*(outerWidth/2.0),Z,radius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+108,coilOrg+YCoil*(coilLength/2.0),Z,coilWidth);
+    (SMap,buildIndex+127,cylCentre-X*(outerWidth/2.0),Z,radius);
 
-  // Cylinder cutters
-  ModelSupport::buildPlane
-    (SMap,buildIndex+201,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+202,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
-
-  FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
-  FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
-  FixedComp::setConnect(6,coilOrg,YCoil);
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,cylEnd,endAxis);
 
   return;
 }
@@ -259,69 +209,16 @@ dipolePipe::createObjects(Simulation& System)
 
   std::string Out;
 
-  if (isActive("MidSplit"))
-    {
-      const std::string ACell=getRuleStr("InnerA");
-      const std::string BCell=getRuleStr("InnerB");
-      const HeadRule& MSplit=getRule("MidSplit");
-	    
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 15 -16 103 -104 201 ");
-      makeCell("MidVoidA",System,cellIndex++,0,0.0,
-	       Out+ACell+MSplit.complement().display());
-
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 15 -16 103 -104 -202");
-      makeCell("MidVoidB",System,cellIndex++,0,0.0,
-	       Out+BCell+MSplit.display());
-    }
-  else
-    {
-      const std::string ACell=
-	(isActive("Inner")) ? getRuleStr("Inner") : "";
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 15 -16 103 -104 201 -202");
-      makeCell("MidVoid",System,cellIndex++,0,0.0,Out+ACell);
-    }
-
   // side voids
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-1:2:17:-27) -15 105 103 -104 (-107:101) (-108:-102)");
-  makeCell("BaseVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 5 -6 17 -27 100 ");
+  makeCell("Void",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-1:2:17:-27) 16 -106 103 -104 (-107:101) (-108:-102)");
-  makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
-
-  // Pole pieces
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -15 5 -17 27 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 16 -6 -17 27 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-107:101) (-108:-102) -105 5 103 -104 "
-    " (-1:2:17:-27) ");
-  makeCell("CoilA",System,cellIndex++,coilMat,0.0,Out);
-
-  
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-107:101) (-108:-102) 106 -6 103 -104 "
-    " (-1:2:17:-27) ");
-  makeCell("CoilB",System,cellIndex++,coilMat,0.0,Out);
-
-  // Void ends
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 201 107 -101 5 -6 103 -104 (-15 : 16)");
-  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
+    (SMap,buildIndex," 1 -2 15 -16  117 -127 (-5 : 6 : -17:27 )  100 ");
+  makeCell("Body",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -202 108 102 5 -6 103 -104 (-15 : 16)");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
-  
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 103 -104 201 -202 ");
+    (SMap,buildIndex," 1 -2 15 -16  117 -127 100 ");
   addOuterSurf(Out);
   
   return;
@@ -335,8 +232,9 @@ dipolePipe::createLinks()
 {
   ELog::RegMethod RegA("dipolePipe","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
   
   return;
 }
@@ -353,6 +251,7 @@ dipolePipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("dipolePipe","createAll");
+
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

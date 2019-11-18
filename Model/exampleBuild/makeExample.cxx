@@ -67,10 +67,13 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -78,45 +81,19 @@
 
 #include "makeExample.h"
 
-namespace pipeSystem
+namespace exampleSystem
 {
 
 makeExample::makeExample() :
+  DPipe(new dipolePipe("DPipe"))
   /*!
     Constructor
   */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+  OR.addObject(DPipe);
 
-
-}
-
-makeExample::makeExample(const makeExample& A) : 
-  ATube(new pipeSystem::pipeTube(*(A.ATube))),
-  BTube(new pipeSystem::pipeTube(*(A.BTube))),
-  CTube(new pipeSystem::pipeTube(*(A.CTube)))
-  /*!
-    Copy constructor
-    \param A :: makeExample to copy
-  */
-{}
-
-makeExample&
-makeExample::operator=(const makeExample& A)
-  /*!
-    Assignment operator
-    \param A :: makeExample to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      *ATube=*A.ATube;
-      *BTube=*A.BTube;
-      *CTube=*A.CTube;
-    }
-  return *this;
 }
 
 makeExample::~makeExample()
@@ -126,7 +103,7 @@ makeExample::~makeExample()
 {}
 
 void 
-makeExample::build(Simulation* SimPtr,
+makeExample::build(Simulation& System,
 		     const mainSystem::inputParam&)
 /*!
   Carry out the full build
@@ -140,7 +117,7 @@ makeExample::build(Simulation* SimPtr,
   int voidCell(74123);
 
   DPipe->addInsertCell(voidCell);
-  DPipe->createAll(*SimPtr,World::masterObject(),0);
+  DPipe->createAll(System,World::masterOrigin(),0);
 
   return;
 }

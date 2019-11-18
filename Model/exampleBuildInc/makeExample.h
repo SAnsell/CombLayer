@@ -3,7 +3,7 @@
  
  * File:   exmapleInc/makeExample.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef pipeSystem_makePipe_h
-#define pipeSystem_makePipe_h
+#ifndef exampleSystem_makeExample_h
+#define exampleSystem_makeExample_h
 
 
 /*!
@@ -40,13 +40,14 @@ namespace exampleSystem
     \date May 2015
     \brief General pipe building system
   */
-
+  class dipolePipe;
+  
 class makeExample
 {
  private:
 
 
-  std::shared_ptr<examplSystem::dipolePipe> DPipe;   ///< pre-tube
+  std::shared_ptr<exampleSystem::dipolePipe> DPipe;   ///< pre-tube
 
  public:
   
@@ -55,7 +56,7 @@ class makeExample
   makeExample& operator=(const makeExample&);
   ~makeExample();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

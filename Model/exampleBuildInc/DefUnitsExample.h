@@ -32,7 +32,7 @@ namespace mainSystem
 
   void setDefUnits(FuncDataBase&,inputParam&);
 
-  void setExampleEX1(defaultConfig&);
+  void setExampleEX1(defaultConfig&,const std::vector<std::string>&);
 }
 
 

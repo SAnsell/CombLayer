@@ -41,6 +41,7 @@ namespace setVariable
   void EssLinacVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
+  void ExampleVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);

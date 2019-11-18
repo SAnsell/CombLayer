@@ -25,7 +25,7 @@
 class Simulation;
 
 
-namespace xraySystem
+namespace exampleSystem
 {
 /*!
   \class dipolePipe
@@ -57,7 +57,6 @@ class dipolePipe : public attachSystem::FixedRotate,
   int outerMat;                     ///< coil material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -71,6 +70,7 @@ class dipolePipe : public attachSystem::FixedRotate,
   dipolePipe& operator=(const dipolePipe&);
   virtual ~dipolePipe();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
