@@ -692,79 +692,40 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,100.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,80.0);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
+  Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
 
   setVariable::BremOpticsCollGenerator OpticsCollGen;
-  OpticsCollGen.setCF<setVariable::CF63>();
-  OpticsCollGen.generateColl(Control,splitKey+"BremCollAA",0.0, 12.0); // ???
+  //OpticsCollGen.setCF<setVariable::CF63>();
+  OpticsCollGen.setAperture(0.6,5);
+  OpticsCollGen.setMaterial("Tungsten", "Lead");
+  OpticsCollGen.generateColl(Control,splitKey+"BremCollAA",0.0, 23.0);
   Control.addVariable(splitKey+"BremCollAAExtActive", 0);
+  Control.addVariable(splitKey+"BremCollAAColLength", 8.0);
+  Control.addVariable(splitKey+"BremCollAAInnerRadius", 5.7);
+  Control.addVariable(splitKey+"BremCollAAColRadius", 3.5);
+  Control.addVariable(splitKey+"BremCollAAWallThick", 1.0);
+  Control.addVariable(splitKey+"BremCollAAFlangeARadius", 6.7);
+  Control.addVariable(splitKey+"BremCollAAFlangeALength", 1.0);
+  Control.addVariable(splitKey+"BremCollAAFlangeBRadius", 6.7);
+  Control.addVariable(splitKey+"BremCollAAFlangeBLength", 1.0);
 
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,30.0);
+  Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
+  Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
 
   // RIGHT BRANCH
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,splitKey+"BellowBA",0,18.0);
-
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF40>();
-  PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeBA",0.0,100.0);
-
-  OpticsCollGen.setCF<setVariable::CF63>();
-  OpticsCollGen.generateColl(Control,splitKey+"BremCollBA",0.0, 12.0); // ???
-  Control.addVariable(splitKey+"BremCollBAExtActive", 0);
-
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF40>();
-  PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeBB",0.0,30.0);
-
-
-
-
-  // Control.addVariable(splitKey+"M3PumpLength",10.0);
-  // Control.addVariable(splitKey+"M3PumpWidth",10.0);
-  // Control.addVariable(splitKey+"M3PumpHeight",10.0);
-  // Control.addVariable(splitKey+"M3PumpWallThick",1.0);
-  // Control.addVariable(splitKey+"M3PumpMainMat","Void");
-  // Control.addVariable(splitKey+"M3PumpWallMat","Aluminium");
-
-  // BellowGen.setCF<setVariable::CF40>();
-  // BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
-  // BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);
-
-  // GateGen.setLength(3.5);
-  // GateGen.setCubeCF<setVariable::CF40>();
-  // GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
-  // GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
-
-  // PTubeGen.setMat("Stainless304");
-  // PTubeGen.setPipeCF<CF63>();
-  // PTubeGen.setPortCF<CF40>();
-  // PTubeGen.setPortLength(2.5,2.5);
-
-  // const std::string pumpNameA=splitKey+"PumpTubeAA";
-  // const std::string pumpNameB=splitKey+"PumpTubeBA";
-  // const Geometry::Vec3D zVec(0,0,1);
-  // const Geometry::Vec3D centPoint(0,0,0);
-  // PTubeGen.generateTube(Control,pumpNameA,0.0,20.0);
-  // Control.addVariable(pumpNameA+"NPorts",1);
-  // PTubeGen.generateTube(Control,pumpNameB,0.0,20.0);
-  // Control.addVariable(pumpNameB+"NPorts",1);
-
-  // PItemGen.setCF<setVariable::CF63>(14.95);
-  // PItemGen.generatePort(Control,pumpNameA+"Port0",centPoint,zVec);
-  // PItemGen.generatePort(Control,pumpNameB+"Port0",centPoint,zVec);
-
-  // PipeGen.setMat("Stainless304");
-  // PipeGen.setNoWindow();   // no window
-  // PipeGen.setCF<setVariable::CF40>();
-  // PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
-  // PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
+  Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
+  Control.copyVarSet(splitKey+"JoinPipeAA", splitKey+"JoinPipeBA");
+  Control.copyVarSet(splitKey+"BremCollAA", splitKey+"BremCollBA");
+  Control.copyVarSet(splitKey+"JoinPipeAB", splitKey+"JoinPipeBB");
 
   // ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
 
