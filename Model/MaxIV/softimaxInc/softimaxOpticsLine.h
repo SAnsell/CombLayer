@@ -145,8 +145,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeAA;
   /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeAA;
-  std::shared_ptr<xraySystem::SqrCollimator> collAA;
+  std::shared_ptr<xraySystem::BremOpticsColl> collAA;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeAB;
 
   // Right branch CXI

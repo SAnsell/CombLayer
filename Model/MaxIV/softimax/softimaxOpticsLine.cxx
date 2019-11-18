@@ -180,8 +180,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
-  collTubeAA(new constructSystem::PipeTube(newName+"CollimatorTubeAA")),
-  collAA(new xraySystem::SqrCollimator(newName+"CollAA")),
+  collAA(new xraySystem::BremOpticsColl(newName+"CollAA")),
   joinPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   joinPipeBA(new constructSystem::VacuumPipe(newName+"JoinPipeBA")),
@@ -281,7 +280,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
   OR.addObject(joinPipeAA);
-  OR.addObject(collTubeAA);
   OR.addObject(collAA);
   OR.addObject(joinPipeAB);
   OR.addObject(bellowBA);
@@ -763,19 +761,11 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,*bellowAA,"back",*joinPipeAA);
 
-  // xrayConstruct::constructUnit
-  //   (System,leftZone,masterCellA,*joinPipeAA,"back",*collTubeAA);
-
-  collTubeAA->setFront(*joinPipeAA,2);
-  collTubeAA->createAll(System,*joinPipeAA,2);
-  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*collTubeAA,2);
-  collTubeAA->insertAllInCell(System,cellA);
-
-  collAA->addInsertCell(collTubeAA->getCell("Void"));
-  collAA->createAll(System,*collTubeAA,0);
+  xrayConstruct::constructUnit
+    (System,leftZone,masterCellA,*joinPipeAA,"back",*collAA);
 
   xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,*collTubeAA,"back",*joinPipeAB);
+    (System,leftZone,masterCellA,*collAA,"back",*joinPipeAB);
 
 
 
