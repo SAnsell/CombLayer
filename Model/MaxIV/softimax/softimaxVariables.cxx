@@ -804,30 +804,35 @@ opticsSlitPackage(FuncDataBase& Control,
 
   const std::string sName=opticsName+"SlitTube";
   const double tLen(48.2);
-  PortTubeGen.setPipeCF<CF200>();
+  PortTubeGen.setPipeCF<CF150>();
 
   PortTubeGen.setPortCF<CF63>();
-  PortTubeGen.setPortLength(-5.0,-5.0);
+  PortTubeGen.setPortLength(-5.4,-5.0);
+  PortTubeGen.setBPort(7.05, 2.2, 0.5); // R,L,T
+  PortTubeGen.setBFlange(10.2, 2.2); // R,L
   PortTubeGen.generateTube(Control,sName,0.0,tLen);
+  Control.addVariable(sName+"WallMat", "Aluminium");
 
-  Control.addVariable(sName+"NPorts",3);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF150>(6.1);
-  PItemGen.setPlate(setVariable::CF150::flangeLength,"Stainless304");
+  Control.addVariable(sName+"NPorts",3);
+  PItemGen.setCF<setVariable::CF100>(7.1);
+  PItemGen.setPlate(setVariable::CF100::flangeLength,"Aluminium");
 
-  // Top port 16.0: Side 20.0cm  from front :  Vacuum 1/2 way
-  //
   const Geometry::Vec3D topJaw(0.0,16.0-tLen/2.0,0.0);
   const Geometry::Vec3D sideJaw(0.0,20.0-tLen/2.0,0.0);
   const Geometry::Vec3D vacPort(0.0,0.0,0.0);
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
+  const double angle(-45*M_PI/180.0);
+  const Geometry::Vec3D port1Vec(cos(angle),sin(angle),0);
 
   PItemGen.setOuterVoid(1); ///
   PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
-  PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
-  PItemGen.generatePort(Control,sName+"Port2",vacPort,-ZVec);
-  //  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+  PItemGen.setCF<setVariable::CF50>(6.1);
+  PItemGen.setPlate(setVariable::CF40::flangeLength,"SiO2");
+  PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);//port1Vec);
+  PItemGen.setCF<setVariable::CF100>(7.1);
+  PItemGen.generatePort(Control,sName+"Port2",vacPort,-XVec);
 
   // Jaw units:
   BeamMGen.setThread(0.5,"Nickel");

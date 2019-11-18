@@ -602,8 +602,8 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
   // FAKE insertcell: required
   slitTube->addAllInsertCell(masterCell->getName());
   slitTube->createAll(System,initFC,sideName);
+  slitTube->intersectPorts(System,0,2);
   slitTube->intersectPorts(System,0,1);
-  slitTube->intersectPorts(System,1,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
   slitTube->insertAllInCell(System,outerCell);
 
