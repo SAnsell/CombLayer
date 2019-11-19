@@ -101,8 +101,10 @@
 // #include "MonoVessel.h"
 // #include "MonoCrystals.h"
 #include "GateValveCube.h"
-// #include "JawUnit.h"
+#include "JawUnit.h"
 #include "JawFlange.h"
+#include "JawValveBase.h"
+#include "JawValveTube.h"
 // #include "FlangeMount.h"
 #include "TankMonoVessel.h"
 #include "GratingUnit.h"
@@ -161,6 +163,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   gateD(new constructSystem::GateValveCube(newName+"GateD")),
   joinPipeA(new constructSystem::VacuumPipe(newName+"JoinPipeA")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  slitsA(new constructSystem::JawValveTube(newName+"SlitsA")),
   pumpTubeM3(new constructSystem::PipeTube(newName+"PumpTubeM3")),
   pumpTubeM3Baffle(new xraySystem::FlangeMount(newName+"PumpTubeM3Baffle")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
@@ -261,6 +264,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gateD);
   OR.addObject(joinPipeA);
   OR.addObject(bellowF);
+  OR.addObject(slitsA);
   OR.addObject(pumpTubeM3);
   OR.addObject(pumpTubeM3Baffle);
   OR.addObject(bellowG);
@@ -968,11 +972,14 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*joinPipeA,"back",*bellowF);
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowF,"back",*slitsA);
+
   /////////////////// M3 Pump and baffle
   // FAKE insertcell: required
   pumpTubeM3->addAllInsertCell(masterCell->getName());
   pumpTubeM3->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpTubeM3->createAll(System,*bellowF,"back");
+  pumpTubeM3->createAll(System,*slitsA,"back");
 
   const constructSystem::portItem& GPI=pumpTubeM3->getPort(1);
   outerCell=buildZone.createOuterVoidUnit

@@ -881,6 +881,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
+  setVariable::JawValveGenerator JawGen;
 
   PipeGen.setNoWindow();   // no window
 
@@ -1032,22 +1033,33 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
+  PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,74.0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0+2.5);
+
+  JawGen.setRadius(setVariable::CF100::innerRadius);
+  JawGen.setWallThick(2.6);
+  JawGen.setLength(2.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum"); // W,H,Thick,Mat
+  JawGen.generateSlits(Control,preName+"SlitsA",0.0,2.0,3.3);//X,xOpen,zOpen
 
   /////////////////////////////////// M3 Pump and baffle
   // will be rotated vertical
   const std::string gateName=preName+"PumpTubeM3";
-  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateName,0.0,40.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF40>(3.45);
+  PItemGen.setCF<setVariable::CF100>(6.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   FlangeGen.setNoPlate();
@@ -1056,7 +1068,7 @@ opticsVariables(FuncDataBase& Control,
   ///////////////////////////////////////////////////////////////////
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",0,17.0);
 
   m3MirrorVariables(Control,preName);
 

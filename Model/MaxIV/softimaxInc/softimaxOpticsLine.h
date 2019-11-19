@@ -26,6 +26,7 @@ namespace constructSystem
 {
   class PortTube;
   class BiPortTube;
+  class JawValveTube;
 }
 
 namespace xraySystem
@@ -115,6 +116,7 @@ class softimaxOpticsLine :
   // vaccum pipe
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeA;
   std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<constructSystem::JawValveTube> slitsA;
   std::shared_ptr<constructSystem::PipeTube> pumpTubeM3;
   std::shared_ptr<xraySystem::FlangeMount> pumpTubeM3Baffle;
   // Bellow to mirror M3
