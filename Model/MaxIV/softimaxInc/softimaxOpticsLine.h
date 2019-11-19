@@ -246,7 +246,7 @@ class softimaxOpticsLine :
      const long int);
 
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+		     const attachSystem::FixedComp&,const std::string&);
   void buildM3Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   void buildM3STXMMirror(Simulation&,MonteCarlo::Object*,

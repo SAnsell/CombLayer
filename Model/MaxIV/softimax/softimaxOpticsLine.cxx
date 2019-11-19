@@ -458,9 +458,9 @@ softimaxOpticsLine::constructDiag
 
 void
 softimaxOpticsLine::buildM1Mirror(Simulation& System,
-				     MonteCarlo::Object* masterCell,
-				     const attachSystem::FixedComp& initFC,
-				     const long int sideIndex)
+				  MonteCarlo::Object* masterCell,
+				  const attachSystem::FixedComp& initFC,
+				  const std::string& side)
   /*!
     Sub build of the m1-mirror package
     \param System :: Simulation to use
@@ -474,7 +474,7 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   int outerCell;
 
   xrayConstruct::constructUnit
-    (System,buildZone,masterCell,initFC,"back",*M1TubeFront);
+    (System,buildZone,masterCell,initFC,side,*M1TubeFront);
 
   M1Tube->setFront(*M1TubeFront,2);
   M1Tube->createAll(System,*M1TubeFront,2);
@@ -869,7 +869,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  pumpM1->intersectPorts(System,1,2);
 
   ///////////// split for FLUKA
-  const constructSystem::portItem& VP0=pumpM1->getPort(0);
+  //  const constructSystem::portItem& VP0=pumpM1->getPort(0);
   const constructSystem::portItem& VP1=pumpM1->getPort(1);
   const constructSystem::portItem& VP2=pumpM1->getPort(2);
   //  const constructSystem::portItem& VP3=pumpM1->getPort(3);
@@ -911,7 +911,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
-  buildM1Mirror(System,masterCell,*bellowB,2);
+  buildM1Mirror(System,masterCell,*bellowB,"back");
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*M1TubeBack,"back",*bellowC);
