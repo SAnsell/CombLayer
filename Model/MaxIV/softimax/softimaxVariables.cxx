@@ -230,7 +230,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(10.2,1.0);
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
-  MBoxGen.setPortLength(2.3,7.5-2.5);
+  MBoxGen.setPortLength(2.3,5.0);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
   Control.addVariable(monoKey+"MonoVesselOuterSize",62);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
@@ -1002,13 +1002,13 @@ opticsVariables(FuncDataBase& Control,
 
   monoVariables(Control,preName);
 
-  GateGen.setLength(2.5);
+  GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
   //  Control.addVariable(preName+"GateCXYAngle",1);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowE",0,26.5);
 
   // will be rotated vertical
   const std::string pumpTubeBname=preName+"PumpTubeB";
@@ -1100,7 +1100,7 @@ opticsVariables(FuncDataBase& Control,
   splitterVariables(Control,preName);
 
 
-  // GateGen.setLength(2.5);
+  // GateGen.setLength(3.5);
   // GateGen.setCubeCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
