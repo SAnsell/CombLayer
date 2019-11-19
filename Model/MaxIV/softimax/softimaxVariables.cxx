@@ -1014,24 +1014,25 @@ opticsVariables(FuncDataBase& Control,
   const std::string pumpTubeBname=preName+"PumpTubeB";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpTubeBname,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,pumpTubeBname,0.0,31.2);
   Control.addVariable(pumpTubeBname+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF63>(5.95);
+  PItemGen.setCF<setVariable::CF63>(4.45);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeBname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setCF<setVariable::CF63>(3.45);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeBname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+  GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,100.0);
+  PipeGen.setCF<CF40>();
+  PipeGen.setAFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,74.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
