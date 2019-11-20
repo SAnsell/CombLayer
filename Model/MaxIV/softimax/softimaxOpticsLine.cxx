@@ -171,6 +171,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
   M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
+  M3Back(new constructSystem::VacuumPipe(newName+"M3Back")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
@@ -273,6 +274,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3Tube);
   OR.addObject(M3Mirror);
   OR.addObject(M3Stand);
+  OR.addObject(M3Back);
   OR.addObject(bellowH);
   OR.addObject(gateE);
   OR.addObject(pumpTubeC);
@@ -551,20 +553,8 @@ softimaxOpticsLine::buildM3Mirror(Simulation& System,
   M3Stand->addInsertCell(outerCell);
   M3Stand->createAll(System,*M3Tube,0);
 
-  // gateA->createAll(System,*offPipeB,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
-  // gateA->setCell("OuterVoid",outerCell);
-
-  // pipeC->createAll(System,*gateA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  // pipeC->insertInCell(System,outerCell);
-
-  // screenA->addAllInsertCell(outerCell);
-  // screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
-  // screenA->createAll(System,*pipeC,0);
-  // screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
-  // screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*M3Tube,"back",*M3Back);
 
   return;
 }
@@ -1001,11 +991,10 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   buildM3Mirror(System,masterCell,*bellowG,"back");
 
   xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*M3Tube,"back",*bellowH);
+    (System,buildZone,masterCell,*M3Back,"back",*bellowH);
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowH,"back",*gateE);
-
 
   //// pumpTubeC
   // FAKE insertcell: required

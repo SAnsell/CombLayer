@@ -747,7 +747,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3Front",0.0,5-0.95);
+  PipeGen.generatePipe(Control,mirrorKey+"M3Front",0.0,4.05);
   Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
   Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
 
@@ -785,6 +785,13 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeD",0,20.6);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setAFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"M3Back",0.0,4.05);
+  Control.addVariable(mirrorKey+"M3BackWindowActive",0);
+  Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
 
   return;
 }

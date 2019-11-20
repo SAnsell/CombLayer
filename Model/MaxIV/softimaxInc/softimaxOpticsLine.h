@@ -126,6 +126,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
   std::shared_ptr<xraySystem::Mirror> M3Mirror;
   std::shared_ptr<xraySystem::BlockStand> M3Stand;
+  std::shared_ptr<constructSystem::VacuumPipe> M3Back;
   std::shared_ptr<constructSystem::Bellows> bellowH;
   // Gate valve for M3
   std::shared_ptr<constructSystem::GateValveCube> gateE;
