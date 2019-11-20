@@ -744,12 +744,19 @@ m3MirrorVariables(FuncDataBase& Control,
   setVariable::MirrorGenerator MirrGen;
   setVariable::PipeGenerator PipeGen;
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setBFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"M3Front",0.0,5-0.95);
+  Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
+  Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
+
+
   const std::string mName=mirrorKey+"M3Tube";
-  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
-  Control.addVariable(mName+"XStep",centreOffset);
-  Control.addVariable(mName+"NPorts",0);   // beam ports
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+  Control.addVariable(mName+"NPorts",0);
+  Control.addVariable(mName+"WallThick",0.25); // measured STEP
 
   // mirror in M3Tube
   MirrGen.setPlate(28.0,1.0,9.0);  //guess

@@ -167,6 +167,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpTubeM3(new constructSystem::PipeTube(newName+"PumpTubeM3")),
   pumpTubeM3Baffle(new xraySystem::FlangeMount(newName+"PumpTubeM3Baffle")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  M3Front(new constructSystem::VacuumPipe(newName+"M3Front")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
   M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   M3Stand(new xraySystem::BlockStand(newName+"M3Stand")),
@@ -268,6 +269,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pumpTubeM3);
   OR.addObject(pumpTubeM3Baffle);
   OR.addObject(bellowG);
+  OR.addObject(M3Front);
   OR.addObject(M3Tube);
   OR.addObject(M3Mirror);
   OR.addObject(M3Stand);
@@ -517,23 +519,26 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
 void
 softimaxOpticsLine::buildM3Mirror(Simulation& System,
-				     MonteCarlo::Object* masterCell,
-				     const attachSystem::FixedComp& initFC,
-				     const long int sideIndex)
+				  MonteCarlo::Object* masterCell,
+				  const attachSystem::FixedComp& initFC,
+				  const std::string& side)
   /*!
     Sub build of the m1-mirror package
     \param System :: Simulation to use
     \param masterCell :: Main master volume
     \param initFC :: Start point
-    \param sideIndex :: start link point
+    \param side :: start link point
   */
 {
   ELog::RegMethod RegA("softimaxOpticsBeamline","buildM3Mirror");
 
   int outerCell;
 
-  M3Tube->setFront(initFC,sideIndex);
-  M3Tube->createAll(System,initFC,sideIndex);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,initFC,side,*M3Front);
+
+  M3Tube->setFront(*M3Front,2);
+  M3Tube->createAll(System,*M3Front,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M3Tube,2);
   M3Tube->insertAllInCell(System,outerCell);
 
@@ -993,7 +998,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,GPI,"OuterPlate",*bellowG);
 
-  buildM3Mirror(System,masterCell,*bellowG,2);
+  buildM3Mirror(System,masterCell,*bellowG,"back");
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*M3Tube,"back",*bellowH);

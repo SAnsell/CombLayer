@@ -122,6 +122,7 @@ class softimaxOpticsLine :
   // Bellow to mirror M3
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// M3 Mirror
+  std::shared_ptr<constructSystem::VacuumPipe> M3Front;
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
   std::shared_ptr<xraySystem::Mirror> M3Mirror;
   std::shared_ptr<xraySystem::BlockStand> M3Stand;
@@ -250,7 +251,7 @@ class softimaxOpticsLine :
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
   void buildM3Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+		     const attachSystem::FixedComp&,const std::string&);
   void buildM3STXMMirror(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const long int);
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
