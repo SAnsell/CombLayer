@@ -182,7 +182,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMFront(new constructSystem::VacuumPipe(newName+"M3STXMFront")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
-  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
+  M3STXMBack(new constructSystem::OffsetFlangePipe(newName+"M3STXMBack")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
@@ -286,7 +286,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowJ);
   OR.addObject(M3STXMFront);
   OR.addObject(M3STXMTube);
-  OR.addObject(offPipeD);
+  OR.addObject(M3STXMBack);
   OR.addObject(splitter);
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
@@ -698,13 +698,13 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   int cellA(0),cellB(0);
 
-  offPipeD->createAll(System,initFC,sideIndex);
-  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*offPipeD,2);
-  offPipeD->insertInCell(System,cellA);
+  M3STXMBack->createAll(System,initFC,sideIndex);
+  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3STXMBack,2);
+  M3STXMBack->insertInCell(System,cellA);
 
 
   // /////////  1: build splitter without creating two outer void units
-  // splitter->createAll(System,*offPipeD,2);
+  // splitter->createAll(System,*M3STXMBack,2);
   // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   // splitter->insertInCell("Flange",System,cellA);
   // splitter->insertInCell("PipeA",System,cellA);
@@ -714,15 +714,15 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   //////////////////// 2: build splitter with creating two outer void units
   ////////////////////////////////////////////////////////////////////////////////////
-  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*M3STXMBack,2);
 
   // No need for insert -- note removal of old master cell
 
   const int deadCell=masterCellA->getName();
 
-  splitter->createAll(System,*offPipeD,2);
+  splitter->createAll(System,*M3STXMBack,2);
 
-  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*M3STXMBack,2);
   buildZone.constructMiddleSurface(SMap,buildIndex+10,*splitter,2,*splitter,3);
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);

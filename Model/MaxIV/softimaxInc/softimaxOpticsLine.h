@@ -142,7 +142,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> M3STXMFront;
   std::shared_ptr<constructSystem::PipeTube>   M3STXMTube;
   /// back port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
+  std::shared_ptr<constructSystem::OffsetFlangePipe> M3STXMBack;
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::BiPortTube> M3Pump;
