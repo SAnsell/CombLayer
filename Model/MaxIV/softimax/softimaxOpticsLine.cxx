@@ -177,7 +177,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  vacPiece(new constructSystem::VacuumPipe(newName+"VacPiece")),
+  joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
@@ -280,7 +280,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gateE);
   OR.addObject(joinPipeB);
   OR.addObject(pumpTubeC);
-  OR.addObject(vacPiece);
+  OR.addObject(joinPipeC);
   OR.addObject(gateF);
   OR.addObject(bellowJ);
   OR.addObject(M3STXMTube);
@@ -1018,10 +1018,10 @@ softimaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
 
   xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*bellowI,"back",*vacPiece);
+    (System,buildZone,masterCell,*bellowI,"back",*joinPipeC);
 
   xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*vacPiece,"back",*gateF);
+    (System,buildZone,masterCell,*joinPipeC,"back",*gateF);
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);

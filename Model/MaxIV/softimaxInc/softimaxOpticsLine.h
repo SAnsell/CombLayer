@@ -135,7 +135,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> pumpTubeC;
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// Vacuum piece
-  std::shared_ptr<constructSystem::VacuumPipe> vacPiece;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
   std::shared_ptr<constructSystem::GateValveCube> gateF;
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// M3 STXM

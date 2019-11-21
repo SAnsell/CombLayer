@@ -1118,7 +1118,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,preName+"VacPiece",0.0,7.0+5.5);
+  PipeGen.generatePipe(Control,preName+"JoinPipeC",0.0,12.5);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
