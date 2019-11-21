@@ -1102,14 +1102,14 @@ opticsVariables(FuncDataBase& Control,
   const std::string pumpTubeCname=preName+"PumpTubeC";
   SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpTubeCname,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,pumpTubeCname,0.0,31.2);
   Control.addVariable(pumpTubeCname+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF63>(5.95);
+  PItemGen.setCF<setVariable::CF100>(7.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setCF<setVariable::CF100>(7.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 

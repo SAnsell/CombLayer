@@ -1005,7 +1005,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // FAKE insertcell: required
   pumpTubeC->addAllInsertCell(masterCell->getName());
   pumpTubeC->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpTubeC->createAll(System,*joinPipeA,2);
+  pumpTubeC->createAll(System,*joinPipeB,2);
 
   const constructSystem::portItem& pumpTubeCCPI=pumpTubeC->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
