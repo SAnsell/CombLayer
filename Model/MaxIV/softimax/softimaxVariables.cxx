@@ -1087,11 +1087,15 @@ opticsVariables(FuncDataBase& Control,
   m3MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",0,16.9);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setBFlangeCF<CF100>();
+  PipeGen.generatePipe(Control,preName+"JoinPipeB",0.0,7.0);
 
   //////////// pumpTubeC
     // will be rotated vertical
