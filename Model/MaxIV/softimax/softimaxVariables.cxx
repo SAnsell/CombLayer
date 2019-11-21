@@ -1113,14 +1113,12 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
+  BellowGen.setCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,preName+"BellowI",0,24.5);
 
-  const std::string mName=preName+"VacPiece";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
-  //Control.addVariable(mName+"XStep",0.0);
-  Control.addVariable(mName+"NPorts",0);
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF100>();
+  PipeGen.generatePipe(Control,preName+"VacPiece",0.0,7.0+5.5);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);

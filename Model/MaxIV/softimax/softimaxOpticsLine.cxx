@@ -177,7 +177,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pumpTubeC(new constructSystem::PipeTube(newName+"PumpTubeC")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  vacPiece(new constructSystem::PipeTube(newName+"VacPiece")),
+  vacPiece(new constructSystem::VacuumPipe(newName+"VacPiece")),
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
@@ -1017,15 +1017,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
 
-  vacPiece->setFront(*bellowI,2);
-  vacPiece->createAll(System,*bellowI,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*vacPiece,2);
-  vacPiece->insertAllInCell(System,outerCell);
-  // TODO: since PipeTube has insertAllInCell but other classes have
-  // insertInCell I can't use constructUnit with PipeTube.
-  // why dont' fix method names for PipeTube? so we could use next 2 lines:
-  // xrayConstruct::constructUnit
-  //   (System,buildZone,masterCell,*bellowI,"back",*);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowI,"back",*vacPiece);
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*vacPiece,"back",*gateF);
