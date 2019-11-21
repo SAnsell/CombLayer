@@ -650,11 +650,13 @@ splitterVariables(FuncDataBase& Control,
   const double splitLength(42.0);
   const double splitXStep(2.7);
   TwinGen.setCF<CF40>();
-  TwinGen.setJoinFlangeCF<CF100>();
+  TwinGen.setJoinFlangeCF<CF150>();
   TwinGen.setAPos(-splitXStep,0);
   TwinGen.setBPos(splitXStep,0);
   TwinGen.setXYAngle(splitAngle,-splitAngle);
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,splitLength);
+  Control.addVariable(splitKey+"SplitterFlangeCJLength",0.2);
+
 
   const std::string m3PumpName=splitKey+"M3Pump";
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
@@ -797,12 +799,6 @@ m3MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,stxmName,0.0,36.0);
   Control.addVariable(stxmName+"XStep",0.0);
   Control.addVariable(stxmName+"NPorts",0);
-
-  PipeGen.setCF<setVariable::CF100>();
-  PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3STXMBack",0,5);
-  Control.addVariable(mirrorKey+"M3STXMBackFlangeFrontLength",0.2);
-  Control.addVariable(mirrorKey+"M3STXMBackFlangeBackLength",0.2);
 
   return;
 }

@@ -182,7 +182,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   M3STXMFront(new constructSystem::VacuumPipe(newName+"M3STXMFront")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
-  M3STXMBack(new constructSystem::OffsetFlangePipe(newName+"M3STXMBack")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
@@ -286,7 +285,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowJ);
   OR.addObject(M3STXMFront);
   OR.addObject(M3STXMTube);
-  OR.addObject(M3STXMBack);
   OR.addObject(splitter);
   OR.addObject(M3Pump);
   OR.addObject(bellowAA);
@@ -698,11 +696,6 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   int cellA(0),cellB(0);
 
-  M3STXMBack->createAll(System,initFC,sideIndex);
-  cellA=buildZone.createOuterVoidUnit(System,masterCellA,*M3STXMBack,2);
-  M3STXMBack->insertInCell(System,cellA);
-
-
   // /////////  1: build splitter without creating two outer void units
   // splitter->createAll(System,*M3STXMBack,2);
   // cellA=buildZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
@@ -720,7 +713,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   const int deadCell=masterCellA->getName();
 
-  splitter->createAll(System,*M3STXMBack,2);
+  splitter->createAll(System,initFC,sideIndex);
 
   //  buildZone.constructMiddleSurface(SMap,buildIndex+10,*M3STXMBack,2);
   buildZone.constructMiddleSurface(SMap,buildIndex+10,*splitter,2,*splitter,3);
