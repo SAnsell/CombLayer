@@ -180,6 +180,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  M3STXMFront(new constructSystem::VacuumPipe(newName+"M3STXMFront")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
@@ -283,6 +284,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(joinPipeC);
   OR.addObject(gateF);
   OR.addObject(bellowJ);
+  OR.addObject(M3STXMFront);
   OR.addObject(M3STXMTube);
   OR.addObject(offPipeD);
   OR.addObject(splitter);
@@ -563,9 +565,9 @@ softimaxOpticsLine::buildM3Mirror(Simulation& System,
 
 void
 softimaxOpticsLine::buildM3STXMMirror(Simulation& System,
-				     MonteCarlo::Object* masterCell,
-				     const attachSystem::FixedComp& initFC,
-				     const long int sideIndex)
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC,
+				      const std::string& side)
   /*!
     Sub build of the m1-mirror package
     \param System :: Simulation to use
@@ -578,8 +580,11 @@ softimaxOpticsLine::buildM3STXMMirror(Simulation& System,
 
   int outerCell;
 
-  M3STXMTube->setFront(initFC,sideIndex);
-  M3STXMTube->createAll(System,initFC,sideIndex);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,initFC,side,*M3STXMFront);
+
+  M3STXMTube->setFront(*M3STXMFront,2);
+  M3STXMTube->createAll(System,*M3STXMFront,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M3STXMTube,2);
   M3STXMTube->insertAllInCell(System,outerCell);
 
@@ -1026,7 +1031,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
 
-  buildM3STXMMirror(System,masterCell,*bellowJ,2);
+
+  buildM3STXMMirror(System,masterCell,*bellowJ,"back");
 
   MonteCarlo::Object* masterCellB(0);
   buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);

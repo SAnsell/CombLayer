@@ -776,6 +776,15 @@ m3MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mirrorKey+"M3StandMat","SiO2");
 
   // M3 STXM part
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF100>();
+  PipeGen.setBFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",0.0,5.85);
+  Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
+  Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
+
+
   const std::string stxmName=mirrorKey+"M3STXMTube";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,stxmName,0.0,36.0);
