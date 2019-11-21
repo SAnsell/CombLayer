@@ -657,6 +657,11 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,splitLength);
   Control.addVariable(splitKey+"SplitterFlangeCJLength",0.2);
 
+  BellowGen.setCF<setVariable::CF50>();
+  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
+
+  Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
+
 
   const std::string m3PumpName=splitKey+"M3Pump";
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
@@ -685,7 +690,7 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,18.0);
+  BellowGen.generateBellow(Control,splitKey+"BellowAB",0,18.0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -720,7 +725,7 @@ splitterVariables(FuncDataBase& Control,
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
 
   // RIGHT BRANCH
-  Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
+  Control.copyVarSet(splitKey+"BellowAB", splitKey+"BellowBB");
   Control.copyVarSet(splitKey+"JoinPipeAA", splitKey+"JoinPipeBA");
   Control.copyVarSet(splitKey+"BremCollAA", splitKey+"BremCollBA");
   Control.copyVarSet(splitKey+"JoinPipeAB", splitKey+"JoinPipeBB");

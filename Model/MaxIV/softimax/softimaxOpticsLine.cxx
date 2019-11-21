@@ -183,12 +183,14 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M3STXMFront(new constructSystem::VacuumPipe(newName+"M3STXMFront")),
   M3STXMTube(new constructSystem::PipeTube(newName+"M3STXMTube")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
-  M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
+  M3Pump(new constructSystem::BiPortTube(newName+"M3Pump")),
+  bellowAB(new constructSystem::Bellows(newName+"BellowAB")),
   joinPipeAA(new constructSystem::VacuumPipe(newName+"JoinPipeAA")),
   bremCollAA(new xraySystem::BremOpticsColl(newName+"BremCollAA")),
   joinPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
-  bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
+  bellowBB(new constructSystem::Bellows(newName+"BellowBB")),
   joinPipeBA(new constructSystem::VacuumPipe(newName+"JoinPipeBA")),
   bremCollBA(new xraySystem::BremOpticsColl(newName+"BremCollBA")),
   joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB"))
@@ -286,12 +288,14 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M3STXMFront);
   OR.addObject(M3STXMTube);
   OR.addObject(splitter);
-  OR.addObject(M3Pump);
   OR.addObject(bellowAA);
+  OR.addObject(bellowBA);
+  OR.addObject(M3Pump);
+  OR.addObject(bellowAB);
   OR.addObject(joinPipeAA);
   OR.addObject(bremCollAA);
   OR.addObject(joinPipeAB);
-  OR.addObject(bellowBA);
+  OR.addObject(bellowBB);
   OR.addObject(joinPipeBA);
   OR.addObject(bremCollBA);
   OR.addObject(joinPipeBB);
@@ -738,11 +742,19 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
+  xrayConstruct::constructUnit
+    (System,leftZone,masterCellA,*splitter,"back",*bellowAA);
+
+  bellowBA->setFront(*splitter,3);
+  bellowBA->createAll(System,*splitter,3);
+  int outerCell=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBA,2);
+  bellowBA->insertInCell(System,outerCell);
+
   // TODO: optimize
   M3Pump->addAllInsertCell(masterCellA->getName());
   M3Pump->addAllInsertCell(masterCellB->getName());
   M3Pump->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  M3Pump->createAll(System,*splitter,2);
+  M3Pump->createAll(System,*bellowAA,2);
 
   const constructSystem::portItem& CPI2=M3Pump->getPort(2);
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,CPI2,CPI2.getSideIndex("OuterPlate"));
@@ -754,9 +766,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // now build left/ right
   // LEFT
   xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAA);
+    (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAB);
   xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,*bellowAA,"back",*joinPipeAA);
+    (System,leftZone,masterCellA,*bellowAB,"back",*joinPipeAA);
 
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,*joinPipeAA,"back",*bremCollAA);
@@ -768,10 +780,10 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   // RIGHT
   xrayConstruct::constructUnit
-    (System,rightZone,masterCellB,CPI3,"OuterPlate",*bellowBA);
+    (System,rightZone,masterCellB,CPI3,"OuterPlate",*bellowBB);
 
   xrayConstruct::constructUnit
-    (System,rightZone,masterCellB,*bellowBA,"back",*joinPipeBA);
+    (System,rightZone,masterCellB,*bellowBB,"back",*joinPipeBA);
 
   xrayConstruct::constructUnit
     (System,rightZone,masterCellB,*joinPipeBA,"back",*bremCollBA);
@@ -780,7 +792,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
     (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
 
 
-  // gateAA->createAll(System,*bellowAA,2);
+  // gateAA->createAll(System,*bellowAB,2);
   // cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAA,2);
   // gateAA->insertInCell(System,cellA);
 
@@ -792,11 +804,11 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
 
   // // RIGHT
-  // bellowBA->createAll(System,*splitter,3);
-  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBA,2);
-  // bellowBA->insertInCell(System,cellB);
+  // bellowBB->createAll(System,*splitter,3);
+  // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBB,2);
+  // bellowBB->insertInCell(System,cellB);
 
-  // gateBA->createAll(System,*bellowBA,2);
+  // gateBA->createAll(System,*bellowBB,2);
   // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*gateBA,2);
   // gateBA->insertInCell(System,cellB);
 
