@@ -647,9 +647,9 @@ splitterVariables(FuncDataBase& Control,
 
 
   const double splitAngle(2.0);
-  const double splitLength(42.0);
-  const double splitXStep(2.7);
-  TwinGen.setCF<CF40>();
+  const double splitLength(1.8);
+  const double splitXStep(4.5);
+  TwinGen.setCF<CF50>();
   TwinGen.setJoinFlangeCF<CF150>();
   TwinGen.setAPos(-splitXStep,0);
   TwinGen.setBPos(splitXStep,0);

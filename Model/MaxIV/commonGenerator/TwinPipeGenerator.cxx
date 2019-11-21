@@ -280,6 +280,7 @@ TwinPipeGenerator::generateTwin(FuncDataBase& Control,
 ///\cond TEMPLATE
 
   template void TwinPipeGenerator::setCF<CF40>();
+  template void TwinPipeGenerator::setCF<CF50>();
   template void TwinPipeGenerator::setCF<CF63>();
   template void TwinPipeGenerator::setCF<CF100>();
   template void TwinPipeGenerator::setCF<CF150>();
