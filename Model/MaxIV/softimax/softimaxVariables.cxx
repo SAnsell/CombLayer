@@ -1120,11 +1120,12 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<CF100>();
   PipeGen.generatePipe(Control,preName+"JoinPipeC",0.0,12.5);
 
-  GateGen.setCubeCF<setVariable::CF63>();
+  GateGen.setLength(4.5);
+  GateGen.setCubeCF<setVariable::CF100>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",0,18.0);
+  BellowGen.setCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,preName+"BellowJ",0,20.0);
 
   splitterVariables(Control,preName);
 
