@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#include <fstream>
+// #include <fstream>
 // #include <iomanip>
 // #include <iostream>
-#include <sstream>
+// #include <sstream>
 // #include <cmath>
 // #include <complex>
 // #include <list>
@@ -35,11 +35,11 @@
 #include <memory>
 
 // #include "Exception.h"
-#include "FileReport.h"
+// #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 // #include "GTKreport.h"
-#include "OutputLog.h"
+// #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 // #include "MatrixBase.h"
@@ -85,7 +85,7 @@
 // #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "OffsetFlangePipe.h"
+// #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
 #include "BremOpticsColl.h"
@@ -96,7 +96,7 @@
 
 #include "BlockStand.h"
 #include "CrossPipe.h"
-#include "BremColl.h"
+// #include "BremColl.h"
 // #include "BremMonoColl.h"
 // #include "MonoVessel.h"
 // #include "MonoCrystals.h"
@@ -112,7 +112,7 @@
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
-#include "SqrCollimator.h"
+// #include "SqrCollimator.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
 // #include "DiffPumpXIADP03.h"

@@ -21,18 +21,18 @@
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
-#include <iostream>
-#include <sstream>
+// #include <iostream>
+// #include <sstream>
 #include <cmath>
-#include <complex>
-#include <list>
+// #include <complex>
+// #include <list>
 #include <vector>
 #include <set>
 #include <map>
 // #include <string>
 // #include <algorithm>
 
-#include "Exception.h"
+// #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -77,7 +77,7 @@
 // #include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
-#include "MonoShutterGenerator.h"
+// #include "MonoShutterGenerator.h"
 #include "TwinPipeGenerator.h"
 
 // #include "PreDipoleGenerator.h"
