@@ -648,7 +648,7 @@ splitterVariables(FuncDataBase& Control,
 
   const double splitAngle(2.0);
   const double splitLength(1.8);
-  const double splitXStep(4.5);
+  const double splitXStep(3.96);
   TwinGen.setCF<CF50>();
   TwinGen.setJoinFlangeCF<CF150>();
   TwinGen.setAPos(-splitXStep,0);
@@ -656,8 +656,14 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.setXYAngle(splitAngle,-splitAngle);
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,splitLength);
   Control.addVariable(splitKey+"SplitterFlangeCJLength",0.2);
+  Control.addVariable(splitKey+"SplitterFlangeARadius",4.0);
+  Control.addVariable(splitKey+"SplitterFlangeBRadius",4.0);
 
   BellowGen.setCF<setVariable::CF50>();
+  BellowGen.setFlangePair(setVariable::CF50::flangeRadius-0.4,
+			  setVariable::CF50::flangeLength,
+			  setVariable::CF50::flangeRadius,
+			  setVariable::CF50::flangeLength);
   BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
 
   Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
@@ -666,20 +672,21 @@ splitterVariables(FuncDataBase& Control,
   const std::string m3PumpName=splitKey+"M3Pump";
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
   SimpleTubeGen.setCF<CF200>();
+  SimpleTubeGen.setPipe(7.7, 0.3, 10.0, 2.0);
   SimpleTubeGen.generateTube(Control,m3PumpName,0.0,36.0);  // centre 13.5cm
   //  Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(m3PumpName+"NPorts",4);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
   const double port0Length(5.95);
-  PItemGen.setCF<setVariable::CF40>(port0Length);
+  PItemGen.setCF<setVariable::CF50>(port0Length);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-4,0,0),ZVec);
+  PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-5.02,0,0),ZVec);
 
   const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
-  PItemGen.setCF<setVariable::CF40>(port0Length*cos(splitAngle*4*M_PI/180)+0.75);
+  PItemGen.setCF<setVariable::CF50>(port0Length*cos(splitAngle*4*M_PI/180)+0.03);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(5.5,0,0),ZVec2);
+  PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(5.02,0,0),ZVec2);
 
   PItemGen.setCF<setVariable::CF40>(4.95);
   PItemGen.setPlate(0.0,"Void");
