@@ -697,12 +697,12 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,splitKey+"BellowAB",0,18.0);
+  BellowGen.generateBellow(Control,splitKey+"BellowAB",0,15.5);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,80.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,90.3);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
@@ -710,8 +710,9 @@ splitterVariables(FuncDataBase& Control,
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   //OpticsCollGen.setCF<setVariable::CF63>();
   OpticsCollGen.setAperture(0.6,5);
-  OpticsCollGen.setMaterial("Tungsten", "Lead");
-  OpticsCollGen.generateColl(Control,splitKey+"BremCollAA",0.0, 23.0);
+  OpticsCollGen.setMaterial("Tungsten", "Stainless304");
+  OpticsCollGen.setFlangeInnerRadius(setVariable::CF40::innerRadius,setVariable::CF40::innerRadius);
+  OpticsCollGen.generateColl(Control,splitKey+"BremCollAA",0.0, 19.0);
   Control.addVariable(splitKey+"BremCollAAExtActive", 0);
   Control.addVariable(splitKey+"BremCollAAColLength", 8.0);
   Control.addVariable(splitKey+"BremCollAAInnerRadius", 5.7);
