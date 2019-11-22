@@ -773,8 +773,8 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,*joinPipeAA,"back",*bremCollAA);
 
-  xrayConstruct::constructUnit
-    (System,leftZone,masterCellA,*bremCollAA,"back",*joinPipeAB);
+  // xrayConstruct::constructUnit
+  //   (System,leftZone,masterCellA,*bremCollAA,"back",*joinPipeAB);
 
 
 
@@ -788,8 +788,8 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   xrayConstruct::constructUnit
     (System,rightZone,masterCellB,*joinPipeBA,"back",*bremCollBA);
 
-  xrayConstruct::constructUnit
-    (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
+  // xrayConstruct::constructUnit
+  //   (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
 
 
   // gateAA->createAll(System,*bellowAB,2);
@@ -817,9 +817,9 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   // cellB=rightZone.createOuterVoidUnit(System,masterCellB,*pumpTubeBA,2);
   // pumpTubeBA->insertAllInCell(System,cellB);
 
-  //   // Get last two cells
-  // setCell("LeftVoid",masterCellA->getName());
-  // setCell("RightVoid",masterCellB->getName());
+  // Get last two cells
+  setCell("LeftVoid",masterCellA->getName());
+  setCell("RightVoid",masterCellB->getName());
 
   return;
 }
@@ -1193,6 +1193,41 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   lastComp=bellowA; //gateJ;
   return;
 }
+
+void
+softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
+					  const int leftCell,
+					  const int rightCell,
+					  const std::vector<int>& hutCells)
+  /*!
+    Construct outgoing tracks
+    \param System :: Simulation
+    \param leftCell :: additional left cell for insertion
+    \param rightCell :: additional right cell for insertion
+    \param hutCell :: Cells for construction in hut [common to both pipes]
+  */
+{
+  ELog::RegMethod RegA("softimaxOpticsLine","buildOutgoingPipes");
+
+  joinPipeAB->addInsertCell(hutCells);
+  joinPipeAB->addInsertCell(leftCell);
+  joinPipeAB->createAll(System,*bremCollAA,2);
+
+  joinPipeBB->addInsertCell(hutCells);
+  joinPipeBB->addInsertCell(rightCell);
+  joinPipeBB->createAll(System,*bremCollBA,2);
+
+  // screenB->addAllInsertCell(leftCell);
+  // screenB->addAllInsertCell(rightCell);
+
+  // screenB->setCutSurf("inner",joinPipeAB->getSurfRule("OuterRadius"));
+  // screenB->setCutSurf("innerTwo",joinPipeBB->getSurfRule("OuterRadius"));
+
+  // screenB->createAll(System,*joinPipeAB,0);
+
+  return;
+}
+
 
 void
 softimaxOpticsLine::createLinks()

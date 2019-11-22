@@ -313,6 +313,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingConcThick",100.0);
 
   Control.addVariable(hutName+"InnerThick",0.3);
+  Control.addVariable(hutName+"Extension",100.0);
 
   Control.addVariable(hutName+"PbWallThick",1.2);
   Control.addVariable(hutName+"PbRoofThick",1.2);
@@ -327,10 +328,6 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",2.5);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",4.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
@@ -727,7 +724,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,30.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,100.0);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);

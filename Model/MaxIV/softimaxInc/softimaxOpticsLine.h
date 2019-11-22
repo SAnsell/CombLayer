@@ -276,6 +276,10 @@ class softimaxOpticsLine :
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
 
+  void buildOutGoingPipes(Simulation&,const int,const int,
+			  const std::vector<int>&);
+
+
   void setPreInsert
   (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
