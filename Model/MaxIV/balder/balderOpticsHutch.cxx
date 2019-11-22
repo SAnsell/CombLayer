@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   balder/balderOpticsHutch.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -65,7 +65,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
@@ -82,7 +82,7 @@
 namespace xraySystem
 {
 
-balderOpticsHutch::balderOpticsHutch(const std::string& Key) : 
+balderOpticsHutch::balderOpticsHutch(const std::string& Key) :
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -98,7 +98,7 @@ balderOpticsHutch::balderOpticsHutch(const std::string& Key) :
   nameSideIndex(17,"frontCut");
 }
 
-balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) : 
+balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -155,7 +155,7 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
   return *this;
 }
 
-balderOpticsHutch::~balderOpticsHutch() 
+balderOpticsHutch::~balderOpticsHutch()
   /*!
     Destructor
   */
@@ -169,7 +169,7 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("balderOpticsHutch","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -180,6 +180,8 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
   ringWallLen=Control.EvalVar<double>(keyName+"RingWallLen");
   ringWallAngle=Control.EvalVar<double>(keyName+"RingWallAngle");
   ringConcThick=Control.EvalVar<double>(keyName+"RingConcThick");
+
+  extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
@@ -198,12 +200,12 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
   inletXStep=Control.EvalDefVar<double>(keyName+"InletXStep",0.0);
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
-  
+
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
 
-  
+
   return;
 }
 
@@ -224,7 +226,7 @@ balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
   Origin+=Y*(outerThick+innerThick+pbFrontThick);
   return;
 }
- 
+
 void
 balderOpticsHutch::createSurfaces()
   /*!
@@ -242,7 +244,7 @@ balderOpticsHutch::createSurfaces()
 
   if (innerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
-      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);
 
   // Steel inner layer
   ModelSupport::buildPlane(SMap,buildIndex+11,
@@ -254,7 +256,7 @@ balderOpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(ringWidth+innerThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+16,
-			       Origin+Z*(height+innerThick),Z);  
+			       Origin+Z*(height+innerThick),Z);
 
   // Lead
   ModelSupport::buildPlane(SMap,buildIndex+21,
@@ -269,7 +271,7 @@ balderOpticsHutch::createSurfaces()
 			       Origin+Z*(height+innerThick+pbRoofThick),Z);
 
   const double steelThick(innerThick+outerThick);
-  
+
   // OuterWall
   if (!ExternalCut::isActive("RingWall"))
     {
@@ -282,6 +284,11 @@ balderOpticsHutch::createSurfaces()
 			   Origin+Y*(length+steelThick+pbBackThick),Y);
   setSurf("outerWall",SMap.realSurf(buildIndex+32));
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+132,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+32),
+				  extension);
+  setSurf("extension",SMap.realSurf(buildIndex+132));
+
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
@@ -290,12 +297,12 @@ balderOpticsHutch::createSurfaces()
   setSurf("ringFlat",SMap.realSurf(buildIndex+34));
 
   ModelSupport::buildPlane(SMap,buildIndex+36,
-			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
+			       Origin+Z*(height+steelThick+pbRoofThick),Z);
 
   if (outerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1033,
-       Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);  
+       Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
 
   if (std::abs(ringWallAngle)>Geometry::zeroTol)
     {
@@ -320,7 +327,7 @@ balderOpticsHutch::createSurfaces()
 	  ExternalCut::setCutSurf("SideWall",-SMap.realSurf(buildIndex+2004));
 	}
     }
-  
+
   if (inletRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+107,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
@@ -329,7 +336,7 @@ balderOpticsHutch::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+117,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
 
-  
+
   return;
 }
 
@@ -343,13 +350,13 @@ balderOpticsHutch::createObjects(Simulation& System)
   ELog::RegMethod RegA("balderOpticsHutch","createObjects");
 
   // ring wall
-  const std::string sideWall=ExternalCut::getRuleStr("SideWall"); 
+  const std::string sideWall=ExternalCut::getRuleStr("SideWall");
   const std::string innerSideWall=
     ExternalCut::getComplementStr("InnerSideWall");
- 
+
   const std::string floor=ExternalCut::getRuleStr("Floor");
   const std::string frontWall=ExternalCut::getRuleStr("RingWall");
-  
+
   std::string Out;
 
   if (innerOutVoid>Geometry::zeroTol)
@@ -382,19 +389,20 @@ balderOpticsHutch::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					"1 -2  4M  104M  (-14M:-114M) -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
-      
+
       //front wall
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"-1M 11M 33 -34 -6M 107 ");
       if (layer=="Outer") Out+=frontWall;
-	
+
       makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out+floor);
-      
+
       //back wall
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) -6 117 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out+floor);
-      
+      addCell("BackWall",cellIndex-1);
+
       // roof
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
@@ -402,7 +410,7 @@ balderOpticsHutch::createObjects(Simulation& System)
       makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
       HI+=10;
     }
-  
+
 
   // Outer void for pipe
 
@@ -418,30 +426,37 @@ balderOpticsHutch::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2 -2M -117 ");
       makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
-    
+
   // Filler space :
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 34 134 -36 -32");
+    (SMap,buildIndex," 34 134 -36 -132");
   makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor+frontWall);
-  
+
+  //  Extension (void outside back wall)
+  if (extension>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2M -132 33 -134 -36");
+      makeCell("Extension",System,cellIndex++,0,0.0,Out+floor);
+    }
+
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI,"-2M 1033 -3M -6M ");
+	(SMap,buildIndex,HI," -132 1033 -3M -6M ");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
 
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI," -2M 1033 -6M ");
+	(SMap,buildIndex,HI," -132 1033 -6M ");
       Out+=innerSideWall;
     }
   else
     Out=ModelSupport::getComposite
-      (SMap,buildIndex,HI," -2M 3M (-4M:-104M) -6M ");
-      
+      (SMap,buildIndex,HI," -132 3M (-4M:-104M) -6M ");
+
 
   // dont need floor ??
-  addOuterSurf(Out+floor+frontWall);      
+  addOuterSurf(Out+floor+frontWall);
 
   return;
 }
@@ -461,9 +476,9 @@ balderOpticsHutch::createLinks()
 
   setConnect(0,Origin-Y*(extraFront),-Y);
   setConnect(1,Origin+Y*(length+extraBack),Y);
-  
+
   setLinkSurf(0,-SMap.realSurf(buildIndex+31));
-  setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  setLinkSurf(1,SMap.realSurf(buildIndex+132));
 
   // inner surf
   setConnect(2,Origin+Y*length,-Y);
@@ -479,24 +494,24 @@ balderOpticsHutch::createLinks()
   nameSideIndex(4,"rightWall");
 
   setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*length,-Y);
-  setLinkSurf(7,-SMap.realSurf(buildIndex+2));  
+  setLinkSurf(7,-SMap.realSurf(buildIndex+2));
   nameSideIndex(7,"exitHole");
 
   setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+Y*length,-Z);
-  setLinkSurf(8,SMap.realSurf(buildIndex+117));  
+  setLinkSurf(8,SMap.realSurf(buildIndex+117));
   nameSideIndex(8,"exitHoleRadius");
 
   setConnect(9,Origin+X*inletXStep+Z*inletZStep+Y*length,-Y);
-  setLinkSurf(9,SMap.realSurf(buildIndex+1));  
+  setLinkSurf(9,SMap.realSurf(buildIndex+1));
   nameSideIndex(9,"inlet");
 
   setConnect(10,Origin+X*inletXStep+Z*(inletRadius+inletZStep),-Z);
-  setLinkSurf(10,SMap.realSurf(buildIndex+107));  
+  setLinkSurf(10,SMap.realSurf(buildIndex+107));
   nameSideIndex(10,"inletRadius");
 
   setConnect(11,Origin,Y);
   setConnect(12,Origin+Y*length,-Y);
-  
+
   setLinkSurf(11,SMap.realSurf(buildIndex+1));
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
 
@@ -522,17 +537,17 @@ balderOpticsHutch::createLinks()
   // addLinkComp(15,-SMap.realSurf(buildIndex+15));
   // addLinkComp(15,SMap.realSurf(buildIndex+32));
 
-  setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);  
+  setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);
   setLinkSurf(16,SMap.realSurf(buildIndex+34));
   addLinkSurf(16,SMap.realSurf(buildIndex+134));
   addLinkComp(16,SMap.realSurf(buildIndex+36));
-  addLinkComp(16,SMap.realSurf(buildIndex+32));
-  
-  setConnect(17,Origin,-Y);  
+  addLinkComp(16,SMap.realSurf(buildIndex+132));
+
+  setConnect(17,Origin,-Y);
   setLinkSurf(17,SMap.realSurf(buildIndex+34));
   addLinkSurf(17,SMap.realSurf(buildIndex+134));
   addLinkComp(17,SMap.realSurf(buildIndex+36));
-  addLinkComp(17,SMap.realSurf(buildIndex+32));
+  addLinkComp(17,SMap.realSurf(buildIndex+132));
 
   return;
 }
@@ -541,7 +556,7 @@ void
 balderOpticsHutch::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
-    \param System :: Simulation 
+    \param System :: Simulation
   */
 {
   ELog::RegMethod Rega("balderOpticsHutch","createChicane");
@@ -568,14 +583,14 @@ balderOpticsHutch::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");      
+      PItem->setCutSurf("outerWall",*this,"leftWall");
       PItem->createAll(System,*this,getSideIndex("leftWall"));
       PItem->addInsertCell("Main",getCell("OuterVoid",0));
 
       PItem->insertObjects(System);
       PChicane.push_back(PItem);
       //      PItem->splitObject(System,23,getCell("WallVoid"));
-      //      PItem->splitObject(System,24,getCell("SplitVoid"));      
+      //      PItem->splitObject(System,24,getCell("SplitVoid"));
     }
   return;
 }
@@ -595,15 +610,15 @@ balderOpticsHutch::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
   createChicane(System);
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

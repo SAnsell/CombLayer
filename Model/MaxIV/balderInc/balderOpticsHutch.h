@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   balderInc/bladerOpticsHutch.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_bladerOpticsHutch_h
@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief balderOpticsHutch unit  
+  \brief balderOpticsHutch unit
 
   Built around the central beam axis
 */
@@ -45,7 +45,7 @@ class balderOpticsHutch :
   public attachSystem::SurfMap
 {
  private:
-  
+
   double height;                ///< void height
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
@@ -53,7 +53,7 @@ class balderOpticsHutch :
   double ringWallAngle;         ///< angle on ring side wall
 
   double ringConcThick;         ///< Thickness of concreate on ring side
-  
+
   double outWidth;              ///< out side width
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
@@ -63,25 +63,26 @@ class balderOpticsHutch :
   double outerThick;            ///< Outer wall/roof skin
 
   double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space 
-  
+  double outerOutVoid;          ///< Extension for outer left void space
+  double extension;             ///< Extension for void behind back wall
+
   double inletXStep;            ///< Inlet XStep
-  double inletZStep;            ///< Inlet ZStep  
+  double inletZStep;            ///< Inlet ZStep
   double inletRadius;           ///< Inlet radius
 
   double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep  
+  double holeZStep;            ///< Hole ZStep
   double holeRadius;           ///< Hole radius
-  
+
   int skinMat;                ///< Fe layer material for walls
   int ringMat;                ///< Conc layer material for ring walls
-  int pbMat;                  ///< pb layer material for walls 
+  int pbMat;                  ///< pb layer material for walls
 
   double beamTubeRadius;      ///< Void to construct components in
-  
-  /// Chicanes 
-  std::vector<std::shared_ptr<PortChicane>> PChicane;  
-  
+
+  /// Chicanes
+  std::vector<std::shared_ptr<PortChicane>> PChicane;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -105,4 +106,3 @@ class balderOpticsHutch :
 }
 
 #endif
- 
