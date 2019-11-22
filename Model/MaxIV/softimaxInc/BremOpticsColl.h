@@ -61,10 +61,12 @@ class BremOpticsColl :
   double extZStep; ///< z offset of external part
 
   double innerRadius;          ///< Inner radius of hole
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
+  double flangeARadius;        ///< Flange A outer radius
+  double flangeAInnerRadius;   ///< Flange A inner radius
+  double flangeALength;        ///< Flange A length
+  double flangeBRadius;        ///< Flange B outer radius
+  double flangeBInnerRadius;        ///< Flange B outer radius
+  double flangeBLength;        ///< Flange B length
 
   int voidMat;                  ///< Main material
   int wallMat;                  ///< Wall material

@@ -120,8 +120,10 @@ BremOpticsColl::BremOpticsColl(const BremOpticsColl& A) :
   extZStep(A.extZStep),
   innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),
+  flangeAInnerRadius(A.flangeAInnerRadius),
   flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),
+  flangeBInnerRadius(A.flangeBInnerRadius),
   flangeBLength(A.flangeBLength),
   voidMat(A.voidMat),wallMat(A.wallMat),
   colMat(A.colMat)
@@ -162,9 +164,11 @@ BremOpticsColl::operator=(const BremOpticsColl& A)
       extZStep=A.extZStep;
       innerRadius=A.innerRadius;
       flangeARadius=A.flangeARadius;
+      flangeAInnerRadius=A.flangeAInnerRadius;
       flangeALength=A.flangeALength;
       flangeBRadius=A.flangeBRadius;
       flangeBLength=A.flangeBLength;
+      flangeBInnerRadius=A.flangeBInnerRadius;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       colMat=A.colMat;
@@ -225,14 +229,25 @@ BremOpticsColl::populate(const FuncDataBase& Control)
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
                                          keyName+"FlangeRadius");
+  flangeAInnerRadius=Control.EvalPair<double>(keyName+"FlangeAInnerRadius",
+					      keyName+"FlangeInnerRadius");
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
                                          keyName+"FlangeLength");
 
   flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
                                          keyName+"FlangeRadius");
+  flangeBInnerRadius=Control.EvalPair<double>(keyName+"FlangeBInnerRadius",
+					      keyName+"FlangeInnerRadius");
   flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
                                          keyName+"FlangeLength");
 
+  if (flangeAInnerRadius>flangeARadius)
+    throw ColErr::RangeError<double>(flangeAInnerRadius, 0, flangeARadius,
+				   "FlangeAInnerRadius must be <= FlangeARadius");
+
+  if (flangeBInnerRadius>flangeBRadius)
+    throw ColErr::RangeError<double>(flangeBInnerRadius, 0, flangeBRadius,
+				   "FlangeBInnerRadius must be <= FlangeBRadius");
 
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -303,6 +318,8 @@ BremOpticsColl::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,innerRadius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,flangeAInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+57,Origin,Y,flangeBInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,colRadius);
 
   // absorber
@@ -339,14 +356,20 @@ BremOpticsColl::createObjects(Simulation& System)
   const std::string front(frontRule());
   const std::string back(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 7 -1 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 47 -1 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+front);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 7 2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -47 -1 ");
+  makeCell("FrontFlangeVoid",System,cellIndex++,voidMat,0.0,Out+front);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 57 2 ");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+back);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -101 ");
-  makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,Out+front);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -57 2 ");
+  makeCell("BackFlangeVoid",System,cellIndex++,voidMat,0.0,Out+back);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -101 ");
+  makeCell("InnerVoidFront",System,cellIndex++,voidMat,0.0,Out);
 
   if (colRadius<innerRadius)
     {
@@ -363,8 +386,8 @@ BremOpticsColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Hole",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 ");
-  makeCell("InnerVoidBack",System,cellIndex++,voidMat,0.0,Out+back);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -2 ");
+  makeCell("InnerVoidBack",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);

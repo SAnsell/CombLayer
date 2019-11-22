@@ -46,10 +46,12 @@ class BremOpticsCollGenerator
   double wallThick;           ///< wall thickness of main tube
 
   double innerRadius;          ///< Inner radius of hole
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
+  double flangeARadius;        ///< Flange A outer radius
+  double flangeAInnerRadius;   ///< Flange A inner radius
+  double flangeALength;        ///< Flange A length
+  double flangeBRadius;        ///< Flange B outer radius
+  double flangeBInnerRadius;        ///< Flange B outer radius
+  double flangeBLength;        ///< Flange B length
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
@@ -81,6 +83,7 @@ class BremOpticsCollGenerator
 
   void setAperture(const double,const double);
   void setMaterial(const std::string&,const std::string&);
+  void setFlangeInnerRadius(const double,const double);
 
   void generateColl(FuncDataBase&,const std::string&,
 		    const double,const double) const;

@@ -50,6 +50,7 @@ namespace setVariable
 
 BremOpticsCollGenerator::BremOpticsCollGenerator() :
   extWidth(13.0),extHeight(10.0),wallThick(0.5),
+  flangeAInnerRadius(setVariable::CF40::innerRadius),flangeBInnerRadius(setVariable::CF40::innerRadius),
   holeXStep(0.0),holeZStep(0.0),
   holeWidth(1.0),holeHeight(1.2),
   colLength(8.4),
@@ -115,6 +116,13 @@ BremOpticsCollGenerator::setAperture(const double W,const double H)
   return;
 }
 
+void
+BremOpticsCollGenerator::setFlangeInnerRadius(const double ra,const double rb)
+{
+  flangeAInnerRadius=ra;
+  flangeBInnerRadius=rb;
+}
+
 
 void
 BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
@@ -140,8 +148,10 @@ BremOpticsCollGenerator::generateColl(FuncDataBase& Control,
 
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeAInnerRadius",flangeAInnerRadius);
   Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"FlangeBRadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeBInnerRadius",flangeBInnerRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
 
   Control.addVariable(keyName+"HoleXStep",holeXStep);
