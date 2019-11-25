@@ -578,7 +578,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const double phi = 0.0;   // rotation angle in deg
   //  const double normialAngle=0.2;
   //  const double vAngle=0.0;
-  const double centreDist(0.0);
+  const double centreDist(5.0);
   //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
   //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
@@ -586,8 +586,9 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,49);
+  SimpleTubeGen.generateTube(Control,mName,0.0,50.0);
   Control.addVariable(mName+"XStep",centreOffset);
+  Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   // mirror in M1Tube
@@ -612,7 +613,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,3.5);
+  PipeGen.generatePipe(Control,backName,0.0,4.5);
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",-2);
   ELog::EM << "XYAngle = -2   is it correct?????" << ELog::endWarn;
@@ -857,7 +858,7 @@ opticsSlitPackage(FuncDataBase& Control,
   PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
   PItemGen.setCF<setVariable::CF50>(6.1);
   PItemGen.setPlate(setVariable::CF40::flangeLength,"SiO2");
-  PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);//port1Vec);
+  PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
   PItemGen.setCF<setVariable::CF100>(7.1);
   PItemGen.generatePort(Control,sName+"Port2",vacPort,-XVec);
 
