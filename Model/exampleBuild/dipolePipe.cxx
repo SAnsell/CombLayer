@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/Dipole.cxx
+ * File:   commonBeam/dipolePipe.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -182,14 +182,14 @@ dipolePipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+100,cylCentre,Y);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,cylCentre+X*(width/2.0),Z,radius);
+    (SMap,buildIndex+17,cylCentre,Z,radius-(width/2.0));
   ModelSupport::buildCylinder
-    (SMap,buildIndex+27,cylCentre-X*(width/2.0),Z,radius);
+    (SMap,buildIndex+27,cylCentre,Z,radius+(width/2.0));
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+117,cylCentre+X*(outerWidth/2.0),Z,radius);
+    (SMap,buildIndex+117,cylCentre,Z,radius-(outerWidth/2.0));
   ModelSupport::buildCylinder
-    (SMap,buildIndex+127,cylCentre-X*(outerWidth/2.0),Z,radius);
+    (SMap,buildIndex+127,cylCentre,Z,radius+(outerWidth/2.0));
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,cylEnd,endAxis);

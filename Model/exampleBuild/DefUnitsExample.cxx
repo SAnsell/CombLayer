@@ -72,19 +72,13 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
       const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
       const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
 
-      if (Key=="EX1")
+      if (Key=="DIPOLE")
 	setExampleEX1(A,LItems);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  EX1 : Example 1"<<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
-	}
-      else 
-	{
-	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");
 	}
     }
   A.setOption("sdefType","Point");        

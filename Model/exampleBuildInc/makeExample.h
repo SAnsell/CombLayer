@@ -41,14 +41,12 @@ namespace exampleSystem
     \brief General pipe building system
   */
   class dipolePipe;
+  class quadPipe;
   
 class makeExample
 {
  private:
-
-
-  std::shared_ptr<exampleSystem::dipolePipe> DPipe;   ///< pre-tube
-
+  
  public:
   
   makeExample();

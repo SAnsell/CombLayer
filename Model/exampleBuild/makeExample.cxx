@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   pipeBuild/makeExample.cxx
+ * File:   exampleBuild/makeExample.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -77,24 +77,18 @@
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "dipolePipe.h"
+#include "dipoleModel.h"
 
 #include "makeExample.h"
 
 namespace exampleSystem
 {
 
-makeExample::makeExample() :
-  DPipe(new dipolePipe("DPipe"))
+makeExample::makeExample() 
   /*!
     Constructor
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  OR.addObject(DPipe);
-
-}
+{}
 
 makeExample::~makeExample()
   /*!
@@ -104,7 +98,7 @@ makeExample::~makeExample()
 
 void 
 makeExample::build(Simulation& System,
-		     const mainSystem::inputParam&)
+		     const mainSystem::inputParam& IParam)
 /*!
   Carry out the full build
   \param SimPtr :: Simulation system
@@ -114,10 +108,17 @@ makeExample::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeExample","build");
 
-  int voidCell(74123);
-
-  DPipe->addInsertCell(voidCell);
-  DPipe->createAll(System,World::masterOrigin(),0);
+  const std::string item=IParam.getDefValue<std::string>
+    ("DIPOLE","defaultConfig",0,0);
+  if (item=="DIPOLE")
+    {
+      dipoleModel A;
+      A.build(System);
+    }
+  else
+    {
+      throw ColErr::InContainerError<std::string>(item,"Model unknown");
+    }
 
   return;
 }
