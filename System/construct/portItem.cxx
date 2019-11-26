@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/portItem.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -91,7 +91,7 @@ portItem::portItem(const std::string& baseKey,
   statusFlag(0),outerFlag(0),
   externalLength(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
-  voidMat(0),wallMat(0),capMat(0)
+  voidMat(0),wallMat(0),capMat(-1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Base name
@@ -106,14 +106,14 @@ portItem::portItem(const std::string& Key) :
   statusFlag(0),outerFlag(0),
   externalLength(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
-  voidMat(0),wallMat(0),capMat(0)
+  voidMat(0),wallMat(0),capMat(-1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-portItem::portItem(const portItem& A) : 
+portItem::portItem(const portItem& A) :
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   portBase(keyName),
@@ -160,8 +160,8 @@ portItem::operator=(const portItem& A)
     }
   return *this;
 }
-  
-portItem::~portItem() 
+
+portItem::~portItem()
   /*!
     Destructor
   */
@@ -174,7 +174,7 @@ portItem::setMain(const double L,const double R,const double WT)
     \param L :: external length
     \param R :: Internal radius
     \param WT :: Wall thick
-    
+
   */
 {
   externalLength=L;
@@ -205,8 +205,8 @@ portItem::setCoverPlate(const double T,const int M)
   */
 {
   capThick=T;
-  if (M<0)
-    capMat=wallMat;
+  capMat=(M<0) ? wallMat : M;
+
   return;
 }
 
@@ -222,7 +222,11 @@ portItem::setMaterial(const int V,const int W,
 {
   voidMat=V;
   wallMat=W;
-  capMat=(PM<0) ? wallMat : PM;
+  if (PM<0 && capMat<0)
+    capMat=wallMat;
+  else if (PM>=0)
+    capMat=PM;
+
   return;
 }
 
@@ -239,22 +243,23 @@ portItem::populate(const FuncDataBase& Control)
     Control.EvalVar<Geometry::Vec3D>(keyName+"Centre");
   axisOffset=
     Control.EvalTail<Geometry::Vec3D>(keyName,portBase,"Axis");
-      
+
   externalLength=Control.EvalTail<double>(keyName,portBase,"Length");
   radius=Control.EvalTail<double>(keyName,portBase,"Radius");
   wall=Control.EvalTail<double>(keyName,portBase,"Wall");
-  
+
   flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
   flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
   capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
 
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
-    
+
   wallMat=ModelSupport::EvalMat<int>
     (Control,keyName+"WallMat",portBase+"WallMat");
   capMat=ModelSupport::EvalDefMat<int>
-    (Control,keyName+"CapMat",portBase+"CapMat",wallMat);
+    (Control,keyName+"CapMat",portBase+"CapMat",capMat);
+  if (capMat<0) capMat=wallMat;
 
   outerFlag=
     static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",outerFlag));
@@ -278,7 +283,7 @@ portItem::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-  
+
 void
 portItem::setCentLine(const attachSystem::FixedComp& FC,
 		      const Geometry::Vec3D& Centre,
@@ -343,8 +348,8 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
     Port position are used for first two link points
     Note that 0/1 are the flange surfaces
     \param LT :: Line track
-    \param AIndex :: start of high density material 
-    \param BIndex :: end of high density material 
+    \param AIndex :: start of high density material
+    \param BIndex :: end of high density material
   */
 {
   ELog::RegMethod RegA("portItem","createLinks");
@@ -423,7 +428,7 @@ portItem::constructOuterFlange(Simulation& System,
   if (capThick>Geometry::zeroTol)
     ModelSupport::buildPlane(SMap,buildIndex+202,
 			     exitPoint+Y*(externalLength+capThick),Y);
-  
+
   // determine start surface:
   std::string frontSurf,midSurf;
   if (startIndex!=0)
@@ -435,10 +440,10 @@ portItem::constructOuterFlange(Simulation& System,
 
   // construct inner volume:
   std::string Out;
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
 
@@ -451,7 +456,7 @@ portItem::constructOuterFlange(Simulation& System,
       Out=ModelSupport::getComposite(SMap,buildIndex," -27 -202 2 ");
       makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
     }
-  
+
   if (outerFlag)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
@@ -470,7 +475,7 @@ portItem::constructOuterFlange(Simulation& System,
       Out=ModelSupport::getComposite(SMap,buildIndex," -17 -102 1 ");
       addOuterUnionSurf(Out+midSurf);
     }
-  
+
   // Mid port exclude
   const std::string tubeExclude=
     ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )");
@@ -492,7 +497,7 @@ portItem::constructOuterFlange(Simulation& System,
 	{
 	  if (i>lastIndex)
 	    OPtr->addSurfString(getExclude());
-	  else 
+	  else
 	    OPtr->addSurfString(tubeExclude);
 	}
     }
@@ -517,7 +522,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 			       const ModelSupport::LineTrack& LT,
 			       size_t& AIndex,size_t& BIndex) const
   /*!
-    Creates the inner and outer objects of the track in the 
+    Creates the inner and outer objects of the track in the
     current ref cell. Base on the idea that the pipe will only
     have to cut solid system [ie. not inner voids]
     \param OGrp :: Object map
@@ -575,7 +580,7 @@ portItem::intersectPair(Simulation& System,
     {
       this->insertComponent(System,"OutVoid",outerVoidRadius);
       Outer.insertComponent(System,"OutVoid",wallComp);
-    }    
+    }
   return;
 }
 
@@ -598,7 +603,7 @@ portItem::intersectVoidPair(Simulation& System,
 
   return;
 }
-  
+
 void
 portItem::constructTrack(Simulation& System)
   /*!
@@ -620,7 +625,7 @@ portItem::constructTrack(Simulation& System)
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();
-  
+
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
   size_t AIndex,BIndex;
@@ -650,7 +655,7 @@ portItem::createAll(Simulation& System,
   constructTrack(System);
   return;
 }
-  
+
 
 
 }  // NAMESPACE constructSystem
