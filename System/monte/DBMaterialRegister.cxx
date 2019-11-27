@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   monte/DBMaterialRegister.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -54,7 +54,7 @@
 namespace ModelSupport
 {
 
-  
+
 void
 DBMaterial::initMaterial()
   /*!
@@ -67,9 +67,9 @@ DBMaterial::initMaterial()
 
   MonteCarlo::Material MObj;
   // THREE ULTRA SPECIAL MATERIALS!!!
-  MObj.setMaterial(-2,"InValid","00000.00c 1.0","",MLib); 
+  MObj.setMaterial(-2,"InValid","00000.00c 1.0","",MLib);
   setMaterial(MObj);
-  MObj.setMaterial(-1,"Empty","00000.00c 1.0","",MLib); 
+  MObj.setMaterial(-1,"Empty","00000.00c 1.0","",MLib);
   setMaterial(MObj);
   MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
   setMaterial(MObj);
@@ -165,13 +165,13 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Material #23 Lead  11340kg m-3 [0.03296371]
-  //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4 
+  //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4
   MObj.setMaterial(23,"Lead","82206.70c 0.00794248 "
 		   "82207.70c 0.00728335 82208.70c 0.0172691","",MLib);
   setMaterial(MObj);
 
   // Material #24 Lead  11340kg m-3 [0.03296371] + Sb at 1.2%
-  //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4 
+  //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4
   MObj.setMaterial(24,"Lead+Sb",
 		   "51121.70c 0.000227377 51123.70c 0.000170066 "
 		   "82204.70c 0.000458119 82206.70c 0.00788619 "
@@ -228,7 +228,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Material #33 Nickel
-  // Total atom density 0.091321 - 8.9 grams per cc 
+  // Total atom density 0.091321 - 8.9 grams per cc
   MObj.setMaterial(33,"Nickel",
 		   "28058.70c 0.062169 28060.70c 0.02394719 "
 		   "28061.70c 0.00104097 28062.70c 0.00331906 "
@@ -254,7 +254,7 @@ DBMaterial::initMaterial()
 		   "29000.50c 1.15420e-3","al.20t",MLib);
   setMaterial(MObj);
 
-  // Material #40  Sapphire : 
+  // Material #40  Sapphire :
   MObj.setMaterial(40,"Al2O3","13027.70c 0.03333333 "
 		   "8016.70c 0.0666666", "",MLib);
   setMaterial(MObj);
@@ -281,8 +281,8 @@ DBMaterial::initMaterial()
 
   // Material #45: Aluminum 2214
   // Total atom density 0.058254 - 2.65 grams per cc (??)
-  // Mg 0.7 : Si 0.7 : Fe 0.5 : NiTi 0.15 : Cr 0.15 : Mn 0.7 :  
-  // Fe 0.4 : Cu 0.1 : Zn 0.25 :  
+  // Mg 0.7 : Si 0.7 : Fe 0.5 : NiTi 0.15 : Cr 0.15 : Mn 0.7 :
+  // Fe 0.4 : Cu 0.1 : Zn 0.25 :
   MObj.setMaterial(45,"Al2214","12000.60c 0.000468292 "
 		   "14028.70c 0.000405257 25055.70c 0.000266369 "
 		   "26054.70c 8.50911e-06 26056.70c 0.000133575 "
@@ -306,7 +306,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(47,"B4C","5010.70c 0.021741 "
 		   "5011.70c 0.087512 6000.70c 0.027313","",MLib);
   setMaterial(MObj);
-  
+
   // Material #48 Poly:
   MObj.setMaterial(48,"Poly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
@@ -348,21 +348,21 @@ DBMaterial::initMaterial()
 		   "7014.70c  5.46980E-03 7015.55c  2.02030E-05","",MLib);
   setMaterial(MObj);
 
-  // Material #52: 5% borated poly  
+  // Material #52: 5% borated poly
   // Total atom density 0.1154 atom/barn-cm
   MObj.setMaterial(52,"B-Poly","1001.70c  0.0752 6000.70c "
 		   "0.0376 5010.70c  0.00051 5011.70c  0.002053",
 		   "poly.01t",MLib);
   setMaterial(MObj);
 
-  // Material #53: Lithium 
+  // Material #53: Lithium
   // Total atom density 0.0219560 - 1.270 g/cc
   MObj.setMaterial(53,"Lithium","3006.70c 0.0047136 "
 		   "3007.70c 0.0424228","",MLib);
   setMaterial(MObj);
 
   // Material #54 Standard Cast Iron [Grey -ASTM A48]:
-  // Carbon 3.4%w/w Si 1.8, Mn 0.5 Rest Fe. [ 7.05g/cc] 
+  // Carbon 3.4%w/w Si 1.8, Mn 0.5 Rest Fe. [ 7.05g/cc]
   MObj.setMaterial( 54,"CastIron","6000.70c 0.00636 "
 		    "14028.70c 0.0051404 25055.70c 0.000386 "
 		    "26054.70c 0.004190 26056.70c 0.065789 26057.70c 0.00152",
@@ -376,7 +376,7 @@ DBMaterial::initMaterial()
   // Material #56 Tin [Density 7310kg/m3]:
   MObj.setMaterial(56,"Tin","50000.42c 0.037088","",MLib);
   setMaterial(MObj);
-  
+
   // Material #57: Lithium Carbonate
   // Total atom density 0.103 Atom/A3 - 2.11 g/cc
   MObj.setMaterial(57,"LithiumCarbonate",
@@ -390,7 +390,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   //Material #59 Nimonic 8.19g/cc
-  // Total atom density 0.091321 - 8.9 grams per cc 
+  // Total atom density 0.091321 - 8.9 grams per cc
 
   MObj.setMaterial(59,"Nimonic","28058.70c 0.0444126 28060.70c 0.0171069 "
 		   "28061.70c 0.000743037 28062.70c 0.00237067 "
@@ -444,14 +444,14 @@ DBMaterial::initMaterial()
 
   setMaterial(MObj);
   // Material #66 Boral
-  // density 0.084235 
+  // density 0.084235
   MObj.setMaterial(66,"B4CAluminium","5010.70c 0.006885 "
 		   "5011.70c 0.031367 6000.70c 0.009563 "
 		   "13027.70c 0.036420","",MLib);
   setMaterial(MObj);
 
   // Material #67 NELCO Concrete
-  // density 2.455g/cc   
+  // density 2.455g/cc
   MObj.setMaterial(67,"NELCOConcrete",
 		   "26054.70c 1.547397e-05 26056.70c 2.429082e-04 "
 		   "26057.70c 5.609809e-06 26058.70c 7.465626e-07 "
@@ -515,7 +515,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
     // Material #72 : Methane + 10% Al.+ 0.18% number density Ar
-    // Mole volume 0.18% 
+    // Mole volume 0.18%
   MObj.setMaterial(72,"CH4Al+Argon",
 		   "6012.70c 0.0172756 1001.70c 0.0690944 "
 		   "13027.70c 0.0054381 "
@@ -525,7 +525,7 @@ DBMaterial::initMaterial()
 
   // Material #73 : Copper
   // Density : 8.91g/cc rho=0.084438
-  
+
   MObj.setMaterial(73,"Copper","29063.70c 0.058389212 "
 		   "29065.70c 0.02604927","",MLib);
   setMaterial(MObj);
@@ -533,16 +533,16 @@ DBMaterial::initMaterial()
    //Material #74: ChipIR Guide Steel (K Jones spec)
    //Density : 7.800 g/cc
   MObj.setMaterial(74,"ChipIRSteel",
-		   "5010.70c 3.459223e-06 5011.70c 1.392381e-05 " 
-		   "6000.70c 4.694025e-04 " 
-		   "7014.70c 3.019615e-05 " 
-		   "13027.70c 2.176586e-04 " 
-		   "14028.70c 1.672824e-04 " 
-		   "25055.70c 3.420733e-04 "  
+		   "5010.70c 3.459223e-06 5011.70c 1.392381e-05 "
+		   "6000.70c 4.694025e-04 "
+		   "7014.70c 3.019615e-05 "
+		   "13027.70c 2.176586e-04 "
+		   "14028.70c 1.672824e-04 "
+		   "25055.70c 3.420733e-04 "
 		   "15031.70c 7.584178e-05 "
-		   "16032.70c 5.563524e-05 16033.70c 4.454102e-07 " 
-		   "16034.70c 2.514223e-06 16036.70c 1.172132e-08 " 
-		   "26054.70c 4.849594e-03 26056.70c 7.612826e-02 " 
+		   "16032.70c 5.563524e-05 16033.70c 4.454102e-07 "
+		   "16034.70c 2.514223e-06 16036.70c 1.172132e-08 "
+		   "26054.70c 4.849594e-03 26056.70c 7.612826e-02 "
 		   "26057.70c 1.758134e-03 26058.70c 2.339753e-04 "
 		   "27059.70c 1.594419e-05 "
 		   "29063.70c 7.671067e-05 29065.70c 3.419098e-05 "
@@ -557,12 +557,12 @@ DBMaterial::initMaterial()
 		   "42100.70c 4.716268e-06 "
 		   "41093.70c 5.056930e-06 "
 		   "23051.42c 9.222311e-06 "
-		   "50112.70c 4.058814e-08 50114.70c 2.761667e-08 " 
+		   "50112.70c 4.058814e-08 50114.70c 2.761667e-08 "
 		   "50115.70c 1.422677e-08 50116.70c 6.084036e-07 "
 		   "50117.70c 3.213576e-07 50118.70c 1.013448e-06 "
 		   "50119.70c 3.594352e-07 50120.70c 1.363259e-06 "
 		   "50122.70c 1.937351e-07 "
-		   "22046.70c 8.097528e-07 22047.70c 7.302498e-07 " 
+		   "22046.70c 8.097528e-07 22047.70c 7.302498e-07 "
 		   "22048.70c 7.235755e-06 22049.70c 5.310015e-07 "
 		   "22050.70c 5.084266e-07 ","",MLib);
   setMaterial(MObj);
@@ -575,24 +575,24 @@ DBMaterial::initMaterial()
 		   "",MLib);
   setMaterial(MObj);
 
-  // Material #76: Titanium alloy (Grade 5): Ti-6Al-4V 
+  // Material #76: Titanium alloy (Grade 5): Ti-6Al-4V
   // Total atom density 0.057135 - 4.43 g/cc
   MObj.setMaterial(76,"Ti-6Al-4V",
 		   "22046.70c 4.221076e-03 22047.70c 3.806643e-03 "
 		   "22048.70c 3.771851e-02 22049.70c 2.768002e-03 "
-		   "22050.70c 2.650324e-03 26054.70c 8.348879e-06 " 
+		   "22050.70c 2.650324e-03 26054.70c 8.348879e-06 "
 		   "26056.70c 1.310595e-04 26057.70c 3.026736e-06 "
 		   "26058.70c 4.028030e-07 8016.70c 1.142704e-04 "
 		   "13027.70c 3.428111e-03 23051.42c 2.285407e-03 ","",MLib);
   setMaterial(MObj);
 
 
-  // Material #77: Platinum 
+  // Material #77: Platinum
   // Total atom density 0.066217 - 21.45 g/cc
   MObj.setMaterial(77,"Platinum",
 		   "78190.80c 9.270400e-06 78192.80c 5.178180e-04 "
 		   "78194.80c 2.182980e-02 78195.80c 2.240258e-02 "
-		   "78196.80c 1.671453e-02 78198.80c 4.743134e-03 ",  
+		   "78196.80c 1.671453e-02 78198.80c 4.743134e-03 ",
 		   "",MLib);
   setMaterial(MObj);
 
@@ -649,8 +649,8 @@ DBMaterial::initMaterial()
 		   "80202.70c 1.213215e-02 80204.70c 2.791289e-03 ",
 		   "",MLib);
   setMaterial(MObj);
-    
-  // Material #86: 90% Be + 10% D2O + H2O mixture (80% D2O & 20% H2O) 
+
+  // Material #86: 90% Be + 10% D2O + H2O mixture (80% D2O & 20% H2O)
   //  (by VOLUME)
   // Total atom density 0.1212102
   MObj.setMaterial(86,"Be90/8D20/2H2O",
@@ -659,15 +659,15 @@ DBMaterial::initMaterial()
 		   "8016.70c 0.0033253","be.60t lwtr.01t hwtr.01t",
 		   MLib);
   setMaterial(MObj);
-  
+
   // Material #87: Light water with 17-O
   // Total atom density 0.0998517 - 1.0 grams per cc
   MObj.setMaterial(87,"H2O_17O","1001.70c 0.06637790 "
-		   "1002.70c 7.634337e-06 8016.70c 0.03345347 "    
+		   "1002.70c 7.634337e-06 8016.70c 0.03345347 "
 		   "8017.70c 1.271715e-05","lwtr.01t",MLib);
   setMaterial(MObj);
 
-  
+
   // Material #88: D2O + H2O mixture (80% D2O & 20% H2O)    (by VOLUME)
   // Total atom density 0.0996049 - 1.0856 grams per cc
   MObj.setMaterial(88,"80D2O/20H2O","1001.70c 1.327648e-02 "
@@ -675,22 +675,22 @@ DBMaterial::initMaterial()
 		   "lwtr.01t hwtr.01t",MLib);
   setMaterial(MObj);
 
-  // Material #89 Boral (95% Aluminium & 5% Boron) 
+  // Material #89 Boral (95% Aluminium & 5% Boron)
   // density 0.06213
   MObj.setMaterial(89,"Boral5","5010.70c 0.0014482 "
 		   "5011.70c 0.0057928 13027.70c 0.054889",
 		   "al.20t",MLib);
   setMaterial(MObj);
 
-  // Material #91 Boral (95% Aluminium & 5% Boron) degraded: 
+  // Material #91 Boral (95% Aluminium & 5% Boron) degraded:
   // 10% of initial B-10 left
   // density 0.062979
   MObj.setMaterial(91,"Boral5Degrade","3007.60c 2.008524e-03 "
 		   "5010.70c 1.168329e-04 5011.70c 5.724811e-03 "
-		   "13027.70c 5.512916e-02","al.20t",MLib);       
+		   "13027.70c 5.512916e-02","al.20t",MLib);
   setMaterial(MObj);
-  
-  // Material #92: Beryllium + heavy water 
+
+  // Material #92: Beryllium + heavy water
   // (Dave Bellenger version 90% Be + 10% D2O - by VOLUME)
   // Total atom density 0.121202
   MObj.setMaterial(92,"Be/10D2O","4009.80c 1.112996e-01 1001.70c 1.651935e-05 "
@@ -702,27 +702,27 @@ DBMaterial::initMaterial()
   // Total atom density 0.121264
   MObj.setMaterial(93,"Be/10H2O","4009.80c 1.112186e-01 "
 		   "1001.70c 6.677949e-03 1002.70c 7.680525e-07 "
-		   "8016.70c 3.366946e-03","lwtr.01t be.60t",MLib);  
+		   "8016.70c 3.366946e-03","lwtr.01t be.60t",MLib);
   setMaterial(MObj);
 
   // Material #94 Stainless 316L
-  // Total atom density 0.086927    
+  // Total atom density 0.086927
   MObj.setMaterial(94,"Stainless316L",
 		   "6000.70c 1.203355e-04 14028.70c 1.715374e-03 "
 		   "24000.50c 1.575140e-02 25055.70c 1.753871e-03 "
 		   "26054.70c 3.301281e-03 26056.70c 5.182305e-02 "
 		   "26057.70c 1.196820e-03 26058.70c 1.592748e-04 "
 		   "28058.70c 6.705771e-03 28060.70c 2.582933e-03 "
-		   "28061.70c 1.121897e-04 28062.70c 3.579432e-04 "    
+		   "28061.70c 1.121897e-04 28062.70c 3.579432e-04 "
 		   "28064.70c 9.111102e-05 42092.70c 1.854269e-04 "
 		   "42094.70c 1.158761e-04 42095.70c 1.996132e-04 "
 		   "42096.70c 2.094056e-04 42097.70c 1.200190e-04 "
-		   "42098.70c 3.036883e-04 42100.70c 1.214000e-04",    
+		   "42098.70c 3.036883e-04 42100.70c 1.214000e-04",
 		   "",MLib);
   setMaterial(MObj);
 
   // Material #95 Steel XC-06: Soft magnetic (yoke) steel
-  // Total atom density 0.086481    
+  // Total atom density 0.086481
   MObj.setMaterial(95,"SteelXC06",
 		   "6000.70c 1.203355e-04 14028.70c 2.229986e-04 "
 		   "24000.50c 3.706212e-05 25055.70c 2.630807e-04 "
@@ -731,9 +731,9 @@ DBMaterial::initMaterial()
 		   "",MLib);
   setMaterial(MObj);
 
-  // Material #96 Carbon, Graphite (Reactor Grade): 
-  // density 0.085238 
-  MObj.setMaterial(96,"Graphite",  
+  // Material #96 Carbon, Graphite (Reactor Grade):
+  // density 0.085238
+  MObj.setMaterial(96,"Graphite",
 		   "6012.70c 8.523759e-02 5010.70c "
 		   "1.894100e-08 5011.70c 7.576401e-08",
 		   "",MLib);
@@ -747,13 +747,13 @@ DBMaterial::initMaterial()
 
     // Material #98 Boral (this is TS1 Boral = Alloy 1100 + B) ->>> 94.7% Al, 5.3% Boron (B-10 enrichment: 98.2%)
     // Density 2.7 g/cm^3
-    // Total atom density 0.06566     
+    // Total atom density 0.06566
   MObj.setMaterial(98,"TS1Boral","5010.70c 8.436522e-03 "
 		   "5011.70c 1.546409e-04 13027.70c 5.706872e-02",
 		   "al.20t",MLib);
   setMaterial(MObj);
 
-  // Material #99: 90% Be + 10% D2O + H2O mixture (50% D2O & 50% H2O) 
+  // Material #99: 90% Be + 10% D2O + H2O mixture (50% D2O & 50% H2O)
   //  (by VOLUME)
   // Total atom density 0.1212533
   MObj.setMaterial(99,"Be90/5D20/5H2O",
@@ -763,7 +763,7 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
-  // Material #100 U3SI2 in Al for reactor New Fuel [delft] 
+  // Material #100 U3SI2 in Al for reactor New Fuel [delft]
   // U density at 4.8g/cc
   MObj.setMaterial(100,"U3Si2",
 		   "13027.70c 3.491000e-02 14028.70c 8.576400e-03 "
@@ -771,8 +771,8 @@ DBMaterial::initMaterial()
 		   "92236.70c 1.714800e-05 92238.70c 9.712900e-03 "
 		   ,"",MLib);
   setMaterial(MObj);
-  
-  // Material #101 Highly burnt U3Si2 - projected to 100% burn 
+
+  // Material #101 Highly burnt U3Si2 - projected to 100% burn
   // which is impossible but allows linear fitting with U3SI2
   // Constructed at 4.8g/cc
   MObj.setMaterial(101,"U3Si2Burnt",
@@ -799,14 +799,14 @@ DBMaterial::initMaterial()
 		   "5011.70c 0.0032776 6000.70c 0.027313","",MLib);
   setMaterial(MObj);
 
-  // Material #103 BeO 
+  // Material #103 BeO
   MObj.setMaterial(103,"BeO",
 		   "4009.70c 0.0988968 8016.70c 0.0988968",
 		   "beo.60t",MLib);
   MObj.setDensity(0.072276);
   setMaterial(MObj);
 
-  // Material #104 U3SI2 in Al for reactor Original Fuel [delft] 
+  // Material #104 U3SI2 in Al for reactor Original Fuel [delft]
   // U density at 4.3//cc
   MObj.setMaterial(104,"U3Si2Low",
 		   "13027.70c 3.491000e-02 14028.70c 8.576400e-03 "
@@ -814,7 +814,7 @@ DBMaterial::initMaterial()
 		   "92236.70c 1.536175e-05 92238.70c 8.701140e-03 "
 		   ,"",MLib);
   setMaterial(MObj);
-  // Material #105 U3SI2 in Al for reactor Original Fuel [delft] 
+  // Material #105 U3SI2 in Al for reactor Original Fuel [delft]
   // U density at 4.3//cc Full 100% burnt for linar interpolationx
   MObj.setMaterial(105,"U3Si2LowBurnt",
 		   "13027.70c 3.491000e-02 14028.70c 8.576400e-03 "
@@ -844,14 +844,14 @@ DBMaterial::initMaterial()
 		   "22048.70c 0.00588208 22049.70c 0.000431661 "
 		   "22050.70c 0.000413309","",MLib);
   setMaterial(MObj);
-  // Material #107 
+  // Material #107
   MObj.setMaterial(107,"Li6ClD2O6Mol",
 		   "3006.60c 0.003358 17035.70c 0.0025185 "
 		   "17037.70c 0.00083950 "
 		   "1002.70c 0.062189 8016.70c 0.031095 ",
                    "hwtr.01t",MLib);
   setMaterial(MObj);
-  // Material #108 
+  // Material #108
   MObj.setMaterial(108,"Li7ClD2O6Mol",
 		   "3007.60c 0.003358 17035.70c 0.0025185 "
 		   "17037.70c 0.00083950 "
@@ -876,7 +876,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
 
-  // Material #111: Beryllium(400K) + heavy water (for test only) 
+  // Material #111: Beryllium(400K) + heavy water (for test only)
   // (90% Be + 10% D2O - by VOLUME)
   // Total atom density 0.121202
   MObj.setMaterial(111,"Be400K/10D2O","4009.80c 1.112996e-01 1001.70c 1.651935e-05 "
@@ -886,8 +886,8 @@ DBMaterial::initMaterial()
 
 
   // Material #112: Aluminum 5251
-  // (Dave Bellenger version for WaterMod aluminium)  
-  // Total atom density 0.059693  
+  // (Dave Bellenger version for WaterMod aluminium)
+  // Total atom density 0.059693
   MObj.setMaterial(112,"Alum5251",
 		   "13027.70c 5.739771e-02 14028.70c 2.307178e-04 "
                    "24000.50c 4.673301e-05 25055.70c 1.474348e-04 "
@@ -897,12 +897,12 @@ DBMaterial::initMaterial()
 		   "22048.70c 3.742363e-05 22049.70c 2.746363e-06 "
 		   "22050.70c 2.629604e-06 29063.70c 2.644224e-05 "
 		   "29065.70c 1.179672e-05 30000.70c 3.714985e-05 "
-		   "12024.70c 1.263543e-03 12025.70c 1.599624e-04 "  
+		   "12024.70c 1.263543e-03 12025.70c 1.599624e-04 "
 		   "12026.70c 1.761186e-04","al.20t",MLib);
   setMaterial(MObj);
 
   // Material #113: Au-In-Cd (75%-0.5%-24.5%); density = 16.3 g/cc
-  // J-PARC decoupler  
+  // J-PARC decoupler
   // Total atom density 0.0591989
   MObj.setMaterial(113,"AuInCd",
 		   "79197.70c 3.737725e-02 49113.70c 1.833815e-05 "
@@ -933,7 +933,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
 
-  // Material #117 Silicon Oxide 
+  // Material #117 Silicon Oxide
   MObj.setMaterial(117,"SiO2",
 		   "14028.70c 0.0245002 "
 		   "14029.70c 0.00124406 "
@@ -955,7 +955,7 @@ DBMaterial::initMaterial()
 		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
 
-  // Material #120: 
+  // Material #120:
   // Low density tungsten
   MObj.setMaterial(120, "Tungsten_15.1g",
 		   "74182.70c  0.265000000 "
@@ -966,7 +966,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-15.1);
   setMaterial(MObj);
 
-  // Material #120: 
+  // Material #120:
   // Homogeneous mixture of Iron and 10% volume H2O
   MObj.setMaterial(121, "Iron_10H2O",
                    " 1001.70c 0.077534884 "
@@ -979,7 +979,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Carston concrete
-  // Number density 0.08800 / B4C fraction : 
+  // Number density 0.08800 / B4C fraction :
   MObj.setMaterial(122,"CarstonConc",
                    "1001.70c 0.0278123 1002.70c 3.19878e-06 "
                    "5010.70c 0.000130219 5011.70c 0.000524148 "
@@ -1001,7 +1001,7 @@ DBMaterial::initMaterial()
                    "poly.01t",MLib);
   setMaterial(MObj);
 
-  
+
   // Material #123 Parafin Wax:
   MObj.setMaterial(123,"Wax","6000.70c 0.2 "
                    "8016.70c 0.1 1001.70c 0.65 "
@@ -1015,7 +1015,7 @@ DBMaterial::initMaterial()
 		   "74184.71c 0.019507618 74186.71c 0.018100573 ","",MLib);
   // density at 300 K according to the Material handbook.
   // YJL says at 600K we should use the same density (??)
-  MObj.setDensity(-19.298); 
+  MObj.setDensity(-19.298);
   setMaterial(MObj);
 
   // # 125 Zircalloy-2 -- 6.56g/cc
@@ -1024,7 +1024,7 @@ DBMaterial::initMaterial()
                    "40090.70c 0.00874443 40091.70c 0.00190695 "
 		   "40093.70c 0.00291481 40094.70c 0.0029539 ",
                    "",MLib);
-  MObj.setDensity(-6.56); 
+  MObj.setDensity(-6.56);
   setMaterial(MObj);
 
   // Material #126 Polystyrene [C8H8]
@@ -1063,7 +1063,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-8.11);
   setMaterial(MObj);
 
-  
+
   // Material #128: SAB - Liquid para-hydrogen (basic)
   //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
   MObj.setMaterial(128,"H2para19K","1001.70c 0.041957","hpara.60t",MLib);
@@ -1126,7 +1126,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Material #134: liquid N2
-  // Total density 0.807g/cc 
+  // Total density 0.807g/cc
   MObj.setMaterial(134,"LiqN2","7014.70c 0.034718","",MLib);
   setMaterial(MObj);
 
@@ -1152,24 +1152,24 @@ DBMaterial::initMaterial()
   // Material #136 Silver
   // Density 10.49g/cc atomic rho=0.058573
   MObj.setMaterial(136,"Silver","47107.70c 0.043778 "
-                   "47109.70c 0.040672 ","",MLib); 
+                   "47109.70c 0.040672 ","",MLib);
   MObj.setDensity(-10.49); // wikipedia
   setMaterial(MObj);
 
-  // 
+  //
   // Material #137 Hi-DensityPoly:
   MObj.setMaterial(137,"HighDensPoly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
   MObj.setDensity(-0.97);
   setMaterial(MObj);
 
-  // 
+  //
   // Material #138 Ammonia [695kg/m^3]
   MObj.setMaterial(138,"Ammonia","7014.70c 0.024801 "
 		   "1001.70c 0.074402","orthh.99t",MLib);
   setMaterial(MObj);
 
-  // 
+  //
   // Material #139 boro-silicate glass (rho=2.24g 75% siO2 12% B2O4 13% Al2O3
   MObj.setMaterial(139,"Borosilicate",
 		   "14028.70c 0.0160107 14029.70c 0.000812983  "
@@ -1177,7 +1177,7 @@ DBMaterial::initMaterial()
 		   "5011.70c 0.00266976 13027.70c 0.00361079  "
 		   "8016.70c 0.0451349 ","",MLib);
   setMaterial(MObj);
-  
+
 
   // Material #140: Hydrogen gas for vacuum pipes (Brem production)
   // Total atom density 5.4127e-5 -  300K 0.08988 g/litre
@@ -1258,11 +1258,21 @@ DBMaterial::initMaterial()
   MObj.setDensity(-2.0272);
   setMaterial(MObj);
 
-  // Material #146 Diamond 
+  // Material #146 Diamond
   // density 3.51g/cc 0.176
   MObj.setMaterial(146,"Diamond", "6012.70c 0.17615 ","",MLib);
   MObj.setDensity(-3.51);
   setMaterial(MObj);
+
+  // ESS Iron
+  MObj.setMaterial(147, "Iron",
+		   " 26054.70c  0.058450000 "
+		   " 26056.70c  0.917540000 "
+		   " 26057.70c  0.021190000 "
+		   " 26058.70c  0.002820000 ", "fe56.12t", MLib);
+  MObj.setDensity(-7.85);
+  setMaterial(MObj);
+
 
   return;
 }
