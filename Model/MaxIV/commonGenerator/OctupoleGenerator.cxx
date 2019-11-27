@@ -61,7 +61,7 @@ OctupoleGenerator::OctupoleGenerator() :
   poleYAngle(22.5),poleGap(1.25),
   poleRadius(1.8),poleWidth(0.9),
   coilRadius(2.31),coilWidth(1.75),
-  poleMat("Stainless304"),
+  poleMat("Iron"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
     Constructor and defaults
