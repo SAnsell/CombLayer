@@ -437,7 +437,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
 
   monoV->constructPorts(System);
 
-
+  
   gateC->setFront(*driftB,2);
   gateC->createAll(System,*driftB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
@@ -467,6 +467,9 @@ balderOpticsBeamline::buildObjects(Simulation& System)
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   cellIndex++;
 
+  // lastComp=gateE;  
+  // setCell("LastVoid",masterCell->getName());
+  // return;
 
   pipeD->setFront(*shieldPipe,2);
   pipeD->createAll(System,*shieldPipe,2);
@@ -496,6 +499,9 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   cellIndex+=2;
   
 
+  // lastComp=gateE;  
+  // setCell("LastVoid",masterCell->getName());
+  // return;
 
   pipeE->setFront(*mirrorBoxB,2);
   pipeE->createAll(System,*mirrorBoxB,2);
@@ -511,7 +517,8 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   slitsB->setCell("OuterVoid",outerCell);
   slitsB->insertInCell(System,outerCell);
 
-
+ 
+  // ERROR HERE :
   // fake insert for ports
   viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
@@ -535,14 +542,17 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",1));
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",3));
+      //      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",1));
+      //      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",3));
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
+  lastComp=gateE;  
+  setCell("LastVoid",masterCell->getName());
+  return;
   
   pipeF->setFront(*viewPipe,2);
   pipeF->createAll(System,*viewPipe,2);

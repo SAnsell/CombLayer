@@ -671,6 +671,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string fname=opticsName+"ViewMount"+std::to_string(0);
   FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
   FlangeGen.setCF<setVariable::CF40>();
+  FlangeGen.setNoPlate();    
   FlangeGen.generateMount(Control,fname,0);    // out of  beam
 
   
