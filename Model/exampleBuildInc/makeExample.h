@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuildInc/DefUnitsMaxIV.h
+ * File:   exmapleInc/makeExample.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,30 +12,52 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef mainSystem_DefUnitsMaxIV_h
-#define mainSystem_DefUnitsMaxIV_h
+#ifndef exampleSystem_makeExample_h
+#define exampleSystem_makeExample_h
 
-class Simulation;
-class FuncDataBase;
 
-namespace mainSystem
+/*!
+  \namespace pipeSystem
+  \brief simple pipemodl
+  \version 1.0
+  \date November 2019
+  \author S. Ansell
+*/
+
+namespace exampleSystem
 {
-  class defaultConfig;
-  class inputParam;
+  /*!
+    \class makePipe
+    \version 1.0
+    \author S. Ansell
+    \date May 2015
+    \brief General pipe building system
+  */
+  class dipolePipe;
+  class quadPipe;
+  
+class makeExample
+{
+ private:
+  
+ public:
+  
+  makeExample();
+  makeExample(const makeExample&);
+  makeExample& operator=(const makeExample&);
+  ~makeExample();
+  
+  void build(Simulation&,const mainSystem::inputParam&);
 
-  void setDefUnits(FuncDataBase&,inputParam&);
-  void setMaxIVSingle(defaultConfig&,const std::vector<std::string>&);
-  void setMaxIVLinac(defaultConfig&);
+};
 
 }
 
-
 #endif
- 

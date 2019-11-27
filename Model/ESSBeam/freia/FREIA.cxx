@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -167,8 +166,6 @@ FREIA::FREIA(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(freiaAxis);
 
   OR.addObject(BendA);

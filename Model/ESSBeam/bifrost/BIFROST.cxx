@@ -3,7 +3,7 @@
  
  * File:   ESSBuild/bifrost/BIFROST.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -205,8 +204,6 @@ BIFROST::BIFROST(const std::string& keyName) :
       OR.addObject(EllFocus[i]);
     }
 
-  // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(bifrostAxis);
 
   OR.addObject(FocusA);

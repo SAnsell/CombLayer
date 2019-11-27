@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/simpleItem/SimpleITEM.cxx
+ * File:   pipeBuild/dipoleModel.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <utility>
 #include <cmath>
 #include <complex>
 #include <list>
@@ -35,13 +34,15 @@
 #include <iterator>
 #include <memory>
 
+#include <boost/format.hpp>
+
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "debugMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -57,98 +58,90 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Object.h"
+#include "insertInfo.h"
+#include "insertBaseInfo.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "CopiedComp.h"
+#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
+#include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "GuideItem.h"
-#include "Bunker.h"
-#include "BunkerInsert.h"
-#include "insertObject.h"
-#include "insertPlate.h"
-#include "beamlineSupport.h"
+#include "dipolePipe.h"
+#include "quadPipe.h"
 
-#include "simpleITEM.h"
+#include "dipoleModel.h"
 
-namespace essSystem
+namespace exampleSystem
 {
 
-simpleITEM::simpleITEM(const std::string& keyN) :
-  attachSystem::CopiedComp("simple",keyN),stopPoint(0),
-  simpleAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-  Plate(new insertSystem::insertPlate(newName+"Plate"))
+dipoleModel::dipoleModel() :
+  DPipe(new dipolePipe("DPipe")),
+  QuadA(new quadPipe("QuadA")),
+  QuadB(new quadPipe("QuadB")),
+  QuadC(new quadPipe("QuadC")),
+  QuadD(new quadPipe("QuadD"))
   /*!
     Constructor
-    \param keyN :: keyName
   */
 {
-  ELog::RegMethod RegA("simpleITEM","simpleITEM");
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+  OR.addObject(DPipe);
+  OR.addObject(QuadA);
+  OR.addObject(QuadB);
+  OR.addObject(QuadC);
+  OR.addObject(QuadD);
 
-  // This necessary:
-  OR.addObject(simpleAxis);
-  OR.addObject(Plate);
 }
 
-
-
-simpleITEM::~simpleITEM()
+dipoleModel::~dipoleModel()
   /*!
     Destructor
-  */
+   */
 {}
-  
+
 void 
-simpleITEM::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+dipoleModel::build(Simulation& System)
   /*!
     Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
-   */
+    \param SimPtr :: Simulation system
+    \param :: Input parameters
+  */
 {
   // For output stream
-  ELog::RegMethod RegA("simpleITEM","build");
-  ELog::EM<<"\nBuilding simpleITEM on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::RegMethod RControl("dipoleModel","build");
 
-  FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(Control);
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  int voidCell(74123);
 
-  essBeamSystem::setBeamAxis(*simpleAxis,System.getDataBase(),GItem,0);
-  
+  DPipe->addInsertCell(voidCell);
+  DPipe->createAll(System,World::masterOrigin(),0);
 
-  if (stopPoint==1) return;                // STOP At monolith edge
+  QuadA->addInsertCell(voidCell);
+  QuadA->createAll(System,*DPipe,"back");
 
-  ELog::EM<<"Bunker unit = "<<bunkerObj.getKeyName()<<ELog::endDiag;
-  Plate->addInsertCell(bunkerObj.getCell("MainVoid"));
-  Plate->createAll(System,GItem.getKey("Beam"),2);
+  QuadB->addInsertCell(voidCell);
+  QuadB->createAll(System,*DPipe,"back");
 
-  
+  QuadC->addInsertCell(voidCell);
+  QuadC->createAll(System,*DPipe,"back");
+
+  QuadD->addInsertCell(voidCell);
+  QuadD->createAll(System,*DPipe,"back");
+
   return;
 }
 
 
-}   // NAMESPACE essSystem
+}   // NAMESPACE exampleSystem
 

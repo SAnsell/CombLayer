@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuildInc/DefUnitsMaxIV.h
+ * File:   exampleBuildInc/DefUnitsExample.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -12,15 +12,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNExample FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef mainSystem_DefUnitsMaxIV_h
-#define mainSystem_DefUnitsMaxIV_h
+#ifndef mainSystem_DefUnitsExample_h
+#define mainSystem_DefUnitsExample_h
 
 class Simulation;
 class FuncDataBase;
@@ -31,9 +31,8 @@ namespace mainSystem
   class inputParam;
 
   void setDefUnits(FuncDataBase&,inputParam&);
-  void setMaxIVSingle(defaultConfig&,const std::vector<std::string>&);
-  void setMaxIVLinac(defaultConfig&);
 
+  void setExampleEX1(defaultConfig&,const std::vector<std::string>&);
 }
 
 

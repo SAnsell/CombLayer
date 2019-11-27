@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTally/userBdxConstruct.cxx
+ * File:   flukaTally/userYieldConstruct.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -70,27 +70,34 @@
 #include "TallySelector.h"
 #include "flukaTallySelector.h"
 #include "flukaTally.h"
-#include "userBdx.h"
-#include "userBdxConstruct.h" 
+#include "userYield.h"
+#include "userBdxConstruct.h"
+#include "userYieldConstruct.h" 
 
 
 namespace flukaSystem
 {
 
-
 void 
-userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& PType,const int fortranTape,
-			      const int cellA,const int cellB,
-			      const bool eLog,const double Emin,
-			      const double Emax,const size_t nE,
-			      const bool aLog,const double Amin,
-			      const double Amax,const size_t nA)
+userYieldConstruct::createTally(SimFLUKA& System,
+				const std::string& PType,
+				const bool lFlag,
+				const std::string& AScore,
+				const std::string& BScore,
+				const int fortranTape,
+				const int cellA,const int cellB,
+				const bool eLog,const double Emin,
+				const double Emax,const size_t nE,
+				const bool aLog,const double Amin,
+				const double Amax,const size_t nA)
   /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
     \param PType :: particle name
+    \param 
+    \param AScore :: score one 						
+    \param BScore :: score two
     \param fortranTape :: output stream
     \param CellA :: initial region
     \param CellB :: secondary region
@@ -104,11 +111,13 @@ userBdxConstruct::createTally(SimFLUKA& System,
     \param nA :: Number of angle bins
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","createTally");
+  ELog::RegMethod RegA("userYieldConstruct","createTally");
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
     
-  userBdx UD(fortranTape);
+  userYield UD(fortranTape);
+
+  UD.setScoreType(lFlag,AScore,BScore);
   UD.setParticle(FG.nameToFLUKA(PType));
 
   UD.setCell(cellA,cellB);
@@ -122,9 +131,9 @@ userBdxConstruct::createTally(SimFLUKA& System,
 
 
 void
-userBdxConstruct::processBDX(SimFLUKA& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+userYieldConstruct::processYield(SimFLUKA& System,
+				 const mainSystem::inputParam& IParam,
+				 const size_t Index) 
   /*!
     Add BDX tally (s) as needed
     - Input:
@@ -136,17 +145,22 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","processBdx");
-
+  ELog::RegMethod RegA("userYieldConstruct","processBdx");
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+  const std::string yieldTypeA=
+    IParam.getValueError<std::string>("tally",Index,2,"tally:YieldType");
+  const std::string yieldTypeB=
+    IParam.getValueError<std::string>("tally",Index,3,"tally:YieldType");
   const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
+    IParam.getValueError<std::string>("tally",Index,4,"tally:Object/Cell");
   const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
+    IParam.getValueError<std::string>("tally",Index,5,"tally:linkPt/Cell");
 
-  size_t itemIndex(4);
+  bool logFlag(1);
+  
+  size_t itemIndex(6);
   int cellA(0);
   int cellB(0);
   if (
@@ -154,7 +168,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
       
-      !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
+       !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
       )
     
     {
@@ -184,27 +198,27 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
 
   
-  userBdxConstruct::createTally(System,particleType,nextId,
-				cellA,cellB,
-				1,EA,EB,NE,
-				0,AA,AB,NA);
+  userYieldConstruct::createTally(System,particleType,
+				  logFlag,yieldTypeA,yieldTypeB,
+				  nextId,
+				  cellA,cellB,
+				  1,EA,EB,NE,
+				  0,AA,AB,NA);
   
   return;      
 }  
   
 void
-userBdxConstruct::writeHelp(std::ostream& OX) 
+userYieldConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream
   */
 {
   OX<<
-    "recordType filename \n"
-    "  --recordType avaiable:\n"
-    "    source : trajectory : local : continuous\n"
-    "    sourceLoss : trajLoss : user";
-
+    " particle yieldTypeA yieldTypeB Object linkPt \n"
+    "   EnergyStart EnergyEnd NPTS \n"
+    "   AngleStart AngleEnd NPTS \n";
   return;
 }
 

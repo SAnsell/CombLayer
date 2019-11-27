@@ -231,8 +231,8 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
 
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleXStep",-2.0);
+  Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
@@ -260,7 +260,7 @@ exptHutVariables(FuncDataBase& Control,
     \param hutName :: Expt hut name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
+  ELog::RegMethod RegA("danmaxVariables","exptHutVariables");
 
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
@@ -276,7 +276,7 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
-  Control.addVariable(hutName+"VoidMat","Air");
+  Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
@@ -914,6 +914,7 @@ opticsVariables(FuncDataBase& Control,
   revBeamStopPackage(Control,opticsName);
 
   BellowGen.generateBellow(Control,opticsName+"BellowK",0,10.0);
+  Control.addVariable(opticsName+"BellowKYAngle",180.0);
 
   monoShutterVariables(Control,opticsName);
   
@@ -1038,7 +1039,7 @@ DANMAXvariables(FuncDataBase& Control)
   // note bellow skip
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
 
-  danmaxVar::exptHutVariables(Control,"DanmaxExpt");
+  danmaxVar::exptHutVariables(Control,"DanmaxExptHut");
 
   const std::string exptName="DanmaxExptLine";
   

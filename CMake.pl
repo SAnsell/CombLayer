@@ -7,7 +7,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
+my @masterprog=("example","fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 		"sns","saxs","reactor","t1MarkII","essBeamline","bilbau",
 		"singleItem","maxiv","testMain");
 # filter
@@ -94,6 +94,10 @@ my @essBeam = qw( essBuild );
 push(@essBeam,@mainLib);
 $gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
 
+
+my @example = qw( exampleBuild );
+push(@example,@mainLib);
+$gM->addDepUnit("example", [@example]);
 
 my @maxiv = qw( maxivBuild );
 push(@maxiv,@mainLib);

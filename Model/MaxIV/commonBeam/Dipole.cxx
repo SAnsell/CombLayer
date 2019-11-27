@@ -365,3 +365,4 @@ Dipole::createAll(Simulation& System,
 }
   
 }  // NAMESPACE xraySystem
+

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/userBdxConstruct.h
+ * File:   essBuild/ExampleInputs.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,53 +19,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_userBdxConstruct_h
-#define tallySystem_userBdxConstruct_h
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <vector>
+#include <set>
+#include <list>
+#include <map>
+#include <string>
+#include <iterator>
+#include <memory>
 
-namespace attachSystem
-{
-  class FixedComp;
-}
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Vec3D.h"
+#include "InputControl.h"
+#include "inputParam.h"
+#include "MainInputs.h"
 
 namespace mainSystem
 {
-  class inputParam;
+
+void
+createExampleInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for the ESS
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createESSInputs");
+  createInputs(IParam);
+  
+
+  return;
 }
 
-class Simulation;
-
-namespace flukaSystem
-{
-
-/*!
-  \class userBdxConstruct
-  \version 1.0
-  \author S. Ansell
-  \date July 2018
-  \brief Constructs a surface tally for fluka
-*/
-
-class userBdxConstruct 
-{
-  private:
-  
-  /// Private constructor
-  userBdxConstruct() {}
-
-  static void createTally(SimFLUKA&,const std::string&,const int,
-			  const int,const int,
-			  const bool,const double,const double,const size_t,
-			  const bool,const double,const double,const size_t);
-  
- public:
-
-  static void processBDX(SimFLUKA&,const mainSystem::inputParam&,
-			 const size_t);
-  
-  static void writeHelp(std::ostream&);
-};
-
-}
-
-#endif
- 
+} // NAMESPACE Main Inputs

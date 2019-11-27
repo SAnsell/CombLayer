@@ -289,6 +289,12 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
       Energy.push_back(E);
       EWeight.push_back(1.0);
     }
+
+  if (!eFlag &&
+      mainSystem::hasInput(inputMap,"momentum"))  // only single momentum
+    {
+      
+    }
       
   return;
 }

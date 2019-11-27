@@ -487,8 +487,6 @@ inputParam::getValue(const std::string& K,
   return IPtr->getObj<T>(setIndex,itemIndex);
 }
   
-
-  
 template<typename T>
 T
 inputParam::getValueError(const std::string& K,

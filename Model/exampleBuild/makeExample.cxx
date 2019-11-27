@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/simpleItem/SimpleITEM.cxx
+ * File:   exampleBuild/makeExample.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <utility>
 #include <cmath>
 #include <complex>
 #include <list>
@@ -35,13 +34,15 @@
 #include <iterator>
 #include <memory>
 
+#include <boost/format.hpp>
+
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "debugMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -57,98 +58,71 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Object.h"
+#include "insertInfo.h"
+#include "insertBaseInfo.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "CopiedComp.h"
+#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
+#include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "GuideItem.h"
-#include "Bunker.h"
-#include "BunkerInsert.h"
-#include "insertObject.h"
-#include "insertPlate.h"
-#include "beamlineSupport.h"
+#include "dipoleModel.h"
 
-#include "simpleITEM.h"
+#include "makeExample.h"
 
-namespace essSystem
+namespace exampleSystem
 {
 
-simpleITEM::simpleITEM(const std::string& keyN) :
-  attachSystem::CopiedComp("simple",keyN),stopPoint(0),
-  simpleAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-  Plate(new insertSystem::insertPlate(newName+"Plate"))
+makeExample::makeExample() 
   /*!
     Constructor
-    \param keyN :: keyName
-  */
-{
-  ELog::RegMethod RegA("simpleITEM","simpleITEM");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  // This necessary:
-  OR.addObject(simpleAxis);
-  OR.addObject(Plate);
-}
-
-
-
-simpleITEM::~simpleITEM()
-  /*!
-    Destructor
   */
 {}
-  
-void 
-simpleITEM::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+
+makeExample::~makeExample()
   /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
+    Destructor
    */
+{}
+
+void 
+makeExample::build(Simulation& System,
+		     const mainSystem::inputParam& IParam)
+/*!
+  Carry out the full build
+  \param SimPtr :: Simulation system
+  \param :: Input parameters
+*/
 {
   // For output stream
-  ELog::RegMethod RegA("simpleITEM","build");
-  ELog::EM<<"\nBuilding simpleITEM on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::RegMethod RControl("makeExample","build");
 
-  FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(Control);
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  const std::string item=IParam.getDefValue<std::string>
+    ("DIPOLE","defaultConfig",0,0);
+  if (item=="DIPOLE")
+    {
+      dipoleModel A;
+      A.build(System);
+    }
+  else
+    {
+      throw ColErr::InContainerError<std::string>(item,"Model unknown");
+    }
 
-  essBeamSystem::setBeamAxis(*simpleAxis,System.getDataBase(),GItem,0);
-  
-
-  if (stopPoint==1) return;                // STOP At monolith edge
-
-  ELog::EM<<"Bunker unit = "<<bunkerObj.getKeyName()<<ELog::endDiag;
-  Plate->addInsertCell(bunkerObj.getCell("MainVoid"));
-  Plate->createAll(System,GItem.getKey("Beam"),2);
-
-  
   return;
 }
 
 
-}   // NAMESPACE essSystem
+}   // NAMESPACE exampleSystem
 

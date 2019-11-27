@@ -180,7 +180,6 @@ ODIN::ODIN(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.cell(newName+"Axis");
   OR.addObject(odinAxis);
 
   OR.addObject(FocusA);

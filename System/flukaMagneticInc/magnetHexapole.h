@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/userBdxConstruct.h
+ * File:   flukaMagnetInc/magnetHexapole.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,53 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_userBdxConstruct_h
-#define tallySystem_userBdxConstruct_h
-
-namespace attachSystem
-{
-  class FixedComp;
-}
-
-namespace mainSystem
-{
-  class inputParam;
-}
-
-class Simulation;
+#ifndef flukaSystem_magnetHexapole_h
+#define flukaSystem_magnetHexapole_h
 
 namespace flukaSystem
 {
-
+  
 /*!
-  \class userBdxConstruct
+  \class magnetHexapole
   \version 1.0
-  \author S. Ansell
-  \date July 2018
-  \brief Constructs a surface tally for fluka
+  \date February 2019
+  \author S.Ansell
+  \brief Holds an external magnetic system
 */
 
-class userBdxConstruct 
+class magnetHexapole :
+  public magnetUnit
 {
-  private:
-  
-  /// Private constructor
-  userBdxConstruct() {}
+ private:
 
-  static void createTally(SimFLUKA&,const std::string&,const int,
-			  const int,const int,
-			  const bool,const double,const double,const size_t,
-			  const bool,const double,const double,const size_t);
+  double KFactor;        ///< K factor [T/cm]
+
+  virtual void populate(const FuncDataBase&);
   
  public:
 
-  static void processBDX(SimFLUKA&,const mainSystem::inputParam&,
-			 const size_t);
-  
-  static void writeHelp(std::ostream&);
+  magnetHexapole(const std::string&,const size_t);
+  magnetHexapole(const magnetHexapole&);
+  magnetHexapole& operator=(const magnetHexapole&);
+  virtual ~magnetHexapole();
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const double);
+
+  virtual void writeFLUKA(std::ostream&) const;
+
 };
 
 }
 
 #endif
- 

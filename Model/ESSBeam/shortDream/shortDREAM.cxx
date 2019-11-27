@@ -67,7 +67,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -164,8 +163,6 @@ shortDREAM::shortDREAM(const std::string& keyName) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // This is necessary:
-  OR.cell(newName+"Axis");
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
