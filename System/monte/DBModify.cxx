@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   monte/DBModify.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@ processMaterialFile(const std::string& matFile)
   DB.readFile(matFile);
   return;
 }
-  
+
 void
 cloneBasicMaterial()
   /*!
@@ -82,7 +82,6 @@ cloneBasicMaterial()
 	  <<ELog::endCrit;
 
   // original material to use ::  name to use [ie thing missing]
-  DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("Aluminium","Aluminium20K");
   DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
   DB.cloneMaterial("Tungsten","Tungsten_15.3g");
@@ -145,14 +144,13 @@ cloneESSMaterial()
   DB.cloneMaterial("Stainless304","SS316L_7.85g");
   DB.cloneMaterial("Stainless304","SS316L785");
   DB.cloneMaterial("Stainless304","SS316L3925");
-  
-  DB.cloneMaterial("CastIron","Iron");
+
   DB.cloneMaterial("ParaH2","HPARA");
   DB.cloneMaterial("Aluminium","Aluminium20K");
 
   return;
 }
-    
+
 void
 addESSMaterial()
   /*!
@@ -193,20 +191,10 @@ addESSMaterial()
 
   MObj.setMaterial(1300, "Aluminium", " 13027.70c 1.0 ", "al27.12t", MLib);
   MObj.setDensity(-2.7);
-  MDB.resetMaterial(MObj); 
+  MDB.resetMaterial(MObj);
 
   MObj.setMaterial(1301, "Aluminium20K", " 13027.70c 1.0 ", "al27.10t", MLib);
   MObj.setDensity(-2.73);
-  MDB.resetMaterial(MObj); 
-
-  // ESS Iron
-  MObj.setMaterial(2600, "Iron",
-		   " 26054.70c  0.058450000 "
-		   " 26056.70c  0.917540000 "
-		   " 26057.70c  0.021190000 "
-		   " 26058.70c  0.002820000 ", "fe56.12t", MLib);
-  //  MObj.setMXitem(6000, 70, 'c', "h", "06012");
-  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   // Homogeneous mixture of Iron and 10% volume H2O
@@ -409,7 +397,7 @@ MDB.resetMaterial(MObj);
 		   "74186.71c  0.284300000 ",
 		   "",MLib);
   MObj.setDensity(-19.3);
-  MDB.resetMaterial(MObj);  
+  MDB.resetMaterial(MObj);
 
 
   // Tunsten as in a2t200 mat 7400 with average density 15.1 g/cm3
@@ -418,7 +406,7 @@ MDB.resetMaterial(MObj);
   // Hence, the filling factor of the infinite square lattice is:
   // 3*1/(3+0.2)/(1+0.2) = 0.78125
   // Natural Tungsten density is 19.298 19.3 g/cm3 [Material book] at 300 K,
-  // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
+  // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3
   // We need to use density at 300 K despite of the fact that during the operation the temperature will be ~600 K since the Tungsten bricks are placed inside
   // containers which do not allow them to expand.
 
@@ -443,7 +431,7 @@ MDB.resetMaterial(MObj);
   MObj.setDensity(-15.6);
   MDB.resetMaterial(MObj);
 
-  
+
   MObj.setMaterial(2660, "Invar36",
 		   " 06000.70c  0.001000000 "
 		   " 14028.70c 0.003227805 "
@@ -518,7 +506,7 @@ MDB.resetMaterial(MObj);
 		   "74186.71c  0.284300000 ",
 		   "",MLib);
   MObj.setDensity(-19.298); // density at 300 K according to the Material handbook. YJL says at 600K we should use the same density
-  MDB.resetMaterial(MObj);  
+  MDB.resetMaterial(MObj);
 
 
   // Tunsten as in a2t200 mat 7400 with average density 15.1 g/cm3
@@ -527,7 +515,7 @@ MDB.resetMaterial(MObj);
   // Hence, the filling factor of the infinite square lattice is:
   // 3*1/(3+0.2)/(1+0.2) = 0.78125
   // Natural Tungsten density is 19.298 \approx 19.3 g/cm3 [Material book] at 300 K,
-  // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
+  // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3
 
   MObj.setMaterial(imat++, "Tungsten_15.1g",
 		   "74180.50c  0.001200000 "
@@ -550,7 +538,7 @@ MDB.resetMaterial(MObj);
   MObj.setDensity(-15.6);
   MDB.resetMaterial(MObj);
 
-  
+
   // Regular concrete (Alan's mat #815)
   // Temperature: 600 K
   // Reference: TSM141108V2005CFG01
