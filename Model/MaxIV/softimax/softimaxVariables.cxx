@@ -578,7 +578,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const double phi = 0.0;   // rotation angle in deg
   //  const double normialAngle=0.2;
   //  const double vAngle=0.0;
-  const double centreDist(5.0);
+  const double centreDist(0.0); // along the beam line
   //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
   //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
