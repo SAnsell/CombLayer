@@ -83,6 +83,8 @@
 #include "magnetUnit.h"
 #include "magnetDipole.h"
 #include "magnetQuad.h"
+#include "magnetHexapole.h"
+#include "magnetOctopole.h"
 #include "flukaDefPhysics.h"
 
 
@@ -191,10 +193,26 @@ setMagneticExternal(SimFLUKA& System,
 	    ("MagUnit",setIndex,0,"typeName");
 	  ModelSupport::getObjectAxis(System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
 	  const Geometry::Vec3D Extent=IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
-	  const double KV=IParam.getValueError<double> ("MagUnit",setIndex,index,"K Value");
+	  const double KV=
+	    IParam.getValueError<double> ("MagUnit",setIndex,index,"K Value");
 
 
-	  if (typeName=="Quad")
+	  if (typeName=="Octopole")
+	    {
+	      std::shared_ptr<flukaSystem::magnetOctopole>
+		OPtr(new magnetOctopole("Octo",setIndex));
+	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
+	      System.addMagnetObject(OPtr);
+	    }
+	  else if (typeName=="Hexapole")
+	    {
+	      std::shared_ptr<flukaSystem::magnetHexapole>
+		OPtr(new magnetHexapole("Hexa",setIndex));
+	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
+	      System.addMagnetObject(OPtr);
+	    }
+
+	  else if (typeName=="Quad")
 	    {
 	      std::shared_ptr<flukaSystem::magnetQuad>
 		QPtr(new magnetQuad("Quad",setIndex));
@@ -204,11 +222,17 @@ setMagneticExternal(SimFLUKA& System,
 
 	  else if (typeName=="Dipole")
 	    {
-	      const double Radius=IParam.getValueError<double> ("MagUnit",setIndex,index,"Radius");
+	      const double Radius=IParam.getValueError<double>
+		("MagUnit",setIndex,index,"Radius");
 	      std::shared_ptr<flukaSystem::magnetDipole>
 		QPtr(new magnetDipole("Dipl",setIndex));
 	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV,Radius);
 	      System.addMagnetObject(QPtr);
+	    }
+	  else
+	    {
+	      throw ColErr::InContainerError<std::string>
+		(typeName,"Magnet type not known");
 	    }
 	}
     }

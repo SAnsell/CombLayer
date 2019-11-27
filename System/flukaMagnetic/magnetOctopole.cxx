@@ -51,7 +51,7 @@
 #include "writeSupport.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "Octopoleratic.h"
+#include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -73,7 +73,7 @@ namespace flukaSystem
 
 magnetOctopole::magnetOctopole(const std::string& Key,
 		       const size_t I) :
-  magnetUnit(Key,I),KFactor(0.0)
+  magnetUnit(Key,I),KAFactor(0.0),KBFactor(0.0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -83,7 +83,7 @@ magnetOctopole::magnetOctopole(const std::string& Key,
 
 magnetOctopole::magnetOctopole(const magnetOctopole& A) : 
   magnetUnit(A),
-  KFactor(A.KFactor)
+  KAFactor(A.KAFactor),KBFactor(A.KBFactor)
   /*!
     Copy constructor
     \param A :: magnetOctopole to copy
@@ -101,7 +101,8 @@ magnetOctopole::operator=(const magnetOctopole& A)
   if (this!=&A)
     {
       magnetUnit::operator=(A);
-      KFactor=A.KFactor;
+      KAFactor=A.KAFactor;
+      KBFactor=A.KBFactor;
     }
   return *this;
 }
@@ -125,8 +126,8 @@ magnetOctopole::populate(const FuncDataBase& Control)
 
   magnetUnit::populate(Control);
   
-  KAFactor=Control.EvalDefVar<double>(keyName+"KAFactor",KFactor);
-  KBFactor=Control.EvalDefVar<double>(keyName+"KBFactor",KFactor);
+  KAFactor=Control.EvalDefVar<double>(keyName+"KAFactor",KAFactor);
+  KBFactor=Control.EvalDefVar<double>(keyName+"KBFactor",KBFactor);
   return;
 }
 
@@ -146,7 +147,7 @@ magnetOctopole::createAll(Simulation& System,
   
   populate(System.getDataBase());
   magnetUnit::createUnitVector(FC,sideIndex);
-li
+
   return;
 }
 
@@ -165,7 +166,7 @@ magnetOctopole::createAll(Simulation& System,
     \param AY :: Y Axis
     \param AZ :: Z Axis [reothorgalizd]
     \param extent :: XYZ Extent distance [0 in an dimestion for all space]
-    \param kValue :: K Value of quadrupole
+    \param kValue :: K Value of components
   */
 {
   ELog::RegMethod RegA("magnetOctopole","createAll");
@@ -174,7 +175,8 @@ magnetOctopole::createAll(Simulation& System,
   magnetUnit::createUnitVector(OG,AY,AZ);
   setExtent(extent[0],extent[1],extent[2]);
   
-  KFactor=kValue;
+  KAFactor=kValue;
+  KBFactor=kValue;
   
   return;
 }
