@@ -140,8 +140,10 @@ FixedComp::splitObjectAbsolute(Simulation& System,
   std::vector<int> OutCell;
   
   const Geometry::Vec3D Axis=XYZ.unit();
-    
+  ELog::EM<<"Key["<<keyName<<"] == "<<Axis<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,Org,Axis);
+  ELog::EM<<"Plane["<<keyName<<"] == "<<
+    *SMap.realSurfPtr(buildIndex+SNoffset)<<ELog::endDiag;
   const int cellExtra=
     System.splitObject(cellN,cellIndex++,SMap.realSurf(buildIndex+SNoffset));
 

@@ -64,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -266,7 +265,10 @@ MonoShutter::createLinks()
   
   setLinkSignedCopy(0,*shutterPipe,1);
   setLinkSignedCopy(1,*shutterPipe,2);
-  setLinkSignedCopy(2,*shutterPipe,11);   // center origin
+  const constructSystem::portItem& PIA=shutterPipe->getPort(0);
+  const constructSystem::portItem& PIB=shutterPipe->getPort(1);
+  const Geometry::Vec3D CP=(PIA.getCentre()+PIB.getCentre())/2.0;
+  setConnect(2,CP,Y);   // center origin between plates
   
   return;
 }

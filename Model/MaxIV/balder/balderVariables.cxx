@@ -657,11 +657,9 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZAxis(0,0,1);
 
   PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,nameView+"0",YAxis*14.0,XAxis);
   PItemGen.generatePort(Control,nameView+"1",YAxis*10.0,-XAxis);
   PItemGen.setCF<setVariable::CF63>(10.0);
-  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,nameView+"2",-YAxis*2.0,ZAxis);
   PItemGen.generatePort(Control,nameView+"3",-YAxis*2.0,
 			Geometry::Vec3D(1,-1,0));

@@ -39,18 +39,20 @@ class PortTube :
   public PipeTube
 {
  private:
-    
-  double portAXStep;       ///< In Port
-  double portAZStep;       ///< In Port
-  double portARadius;      ///< In Port
-  double portALen;         ///< In Port
-  double portAThick;       ///< In Port
 
-  double portBXStep;       ///< Out Port
-  double portBZStep;       ///< Out Port
-  double portBRadius;      ///< Out Port
-  double portBLen;         ///< Out Port
-  double portBThick;       ///< Out Port
+  bool portAOuterFlag;     ///< In Port void constructed  
+  double portAXStep;       ///< In Port XStep		  
+  double portAZStep;       ///< In Port YStep		  
+  double portARadius;      ///< In Port Inner Radius	  
+  double portALen;         ///< In Port Length inc flange 
+  double portAThick;       ///< In Port Pipe thickness    
+
+  bool portBOuterFlag;     ///< In Port  void constructed  
+  double portBXStep;       ///< Out Port XStep		  
+  double portBZStep;       ///< Out Port YStep		  
+  double portBRadius;      ///< Out Port Inner Radius	  
+  double portBLen;         ///< Out Port Length inc flange 
+  double portBThick;       ///< Out Port Pipe thickness    
   
   void populate(const FuncDataBase&);
   void createSurfaces();
