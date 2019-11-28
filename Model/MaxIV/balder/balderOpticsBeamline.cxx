@@ -437,7 +437,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
 
   monoV->constructPorts(System);
 
-
+  
   gateC->setFront(*driftB,2);
   gateC->createAll(System,*driftB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
@@ -495,8 +495,6 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   mirrorBoxB->splitObject(System,12,outerCell);
   cellIndex+=2;
   
-
-
   pipeE->setFront(*mirrorBoxB,2);
   pipeE->createAll(System,*mirrorBoxB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,
@@ -511,63 +509,80 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   slitsB->setCell("OuterVoid",outerCell);
   slitsB->insertInCell(System,outerCell);
 
-
+ 
+  // ERROR HERE :
   // fake insert for ports
   viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
-  viewPipe->insertAllInCell(System,outerCell);
 
-  const constructSystem::portItem& CPI=viewPipe->getPort(3);
-  CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
-
-  // split the object into four
-  const int cNumOffset(outerCell);
   viewPipe->addCell("OuterVoid",outerCell);
+  viewPipe->splitObject(System,-11,outerCell);
+  viewPipe->splitObject(System,12,outerCell);
   viewPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-  viewPipe->splitObject(System,2001,outerCell,
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-  viewPipe->splitObject(System,2002,viewPipe->getCell("OuterVoid",1),
-  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
+  viewPipe->insertInCell("FlangeA",System,viewPipe->getCell("OuterVoid",1));
+  viewPipe->insertInCell("FlangeB",System,viewPipe->getCell("OuterVoid",2));
+  viewPipe->insertInCell("Main",System,viewPipe->getCell("OuterVoid",0));
+  viewPipe->insertInCell("Main",System,viewPipe->getCell("OuterVoid",3));
+
+  const constructSystem::portItem& CPA=viewPipe->getPort(0);
+  CPA.insertInCell(System,viewPipe->getCell("OuterVoid",3));
+
+  const constructSystem::portItem& CPB=viewPipe->getPort(1);
+  CPB.insertInCell(System,viewPipe->getCell("OuterVoid",0));
+  const constructSystem::portItem& CPC=viewPipe->getPort(2);
+  CPC.insertInCell(System,viewPipe->getCell("OuterVoid",0));
+  CPC.insertInCell(System,viewPipe->getCell("OuterVoid",3));
+
+  const constructSystem::portItem& CPI=viewPipe->getPort(3);
+  CPI.insertInCell(System,viewPipe->getCell("OuterVoid",1));
+  CPI.insertInCell(System,viewPipe->getCell("OuterVoid",3));
+  CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
+
+  
+  // split the object into four
 
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",1));
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterVoid",3));
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
-  
   pipeF->setFront(*viewPipe,2);
   pipeF->createAll(System,*viewPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
   pipeF->insertInCell(System,outerCell);
 
+  // FAKE build
 
   monoShutter->addAllInsertCell(masterCell->getName());
   monoShutter->setCutSurf("front",*pipeF,2);
   monoShutter->createAll(System,*pipeF,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoShutter,2);
 
+  monoShutter->addCell("OuterVoid",outerCell);
   monoShutter->insertAllInCell(System,outerCell);
-  monoShutter->splitObject(System,"-PortACut",outerCell);
+  
+  monoShutter->splitObject(System,"PortACut",outerCell);
+
   const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
   const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
+  monoShutter->splitObjectAbsolute(System,2001,
+				   monoShutter->getCell("OuterVoid",1),
+				   midPoint,midAxis);
+  monoShutter->splitObject(System,"PortBCut",
+			   monoShutter->getCell("OuterVoid",1));
 
   pipeG->setFront(*monoShutter,2);
   pipeG->createAll(System,*monoShutter,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeG,2);
   pipeG->insertInCell(System,outerCell);
-
 
   gateE->setFront(*pipeG,2);
   gateE->createAll(System,*pipeG,2);

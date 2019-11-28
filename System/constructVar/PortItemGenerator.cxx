@@ -171,6 +171,19 @@ PortItemGenerator::setPlate(const double T,const std::string& PM)
   return;
 }
 
+void
+PortItemGenerator::setNoPlate()
+  /*!
+    Remove the outer plate
+    \param T :: Plate thickness
+    \param PM :: material for plate
+   */
+{
+  capThick=0.0;
+  capMat="Void";
+  return;
+}
+
 
 void
 PortItemGenerator::generatePort(FuncDataBase& Control,

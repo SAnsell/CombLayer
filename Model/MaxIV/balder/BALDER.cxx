@@ -218,10 +218,13 @@ BALDER::build(Simulation& System,
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
+  if (stopPoint=="opticsBeam") return;
+  
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
+
 
   //  exptHut->addInsertCell(voidCell);
   //  exptHut->addInsertCell(voidCell);

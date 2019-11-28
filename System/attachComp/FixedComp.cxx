@@ -1172,6 +1172,8 @@ FixedComp::setLinkSignedCopy(const size_t Index,
     setUSLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
   else if (sideIndex<0)   // complement form
     setUSLinkComplement(Index,FC,static_cast<size_t>(-1-sideIndex));
+  else if (sideIndex==0)
+    setConnect(Index,Origin,Y);
   else
     throw ColErr::IndexError<long int>
       (sideIndex,static_cast<long int>(FC.LU.size()),"FC/sideIndex");

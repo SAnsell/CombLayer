@@ -65,8 +65,9 @@ class PortItemGenerator
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
   void setFlange(const double,const double);
-  // set 
+  // plate thick / mat
   void setPlate(const double,const std::string&);
+  void setNoPlate(); 
 
   /// accessor to outerVoid
   void setOuterVoid(const bool F) { outerVoid=F; }

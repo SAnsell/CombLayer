@@ -88,7 +88,7 @@ namespace constructSystem
 {
 
 PipeTube::PipeTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key,15),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
