@@ -92,7 +92,8 @@ Object::Object() :
   ObjName(0),listNum(-1),Tmp(300.0),
   matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
   trcl(0),imp(1),populated(0),
-  activeMag(0),objSurfValid(0)
+  activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
+  objSurfValid(0)
    /*!
      Defaut constuctor, set temperature to 300C and material to vacuum
    */
@@ -102,7 +103,8 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),objSurfValid(0)
+  trcl(0),imp(1),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -118,7 +120,8 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),objSurfValid(0)
+  trcl(0),imp(1),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -135,6 +138,7 @@ Object::Object(const Object& A) :
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
   activeMag(A.activeMag),magVec(A.magVec),
+  magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
@@ -161,6 +165,8 @@ Object::operator=(const Object& A)
       imp=A.imp;
       populated=A.populated;
       activeMag=A.activeMag;
+      magMinStep=A.magMinStep;
+      magMaxStep=A.magMaxStep;
       magVec=A.magVec;
       HRule=A.HRule;
       objSurfValid=0;
@@ -1411,6 +1417,24 @@ Object::writeFLUKA(std::ostream& OX) const
   cx<<HRule.displayFluka()<<std::endl;
   StrFunc::writeMCNPX(cx.str(),OX);
   
+  return;
+}
+
+void 
+Object::writeFLUKAstepsize(std::ostream& OX) const
+  /*!
+    Write the object to a standard 
+    for the magnetic step size
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writeFLUKA");
+
+  std::ostringstream cx;
+  cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
+  cx<<"STEPSIZE "<<magMinStep<<" "<<magMaxStep<<" "
+    <<"R"<<ObjName<<" - - - ";
+  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 

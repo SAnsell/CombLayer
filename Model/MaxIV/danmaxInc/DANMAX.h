@@ -45,6 +45,7 @@ namespace xraySystem
   class R3FrontEndCave;
   class R3FrontEnd;
   class ConnectZone;
+  class SqrShield;
   class balderFrontEnd;
   class PipeShield;
   class WallLead;
@@ -67,7 +68,6 @@ class DANMAX : public R3Beamline
   /// the components in the front end
   std::shared_ptr<danmaxFrontEnd> frontBeam;
 
-
   /// lead in beam wall
   std::shared_ptr<WallLead> wallLead;           
   
@@ -81,16 +81,10 @@ class DANMAX : public R3Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;
 
   /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
-
-  /// Pipe shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> outerShield;
-  
-  /// Connection between hutches
-  std::shared_ptr<xraySystem::ConnectZone> connectZone;
+  std::shared_ptr<xraySystem::SqrShield> connectShield;
 
   /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeC;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;

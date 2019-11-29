@@ -87,6 +87,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
   IParam.regMulti("Mag","MAG",1000,0);
+  IParam.regMulti("MagStep","MAGSTEP",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
   IParam.regMulti("userWeight","userWeight",1000,0);
@@ -258,6 +259,10 @@ createInputs(inputParam& IParam)
   IParam.setDesc("PovRay","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("Mag","Activate magnetic field [Vector]");
+  IParam.setDesc("MagStep","Set the min/max step size for magnetics");
+  IParam.setDesc("MagUnit","Add a magnetic type");
+  IParam.setDesc("MagField","Set the various units");
   IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");

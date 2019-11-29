@@ -89,6 +89,7 @@ void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
+void connectVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
 void lensPackage(FuncDataBase&,const std::string&);
@@ -247,6 +248,30 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
 
+
+  return;
+}
+
+void
+connectVariables(FuncDataBase& Control,
+		 const std::string& beamName)
+  /*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param beamName :: beamline name
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","beamVariables");
+
+  const std::string connectName(beamName+"Connect");
+  Control.addVariable(connectName+"Height",100.0);
+  Control.addVariable(connectName+"Height",100.0);
+  Control.addVariable(connectName+"Length",858.4);
+  Control.addVariable(connectName+"Thick",0.5);
+  Control.addVariable(connectName+"SkinThick",0.2);
+
+  Control.addVariable(connectName+"SkinMat","Stainless304");
+  Control.addVariable(connectName+"Mat","Lead");
 
   return;
 }
@@ -921,81 +946,6 @@ opticsVariables(FuncDataBase& Control,
   return;
 }
 
-void
-connectingVariables(FuncDataBase& Control)
-  /*!
-    Variables for the connecting region
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("danmaxVariables[F]","connectingVariables");
-
-  const std::string baseName="DanmaxConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
-  Control.addVariable(baseName+"OuterRadius",60.0);
-  
-  setVariable::BellowGenerator BellowGen;
-  setVariable::PipeGenerator LeadPipeGen;
-  setVariable::PortTubeGenerator PTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::LeadBoxGenerator LBGen;
-  setVariable::PipeShieldGenerator PSGen;
-  
-  PItemGen.setCF<setVariable::CF40>(3.0);
-  PItemGen.setPlate(0.0,"Void");  
-  /*
-  BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
-
-  LBGen.setPlate(15.0,15.0,0.6);
-  LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
-    
-  LeadPipeGen.setCF<CF40>();
-  LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
-  
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setPipeCF<CF40>();
-  PTubeGen.setPortCF<CF40>();
-  PTubeGen.setPortLength(3.0,3.0);
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,4.0);
-  Control.addVariable(baseName+"IonPumpANPorts",1);
-  PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
-
-
-  // temp offset
-  LBGen.setPlate(15.0,15.0,0.6);
-  LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
-  //  PSGen.generateShield(Control,baseName+"PumpBoxAFShield",0.0,0.0);
-
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
-			       PTubeGen.getTotalLength(4.0),188.0);
-  
-  BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
-  
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
-
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
-  
-  Control.addVariable(baseName+"IonPumpBNPorts",1);
-  PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
-  
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
-			       PTubeGen.getTotalLength(4.0),172.0);
-
-
-  BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
-  */  
-  return;
-}
-
 }  // NAMESPACE danmaxVar
   
 void
@@ -1034,12 +984,12 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectingVariables(Control);
+  danmaxVar::connectVariables(Control,"Danmax");
 
   // note bellow skip
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
 
-  danmaxVar::exptHutVariables(Control,"DanmaxExptHut");
+  danmaxVar::exptHutVariables(Control,"Danmax");
 
   const std::string exptName="DanmaxExptLine";
   
