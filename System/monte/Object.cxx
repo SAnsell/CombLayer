@@ -226,6 +226,22 @@ Object::setMaterial(const int matID)
   return;
 }
 
+void
+Object::setMagStep(const double minV,const double maxV)
+  /*!
+    Set the min/max steps
+    This function should not be called under most cases.
+    \param matID :: Material id
+   */
+{
+  ELog::RegMethod RegA("Object","setMagStep");
+
+  magMinStep=std::min(minV,maxV);
+  magMaxStep=std::min(minV,maxV);  
+  
+  return;
+}
+
 
 int
 Object::complementaryObject(const int Cnum,std::string& Ln)
@@ -1431,7 +1447,7 @@ Object::writeFLUKAstepsize(std::ostream& OX) const
   ELog::RegMethod RegA("Object","writeFLUKA");
 
   std::ostringstream cx;
-  cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
+  OX<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
   cx<<"STEPSIZE "<<magMinStep<<" "<<magMaxStep<<" "
     <<"R"<<ObjName<<" - - - ";
   StrFunc::writeFLUKA(cx.str(),OX);
