@@ -377,12 +377,17 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 	cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
       
       StrFunc::writeFLUKA(cx.str(),OX);
+      
       return;
     }
 
   // Need to set mgnfield to zero
   cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
   StrFunc::writeFLUKA(cx.str(),OX);
+
+  for(const OTYPE::value_type& mp : OList)
+    mp.second->writeFLUKAstepsize(OX);
+
   for(const MagTYPE::value_type& MI : MagItem)
     MI.second->writeFLUKA(OX);
 

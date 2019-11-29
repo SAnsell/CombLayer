@@ -55,6 +55,8 @@ class Object
   int populated;     ///< Full population
 
   bool activeMag;         ///< Magnetic field active
+  double magMinStep;      ///< min step for mag field [fluka]
+  double magMaxStep;      ///< max step for mag field [fluka]
   Geometry::Vec3D magVec; ///< Magnetic field  [for fluka/phits]
   
   HeadRule HRule;    ///< Top rule
@@ -212,6 +214,7 @@ class Object
   void writePHITS(std::ostream&) const;    
   void writeFLUKA(std::ostream&) const;    
   void writeFLUKAmat(std::ostream&) const;
+  void writeFLUKAstepsize(std::ostream&) const;
   void writePOVRay(std::ostream&) const;    
 
   void checkPointers() const;
