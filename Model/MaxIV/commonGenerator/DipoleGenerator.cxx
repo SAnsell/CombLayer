@@ -60,7 +60,7 @@ DipoleGenerator::DipoleGenerator() :
   height(20.0),poleAngle(1.5),poleRadius(1910.0),
   poleGap(2.6),poleWidth(3.0),
   coilGap(4.0),coilLength(60.0),coilWidth(6.0),
-  poleMat("Stainless304"),coilMat("Copper")
+  poleMat("Iron"),coilMat("Copper")
   /*!
     Constructor and defaults
   */

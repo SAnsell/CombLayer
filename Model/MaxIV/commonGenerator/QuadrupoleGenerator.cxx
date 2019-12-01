@@ -64,7 +64,7 @@ QuadrupoleGenerator::QuadrupoleGenerator() :
   poleLength(6.0),poleRadius(1.2),
   poleZStep(0.5),poleYAngle(30.0),
   poleStep(1.5),poleWidth(1.5),
-  poleMat("Stainless304"),coreMat("Iron"),
+  poleMat("Iron"),coreMat("Iron"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
     Constructor and defaults
