@@ -237,8 +237,8 @@ Object::setMagStep(const double minV,const double maxV)
   ELog::RegMethod RegA("Object","setMagStep");
 
   magMinStep=std::min(minV,maxV);
-  magMaxStep=std::min(minV,maxV);  
-  
+  magMaxStep=std::max(minV,maxV);
+
   return;
 }
 
