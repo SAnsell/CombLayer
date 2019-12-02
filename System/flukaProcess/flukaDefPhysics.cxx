@@ -142,23 +142,13 @@ setMagneticPhysics(SimFLUKA& System,
       
       for(size_t index=0;index<NIndex;index++)
 	{
-	  const std::string objName=
-	    IParam.getValueError<std::string>
-	    ("MagField",setIndex,index,"No objName for MagField");
-	  const std::vector<int> Cells=System.getObjectRange(objName);
-	  if (Cells.empty())
-	    throw ColErr::InContainerError<std::string>
-	      (objName,"Empty cell");
 	  
-	  Simulation::OTYPE& CellObjects=System.getCells();
-	  // Special to set cells in OBJECT  [REMOVE]
-	  for(const int CN : Cells)
-	    {
-	      Simulation::OTYPE::iterator mc=
-		CellObjects.find(CN);
-	      if (mc!=CellObjects.end())
-		mc->second->setMagFlag();
-	    }
+	  const std::set<MonteCarlo::Object*> Cells=
+	    mainSystem::getNamedObjects
+	    (System,IParam,"MagField",0,0,"MagField Cells");
+
+	  for(MonteCarlo::Object* OPtr : Cells)
+	    OPtr->setMagFlag();
 	}
     }
   if (nSet) setMagneticExternal(System,IParam);
@@ -177,6 +167,20 @@ setMagneticExternal(SimFLUKA& System,
 {
   ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
 
+  if (IParam.flag("MagStep"))
+    {
+      const size_t nSet=IParam.setCnt("MagStep");
+      for(size_t index=0;index<nSet;index++)
+	{
+	  const std::set<MonteCarlo::Object*> Cells=
+	    mainSystem::getNamedObjects
+	    (System,IParam,"MagStep",index,0,"MagStep");
+	  const double minV=IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
+	  const double maxV=IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
+	  for(MonteCarlo::Object* mc : Cells)
+	    mc->setMagStep(minV,maxV);
+	}
+    }
 
   if (IParam.flag("MagUnit"))
     {

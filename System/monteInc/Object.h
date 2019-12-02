@@ -116,7 +116,8 @@ class Object
   int procHeadRule(const HeadRule&);
 
   void setMaterial(const int);  // to be written
-
+  void setMagStep(const double,const double);
+  
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
   int isPopulated() const { return populated; }        ///< Is populated   
