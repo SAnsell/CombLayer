@@ -154,6 +154,9 @@ class Object
 
   bool hasSurface(const int) const;
   bool hasMagField() const { return activeMag; }  ///< Active mag
+  /// Steps
+  std::pair<double,double> getMagStep() const
+    { return std::pair<double,double>(magMinStep,magMaxStep); }  
   int isValid(const Geometry::Vec3D&) const;            
   int isValid(const Geometry::Vec3D&,const int) const;            
   int isDirectionValid(const Geometry::Vec3D&,const int) const;            

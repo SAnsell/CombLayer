@@ -87,7 +87,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
   IParam.regMulti("Mag","MAG",1000,0);
-  IParam.regMulti("MagStep","MAGSTEP",1000,0);
+  IParam.regMulti("MagStep","MagStep",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
   IParam.regMulti("userWeight","userWeight",1000,0);
