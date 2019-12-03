@@ -165,7 +165,7 @@ frontMaskVariables(FuncDataBase& Control,
   // approx for 100uRad x 100uRad
   //  CollGen.setMinSize(32.0,0.680,0.358);
 
-  CollGen.setMinAngleSize(32.0,1600.0,100.0,100.0);
+  CollGen.setMinAngleSize(32.0,1600.0,220.0,220.0); // 220 uRad
   CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
 
   // FM 3:
