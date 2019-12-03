@@ -229,10 +229,11 @@ Object::setMaterial(const int matID)
 void
 Object::setMagStep(const double minV,const double maxV)
   /*!
-    Set the min/max steps
-    This function should not be called under most cases.
-    \param matID :: Material id
-   */
+    Set the min/max steps for the steps of charged particle
+    in a magnetic field
+    \param minV :: min step value
+    \param maxV :: max step value
+  */
 {
   ELog::RegMethod RegA("Object","setMagStep");
 
@@ -1433,26 +1434,6 @@ Object::writeFLUKA(std::ostream& OX) const
   cx<<HRule.displayFluka()<<std::endl;
   StrFunc::writeMCNPX(cx.str(),OX);
   
-  return;
-}
-
-void 
-Object::writeFLUKAstepsize(std::ostream& OX) const
-  /*!
-    Write the object to a standard 
-    for the magnetic step size
-    \param OX :: Output stream (required for multiple std::endl)
-  */
-{
-  ELog::RegMethod RegA("Object","writeFLUKA");
-
-  
-  
-  std::ostringstream cx;
-  OX<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
-  cx<<"STEPSIZE "<<magMinStep<<" "<<magMaxStep<<" "
-    <<"R"<<ObjName<<" - - - ";
-  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 
