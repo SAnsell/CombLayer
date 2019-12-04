@@ -77,7 +77,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 
 #include "SqrShield.h"
 
@@ -89,8 +88,7 @@ SqrShield::SqrShield(const std::string& Key)  :
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut(),
-  buildZone(*this,cellIndex)
+  attachSystem::FrontBackCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -161,14 +159,21 @@ SqrShield::createSurfaces()
       ModelSupport::buildPlane(SMap,BI+6,Origin+Z*(T+height/2.0),Z);
       BI+=10;
     }
-
-  const std::string Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3 -4 5 -6");  
-  const HeadRule HR(Out);
-  buildZone.setSurround(HR);
-
   return;
 }
+
+HeadRule
+SqrShield::getInnerVoid() const
+  /*!
+    Get the inner void psace
+    \return HeadRule of inner void [minus front/back]
+   */
+{
+  const std::string Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3 -4 5 -6");  
+  return HeadRule(Out);
+}  
+
 
 void
 SqrShield::createObjects(Simulation& System)
@@ -183,16 +188,24 @@ SqrShield::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 13 -14 15 -16 (-3:4:-5:6)");
+  CellMap::makeCell("Inner",System,cellIndex++,skinMat,0.0,
+		    Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 23 -24 25 -26 (-13:14:-15:16)");
+  CellMap::makeCell("Wall",System,cellIndex++,mat,0.0,
+		    Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 33 -34 35 -36 (-23:24:-25:26)");
+  CellMap::makeCell("Outer",System,cellIndex++,skinMat,0.0,
+		    Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36 ");
   addOuterSurf(Out+frontStr+backStr);
-
-  int outerCell;
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
-
-  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
-
-  //  outerCell=buildZone.createOuterVoidUnit(System,);
 
   return;
 }

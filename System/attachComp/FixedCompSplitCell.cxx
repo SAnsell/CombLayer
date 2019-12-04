@@ -123,7 +123,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
 			       const int cellN,
 			       const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& XYZ)
-/*!
+  /*!
     Carries out a splitObject function -- not 100% sure
     is goes here but...
     Note that the NEGATIVE surface constructed is the original cell.
@@ -140,10 +140,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
   std::vector<int> OutCell;
   
   const Geometry::Vec3D Axis=XYZ.unit();
-  ELog::EM<<"Key["<<keyName<<"] == "<<Axis<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,Org,Axis);
-  ELog::EM<<"Plane["<<keyName<<"] == "<<
-    *SMap.realSurfPtr(buildIndex+SNoffset)<<ELog::endDiag;
   const int cellExtra=
     System.splitObject(cellN,cellIndex++,SMap.realSurf(buildIndex+SNoffset));
 

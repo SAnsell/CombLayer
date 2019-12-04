@@ -263,9 +263,9 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","beamVariables");
 
-  const std::string connectName(beamName+"Connect");
+  const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",100.0);
-  Control.addVariable(connectName+"Height",100.0);
+  Control.addVariable(connectName+"Width",100.0);
   Control.addVariable(connectName+"Length",858.4);
   Control.addVariable(connectName+"Thick",0.5);
   Control.addVariable(connectName+"SkinThick",0.2);
@@ -285,7 +285,7 @@ exptHutVariables(FuncDataBase& Control,
     \param hutName :: Expt hut name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables","exptHutVariables");
+  ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
@@ -989,7 +989,7 @@ DANMAXvariables(FuncDataBase& Control)
   // note bellow skip
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
 
-  danmaxVar::exptHutVariables(Control,"Danmax");
+  danmaxVar::exptHutVariables(Control,"DanmaxExptHut");
 
   const std::string exptName="DanmaxExptLine";
   

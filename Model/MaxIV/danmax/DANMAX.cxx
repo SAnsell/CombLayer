@@ -79,10 +79,9 @@
 #include "R3FrontEnd.h"
 #include "danmaxFrontEnd.h"
 #include "danmaxOpticsLine.h"
-#include "ConnectZone.h"
+#include "danmaxConnectLine.h"
 #include "PipeShield.h"
 #include "SqrShield.h"
-//#include "danmaxExptBeamline.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -98,7 +97,7 @@ DANMAX::DANMAX(const std::string& KN) :
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
-  connectShield(new SqrShield(newName+"ConnectShield")),
+  connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   exptHut(new xraySystem::ExperimentalHutch(newName+"ExptHut"))  
   /*!
@@ -115,7 +114,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(joinPipe);
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
-  OR.addObject(connectShield);
+  OR.addObject(connectUnit);
   OR.addObject(joinPipeB);
   OR.addObject(exptHut);
 }
@@ -208,9 +207,11 @@ DANMAX::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
-  connectShield->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  connectShield->createAll(System,*opticsHut,2);
-  
+  connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  connectUnit->setFront(*opticsHut,2);
+  connectUnit->setBack(*exptHut,1);
+  connectUnit->createAll(System,*opticsHut,2);
+
   /*
   connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
