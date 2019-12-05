@@ -76,6 +76,7 @@
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -100,16 +101,16 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
-  connectShield(new xraySystem::SqrShield(newName+"ConnectShield")),
-  bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
-  ionPumpA(new constructSystem::PortTube(newName+"IonPumpA")),
-  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  ionPumpB(new constructSystem::PortTube(newName+"IonPumpB")),
-  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC"))
+  connectShield(new xraySystem::SqrShield(keyName+"ConnectShield")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  ionPumpA(new constructSystem::PortTube(keyName+"IonPumpA")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  ionPumpB(new constructSystem::PortTube(keyName+"IonPumpB")),
+  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -119,7 +120,6 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  
   OR.addObject(bellowA);
   OR.addObject(pipeA);
   OR.addObject(ionPumpA);
@@ -147,7 +147,7 @@ danmaxConnectLine::populate(const FuncDataBase& Control)
 void
 danmaxConnectLine::buildObjects(Simulation& System,
 				const attachSystem::FixedComp& FC,
-				const long int sideIndex)
+				const std::string& sideName)
   /*!
     Build all the objects relative to the main FC
     point.
@@ -162,19 +162,20 @@ danmaxConnectLine::buildObjects(Simulation& System,
   int outerCell;
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));  
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
 
   connectShield->setInsertCell(getInsertCells());
   connectShield->setFront(*this);
   connectShield->setBack(*this);
-  connectShield->createAll(System,FC,sideIndex);
-  /*
-  std::string Out;
-  
-  // create first unit:
+  connectShield->createAll(System,FC,sideName);
 
-  // First build to set bellows/Box
+  buildZone.setSurround(connectShield->getInnerVoid());
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System);
+
+  // insert first tube:
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,FC,sideName,*pipeA);
+  /*
   pipeA->createAll(System,FC,sideIndex);
   
   // Now build lead box
@@ -365,9 +366,9 @@ danmaxConnectLine::createLinks()
   
   
 void 
-danmaxConnectLine::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+danmaxConnectLine::construct(Simulation& System,
+			     const attachSystem::FixedComp& FC,
+			     const std::string& sideName)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -379,9 +380,9 @@ danmaxConnectLine::createAll(Simulation& System,
   ELog::RegMethod RControl("danmaxConnectLine","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createUnitVector(FC,FC.getSideIndex(sideName));
 
-  buildObjects(System,FC,sideIndex);    
+  buildObjects(System,FC,sideName);    
   createLinks();
   insertObjects(System);
   return;

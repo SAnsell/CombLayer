@@ -261,7 +261,7 @@ connectVariables(FuncDataBase& Control,
     \param beamName :: beamline name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","beamVariables");
+  ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",100.0);
@@ -984,7 +984,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectVariables(Control,"Danmax");
+  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");
 
   // note bellow skip
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);

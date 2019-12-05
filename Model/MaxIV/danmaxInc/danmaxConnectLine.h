@@ -49,7 +49,6 @@ namespace xraySystem
   */
 
 class danmaxConnectLine :
-  public attachSystem::CopiedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -85,7 +84,7 @@ class danmaxConnectLine :
   
   void populate(const FuncDataBase&);
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
-		    const long int);
+		    const std::string&);
   void createLinks();
   
  public:
@@ -100,8 +99,8 @@ class danmaxConnectLine :
     { JPipe=JP; }
   
   void insertFirstRegion(Simulation&,const int);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void construct(Simulation&,const attachSystem::FixedComp&,
+		 const std::string&);
 
 };
 

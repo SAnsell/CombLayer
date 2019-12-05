@@ -212,6 +212,8 @@ DANMAX::build(Simulation& System,
   connectUnit->setBack(*exptHut,1);
   connectUnit->createAll(System,*opticsHut,2);
 
+  ELog::EM<<"ASFDASFSAFDSA "<<ELog::endDiag;
+  joinPipeB->insertInCell(System,connectUnit->getCell("MasterVoid",0));
   /*
   connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
