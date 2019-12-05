@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 9;
+#declare view = 2000;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -15,7 +15,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -118,6 +118,10 @@ global_settings {
     #declare cameraLocation = <2400, 8600, 10>;
     #declare cameraLookAt   = <2400, 8408, 0>;
     #declare cameraAngle = 170;
+  #break
+  #case(2000) // front-end and the side door
+    #declare cameraLocation = <1870, 8200, 50>;
+    #declare cameraLookAt   = <1930, 8511, 0>;
   #break
   #else // whole optics line top view
     #declare cameraLocation = <2400, 8450, 160>;
