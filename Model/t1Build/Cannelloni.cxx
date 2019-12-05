@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -522,7 +521,8 @@ Cannelloni::addProtonLine(Simulation& System,
   
 void
 Cannelloni::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -532,7 +532,7 @@ Cannelloni::createAll(Simulation& System,
   ELog::RegMethod RegA("Cannelloni","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

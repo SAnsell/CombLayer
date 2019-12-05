@@ -3,7 +3,7 @@
  
  * File:   build/TS2FlatTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -221,20 +221,6 @@ TS2FlatTarget::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-TS2FlatTarget::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit for origin + xyz
-  */
-{
-  ELog::RegMethod RegA("TS2FlatTarget","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  applyOffset();
-  
-  return;
-}
 
 void
 TS2FlatTarget::createSurfaces()
@@ -475,17 +461,19 @@ TS2FlatTarget::addProtonLine(Simulation& System,
   
 void
 TS2FlatTarget::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC)
+			 const attachSystem::FixedComp& FC,
+			 const int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed Component for origin
+    \param FC :: Fixed Component for origin    
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("TS2FlatTarget","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   layerProcess(System);

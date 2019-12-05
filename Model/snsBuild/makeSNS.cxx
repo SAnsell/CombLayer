@@ -114,7 +114,7 @@ makeSNS::build(Simulation* SimPtr,
 
   int voidCell(74123);
   tarOuterObj->addInsertCell(voidCell);
-  tarOuterObj->createAll(*SimPtr,World::masterOrigin());
+  tarOuterObj->createAll(*SimPtr,World::masterOrigin(),0);
 
   refObj->addInsertCell(voidCell);
   refObj->createAll(*SimPtr,World::masterOrigin(),0);

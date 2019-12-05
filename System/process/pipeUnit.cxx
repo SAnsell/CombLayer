@@ -493,9 +493,9 @@ pipeUnit::insertObjects(Simulation& System)
 
 
 void 
-pipeUnit::createUnit(Simulation& System,
-		     const size_t AF,
-		     const std::vector<cylValues>& CV)
+pipeUnit::buildUnit(Simulation& System,
+		    const size_t AF,
+		    const std::vector<cylValues>& CV)
 /*!
     Build a pipe unit and insert it into the model
     \param System :: Simulation to 

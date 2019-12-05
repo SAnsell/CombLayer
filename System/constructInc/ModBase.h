@@ -32,7 +32,7 @@ namespace constructSystem
   \version 1.0
   \author S. Ansell
   \date July 2013
-  \brief General ModBase unit
+  \brief General Moderator Base unit
 */
 
 class ModBase : public attachSystem::ContainedComp,
@@ -47,7 +47,11 @@ class ModBase : public attachSystem::ContainedComp,
 
   virtual void populate(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
-				const attachSystem::FixedComp*,
+				const long int,
+				const attachSystem::FixedComp&,
+				const long int);
+
+  virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
   
  public:
@@ -65,8 +69,11 @@ class ModBase : public attachSystem::ContainedComp,
   long int getSideIndex(const size_t) const;
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const attachSystem::FixedComp* =0,
-			 const long int =0) =0;
+			 const long int);
+    
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const attachSystem::FixedComp&,
+			 const long int) =0;
 
 };
 

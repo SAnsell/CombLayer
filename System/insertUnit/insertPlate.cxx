@@ -74,8 +74,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
-#include "BaseMap.h"
+#include "BaseMap.h"B
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"

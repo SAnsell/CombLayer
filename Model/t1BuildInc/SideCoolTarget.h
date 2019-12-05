@@ -42,7 +42,8 @@ namespace ts1System
   Provides linkage to its outside on FixedComp[0]
 */
 
-class SideCoolTarget : public constructSystem::TargetBase
+class SideCoolTarget :
+  public constructSystem::TargetBase
 {
  private:
   
@@ -69,10 +70,7 @@ class SideCoolTarget : public constructSystem::TargetBase
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  
+  void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,8 +91,7 @@ class SideCoolTarget : public constructSystem::TargetBase
   void addProtonLine(Simulation&,	 
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const int);
   
 
 };

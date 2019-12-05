@@ -134,7 +134,6 @@ class TS2ModifyTarget : public attachSystem::FixedComp,
   std::vector<coneCut> CCut;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
   void createObjects(Simulation&,const int,const int);
 
@@ -148,7 +147,8 @@ class TS2ModifyTarget : public attachSystem::FixedComp,
   TS2ModifyTarget& operator=(const TS2ModifyTarget&);
   ~TS2ModifyTarget();
 
-  void createAll(Simulation&,const constructSystem::TargetBase&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const int);
 };
 
 }

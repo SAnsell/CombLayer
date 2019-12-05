@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
@@ -60,6 +59,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "NList.h"
@@ -99,7 +99,7 @@ meshConstruct::calcXYZ(const objectGroups& OGrp,
     OGrp.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
   const long int sideIndex=FC->getSideIndex(linkPos);
 
-  attachSystem::FixedComp A("tmpComp",0);
+  attachSystem::FixedUnit A("tmpComp",0);
   A.createUnitVector(*FC,sideIndex);
 
   //

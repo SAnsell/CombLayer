@@ -288,6 +288,23 @@ BeamMount::createLinks()
 }
 
 void
+BeamFlange::createAll(Simulation& ,
+		      const attachSystem::FixedComp&,
+		      const long int)
+ /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param portFC :: FixedComp
+    \param portIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("BeamFlange","createAll(FC)");
+
+  throw ColErr::AbsObjMethod("Single value createAll");
+  return;
+}
+
+void
 BeamMount::createAll(Simulation& System,
 		    const attachSystem::FixedComp& centreFC,
 		    const long int cIndex,

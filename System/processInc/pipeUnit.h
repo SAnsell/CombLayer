@@ -117,7 +117,7 @@ class pipeUnit : public attachSystem::FixedComp,
   void connectFrom(pipeUnit*);
   void connectTo(pipeUnit*);
 
-  void createUnit(Simulation&,const size_t,
+  void buildUnit(Simulation&,const size_t,
 		 const std::vector<cylValues>&);
     
 };

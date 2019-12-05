@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -183,7 +182,7 @@ t1PlateTarget::createAll(Simulation& System,
 
   PlateTarObj->addInsertCell(PressVObj->getInnerVoid());
   PlateTarObj->addInsertCell(PressVObj->getOuterWall());
-  PlateTarObj->createAll(System,*PressVObj);
+  PlateTarObj->createAll(System,*PressVObj,0);
 
   DivObj->addInsertCell(PressVObj->getInnerVoid());
   DivObj->createAll(System,*PlateTarObj,*PressVObj);

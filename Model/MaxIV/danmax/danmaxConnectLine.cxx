@@ -157,7 +157,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("danmaxConnectLine","buildObjects");
-    
+  ELog::EM<<"XXX ASFSADFDSF"<<ELog::endDiag;    
   // First build construction zone
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -169,9 +169,12 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->createAll(System,FC,sideName);
 
   buildZone.setSurround(connectShield->getInnerVoid());
+
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System);
 
+  ELog::EM<<"Get cell == "<<getCell("OuterVoid")<<ELog::endDiag;
+  ELog::EM<<"Get cell == "<<getCell("MasterVoid")<<ELog::endDiag;
   // insert first tube:
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,FC,sideName,*pipeA);

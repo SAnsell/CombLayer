@@ -124,7 +124,7 @@ class boxUnit : public attachSystem::FixedComp,
   void connectTo(boxUnit*);
 
 
-  void createAll(Simulation&,const size_t,
+  void buildUnit(Simulation&,const size_t,
 		 const std::vector<boxValues>&);
     
 };

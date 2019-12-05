@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/SupplyBox.cxx
+ * File:   construct/SupplyBox.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,16 +136,13 @@ SupplyBox::~SupplyBox()
 {}
 
 void
-SupplyBox::populate(const Simulation& System)
+SupplyBox::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("SupplyBox","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
   
   std::string numStr;
   NSegIn=Control.EvalPair<size_t>(optName+"NSegIn",keyName+"NSegIn");
@@ -392,7 +389,7 @@ SupplyBox::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyBox","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   addOuterPoints();
@@ -401,7 +398,7 @@ SupplyBox::createAll(Simulation& System,
   //  Coaxial.setNAngle(nAngle);
   if (!startSurf.empty())
     Coaxial.setStartSurf(startSurf);
-  Coaxial.createAll(System);
+  Coaxial.build(System);
   createLinks();
   return;
 }
@@ -422,7 +419,7 @@ SupplyBox::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyBox","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
   insertInlet(FC,exitSideIndex);
@@ -432,7 +429,7 @@ SupplyBox::createAll(Simulation& System,
   //  Coaxial.setNAngle(nAngle);
   if (!startSurf.empty())
     Coaxial.setStartSurf(startSurf);
-  Coaxial.createAll(System);
+  Coaxial.build(System);
   
   createLinks();
   return;
@@ -458,7 +455,7 @@ SupplyBox::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyBox","createAll<LC>");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
 
@@ -471,7 +468,7 @@ SupplyBox::createAll(Simulation& System,
   //  Coaxial.setNAngle(nAngle);
   if (!startSurf.empty())
     Coaxial.setStartSurf(startSurf);
-  Coaxial.createAll(System);
+  Coaxial.build(System);
   createLinks();
   return;
 }

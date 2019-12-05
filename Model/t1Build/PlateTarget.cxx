@@ -3,7 +3,7 @@
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -188,7 +187,7 @@ PlateTarget::populate(const Simulation& System)
   blockType.resize(nBlock);
   for(size_t i=0;i<nBlock;i++)
     blockType[i]=Control.EvalDefVar<int>
-      (StrFunc::makeString(keyName+"BlockType",i),1);
+      (keyName+"BlockType"+std::to_string(i),1);
   
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
@@ -201,7 +200,8 @@ PlateTarget::populate(const Simulation& System)
 }
   
 void
-PlateTarget::createUnitVector(const attachSystem::FixedComp& FC)
+PlateTarget::createUnitVector(const attachSystem::FixedComp& FC,
+			      const int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed compontent [front of target void vessel]
@@ -209,7 +209,7 @@ PlateTarget::createUnitVector(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegA("PlateTarget","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   Origin=FC.getLinkPt(1);
   return;
 }
@@ -424,7 +424,7 @@ PlateTarget::buildFeedThrough(Simulation& System)
   for(int i=0;i<4;i++)
     {
       ModelSupport::BoxLine 
-	WaterChannel(StrFunc::makeString("waterChannel",i+1));   
+	WaterChannel("waterChannel"+std::to_string(i+1));   
 
 //     ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
       const double sX((i % 2) ? -1 : 1);
@@ -459,17 +459,20 @@ PlateTarget::getTargetLength() const
 
 
 void
-PlateTarget::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+PlateTarget::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("PlateTarget","createAll");
   populate(System);
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces(FC);
   createObjects(System);
   createLinks();

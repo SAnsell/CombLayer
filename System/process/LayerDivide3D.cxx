@@ -3,7 +3,7 @@
  
  * File:   process/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -72,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -89,7 +89,7 @@ namespace ModelSupport
 {
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
-  FixedComp(Key,0),
+  FixedUnit(Key,0),
   WallID({"Sector","Vert","Radial"}),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -98,7 +98,7 @@ LayerDivide3D::LayerDivide3D(const std::string& Key)  :
 {}
 
 LayerDivide3D::LayerDivide3D(const LayerDivide3D& A) : 
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedUnit(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   Centre(A.Centre),
   AFrac(A.AFrac),BFrac(A.BFrac),CFrac(A.CFrac),
@@ -123,7 +123,7 @@ LayerDivide3D::operator=(const LayerDivide3D& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedUnit::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       Centre=A.Centre;

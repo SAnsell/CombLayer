@@ -695,17 +695,17 @@ boxUnit::addExcludeStrings(const std::map<int,MonteCarlo::Object*>& OMap) const
 }
 
 void
-boxUnit::createAll(Simulation& System,
-		    const size_t AF,
-		    const std::vector<boxValues>& CV)
-  /*!
+boxUnit::buildUnit(Simulation& System,
+		   const size_t AF,
+		   const std::vector<boxValues>& CV)
+/*!
     Build a pipe unit and insert it into the model
     \param System :: Simulation to 
     \param AF :: activeFlag
     \param CV :: Values for each layer
    */
 {
-  ELog::RegMethod RegA("boxUnit","createAll");
+  ELog::RegMethod RegA("boxUnit","buidUnit");
 
   populate(AF,CV);
   createSurfaces();

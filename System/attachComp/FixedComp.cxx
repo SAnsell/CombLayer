@@ -58,6 +58,7 @@
 #include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 
 namespace attachSystem
 {
@@ -379,7 +380,8 @@ FixedComp::createPairVector(const FixedComp& FCA,
   */
 {
   ELog::RegMethod RegA("FixedComp","createPairVector");
-  FixedComp tmpFC("tmp",0);
+
+  FixedUnit tmpFC("tmp",0);
   createUnitVector(FCA,sideIndexA,sideIndexA);
   tmpFC.createUnitVector(FCB,sideIndexB,sideIndexB);
   X+=tmpFC.X;
@@ -2075,7 +2077,7 @@ FixedComp::createAll(Simulation& System,const FixedComp& FC,
     \param linkName :: linkPoint
   */
 {
-  ELog::RegMethod RegA("FixedComp","createNamedAll");
+  ELog::RegMethod RegA("FixedComp","createAll(Named)");
   
   this->createAll(System,FC,FC.getSideIndex(linkName));
   return;

@@ -3,7 +3,7 @@
  
  * File:   process/PipeLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -393,7 +393,7 @@ PipeLine::createUnits(Simulation& System)
     {
       forcedInsertCells(i);
       PUnits[i]->setNAngle(nAngle);
-      PUnits[i]->createUnit(System,activeFlags[i],CV);
+      PUnits[i]->buildUnit(System,activeFlags[i],CV);
     }
   return 0;
 }
@@ -481,13 +481,13 @@ PipeLine::setStartSurf(const std::string& startS)
 }
   
 void
-PipeLine::createAll(Simulation& System)
+PipeLine::build(Simulation& System)
   /*!
     Global creation of pipe
     \param System :: Simulation to add vessel to
   */
 {
-  ELog::RegMethod RegA("PipeLine","createAll");
+  ELog::RegMethod RegA("PipeLine","build");
   createUnits(System);
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   constructInc/CylMod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ class CylMod : public constructSystem::ModBase
   virtual std::string getLayerString(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,
+		 const long int,const attachSystem::FixedComp&,
 		 const long int);
   
 };

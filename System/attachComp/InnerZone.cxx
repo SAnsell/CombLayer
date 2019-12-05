@@ -72,6 +72,7 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -260,7 +261,7 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
   ELog::RegMethod RegA("InnerZone","constructMiddleSurface(FC,FC)");
 
 
-  attachSystem::FixedComp DUnit("Dunit",0);
+  attachSystem::FixedUnit DUnit("Dunit",0);
   DUnit.createPairVector(FCA,sideIndexA,FCB,sideIndexB);
   const Geometry::Vec3D DPoint(DUnit.getCentre());
 
@@ -621,7 +622,6 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   std::string Out;
-  ELog::EM<<"Surrount == "<<surroundHR.display()<<ELog::endDiag;
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
   
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);

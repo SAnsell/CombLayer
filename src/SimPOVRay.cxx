@@ -144,7 +144,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   std::set<int> writtenMat;      ///< set of written materials
   for(const auto& [cellNum,objPtr]  : OList)
     {
@@ -157,7 +156,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 	  writtenMat.emplace(ID);
 	}
     }
-  
 
   OX << "#if (file_exists(\"povray/materials.inc\"))" << std::endl;
   OX << "#include \"povray/materials.inc\"" << std::endl;

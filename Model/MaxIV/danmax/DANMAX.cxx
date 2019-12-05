@@ -207,12 +207,11 @@ DANMAX::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
+
   connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectUnit->setFront(*opticsHut,2);
   connectUnit->setBack(*exptHut,1);
-  connectUnit->createAll(System,*opticsHut,2);
-
-  ELog::EM<<"ASFDASFSAFDSA "<<ELog::endDiag;
+  connectUnit->construct(System,*opticsHut,"back");
   joinPipeB->insertInCell(System,connectUnit->getCell("MasterVoid",0));
   /*
   connectZone->registerJoinPipe(joinPipeC);

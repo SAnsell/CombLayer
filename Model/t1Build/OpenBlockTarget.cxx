@@ -3,7 +3,7 @@
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -202,22 +202,6 @@ OpenBlockTarget::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-OpenBlockTarget::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int indexPt)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed compontent [front of target void vessel]
-    - Y Down the beamline
-  */
-{
-  ELog::RegMethod RegA("OpenBlockTarget","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,indexPt);
-  applyOffset();
-  
-  return;
-}
-
 void
 OpenBlockTarget::createSurfaces()
   /*!
@@ -472,18 +456,20 @@ OpenBlockTarget::addProtonLine(Simulation& System,
 
 void
 OpenBlockTarget::createAll(Simulation& System,
-			   const attachSystem::FixedComp& FC)
+			   const attachSystem::FixedComp& FC,
+			   const int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("OpenBlockTarget","createAll");
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

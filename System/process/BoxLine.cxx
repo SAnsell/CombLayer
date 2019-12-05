@@ -3,7 +3,7 @@
  
  * File:   process/BoxLine.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -397,7 +397,7 @@ BoxLine::createUnits(Simulation& System)
     {
       forcedInsertCells(i);
       //      PUnits[i]->setNAngle(nAngle);
-      PUnits[i]->createAll(System,activeFlags[i],CV);
+      PUnits[i]->buildUnit(System,activeFlags[i],CV);
     }
   return 0;
 }
@@ -441,13 +441,13 @@ BoxLine::setStartSurf(const std::string& startS)
 }
 
 void
-BoxLine::createAll(Simulation& System)
+BoxLine::build(Simulation& System)
   /*!
-    Global creation of the hutch
+    Global creation of the box system
     \param System :: Simulation to add vessel to
   */
 {
-  ELog::RegMethod RegA("BoxLine","createAll");
+  ELog::RegMethod RegA("BoxLine","build");
 
   System.populateCells();
   System.validateObjSurfMap();

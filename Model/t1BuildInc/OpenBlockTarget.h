@@ -65,8 +65,6 @@ class OpenBlockTarget : public constructSystem::TargetBase
   int waterMat;                 ///< Water material
   int pressMat;                 ///< Pressure mat
 
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -82,11 +80,12 @@ class OpenBlockTarget : public constructSystem::TargetBase
   Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
   void populate(const FuncDataBase&);  
   double getTargetLength() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+
 
   virtual void addProtonLine(Simulation&,const attachSystem::FixedComp&,
 			     const long int); 
-  
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,const int);
 };
 
 }

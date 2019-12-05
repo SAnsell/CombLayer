@@ -3,7 +3,7 @@
  
  * File:   constructInc/SupplyBox.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class SupplyBox : public attachSystem::FixedComp
 
   std::string startSurf;               ///< Start surfaces [if needed]
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
 			const long int);
   void createUnitVector(const attachSystem::FixedComp&,

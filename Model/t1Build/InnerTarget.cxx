@@ -3,7 +3,7 @@
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -497,17 +497,19 @@ InnerTarget::addProtonLine(Simulation& System,
   
 void
 InnerTarget::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed Component for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("InnerTarget","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -190,9 +190,6 @@ BeamPair::createSurfaces()
 {
   ELog::RegMethod RegA("BeamPair","createSurfaces");
 
-
-  const attachSystem::FixedComp& beamFC=getKey("Beam");
-
   // Not can have a local rotation of the beam component
   // construct support
 
@@ -238,7 +235,7 @@ BeamPair::createSurfaces()
 void
 BeamPair::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the paired object
     \param System :: Simulation to add results
    */
 {

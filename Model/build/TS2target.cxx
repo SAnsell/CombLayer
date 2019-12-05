@@ -3,7 +3,7 @@
  
  * File:   build/TS2target.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,21 +256,6 @@ TS2target::populate(const FuncDataBase& Control)
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
-  return;
-}
-
-void
-TS2target::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit for origin + xyz
-  */
-{
-  ELog::RegMethod RegA("TS2target","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  applyOffset();
-  
   return;
 }
 
@@ -709,17 +694,20 @@ TS2target::addProtonLine(Simulation& System,
 
   
 void
-TS2target::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+TS2target::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
+		     const int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed Component for origin
+    \param sideIndex :: line point
   */
 {
   ELog::RegMethod RegA("TS2target","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createNoseConeObjects(System);

@@ -517,8 +517,9 @@ CylMod::createWedges(Simulation& System)
 
 void
 CylMod::createAll(Simulation& System,
+		  const attachSystem::FixedComp& orgFC,
+		  const long int orgIndex,
 		  const attachSystem::FixedComp& axisFC,
-		  const attachSystem::FixedComp* orgFC,
 		  const long int sideIndex)
   /*!
     Extrenal build everything
@@ -531,7 +532,7 @@ CylMod::createAll(Simulation& System,
   ELog::RegMethod RegA("CylMod","createAll");
   populate(System.getDataBase());
 
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

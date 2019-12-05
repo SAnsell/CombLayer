@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedGroup.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "objectRegister.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 
 namespace attachSystem
@@ -211,9 +211,7 @@ FixedGroup::registerKey(const std::string& AKey,const size_t NL)
 {
   ELog::RegMethod RegA("FixedGroup","registerKey");
 
-  //  OR.cell(keyName+AKey);
-  CompTYPE FCUnit(new FixedComp(keyName+AKey,NL));  
-  //  OR.addObject(FCUnit);
+  CompTYPE FCUnit(new FixedUnit(keyName+AKey,NL));  
   FMap.insert(FTYPE::value_type(AKey,FCUnit));
   return;
 }

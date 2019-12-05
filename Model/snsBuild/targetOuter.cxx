@@ -198,20 +198,6 @@ void
   return;
 }
 
-void
-targetOuter::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit for origin + xyz
-  */
-{
-  ELog::RegMethod RegA("targetOuter","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  applyOffset();
-  
-  return;
-}
 
 void
 targetOuter::createSurfaces()
@@ -486,7 +472,9 @@ targetOuter::addProtonLine(Simulation& System,
 
   
 void
-targetOuter::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+targetOuter::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -496,7 +484,7 @@ targetOuter::createAll(Simulation& System,const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("targetOuter","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

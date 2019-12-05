@@ -3,7 +3,7 @@
  
  * File:   construct/BlockMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -473,6 +474,32 @@ void
 BlockMod::createAll(Simulation& System,
 		    const attachSystem::FixedComp& axisFC,
 		    const attachSystem::FixedComp* orgFC,
+		    const long int sideIndex)
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("BlockMod","createAll");
+  
+  populate(System.getDataBase());
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);       
+
+  createWedges(System);
+  return;
+}
+
+void
+BlockMod::createAll(Simulation& System,
+		    const attachSystem::FixedComp& axisFC,
+		    const attachSystem::FixedComp& orgFC,
 		    const long int sideIndex)
   /*!
     Extrenal build everything

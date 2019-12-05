@@ -106,8 +106,7 @@ class InnerTarget : public constructSystem::TargetBase
   void addProtonLine(Simulation&,	 
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const int);
   
 
 };
