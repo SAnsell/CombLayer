@@ -144,20 +144,21 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   std::set<int> writtenMat;      ///< set of written materials
   for(const auto& [cellNum,objPtr]  : OList)
     {
       (void) cellNum;        // avoid warning -- fixed c++20
       const MonteCarlo::Material* mPtr = objPtr->getMatPtr();
       const int ID=mPtr->getID();
-      if (ID && writtenMat.find(ID)!=writtenMat.end())
+      if (ID && writtenMat.find(ID)==writtenMat.end())
 	{
 	  mPtr->writePOVRay(OX);
 	  writtenMat.emplace(ID);
 	}
     }
   
-  // Overwrite textures by a user-provided file
+
   OX << "#if (file_exists(\"povray/materials.inc\"))" << std::endl;
   OX << "#include \"povray/materials.inc\"" << std::endl;
   OX << "#end"  << std::endl;

@@ -918,7 +918,6 @@ Material::writePOVRay(std::ostream& OX) const
   Geometry::Vec3D rgbCol(rgb/0xFFFF,(rgb % 0xFFFF)/0xFF,rgb % 0xFF);
   rgbCol.makeUnit();
 
-  
   OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
     << " pigment{color rgb<"
     <<   MW.NumComma(rgbCol)

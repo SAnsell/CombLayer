@@ -385,8 +385,19 @@ SimFLUKA::writeMagField(std::ostream& OX) const
   cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
   StrFunc::writeFLUKA(cx.str(),OX);
 
+  flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
   for(const OTYPE::value_type& mp : OList)
-    mp.second->writeFLUKAstepsize(OX);
+    {
+      if (mp.second->hasMagField())
+	{
+	  const std::pair<double,double> magStep=
+	    mp.second->getMagStep();
+	  Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	}
+    }
+  const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+  const std::vector<int> cellInfo=this->getCellVector();
+  Steps.writeFLUKA(OX,cellInfo,fmtSTR);
 
   for(const MagTYPE::value_type& MI : MagItem)
     MI.second->writeFLUKA(OX);

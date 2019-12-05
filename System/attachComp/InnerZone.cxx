@@ -621,7 +621,7 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   std::string Out;
-
+  ELog::EM<<"Surrount == "<<surroundHR.display()<<ELog::endDiag;
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
   
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
