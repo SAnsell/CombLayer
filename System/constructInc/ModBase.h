@@ -72,6 +72,7 @@ class ModBase : public attachSystem::ContainedComp,
 			 const long int);
     
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int,
 			 const attachSystem::FixedComp&,
 			 const long int) =0;
 

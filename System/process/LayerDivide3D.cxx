@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -71,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -123,7 +125,7 @@ LayerDivide3D::operator=(const LayerDivide3D& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedUnit::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       Centre=A.Centre;
@@ -527,7 +529,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   int aIndex(buildIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
-      const std::string layerNum(StrFunc::makeString(i));
+      const std::string layerNum(std::to_string(i));
       const std::string ACut=
         ModelSupport::getComposite(SMap,aIndex,"1 -2");
       

@@ -464,7 +464,10 @@ BlockMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,mainCell,*this,1,1);  // +ve Y direction [cylinder]
+      WPtr->addInsertCell(mainCell);
+      WPtr->addInsertCell(mainCell+1);  // for wall
+      WPtr->setLayer(*this,1,1);
+      WPtr->createAll(System,*this,0);  // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;
@@ -472,8 +475,9 @@ BlockMod::createWedges(Simulation& System)
 
 void
 BlockMod::createAll(Simulation& System,
-		    const attachSystem::FixedComp& axisFC,
-		    const attachSystem::FixedComp* orgFC,
+		    const attachSystem::FixedComp& orgFC,
+		    const long int orgIndex,
+		    const attachSystem::FixedComp* axisFC,
 		    const long int sideIndex)
   /*!
     Extrenal build everything
@@ -486,7 +490,7 @@ BlockMod::createAll(Simulation& System,
   ELog::RegMethod RegA("BlockMod","createAll");
   
   populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -498,27 +502,19 @@ BlockMod::createAll(Simulation& System,
 
 void
 BlockMod::createAll(Simulation& System,
-		    const attachSystem::FixedComp& axisFC,
-		    const attachSystem::FixedComp& orgFC,
-		    const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int orgIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
-    \param orgFC :: Extra origin point if required
-    \param sideIndex :: link point for origin if given
+    \param FC :: FixedComp to get axis / orgin
+    \param orgIndex :: link point for origin if given
    */
 {
   ELog::RegMethod RegA("BlockMod","createAll");
-  
-  populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  insertObjects(System);       
 
-  createWedges(System);
+  createAll(System,FC,orgIndex,FC,0);
+
   return;
 }
 

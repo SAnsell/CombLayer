@@ -48,7 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "stringCombine.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -71,6 +70,7 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "LineTrack.h"
 #include "pipeSupport.h"
@@ -84,7 +84,7 @@ namespace ModelSupport
 {
 
 boxUnit::boxUnit(const std::string& Key,const size_t index) : 
-  attachSystem::FixedComp(StrFunc::makeString(Key,index),6),
+  attachSystem::FixedUnit(Key+std::to_string(index),6),
   attachSystem::ContainedComp(),
   prev(0),next(0),maxExtent(0.0),
   activeFlag(0),nSides(0)
@@ -96,7 +96,8 @@ boxUnit::boxUnit(const std::string& Key,const size_t index) :
 {}
 
 boxUnit::boxUnit(const boxUnit& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),
   prev(A.prev),
   next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),XUnit(A.XUnit),ZUnit(A.ZUnit),
@@ -353,13 +354,13 @@ boxUnit::createSurfaces()
   if (!ASurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,APt,ANorm);
-      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+1)));
+      ASurf=HeadRule(SMap.realSurf(buildIndex+1));
       ASurf.populateSurf();
     }
   if (!BSurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,BPt,BNorm);
-      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+2)));
+      BSurf=HeadRule(SMap.realSurf(buildIndex+2));
       BSurf.populateSurf();
     }
   

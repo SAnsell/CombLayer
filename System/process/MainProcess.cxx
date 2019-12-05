@@ -90,6 +90,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 
 namespace mainSystem
 {
@@ -435,9 +436,13 @@ createSimulation(inputParam& IParam,
 
 void
 buildWorld(objectGroups& OGrp)
+  /*!
+    Build and register a world object in a object group
+    \param OGrp :: Simluation to add a world to.
+  */
 {
   std::shared_ptr<attachSystem::FixedComp> worldPtr=
-    std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
+    std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
 
   OGrp.addObject(worldPtr);
   return;

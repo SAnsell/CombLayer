@@ -3,7 +3,7 @@
  
  * File:   source/RectangleSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "inputSupport.h"
@@ -71,7 +72,7 @@ namespace SDef
 {
 
 RectangleSource::RectangleSource(const std::string& keyName) : 
-  attachSystem::FixedOffset(keyName,0),
+  attachSystem::FixedOffsetUnit(keyName,0),
   SourceBase(),
   width(1.0),height(1.0),angleSpread(0.0)
   /*!
@@ -81,7 +82,7 @@ RectangleSource::RectangleSource(const std::string& keyName) :
 {}
 
 RectangleSource::RectangleSource(const RectangleSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   width(A.width),height(A.height),
   angleSpread(A.angleSpread)
   /*!

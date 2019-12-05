@@ -69,6 +69,7 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "LineTrack.h"
 #include "pipeUnit.h"
@@ -77,7 +78,7 @@ namespace ModelSupport
 {
 
 pipeUnit::pipeUnit(const std::string& Key,const size_t Index) : 
-  attachSystem::FixedComp(StrFunc::makeString(Key,Index),3),
+  attachSystem::FixedUnit(Key+std::to_string(Index),3),
   attachSystem::ContainedComp(),
   nAngle(6),prev(0),next(0),
   activeFlag(511)
@@ -89,7 +90,7 @@ pipeUnit::pipeUnit(const std::string& Key,const size_t Index) :
 {}
 
 pipeUnit::pipeUnit(const pipeUnit& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedUnit(A),attachSystem::ContainedComp(A),
   nAngle(A.nAngle),
   prev(A.prev),next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),ASurf(A.ASurf),BSurf(A.BSurf),

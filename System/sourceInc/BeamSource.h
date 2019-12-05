@@ -39,7 +39,7 @@ namespace SDef
 */
 
 class BeamSource : 
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public SourceBase
 {
  private:

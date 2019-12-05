@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "inputSupport.h"
@@ -66,7 +67,7 @@ namespace SDef
 {
 
 PointSource::PointSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),SourceBase(),
+  FixedOffsetUnit(keyName,0),SourceBase(),
   angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -75,7 +76,7 @@ PointSource::PointSource(const std::string& keyName) :
 {}
 
 PointSource::PointSource(const PointSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   angleSpread(A.angleSpread)
   /*!
     Copy constructor

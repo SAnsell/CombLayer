@@ -39,12 +39,10 @@ namespace SDef
 */
 
 class PointSource : 
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public SourceBase
 {
  private:
-
-  using FixedComp::createAll;
   
   double angleSpread;           ///< Angle spread
   

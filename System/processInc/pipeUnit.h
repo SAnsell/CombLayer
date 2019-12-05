@@ -54,7 +54,7 @@ struct cylValues
   \brief A single unit of a pipe
 */
 
-class pipeUnit : public attachSystem::FixedComp,
+class pipeUnit : public attachSystem::FixedUnit,
   public attachSystem::ContainedComp
 {
  private:

@@ -508,8 +508,10 @@ CylMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,CellMap::getCell(keyName,0),
-		      *this,1,1);   // +ve Y direction [cylinder]
+      WPtr->addInsertCell(CellMap::getCell(keyName,0));
+      WPtr->addInsertCell(CellMap::getCell(keyName,1));
+      WPTr->setLayer(*this,1,1);      
+      WPtr->createAll(System,*this,0);   // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;

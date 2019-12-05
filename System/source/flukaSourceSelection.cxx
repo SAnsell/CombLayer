@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "groupRange.h"
@@ -92,7 +93,6 @@ flukaSourceSelection(Simulation& System,
 {
   ELog::RegMethod RegA("flukaSourceSelector[F]","flukaSourceSelection");
   
-
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
   
   const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
