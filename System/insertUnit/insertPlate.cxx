@@ -76,7 +76,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
-#include "BaseMap.h"B
+#include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"

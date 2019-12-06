@@ -3,7 +3,7 @@
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,6 +74,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "ProtonVoid.h"
 
 namespace ts1System
@@ -83,6 +83,7 @@ namespace ts1System
 ProtonVoid::ProtonVoid(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
+  attachSystem::ExternalCut(),
   protonVoidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -92,6 +93,7 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
 
 ProtonVoid::ProtonVoid(const ProtonVoid& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ExternalCut(A),
   protonVoidCell(A.protonVoidCell),
   viewRadius(A.viewRadius)
   /*!
@@ -112,6 +114,7 @@ ProtonVoid::operator=(const ProtonVoid& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A),
       protonVoidCell=A.protonVoidCell;
       viewRadius=A.viewRadius;
     }
@@ -204,16 +207,12 @@ ProtonVoid::createLinks()
 void
 ProtonVoid::createAll(Simulation& System,
 		      const attachSystem::FixedComp& TargetFC,
-		      const long int tIndex,
-		      const attachSystem::FixedComp& RefFC,
-		      const long int rIndex)
+		      const long int tIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param TargetFC :: FixedComp for origin and target value
     \param tIndex :: Target plate surface
-    \param RefFC :: FixedComp for reflector (bounding surf)
-    \param rIndex :: Reflector outer surf
   */
 {
   ELog::RegMethod RegA("ProtonVoid","createAll");
@@ -221,8 +220,10 @@ ProtonVoid::createAll(Simulation& System,
 
   createUnitVector(TargetFC);
   createSurfaces();
+  // This need to be from externalCut:
   const std::string TSurf=TargetFC.getLinkString(tIndex);
-  const std::string RSurf=RefFC.getLinkString(rIndex);
+  std::string RSurf;
+  //  const std::string RSurf=RefFC.getLinkString(rIndex);
 
   createObjects(System,TSurf,RSurf);
   createLinks();

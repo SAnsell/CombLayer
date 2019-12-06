@@ -70,6 +70,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "boxValues.h"

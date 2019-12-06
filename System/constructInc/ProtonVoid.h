@@ -36,7 +36,8 @@ namespace ts1System
 */
 
 class ProtonVoid : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -57,10 +58,9 @@ class ProtonVoid : public attachSystem::ContainedComp,
   ProtonVoid& operator=(const ProtonVoid&);
   ~ProtonVoid();
 
+  /// access void cell  
   int getVoidCell() const { return protonVoidCell; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,
-		 const attachSystem::FixedComp&,
 		 const long int);
 
 };

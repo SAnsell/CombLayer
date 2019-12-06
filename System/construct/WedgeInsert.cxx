@@ -246,13 +246,13 @@ WedgeInsert::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("WedgeInsert","createObjects");
 
-  const attachSystem::LayerComp* LCPtr=
-    System.getObjectThrow<attachSystem::LayerComp>(FC.getKeyName(),"LayerComp");
+  if (!LCPtr)
+    throw ColErr::EmptyValue<attachSystem::LayerComp*>("LayerComp LCPtr");
 
   std::string Out;
   const std::string CShape=
     MonteCarlo::getComplementShape
-    (LCPtr->getLayerString(layerIndex,static_cast<long int>(sideIndex+1)));
+    (LCPtr->getLayerString(layerIndex,static_cast<long int>(layerIndex+1)));
 
   if (wall>Geometry::zeroTol)
     {

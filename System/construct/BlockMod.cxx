@@ -477,7 +477,7 @@ void
 BlockMod::createAll(Simulation& System,
 		    const attachSystem::FixedComp& orgFC,
 		    const long int orgIndex,
-		    const attachSystem::FixedComp* axisFC,
+		    const attachSystem::FixedComp& axisFC,
 		    const long int sideIndex)
   /*!
     Extrenal build everything
@@ -500,22 +500,5 @@ BlockMod::createAll(Simulation& System,
   return;
 }
 
-void
-BlockMod::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC,
-		    const long int orgIndex)
-  /*!
-    Extrenal build everything
-    \param System :: Simulation
-    \param FC :: FixedComp to get axis / orgin
-    \param orgIndex :: link point for origin if given
-   */
-{
-  ELog::RegMethod RegA("BlockMod","createAll");
-
-  createAll(System,FC,orgIndex,FC,0);
-
-  return;
-}
 
 }  // NAMESPACE constructSystem

@@ -1463,6 +1463,7 @@ namespace Geometry {
   class Vec3D;
 }
  
+namespace attachSystem { class LayerComp; }
 namespace SDef { class SrcBase; }
 namespace TimeData { class WorkSpace; }
 namespace mainSystem { class IItemBase; }
@@ -1479,6 +1480,7 @@ template class ColErr::EmptyValue<MonteCarlo::Object*>;
 template class ColErr::EmptyValue<Geometry::Surface*>;
 template class ColErr::EmptyValue<Geometry::Face*>;
 template class ColErr::EmptyValue<Geometry::Edge*>;
+template class ColErr::EmptyValue<attachSystem::LayerComp*>;
 template class ColErr::EmptyValue<objectGroups*>;
 template class ColErr::EmptyValue<void>;
 template class ColErr::EmptyValue<int>;

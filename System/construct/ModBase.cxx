@@ -162,7 +162,7 @@ ModBase::createUnitVector(const attachSystem::FixedComp& orgFC,
   
   attachSystem::FixedComp::createUnitVector(axisFC,axisIndex);
   
-  Origin= orgFC->getLinkPt(sideIndex);
+  Origin= orgFC.getLinkPt(orgIndex);
   FixedOffset::applyOffset();
   return; 
 }
