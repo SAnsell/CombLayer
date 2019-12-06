@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,7 +235,8 @@ H2Wing::populate(const FuncDataBase& Control)
 }
   
 void
-H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
+H2Wing::createUnitVector(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the H2Wing direction
@@ -246,7 +247,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   const double dh = std::accumulate(layerDepth.begin(),layerDepth.end(),0.0) -
     std::accumulate(layerHeight.begin(),layerHeight.end(),0.0);
 
@@ -695,17 +696,19 @@ H2Wing::getLayerString(const size_t layerIndex,
 
 void
 H2Wing::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed object just for origin/axis
+    \param sideIndex :: side to link
   */
 {
   ELog::RegMethod RegA("H2Wing","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 
@@ -713,7 +716,7 @@ H2Wing::createAll(Simulation& System,
   insertObjects(System);
 
   if (engActive)
-    InnerComp->createAll(System,*this);
+    InnerComp->createAll(System,*this,0);
   return;
 }
   

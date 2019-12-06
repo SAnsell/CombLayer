@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylFlowGuide.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov
+ * Copyright (c) 2004-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -78,7 +79,7 @@ namespace essSystem
 
 CylFlowGuide::CylFlowGuide(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedUnit(Key,0),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -88,7 +89,7 @@ CylFlowGuide::CylFlowGuide(const std::string& Key) :
 
 CylFlowGuide::CylFlowGuide(const CylFlowGuide& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedUnit(A),
   attachSystem::CellMap(A),
   wallThick(A.wallThick),
   wallMat(A.wallMat),

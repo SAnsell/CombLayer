@@ -3,7 +3,7 @@
  
  * File:   construct/BasicFlightLine.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -85,7 +85,7 @@ namespace moderatorSystem
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffsetUnit(Key,12),
   nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +94,8 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 {}
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedOffsetUnit(A),
   attachSystem::CellMap(A),
   height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),

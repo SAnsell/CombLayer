@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerFeed.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace essSystem
 */
 
 class BunkerFeed :
-  public attachSystem::FixedComp,
+  public attachSystem::FixedUnit,
   public attachSystem::CellMap
 {
  private:
@@ -69,7 +69,7 @@ class BunkerFeed :
   BunkerFeed& operator=(const BunkerFeed&);
   ~BunkerFeed();
   
-  void createAll(Simulation&,const Bunker&,
+  void buildAll(Simulation&,const Bunker&,
 		 const size_t,const std::string&);
 
 };

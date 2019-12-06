@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2FlowGuide.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,6 @@ class H2FlowGuide :
   double wallTemp;               ///< LH2 temperature [K]
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
 
@@ -70,7 +68,8 @@ class H2FlowGuide :
   virtual H2FlowGuide* clone() const;
   virtual ~H2FlowGuide();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

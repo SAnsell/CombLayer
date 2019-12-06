@@ -63,6 +63,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -100,7 +101,7 @@ namespace essSystem
 NMX::NMX(const std::string& keyName) :
   attachSystem::CopiedComp("nmx",keyName),
   stopPoint(0),
-  nmxAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  nmxAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),

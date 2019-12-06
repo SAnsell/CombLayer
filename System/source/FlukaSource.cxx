@@ -251,7 +251,7 @@ FlukaSource::write(std::ostream& OX) const
 }
 
 void
-FlukaSource::writePHITS(std::ostream& OX) const
+FlukaSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream

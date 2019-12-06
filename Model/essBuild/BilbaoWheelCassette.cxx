@@ -646,9 +646,6 @@ BilbaoWheelCassette::createLinks()
   return;
 }
 
-
-
-
 void
 BilbaoWheelCassette::createAll(Simulation& System,
 			       const attachSystem::FixedComp& FC,

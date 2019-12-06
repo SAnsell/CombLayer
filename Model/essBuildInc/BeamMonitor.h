@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   essBuildInc/PBW.h
+ * File:   essBuildInc/BeamMonitor.h
  *
- * Copyright (c) 2017-2018 by Konstantin Batkov
+ * Copyright (c) 2017-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class BeamMonitor : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedOffsetUnit
 {
  private:
 

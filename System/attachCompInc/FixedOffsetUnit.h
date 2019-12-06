@@ -34,12 +34,12 @@ namespace attachSystem
   \brief FixedComp with abstract units removed
 */
 
-class FixedOffsetUnit : public FixedComp
+class FixedOffsetUnit : public FixedOffset
 {  
  public:
 
   FixedOffsetUnit(const std::string& K,const size_t I) :
-    FixedComp(K,I) {}
+    FixedOffset(K,I) {}
   FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
   FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}
   virtual ~FixedOffsetUnit() {}     ///< Destructor

@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -94,7 +95,7 @@ namespace essSystem
 shortODIN::shortODIN(const std::string& keyName) :
   attachSystem::CopiedComp("shortOdin",keyName),
   stopPoint(0),
-  odinAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  odinAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
@@ -203,7 +204,7 @@ shortODIN::setBeamAxis(const attachSystem::FixedGroup& GItem,
 {
   ELog::RegMethod RegA("shortODIN","setBeamAxis");
 
-  odinAxis->createUnitVector(GItem);
+  odinAxis->createUnitVector(GItem.getKey("Main"),0);
   odinAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
   odinAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
 

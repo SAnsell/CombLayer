@@ -65,10 +65,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -105,7 +105,7 @@ namespace essSystem
 TREX::TREX(const std::string& keyName):
   attachSystem::CopiedComp("trex",keyName),
   nC(7),nF(8),stopPoint(0),
-  trexAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  trexAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
   VPipeBridge(new constructSystem::VacuumPipe(newName+"PipeBridge")),
@@ -382,13 +382,13 @@ TREX::buildBunkerWallUnits(Simulation& System,
   ELog::RegMethod RegA("TREX","buildBunkerWallUnits");
   
   BInsertA->addInsertCell(bunkerVoid);
-  BInsertA->createAll(System,FA,startIndex,bunkerObj);
+  BInsertA->createAll(System,FA,startIndex);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
 
   FocusWallA->addInsertCell(BInsertA->getCells("Item"));
   FocusWallA->createAll(System,*BInsertA,0,*BInsertA,0);
 
-  BInsertB->createAll(System,*BInsertA,2,bunkerObj);
+  BInsertB->createAll(System,*BInsertA,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
   return;
 }

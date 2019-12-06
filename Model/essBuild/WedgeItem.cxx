@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2016 by Konstantin Batkov
+ * Copyright (c) 2004-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,6 +74,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "World.h"
 #include "SurInter.h"
@@ -86,7 +86,7 @@ namespace essSystem
 
 WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6)
+  attachSystem::FixedOffsetUnit(Key+std::to_string(Index),6)
 
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -96,7 +96,8 @@ WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
 {}
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffsetUnit(A),
   length(A.length),baseWidth(A.baseWidth),
   mat(A.mat)
   /*!

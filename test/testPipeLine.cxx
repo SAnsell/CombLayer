@@ -3,7 +3,7 @@
  
  * File:   test/testPipeLine.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "ModelSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -224,7 +225,7 @@ testPipeLine::testBasic()
   AP.addPoint(Geometry::Vec3D(0,0,0));
   AP.addPoint(Geometry::Vec3D(0,0,10));
   AP.addRadius(0.4,7,0.0);
-  AP.createAll(ASim);
+  AP.build(ASim);
 
   ASim.renumberAll();
   ASim.write("testBasic.x");
@@ -246,7 +247,7 @@ testPipeLine::testJoin()
   AP.addPoint(Geometry::Vec3D(10,0,10));
   AP.addPoint(Geometry::Vec3D(15,0,15));
   AP.addRadius(0.4,7,0.0);
-  AP.createAll(ASim);
+  AP.build(ASim);
 
   ASim.renumberAll();
   ASim.write("testJoin.x");

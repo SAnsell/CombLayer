@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -96,7 +97,7 @@ namespace xraySystem
 // Note currently uncopied:
   
 danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedOffsetUnit(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),

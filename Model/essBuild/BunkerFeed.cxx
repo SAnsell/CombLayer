@@ -3,7 +3,7 @@
  
  * File:   bunker/BunkerFeed.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "ModelSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -84,7 +85,7 @@ namespace essSystem
 
 BunkerFeed::BunkerFeed(const std::string& Key,
                        const size_t Index)  :
-  attachSystem::FixedComp(Key+std::to_string(Index),2),
+  attachSystem::FixedUnit(Key+std::to_string(Index),2),
   ID(Index),baseName(Key),
   voidTrack(new ModelSupport::BoxLine(keyName))
   /*!
@@ -94,7 +95,7 @@ BunkerFeed::BunkerFeed(const std::string& Key,
 {}
 
 BunkerFeed::BunkerFeed(const BunkerFeed& A) : 
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedUnit(A),attachSystem::CellMap(A),
   ID(A.ID),baseName(A.baseName),
   voidTrack(new ModelSupport::BoxLine(*A.voidTrack)),
   height(A.height),width(A.width),Offset(A.Offset),
@@ -238,21 +239,20 @@ BunkerFeed::insertColl(Simulation& System)
 	X*trackPt[0]+Y*trackPt[1]+Z*trackPt[2];
       realPoint+=Origin;
       voidTrack->addPoint(realPoint);
-      ELog::EM<<"Adding Point == "<<realPoint<<ELog::endDiag;
     }
         
   // make void
-  ELog::EM<<"WH == "<<width<<" "<<height<<ELog::endDiag;
   voidTrack->addSection(width,height,0,0.0);
   voidTrack->setInitZAxis(Z);
   DegA.activate();
-  voidTrack->createAll(System);
+
+  voidTrack->build(System);
 
   return;
 }
   
 void
-BunkerFeed::createAll(Simulation& System,
+BunkerFeed::buildAll(Simulation& System,
                       const Bunker& bunkerObj,
                       const size_t segNumber,
                       const std::string& feedName)

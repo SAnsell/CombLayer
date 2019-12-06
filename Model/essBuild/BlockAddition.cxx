@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,10 +64,10 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BlockAddition.h"
@@ -77,7 +77,7 @@ namespace essSystem
 
 BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffsetUnit(Key,6),
   active(0),nLayers(0),edgeSurf(0)
   /*!
     Constructor
@@ -87,7 +87,7 @@ BlockAddition::BlockAddition(const std::string& Key) :
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedOffsetUnit(A),
   active(A.active),length(A.length),
   height(A.height),width(A.width),nLayers(A.nLayers),
   wallThick(A.wallThick),waterMat(A.waterMat),
@@ -158,12 +158,12 @@ BlockAddition::populate(const FuncDataBase& Control)
   for(size_t i=1;i<nLayers;i++)
     {
       WT+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"WallThick",i));   
+	(keyName+"WallThick"+std::to_string(i));   
       M=ModelSupport::EvalMat<int>
-	(Control,StrFunc::makeString(keyName+"WallMat",i));   
+	(Control,keyName+"WallMat"+std::to_string(i));   
 
       T=Control.EvalDefVar<double>
-	(StrFunc::makeString(keyName+"WallTemp",i),0.0);   
+	(keyName+"WallTemp"+std::to_string(i),0.0);   
             
       wallThick.push_back(WT);
       wallTemp.push_back(T);
@@ -485,10 +485,10 @@ BlockAddition::getLayerString(const size_t layerIndex,
       int signValue((sideIndex<0) ? -1 : 1);
       signValue*=((sideIndex % 2) ? -1 : 1);
       const int SurfN= signValue*SMap.realSurf(SI+uSIndex);
-      return " "+StrFunc::makeString(SurfN)+" ";
+      return " "+std::to_string(SurfN)+" ";
     }
   const std::string Out=preModInner+" "+
-    StrFunc::makeString(-SMap.realSurf(buildIndex+1));
+	    std::to_string(-SMap.realSurf(buildIndex+1));
   if (sideIndex<0)
     {
       HeadRule HR(Out);

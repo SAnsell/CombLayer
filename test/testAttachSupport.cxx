@@ -3,7 +3,7 @@
  
  * File:   test/testAttachSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ testAttachSupport::testBoundaryValid()
 
   std::shared_ptr<testSystem::simpleObj> 
     CC(new testSystem::simpleObj("A"));
-  CC->createAll(ASim,World::masterOrigin());
+  CC->createAll(ASim,World::masterOrigin(),0);
 
 
   int cnt(1);
@@ -214,7 +214,7 @@ testAttachSupport::testInsertComponent()
   initSim();
   SObj.push_back(SOTYPE(new testSystem::simpleObj("A")));
   SObj.back()->addInsertCell(5001);
-  SObj.back()->createAll(ASim,World::masterOrigin());
+  SObj.back()->createAll(ASim,World::masterOrigin(),0);
 
   return 0;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/HEIMDAL.cxx
+ * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -109,7 +110,7 @@ namespace essSystem
 HEIMDAL::HEIMDAL(const std::string& keyName) :
   attachSystem::CopiedComp("heimdal",keyName),
   startPoint(0),stopPoint(0),
-  heimdalAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  heimdalAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   FocusTA(new beamlineSystem::GuideLine(newName+"FTA")),
   FocusCA(new beamlineSystem::GuideLine(newName+"FCA")),

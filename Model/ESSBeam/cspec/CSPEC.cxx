@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -101,7 +102,7 @@ namespace essSystem
 CSPEC::CSPEC(const std::string& keyName) :
   attachSystem::CopiedComp("cspec",keyName),
   stopPoint(0),
-  cspecAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  cspecAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 

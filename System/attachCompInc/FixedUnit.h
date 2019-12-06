@@ -40,6 +40,14 @@ class FixedUnit : public FixedComp
 
   FixedUnit(const std::string& K,const size_t I) :
     FixedComp(K,I) {}
+ FixedUnit(const std::string& K,const size_t I,const size_t S) :
+    FixedComp(K,I,S) {}
+  FixedUnit(const std::string& K,const size_t I,
+	    const Geometry::Vec3D& OO,const Geometry::Vec3D& XX, 
+	    const Geometry::Vec3D& YY,const Geometry::Vec3D& ZZ) :
+    FixedComp(K,I,OO,XX,YY,ZZ) {}
+
+      
   FixedUnit(const FixedUnit& A) : FixedComp(A) {}
   FixedUnit(const FixedComp& A) : FixedComp(A) {}
   virtual ~FixedUnit() {}     ///< Destructor

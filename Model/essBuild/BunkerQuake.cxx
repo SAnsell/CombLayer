@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerQuake.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,24 +65,18 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
-#include "MXcards.h"
-#include "Zaid.h"
-#include "Material.h"
-#include "DBMaterial.h"
-#include "surfDIter.h"
 #include "BunkerQUnit.h"
 #include "BunkerQuake.h"
 
@@ -91,7 +85,7 @@ namespace essSystem
 {
 
 BunkerQuake::BunkerQuake(const std::string& bunkerName) :
-  attachSystem::FixedComp(bunkerName+"Quake",0)
+  attachSystem::FixedUnit(bunkerName+"Quake",0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -106,7 +100,7 @@ BunkerQuake::~BunkerQuake()
 {}
  
 void
-BunkerQuake::createAll(Simulation& System,
+BunkerQuake::buildAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int orgIndex,
                        const long int axisIndex)

@@ -70,16 +70,11 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
-#include "FixedOffset.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
 #include "AttachSupport.h"
 
 #include "CellMap.h"
@@ -93,7 +88,7 @@ namespace essSystem
 
 PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedOffsetUnit(Key,8),
   shield(new TelescopicPipe(Key+"Shield"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -110,7 +105,7 @@ PBW::PBW(const std::string& Key)  :
 
 PBW::PBW(const PBW& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedOffsetUnit(A),
 
   engActive(A.engActive),
   plugLength1(A.plugLength1),
@@ -567,9 +562,6 @@ PBW::createLinks()
 
   return;
 }
-
-
-
 
 void
 PBW::createAll(Simulation& System,

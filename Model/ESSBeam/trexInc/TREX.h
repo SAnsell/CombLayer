@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trexInc/TREX.h
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ class TREX : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis
-  std::shared_ptr<attachSystem::FixedOffset> trexAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> trexAxis;
   
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> FocusMono;

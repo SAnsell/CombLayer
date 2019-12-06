@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/shortDREAM.h
+ * File:   ESSBeam/shortDreamInc/shortDREAM.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ class shortDREAM : public attachSystem::CopiedComp
   int stopPoint;  
   
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> dreamAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> dreamAxis;
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

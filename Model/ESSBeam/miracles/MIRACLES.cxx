@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/MIRACLES.cxx
+ * File:   ESSBeam/miracles/MIRACLES.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -65,6 +65,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -104,7 +105,7 @@ namespace essSystem
 MIRACLES::MIRACLES(const std::string& keyName) :
   attachSystem::CopiedComp("miracles",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
-  miraclesAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  miraclesAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),

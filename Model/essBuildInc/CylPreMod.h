@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CylPreMod.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@ class CylPreMod : public attachSystem::ContainedGroup,
   void checkItems(const attachSystem::FixedComp&);
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp*);
@@ -90,7 +89,6 @@ class CylPreMod : public attachSystem::ContainedGroup,
   CylPreMod& operator=(const CylPreMod&);
   virtual ~CylPreMod();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
 
   const std::shared_ptr<BlockAddition>& getBox(const char) const;
   std::string getBoxCut(const char) const;
@@ -99,6 +97,8 @@ class CylPreMod : public attachSystem::ContainedGroup,
   virtual std::string getLayerString(const size_t,const long int) const;
 
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+    
 };
 
 }

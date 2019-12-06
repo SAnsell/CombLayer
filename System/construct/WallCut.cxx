@@ -74,6 +74,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LinkSupport.h"
+#include "ExternalCut.h"
 #include "WallCut.h"
 
 
@@ -218,8 +219,7 @@ WallCut::createSurfaces()
 
 
 void
-WallCut::createObjects(Simulation& System,
-		       const HeadRule& wallBoundary)
+WallCut::createObjects(Simulation& System)
   /*!
     Adds the main component
     \param System :: Simulation to create objects in
@@ -228,6 +228,8 @@ WallCut::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("WallCut","createObjects");
 
+  const HeadRule& wallBoundary=
+    ExternalCut::getRule("WallBoundary");
   std::string Out;
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
@@ -293,8 +295,7 @@ WallCut::createLinks(const HeadRule& wallBoundary)
 void
 WallCut::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
-		   const long int sideIndex,
-		   const HeadRule& wallBoundary)
+		   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -308,8 +309,8 @@ WallCut::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,wallBoundary);
-  createLinks(wallBoundary);
+  createObjects(System);
+  createLinks();
   insertObjects(System);
   
   return;

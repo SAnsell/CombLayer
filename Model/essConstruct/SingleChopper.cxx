@@ -3,7 +3,7 @@
  
  * File:   essConstruct/SingleChopper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -73,7 +72,6 @@
 #include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -323,7 +321,8 @@ SingleChopper::createObjects(Simulation& System)
   addCell("PortVoid",cellIndex-1);
 
   IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->createAll(System,BuildBeam,0,Out+innerFSurf);
+  IPA->setCutSurf("Boundary",Out+innerFSurf);
+  IPA->createAll(System,BuildBeam,0);
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
@@ -331,7 +330,8 @@ SingleChopper::createObjects(Simulation& System)
   addCell("PortVoid",cellIndex-1);
 
   IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->createAll(System,BuildBeam,0,Out+innerBSurf);
+  IPB->setCutSurf("Boundary",Out+innerBSurf);
+  IPB->createAll(System,BuildBeam,0);
 
   
   // Outer

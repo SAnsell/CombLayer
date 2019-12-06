@@ -41,7 +41,8 @@ namespace constructSystem
 class InnerPort :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -64,12 +65,10 @@ class InnerPort :
   
   int mat;             ///< Port Seal material
 
-  HeadRule boundaryHR; ///< boundary HR
   std::set<int> activeCells;   ///< Cells containing port
   bool calcIntersect(const Geometry::Vec3D&) const;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -83,9 +82,9 @@ class InnerPort :
   InnerPort& operator=(const InnerPort&);
   virtual ~InnerPort();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
   void addInnerCell(const int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

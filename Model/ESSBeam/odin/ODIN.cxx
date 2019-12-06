@@ -62,10 +62,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -101,7 +101,7 @@ namespace essSystem
 ODIN::ODIN(const std::string& keyName) :
   attachSystem::CopiedComp("odin",keyName),
   stopPoint(0),
-  odinAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  odinAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   

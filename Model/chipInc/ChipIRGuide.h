@@ -204,7 +204,7 @@ class ChipIRGuide : public attachSystem::FixedGroup,
 
   void createAll(Simulation&,const shutterSystem::BulkShield&,
 		 const size_t);
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

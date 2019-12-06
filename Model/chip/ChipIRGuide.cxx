@@ -1159,16 +1159,18 @@ ChipIRGuide::createAll(Simulation& System,
 
 void
 ChipIRGuide::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createAll[FC]");
 
-  const FuncDataBase& Control=System.getDataBase();
+  const FuncDataBase& Control=
   populate(Control);
   
   const double ORadius=

@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
@@ -95,7 +96,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,14),
+  attachSystem::FixedUnit(baseKey+extraKey,14),
   baseName(baseKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -106,7 +107,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A), baseName(A.baseName),
+  attachSystem::FixedUnit(A), baseName(A.baseName),
   midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),

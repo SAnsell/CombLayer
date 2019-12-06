@@ -3,7 +3,7 @@
  
  * File:   essConstruct/TwinChopper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,8 @@ TwinChopper::buildPorts(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerFSurf));
   addCell("PortVoid",cellIndex-1);
   IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->createAll(System,Beam,0,Out+innerFSurf);
+  IPA->setCutSurf("Boundary",Out+innerFSurf);
+  IPA->createAll(System,Beam,0);
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
@@ -163,7 +164,8 @@ TwinChopper::buildPorts(Simulation& System)
   addCell("PortVoid",cellIndex-1);
 
   IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->createAll(System,Beam,0,Out+innerBSurf);
+  IPB->setCutSurf("Boundary",Out+innerBSurf);
+  IPB->createAll(System,Beam,0);
   return;
 }
 

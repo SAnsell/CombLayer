@@ -3,7 +3,7 @@
  
   * File:   essBuild/BeRefInnerStructure.cxx
   *
-  * Copyright (c) 2004-2018 by Stuart Ansell
+  * Copyright (c) 2004-2019 by Stuart Ansell
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@
 #include "generateSurf.h"
 #include "support.h"
 #include "SurInter.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -165,18 +164,6 @@ BeRefInnerStructure::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-BeRefInnerStructure::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Centre for object
-  */
-{
-  ELog::RegMethod RegA("BeRefInnerStructure","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  return;
-}
 
 void
 BeRefInnerStructure::createSurfaces(const attachSystem::FixedComp& Reflector)
@@ -315,17 +302,19 @@ BeRefInnerStructure::createLinks()
   
 void
 BeRefInnerStructure::createAll(Simulation& System,
-                               const attachSystem::FixedComp& FC)
+                               const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: Attachment point	       
+    \param FC :: Attachment point	      
+    \param sideIndex :: lin point
 */
 {
   ELog::RegMethod RegA("BeRefInnerStructure","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
 
   createSurfaces(FC);
   createObjects(System, FC);

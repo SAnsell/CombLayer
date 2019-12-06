@@ -54,7 +54,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -65,22 +64,17 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "FixedOffset.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "PBIP.h"
 
@@ -89,7 +83,7 @@ namespace essSystem
 
 PBIP::PBIP(const std::string& Key)  :
   attachSystem::ContainedGroup("before","main","after"),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedOffsetUnit(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -98,7 +92,7 @@ PBIP::PBIP(const std::string& Key)  :
 
 PBIP::PBIP(const PBIP& A) :
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedOffsetUnit(A),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),

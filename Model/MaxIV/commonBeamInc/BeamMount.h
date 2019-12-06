@@ -69,7 +69,9 @@ class BeamMount :
   void createObjects(Simulation&);
   void createLinks();
   std::vector<Geometry::Vec3D> calcEdgePoints() const;
-  
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+
  public:
 
   BeamMount(const std::string&);
@@ -77,7 +79,6 @@ class BeamMount :
   BeamMount& operator=(const BeamMount&);
   virtual ~BeamMount();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);

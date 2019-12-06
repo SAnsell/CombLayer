@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/ShutterBay.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ namespace essSystem
 
 class ShutterBay : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
  
@@ -59,11 +60,9 @@ class ShutterBay : public attachSystem::ContainedComp,
   int skinMat;          ///< Skin Material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
 
  public:
 
@@ -73,7 +72,7 @@ class ShutterBay : public attachSystem::ContainedComp,
   virtual ~ShutterBay();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+		 const long int);
 
 };
 

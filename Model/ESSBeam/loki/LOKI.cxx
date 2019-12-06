@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -65,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -110,7 +110,7 @@ namespace essSystem
 
 LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),startPoint(0),stopPoint(0),
-  lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  lokiAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
   ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  
@@ -472,7 +472,7 @@ LOKI::build(Simulation& System,
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->setFront(bunkerObj,-1);
   BInsert->setBack(bunkerObj,-2);
-  BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,FocusC->getKey("Guide0"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCells("Item"));

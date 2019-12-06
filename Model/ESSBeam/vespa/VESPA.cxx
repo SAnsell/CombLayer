@@ -3,7 +3,7 @@
 
  * File:   ESSBeam/vespa/VESPA.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -65,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -114,7 +114,7 @@ namespace essSystem
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   startPoint(0),stopPoint(0),
-  vespaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  vespaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   
   // Guide into the monolith
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
@@ -266,13 +266,13 @@ VESPA::VESPA(const std::string& keyName) :
       
       ShieldArray.push_back
         (STYPE(new constructSystem::TriangleShield(newName+"ShieldArray"+
-						   StrFunc::makeString(i))));
+						   std::to_string(i))));
       VPipeArray.push_back
         (VTYPE(new constructSystem::VacuumPipe(newName+"VPipeArray"+
-                                               StrFunc::makeString(i))));
+                                               std::to_string(i))));
       FocusArray.push_back
         (GTYPE(new beamlineSystem::GuideLine(newName+"FocusArray"+
-                                             StrFunc::makeString(i))));
+                                             std::to_string(i))));
       OR.addObject(ShieldArray.back());
       OR.addObject(VPipeArray.back());
       OR.addObject(FocusArray.back());

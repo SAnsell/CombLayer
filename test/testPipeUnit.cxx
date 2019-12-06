@@ -63,6 +63,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "pipeUnit.h"
 
 #include "testFunc.h"
@@ -195,7 +196,7 @@ testPipeUnit::testBasic()
 
   pipeUnit AP("tst",1);
   AP.setPoints(Geometry::Vec3D(0,0,0),Geometry::Vec3D(10.0,0,0));
-  AP.createUnit(ASim,0,CV);
+  AP.buildUnit(ASim,0,CV);
   return 0;
 }
 

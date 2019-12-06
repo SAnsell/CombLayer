@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRFilter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ChipIRFilter.h"
@@ -81,8 +82,8 @@ namespace hutchSystem
 {
 
 ChipIRFilter::ChipIRFilter(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  populated(0)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,9 +91,8 @@ ChipIRFilter::ChipIRFilter(const std::string& Key)  :
 {}
 
 ChipIRFilter::ChipIRFilter(const ChipIRFilter& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),outerLen(A.outerLen),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  outerLen(A.outerLen),
   outerWidth(A.outerWidth),outerHeight(A.outerHeight),nLayers(A.nLayers),
   fracFrac(A.fracFrac),fracMat(A.fracMat)
   /*!
@@ -112,13 +112,7 @@ ChipIRFilter::operator=(const ChipIRFilter& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
       outerLen=A.outerLen;
       outerWidth=A.outerWidth;
       outerHeight=A.outerHeight;
@@ -136,58 +130,23 @@ ChipIRFilter::~ChipIRFilter()
 {}
 
 void
-ChipIRFilter::populate(const Simulation& System)
+ChipIRFilter::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("ChipIRFilter","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  // Master values
-  //  xStep=Control.EvalVar<double>(keyName+"XStep");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  FixedOffset::populate(Control);
  
   outerLen=Control.EvalVar<double>(keyName+"OuterLen");
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
 
-  populated |= 1;
   return;
 }
   
-void
-ChipIRFilter::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("ChipIRFilter","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
-
-  return;
-}
-
 void
 ChipIRFilter::createSurfaces()
   /*!
@@ -264,17 +223,21 @@ ChipIRFilter::createLinks()
 }
 
 void
-ChipIRFilter::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+ChipIRFilter::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Linear object to component
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ChipIRFilter","createAll");
-  populate(System);
 
-  createUnitVector(FC);
+  populate(System.getDataBase());
+
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

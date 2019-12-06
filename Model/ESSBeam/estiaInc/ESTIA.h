@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/ESTIA.h
+ * File:   ESSBeam/estia/ESTIA.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ class ESTIA : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> estiaAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> estiaAxis;
 
   /// mirror to end of monolith
   std::shared_ptr<beamlineSystem::GuideLine> FocusMono;

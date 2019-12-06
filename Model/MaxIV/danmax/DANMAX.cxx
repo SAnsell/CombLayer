@@ -50,6 +50,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"

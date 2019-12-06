@@ -3,7 +3,7 @@
  
  * File:   test/simpleObj.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +129,8 @@ simpleObj::~simpleObj()
 {}
   
 void
-simpleObj::createUnitVector(const attachSystem::FixedComp& FC)
+simpleObj::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -137,7 +138,7 @@ simpleObj::createUnitVector(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegA("simpleObj","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
   Origin+=offset;
   applyAngleRotate(xyAngle,0);
@@ -255,7 +256,8 @@ simpleObj::getComposite(const std::string& surfList) const
 
 void
 simpleObj::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -263,7 +265,7 @@ simpleObj::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("simpleObj","createAll");
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

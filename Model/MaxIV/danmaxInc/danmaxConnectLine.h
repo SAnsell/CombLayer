@@ -49,7 +49,7 @@ namespace xraySystem
   */
 
 class danmaxConnectLine :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap      

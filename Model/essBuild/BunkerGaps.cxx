@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerGaps.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -92,7 +93,7 @@ namespace essSystem
 {
 
 BunkerGaps::BunkerGaps(const std::string& bunkerName) :
-  attachSystem::FixedComp(bunkerName+"Gaps",0)
+  attachSystem::FixedUnit(bunkerName+"Gaps",0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -107,7 +108,7 @@ BunkerGaps::~BunkerGaps()
 {}
  
 void
-BunkerGaps::createAll(Simulation& System,
+BunkerGaps::buildAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int orgIndex,
                        const long int axisIndex)
@@ -130,7 +131,7 @@ BunkerGaps::createAll(Simulation& System,
   for(size_t i=0;i<NPath;i++)
     {
       QUnit.push_back(std::shared_ptr<BunkerQUnit>
-		      (new BunkerQUnit(keyName+StrFunc::makeString(i))));
+		      (new BunkerQUnit(keyName+std::to_string(i))));
       OR.addObject(QUnit.back());
       QUnit.back()->createAll(System,FC,orgIndex,axisIndex);
     }

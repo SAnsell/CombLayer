@@ -3,7 +3,7 @@
  
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,11 +68,14 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "EssModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"
@@ -442,6 +445,23 @@ ButterflyModerator::getRightExclude() const
 
 void
 ButterflyModerator::createAll(Simulation& System,
+			      const attachSystem::FixedComp& FC,
+                              const long int sideIndex)
+/*!
+  Construct components
+  \param System :: Simulation 
+  \param FC :: Origin/axis component
+  \param sideIndex :: link point for origin 
+*/
+{
+  ELog::RegMethod RegA("ButterflyModerator","createAll(FC)");
+  
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
+void
+ButterflyModerator::createAll(Simulation& System,
 			      const attachSystem::FixedComp& orgFC,
                               const long int orgIndex,
 			      const attachSystem::FixedComp& axisFC,
@@ -461,14 +481,16 @@ ButterflyModerator::createAll(Simulation& System,
   createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
   
-  LeftUnit->createAll(System,*this);
-  RightUnit->createAll(System,*this);
+  LeftUnit->createAll(System,*this,0);
+  RightUnit->createAll(System,*this,0);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  LeftWater->createAll(System,*LeftUnit,2,Exclude);
-  RightWater->createAll(System,*RightUnit,2,Exclude);
+  LeftWater->setCutSurf("Container",Exclude);
+  RightWater->setCutSurf("Container",Exclude);
+  LeftWater->createAll(System,*LeftUnit,2);
+  RightWater->createAll(System,*RightUnit,2);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 

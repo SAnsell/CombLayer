@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/FREIA.cxx
+ * File:   ESSBeam/freia/FREIA.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -102,7 +103,7 @@ namespace essSystem
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
   startPoint(0),stopPoint(0),
-  freiaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  freiaAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 

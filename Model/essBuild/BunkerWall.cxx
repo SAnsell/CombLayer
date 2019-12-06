@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerWall.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -72,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -91,7 +91,7 @@ namespace essSystem
 
 BunkerWall::BunkerWall(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Wall",6,20000),
+  attachSystem::FixedUnit(bunkerName+"Wall",6,20000),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
   activeWall(0),frontSurf(0),backSurf(0),
   topSurf(0),baseSurf(0)
@@ -102,7 +102,7 @@ BunkerWall::BunkerWall(const std::string& bunkerName) :
 {}
 
 BunkerWall::BunkerWall(const BunkerWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   baseName(A.baseName),wallThick(A.wallThick),
   wallMat(A.wallMat),activeWall(A.activeWall),nVert(A.nVert),
@@ -280,7 +280,7 @@ BunkerWall::createSector(Simulation& System,
   std::vector<double> empty;
   
   ModelSupport::LayerDivide3D LD3(keyName+"MainWall"+
-				  StrFunc::makeString(sectNum));
+				  std::to_string(sectNum));
 
   // Front/back??
   LD3.setSurfPair(0,frontSurf,backSurf);
@@ -317,7 +317,7 @@ BunkerWall::createSector(Simulation& System,
       LD3.setMaterials(0,actualMatVec);
     }
   LD3.divideCell(System,cellN);
-  addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
+  addCells("Sector"+std::to_string(sectNum),LD3.getCells());
   return;
 }
 

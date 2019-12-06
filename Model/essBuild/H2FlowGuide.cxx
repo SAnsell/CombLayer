@@ -183,17 +183,6 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: fixed Comp [and link comp]
-  */
-{
-  ELog::RegMethod RegA("H2FlowGuide","createUnitVector");
-  FixedComp::createUnitVector(FC);
-  return;
-}  
   
 void
 H2FlowGuide::createSurfaces()
@@ -286,7 +275,8 @@ H2FlowGuide::createObjects(Simulation& System,
 
 void
 H2FlowGuide::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -296,7 +286,7 @@ H2FlowGuide::createAll(Simulation& System,
   ELog::RegMethod RegA("H2FlowGuide","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,FC);
   

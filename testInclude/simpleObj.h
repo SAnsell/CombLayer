@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   testInclude/simpleObj.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class simpleObj : public attachSystem::ContainedComp,
   int mainCell;                 ///< Main cell
 
   //  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const double,
 			const double,const double);
 
@@ -88,9 +88,10 @@ class simpleObj : public attachSystem::ContainedComp,
   void setRefFlag(const int R) {refFlag=R;}
   /// Set offset
   void setOffset(const Geometry::Vec3D& O) { offset=O; }
-  void createAll(Simulation&,const attachSystem::FixedComp&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const double,const double,const double);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 
