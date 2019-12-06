@@ -15,7 +15,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -134,7 +134,7 @@ global_settings {
 #if (quick=1)
   light_source { // front
     cameraLocation + <-100,0,50> C_Sun
-    shadowless
+   shadowless
   }
   light_source { // back
     cameraLocation + <100,0,70> C_Sun
