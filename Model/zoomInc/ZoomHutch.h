@@ -40,8 +40,6 @@ class ZoomHutch : public attachSystem::ContainedComp,
 {
  private:
   
-  int populated;                ///< 1:var
-  
   ZoomTank tank;                ///< Tank object
 
   double xStep;                 ///< Offset on X to Target
@@ -77,8 +75,9 @@ class ZoomHutch : public attachSystem::ContainedComp,
 
   int innerVoid;                ///< Inner void cell
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedGroup&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedGroup&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -91,7 +90,7 @@ class ZoomHutch : public attachSystem::ContainedComp,
   ZoomHutch& operator=(const ZoomHutch&);
   virtual ~ZoomHutch();
 
-  void createAll(Simulation&,const attachSystem::FixedGroup&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

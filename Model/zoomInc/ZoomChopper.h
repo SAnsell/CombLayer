@@ -119,7 +119,9 @@ class ZoomChopper : public attachSystem::FixedGroup,
   void createObjects(Simulation&,const attachSystem::ContainedGroup&);
   void createLinks();
   void divideMainShield(Simulation&);
-  
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) {}
  public:
 
   ZoomChopper(const std::string&);

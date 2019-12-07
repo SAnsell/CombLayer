@@ -38,7 +38,8 @@ namespace constructSystem
 */
 
 class WallCut : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -57,8 +58,8 @@ class WallCut : public attachSystem::FixedOffset,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const HeadRule&);
-  void createLinks(const HeadRule&);
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
 

@@ -94,6 +94,7 @@ class FixedOffsetGroup  : public FixedGroup
   virtual ~FixedOffsetGroup() {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
+  virtual void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void applyOffset();
 };

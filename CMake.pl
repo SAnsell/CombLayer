@@ -16,7 +16,7 @@ my @masterprog=("example","fullBuild","ess","muBeam","pipe","photonMod2","t1Real
 ## Model Directory
 ##my @modelLibDir=qw( bibBuild bnctBuild build chip
 ##                    cuBlock d4cModel delft epbBuild essBuild
-##                    gammaBuild imat lensModel moderator
+##                    gammaBuild lensModel moderator
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
 ##                    t1Engineer t1Upgrade t3Model zoom );
 
@@ -27,7 +27,7 @@ my @masterprog=("example","fullBuild","ess","muBeam","pipe","photonMod2","t1Real
 ## MODEL Directory
 my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        cuBlockInc d4cModelInc delftInc epbBuildInc
-                       essBuildInc gammaBuildInc imatInc lensModelInc
+                       essBuildInc gammaBuildInc lensModelInc
                        moderatorInc muonInc pipeBuildInc photonInc
                        singleItemBuildInc sinbadBuildInc snsBuildInc t1BuildInc
                        t1EngineerInc t1UpgradeInc t3ModelInc zoomInc );
@@ -116,7 +116,7 @@ my @bilbau = qw( bibBuild );
 push(@bilbau,@mainLib);
 $gM->addDepUnit("bilbau", [@bilbau]),
 
-my @fullBuild = qw( build chip moderator build zoom imat );
+my @fullBuild = qw( build chip moderator build zoom  );
 push(@fullBuild,@mainLib);
 $gM->addDepUnit("fullBuild", [@fullBuild]),
 
@@ -134,11 +134,11 @@ $gM->addDepUnit("lens", [@lens]);
 
 $gM->addDepUnit("simple", [@mainLib]);
 
-my @t1MarkII = qw( t1Upgrade t1Build imat chip zoom build moderator ) ;
+my @t1MarkII = qw( t1Upgrade t1Build  chip zoom build moderator ) ;
 push(@t1MarkII,@mainLib);
 $gM->addDepUnit("t1MarkII", [@t1MarkII]);
 
-my @t1Eng = qw( t1Engineer t1Upgrade t1Build imat chip zoom build moderator ) ;
+my @t1Eng = qw( t1Engineer t1Upgrade t1Build chip zoom build moderator ) ;
 push(@t1Eng,@mainLib);
 $gM->addDepUnit("t1Eng", [@t1Eng]);
 
@@ -164,7 +164,7 @@ $gM->addDepUnit("singleItem", [@singleItem,
 			       qw(commonGenerator commonVar
 			       commonBeam R3Common )]);
 
-my @t1Real = qw( t1Build build imat moderator chip zoom ) ;
+my @t1Real = qw( t1Build build  moderator chip zoom ) ;
 push(@t1Real,@mainLib);
 $gM->addDepUnit("t1Real", [@t1Real]);
 

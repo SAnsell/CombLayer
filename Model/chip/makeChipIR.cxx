@@ -64,8 +64,11 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -167,21 +170,21 @@ makeChipIR::buildIsolated(Simulation& System,
   GObj->addInsertCell("outer",voidCell);
   GObj->addInsertCell("rightwall",voidCell);
   GObj->addInsertCell("leftwall",voidCell);
-  GObj->createAll(System,World::masterOrigin());
+  GObj->createAll(System,World::masterOrigin(),0);
 
   hutchObj->addInsertCell(voidCell);
   hutchObj->createAll(System,World::masterTS2Origin(),*GObj,
   		  GObj->getCC("inner"));
   //  FB.createAll(System,*hutchObj);
 
-  FB.createAll(System,*hutchObj);
+  FB.createAll(System,*hutchObj,0);
   const FuncDataBase& Control=System.getDataBase();  
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
       FeedVec.push_back
       (std::make_shared<FeedThrough>("chipWiresColl",i+1));
-      FeedVec.back()->createAll(System,*hutchObj);
+      FeedVec.back()->createAll(System,*hutchObj,0);
     }  
   
   return;
@@ -215,19 +218,19 @@ makeChipIR::build(Simulation* SimPtr,
   
   GObj->createAll(*SimPtr,BulkObj,0);
     
-  hutchObj->addInsertCell(74123);
+  hutchObj->addInsertCell(voidCell);
   hutchObj->createAll(*SimPtr,*GObj,2);
   //  hutchObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
   //		      GObj->getCC("inner"));
   
-  FB.createAll(*SimPtr,*hutchObj);
+  FB.createAll(*SimPtr,*hutchObj,0);
 
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
       FeedVec.push_back
 	(std::make_shared<FeedThrough>("chipWiresColl",i+1));
-      FeedVec.back()->createAll(*SimPtr,*hutchObj);
+      FeedVec.back()->createAll(*SimPtr,*hutchObj,0);
     }  
 
 

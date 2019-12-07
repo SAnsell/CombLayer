@@ -83,7 +83,7 @@ namespace constructSystem
 
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
   attachSystem::FixedOffset(Key+std::to_string(ID),6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedComp(),attachSystem::ExternalCut(),
   baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,8 +94,10 @@ WallCut::WallCut(const std::string& Key,const size_t ID)  :
 
 WallCut::WallCut(const WallCut& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   baseName(A.baseName),insertKey(A.insertKey),
-  height(A.height),width(A.width),length(A.length)
+  height(A.height),width(A.width),length(A.length),
+  mat(A.mat),matTemp(A.matTemp)
   /*!
     Copy constructor
     \param A :: WallCut to copy
@@ -114,10 +116,13 @@ WallCut::operator=(const WallCut& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       insertKey=A.insertKey;
       height=A.height;
       width=A.width;
       length=A.length;
+      mat=A.mat;
+      matTemp=A.matTemp;
     }
   return *this;
 }
@@ -230,6 +235,7 @@ WallCut::createObjects(Simulation& System)
 
   const HeadRule& wallBoundary=
     ExternalCut::getRule("WallBoundary");
+  
   std::string Out;
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
@@ -240,14 +246,16 @@ WallCut::createObjects(Simulation& System)
 }
 
 void
-WallCut::createLinks(const HeadRule& wallBoundary)
+WallCut::createLinks()
   /*!
     Create linkes
-    \param wallBoundary :: Wall boundary rule
   */
 {
   ELog::RegMethod RegA("WallCut","createLinks");
-  
+
+  const HeadRule& wallBoundary=
+    ExternalCut::getRule("WallBoundary");
+    
   if (length>Geometry::zeroTol)
     {
       FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));

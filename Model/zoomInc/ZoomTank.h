@@ -40,8 +40,6 @@ class ZoomTank : public attachSystem::ContainedComp,
 {
  private:
   
-  int populated;                ///< 1:var
-  
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on Y to Target
   double zStep;                 ///< Offset on Z top Target
@@ -67,8 +65,9 @@ class ZoomTank : public attachSystem::ContainedComp,
   int wallMat;                  ///< Material for walls
   int windowMat;                  ///< Material for walls
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedGroup&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedGroup&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -81,7 +80,8 @@ class ZoomTank : public attachSystem::ContainedComp,
   ZoomTank& operator=(const ZoomTank&);
   ~ZoomTank();
 
-  void createAll(Simulation&,const attachSystem::FixedGroup&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

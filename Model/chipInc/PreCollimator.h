@@ -36,17 +36,10 @@ namespace hutchSystem
 */
 
 class PreCollimator : public attachSystem::ContainedComp,
-    public attachSystem::FixedGroup
+    public attachSystem::FixedOffsetGroup
 {
  private:
   
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
-  
-  double xyAngle;           ///< Angle relative to LC 
-  double zAngle;            ///< Angle relative LC 
-  double fStep;             ///< origin forward step
-  double xStep;             ///< Offset on XAxis of centre
-  double zStep;             ///< Offset on ZAxis of centre
   Geometry::Vec3D Centre;
 
   double radius;            ///< Full radius
@@ -71,7 +64,7 @@ class PreCollimator : public attachSystem::ContainedComp,
   void setHoleIndex(const size_t,const double);
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -90,8 +83,10 @@ class PreCollimator : public attachSystem::ContainedComp,
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;
 
-  void createPartial(Simulation&,const attachSystem::FixedComp&);
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createPartial(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

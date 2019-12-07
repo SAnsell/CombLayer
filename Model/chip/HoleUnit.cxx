@@ -71,6 +71,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "HoleUnit.h"
@@ -79,9 +80,8 @@ namespace hutchSystem
 {
 
 HoleUnit::HoleUnit(const std::string& Key) :
-
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,2),
+  attachSystem::FixedUnit(Key,2),
   shapeType(0),
   AngleOffset(0),radialOffset(0.0),radius(0.0),
   depth(0.0),frontFace(0),backFace(0)
@@ -94,7 +94,8 @@ HoleUnit::HoleUnit(const std::string& Key) :
 {}
 
 HoleUnit::HoleUnit(const HoleUnit& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedUnit(A),
   shapeType(A.shapeType),
   AngleOffset(A.AngleOffset),radialOffset(A.radialOffset),
   radius(A.radius),depth(A.depth),frontFace(A.frontFace),
@@ -468,8 +469,8 @@ HoleUnit::exitWindow(const double Dist,
   
 
 void
-HoleUnit::createAll(const double rotAngle,
-		    const attachSystem::FixedComp& FC)
+HoleUnit::build(const double rotAngle,
+		const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param rotAngle :: Angle offset

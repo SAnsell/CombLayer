@@ -74,7 +74,9 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "HoleUnit.h"
 #include "PreCollimator.h"
@@ -84,8 +86,8 @@ namespace hutchSystem
 
 PreCollimator::PreCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
-  populated(0),holeIndex(0),nHole(0),nLayers(0)
+  attachSystem::FixedOffsetGroup(Key,"Main",2,"Beam",2),
+  holeIndex(0),nHole(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,10 +95,10 @@ PreCollimator::PreCollimator(const std::string& Key)  :
 {}
 
 PreCollimator::PreCollimator(const PreCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
-  populated(A.populated),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  fStep(A.fStep),xStep(A.xStep),zStep(A.zStep),Centre(A.Centre),
-  radius(A.radius),depth(A.depth),defMat(A.defMat),innerWall(A.innerWall),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffsetGroup(A),
+  Centre(A.Centre),radius(A.radius),depth(A.depth),
+  defMat(A.defMat),innerWall(A.innerWall),
   innerWallMat(A.innerWallMat),nHole(A.nHole),nLayers(A.nLayers),
   Holes(A.Holes),cFrac(A.cFrac),cMat(A.cMat),CDivideList(A.CDivideList)
   /*!
@@ -117,12 +119,6 @@ PreCollimator::operator=(const PreCollimator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
-      populated=A.populated;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      fStep=A.fStep;
-      xStep=A.xStep;
-      zStep=A.zStep;
       radius=A.radius;
       depth=A.depth;
       defMat=A.defMat;
@@ -157,12 +153,6 @@ PreCollimator::populate(const Simulation& System)
 
   nHole=Control.EvalVar<size_t>(keyName+"NHole");
   
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-  fStep=Control.EvalVar<double>(keyName+"FStep");
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
   radius=Control.EvalVar<double>(keyName+"Radius");
   depth=Control.EvalVar<double>(keyName+"Depth");
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
@@ -180,9 +170,7 @@ PreCollimator::populate(const Simulation& System)
 
   for(int i=0;i<static_cast<int>(nHole);i++)
     {
-      std::ostringstream cx;
-      cx<<keyName+"Hole"<<i+1;
-      Holes.push_back(HoleUnit(cx.str()));
+      Holes.push_back(HoleUnit(keyName+"Hole"+std::to_string(i+1)));
       Holes.back().populate(Control);
     }
 
@@ -191,7 +179,6 @@ PreCollimator::populate(const Simulation& System)
   const double HA=Control.EvalVar<double>(keyName+"HoleAngOff");
   setHoleIndex(HI,HA);
 
-  populated |= 1;
   return;
 }
 
@@ -219,7 +206,8 @@ PreCollimator::setHoleIndex(const size_t HIndex,const double HAngle)
 }
 
 void
-PreCollimator::createUnitVector(const attachSystem::FixedComp& FC)
+PreCollimator::createUnitVector(const attachSystem::FixedComp& FC,
+				const long int sideIndex)
   /*!
     Create the unit vectors. The vectors are created
     relative to the exit point
@@ -228,20 +216,13 @@ PreCollimator::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("PreCollimator","createUnitVector");
 
+  FixedOffsetGroup::createUnitVector(FC,sideIndex);
+
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-
-  
-  // Origin is in the wrong place as it is at the EXIT:
-  mainFC.createUnitVector(FC);
-  mainFC.setCentre(FC.getLinkPt(2));
-  mainFC.applyShift(xStep,fStep,zStep);
-  beamFC.createUnitVector(mainFC,0);
   beamFC.applyShift(0,depth/2.0,0);
-  beamFC.applyAngleRotate(xyAngle,zAngle);
-  setDefault("Main");
-  setSecondary("Main");
-   
+  
+  setDefault("Main","Beam");
   return;
 }
 
@@ -301,7 +282,7 @@ PreCollimator::createObjects(Simulation& System)
     {
       HoleUnit& HU=Holes[i];
       HU.setFaces(SMap.realSurf(buildIndex+1),SMap.realSurf(buildIndex+2));
-      HU.createAll(holeAngOffset,*this);          // Use THESE Origins
+      HU.build(holeAngOffset,*this);          // Use THESE Origins
       std::string OutItem=HU.createObjects();
       if (OutItem!=" ")
 	{
@@ -389,7 +370,8 @@ PreCollimator::exitWindow(const double Dist,
 
 void
 PreCollimator::createPartial(Simulation& System,
-			     const attachSystem::FixedComp& FC)
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Allows the construction of points but not the explicit object
     \param System :: Simulation item
@@ -399,13 +381,14 @@ PreCollimator::createPartial(Simulation& System,
   ELog::RegMethod RegA("PreCollimator","createPartial");
 
   populate(System);
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   return;
 }
 
 void
 PreCollimator::createAll(Simulation& System,
-		      const attachSystem::FixedComp& LC)
+			 const attachSystem::FixedComp& LC,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -415,7 +398,7 @@ PreCollimator::createAll(Simulation& System,
   ELog::RegMethod RegA("PreCollimator","createAll");
 
   populate(System);
-  createUnitVector(LC);
+  createUnitVector(LC,sideIndex);
   createSurfaces();
   createObjects(System);
   layerProcess(System);

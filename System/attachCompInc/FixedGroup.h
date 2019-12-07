@@ -68,7 +68,9 @@ class FixedGroup : public FixedComp
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();
 
-		   
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  
   void setDefault(const std::string&);
   void setSecondary(const std::string&);
   void setDefault(const std::string&,const std::string&);

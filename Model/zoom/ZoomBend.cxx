@@ -79,9 +79,9 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -98,7 +98,7 @@ namespace zoomSystem
 ZoomBend::ZoomBend(const std::string& Key)  : 
   attachSystem::ContainedGroup("A","B","C","D"),
   attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
-  populated(0),innerCell(0)
+  innerCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -107,7 +107,7 @@ ZoomBend::ZoomBend(const std::string& Key)  :
 
 ZoomBend::ZoomBend(const ZoomBend& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
-  populated(A.populated),BCentre(A.BCentre),normalOut(A.normalOut),
+  BCentre(A.BCentre),normalOut(A.normalOut),
   bendAngle(A.bendAngle),bendVertAngle(A.bendVertAngle),
   bendXAngle(A.bendXAngle),bendRadius(A.bendRadius),
   bendLength(A.bendLength),NVanes(A.NVanes),bendWidth(A.bendWidth),
@@ -133,7 +133,6 @@ ZoomBend::operator=(const ZoomBend& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedGroup::operator=(A);
-      populated=A.populated;
       BCentre=A.BCentre;
       normalOut=A.normalOut;
       bendAngle=A.bendAngle;
@@ -167,15 +166,13 @@ ZoomBend::~ZoomBend()
 {}
 
 void
-ZoomBend::populate(const Simulation& System)
+ZoomBend::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation database to use
   */
 {
   ELog::RegMethod RegA("ZoomBend","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -222,12 +219,12 @@ ZoomBend::populate(const Simulation& System)
   vaneMat=ModelSupport::EvalMat<int>(Control,keyName+"VaneMat");
   NVanes=Control.EvalVar<size_t>(keyName+"NVanes");
 
-  populated=1;
   return;
 }
 
 void
-ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
+ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS,
+			   const long int sideIndex)
   /*!
     Create the unit vectors.
     Note the outer core goes down the beam
@@ -253,8 +250,8 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
     }
   else
     {
-      mainFC.createUnitVector(ZS);
-      beamFC.createUnitVector(ZS);
+      mainFC.createUnitVector(ZS,sideIndex);
+      beamFC.createUnitVector(ZS,sideIndex);
     }
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
@@ -644,7 +641,8 @@ ZoomBend::createLinks()
 
 void
 ZoomBend::createAll(Simulation& System,
-		    const attachSystem::FixedComp& ZC)
+		    const attachSystem::FixedComp& ZC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -654,8 +652,8 @@ ZoomBend::createAll(Simulation& System,
   ELog::RegMethod RegA("ZoomBend","createAll");
 
 
-  populate(System);
-  createUnitVector(ZC);
+  populate(System.getDataBase());
+  createUnitVector(ZC,sideIndex);
   createSurfaces();
   createObjects(System);
   createVanes(System);

@@ -100,13 +100,13 @@ class FixedComp
   void reOrientate(const size_t,const Geometry::Vec3D&);
   
   // Operator Set:
-  void createUnitVector(const FixedComp&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
-  void createUnitVector(const FixedComp&,const long int);
-  void createUnitVector(const FixedComp&,const long int,const long int);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  virtual void createUnitVector(const FixedComp&);
+  virtual void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  virtual void createUnitVector(const FixedComp&,const long int);
+  virtual void createUnitVector(const FixedComp&,const long int,const long int);
+  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void createPairVector(const FixedComp&,const long int,

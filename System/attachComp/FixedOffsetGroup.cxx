@@ -280,5 +280,21 @@ FixedOffsetGroup::applyOffset()
   return;
 }
 
+void
+FixedOffsetGroup::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","createUnitVector");
+
+  FixedGroup::createUnitVector(FC,sideIndex);
+  applyOffset();
+    
+  return;
+}
  
 }  // NAMESPACE attachSystem

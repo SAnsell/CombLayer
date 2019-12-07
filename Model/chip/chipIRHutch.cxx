@@ -81,8 +81,11 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -404,7 +407,7 @@ chipIRHutch::populate(const FuncDataBase& Control)
 }
 
 void
-chipIRHutch::createUnitVector(const attachSystem::FixedGroup& FG,
+chipIRHutch::createUnitVector(const attachSystem::FixedComp& FG,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -415,24 +418,30 @@ chipIRHutch::createUnitVector(const attachSystem::FixedGroup& FG,
 {
   ELog::RegMethod RegA("Hutch","createUnitVector");
 
-  const masterRotate& MR=masterRotate::Instance();
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  
-  mainFC.createUnitVector(FG.getKey("Main"),sideIndex);
-  mainFC.setCentre(FG.getKey("Main").getLinkPt(7));
-  beamFC.createUnitVector(FG.getKey("Beam"),sideIndex);
-  beamFC.setCentre(FG.getKey("Main").getLinkPt(7));
-
-  FixedGroup::setDefault("Main","Beam");
+  const attachSystem::FixedGroup* FGPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FG);
+  if (FGPtr)
+    {
+    
+      attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+      attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
       
-  // remove old Z component and replace:
-
-  mainFC.applyShift(xStep,yStep,0);
-  const double zStep(zLine-mainFC.getZ().dotProd(Origin));
-  mainFC.applyShift(0,0,zStep);
-  beamFC.applyAngleRotate(0,beamAngle);
-
+      mainFC.createUnitVector(FGPtr->getKey("Main"),sideIndex);
+      mainFC.setCentre(FGPtr->getKey("Main").getLinkPt(7));
+      beamFC.createUnitVector(FGPtr->getKey("Beam"),sideIndex);
+      beamFC.setCentre(FGPtr->getKey("Main").getLinkPt(7));
+      
+      FixedGroup::setDefault("Main","Beam");
+      
+      // remove old Z component and replace:
+      
+      mainFC.applyShift(xStep,yStep,0);
+      const double zStep(zLine-mainFC.getZ().dotProd(Origin));
+      mainFC.applyShift(0,0,zStep);
+      beamFC.applyAngleRotate(0,beamAngle);
+    }
+  else
+    FixedGroup::createUnitVector(FG,sideIndex);
 
   FixedGroup::setDefault("Main","Beam");
   
@@ -1116,9 +1125,9 @@ chipIRHutch::addCollimators(Simulation& System,
   PreColObj->addBoundarySurf(-SMap.realSurf(buildIndex+34));
 
   if (collActiveFlag & 1)
-    PreColObj->createAll(System,GI.getKey("Beam"));
+    PreColObj->createAll(System,GI.getKey("Beam"),2);
   else
-    PreColObj->createPartial(System,GI.getKey("Beam"));
+    PreColObj->createPartial(System,GI.getKey("Beam"),2);
 
 
   // Stuff for collimator box:
@@ -1288,15 +1297,15 @@ chipIRHutch::createCommonAll(Simulation& System,
 
   FTable->setFloor(SMap.realSurf(buildIndex+35));
   FTable->addInsertCell(tailVoid);
-  FTable->createAll(System,Guide);
+  FTable->createAll(System,Guide,0);
   BTable->setFloor(SMap.realSurf(buildIndex+35));
   BTable->addInsertCell(tailVoid);
-  BTable->createAll(System,Guide);
+  BTable->createAll(System,Guide,0);
 
   for(std::shared_ptr<ChipSample>& SI : SampleItems)
     {
       SI->addInsertCell(tailVoid);
-      SI->createAll(System,*FTable,*BTable);
+      SI->createAll(System,*FTable,0);
     }
   layerProcess(System);
 
@@ -1331,7 +1340,7 @@ chipIRHutch::createAll(Simulation& System,
 
 void
 chipIRHutch::createAll(Simulation& System,
-		       const attachSystem::FixedGroup& FC,
+		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
     Generic function to create everything
@@ -1343,11 +1352,20 @@ chipIRHutch::createAll(Simulation& System,
   ELog::RegMethod RegA("chipIRHutch","createAll(ShutterPort)");
 
   populate(System.getDataBase());
+
   //  ELog::EM<<"Shutter Port == "<<ShutterPort.getXYAxis()<<ELog::endDiag;
-  ELog::EM<<"FC == "<<FC.getKey("Main").getLinkPt(sideIndex)<<ELog::endDiag;
-  ELog::EM<<"FC == "<<FC.getKey("Main").getLinkAxis(sideIndex)<<ELog::endDiag;
 
   createUnitVector(FC,sideIndex);
+  const attachSystem::FixedGroup* FGPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (FGPtr)
+    {
+      ELog::EM<<"FC == "<<FGPtr->getKey("Main").getLinkPt(sideIndex)
+	      <<ELog::endDiag;
+      ELog::EM<<"FC == "<<FGPtr->getKey("Main").getLinkAxis(sideIndex)
+	      <<ELog::endDiag;
+    }
+
   //  createUnitVector(FC,sideIndex);
   ELog::EM<<"Y == "<<Origin<<" "<<Y<<" "<<Z<<ELog::endDiag;
   //  createCommonAll(System,Guide,IC);

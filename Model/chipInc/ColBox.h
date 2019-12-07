@@ -59,8 +59,9 @@ class ColBox : public attachSystem::ContainedComp,
   int outMat;                 ///< Material for roof
   int defMat;                 ///< Material for roof
   
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedGroup&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -74,11 +75,14 @@ class ColBox : public attachSystem::ContainedComp,
 
   void setMidFace(const Geometry::Vec3D&);
 
-  void createPartial(Simulation&,const attachSystem::FixedGroup&);
-  void createAll(Simulation&,const attachSystem::FixedGroup&);
+  void createPartial(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D& Pt) const;
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

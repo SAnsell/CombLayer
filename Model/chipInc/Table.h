@@ -3,7 +3,7 @@
  
  * File:   chipInc/Table.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,12 @@ namespace hutchSystem
 */
 
 class Table : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int shapeType;          ///< Shape type [0 square : 1 triangle]
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
-  
-  double xyAngle;           ///< Angle of top relative to LC 
-  double zAngle;            ///< Angle of top relative LC 
 
-  double fStep;             ///< origin forward step
-  double xStep;             ///< Offset on X of centre
   Geometry::Vec3D Centre;   ///< Centre point 
 
   double height;           ///< height [from beam]
@@ -62,9 +56,7 @@ class Table : public attachSystem::ContainedComp,
   
   int floorSurf;           ///< Floor surface
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,7 +77,8 @@ class Table : public attachSystem::ContainedComp,
   /// Value of the centre [beam position]
   const Geometry::Vec3D& getBeamPos() const { return Centre; }
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

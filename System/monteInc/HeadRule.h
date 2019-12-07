@@ -120,7 +120,8 @@ class HeadRule
   bool partMatched(const HeadRule&) const;
 
   std::set<int> getSurfSet() const;
-
+  int getSingleSurf() const;
+  
   int removeItems(const int);
   int removeUnsignedItems(const int);
   void isolateSurfNum(const std::set<int>&);

@@ -84,6 +84,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -96,11 +97,9 @@
 #include "Torpedo.h"
 #include "ChipIRShutterFlat.h"
 #include "ChipIRInsert.h"
-#include "IMatBulkInsert.h"
 #include "collInsertBase.h"
 #include "collInsertBlock.h"
 #include "ZoomShutter.h"
-#include "IMatShutter.h"
 #include "BlockShutter.h"
 #include "BulkShield.h"
 
@@ -108,7 +107,6 @@ namespace shutterSystem
 {
 
 const size_t BulkShield::chipShutter(0);
-const size_t BulkShield::imatShutter(3);
 const size_t BulkShield::zoomShutter(9);
 const size_t BulkShield::letShutter(6);
 
@@ -302,8 +300,6 @@ BulkShield::createShutters(Simulation& System,
 
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compNoCaseValue("E",std::string("chipir")));
-  const bool imatFlag(!IParam.flag("exclude") || 
-   		      !IParam.compNoCaseValue("E",std::string("imat")));
 
   const bool zoomFlag(!IParam.flag("exclude") || 
    		      !IParam.compNoCaseValue("E",std::string("zoom")));
@@ -316,9 +312,6 @@ BulkShield::createShutters(Simulation& System,
       if (i==chipShutter && chipFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
-      else if (i==imatShutter && imatFlag)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new IMatShutter(i+1,"shutter","imatShutter")));
       else if (i==zoomShutter && zoomFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ZoomShutter(i+1,"shutter","zoomShutter")));
@@ -370,9 +363,6 @@ BulkShield::createBulkInserts(Simulation& System,
   
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compValue("E",std::string("chipIR")));
-  const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("imat")) &&
-		       !IParam.compValue("E",std::string("IMat"))) );
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
@@ -382,9 +372,6 @@ BulkShield::createBulkInserts(Simulation& System,
 	  BItem=std::shared_ptr<BulkInsert>
 	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
 	}
-      else if (i==imatShutter && imatFlag)
-	BItem=std::shared_ptr<BulkInsert>
-	  (new BulkInsert(i,"bulkInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 

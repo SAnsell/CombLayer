@@ -3,7 +3,7 @@
  
  * File:   zoom/makeZoom.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,13 +62,14 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "World.h"
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
@@ -167,29 +168,32 @@ makeZoom::buildIsolated(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeZoom","buildIsolated");
+  const int voidCell(74123);
+  
+  ZBend->addInsertCell("A",voidCell);
+  ZBend->addInsertCell("B",voidCell);
+  ZBend->addInsertCell("C",voidCell);
+  ZBend->addInsertCell("D",voidCell);
 
-  ZBend->addInsertCell("A",74123);
-  ZBend->addInsertCell("B",74123);
-  ZBend->addInsertCell("C",74123);
-  ZBend->addInsertCell("D",74123);
+  ZBend->createAll(System,World::masterOrigin(),0); 
 
-  ZBend->createAll(System,World::masterOrigin()); 
-
-  ZChopper->addInsertCell(74123);
+  ZChopper->addInsertCell(voidCell);
   ZChopper->createAll(System,*ZBend);
 
   ZDisk->addInsertCell(ZChopper->getVoidCell());
   ZDisk->createAll(System,*ZChopper,0);
 
-  ZCollimator->addInsertCell(74123);
-  ZCollimator->createAll(System,*ZChopper);
+  ZCollimator->addInsertCell(voidCell);
+  ZCollimator->setCutSurf("front",ZChopper->getLinkSurf(2));
+  ZCollimator->createAll(System,*ZChopper,0);
 
-  ZColInsert->createAll(System,ZCollimator->getVoidCell(),
-			*ZCollimator);
+  ZColInsert->addInsertCell(ZCollimator->getVoidCell());
+  //  ZColInsert->setCutSurf("front",ZCollimator->getLinkSurf(2));
+  ZColInsert->createAll(System,*ZCollimator,0);
 
 
-  ZPrim->addInsertCell(74123);
-  ZPrim->createAll(System,*ZCollimator);
+  ZPrim->addInsertCell(voidCell);
+  ZPrim->createAll(System,*ZCollimator,0);
   
   return;
 }
@@ -209,7 +213,7 @@ makeZoom::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeZoom","build");
   
-
+  const int voidCell(74123);
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("Zoom")))
       return;
@@ -222,31 +226,32 @@ makeZoom::build(Simulation& System,
     throw ColErr::InContainerError<size_t>(zsNumber,"Shutter number");
   
   const shutterSystem::BulkInsert* BOPtr=BulkObj.getInsert(zsNumber);
+
   ZBend->addInsertCell("A",BOPtr->getInnerVoid());
   ZBend->addInsertCell("B",BOPtr->getInnerVoid());
   ZBend->addInsertCell("A",BOPtr->getOuterVoid());
   ZBend->addInsertCell("B",BOPtr->getOuterVoid());
   ZBend->addInsertCell("C",BOPtr->getOuterVoid());
-  ZBend->createAll(System,*ZS);
+  ZBend->createAll(System,*ZS,0);
   
-  ZChopper->addInsertCell(74123);
+  ZChopper->addInsertCell(voidCell);
   ZChopper->setMonoSurface(BulkObj.getMonoSurf());
   ZChopper->createAll(System,*ZBend,*ZS);
   
   ZDisk->addInsertCell(ZChopper->getVoidCell());
   ZDisk->createAll(System,*ZChopper,0);
   
-  ZCollimator->addInsertCell(74123);
-  ZCollimator->createAll(System,*ZChopper);
+  ZCollimator->addInsertCell(voidCell);
+  ZCollimator->createAll(System,*ZChopper,0);
+
+  ZColInsert->addInsertCell(voidCell);
+  ZColInsert->createAll(System,*ZCollimator,0);
   
-  ZColInsert->createAll(System,ZCollimator->getVoidCell(),
-			*ZCollimator);
+  ZPrim->addInsertCell(voidCell);
+  ZPrim->createAll(System,*ZCollimator,0);
   
-  ZPrim->addInsertCell(74123);
-  ZPrim->createAll(System,*ZCollimator);
-  
-  ZHut->addInsertCell(74123);
-  ZHut->createAll(System,*ZPrim); 
+  ZHut->addInsertCell(voidCell);
+  ZHut->createAll(System,*ZPrim,0); 
 
   return;
 }

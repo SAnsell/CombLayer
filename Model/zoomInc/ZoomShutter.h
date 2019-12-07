@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomShutter.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class ZoomShutter : public GeneralShutter
   //--------------
   // FUNCTIONS:
   //--------------
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createInsert(Simulation&);  
   void createObjects(Simulation&);  
   void createSurfaces();  
@@ -91,8 +91,9 @@ class ZoomShutter : public GeneralShutter
   Geometry::Vec3D getExitTrack() const;
   Geometry::Vec3D getExitPoint() const;
 
-  virtual void createAll(Simulation&,const double,
-			 const attachSystem::FixedComp*);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

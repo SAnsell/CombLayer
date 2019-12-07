@@ -77,7 +77,7 @@ class BlockShutter : public GeneralShutter
   //--------------
   // FUNCTIONS:
   //--------------
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createInsert(Simulation&);  
   void createObjects(Simulation&);  
   void createSurfaces();  
@@ -100,8 +100,9 @@ class BlockShutter : public GeneralShutter
   std::vector<Geometry::Vec3D>  createFrontViewPoints() const;
   std::vector<Geometry::Vec3D>  createBackViewPoints() const;
 
-  virtual void createAll(Simulation&,const double,
-			 const attachSystem::FixedComp*);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

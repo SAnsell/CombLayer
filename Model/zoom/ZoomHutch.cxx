@@ -52,9 +52,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -86,7 +83,6 @@ namespace zoomSystem
 ZoomHutch::ZoomHutch(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
-  populated(0),
   tank("zoomTank"),innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -96,7 +92,7 @@ ZoomHutch::ZoomHutch(const std::string& Key)  :
 
 ZoomHutch::ZoomHutch(const ZoomHutch& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
-  populated(A.populated),tank(A.tank),xStep(A.xStep),yStep(A.yStep),
+  tank(A.tank),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   frontLeftWidth(A.frontLeftWidth),
   midLeftWidth(A.midLeftWidth),backLeftWidth(A.backLeftWidth),
@@ -125,7 +121,6 @@ ZoomHutch::operator=(const ZoomHutch& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
-      populated=A.populated;
       tank=A.tank;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -163,16 +158,14 @@ ZoomHutch::~ZoomHutch()
 {}
 
 void
-ZoomHutch::populate(const Simulation& System)
+ZoomHutch::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("ZoomHutch","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
 
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -208,12 +201,12 @@ ZoomHutch::populate(const Simulation& System)
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
-  populated |= 1;
   return;
 } 
   
 void
-ZoomHutch::createUnitVector(const attachSystem::FixedGroup& TC)
+ZoomHutch::createUnitVector(const attachSystem::FixedGroup& TC,
+			    const long int)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -408,24 +401,32 @@ ZoomHutch::createLinks()
 
 void
 ZoomHutch::createAll(Simulation& System,
-		     const attachSystem::FixedGroup& TC)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param TC :: Linear object to component
+    \param FC :: Linear object to component
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("ZoomHutch","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(TC);
+  const attachSystem::FixedGroup* FGPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (!FGPtr)
+    throw ColErr::DynamicConv("FixedComp","FixedGroup","FC");
+  
+  
+  createUnitVector(*FGPtr,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       
   
   tank.addInsertCell(innerVoid);
-  tank.createAll(System,TC);
+  tank.createAll(System,*FGPtr,0);
   
   return;
 }

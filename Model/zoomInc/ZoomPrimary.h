@@ -42,12 +42,11 @@ namespace zoomSystem
 */
 
   class ZoomPrimary : public attachSystem::FixedGroup,
-    public attachSystem::ContainedComp
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut
 {
  private:
   
-  int populated;                ///< populated or not
-
   double length;               ///< Full length
   double height;               ///< Full height
   double depth;                ///< Full height
@@ -68,10 +67,9 @@ namespace zoomSystem
   std::vector<int> CDivideList;   ///< Cell divide List for 
 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedGroup&);
+  void populate(const FuncDataBase&);
   
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   void layerProcess(Simulation&);
@@ -83,7 +81,8 @@ namespace zoomSystem
   ZoomPrimary& operator=(const ZoomPrimary&);
   virtual ~ZoomPrimary();
 
-  void createAll(Simulation&,const attachSystem::FixedGroup&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;

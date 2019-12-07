@@ -350,7 +350,7 @@ FixedGroup::applyRotation(const Geometry::Vec3D& Axis,
 			  const double Angle)
   /*!
     Apply a rotation to all groups
-    \param Axis :: rotation axis 
+f    \param Axis :: rotation axis 
     \param Angle :: rotation angle
   */
 {
@@ -398,6 +398,47 @@ FixedGroup::setAxisControl(const long int axisIndex,
   return;
 }
 
+void
+FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    Applies FC[grp](sideIndex) to each component
+    which has a name match.
+    Then applies FGrp [def](sideIndex) to all 
+    remaining units.
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","createUnitVector");
+
+  const attachSystem::FixedGroup* FCGrp=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (FCGrp)
+    {
+      // key : shared_ptr
+      for(FTYPE::value_type& MItem : FMap)
+	{
+	  FTYPE::const_iterator mc=
+	    FCGrp->FMap.find(MItem.first);
+	  // if match apply
+	  if (mc!=FCGrp->FMap.end())
+	    MItem.second->createUnitVector(*mc->second,sideIndex);
+	  else  // no match [apply default]
+	    MItem.second->createUnitVector(FC,sideIndex);
+	}
+    }
+  // Only a standard FC unit:
+  else
+    {
+      // key : shared_ptr
+      for(FTYPE::value_type& MItem : FMap)
+	MItem.second->createUnitVector(FC,sideIndex);
+    }
+  FixedComp::createUnitVector(FC,sideIndex);
+  return;
+}
 
   
 
