@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/Torpedo.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,10 @@ namespace shutterSystem
     Can be specialized a vacuum/air torpedo 
   */
 
-class Torpedo : public attachSystem::FixedComp,
+class Torpedo : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  protected:
 
@@ -62,8 +63,7 @@ class Torpedo : public attachSystem::FixedComp,
   // FUNCTIONS:
   //--------------
 
-  void populate(const FuncDataBase&,const shutterSystem::GeneralShutter&);
-  void createUnitVector(const shutterSystem::GeneralShutter&);
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void calcVoidIntercept(const attachSystem::ContainedComp&);
@@ -80,15 +80,13 @@ class Torpedo : public attachSystem::FixedComp,
   Torpedo& operator=(const Torpedo&);
   virtual ~Torpedo();
 
-  void setExternal(const int);
-
-  void createAll(Simulation&,
-		 const shutterSystem::GeneralShutter&,
-		 const attachSystem::ContainedComp&);
-  
   
   void addCrossingIntersect(Simulation&,const Torpedo&);
   int findPlane(const Geometry::Face&) const;
+
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

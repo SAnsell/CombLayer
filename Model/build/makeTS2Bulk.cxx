@@ -100,7 +100,7 @@ namespace moderatorSystem
 {
 
 makeTS2Bulk::makeTS2Bulk() :
-  RefObj(new Reflector("reflect")),
+  RefObj(new RefStructure("reflect")),
   VObj(new shutterSystem::VoidVessel("void")),
   BulkObj(new shutterSystem::BulkShield("bulk"))
   /*!
@@ -180,15 +180,17 @@ makeTS2Bulk::build(Simulation* SimPtr,
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
-      RefObj->createAll(*SimPtr,IParam);
-      VObj->createAll(*SimPtr,World::masterTS2Origin(),
-		      RefObj.get());
+      RefObj->build(*SimPtr,IParam);
+      // void vessel
+      VObj->createAll(*SimPtr,World::masterTS2Origin(),0);
+      RefObj->getRef()->insertAllInCell(System,VObj->getCell("Void"));
       BulkObj->createAll(*SimPtr,IParam,*VObj,*VObj);
     }
   else
     {
-      RefObj->addInsertCell(74123);
+      makeReflector RefObj;
       RefObj->createAll(*SimPtr,IParam);
+      RefObj->getRef()->insertAllInCell(System,74123);
     }
 	
   return;

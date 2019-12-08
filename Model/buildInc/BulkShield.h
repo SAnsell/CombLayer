@@ -44,11 +44,11 @@ namespace shutterSystem
 */
 
 class BulkShield : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
-  int populated;                  ///< 1:var
   const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for Torpdeo
@@ -76,14 +76,15 @@ class BulkShield : public attachSystem::FixedComp,
   int innerCell;                  ///< Inner cell
   int outerCell;                  ///< Outer cell
 
+  std::set<std::string> excludeSet; 
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
-  void createBulkInserts(Simulation&,const mainSystem::inputParam&);
+  void createBulkInserts(Simulation&);
   void createTorpedoes(Simulation&,const attachSystem::ContainedComp&);
   void createShutters(Simulation&,const mainSystem::inputParam&);
 
@@ -100,7 +101,9 @@ class BulkShield : public attachSystem::FixedComp,
   static const size_t letShutter;    ///< LET shutter number
   static const size_t zoomShutter;   ///< zoom shutter number
 
-
+  /// Set excluded items
+  void addExlcude(const std::string& A)
+    { excludeSet.insert(A); }
   /// Access outer limit
   double getORadius() const { return outerRadius; }
 
@@ -125,9 +128,8 @@ class BulkShield : public attachSystem::FixedComp,
 
   void beamlineZeroImp(Simulation&,const int) const;
 
-  void createAll(Simulation&,const mainSystem::inputParam&,
-		 const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderator/Reflector.cxx
+ * File:   moderator/makeReflector.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -78,11 +78,30 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "TargetBase.h"
+#include "TS2target.h"
+#include "TS2ModifyTarget.h"
+#include "Groove.h"
+#include "Hydrogen.h"
+#include "OrthoInsert.h"
+#include "VacVessel.h"
+#include "FlightLine.h"
+#include "World.h"
+#include "PreMod.h"
+#include "HWrapper.h"
+#include "Decoupled.h"
+#include "DecLayer.h"
+#include "DecFileMod.h"
+#include "pipeUnit.h"
+#include "PipeLine.h"
+#include "CouplePipe.h"
+#include "DecouplePipe.h"
 #include "Bucket.h"
 #include "CoolPad.h"
 #include "RefCutOut.h"
 #include "RefBolts.h"
 #include "Reflector.h"
+#include "makeReflector.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -90,8 +109,7 @@
 namespace moderatorSystem
 {
 
-Reflector::Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
+makeReflector::makeReflector(const std::string& Key)  :
   TarObj(new TMRSystem::TS2target("t2Target")),
   GrooveObj(new Groove("groove")),
   HydObj(new Hydrogen("hydrogen")),
@@ -106,7 +124,8 @@ Reflector::Reflector(const std::string& Key)  :
   FLnarrow(new FlightLine("narrowFlight")),
   PMdec(new PreMod("decPM")),
   IRcut(new RefCutOut("chipIRCut")),
-  CdBucket(new Bucket("cdBucket"))
+  CdBucket(new Bucket("cdBucket")),
+  RefObj(new Reflector("Reflector"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -127,208 +146,34 @@ Reflector::Reflector(const std::string& Key)  :
   OR.addObject(FLnarrow);
   OR.addObject(PMdec);
   OR.addObject(CdBucket);
+  OR.addObject(Reflector);
 }
 
 
-Reflector::Reflector(const Reflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  xySize(A.xySize),zSize(A.zSize),cutSize(A.cutSize),
-  defMat(A.defMat),
-  TarObj(new TMRSystem::TS2target(*A.TarObj)),
-  GrooveObj(new Groove(*A.GrooveObj)),
-  HydObj(new Hydrogen(*A.HydObj)),
-  VacObj(new VacVessel(*A.VacObj)),
-  FLgroove(new FlightLine(*A.FLgroove)),
-  FLhydro(new FlightLine(*A.FLhydro)),
-  PMgroove(new PreMod(*A.PMgroove)),
-  PMhydro(new PreMod(*A.PMhydro)),
-  Horn(new HWrapper(*A.Horn)),
-  //  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
-  DVacObj(new VacVessel(*A.DVacObj)),
-  FLwish(new FlightLine(*A.FLwish)),
-  FLnarrow(new FlightLine(*A.FLnarrow)),
-  PMdec(new PreMod(*A.PMdec)),IRcut(new RefCutOut(*A.IRcut)),
-  CdBucket(new Bucket(*A.CdBucket)),Pads(A.Pads)
-  /*!
-    Copy constructor
-    \param A :: Reflector to copy
-  */
-{}
 
-Reflector&
-Reflector::operator=(const Reflector& A)
-  /*!
-    Assignment operator
-    \param A :: Reflector to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xySize=A.xySize;
-      zSize=A.zSize;
-      cutSize=A.cutSize;
-      defMat=A.defMat;
-      *TarObj=*A.TarObj;
-      *GrooveObj = *A.GrooveObj;
-      *HydObj = *A.HydObj;
-      *VacObj = *A.VacObj;
-      *FLgroove = *A.FLgroove;
-      *FLhydro = *A.FLhydro;
-      *PMgroove = *A.PMgroove;
-      *PMhydro = *A.PMhydro;
-      *Horn = *A.Horn;
-      *DVacObj = *A.DVacObj;
-      *FLwish = *A.FLwish;
-      *FLnarrow = *A.FLnarrow;
-      *PMdec = *A.PMdec;
-      *IRcut = *A.IRcut;
-      *CdBucket = *A.CdBucket;
-      Pads=A.Pads;
-    }
-  return *this;
-}
-
-Reflector::~Reflector() 
+makeReflector::~makeReflector() 
   /*!
     Destructor
   */
 {}
+  
+
 
 void
-Reflector::populate(const FuncDataBase& Control)
-/*!
-  Populate all the variables
-  \param Control :: Data base for variables
-*/
-{
-  ELog::RegMethod RegA("Reflector","populate");
-  
-  FixedOffset::populate(Control);
-  
-  xySize=Control.EvalVar<double>(keyName+"XYSize");
-  zSize=Control.EvalVar<double>(keyName+"ZSize");
-  cutSize=Control.EvalVar<double>(keyName+"CutSize");
-  cornerAngle=Control.EvalVar<double>(keyName+"CornerAngle");
-  
-  defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
-  for(size_t i=0;i<nPads;i++)
-    Pads.push_back(CoolPad("coolPad",i+1));
-
-  return;
-}
-  
-void
-Reflector::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Comp 
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("Reflector","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-  
-void
-Reflector::createSurfaces()
-  /*!
-    Create All the surfaces
-  */
-{
-  ELog::RegMethod RegA("Reflector","createSurface");
-
-  // rotation of axis:
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(cornerAngle,Z);
-  Geometry::Vec3D XR(X);
-  Geometry::Vec3D YR(Y);
-  Qxy.rotate(XR);
-  Qxy.rotate(YR);
-  
-  // Simple box planes
-
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*xySize,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*xySize,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xySize,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xySize,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize,Z);
- 
-  // Corner cuts:
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-YR*cutSize,YR);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+YR*cutSize,YR);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-XR*cutSize,XR);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+XR*cutSize,XR);
-
-  createLinks(XR,YR);
-
-  return;
-}
-
-void
-Reflector::createLinks(const Geometry::Vec3D& XR,
-		       const Geometry::Vec3D& YR)
-  /*!
-    Build the links to the primary surfaces
-    \param XR :: Size rotation direction
-    \param YR :: Size rotation direction
-  */
-{
-  ELog::RegMethod RegA("Reflector","createLinks");
-
-  FixedComp::setConnect(0,Origin-Y*xySize,-Y);  // chipIR OPPOSITE
-  FixedComp::setConnect(1,Origin+Y*xySize,Y);   // chipIR
-  FixedComp::setConnect(2,Origin-X*xySize,-X);
-  FixedComp::setConnect(3,Origin+X*xySize,X);
-  FixedComp::setConnect(4,Origin-Z*zSize,-Z);
-  FixedComp::setConnect(5,Origin+Z*zSize,Z);
-
-  FixedComp::setConnect(6,Origin-YR*cutSize,-YR);
-  FixedComp::setConnect(7,Origin+YR*cutSize,YR);
-  FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
-  FixedComp::setConnect(9,Origin+XR*cutSize,XR);
-
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+14));
-
-  return;
-}
-
-void
-Reflector::createObjects(Simulation& System)
+makeReflector::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("Reflector","createObjects");
+  ELog::RegMethod RegA("makeReflector","createObjects");
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(Out);
 
   System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
+
   TarObj->addInsertCell(cellIndex-1);
 
   VacObj->addInsertCell(cellIndex-1);
@@ -354,7 +199,7 @@ Reflector::createObjects(Simulation& System)
 }
 
 void
-Reflector::processDecoupled(Simulation& System,				
+makeReflector::processDecoupled(Simulation& System,				
 			    const mainSystem::inputParam& IParam)
   /*!
     Create the decoupled item and build it
@@ -362,7 +207,7 @@ Reflector::processDecoupled(Simulation& System,
     \param IParam :: Parameters
    */
 {
-  ELog::RegMethod RegA("Reflector","processDecoupled");
+  ELog::RegMethod RegA("makeReflector","processDecoupled");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -412,7 +257,7 @@ Reflector::processDecoupled(Simulation& System,
 }
 
 void
-Reflector::createInternalObjects(Simulation& System,
+makeReflector::createInternalObjects(Simulation& System,
 				 const mainSystem::inputParam& IParam)
   /*!
     Build the inner objects
@@ -420,7 +265,7 @@ Reflector::createInternalObjects(Simulation& System,
     \param IParam :: Input paramters for decoupled type
   */
 {
-  ELog::RegMethod RegA("Reflector","createInternalObjects");
+  ELog::RegMethod RegA("makeReflector","createInternalObjects");
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
@@ -431,12 +276,6 @@ Reflector::createInternalObjects(Simulation& System,
   TarObj->createAll(System,World::masterTS2Origin(),0);
 
 
-  if (TarName=="tMoly")
-    {
-      std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
-	(new TMRSystem::TS2ModifyTarget("tMoly"));
-      TarObjModify->createAll(System,*TarObj,0);
-    }
 
   TarObj->addProtonLineInsertCell(cellIndex-1);
   TarObj->addProtonLine(System,*this,-7);
@@ -526,7 +365,7 @@ Reflector::createInternalObjects(Simulation& System,
 }
 
 void
-Reflector::insertPipeObjects(Simulation& System,
+makeReflector::insertPipeObjects(Simulation& System,
 			     const mainSystem::inputParam& IParam)
   /*!
     Calls all the objects that own a pipe to be
@@ -535,7 +374,7 @@ Reflector::insertPipeObjects(Simulation& System,
     \param IParam :: Parameter table
   */
 {
-  ELog::RegMethod RegA("Reflector","insertPipeObjects");
+  ELog::RegMethod RegA("makeReflector","insertPipeObjects");
   return;
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
@@ -554,7 +393,7 @@ Reflector::insertPipeObjects(Simulation& System,
 }
   
 int
-Reflector::calcModeratorPlanes(const int BeamLine,
+makeReflector::calcModeratorPlanes(const int BeamLine,
 			       std::vector<int>& Window,
 			       int& dSurf) const
   /*!
@@ -566,7 +405,7 @@ Reflector::calcModeratorPlanes(const int BeamLine,
     \return Master Plane
   */
 {
-  ELog::RegMethod RegA("Reflector","calcModeratorPlanes");
+  ELog::RegMethod RegA("makeReflector","calcModeratorPlanes");
 
   if (BeamLine<0 || BeamLine>17)
     throw ColErr::IndexError<int>(BeamLine,18," <beamline number> ");
@@ -596,7 +435,7 @@ Reflector::calcModeratorPlanes(const int BeamLine,
 }
 
 Geometry::Vec3D
-Reflector::getViewOrigin(const int BeamLine) const
+makeReflector::getViewOrigin(const int BeamLine) const
   /*!
     Given the beamline calculate the defining view and the 
     active surface 
@@ -604,7 +443,7 @@ Reflector::getViewOrigin(const int BeamLine) const
     \return View point
   */
 {
-  ELog::RegMethod RegA("Reflector","getViewOrigin");
+  ELog::RegMethod RegA("makeReflector","getViewOrigin");
 
   if (BeamLine<0 || BeamLine>17)
     throw ColErr::IndexError<int>(BeamLine,18,"BeamLine");
@@ -627,13 +466,13 @@ Reflector::getViewOrigin(const int BeamLine) const
 }
 
 std::string
-Reflector::getExclude() const 
+makeReflector::getExclude() const 
   /*!
     Virtual function to add the cooling pads
     \return Full Exlcude path
   */
 {
-  ELog::RegMethod RegA("Reflector","getExclude");
+  ELog::RegMethod RegA("makeReflector","getExclude");
 
   std::string Out=ContainedComp::getExclude();
   for(const CoolPad& PD : Pads)
@@ -642,7 +481,7 @@ Reflector::getExclude() const
 }
 
 void
-Reflector::createAll(Simulation& System,
+makeReflector::build(Simulation& System,
 		     const mainSystem::inputParam& IParam)
   /*!
     Generic function to create everything
@@ -650,13 +489,8 @@ Reflector::createAll(Simulation& System,
     \param IParam :: Parameter table
   */
 {
-  ELog::RegMethod RegA("Reflector","createAll");
+  ELog::RegMethod RegA("makeReflector","createAll");
 
-  populate(System.getDataBase());
-
-  createUnitVector(World::masterTS2Origin(),0);
-  createSurfaces();
-  createObjects(System);
 	
   createInternalObjects(System,IParam);
   insertObjects(System);              

@@ -222,35 +222,6 @@ BulkInsert::populate(const FuncDataBase& Control,
   return;
 }
 
-void
-BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
-  /*!
-    Create unit vectors for shutter along shutter direction
-    - Z is gravity 
-    - Y is beam XY-axis
-    - X is perpendicular to XY-Axis
-    Note use the exit point of the GS to construct the 
-    bulk insert start point [I think]
-    \param GS :: General shutter :
-  */
-{
-  ELog::RegMethod RegA("BulkInsert","createUnitVector");
-
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-
-  mainFC.createUnitVector(GS.getKey("Main"),2);
-  beamFC.createUnitVector(GS.getKey("Beam"),2);
-
-  
-  divideSurf=GS.getDivideSurf();
-  DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
-  Origin=GS.getTargetPoint();
-  mainFC.setCentre(Origin);
-  setDefault("Main","Beam");
-  
-  return;
-}
 
 void
 BulkInsert::setExternal(const int rInner,const int rMid,
