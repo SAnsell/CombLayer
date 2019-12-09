@@ -3,7 +3,7 @@
  
  * File:   moderator/OrthoInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,10 +67,14 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "Groove.h"
@@ -82,7 +86,7 @@ namespace moderatorSystem
 
 OrthoInsert::OrthoInsert(const std::string& Key)  :
   attachSystem::ContainedGroup("GSide","HSide"),
-  attachSystem::FixedComp(Key,0)
+  attachSystem::FixedUnit(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +94,7 @@ OrthoInsert::OrthoInsert(const std::string& Key)  :
 {}
 
 OrthoInsert::OrthoInsert(const OrthoInsert& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedUnit(A),
   GCent(A.GCent),grooveThick(A.grooveThick),grooveWidth(A.grooveWidth),
   grooveHeight(A.grooveHeight),HCent(A.HCent),
   HRadius(A.HRadius),hydroThick(A.hydroThick),
@@ -234,7 +238,7 @@ OrthoInsert::createObjects(Simulation& System,
 }
   
 void
-OrthoInsert::createAll(Simulation& System,
+OrthoInsert::build(Simulation& System,
 		       const Hydrogen& HUnit,
 		       const Groove& GUnit)
   /*!

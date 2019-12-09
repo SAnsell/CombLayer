@@ -275,19 +275,18 @@ makeReflector::createInternalObjects(Simulation& System,
 		       -SMap.realSurf(buildIndex+11));
   TarObj->createAll(System,World::masterTS2Origin(),0);
 
-
-
   TarObj->addProtonLineInsertCell(cellIndex-1);
   TarObj->addProtonLine(System,*this,-7);
 
   GrooveObj->createAll(System,World::masterTS2Origin());
-  HydObj->createAll(System,*GrooveObj,0);
+  HydObj->setSurfCut("innerWall",GrooveObj->getLinkSurf(1));
+  HydObj->createAll(System,*GrooveObj,1);
   if (IParam.flag("orthoH"))
     {
       OrthoInsert OI("ortho");
       OI.createAll(System,*HydObj,*GrooveObj);
     }
-  VacObj->createAllPair(System,*GrooveObj,*HydObj);
+  VacObj->buildPair(System,*GrooveObj,*HydObj);
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"-14 -2 -4");
   FLgroove->addBoundarySurf("inner",Out);  
@@ -319,7 +318,7 @@ makeReflector::createInternalObjects(Simulation& System,
 
   if (DT!="plate")
     {
-      DVacObj->createAll(System,*DMod,*CMod);
+      DVacObj->buildSingle(System,*DMod,CMod->getExclude());
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"-2 13 3");
       FLnarrow->addBoundarySurf("inner",Out);  
@@ -509,6 +508,20 @@ makeReflector::build(Simulation& System,
   createInternalObjects(System,IParam);
   insertObjects(System);              
 
+  /*  
+  
+  IRcut->addInsertCell(cellIndex-1);
+  CdBucket->addInsertCell(cellIndex-1);
+   Out=ModelSupport::getComposite(SMap,buildIndex," 3 ");
+  IRcut->addBoundarySurf(Out);  
+  IRcut->createAll(System,*this,0);
+  
+  CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
+  CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
+  CdBucket->addBoundarySurf(TarObj->getExclude());
+  CdBucket->createAll(System,*this,0);
+ // torpedoCell=cellIndex-1;
+*/
   return;
 }
 

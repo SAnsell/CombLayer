@@ -70,6 +70,7 @@ class Groove : public attachSystem::ContainedComp,
   int alMat;                ///< Al material
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -86,7 +87,7 @@ class Groove : public attachSystem::ContainedComp,
   Geometry::Vec3D getViewPoint() const;
   Geometry::Vec3D getBackGroove() const;
   
-  void createAll(Simulation&,const attachSystem::FixedComp&
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

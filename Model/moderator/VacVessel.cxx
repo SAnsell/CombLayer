@@ -3,7 +3,7 @@
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "Groove.h"
 #include "Hydrogen.h"
@@ -77,8 +82,7 @@ namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,8),
-  populated(0)
+  attachSystem::ContainedComp(),attachSystem::FixedUnit(Key,8)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -86,9 +90,9 @@ VacVessel::VacVessel(const std::string& Key)  :
 {}
 
 VacVessel::VacVessel(const VacVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   grooveKeyName(A.grooveKeyName),
-  hydKeyName(A.hydKeyName),populated(A.populated),
+  hydKeyName(A.hydKeyName),
   BVec(A.BVec),vacPosGap(A.vacPosGap),vacNegGap(A.vacNegGap),
   vacPosRadius(A.vacPosRadius),vacNegRadius(A.vacNegRadius),
   vacLSide(A.vacLSide),vacRSide(A.vacRSide),vacTop(A.vacTop),vacBase(A.vacBase),
@@ -115,7 +119,6 @@ VacVessel::operator=(const VacVessel& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
       BVec=A.BVec;
       vacPosGap=A.vacPosGap;
       vacNegGap=A.vacNegGap;
@@ -153,16 +156,14 @@ VacVessel::~VacVessel()
 {}
 
 void
-VacVessel::populate(const Simulation& System)
+VacVessel::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Simulation to use
  */
 {
   ELog::RegMethod RegA("VacVessel","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   // First get inner widths:
   vacPosGap=Control.EvalVar<double>(keyName+"VacPosGap");
   vacNegGap=Control.EvalVar<double>(keyName+"VacNegGap");
@@ -209,25 +210,9 @@ VacVessel::populate(const Simulation& System)
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat");
 
-  populated |= 1;
   return;
 }
   
-
-void
-VacVessel::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Points down the Groove direction
-    - X Across the Groove
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-  */
-{
-  ELog::RegMethod RegA("VacVessel","createUnitVector");
-  FixedComp::createUnitVector(FC);
-  return;
-}
 
 void
 VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
@@ -502,7 +487,7 @@ VacVessel::getSurfacePoint(const size_t layer,
 }
 
 void
-VacVessel::createAllPair(Simulation& System,const Groove& GMod,
+VacVessel::buildPair(Simulation& System,const Groove& GMod,
 			 const Hydrogen& HMod)
   /*!
     Global creation of the vac-vessel
@@ -512,9 +497,9 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
   */
 {
   ELog::RegMethod RegA("VacVessel","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(GMod);
+  createUnitVector(GMod,0);
   createBoundary(GMod,HMod);
   createSurfaces();
   createObjects(System,GMod.getExclude()+" "+HMod.getExclude());
@@ -539,9 +524,10 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
 }
 
 void
-VacVessel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const attachSystem::ContainedComp& CC)
+VacVessel::buildSingle(Simulation& System,
+		     const attachSystem::FixedComp& AFC,
+		     const std::string& exclude)
+
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
@@ -550,12 +536,12 @@ VacVessel::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("VacVessel","createAll");
-  populate(System);
+  populate(System.getDataBase());
  
-  createUnitVector(FC);                       // fixed 
-  createBoundary(FC);
+  createUnitVector(AFC,0);                       // fixed 
+  createBoundary(AFC);
   createSurfaces();
-  createObjects(System,CC.getExclude());
+  createObjects(System,exclude);  // CC.getExclude()
   createLinks();
   insertObjects(System);       
 

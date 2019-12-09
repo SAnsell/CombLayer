@@ -54,8 +54,6 @@ class Reflector : public attachSystem::ContainedComp,
   double cutSize;               ///< End cuts
   int defMat;                   ///< Default material
 
-  std::shared_ptr<RefCutOut> IRcut;         ///< Reflector cut out for chipIR
-  std::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
 
   // The pads
   std::vector<moderatorSystem::CoolPad> Pads;
@@ -63,7 +61,7 @@ class Reflector : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
-  void createLinks()
+  void createLinks(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
  public:
 

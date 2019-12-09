@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class OrthoInsert : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+    public attachSystem::FixedUnit
 {
  private:
   
@@ -70,7 +70,7 @@ class OrthoInsert : public attachSystem::ContainedGroup,
 
   int viewSurf() const;
 
-  void createAll(Simulation&,const Hydrogen&,const Groove&);
+  void build(Simulation&,const Hydrogen&,const Groove&);
 
 };
 

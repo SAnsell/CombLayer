@@ -3,7 +3,7 @@
  
  * File:   moderatorInc/DecouplePipe.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,9 @@ namespace moderatorSystem
   \brief DecouplePipe [insert object]
 */
 
-class DecouplePipe : public attachSystem::FixedComp
+class DecouplePipe : public attachSystem::FixedUnit
 {
  private:
-  
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   ModelSupport::PipeLine Outer;   ///< Outer 
   ModelSupport::PipeLine HeIn;    ///< In-going He
@@ -79,7 +77,7 @@ class DecouplePipe : public attachSystem::FixedComp
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
-
+  
   void insertPipes(Simulation&);
   void insertOuter(Simulation&,const VacVessel&);
   void insertHePipe(Simulation&,const VacVessel&);
@@ -91,7 +89,7 @@ class DecouplePipe : public attachSystem::FixedComp
   DecouplePipe& operator=(const DecouplePipe&);
   ~DecouplePipe();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void build(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const VacVessel&,const int);
 
 };

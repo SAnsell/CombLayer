@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -224,7 +225,6 @@ CoolPad::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,Mat,0.0,Out));
   addOuterSurf(Out);
 
-
   return;
 }
 
@@ -242,7 +242,7 @@ CoolPad::createWaterTrack(Simulation& System)
   WaterTrack.addSection(IWidth,IDepth,IMat,0.0);
 
   WaterTrack.setInitZAxis(Y);
-  WaterTrack.createAll(System);
+  WaterTrack.build(System);
   // NoInsert();
   //  WaterTrack.insertPipeToCell(System,cellIndex-1);
   return;

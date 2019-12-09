@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/CouplePipe.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,10 @@ namespace moderatorSystem
   \brief CouplePipe [insert object]
 */
 
-class CouplePipe : public attachSystem::FixedComp
+class CouplePipe :
+  public attachSystem::FixedUnit
 {
  private:
-  
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   ModelSupport::PipeLine GOuter; ///< Global outer
   ModelSupport::PipeLine HInner; ///< Inner Hydrogen pipe
@@ -72,7 +71,7 @@ class CouplePipe : public attachSystem::FixedComp
   double hRadius;           ///< Outer radius
   double hThick;            ///< Wall thickness
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t);
 
   void insertPipes(Simulation&,const VacVessel&);
@@ -86,7 +85,7 @@ class CouplePipe : public attachSystem::FixedComp
   ~CouplePipe();
 
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void build(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const VacVessel&);
 
 };

@@ -41,13 +41,12 @@ namespace moderatorSystem
 
 class VacVessel : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedUnit
 {
  private:
   
   const std::string grooveKeyName;  ///< KeyName [Groove]
   const std::string hydKeyName;     ///< KeyName [Hydrogen]
-  int populated;                    ///< 1:var
   
   std::array<Geometry::Vec3D,6> BVec;     ///< Boundary Points
   int divideSurf;                           ///< Divide surface
@@ -88,9 +87,8 @@ class VacVessel :
   int alMat;             ///< Al (inner) material
   int outMat;            ///< Al (outer) material
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
 
-  void createUnitVector(const attachSystem::FixedComp&);
   void createBoundary(const attachSystem::FixedComp&);
   void createBoundary(const attachSystem::FixedComp&,
 		      const attachSystem::FixedComp&);
@@ -111,9 +109,10 @@ class VacVessel :
   /// Accessor to divide surf:
   int getDivideSurf() const { return divideSurf; }
 
-  void createAllPair(Simulation&,const Groove&,const Hydrogen&);
-  void createAll(Simulation&, const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+  void buildPair(Simulation&,const Groove&,const Hydrogen&);
+  void buildSingle(Simulation&, const attachSystem::FixedComp&,
+		 const std::string&);
+
 
 
 };

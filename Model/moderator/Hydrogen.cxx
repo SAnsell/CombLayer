@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Hydrogen.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,8 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedUnit.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -81,7 +82,7 @@ namespace moderatorSystem
 
 Hydrogen::Hydrogen(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  populated(0)
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +91,8 @@ Hydrogen::Hydrogen(const std::string& Key)  :
 
 Hydrogen::Hydrogen(const Hydrogen& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),width(A.width),height(A.height),
+  attachSystem::ExternalCut(A),
+  width(A.width),height(A.height),
   depth(A.depth),radius(A.radius),innerXShift(A.innerXShift),
   alDivide(A.alDivide),alFront(A.alFront),alTop(A.alTop),
   alBase(A.alBase),alSide(A.alSide),modTemp(A.modTemp),modMat(A.modMat),
@@ -113,7 +115,7 @@ Hydrogen::operator=(const Hydrogen& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
+      attachSystem::ExternalCut::operator=(A);
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -139,7 +141,7 @@ Hydrogen::~Hydrogen()
 {}
 
 void
-Hydrogen::populate(const Simulation& System)
+Hydrogen::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -147,8 +149,6 @@ Hydrogen::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("Hydrogen","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -166,14 +166,13 @@ Hydrogen::populate(const Simulation& System)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
 
-  populated |= 1;
   return;
 }
   
 
 void
 Hydrogen::createUnitVector(const attachSystem::FixedComp& CUnit,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the Hydrogen direction
@@ -185,21 +184,14 @@ Hydrogen::createUnitVector(const attachSystem::FixedComp& CUnit,
 {
   ELog::RegMethod RegA("Hydrogen","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
+  FixedComp::createUnitVector(CUnit,sideIndex);
 
-  // Opposite since other face:
-  const attachSystem::LinkUnit& LU=CUnit.getLU(sideIndex);
-
-  Y= LU.getAxis();
-  X= Y*Z;
-  Origin=LU.getConnectPt();
   HCentre=Origin-Y*(radius-depth-alDivide)+X*innerXShift;
-
   return;
 }
   
 void
-Hydrogen::createSurfaces(const attachSystem::LinkUnit& LU)
+Hydrogen::createSurfaces()
   /*!
     Create All the surfaces
     \param LU :: Linked unit to the hydrogen [groove]
@@ -216,7 +208,6 @@ Hydrogen::createSurfaces(const attachSystem::LinkUnit& LU)
   FixedComp::setConnect(5,Origin+Z*(height/2.0+alTop),Z);
 
 
-  SMap.addMatch(buildIndex+11,LU.getLinkSurf());
   // Hydrogen Layers
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
@@ -254,19 +245,20 @@ Hydrogen::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Hydrogen","createObjects");
-  
+
+  const std::string innerWall(ExternalCut::getRuleStr("innerWall"));
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 -14 15 -16");
+  addOuterSurf(Out+innerWall);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addBoundarySurf(Out);
   System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   HCell=cellIndex-1;
   // Al layers :
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 -14 15 -16 "
 				 " (-1 : 2 : -3 : 4 : -5 : 6 ) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out+innerWall));
   
   return;
 }
@@ -294,7 +286,7 @@ Hydrogen::viewSurf() const
 void
 Hydrogen::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FUnit,
-		    const size_t sideIndex)
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -303,10 +295,10 @@ Hydrogen::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Hydrogen","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit,sideIndex);
-  createSurfaces(FUnit.getLU(sideIndex));
+  createSurfaces();
   createObjects(System);
   insertObjects(System);       
   

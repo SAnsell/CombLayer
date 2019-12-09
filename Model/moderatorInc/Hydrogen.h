@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/Hydrogen.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,11 @@ namespace moderatorSystem
 */
 
 class Hydrogen : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::ExternalCut
+  
 {
  private:
-  
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double width;             ///< Total Width
   double height;            ///< Total height
@@ -61,10 +61,10 @@ class Hydrogen : public attachSystem::ContainedComp,
   Geometry::Vec3D HCentre;  ///< Centre of Radius  
   int HCell;                ///< Main H2 cell
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
-  void createSurfaces(const attachSystem::LinkUnit&);
+  void createSurfaces();
   void createObjects(Simulation&);
 
  public:
@@ -85,7 +85,7 @@ class Hydrogen : public attachSystem::ContainedComp,
   double getAlDivide() const { return alDivide; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

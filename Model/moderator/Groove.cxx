@@ -334,7 +334,8 @@ Groove::getBackGroove() const
 
 void
 Groove::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -344,7 +345,7 @@ Groove::createAll(Simulation& System,
   ELog::RegMethod RegA("Groove","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
