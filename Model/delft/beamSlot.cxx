@@ -71,7 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 
@@ -80,7 +80,7 @@ namespace delftSystem
 
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(SN),6),
+  attachSystem::FixedRotate(Key+std::to_string(SN),6),
   attachSystem::ExternalCut(),
   baseName(Key)
   /*!
@@ -91,7 +91,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 {}
 
 beamSlot::beamSlot(const beamSlot& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   baseName(A.baseName),xSize(A.xSize),
   zSize(A.zSize)
   /*!
@@ -111,7 +111,7 @@ beamSlot::operator=(const beamSlot& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       xSize=A.xSize;
       zSize=A.zSize;
     }
@@ -133,16 +133,9 @@ beamSlot::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("beamSlot","populate");
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   // First get inner widths:
-  axisAngle=Control.EvalVar<double>(keyName+"AxisAngle");
-  
-  xStep=Control.EvalDefTail<double>(keyName,baseName,"XStep",xStep);
-  yStep=Control.EvalDefTail<double>(keyName,baseName,"YStep",yStep);
-  xyAngle=Control.EvalDefTail<double>(keyName,baseName,"XYAngle",xyAngle);
-  zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
-
   
   xSize=Control.EvalTail<double>(keyName,baseName,"XSize");
   zSize=Control.EvalTail<double>(keyName,baseName,"ZSize");
@@ -158,45 +151,6 @@ beamSlot::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-beamSlot::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-  */
-{
-  ELog::RegMethod RegA("beamSlot","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-
-  // PROCESS Origin of a point
-  Origin+=X*xStep+Z*zStep;
-
-  if (fabs(axisAngle)>Geometry::zeroTol || 
-      fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qaxis=
-	Geometry::Quaternion::calcQRotDeg(axisAngle,Y);
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,X);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-      Qaxis.rotate(X);
-      Qaxis.rotate(Z);
-      Qz.rotate(X);
-      Qz.rotate(Y);
-      Qz.rotate(Z);
-      Qxy.rotate(Y);
-      Qxy.rotate(X);
-      Qxy.rotate(Z); 
-    }
-  return;
-}
 
 void
 beamSlot::createSurfaces(const attachSystem::FixedComp& FC)

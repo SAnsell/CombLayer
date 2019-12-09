@@ -35,7 +35,7 @@ namespace delftSystem
   */
   
 class beamSlot : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedRotate
 {
  private:
 
@@ -64,7 +64,8 @@ class beamSlot : public attachSystem::ContainedComp,
   beamSlot& operator=(const beamSlot&);
   virtual ~beamSlot();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 
 };
 

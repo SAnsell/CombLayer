@@ -70,6 +70,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 #include "BeamInsert.h"
@@ -235,7 +236,7 @@ BeamInsert::createAll(Simulation& System,
   for(size_t i=0;i<nSlots;i++)
     {
       Holes[i]->addInsertCell(cellIndex-1);
-      Holes[i]->createAll(System,*this);
+      Holes[i]->createAll(System,*this,0);
     }
   return;
 }
