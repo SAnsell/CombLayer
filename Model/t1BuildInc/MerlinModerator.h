@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/MerlinModerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ class MerlinModerator : public attachSystem::ContainedComp,
   void applyModification();
   Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,7 +75,8 @@ class MerlinModerator : public attachSystem::ContainedComp,
   MerlinModerator& operator=(const MerlinModerator&);
   virtual ~MerlinModerator();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

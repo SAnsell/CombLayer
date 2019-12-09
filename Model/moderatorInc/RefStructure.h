@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/RefStructure.h
+ * File:   moderatorInc/makeRefStructure.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_RefStructure_h
-#define moderatorSystem_RefStructure_h
+#ifndef moderatorSystem_makeRefStructure_h
+#define moderatorSystem_makeRefStructure_h
 
 class Simulation;
 
@@ -48,7 +48,7 @@ namespace moderatorSystem
   \brief makeReflector [insert object]
 */
 
-class RefStructure
+class makeRefStructure
 {
  private:
   
@@ -77,12 +77,12 @@ class RefStructure
 
  public:
 
-  RefStructure(const std::string&);
-  RefStructure(const RefStructure&);
-  RefStructure& operator=(const RefStructure&);
-  virtual ~RefStructure();
+  makeRefStructure(const std::string&);
+  makeRefStructure(const makeRefStructure&);
+  makeRefStructure& operator=(const makeRefStructure&);
+  virtual ~makeRefStructure();
 
-  std::shared_ptr<Reflector> getReflector() const { return reflector; }
+
   int calcModeratorPlanes(const int,std::vector<int>&,int&) const;
   Geometry::Vec3D getViewOrigin(const int) const;
     
@@ -90,6 +90,9 @@ class RefStructure
 
   virtual std::string getExclude() const;
 
+  // do we need this:
+  std::shared_ptr<Reflector> getReflector() const { return reflector; }
+  
   void build(Simulation&,const mainSystem::inputParam&);
 
 

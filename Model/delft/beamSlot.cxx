@@ -81,6 +81,7 @@ namespace delftSystem
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key+std::to_string(SN),6),
+  attachSystem::ExternalCut(),
   baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -310,7 +311,8 @@ beamSlot::createLinks()
 
 void
 beamSlot::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add slot to
@@ -320,7 +322,7 @@ beamSlot::createAll(Simulation& System,
   ELog::RegMethod RegA("beamSlot","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces(FC);
   createObjects(System);
   createLinks();

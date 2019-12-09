@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/t1Reflector.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,17 +46,10 @@ namespace ts1System
 */
 
 class t1Reflector : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle [degrees]
   double xSize;                 ///< Left/Right size
   double ySize;                 ///< length down target
   double ySizeColdCut;          ///< Cold Mods different thickness  
@@ -74,9 +67,7 @@ class t1Reflector : public attachSystem::ContainedComp,
   double baseZCut;              ///< Distance down to base cut
 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -90,10 +81,12 @@ class t1Reflector : public attachSystem::ContainedComp,
 
   std::string getComposite(const std::string&) const;
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
 
   void createBoxes(Simulation&,const std::string&);
   void createRods(Simulation&);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

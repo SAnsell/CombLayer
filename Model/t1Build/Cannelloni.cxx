@@ -74,6 +74,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -511,7 +512,7 @@ Cannelloni::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("Cannelloni","addProtonLine");
 
   // 0 ::  front fact of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -522,7 +523,7 @@ Cannelloni::addProtonLine(Simulation& System,
 void
 Cannelloni::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const int sideIndex)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

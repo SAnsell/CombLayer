@@ -63,10 +63,13 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
 #include "channel.h"
@@ -405,7 +408,10 @@ makeT1Real::build(Simulation* SimPtr,
     {
     //  VoidObj->addInsertCell(74123);  
       VoidObj->createAll(*SimPtr);
-      BulkObj->addInsertCell(voidCell);  
+
+      BulkObj->addInsertCell(voidCell);
+      BulkObj->setCutSurf("Inner",*VoidObj->getFullRule());
+      BulkObj->setCutSurf("FullInner",*VoidObj->getCompExclude());
       BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
       MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);

@@ -34,7 +34,7 @@ namespace ModelSupport
   \brief Bulk divider to produce 1D grid in a cell
 */
 
-class LayerDivide1D  : public attachSystem::FixedComp,
+class LayerDivide1D  : public attachSystem::FixedUnit,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {

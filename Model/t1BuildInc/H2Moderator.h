@@ -69,9 +69,6 @@ class H2Moderator : public attachSystem::ContainedComp,
 
   void applyModification();
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
-
   void createSurfaces();
 //  void createObjects(Simulation&);
   void createObjects(Simulation&);
@@ -91,7 +88,8 @@ class H2Moderator : public attachSystem::ContainedComp,
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

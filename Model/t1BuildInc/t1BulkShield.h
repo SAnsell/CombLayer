@@ -43,8 +43,11 @@ namespace shutterSystem
   \brief Specialized for for the t1BulkShield
 */
 
-class t1BulkShield : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class t1BulkShield :
+  public attachSystem::FixedComp,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -75,10 +78,9 @@ class t1BulkShield : public attachSystem::FixedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector();
   void createLinks();
 
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
   void createBulkInserts(Simulation&,const mainSystem::inputParam&);
   void createShutters(Simulation&,const mainSystem::inputParam&);
@@ -123,8 +125,7 @@ class t1BulkShield : public attachSystem::FixedComp,
   const shutterSystem::BulkInsert* getInsert(const int) const;
   void processVoid(Simulation&);
 
-  void createAll(Simulation&,const mainSystem::inputParam&,
-		 const t1CylVessel&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 
 

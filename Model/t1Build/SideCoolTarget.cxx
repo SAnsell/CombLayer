@@ -73,7 +73,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -373,7 +375,7 @@ SideCoolTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("SideCoolTarget","addProtonLine");
 
   // 0 ::  front face of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -396,7 +398,7 @@ SideCoolTarget::getInnerCells() const
 void
 SideCoolTarget::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-			  const int sideIndex)
+			  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

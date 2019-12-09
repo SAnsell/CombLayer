@@ -71,6 +71,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -445,7 +446,7 @@ OpenBlockTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("OpenBlockTarget","addProtonLine");
 
   // 0 ::  front face of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -457,7 +458,7 @@ OpenBlockTarget::addProtonLine(Simulation& System,
 void
 OpenBlockTarget::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
-			   const int sideIndex)
+			   const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

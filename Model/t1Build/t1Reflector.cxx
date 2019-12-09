@@ -85,8 +85,7 @@ namespace ts1System
 {
 
 t1Reflector::t1Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,11),
-  populated(0)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,11)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,9 +94,7 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),xSize(A.xSize),ySize(A.ySize),
+  xSize(A.xSize),ySize(A.ySize),
   ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
   defMat(A.defMat),Boxes(A.Boxes),Rods(A.Rods),
   Plates(A.Plates),baseZCut(A.baseZCut)
@@ -119,11 +116,6 @@ t1Reflector::operator=(const t1Reflector& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       xSize=A.xSize;
       ySize=A.ySize;
       ySizeColdCut=A.ySizeColdCut;
@@ -145,21 +137,15 @@ t1Reflector::~t1Reflector()
 {}
 
 void
-t1Reflector::populate(const Simulation& System)
+t1Reflector::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database to use
  */
 {
   ELog::RegMethod RegA("t1Reflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  FixedOffset::populate(Control);
 
   xSize=Control.EvalVar<double>(keyName+"XSize");
   ySize=Control.EvalVar<double>(keyName+"YSize");
@@ -173,24 +159,9 @@ t1Reflector::populate(const Simulation& System)
   // Box information
   baseZCut=Control.EvalVar<double>(keyName+"BaseZCut");
 
-  populated |= 1;
   return;
 }
   
-void
-t1Reflector::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param LC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("t1Reflector","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);
-  return;
-}
 
 void
 t1Reflector::createSurfaces()
@@ -713,7 +684,8 @@ t1Reflector::createRods(Simulation& System)
 		     
 void
 t1Reflector::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -721,9 +693,9 @@ t1Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("t1Reflector","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

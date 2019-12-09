@@ -71,12 +71,12 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "ReadFunctions.h"
-#include "RefStructure.h"
 #include "VoidVessel.h"
 #include "World.h"
 #include "BulkShield.h"
@@ -87,7 +87,6 @@ namespace moderatorSystem
 {
 
 makeTS2Bulk::makeTS2Bulk() :
-  RefObj("reflect"),
   VObj(new shutterSystem::VoidVessel("void")),
   BulkObj(new shutterSystem::BulkShield("bulk"))
   /*!
@@ -110,19 +109,6 @@ makeTS2Bulk::~makeTS2Bulk()
 {}
 
 
-void
-makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
-			       const mainSystem::inputParam& IParam)
-  /*!
-    Accessor function to create pipe objects 
-    \param SimPtr :: Simulation system
-    \param IParam :: Input from command line
-  */
-{
-  ELog::RegMethod RegA("makeTS2Bulk","insertPipeObjects");
-  RefObj.insertPipeObjects(*SimPtr,IParam);
-  return;
-}
 
 void 
 makeTS2Bulk::build(Simulation* SimPtr,
@@ -139,17 +125,16 @@ makeTS2Bulk::build(Simulation* SimPtr,
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
-      RefObj->build(*SimPtr,IParam);
       // void vessel
       VObj->createAll(*SimPtr,World::masterTS2Origin(),0);
-      RefObj->getRef()->insertAllInCell(System,VObj->getCell("Void"));
-      BulkObj->createAll(*SimPtr,IParam,*VObj,*VObj);
+      //      RefObj->getRef()->insertAllInCell(System,VObj->getCell("Void"));
+      BulkObj->createAll(*SimPtr,*VObj,0);
     }
   else
     {
-      makeReflector RefObj;
-      RefObj->createAll(*SimPtr,IParam);
-      RefObj->getRef()->insertAllInCell(System,74123);
+      // makeReflector RefObj;
+      // RefObj->createAll(*SimPtr,IParam);
+      // RefObj->getRef()->insertAllInCell(System,74123);
     }
 	
   return;

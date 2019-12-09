@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -141,15 +142,13 @@ PlateTarget::~PlateTarget()
 {}
 
 void
-PlateTarget::populate(const Simulation& System)
+PlateTarget::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
  */
 {
   ELog::RegMethod RegA("PlateTarget","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   // Global values:
   height=Control.EvalVar<double>(keyName+"Height");
@@ -438,7 +437,7 @@ PlateTarget::buildFeedThrough(Simulation& System)
       WaterChannel.addPoint(PEnd);
       WaterChannel.addSection(feedWidth,feedHeight,waterMat,0.0);
       WaterChannel.setInitZAxis(Z);
-      WaterChannel.createAll(System);
+      WaterChannel.build(System);
     }
 
   return;
@@ -461,7 +460,7 @@ PlateTarget::getTargetLength() const
 void
 PlateTarget::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const int sideIndex)
+		       const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -470,7 +469,7 @@ PlateTarget::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("PlateTarget","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   createSurfaces(FC);

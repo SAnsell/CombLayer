@@ -39,7 +39,6 @@ class CH4Pipe : public attachSystem::FixedComp
 {
  private:
   
-  
   ModelSupport::PipeLine Central; ///< Global outer
 
   double Xoffset;              ///< Pipe offset [x]

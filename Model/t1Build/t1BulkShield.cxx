@@ -81,10 +81,13 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
 #include "collInsertBase.h"
 #include "collInsertBlock.h"
 #include "GeneralShutter.h"
@@ -118,7 +121,10 @@ const size_t t1BulkShield::hrpdShutter(17);  // South 8
 const size_t t1BulkShield::pearlShutter(18);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut(),
   numberBeamLines(18)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -128,6 +134,7 @@ t1BulkShield::t1BulkShield(const std::string& Key)  :
 
 t1BulkShield::t1BulkShield(const t1BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),  attachSystem::ExternalCut(A),
   numberBeamLines(A.numberBeamLines),
   GData(A.GData),BData(A.BData),vYoffset(A.vYoffset),
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),
@@ -153,6 +160,8 @@ t1BulkShield::operator=(const t1BulkShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       GData=A.GData;
       BData=A.BData;
       vYoffset=A.vYoffset;
@@ -199,19 +208,7 @@ t1BulkShield::populate(const FuncDataBase& Control)
 }
 
 void
-t1BulkShield::createUnitVector()
-  /*!
-    Create the unit vectors
-  */
-{
-  ELog::RegMethod RegA("t1BulkShield","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
-  applyShift(0.0,vYoffset,0.0);
-  return;
-}
-
-void
-t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
+t1BulkShield::createSurfaces()
   /*!
     Create all the surfaces
     \param FC :: Fixed object of inner surface(s)
@@ -234,7 +231,8 @@ t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  SMap.addMatch(buildIndex+7,FC.getLinkSurf(1));
+  const int SN=ExternalCut::getPrimarySurface("Inner");
+  SMap.addMatch(buildIndex+7,SN);
   return;
 }
 
@@ -370,8 +368,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 }
 
 void
-t1BulkShield::createObjects(Simulation& System,
-			  const attachSystem::ContainedComp& CC)
+t1BulkShield::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -380,19 +377,20 @@ t1BulkShield::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("t1BulkShield","createObjects");
 
+  const std::string innerComp=ExternalCut::getRuleStr("FullInner");
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  shutterCell=cellIndex-1;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
+  makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
+  //  shutterCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  innerCell=cellIndex-1;
+  makeCell("innerCell",System,cellIndex++,ironMat,0.0,Out));
+//  innerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  outerCell=cellIndex-1;
+  makeCell("outerCell",System,cellIndex++,ironMat,0.0,Out));
+//  outerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
   addOuterSurf(Out);
@@ -469,8 +467,8 @@ t1BulkShield::createLinks()
 
 void
 t1BulkShield::createAll(Simulation& System,
-			const mainSystem::inputParam& IParam,
-			const t1CylVessel& CVoid)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Create the main shield
     \param System :: Simulation to process
@@ -480,11 +478,15 @@ t1BulkShield::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("t1BulkShield","createAll");
 
+  // const mainSystem::inputParam& IParam,
+  // const t1CylVessel& CVoid)
+
   populate(System.getDataBase());
   voidRadius=CVoid.getOuterRadius();
-  createUnitVector();
-  createSurfaces(CVoid);
-  createObjects(System,CVoid);
+  createUnitVector(FC,sideIndex);
+
+  createSurfaces();
+  createObjects(System); 
   processVoid(System);
   createShutters(System,IParam);
   createBulkInserts(System,IParam);

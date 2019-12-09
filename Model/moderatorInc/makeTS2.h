@@ -49,6 +49,7 @@ namespace moderatorSystem
 {
   class FlightLine;
   class Reflector;
+  class makeRefStructure;
 
   /*!
     \class makeTS2

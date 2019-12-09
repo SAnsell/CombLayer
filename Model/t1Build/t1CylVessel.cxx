@@ -136,17 +136,16 @@ t1CylVessel::~t1CylVessel()
 {}
 
 void
-t1CylVessel::populate(const Simulation& System)
+t1CylVessel::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("t1CylVessel","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  voidYoffset=Control.EvalVar<double>("voidYoffset");   
+  voidYoffset=Control.EvalVar<double>("voidYoffset");
+  yStep=voidYoffset;
   radius=Control.EvalVar<double>(keyName+"Radius");   
   clearance=Control.EvalVar<double>(keyName+"Clearance");   
   height=Control.EvalVar<double>(keyName+"Height");   
@@ -157,21 +156,6 @@ t1CylVessel::populate(const Simulation& System)
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
       
-  populated = 1;
-  return;
-}
-
-void
-t1CylVessel::createUnitVector()
-  /*!
-    Create the unit vectors
-  */
-{
-  ELog::RegMethod RegA("t1CylVessel","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
-  applyShift(0.0,voidYoffset,0.0);
-  
   return;
 }
 
@@ -328,7 +312,9 @@ t1CylVessel::createLinks()
 }
 
 void
-t1CylVessel::createStatus(const Simulation& System)
+t1CylVessel::createStatus(const Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Create the void vessel status so origins etc are correctly moved
     \param System :: Simulation to process
@@ -336,19 +322,21 @@ t1CylVessel::createStatus(const Simulation& System)
 {
   ELog::RegMethod RegA("t1CylVessel","createStatus");
   populate(System);
-  createUnitVector();
+  createUnitVector(FC,sideIndex);
   return;
 }
 
 void
-t1CylVessel::createAll(Simulation& System)
+t1CylVessel::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Create the void vessel
     \param System :: Simulation to process
   */
 {
   ELog::RegMethod RegA("t1CylVessel","createAll");
-  createStatus(System);
+  createStatus(System,FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createWindows(System);

@@ -84,11 +84,11 @@ class PlateTarget : public attachSystem::ContainedComp,
 
   Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
   void buildFeedThrough(Simulation&);
-  void populate(const Simulation&);  
+  void populate(const FuncDataBase&);  
   double getTargetLength() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const int);
+		 const long int);
 
 };
 

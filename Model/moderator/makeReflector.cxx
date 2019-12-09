@@ -481,6 +481,20 @@ makeReflector::getExclude() const
 }
 
 void
+makeReflector::insertPipeObjects(Simulation* SimPtr,
+				 const mainSystem::inputParam& IParam)
+/*!
+    Accessor function to create pipe objects 
+    \param SimPtr :: Simulation system
+    \param IParam :: Input from command line
+  */
+{
+  ELog::RegMethod RegA("makeTS2Bulk","insertPipeObjects");
+  RefObj.insertPipeObjects(*SimPtr,IParam);
+  return;
+}
+
+void
 makeReflector::build(Simulation& System,
 		     const mainSystem::inputParam& IParam)
   /*!
