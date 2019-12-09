@@ -219,7 +219,7 @@ MonoPlug::createObjects(Simulation& System)
 
   const std::string voidSurf=ExternalCut::getRuleStr("voidSurf");
   const std::string outSurf=ExternalCut::getRuleStr("outSurf");
-  const std::string bulkSurf=ExternalCut::getRuleStr("bulfSurf");
+  const std::string bulkSurf=ExternalCut::getRuleStr("bulkSurf");
 
   
   // SPECIAL FOR ONE SINGLE ITEM:

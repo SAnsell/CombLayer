@@ -164,18 +164,20 @@ t1PlateTarget::addProtonLine(Simulation& System,
 
 void
 t1PlateTarget::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: FixedComp for origin [World Origin]
+    \param sideIndex :: link point 
   */
 {
   ELog::RegMethod RegA("t1PlateTarget","createAll");
 
-  PlateTarObj->populate(System);
+  PlateTarObj->populate(System.getDataBase());
   PressVObj->setTargetLength(PlateTarObj->getTargetLength());
-  PressVObj->createAll(System,FC,0);
+  PressVObj->createAll(System,FC,sideIndex);
 
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);

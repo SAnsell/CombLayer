@@ -121,7 +121,7 @@ class makeT1Real
   makeT1Real& operator=(const makeT1Real&);
   ~makeT1Real();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

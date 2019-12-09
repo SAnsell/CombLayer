@@ -461,7 +461,7 @@ TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
 void
 TS2ModifyTarget::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
-			   const int sideIndex)
+			   const long int sideIndex)
 /*!
     Generic function to create everything
     \param System :: Simulation item

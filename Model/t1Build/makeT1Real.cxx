@@ -281,7 +281,8 @@ makeT1Real::flightLines(Simulation* SimPtr)
 }
 
 std::string
-makeT1Real::buildTarget(Simulation& System,const std::string& TType,
+makeT1Real::buildTarget(Simulation& System,
+			const std::string& TType,
 			const int voidCell)
   /*!
     Create a target based on the 
@@ -386,7 +387,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
 }
 
 void 
-makeT1Real::build(Simulation* SimPtr,
+makeT1Real::build(Simulation& System,
 		  const mainSystem::inputParam& IParam)
   
   /*!
@@ -407,57 +408,64 @@ makeT1Real::build(Simulation* SimPtr,
        !IParam.compValue("E",std::string("Reflector")) )) 
     {
     //  VoidObj->addInsertCell(74123);  
-      VoidObj->createAll(*SimPtr);
+      VoidObj->createAll(System,World::masterOrigin(),0);
 
       BulkObj->addInsertCell(voidCell);
-      BulkObj->setCutSurf("Inner",*VoidObj->getFullRule());
-      BulkObj->setCutSurf("FullInner",*VoidObj->getCompExclude());
-      BulkObj->createAll(*SimPtr,IParam,*VoidObj);
+      BulkObj->setCutSurf("Inner",VoidObj->getFullRule(1));
+      BulkObj->setCutSurf("FullInner",VoidObj->getCompExclude());
+      BulkObj->createAll(System,*VoidObj,0);
 
-      MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
+      MonoTopObj->setSurfCut("voidSurf",VoidObj->getLinkString(3));
+      MonoTopObj->setSurfCut("outSurf",VoidObj->getLinkString(-1));
+      MonoTopObj->setSurfCut("bulkSurf",BulkOjb.getLinkString(-3));
+      MonoBaseObj->setSurfCut("voidSurf",VoidObj->getLinkString(2));
+      MonoBaseObj->setSurfCut("outSurf",VoidObj->getLinkString(-1));
+      MonoBaseObj->setSurfCut("bulkSurf",BulkOjb.getLinkString(-2));
+      
+      MonoTopObj->createAll(System,*VoidObj,3);
+      MonoBaseObj->createAll(System,*VoidObj,2);
       voidCell=VoidObj->getVoidCell();
     }
   else
     {
-      VoidObj->createStatus(*SimPtr);
+      VoidObj->createStatus(System);
     }
   RefObj->addInsertCell(voidCell);  
-  RefObj->createAll(*SimPtr,*VoidObj);
+  RefObj->createAll(System,*VoidObj);
 
   const std::string TarExcludeName=
-    buildTarget(*SimPtr,TarName,voidCell);
+    buildTarget(System,TarName,voidCell);
   if (IParam.flag("exclude") &&
       IParam.compValue("E",std::string("Reflector")))
     return;
 
   // Add target flight line
-  TarObj->addProtonLine(*SimPtr,*RefObj,-1);
+  TarObj->addProtonLine(System,*RefObj,-1);
 
   RefObj->addToInsertChain(*Lh2ModObj);
-  Lh2ModObj->createAll(*SimPtr,*VoidObj);
+  Lh2ModObj->createAll(System,*VoidObj);
 
   RefObj->addToInsertChain(*CH4ModObj);
-  CH4ModObj->createAll(*SimPtr,*VoidObj,0);
+  CH4ModObj->createAll(System,*VoidObj,0);
 
   RefObj->addToInsertChain(*MerlinMod);
-  MerlinMod->createAll(*SimPtr,*VoidObj);
+  MerlinMod->createAll(System,*VoidObj);
 
   RefObj->addToInsertChain(*WaterModObj);
-  WaterModObj->createAll(*SimPtr,*VoidObj);
+  WaterModObj->createAll(System,*VoidObj);
 
   flightLines(SimPtr);
 
-  RefObj->createBoxes(*SimPtr,TarExcludeName);
+  RefObj->createBoxes(System,TarExcludeName);
 
-  WaterPipeObj->createAll(*SimPtr,*WaterModObj,6);
-  MPipeObj->createAll(*SimPtr,*MerlinMod,6);
+  WaterPipeObj->createAll(System,*WaterModObj,6);
+  MPipeObj->createAll(System,*MerlinMod,6);
 
-  H2PipeObj->createAll(*SimPtr,*Lh2ModObj,5);   // long int sideIndex
-  CH4PipeObj->createAll(*SimPtr,*CH4ModObj,5);  // long int sideIndex
+  H2PipeObj->createAll(System,*Lh2ModObj,5);   // long int sideIndex
+  CH4PipeObj->createAll(System,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
-    RefObj->createRods(*SimPtr);  
+    RefObj->createRods(System);  
   
 
   return;

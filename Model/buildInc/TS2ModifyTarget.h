@@ -148,7 +148,7 @@ class TS2ModifyTarget : public attachSystem::FixedComp,
   ~TS2ModifyTarget();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const int);
+		 const long int);
 };
 
 }
