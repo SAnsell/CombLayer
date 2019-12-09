@@ -83,10 +83,10 @@ class BulkShield : public attachSystem::FixedComp,
   void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
   void createBulkInserts(Simulation&);
-  void createTorpedoes(Simulation&,const attachSystem::ContainedComp&);
-  void createShutters(Simulation&,const mainSystem::inputParam&);
+  void createTorpedoes(Simulation&);
+  void createShutters(Simulation&);
 
  public:
 

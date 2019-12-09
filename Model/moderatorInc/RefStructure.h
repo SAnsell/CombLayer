@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   moderatorInc/makeReflector.h
+ * File:   moderatorInc/RefStructure.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_makeReflector_h
-#define moderatorSystem_makeReflector_h
+#ifndef moderatorSystem_RefStructure_h
+#define moderatorSystem_RefStructure_h
 
 class Simulation;
 
@@ -32,7 +32,14 @@ namespace TMRSystem
 
 namespace moderatorSystem
 {
-
+  class Groove;
+  class Hydrogen;
+  class VacVessel;
+  class FlightLine;
+  class PreMod;
+  class HWrapper;
+  class Reflector;
+  
 /*!
   \class makeReflector
   \version 1.0
@@ -41,7 +48,7 @@ namespace moderatorSystem
   \brief makeReflector [insert object]
 */
 
-class makeReflector 
+class RefStructure
 {
  private:
   
@@ -62,17 +69,20 @@ class makeReflector
   std::shared_ptr<FlightLine> FLwish;       ///< Wish [broad] flight line
   std::shared_ptr<FlightLine> FLnarrow;     ///< Narrow flight line
   std::shared_ptr<PreMod> PMdec;            ///< Pre-moderator for decoupled
+
+  std::shared_ptr<Reflector> reflector;       ///< reflector
    
   void processDecoupled(Simulation&,const mainSystem::inputParam&);
   void setTarget(const mainSystem::inputParam&);
 
  public:
 
-  makeReflector(const std::string&);
-  makeReflector(const makeReflector&);
-  makeReflector& operator=(const makeReflector&);
-  virtual ~makeReflector();
+  RefStructure(const std::string&);
+  RefStructure(const RefStructure&);
+  RefStructure& operator=(const RefStructure&);
+  virtual ~RefStructure();
 
+  std::shared_ptr<Reflector> getReflector() const { return reflector; }
   int calcModeratorPlanes(const int,std::vector<int>&,int&) const;
   Geometry::Vec3D getViewOrigin(const int) const;
     

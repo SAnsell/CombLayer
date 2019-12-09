@@ -44,7 +44,8 @@ class makeTS2Bulk
 {
  private:
 
-  std::shared_ptr<moderatorSystem::Reflector> RefObj;  ///< Reflector object  
+  /// Reflector object  
+  moderatorSystem::RefStructure RefObj; 
   std::shared_ptr<shutterSystem::VoidVessel> VObj;     ///< Void vessel
   std::shared_ptr<shutterSystem::BulkShield> BulkObj;  ///< Bulk shield
   
@@ -61,7 +62,7 @@ class makeTS2Bulk
 
   /// Accessor to Reflectro
   const moderatorSystem::Reflector* getReflector() const 
-    { return RefObj.get(); } 
+    { return RefObj.getReflector(); } 
   /// Accessor to bulk object 
   const shutterSystem::BulkShield* getBulkShield() const 
     { return BulkObj.get(); } 

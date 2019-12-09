@@ -373,7 +373,7 @@ BulkShield::createBulkInserts(Simulation& System)
       BItem->setExternal(SMap.realSurf(buildIndex+17),
 			 SMap.realSurf(buildIndex+27),
 			 SMap.realSurf(buildIndex+37) );
-      BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
+      BItem->createAll(System,*GData[static_cast<size_t>(i)],0);    
       OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
     }
@@ -389,14 +389,14 @@ BulkShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BulkShield","createObjects");
 
-  const std::string bulkInsertStr=ExcludedCut::getRuleStr("BulkInsert");
+  const std::string bulkInsertStr=ExternalCut::getRuleStr("BulkInsert");
   // Torpedo
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+bulkInsert;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+bulkInsertStr;
   System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   torpedoCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+bulkInsertStr;
   System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
@@ -552,24 +552,23 @@ BulkShield::calcOuterPlanes(const int BeamLine,
 void
 BulkShield::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC)
+		      const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
-    \param IParam :: Input Parameters
-    \param CC :: Void Vessel containment
+    \param FC :: Fiixed
    */
 {
   ELog::RegMethod RegA("BulkShield","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,CC);
+  createObjects(System);
   processVoid(System);
 
-  createShutters(System,IParam);
-  createBulkInserts(System,IParam);
-  createTorpedoes(System,CC);
+  createShutters(System);
+  createBulkInserts(System);
+  createTorpedoes(System);
   return;
 }
 

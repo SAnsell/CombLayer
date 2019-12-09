@@ -115,7 +115,7 @@ class TS2FlatTarget : public constructSystem::TargetBase
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
   void layerProcess(Simulation&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,const int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   
 
 };

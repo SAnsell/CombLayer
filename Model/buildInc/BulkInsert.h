@@ -81,9 +81,7 @@ class BulkInsert :
   // FUNCTIONS:
   //--------------
 
-  void populate(const FuncDataBase&,
-		const shutterSystem::GeneralShutter&);
-  void createUnitVector(const shutterSystem::GeneralShutter&);
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   std::string divideStr() const;
@@ -117,7 +115,8 @@ class BulkInsert :
   /// Accessor to include
   const std::string& getOuterInc() const { return outerInclude; }
 
-  virtual void createAll(Simulation&,const shutterSystem::GeneralShutter&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

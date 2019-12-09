@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -151,7 +152,7 @@ Torpedo::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Torpedo","populate");
 
   // Global from shutter size:
-  FixedOffset::popuate(Control);
+  FixedOffset::populate(Control);
   
   voidXoffset=Control.EvalVar<double>("voidXoffset");
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
@@ -384,7 +385,7 @@ Torpedo::findPlane(const Geometry::Face& FC) const
 
 void
 Torpedo::createAll(Simulation& System,
-		   const attachSystem::FixdComp& GS,
+		   const attachSystem::FixedComp& GS,
 		   const long int sideIndex)
   /*!
     Create the shutter

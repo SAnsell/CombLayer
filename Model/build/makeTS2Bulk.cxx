@@ -66,30 +66,17 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
 #include "ReadFunctions.h"
-#include "Groove.h"
-#include "Hydrogen.h"
-#include "OrthoInsert.h"
-#include "VacVessel.h"
-#include "FlightLine.h"
-#include "PreMod.h"
-#include "HWrapper.h"
-#include "Decoupled.h"
-#include "DecLayer.h"
-#include "DecFileMod.h"
-#include "pipeUnit.h"
-#include "PipeLine.h"
-#include "CouplePipe.h"
-#include "DecouplePipe.h"
-#include "Bucket.h"
-#include "CoolPad.h"
-#include "RefCutOut.h"
-#include "RefBolts.h"
-#include "Reflector.h"
+#include "RefStructure.h"
 #include "VoidVessel.h"
 #include "World.h"
 #include "BulkShield.h"
@@ -100,7 +87,7 @@ namespace moderatorSystem
 {
 
 makeTS2Bulk::makeTS2Bulk() :
-  RefObj(new RefStructure("reflect")),
+  RefObj("reflect"),
   VObj(new shutterSystem::VoidVessel("void")),
   BulkObj(new shutterSystem::BulkShield("bulk"))
   /*!
@@ -112,36 +99,8 @@ makeTS2Bulk::makeTS2Bulk() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(RefObj);
   OR.addObject(VObj);
   OR.addObject(BulkObj);
-}
-
-makeTS2Bulk::makeTS2Bulk(const makeTS2Bulk& A) : 
-  RefObj(new moderatorSystem::Reflector(*A.RefObj)),
-  VObj(new shutterSystem::VoidVessel(*A.VObj)),
-  BulkObj(new shutterSystem::BulkShield(*A.BulkObj))
-  /*!
-    Copy constructor
-    \param A :: makeTS2Bulk to copy
-  */
-{}
-
-makeTS2Bulk&
-makeTS2Bulk::operator=(const makeTS2Bulk& A)
-  /*!
-    Assignment operator
-    \param A :: makeTS2Bulk to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      *RefObj = *A.RefObj;
-      *VObj = *A.VObj;
-      *BulkObj = *A.BulkObj;
-    }
-  return *this;
 }
 
 makeTS2Bulk::~makeTS2Bulk()
@@ -161,7 +120,7 @@ makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
   */
 {
   ELog::RegMethod RegA("makeTS2Bulk","insertPipeObjects");
-  RefObj->insertPipeObjects(*SimPtr,IParam);
+  RefObj.insertPipeObjects(*SimPtr,IParam);
   return;
 }
 

@@ -142,19 +142,6 @@ ProtonVoid::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-ProtonVoid::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: FixedComp for origin and axis
-  */
-{
-  ELog::RegMethod RegA("ProtonVoid","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  return;
-}
 
 void
 ProtonVoid::createSurfaces()
@@ -218,7 +205,7 @@ ProtonVoid::createAll(Simulation& System,
   ELog::RegMethod RegA("ProtonVoid","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(TargetFC);
+  createUnitVector(TargetFC,tIndex);
   createSurfaces();
   // This need to be from externalCut:
   const std::string TSurf=TargetFC.getLinkString(tIndex);

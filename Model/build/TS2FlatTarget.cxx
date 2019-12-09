@@ -73,6 +73,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -453,7 +454,7 @@ TS2FlatTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("TS2Target","addProtonLine");
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
 
-  PLine->createAll(System,*this,3,refFC,index);
+  PLine->createAll(System,*this,3);
   createBeamWindow(System,3);
   return;
 }
@@ -462,7 +463,7 @@ TS2FlatTarget::addProtonLine(Simulation& System,
 void
 TS2FlatTarget::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
-			 const int sideIndex)
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
