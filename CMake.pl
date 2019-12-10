@@ -7,8 +7,9 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("example","fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
-		"sns","saxs","reactor","t1MarkII","essBeamline","bilbau",
+my @masterprog=("example","fullBuild","ess","muBeam",
+		"pipe","photonMod2","t1Real",
+		"sns","saxs","reactor","essBeamline","bilbau",
 		"singleItem","maxiv","testMain");
 # filter
 
@@ -18,7 +19,7 @@ my @masterprog=("example","fullBuild","ess","muBeam","pipe","photonMod2","t1Real
 ##                    cuBlock d4cModel delft epbBuild essBuild
 ##                    gammaBuild lensModel moderator
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
-##                    t1Engineer t1Upgrade t3Model zoom );
+##                    zoom );
 
 ##my @modelNames= @modelLibDir;
 
@@ -30,7 +31,7 @@ my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        essBuildInc gammaBuildInc lensModelInc
                        moderatorInc muonInc pipeBuildInc photonInc
                        singleItemBuildInc sinbadBuildInc snsBuildInc t1BuildInc
-                       t1EngineerInc t1UpgradeInc t3ModelInc zoomInc );
+                       zoomInc );
 
 
 ## SYSTEM Directory
@@ -124,23 +125,11 @@ my @d4c = qw( d4cModel ) ;
 push(@d4c,@mainLib);
 $gM->addDepUnit("d4c", [@d4c]);
 
-my @t3Expt = qw( t3Model );
-push(@t3Expt,@mainLib);
-$gM->addDepUnit("t3Expt", [@t3Expt]);
-
 my @lens = qw( lensModel ) ;
 push(@lens,@mainLib);
 $gM->addDepUnit("lens", [@lens]);
 
 $gM->addDepUnit("simple", [@mainLib]);
-
-my @t1MarkII = qw( t1Upgrade t1Build  chip zoom build moderator ) ;
-push(@t1MarkII,@mainLib);
-$gM->addDepUnit("t1MarkII", [@t1MarkII]);
-
-my @t1Eng = qw( t1Engineer t1Upgrade t1Build chip zoom build moderator ) ;
-push(@t1Eng,@mainLib);
-$gM->addDepUnit("t1Eng", [@t1Eng]);
 
 my @photonMod = qw( photon ) ;
 push(@photonMod,@mainLib);

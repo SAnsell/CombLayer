@@ -263,6 +263,15 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
+  const Geometry::Vec3D OPos(0,0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+
+    
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",100.0);
   Control.addVariable(connectName+"Width",100.0);
@@ -272,7 +281,21 @@ connectVariables(FuncDataBase& Control,
 
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
+  
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,beamName+"PipeA",0,125.0);
 
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setPipeCF<CF40>();
+  PTubeGen.setPortCF<CF40>();
+  PTubeGen.setPortLength(3.0,3.0);
+  // ystep/length
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,3.0);
+  Control.addVariable(baseName+"IonPumpANPorts",1);
+  PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
+  
+  
   return;
 }
 
@@ -401,7 +424,7 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
 
   PItemGen.setCF<setVariable::CF40>(0.5);
   const Geometry::Vec3D Z(0,0,1);
-  const Geometry::Vec3D YStep(0,48.0/7.0,0);
+  const Geometry::Vec3D YStep(0,48.0/6.5,0);
   Geometry::Vec3D Pt(-YStep*2.5);
   for(size_t i=0;i<NPorts;i++)
     {

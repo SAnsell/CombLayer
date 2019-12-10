@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "beamSlot.h"
 
 namespace delftSystem
@@ -92,6 +93,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 
 beamSlot::beamSlot(const beamSlot& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::ExternalCut(A),
   baseName(A.baseName),xSize(A.xSize),
   zSize(A.zSize)
   /*!
@@ -112,6 +114,7 @@ beamSlot::operator=(const beamSlot& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       xSize=A.xSize;
       zSize=A.zSize;
     }

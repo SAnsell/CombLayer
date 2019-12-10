@@ -137,18 +137,13 @@ danmaxConnectLine::~danmaxConnectLine()
     Destructor
    */
 {}
-
-void
-danmaxConnectLine::populate(const FuncDataBase& Control)
-{
-  
-}
-
   
 void
 danmaxConnectLine::buildObjects(Simulation& System,
 				const attachSystem::FixedComp& FC,
-				const std::string& sideName)
+				const std::string& sideName,
+				const attachSystem::FixedComp& beamFC,
+				const std::string& beamName)
   /*!
     Build all the objects relative to the main FC
     point.
@@ -158,7 +153,6 @@ danmaxConnectLine::buildObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("danmaxConnectLine","buildObjects");
-  ELog::EM<<"XXX ASFSADFDSF"<<ELog::endDiag;    
   // First build construction zone
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -168,86 +162,24 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->setFront(*this);
   connectShield->setBack(*this);
   connectShield->createAll(System,FC,sideName);
-
+  
   buildZone.setSurround(connectShield->getInnerVoid());
 
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System);
 
-  ELog::EM<<"Get cell == "<<getCell("OuterVoid")<<ELog::endDiag;
-  ELog::EM<<"Get cell == "<<getCell("MasterVoid")<<ELog::endDiag;
+  buildZone.createOuterVoidUnit(System,masterCell,beamFC,beamName);
+
+  //  ELog::EM<<"Get cell == "<<getCell("OuterVoid")<<ELog::endDiag;
   // insert first tube:
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,FC,sideName,*pipeA);
-  /*
-  pipeA->createAll(System,FC,sideIndex);
-  
-  // Now build lead box
-  if (LeadPipePtr)
-    boxA->addInsertCell("FrontWall",LeadPipePtr->getCell("BackSpaceVoid"));
-  boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
-  boxA->setCutSurf("portCutA",FC,"pipeWall");
-  boxA->setCutSurf("portCutB",*pipeA,"pipeWall");
-  boxA->setCutSurf("leadRadiusA",FC,"outerPipe");
-  boxA->setCutSurf("leadRadiusB",*pipeA,"outerPipe");
+  outerCell=xrayConstruct::constructUnit
+    (System,buildZone,masterCell,beamFC,beamName,*pipeA);
 
-  boxA->createAll(System,FC,sideIndex);
-
-  boxA->splitObjectAbsolute
-    (System,1001,
-     boxA->getCell("Void"),
-     {{FC.getLinkPt(sideIndex),pipeA->getLinkPt(1)}},
-     {{FC.getLinkAxis(sideIndex),pipeA->getLinkAxis(-1)}});
-
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxA,-1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxA,2);
-  boxA->insertInCell("Main",System,outerCell);
-
-  LeadPipePtr->insertInCell(System,boxA->getCell("Void",0));
-  pipeA->insertInCell(System,boxA->getCell("Void",2));
-
-  // Bellow goes immediately in next unit
-  bellowA->addInsertCell(boxA->getCell("Void",1));
-  bellowA->setFront(FC,sideIndex);  
-  bellowA->setBack(*pipeA,1);
-  bellowA->createAll(System,FC,sideIndex);
-
-  // SKIP :: pipe B is placed and the ion pump bridges
-  pipeB->createAll(System,*pipeA,2);
-
-  pumpBoxA->addInsertCell("FrontWall",pipeA->getCell("BackSpaceVoid"));
-  pumpBoxA->addInsertCell("BackWall",pipeB->getCell("FrontSpaceVoid"));
-
-  pumpBoxA->setCutSurf("portCutA",*pipeA,"pipeWall");  // lead line
-  pumpBoxA->setCutSurf("portCutB",*pipeB,"pipeWall");
-  pumpBoxA->setCutSurf("leadRadiusA",*pipeA,"outerPipe");
-  pumpBoxA->setCutSurf("leadRadiusB",*pipeB,"outerPipe");
-  pumpBoxA->createAll(System,*pipeA,2);
-
-  pumpBoxA->splitObjectAbsolute
-    (System,1001,pumpBoxA->getCell("Void"),
-     {{pipeA->getLinkPt(2),pipeB->getLinkPt(1)}},
-     {{pipeA->getLinkAxis(2),pipeB->getLinkAxis(-1)}});
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,-1);
-  pipeA->insertInCell(System,outerCell);
-  pipeA->insertInCell(System,pumpBoxA->getCell("Void",0));
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,2);
-  pumpBoxA->insertInCell("Main",System,outerCell);
-  
-  pipeA->insertInCell(System,pumpBoxA->getCell("Void",0));
-  pipeB->insertInCell(System,pumpBoxA->getCell("Void",2));
-
-
-  ionPumpA->delayPorts();
-  ionPumpA->addAllInsertCell(pumpBoxA->getCell("Void",1));
+  ionPumpA->addAllInsertCell(outerCell);
   ionPumpA->setFront(*pipeA,2);
-  ionPumpA->setBack(*pipeB,1);
   ionPumpA->createAll(System,*pipeA,2);
-  // ionPumpA->createPorts(System);
 
+  /*
   // SKIP PIPE
   pipeC->createAll(System,*pipeB,2);
   // Now build lead box
@@ -357,37 +289,38 @@ danmaxConnectLine::buildObjects(Simulation& System,
   return;
 }
 
-void
-danmaxConnectLine::createLinks()
-  /*!
-    Create a front/back link
-  */
-{
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowC,2);
-  return;
-}
+// void
+// danmaxConnectLine::createLinks()
+//   /*!
+//     Create a front/back link
+//   */
+// {
+//   setLinkSignedCopy(0,*bellowA,1);
+//   setLinkSignedCopy(1,*bellowC,2);
+//   return;
+// }
   
   
 void 
 danmaxConnectLine::construct(Simulation& System,
 			     const attachSystem::FixedComp& FC,
-			     const std::string& sideName)
+			     const std::string& sideName,
+			     const attachSystem::FixedComp& beamFC,
+			     const std::string& beamName)
+  
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param FC :: Fixed component
-    \param sideIndex :: link point
+    \param FC :: Fixed component (hutch wall)
+    \param sideName :: link point (hutch wall)
+    \param beamFC :: Fixed component for pipe/beam
+    \param beamName :: link point for beam
    */
 {
   // For output stream
   ELog::RegMethod RControl("danmaxConnectLine","createAll");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,FC.getSideIndex(sideName));
-
-  buildObjects(System,FC,sideName);    
-  createLinks();
+  buildObjects(System,FC,sideName,beamFC,beamName);    
   insertObjects(System);
   return;
 }

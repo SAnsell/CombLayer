@@ -125,6 +125,10 @@ class InnerZone
 			  MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,
 			  const long int);
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
+			  const attachSystem::FixedComp&,
+			  const std::string&);
 
   int createOuterVoidUnit(Simulation&,
 			  MonteCarlo::Object*,

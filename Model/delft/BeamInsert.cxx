@@ -71,6 +71,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 #include "BeamInsert.h"

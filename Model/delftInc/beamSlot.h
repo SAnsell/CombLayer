@@ -35,7 +35,8 @@ namespace delftSystem
   */
   
 class beamSlot : public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate
+  public attachSystem::FixedRotate,
+  public attachSystem::ExternalCut  
 {
  private:
 
@@ -52,7 +53,6 @@ class beamSlot : public attachSystem::ContainedComp,
   int glassMat;          ///< Glass material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
   void createLinks();

@@ -520,6 +520,25 @@ InnerZone::createOuterVoidUnit(Simulation& System,
 }
 
 int
+InnerZone::createOuterVoidUnit(Simulation& System,
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& FC,
+			       const std::string& sideName)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FC :: FixedComp
+    \param sideName :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit(string)");
+  return createOuterVoidUnit(System,masterCell,frontDivider,
+			     FC,FC.getSideIndex(sideName));
+}
+
+int
 InnerZone::createNamedOuterVoidUnit(Simulation& System,
 				    const std::string& extraName,
 				    MonteCarlo::Object* masterCell,

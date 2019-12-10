@@ -82,10 +82,9 @@ class danmaxConnectLine :
   /// REGISTERED Shared_ptr : constructed not owned:
   std::shared_ptr<constructSystem::VacuumPipe> JPipe;
   
-  void populate(const FuncDataBase&);
-  void buildObjects(Simulation&,const attachSystem::FixedComp&,
-		    const std::string&);
-  void createLinks();
+  void buildObjects(Simulation&,
+		    const attachSystem::FixedComp&,const std::string&,
+		    const attachSystem::FixedComp&,const std::string&);
   
  public:
   
@@ -99,8 +98,9 @@ class danmaxConnectLine :
     { JPipe=JP; }
   
   void insertFirstRegion(Simulation&,const int);
-  void construct(Simulation&,const attachSystem::FixedComp&,
-		 const std::string&);
+  void construct(Simulation&,
+		 const attachSystem::FixedComp&,const std::string&,
+		 const attachSystem::FixedComp&,const std::string&);
 
 };
 
