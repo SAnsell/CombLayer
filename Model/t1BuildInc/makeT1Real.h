@@ -110,7 +110,7 @@ class makeT1Real
   std::shared_ptr<moderatorSystem::FlightLine> WaterNorthFL; 
   std::shared_ptr<moderatorSystem::FlightLine> WaterSouthFL; 
 
-  void flightLines(Simulation*);
+  void flightLines(Simulation&);
 
   std::string buildTarget(Simulation&,const std::string&,const int);
   

@@ -941,7 +941,7 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
       ABHighBay->setCurtainCut
-	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+	(TopCurtain->combine("-OuterRadius -OuterZStep"));
       ABHighBay->addInsertCell(voidCell);
       ABHighBay->buildAll(System,*ABunker,*BBunker);
 

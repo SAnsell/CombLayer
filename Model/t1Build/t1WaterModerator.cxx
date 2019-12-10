@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1WaterModerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "t1Reflector.h"
 #include "t1WaterModerator.h"
@@ -80,7 +81,7 @@ namespace ts1System
 {
 
 t1WaterModerator::t1WaterModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,10 +89,10 @@ t1WaterModerator::t1WaterModerator(const std::string& Key)  :
 {}
 
 t1WaterModerator::t1WaterModerator(const t1WaterModerator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),xOutSize(A.xOutSize),yOutSize(A.yOutSize),
-  zOutSize(A.zOutSize),alThickOut(A.alThickOut),alMat(A.alMat),waterMat(A.waterMat)
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  xOutSize(A.xOutSize),yOutSize(A.yOutSize),
+  zOutSize(A.zOutSize),alThickOut(A.alThickOut),
+  alMat(A.alMat),waterMat(A.waterMat)
   /*!
     Copy constructor
     \param A :: t1WaterModerator to copy
@@ -109,11 +110,7 @@ t1WaterModerator::operator=(const t1WaterModerator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      attachSystem::FixedOffset::operator=(A);
       xOutSize=A.xOutSize;
       yOutSize=A.yOutSize;
       zOutSize=A.zOutSize;
@@ -131,21 +128,15 @@ t1WaterModerator::~t1WaterModerator()
 {}
 
 void
-t1WaterModerator::populate(const Simulation& System)
+t1WaterModerator::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
  */
 {
   ELog::RegMethod RegA("t1WaterModerator","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  FixedOffset::populate(Control);
 
   xOutSize=Control.EvalVar<double>(keyName+"XOutSize");
   yOutSize=Control.EvalVar<double>(keyName+"YOutSize");
@@ -161,27 +152,6 @@ t1WaterModerator::populate(const Simulation& System)
   return;
 }
   
-void
-t1WaterModerator::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("t1WaterModerator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  const masterRotate& MR=masterRotate::Instance();
-   
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  ELog::EM<<"Origin == "<<MR.calcRotate(Origin)<<ELog::endDebug;
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  return;
-}
 
 void
 t1WaterModerator::createSurfaces()
@@ -279,7 +249,8 @@ t1WaterModerator::createLinks()
 
 void
 t1WaterModerator::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC)
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -287,9 +258,9 @@ t1WaterModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("t1WaterModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

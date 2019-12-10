@@ -82,8 +82,11 @@ class CH4Layer : public constructSystem::ModBase
   virtual std::string 
     getLayerString(const size_t,const long int) const;
 
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,const long int,
+			 const attachSystem::FixedComp&,const long int);
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const attachSystem::FixedComp*,const long int);
+			 const long int);
     
 };
 

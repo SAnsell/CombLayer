@@ -185,7 +185,6 @@ SurfMap::getSurfRules(const std::string& Key) const
 {
   ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 
 
-  
   HeadRule Out;
   if (!Key.empty() && Key[0]=='-')
     {
@@ -228,22 +227,36 @@ SurfMap::getSurfComplement(const std::string& Key) const
   return getSurfRules(Key).complement().display();
 }
 
-  
 HeadRule
-SurfMap::combine(const std::set<std::string>& KeySet) const
+SurfMap::combine(const std::string& KeySet) const
   /*!
     Add the rules as intesection
-    \param KeySet :: Keynames of surfaces
+    \param KeySet :: Keynames of surfaces (space sparated)
     \return HeadRule [form: s1 s2 s3 ]
+    \todo make work with full string objects
    */
 {
-  ELog::RegMethod RegA("SurfMap","combine"); 
-  
-  HeadRule Out;
-  for(const std::string& KS : KeySet)
-    Out.addIntersection(getSurfRules(KS));
+  ELog::RegMethod RegA("SurfMap","combine(string)"); 
 
-  return Out;
+  std::string HR;
+  std::string part;
+  for(const char C : KeySet)
+    {
+      if (std::isdigit(static_cast<int>(C)) || 
+	  std::isalpha(static_cast<int>(C)) || C=='-')
+	part+=C;
+      else if (!part.empty())
+	{
+	  int N;
+	  if (StrFunc::convert(part,N))
+	    HR+=part;
+	  else
+	    HR+=getSurfString(part);
+	}
+      else
+	HR+=C;
+    }
+  return HeadRule(HR);
 }
 
 void

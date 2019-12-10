@@ -35,7 +35,7 @@ namespace shutterSystem
   \brief Specialized for for the ts1 void vessel
 */
 
-class t1CylVessel : public attachSystem::FixedComp,
+class t1CylVessel : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:

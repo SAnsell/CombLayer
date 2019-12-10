@@ -61,8 +61,10 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "channel.h"
 #include "PressVessel.h"
 #include "PlateTarget.h"
@@ -156,7 +158,8 @@ t1PlateTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
-  PLine->createAll(System,*PressVObj,-7,refFC,index);
+  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
+  PLine->createAll(System,*PressVObj,-7);
   createBeamWindow(System,7);
   
   return;
@@ -187,7 +190,7 @@ t1PlateTarget::createAll(Simulation& System,
   PlateTarObj->createAll(System,*PressVObj,0);
 
   DivObj->addInsertCell(PressVObj->getInnerVoid());
-  DivObj->createAll(System,*PlateTarObj,*PressVObj);
+  DivObj->build(System,*PlateTarObj,*PressVObj);
 
   insertObjects(System);
   PlateTarObj->buildFeedThrough(System);

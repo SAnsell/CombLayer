@@ -32,7 +32,15 @@ namespace TMRSystem
 
 namespace moderatorSystem
 {
-
+  class Groove;
+  class Hydrogen;
+  class VacVessel;
+  class PreMod;
+  class FlightLine;
+  class HWrapper;
+  class Bucket;
+  class RefCutOut;
+  
 /*!
   \class makeReflector
   \version 1.0
@@ -41,8 +49,7 @@ namespace moderatorSystem
   \brief makeReflector [insert object]
 */
 
-class makeReflector : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class makeReflector 
 {
  private:
   
@@ -66,16 +73,16 @@ class makeReflector : public attachSystem::ContainedComp,
   std::shared_ptr<RefCutOut> IRcut;         ///< makeReflector cut out for chipIR
   std::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
   std::shared_ptr<Reflector> RefObj;        ///< Reflector
-  
-  // The pads
-  std::vector<moderatorSystem::CoolPad> Pads;
 
+  void createObjects(Simulation&);
+  void createInternalObjects(Simulation&,const mainSystem::inputParam&);
   void processDecoupled(Simulation&,const mainSystem::inputParam&);
   void setTarget(const mainSystem::inputParam&);
 
+
  public:
 
-  makeReflector(const std::string&);
+  makeReflector();
   makeReflector(const makeReflector&);
   makeReflector& operator=(const makeReflector&);
   virtual ~makeReflector();

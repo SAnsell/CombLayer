@@ -55,7 +55,6 @@ class InnerLayer : public ts1System::CH4Layer
 
   
   void populate(const FuncDataBase&);
-
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -78,8 +77,14 @@ class InnerLayer : public ts1System::CH4Layer
   const std::vector<int>& getInnerCells() const
     { return innerCells; }
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

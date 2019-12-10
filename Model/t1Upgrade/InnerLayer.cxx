@@ -318,12 +318,29 @@ InnerLayer::getLayerSurf(const size_t layerIndex,
   return CH4Layer::getLayerSurf(layerIndex,sideIndex);
 }
 
+void
+InnerLayer::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
+  /*!
+    Extrenal build everything include divided inner
+    \param System :: Simulation
+    \param FC :: FixedComp to get axis 
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("InnerLayer","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
 
 void
 InnerLayer::createAll(Simulation& System,
-		      const attachSystem::FixedComp& axisFC,
-		      const attachSystem::FixedComp* orgFC,
-		      const long int sideIndex)
+		     const attachSystem::FixedComp& orgFC,
+		     const long int orgIndex,
+		     const attachSystem::FixedComp& axisFC,
+		     const long int sideIndex)
   /*!
     Extrenal build everything include divided inner
     \param System :: Simulation
@@ -335,7 +352,7 @@ InnerLayer::createAll(Simulation& System,
   ELog::RegMethod RegA("InnerLayer","createAll");
 
   populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   
   createSurfaces();
   createObjects(System);

@@ -585,8 +585,25 @@ CH4Layer::createLinks()
 
 void
 CH4Layer::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+  /*!
+    Extrenal build layered moderator
+    \param System :: Simulation
+    \param FC :: FixedComp to get axis [origin if orgFC == 0]
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("CH4Layer","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
+void
+CH4Layer::createAll(Simulation& System,
+		    const attachSystem::FixedComp& orgFC,
+		    const long int orgIndex,
 		    const attachSystem::FixedComp& axisFC,
-		    const attachSystem::FixedComp* orgFC,
 		    const long int sideIndex)
   /*!
     Extrenal build layered moderator
@@ -599,7 +616,7 @@ CH4Layer::createAll(Simulation& System,
   ELog::RegMethod RegA("CH4Layer","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(axisFC,orgFC,sideIndex);
+  createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

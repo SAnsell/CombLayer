@@ -76,7 +76,8 @@ class CH4PreMod : public CH4PreModBase
   CH4PreMod& operator=(const CH4PreMod&);
   virtual ~CH4PreMod();
   virtual CH4PreMod* clone() const;
-
+  
+  void setTouchIndex(const long int I ) { touchSurf=I; }
   virtual size_t getNLayers(const long int) const;
   virtual Geometry::Vec3D 
     getSurfacePoint(const size_t,const long int) const;
@@ -86,7 +87,7 @@ class CH4PreMod : public CH4PreModBase
     getLayerString(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const long int);
+		 const long int);
 
 };
 

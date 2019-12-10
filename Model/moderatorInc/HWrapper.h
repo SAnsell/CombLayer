@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/HWrapper.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,9 @@ namespace moderatorSystem
 */
 
 class HWrapper : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedUnit
 {
  private:
-  
-  int populated;                ///< 1:var
   
   int divideSurf;               ///< Divider surface for cylinders
 
@@ -61,7 +59,7 @@ class HWrapper : public attachSystem::ContainedComp,
   int alMat;                ///< Al material
 
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
 
   void createSurfMesh(const int,const int,const int*,
 		      const double*,const int*);
@@ -84,7 +82,7 @@ class HWrapper : public attachSystem::ContainedComp,
   /// Divide Plane setter
   void setDivideSurf(const int SN) { divideSurf=SN; }
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void build(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
 		 const attachSystem::ContainedComp&);
 

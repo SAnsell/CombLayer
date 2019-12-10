@@ -245,7 +245,8 @@ ReflectRods::populate(const FuncDataBase& Control)
 }
 
 void
-ReflectRods::createUnitVector(const attachSystem::FixedComp& FC)
+ReflectRods::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComponent to attach this object to.
@@ -254,7 +255,7 @@ ReflectRods::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("ReflectRods","createUnitVector");
 
   // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
   HexHA=X*cos(M_PI*60.0/180.0)-Y*sin(M_PI*60.0/180.0);
@@ -762,7 +763,7 @@ ReflectRods::printHoles() const
 void
 ReflectRods::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t)
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -774,7 +775,7 @@ ReflectRods::createAll(Simulation& System,
   populate(System.getDataBase());
   if (populated)
     {
-      createUnitVector(FC);
+      createUnitVector(FC,sideIndex);
       getZSurf();
       calcCentre();
       createCentres(topSurf);

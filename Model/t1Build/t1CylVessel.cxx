@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "Window.h"
 #include "World.h"
 #include "t1CylVessel.h"
@@ -80,8 +81,8 @@ namespace shutterSystem
 {
 
 t1CylVessel::t1CylVessel(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
-  populated(0),steelCell(0),voidCell(0)
+  attachSystem::FixedOffset(Key,3),attachSystem::ContainedComp(),
+  steelCell(0),voidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -89,8 +90,8 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
 {}
 
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  populated(A.populated),voidYoffset(A.voidYoffset),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  voidYoffset(A.voidYoffset),
   radius(A.radius),clearance(A.clearance),baseRadius(A.baseRadius),
   topRadius(A.topRadius),wallThick(A.wallThick),
   height(A.height),wallMat(A.wallMat),ports(A.ports),
@@ -111,9 +112,8 @@ t1CylVessel::operator=(const t1CylVessel& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      populated=A.populated;
       voidYoffset=A.voidYoffset;
       radius=A.radius;
       clearance=A.clearance;
@@ -144,6 +144,7 @@ t1CylVessel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1CylVessel","populate");
 
+  FixedOffset::populate(Control);
   voidYoffset=Control.EvalVar<double>("voidYoffset");
   yStep=voidYoffset;
   radius=Control.EvalVar<double>(keyName+"Radius");   
@@ -287,7 +288,7 @@ t1CylVessel::createWindows(Simulation& System)
     {
       vc->setBaseCell(steelCell);
       vc->addInsertCell(steelCell);
-      vc->createAll(System,*this);
+      vc->createAll(System,*this,0);
     }
   return;
 }
@@ -321,7 +322,7 @@ t1CylVessel::createStatus(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("t1CylVessel","createStatus");
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   return;
 }

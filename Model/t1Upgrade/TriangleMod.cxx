@@ -806,25 +806,41 @@ TriangleMod::getLayerString(const size_t layerIndex,
   return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
-  
 void
 TriangleMod::createAll(Simulation& System,
-		       const attachSystem::FixedComp& axisFC,
-		       const attachSystem::FixedComp* orgFC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
-    Generic function to create everything
-    \param System :: Simulation item
+    Extrenal build everything include divided inner
+    \param System :: Simulation
+    \param FC :: FixedComp to get axis 
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("TriangleMod","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
+void
+TriangleMod::createAll(Simulation& System,
+		     const attachSystem::FixedComp& orgFC,
+		     const long int orgIndex,
+		     const attachSystem::FixedComp& axisFC,
+		     const long int sideIndex)
+  /*!
+    Extrenal build everything include divided inner
+    \param System :: Simulation
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
     \param sideIndex :: link point for origin if given
-  */
+   */
 {
   ELog::RegMethod RegA("TriangleMod","createAll");
-  
+    
   populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
-  
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
+ 
   createConvex();
   createSurfaces();
   createObjects(System);

@@ -55,6 +55,7 @@ class PreMod : public attachSystem::ContainedComp,
 
   int divideSurf;           ///< Division surface
   int targetSurf;           ///< Division surface
+  bool rFlag;               ///< Rotation needed
   
   void populate(const FuncDataBase&);
 
@@ -80,8 +81,9 @@ class PreMod : public attachSystem::ContainedComp,
   /// Setter 
   void setDivideSurf(const int SN) { divideSurf=SN; }
 
+  void setRotate() { rFlag=1; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool);
+		 const long int);
 
 };
 

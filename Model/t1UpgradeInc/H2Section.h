@@ -83,8 +83,15 @@ class H2Section : public constructSystem::ModBase
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,const long int);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int,
+		 const attachSystem::FixedComp&,
+		 const long int);
+
 
 };
 

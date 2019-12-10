@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/WaterDividers.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace ts1System
 */
 
 class WaterDividers : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedUnit
 {
  private:
   
@@ -86,7 +86,6 @@ class WaterDividers : public attachSystem::ContainedComp,
   double cornerWidth;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces(const PlateTarget&,
 		      const attachSystem::FixedComp&);
   void createLinks();
@@ -99,7 +98,7 @@ class WaterDividers : public attachSystem::ContainedComp,
   WaterDividers& operator=(const WaterDividers&);
   ~WaterDividers();
   
-  void createAll(Simulation&,const PlateTarget&,
+  void build(Simulation&,const PlateTarget&,
 		 const attachSystem::FixedComp&);
 
 };

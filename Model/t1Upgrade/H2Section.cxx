@@ -516,9 +516,26 @@ H2Section::getLayerSurf(const size_t layerIndex,
 
 void
 H2Section::createAll(Simulation& System,
-		    const attachSystem::FixedComp& axisFC,
-		    const attachSystem::FixedComp* orgFC,
-		    const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+    \param FC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("H2Section","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
+void
+H2Section::createAll(Simulation& System,
+		     const attachSystem::FixedComp& orgFC,
+		     const long int orgIndex,
+		     const attachSystem::FixedComp& axisFC,
+		     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -530,7 +547,7 @@ H2Section::createAll(Simulation& System,
   ELog::RegMethod RegA("H2Section","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(axisFC,orgFC,sideIndex);
+  createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

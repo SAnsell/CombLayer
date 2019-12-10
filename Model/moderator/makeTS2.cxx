@@ -62,10 +62,13 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
@@ -74,9 +77,8 @@
 #include "makeChipIR.h"
 #include "makeZoom.h"
 
-#include "makeIMat.h"
 #include "makeTS2Bulk.h"
-#include "makeRefStructure.h"
+#include "makeReflector.h"
 
 #include "makeTS2.h"
 
@@ -109,7 +111,7 @@ makeTS2::build(Simulation* SimPtr,
   ELog::RegMethod RControl("makeTS2","build");
 
   moderatorSystem::makeTS2Bulk bulkObj;
-  moderatorSystem::makeRefStructure refObj;
+  moderatorSystem::makeReflector refObj;
   hutchSystem::makeChipIR chipObj;
   zoomSystem::makeZoom zoomObj;
   
@@ -125,6 +127,8 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
+
+  refObj.build(*SimPtr,IParam);
   bulkObj.build(SimPtr,IParam);
 
   if (!IParam.flag("exclude") ||

@@ -82,6 +82,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -231,18 +232,16 @@ t1BulkShield::createSurfaces()
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  const int SN=ExternalCut::getPrimarySurface("Inner");
+  const int SN=ExternalCut::getRule("Inner").getPrimarySurface();
   SMap.addMatch(buildIndex+7,SN);
   return;
 }
 
 void
-t1BulkShield::createShutters(Simulation& System,		      
-			     const mainSystem::inputParam& IParam)
+t1BulkShield::createShutters(Simulation& System)
   /*!
     Construct and build all the shutters
     \param System :: Simulation object to add data
-    \param IParam :: Input parameters
   */
 {
   ELog::RegMethod RegA("t1BulkShield","createShutters");
@@ -250,16 +249,10 @@ t1BulkShield::createShutters(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const bool insertVoid(IParam.flag("exclude") &&
-			IParam.compValue("E",std::string("Insert")));
-
   GData.clear();
   for(size_t i=1;i<=numberBeamLines;i++)
     {
-      if (insertVoid)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new GeneralShutter(i+1,"shutter")));
-      else if (i==sandalsShutter)
+      if (i==sandalsShutter)
 	GData.push_back(std::make_shared<BlockShutter>
 			(i,"shutter","sandalsShutter"));
       else if (i==prismaShutter)
@@ -334,7 +327,7 @@ t1BulkShield::createShutters(Simulation& System,
       GData[i]->setGlobalVariables(voidRadius,shutterRadius,
 				   totalDepth,totalHeight);
       GData[i]->setDivide(50000);     /// ARRRHHH....
-      GData[i]->createAll(System,0.0,this);    
+      GData[i]->createAll(System,*this,0);    
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 
@@ -342,12 +335,10 @@ t1BulkShield::createShutters(Simulation& System,
 }
 
 void
-t1BulkShield::createBulkInserts(Simulation& System,
-				const mainSystem::inputParam&)
+t1BulkShield::createBulkInserts(Simulation& System)
   /*!
     Construct and build all the bulk insert
     \param System :: Simulation to use
-    \param IParam :: Input parameters
   */
 {
   ELog::RegMethod RegA("t1BulkShield","createBulkInserts");
@@ -362,7 +353,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 				SMap.realSurf(buildIndex+27),
 				SMap.realSurf(buildIndex+37) );
       BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
-      BData.back()->createAll(System,*GData[i]);    
+      BData.back()->createAll(System,*GData[i],0);    
     }
   return;
 }
@@ -385,11 +376,11 @@ t1BulkShield::createObjects(Simulation& System)
   //  shutterCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  makeCell("innerCell",System,cellIndex++,ironMat,0.0,Out));
+  makeCell("innerCell",System,cellIndex++,ironMat,0.0,Out);
 //  innerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  makeCell("outerCell",System,cellIndex++,ironMat,0.0,Out));
+  makeCell("outerCell",System,cellIndex++,ironMat,0.0,Out);
 //  outerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
@@ -482,14 +473,14 @@ t1BulkShield::createAll(Simulation& System,
   // const t1CylVessel& CVoid)
 
   populate(System.getDataBase());
-  voidRadius=CVoid.getOuterRadius();
+  //  voidRadius=CVoid.getOuterRadius();
   createUnitVector(FC,sideIndex);
 
   createSurfaces();
   createObjects(System); 
   processVoid(System);
-  createShutters(System,IParam);
-  createBulkInserts(System,IParam);
+  createShutters(System);
+  createBulkInserts(System);
   createLinks();
 
   return;

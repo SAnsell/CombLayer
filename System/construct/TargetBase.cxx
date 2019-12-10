@@ -141,6 +141,7 @@ TargetBase::createBeamWindow(Simulation& System,
   /*!
     Create the beamwindow if present
     \param System :: Simulation to build into
+    \param sideIndex :: link poin in this to use
   */
 {
   ELog::RegMethod RegA("TargetBase","createBeamWindow");

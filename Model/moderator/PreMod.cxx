@@ -77,7 +77,7 @@ namespace moderatorSystem
 PreMod::PreMod(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   centOrgFlag(1),
-  divideSurf(0),targetSurf(0)
+  divideSurf(0),targetSurf(0),rFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +89,7 @@ PreMod::PreMod(const PreMod& A) :
   centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
-  targetSurf(A.targetSurf)
+  targetSurf(A.targetSurf),rFlag(A.rFlag)
   /*!
     Copy constructor
     \param A :: PreMod to copy
@@ -118,6 +118,7 @@ PreMod::operator=(const PreMod& A)
       alMat=A.alMat;
       divideSurf=A.divideSurf;
       targetSurf=A.targetSurf;
+      rFlag=A.rFlag;
     }
   return *this;
 }
@@ -303,9 +304,8 @@ PreMod::createLinks()
   
 void
 PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
-		  const long int baseIndex,
-		  const bool rFlag)
-  /*!
+		  const long int baseIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param baseIndex :: base number

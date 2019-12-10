@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExcludedComp.h"
@@ -93,7 +94,7 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 {}
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   xSize(A.xSize),ySize(A.ySize),
   ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
   defMat(A.defMat),Boxes(A.Boxes),Rods(A.Rods),
@@ -115,7 +116,7 @@ t1Reflector::operator=(const t1Reflector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       xSize=A.xSize;
       ySize=A.ySize;
       ySizeColdCut=A.ySizeColdCut;

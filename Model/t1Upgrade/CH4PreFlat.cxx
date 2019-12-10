@@ -68,6 +68,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "ExternalCut.h"
 #include "CH4PreModBase.h"
 #include "CH4PreFlat.h"
 
@@ -156,24 +157,7 @@ CH4PreFlat::populate(const FuncDataBase& Control)
   zStep+=alThick+height/2.0;
   return;
 }
-  
-void
-CH4PreFlat::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int linkPt)
-  /*!
-    Create the unit vectors
-    \param FC :: Component to connect to
-    \param linkPt :: Link point to base of moderator
-  */
-{
-  ELog::RegMethod RegA("CH4PreFlat","createUnitVector");
-
-  FixedComp::createUnitVector(FC,linkPt);
-  applyOffset();
-
-  return;
-}
-  
+    
 void
 CH4PreFlat::createSurfaces()
   /*!
@@ -352,8 +336,7 @@ CH4PreFlat::createLinks()
 void
 CH4PreFlat::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const long int linkPt,
-		      const long int)
+		      const long int linkPt)
   /*!
     Generic function to create everything
     \param System :: Simulation item

@@ -223,7 +223,7 @@ makeT1Real::~makeT1Real()
 
 
 void
-makeT1Real::flightLines(Simulation* SimPtr)
+makeT1Real::flightLines(Simulation& System)
   /*!
     Build the flight lines of the reflector
     \param SimPtr :: Simulation to add to
@@ -238,45 +238,45 @@ makeT1Real::flightLines(Simulation* SimPtr)
   Out=RefObj->getComposite(" 3 ");
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
-  H2FL->createAll(*SimPtr,*Lh2ModObj,1);
+  H2FL->createAll(System,*Lh2ModObj,1);
   
   RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
   Out=RefObj->getComposite(" 3 -12 ");
   Out1=Lh2ModObj->getComposite(" (-61:64)  ");
   CH4NorthFL->addBoundarySurf("inner",Out+Out1);
   CH4NorthFL->addBoundarySurf("outer",Out+Out1);
-  CH4NorthFL->createAll(*SimPtr,*CH4ModObj,1);
+  CH4NorthFL->createAll(System,*CH4ModObj,1);
 
   RefObj->addToInsertChain(CH4SouthFL->getCC("outer"));
   Out=RefObj->getComposite(" 1 -4 -13 ");
   CH4SouthFL->addBoundarySurf("inner",Out);
   CH4SouthFL->addBoundarySurf("outer",Out);
-  CH4SouthFL->createAll(*SimPtr,*CH4ModObj,2); 
+  CH4SouthFL->createAll(System,*CH4ModObj,2); 
 
   Out=RefObj->getComposite(" -4 ");
   MerlinFL->addBoundarySurf("inner",Out);
   MerlinFL->addBoundarySurf("outer",Out);
   RefObj->addToInsertChain(MerlinFL->getCC("outer"));
-  MerlinFL->createAll(*SimPtr,*MerlinMod,1);
+  MerlinFL->createAll(System,*MerlinMod,1);
   
   Out=RefObj->getComposite(" 1 3 -11 ");
   RefObj->addToInsertChain(WaterNorthFL->getCC("outer"));
   WaterNorthFL->addBoundarySurf("inner",Out);
   WaterNorthFL->addBoundarySurf("outer",Out);
-  WaterNorthFL->createAll(*SimPtr,*WaterModObj,1);
+  WaterNorthFL->createAll(System,*WaterModObj,1);
 
   Out=RefObj->getComposite(" -14 -4 ");
   RefObj->addToInsertChain(WaterSouthFL->getCC("outer"));
   WaterSouthFL->addBoundarySurf("inner",Out);
   WaterSouthFL->addBoundarySurf("outer",Out);
-  WaterSouthFL->createAll(*SimPtr,*WaterModObj,2); 
+  WaterSouthFL->createAll(System,*WaterModObj,2); 
 
   // Flight line intersects:
-  MerlinFL->processIntersectMinor(*SimPtr,*WaterSouthFL,"inner","outer");
-  WaterSouthFL->processIntersectMajor(*SimPtr,*MerlinFL,"inner","outer");
+  MerlinFL->processIntersectMinor(System,*WaterSouthFL,"inner","outer");
+  WaterSouthFL->processIntersectMajor(System,*MerlinFL,"inner","outer");
 
-  CH4NorthFL->processIntersectMajor(*SimPtr,*H2FL,"inner","outer");
-  H2FL->processIntersectMinor(*SimPtr,*CH4NorthFL,"inner","outer");
+  CH4NorthFL->processIntersectMajor(System,*H2FL,"inner","outer");
+  H2FL->processIntersectMinor(System,*CH4NorthFL,"inner","outer");
   return;
 }
 
@@ -415,12 +415,12 @@ makeT1Real::build(Simulation& System,
       BulkObj->setCutSurf("FullInner",VoidObj->getCompExclude());
       BulkObj->createAll(System,*VoidObj,0);
 
-      MonoTopObj->setSurfCut("voidSurf",VoidObj->getLinkString(3));
-      MonoTopObj->setSurfCut("outSurf",VoidObj->getLinkString(-1));
-      MonoTopObj->setSurfCut("bulkSurf",BulkOjb.getLinkString(-3));
-      MonoBaseObj->setSurfCut("voidSurf",VoidObj->getLinkString(2));
-      MonoBaseObj->setSurfCut("outSurf",VoidObj->getLinkString(-1));
-      MonoBaseObj->setSurfCut("bulkSurf",BulkOjb.getLinkString(-2));
+      MonoTopObj->setCutSurf("voidSurf",VoidObj->getLinkString(3));
+      MonoTopObj->setCutSurf("outSurf",VoidObj->getLinkString(-1));
+      MonoTopObj->setCutSurf("bulkSurf",BulkObj->getLinkString(-3));
+      MonoBaseObj->setCutSurf("voidSurf",VoidObj->getLinkString(2));
+      MonoBaseObj->setCutSurf("outSurf",VoidObj->getLinkString(-1));
+      MonoBaseObj->setCutSurf("bulkSurf",BulkObj->getLinkString(-2));
       
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);
@@ -428,10 +428,10 @@ makeT1Real::build(Simulation& System,
     }
   else
     {
-      VoidObj->createStatus(System);
+      VoidObj->createStatus(System,World::masterOrigin(),0);
     }
   RefObj->addInsertCell(voidCell);  
-  RefObj->createAll(System,*VoidObj);
+  RefObj->createAll(System,*VoidObj,0);
 
   const std::string TarExcludeName=
     buildTarget(System,TarName,voidCell);
@@ -443,18 +443,18 @@ makeT1Real::build(Simulation& System,
   TarObj->addProtonLine(System,*RefObj,-1);
 
   RefObj->addToInsertChain(*Lh2ModObj);
-  Lh2ModObj->createAll(System,*VoidObj);
+  Lh2ModObj->createAll(System,*VoidObj,0);
 
   RefObj->addToInsertChain(*CH4ModObj);
   CH4ModObj->createAll(System,*VoidObj,0);
 
   RefObj->addToInsertChain(*MerlinMod);
-  MerlinMod->createAll(System,*VoidObj);
+  MerlinMod->createAll(System,*VoidObj,0);
 
   RefObj->addToInsertChain(*WaterModObj);
-  WaterModObj->createAll(System,*VoidObj);
+  WaterModObj->createAll(System,*VoidObj,0);
 
-  flightLines(SimPtr);
+  flightLines(System);
 
   RefObj->createBoxes(System,TarExcludeName);
 

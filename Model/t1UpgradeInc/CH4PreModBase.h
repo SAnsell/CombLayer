@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/CH4PreModBase.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,9 @@ namespace ts1System
 
 class CH4PreModBase : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::LayerComp
+  public attachSystem::LayerComp,
+  public attachSystem::ExternalCut
+  
 {
  protected:
   
@@ -51,7 +53,7 @@ class CH4PreModBase : public attachSystem::ContainedComp,
   virtual CH4PreModBase* clone() const =0; 
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int,const long int) =0;
+			 const long int) =0;
 
 };
 

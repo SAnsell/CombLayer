@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/t1BulkShield.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,9 +81,9 @@ class t1BulkShield :
   void createLinks();
 
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
-  void createBulkInserts(Simulation&,const mainSystem::inputParam&);
-  void createShutters(Simulation&,const mainSystem::inputParam&);
+  void createObjects(Simulation&);
+  void createBulkInserts(Simulation&);
+  void createShutters(Simulation&);
 
  public:
 

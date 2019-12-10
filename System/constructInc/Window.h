@@ -59,8 +59,6 @@ class Window : public attachSystem::ContainedComp,
   std::vector<int> layerMat;        ///< Material number [nlayer]
   std::vector<int> layerSurf;       ///< Surface layres
   
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createCentre(Simulation&);
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,7 +76,8 @@ class Window : public attachSystem::ContainedComp,
   void setBaseCell(const int);
   
   void createAll(Simulation&,
-		 const attachSystem::FixedComp&);
+		 const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

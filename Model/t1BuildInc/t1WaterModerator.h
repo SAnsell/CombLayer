@@ -37,16 +37,10 @@ namespace ts1System
 */
 
 class t1WaterModerator : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle [degrees]
   double xOutSize;              ///< Left/Right size (out)
   double yOutSize;              ///< length down target (out)
   double zOutSize;              ///< Vertical size (out)
@@ -55,9 +49,7 @@ class t1WaterModerator : public attachSystem::ContainedComp,
   int alMat;                    ///< Al
   int waterMat;                   ///< water
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,7 +61,7 @@ class t1WaterModerator : public attachSystem::ContainedComp,
   t1WaterModerator& operator=(const t1WaterModerator&);
   virtual ~t1WaterModerator();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

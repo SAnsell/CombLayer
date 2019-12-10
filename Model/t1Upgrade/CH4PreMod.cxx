@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "ExternalCut.h"
 #include "CH4PreModBase.h"
 #include "CH4PreMod.h"
 
@@ -508,8 +509,7 @@ CH4PreMod::createLinks()
 void
 CH4PreMod::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const long int frontIndex,
-		     const long int touchIndex)
+		     const long int frontIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -521,7 +521,6 @@ CH4PreMod::createAll(Simulation& System,
   ELog::RegMethod RegA("CH4PreMod","createAll");
 
   populate(System.getDataBase());
-  touchSurf=touchIndex;
   createUnitVector(FC);
   createSurfaces(FC,frontIndex);
   createObjects(System,FC,frontIndex);

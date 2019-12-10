@@ -3,7 +3,7 @@
  
  * File:   t1Build/WaterDividers.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "PlateTarget.h"
 #include "WaterDividers.h"
@@ -79,7 +80,7 @@ namespace ts1System
 {
 
 WaterDividers::WaterDividers(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0)
+  attachSystem::ContainedComp(),attachSystem::FixedUnit(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,7 +88,7 @@ WaterDividers::WaterDividers(const std::string& Key)  :
 {}
 
 WaterDividers::WaterDividers(const WaterDividers& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   conHeight(A.conHeight),
   fblkConnect(A.fblkConnect),fblkSize(A.fblkSize),
   fblkSndStep(A.fblkSndStep),fblkSndOut(A.fblkSndOut),
@@ -227,19 +228,6 @@ WaterDividers::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-WaterDividers::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed compontent [front of target void vessel]
-    - Y Down the beamline
-  */
-{
-  ELog::RegMethod RegA("WaterDividers","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,0);
-  return;
-}
-
 void
 WaterDividers::createSurfaces(const PlateTarget& PT,
 			      const attachSystem::FixedComp& Vessel)
@@ -665,9 +653,9 @@ WaterDividers::createLinks()
 }
 
 void
-WaterDividers::createAll(Simulation& System,
-			 const PlateTarget& PT,
-			 const attachSystem::FixedComp& Vessel)
+WaterDividers::build(Simulation& System,
+		     const PlateTarget& PT,
+		     const attachSystem::FixedComp& Vessel)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

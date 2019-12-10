@@ -91,7 +91,8 @@ namespace moderatorSystem
 {
 
 Reflector::Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,10),
   attachSystem::SurfMap(),
   attachSystem::CellMap()
   /*!
@@ -187,19 +188,29 @@ Reflector::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*xySize,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*xySize,Y);
-
+  SurfMap::addSurf("Front",SMap.realSurf(buildIndex+1));
+  SurfMap::addSurf("Back",-SMap.realSurf(buildIndex+2));
+  
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xySize,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xySize,X);
+  SurfMap::addSurf("Left",SMap.realSurf(buildIndex+3));
+  SurfMap::addSurf("Right",-SMap.realSurf(buildIndex+4));
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize,Z);
+  SurfMap::addSurf("Base",SMap.realSurf(buildIndex+5));
+  SurfMap::addSurf("Top",-SMap.realSurf(buildIndex+6));
  
   // Corner cuts:
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-YR*cutSize,YR);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+YR*cutSize,YR);
-
+  SurfMap::addSurf("CornerA",SMap.realSurf(buildIndex+11));
+  SurfMap::addSurf("CornerB",-SMap.realSurf(buildIndex+12));
+    
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-XR*cutSize,XR);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+XR*cutSize,XR);
+  SurfMap::addSurf("CornerC",SMap.realSurf(buildIndex+13));
+  SurfMap::addSurf("CornerD",-SMap.realSurf(buildIndex+14));
 
   createLinks(XR,YR);
 
@@ -256,7 +267,7 @@ Reflector::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(Out);
 
-  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
+  makeCell("Reflect",System,cellIndex++,defMat,0.0,Out);
 
   for(CoolPad& PD : Pads)
     PD.addInsertCell(74123);

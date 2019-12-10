@@ -54,7 +54,6 @@ class CH4PreFlat : public CH4PreModBase
 			const size_t);
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,7 +75,7 @@ class CH4PreFlat : public CH4PreModBase
 
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int,const long int);
+			 const long int);
 
 };
 

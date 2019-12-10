@@ -48,7 +48,6 @@ class SplitInner : public ts1System::CH4Layer
   std::vector<double> temp;       ///< Temperatures
     
   void populate(const FuncDataBase&);
-
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -67,8 +66,14 @@ class SplitInner : public ts1System::CH4Layer
   virtual std::string 
     getLayerString(const size_t,const long int) const;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

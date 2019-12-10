@@ -289,9 +289,27 @@ SplitInner::getLayerSurf(const size_t layerIndex,
 
 void
 SplitInner::createAll(Simulation& System,
-		      const attachSystem::FixedComp& axisFC,
-		      const attachSystem::FixedComp* orgFC,
-		      const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
+  /*!
+    Extrenal build everything include divided inner
+    \param System :: Simulation
+    \param FC :: FixedComp to get axis 
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("SplitInner","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+
+
+void
+SplitInner::createAll(Simulation& System,
+		     const attachSystem::FixedComp& orgFC,
+		     const long int orgIndex,
+		     const attachSystem::FixedComp& axisFC,
+		     const long int sideIndex)
   /*!
     Extrenal build everything include divided inner
     \param System :: Simulation
@@ -303,13 +321,14 @@ SplitInner::createAll(Simulation& System,
   ELog::RegMethod RegA("SplitInner","createAll");
 
   populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
-
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
+  
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       
   return;
 }
+
   
 }  // NAMESPACE ts1System

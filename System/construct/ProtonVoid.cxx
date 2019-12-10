@@ -209,7 +209,7 @@ ProtonVoid::createAll(Simulation& System,
   createSurfaces();
   // This need to be from externalCut:
   const std::string TSurf=TargetFC.getLinkString(tIndex);
-  std::string RSurf;
+  const std::string RSurf=ExternalCut::getRuleStr("RefBoundary");
   //  const std::string RSurf=RefFC.getLinkString(rIndex);
 
   createObjects(System,TSurf,RSurf);
