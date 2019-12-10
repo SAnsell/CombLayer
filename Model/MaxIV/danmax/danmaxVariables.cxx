@@ -270,6 +270,8 @@ connectVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  PItemGen.setCF<setVariable::CF40>(3.0);
+  PItemGen.setPlate(0.0,"Void");  
 
     
   const std::string connectName(beamName+"ConnectShield");
@@ -290,10 +292,11 @@ connectVariables(FuncDataBase& Control,
   PTubeGen.setPipeCF<CF40>();
   PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
+
   // ystep/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,3.0);
-  Control.addVariable(baseName+"IonPumpANPorts",1);
-  PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
+  PTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,5.0);
+  Control.addVariable(beamName+"IonPumpANPorts",1);
+  PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
   
   
   return;

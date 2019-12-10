@@ -3,7 +3,7 @@
  
  * File:   delft/BeSurround.cxx
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,13 +72,16 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeSurround.h"
 
 namespace delftSystem
 {
 
 BeSurround::BeSurround(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,3),
+  attachSystem::ExternalCut(),
   active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -87,7 +90,9 @@ BeSurround::BeSurround(const std::string& Key)  :
 {}
 
 BeSurround::BeSurround(const BeSurround& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   active(A.active),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   length(A.length),mat(A.mat)
@@ -109,6 +114,7 @@ BeSurround::operator=(const BeSurround& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       active=A.active;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
@@ -151,23 +157,6 @@ BeSurround::populate(const FuncDataBase& Control)
 }
   
 void
-BeSurround::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: sideIndex for link point
-  */
-{
-  ELog::RegMethod RegA("BeSurround","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-
-  applyOffset();
-  return;
-}
-
-void
 BeSurround::createSurfaces()
   /*!
     Create All the surfaces
@@ -190,8 +179,7 @@ BeSurround::createSurfaces()
 }
 
 void
-BeSurround::createObjects(Simulation& System,
-			  const std::string& ExcludeString)
+BeSurround::createObjects(Simulation& System)
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
@@ -199,6 +187,9 @@ BeSurround::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BeSurround","createObjects");
+
+  const std::string ExcludeString=
+    ExternalCut::getRuleStr("FlightCut");
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 -17 7 ");
@@ -235,8 +226,7 @@ BeSurround::createLinks()
 
 void
 BeSurround::createAll(Simulation& System,const attachSystem::FixedComp& FC,
-		      const long int sideIndex,
-		      const std::string& ExcludeStr)
+		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
@@ -252,7 +242,7 @@ BeSurround::createAll(Simulation& System,const attachSystem::FixedComp& FC,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,ExcludeStr);
+  createObjects(System);
   createLinks();
   insertObjects(System);       
   return;

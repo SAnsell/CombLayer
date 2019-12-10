@@ -175,10 +175,11 @@ danmaxConnectLine::buildObjects(Simulation& System,
   outerCell=xrayConstruct::constructUnit
     (System,buildZone,masterCell,beamFC,beamName,*pipeA);
 
-  ionPumpA->addAllInsertCell(outerCell);
+  ionPumpA->addAllInsertCell(masterCell->getName());
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->createAll(System,*pipeA,2);
-
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPumpA,2);
+  ionPumpA->insertAllInCell(System,outerCell);
   /*
   // SKIP PIPE
   pipeC->createAll(System,*pipeB,2);

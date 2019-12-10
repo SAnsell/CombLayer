@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomMonitor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,11 +50,8 @@
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -178,23 +175,6 @@ ZoomMonitor::createLinks()
 }
 
 void
-ZoomMonitor::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Unit for origin
-    \param linkIndex :: Index for orientation [0 for central origin]
-  */
-{
-  ELog::RegMethod RegA("ZoomMonitor","createUnitVector");
-
-  FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 ZoomMonitor::createSurfaces()
   /*!
     Create All the surfaces
@@ -242,8 +222,7 @@ ZoomMonitor::createObjects(Simulation& System)
 void
 ZoomMonitor::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex,
-		       const attachSystem::ContainedComp& Region)	       
+		       const long int linkIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
