@@ -71,6 +71,7 @@ class PipeShield : public attachSystem::ContainedGroup,
 
   void populate(const FuncDataBase&);
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

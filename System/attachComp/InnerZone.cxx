@@ -444,7 +444,10 @@ InnerZone::singleVoidUnit(Simulation& System,
   
 int
 InnerZone::createFinalVoidUnit(Simulation& System,
-			       MonteCarlo::Object* masterCell)
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
+			       
   /*!
     Construct outer void object main pipe
     \param System :: Simulation
@@ -458,7 +461,7 @@ InnerZone::createFinalVoidUnit(Simulation& System,
   std::string Out;
   
   Out=surroundHR.display()+
-    frontHR.display()+backHR.display();  
+    FC.getLinkString(sideIndex)+backHR.display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   System.removeCell(masterCell->getName());
 

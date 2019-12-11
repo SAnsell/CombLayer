@@ -194,9 +194,16 @@ danmaxConnectLine::buildObjects(Simulation& System,
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowB,"back",*pipeB);
 
-  outerCell=buildZone.createFinalVoidUnit(System,masterCell);
+  outerCell=buildZone.createFinalVoidUnit(System,masterCell,*pipeB,2);
+
+  JPipe->addInsertCell(outerCell);
+  JPipe->setFront(*pipeB,2);
   JPipe->createAll(System,*pipeB,2);
-  JPipe->insertInCell(System,masterCell->getName());
+    
+
+
+  // JPipe->createAll(System,*pipeB,2);
+  // JPipe->insertInCell(System,masterCell->getName());
 
   return;
 }

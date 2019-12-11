@@ -312,20 +312,23 @@ connectVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,beamName+"PipeB",0,325.0);
+  
   return;
 }
 
 void
 exptHutVariables(FuncDataBase& Control,
-		 const std::string& hutName)
-/*!
+		 const std::string& beamName)
+  /*!
     Optics hut variables
     \param Control :: DataBase to add
-    \param hutName :: Expt hut name
+    \param beamName :: Beamline name
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
+  const std::string hutName(beamName+"ExptHut");
+  
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"Height",200.0);
@@ -345,11 +348,21 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
-  Control.addVariable(hutName+"HoleRadius",7.0);
-  Control.addVariable(hutName+"HoleMat","Lead");
+  Control.addVariable(hutName+"HoleXStep",-2.0);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleMat","Void");
 
+  // lead shield on pipe
+  Control.addVariable(beamName+"PShieldXStep",-1.26);
+  Control.addVariable(beamName+"PShieldYStep",0.3);
+  Control.addVariable(beamName+"PShieldLength",1.0);
+  Control.addVariable(beamName+"PShieldWidth",10.0);
+  Control.addVariable(beamName+"PShieldHeight",10.0);
+  Control.addVariable(beamName+"PShieldWallThick",0.2);
+  Control.addVariable(beamName+"PShieldClearGap",0.3);
+  Control.addVariable(beamName+"PShieldWallMat","Stainless304");
+  Control.addVariable(beamName+"PShieldMat","Lead");
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -1023,12 +1036,12 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");
+  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");  
 
-  // note bellow skip
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",0,54.0);
 
-  danmaxVar::exptHutVariables(Control,"DanmaxExptHut");
+  danmaxVar::exptHutVariables(Control,"Danmax");
 
   const std::string exptName="DanmaxExptLine";
   
