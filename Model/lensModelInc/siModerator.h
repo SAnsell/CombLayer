@@ -67,7 +67,6 @@ class siModerator : public attachSystem::ContainedComp,
 
 
   void populate(const FuncDataBase&);
-  void createUnitVector();
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -79,7 +78,7 @@ class siModerator : public attachSystem::ContainedComp,
   siModerator& operator=(const siModerator&);
   ~siModerator() {}  ///< Destructor
 
-  void createAll(Simulation&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
   /// lowest Point
   double getDepth() const { return -baseThick-modHeight/2.0; }

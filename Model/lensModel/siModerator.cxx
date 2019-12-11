@@ -3,7 +3,7 @@
  
  * File:   lensModel/siModerator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,23 +151,6 @@ siModerator::populate(const FuncDataBase& Control)
 }
 
 void
-siModerator::createUnitVector()
-  /*!
-    Create the unit vectors
-    - Y towards the normal of the target
-    - X across the moderator
-    - Z up / down (gravity)
-  */
-{
-  ELog::RegMethod RegA("siModerator","createUnitVector");
-  Z=Geometry::Vec3D(0,0,1);          // Gravity axis [up]
-  Y=Geometry::Vec3D(0,1,0);
-  X=Geometry::Vec3D(1,0,0);
-
-  return;
-}
-
-void
 siModerator::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
@@ -280,7 +263,9 @@ siModerator::createLinks()
 
 
 void
-siModerator::createAll(Simulation& System)
+siModerator::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -289,7 +274,7 @@ siModerator::createAll(Simulation& System)
   ELog::RegMethod RegA("siModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector();
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

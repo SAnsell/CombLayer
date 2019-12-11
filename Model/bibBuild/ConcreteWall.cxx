@@ -3,7 +3,7 @@
  
  * File:   bibBuild/ConcreteWall.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -61,12 +59,11 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "inputParam.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
+// #include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -74,7 +71,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-//#include "VacVessel.h"
+#include "ExternalCut.h"
 #include "World.h"
 
 #include "ConcreteWall.h"
@@ -83,7 +80,9 @@ namespace bibSystem
 {
 
 ConcreteWall::ConcreteWall(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +90,9 @@ ConcreteWall::ConcreteWall(const std::string& Key)  :
 {}
 
 ConcreteWall::ConcreteWall(const ConcreteWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   innerRadius(A.innerRadius),
   thickness(A.thickness),height(A.height),base(A.base),
   mat(A.mat)
@@ -113,6 +114,7 @@ ConcreteWall::operator=(const ConcreteWall& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       innerRadius=A.innerRadius;
       thickness=A.thickness;
       height=A.height;
@@ -149,39 +151,22 @@ ConcreteWall::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+    
 void
-ConcreteWall::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Linked object
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("ConcreteWall","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-  
-void
-ConcreteWall::createSurfaces(const attachSystem::FixedComp& ReflFC,
-			     const long int sideIndex)
+ConcreteWall::createSurfaces()
   /*!
     Create All the surfaces
-    \param ReflFC :: Inner wall of reflector
-    \param sideIndex :: Side of inner wall of reflector
   */
 {
   ELog::RegMethod RegA("ConcreteWall","createSurface");
   // rotation of axis:
+  const int SNouter=ExternalCut::getRule("Outer").getPrimarySurface();
+  const int SNfront=ExternalCut::getRule("Front").getPrimarySurface();
+  const int SNback=ExternalCut::getRule("Back").getPrimarySurface();
 
-  const long int SI(std::abs(sideIndex));
-  SMap.addMatch(buildIndex+7,ReflFC.getLinkSurf(SI));
-  SMap.addMatch(buildIndex+1,ReflFC.getLinkSurf(1+((SI+1) % 3)));
-  SMap.addMatch(buildIndex+2,ReflFC.getLinkSurf(1+((SI+2) % 3)));
+  SMap.addMatch(buildIndex+7,SNouter);
+  SMap.addMatch(buildIndex+1,SNfront);
+  SMap.addMatch(buildIndex+2,SNback);
 
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,innerRadius+thickness);
@@ -204,8 +189,8 @@ ConcreteWall::createObjects(Simulation& System)
   ELog::RegMethod RegA("ConcreteWall","createObjects");
 
   std::string Out;
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -17 5 -6");
+    
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"17 -27 5 -6");
@@ -249,16 +234,12 @@ ConcreteWall::createLinks()
 
 void
 ConcreteWall::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const size_t originIndex,
-		       const attachSystem::FixedComp& RefFC, 
-		       const size_t sideIndex)
-  /*!
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+/*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-    \param originIndex
-    \param RefFC :: Reflector 
     \param sideIndex :: inner surface 
    */
 {
@@ -266,8 +247,8 @@ ConcreteWall::createAll(Simulation& System,
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,originIndex+1);
-  createSurfaces(RefFC,sideIndex+1);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);

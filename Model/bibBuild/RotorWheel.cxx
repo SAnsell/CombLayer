@@ -3,7 +3,7 @@
  
  * File:   bibBuild/RotorWheel.cxx
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@
 #include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 
 #include "RotorWheel.h"
@@ -76,7 +76,7 @@ namespace bibSystem
 
 RotorWheel::RotorWheel(const std::string& Key) :
   attachSystem::ContainedGroup("Target","Body"),
-  attachSystem::FixedComp(Key,15)
+  attachSystem::FixedOffset(Key,15)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,9 +84,8 @@ RotorWheel::RotorWheel(const std::string& Key) :
 {}
 
 RotorWheel::RotorWheel(const RotorWheel& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),radius(A.radius),
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  radius(A.radius),
   waterThick(A.waterThick),wallThick(A.wallThick),
   beThick(A.beThick),beLength(A.beLength),frontVac(A.frontVac),
   backVac(A.backVac),endVac(A.endVac),outWallThick(A.outWallThick),
@@ -113,12 +112,7 @@ RotorWheel::operator=(const RotorWheel& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
       radius=A.radius;
       waterThick=A.waterThick;
       wallThick=A.wallThick;
@@ -165,11 +159,8 @@ RotorWheel::populate(const FuncDataBase& Control)
 
   // Master object : everything references against this
 
-  yStep=0.0;
-  zStep=0.0;
-  xyAngle=0.0;
-  zAngle=0.0;
-
+  FixedOffset::populate(Control);
+  
   radius=Control.EvalVar<double>(keyName+"Radius");
   waterThick=Control.EvalVar<double>(keyName+"WaterThick");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -202,24 +193,7 @@ RotorWheel::populate(const FuncDataBase& Control)
   polyMat=ModelSupport::EvalMat<int>(Control,keyName+"PolyMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
 
-  xStep=radius-beLength/2.0;
-
-  return;
-}
-
-
-void
-RotorWheel::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("RotorWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  xStep+=radius-beLength/2.0;
 
   return;
 }
@@ -445,17 +419,19 @@ RotorWheel::createLinks()
 
 void
 RotorWheel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: linke point
    */
 {
   ELog::RegMethod RegA("RotorWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

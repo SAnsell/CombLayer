@@ -40,8 +40,6 @@ class ProtonPipe : public attachSystem::ContainedComp,
 {
  private:
   
-
-
   double radius;                  ///< Radius of inner pipe
   double innerWallThick;          ///< Inner wall thickness
   double wallThick;               ///< Main wall thickness
@@ -56,9 +54,6 @@ class ProtonPipe : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-		  const long int);
-
   void createSurfaces(const attachSystem::FixedComp&,
 		     const long int);
   void createObjects(Simulation&);
@@ -72,7 +67,7 @@ class ProtonPipe : public attachSystem::ContainedComp,
   virtual ~ProtonPipe();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
   
 };
 

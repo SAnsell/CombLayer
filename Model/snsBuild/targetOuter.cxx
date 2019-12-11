@@ -71,6 +71,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -464,7 +465,8 @@ targetOuter::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("SNStarget","addProtonLine");
 
-  PLine->createAll(System,*this,2,refFC,index);
+  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
+  PLine->createAll(System,*this,2);
   createBeamWindow(System,1);
 
   return;
@@ -474,7 +476,7 @@ targetOuter::addProtonLine(Simulation& System,
 void
 targetOuter::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const int sideIndex)
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

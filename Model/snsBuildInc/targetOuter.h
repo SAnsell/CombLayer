@@ -111,7 +111,7 @@ class targetOuter : public constructSystem::TargetBase
 		     const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const int);
+		 const long int);
   
 
 };

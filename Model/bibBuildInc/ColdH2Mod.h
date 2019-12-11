@@ -3,7 +3,7 @@
  
  * File:   bibBuildInc/ColdH2Mod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ namespace bibSystem
 */
 
 class ColdH2Mod : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -50,7 +51,6 @@ class ColdH2Mod : public attachSystem::ContainedComp,
   double frontGap;                ///< front [target] Gaps
   double backGap;                 ///< back Gaps
   double vertGap;                 ///< vertical Gaps
-
 
   int modMat;		          ///< Moderador material
   int waterMat;                   ///< Water material
@@ -67,9 +67,7 @@ class ColdH2Mod : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
-  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -80,8 +78,9 @@ class ColdH2Mod : public attachSystem::ContainedComp,
   ColdH2Mod& operator=(const ColdH2Mod&);
   virtual ~ColdH2Mod();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int);
+
   
 };
 

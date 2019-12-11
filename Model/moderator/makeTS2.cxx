@@ -140,7 +140,7 @@ makeTS2::build(Simulation* SimPtr,
 	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
     }
   // Insert pipes [make part of makeTS2Bulk]
-  bulkObj.insertPipeObjects(SimPtr,IParam);
+  refObj.insertPipeObjects(*SimPtr,IParam);
 
   return;
 }
