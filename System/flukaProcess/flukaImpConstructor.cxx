@@ -213,16 +213,10 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
       (keyName,setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for "+keyName);      
 
-  ELog::EM<<"IMP "<<keyName<<":"<<cellM<<" "<<materialFlag<<ELog::endDiag;
   if (materialFlag>=0)
     {
       const std::set<int> activeCell=
 	getActiveUnit(System,materialFlag,cellM);
-      if (cellM=="SoftiMAXFrontBeamECutDisk")
-	{
-	  for(auto a : activeCell)
-	    ELog::EM<<"Cells == "<<a<<ELog::endDiag;
-	}
       if (activeCell.empty())
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VV);

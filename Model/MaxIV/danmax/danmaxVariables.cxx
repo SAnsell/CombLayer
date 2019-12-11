@@ -968,6 +968,7 @@ opticsVariables(FuncDataBase& Control,
 
   viewPackage(Control,opticsName+"View");
 
+  GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowF",0,10.0);    
 

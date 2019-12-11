@@ -718,15 +718,21 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*monoVessel,"back",*gateC);
 
-  
+
+
   constructViewScreen(System,masterCell,*gateC,"back");
+
+  setCell("LastVoid",masterCell->getName());
+  lastComp=gateC;
+  
+  return;
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateD,"back",*bellowF);
 
   constructMirrorMono(System,masterCell,*bellowF,"back");
-  
 
+  
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*MLMVessel,"back",*bellowG);
 

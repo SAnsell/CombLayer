@@ -375,13 +375,20 @@ GateValveCylinder::createObjects(Simulation& System)
 	Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
       else if (!portBExtends)
 	Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
-      else 
-	Out=ModelSupport::getComposite(SMap,buildIndex," (-11 -117): (12 -217) ");
-      
+      else
+	{
+	  // Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 ");
+	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+frontStr);
+	  // Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
+	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+backStr);
+	  // Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
+	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+backStr);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," (-11 -117) : (12 -217) ");
+	}
       addOuterUnionSurf(Out+frontStr+backStr);
     }
 
-  addOuterUnionSurf(Out+frontStr+backStr);
+  //  addOuterUnionSurf(Out+frontStr+backStr);
 
   return;
 }
