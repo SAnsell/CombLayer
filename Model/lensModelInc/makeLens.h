@@ -58,7 +58,7 @@ class makeLens
   void build(Simulation* SimPtr);
   void createTally(SimMCNP&,const mainSystem::inputParam&);
   
-  const FlightCluster& getFC() const;
+  const FlightCluster& getFlightCluster() const;
 };
 
 }

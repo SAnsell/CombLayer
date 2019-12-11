@@ -60,7 +60,7 @@ class longLOKI
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> lokiAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> lokiAxis;
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

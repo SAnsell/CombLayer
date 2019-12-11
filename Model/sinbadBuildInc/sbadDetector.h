@@ -14,7 +14,7 @@ namespace sinbadSystem
 */
 
 class sbadDetector : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
  private:
   
@@ -22,18 +22,12 @@ class sbadDetector : public attachSystem::ContainedComp,
   const size_t detID;             ///< Index of Detector
 
   int active;                     ///< active flag
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
 
   double radius;                  ///< Radis of rod 
   double length;                  ///< Length of rod
   int mat;                        ///< Material 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -46,10 +40,12 @@ class sbadDetector : public attachSystem::ContainedComp,
   virtual sbadDetector* clone() const; 
   virtual ~sbadDetector();
 
-  virtual void createAll(Simulation&,
-  			 const attachSystem::FixedComp&);
   
   int isActive() const { return active; }
+
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

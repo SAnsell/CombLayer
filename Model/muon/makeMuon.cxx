@@ -3,7 +3,7 @@
  
  * File:   muon/makeMuon.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,8 +63,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -183,27 +183,27 @@ makeMuon::build(Simulation* SimPtr,
   ELog::RegMethod RControl("makeMuon","build"); 
 
   TargShieldObj->addInsertCell(74123);
-  TargShieldObj->createAll(*SimPtr,World::masterOrigin());
+  TargShieldObj->createAll(*SimPtr,World::masterOrigin(),0);
 
 // target vessel    
   VessBoxObj->addInsertCell(74123);
-  VessBoxObj->createAll(*SimPtr,World::masterOrigin());
+  VessBoxObj->createAll(*SimPtr,World::masterOrigin(),0);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*TargShieldObj,*VessBoxObj);
   
 // target     
-  TargetObj->createAll(*SimPtr,World::masterOrigin());
+  TargetObj->createAll(*SimPtr,World::masterOrigin(),0);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*VessBoxObj,*TargetObj);
 
 // epb tubes  
   EpbInTubeObj->addInsertCell(74123);
-  EpbInTubeObj->createAll(*SimPtr,World::masterOrigin()); 
+  EpbInTubeObj->createAll(*SimPtr,World::masterOrigin(),0); 
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*EpbInTubeObj);
   //  attachSystem::addToInsertForced(*SimPtr,*VessBoxObj,*EpbInTubeObj);
   attachSystem::addToInsertForced(*SimPtr,*VessBoxObj,*EpbInTubeObj);
 
 //  
   EpbOutTubeObj->addInsertCell(74123);
-  EpbOutTubeObj->createAll(*SimPtr,World::masterOrigin()); 
+  EpbOutTubeObj->createAll(*SimPtr,World::masterOrigin(),0); 
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*EpbOutTubeObj);
   attachSystem::addToInsertForced(*SimPtr,*VessBoxObj,*EpbOutTubeObj);
 
@@ -212,25 +212,25 @@ makeMuon::build(Simulation* SimPtr,
   FirstShieldObj->createAll(*SimPtr,World::masterOrigin(),0);
 
   FirstCollObj->addInsertCell(74123);
-  FirstCollObj->createAll(*SimPtr,World::masterOrigin());     
+  FirstCollObj->createAll(*SimPtr,World::masterOrigin(),0);     
   attachSystem::addToInsertForced(*SimPtr,*FirstShieldObj,*FirstCollObj);
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*FirstCollObj);
 
 // muon beam window 1    
-  BWin1Obj->createAll(*SimPtr,World::masterOrigin());    
+  BWin1Obj->createAll(*SimPtr,World::masterOrigin(),0);    
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*BWin1Obj);
   attachSystem::addToInsertForced(*SimPtr,*VessBoxObj,*BWin1Obj);
 
 // muon beam window 2    
-  BWin2Obj->createAll(*SimPtr,World::masterOrigin());    
+  BWin2Obj->createAll(*SimPtr,World::masterOrigin(),0);    
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*BWin2Obj);
   attachSystem::addToInsertForced(*SimPtr,*VessBoxObj,*BWin2Obj);
 // room
   MuRoomObj->addInsertCell(74123);
-  MuRoomObj->createAll(*SimPtr,World::masterOrigin());    
+  MuRoomObj->createAll(*SimPtr,World::masterOrigin(),0);    
 
   // position ring 1    
-  PosRing1Obj->createAll(*SimPtr,World::masterOrigin());  
+  PosRing1Obj->createAll(*SimPtr,World::masterOrigin(),0);  
   attachSystem::addToInsertForced(*SimPtr,*TargShieldObj,*PosRing1Obj);
   attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*PosRing1Obj);
   //  
@@ -247,26 +247,26 @@ makeMuon::build(Simulation* SimPtr,
 
       // 1st tube  
       FirstTubeObj->addInsertCell(74123);
-      FirstTubeObj->createAll(*SimPtr,World::masterOrigin());    
+      FirstTubeObj->createAll(*SimPtr,World::masterOrigin(),0);    
       attachSystem::addToInsertForced(*SimPtr,*FirstShieldObj,*FirstTubeObj);
 
-      ThirdCollObj->createAll(*SimPtr,World::masterOrigin()); 
+      ThirdCollObj->createAll(*SimPtr,World::masterOrigin(),0); 
       attachSystem::addToInsertForced(*SimPtr,*ThirdShieldObj,*ThirdCollObj);
       attachSystem::addToInsertForced(*SimPtr,*ProfMonObj,*ThirdCollObj);
       attachSystem::addToInsertForced(*SimPtr,*FirstShieldObj,*ThirdCollObj);
 
       // 3rd tube  
       ThirdTubeObj->addInsertCell(74123);
-      ThirdTubeObj->createAll(*SimPtr,World::masterOrigin());     
+      ThirdTubeObj->createAll(*SimPtr,World::masterOrigin(),0);     
       attachSystem::addToInsertForced(*SimPtr,*ThirdShieldObj,*ThirdTubeObj);
       attachSystem::addToInsertForced(*SimPtr,*ProfMonObj,*ThirdTubeObj);
 
       // Q44 quadropole and final tube      
       Q44Obj->addInsertCell(74123);
-      Q44Obj->createAll(*SimPtr,World::masterOrigin());  
+      Q44Obj->createAll(*SimPtr,World::masterOrigin(),0);  
 
       FinalTubeObj->addInsertCell(74123);
-      FinalTubeObj->createAll(*SimPtr,World::masterOrigin());     
+      FinalTubeObj->createAll(*SimPtr,World::masterOrigin(),0);     
       attachSystem::addToInsertForced(*SimPtr,*ProfMonObj,*FinalTubeObj);
       attachSystem::addToInsertForced(*SimPtr,*Q44Obj,*FinalTubeObj);
     }
@@ -275,26 +275,26 @@ makeMuon::build(Simulation* SimPtr,
       !IParam.compValue("E",std::string("MuonBeamline")))
     {
       // +++++++++++++++++++++++++++++++++++  muon beamline  
-      Q1Obj->createAll(*SimPtr,World::masterOrigin());
+      Q1Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*Q1Obj);
 
       // Muon vacuum tube 1    
-      MuTube1Obj->createAll(*SimPtr,World::masterOrigin());         
+      MuTube1Obj->createAll(*SimPtr,World::masterOrigin(),0);         
       attachSystem::addToInsertForced(*SimPtr,*Q1Obj,*MuTube1Obj);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*MuTube1Obj);
 
-      Q2Obj->createAll(*SimPtr,World::masterOrigin());
+      Q2Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*Q2Obj);
 
-      CernFront->createAll(*SimPtr,World::masterOrigin());
+      CernFront->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*CernFront);
 
-      CernBack->createAll(*SimPtr,World::masterOrigin());     
+      CernBack->createAll(*SimPtr,World::masterOrigin(),0);     
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*CernBack);
 
       // Muon vacuum tube 2    
       //      MuTube2Obj->addInsertCell(74123);
-      MuTube2Obj->createAll(*SimPtr,World::masterOrigin());  
+      MuTube2Obj->createAll(*SimPtr,World::masterOrigin(),0);  
       attachSystem::addToInsertForced(*SimPtr,*Q1Obj,*MuTube2Obj);
       attachSystem::addToInsertForced(*SimPtr,*Q2Obj,*MuTube2Obj);
       attachSystem::addToInsertForced(*SimPtr,*CernFront,*MuTube2Obj);
@@ -303,15 +303,15 @@ makeMuon::build(Simulation* SimPtr,
 
       // position ring 2    
       //      PosRing2Obj->addInsertCell(74123);
-      PosRing2Obj->createAll(*SimPtr,World::masterOrigin());      
+      PosRing2Obj->createAll(*SimPtr,World::masterOrigin(),0);      
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*PosRing2Obj);
 
       // Muon vacuum tube 3    
-      MuTube3Obj->createAll(*SimPtr,World::masterOrigin());  
+      MuTube3Obj->createAll(*SimPtr,World::masterOrigin(),0);  
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*MuTube3Obj);
 
       // position ring 3    
-      PosRing3Obj->createAll(*SimPtr,World::masterOrigin());
+      PosRing3Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*PosRing3Obj);
 
       // Shield plug 
@@ -320,15 +320,15 @@ makeMuon::build(Simulation* SimPtr,
       attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*ShieldPlugObj);
 
       // Muon vacuum tube 4 & 5    
-      MuTube4Obj->createAll(*SimPtr,World::masterOrigin());
+      MuTube4Obj->createAll(*SimPtr,World::masterOrigin(),0);
       attachSystem::addToInsertForced(*SimPtr,*ShieldPlugObj,*MuTube4Obj);
       attachSystem::addToInsertForced(*SimPtr,*MuTube4Obj,*MuTube2Obj);
 
       MuTube5Obj->addInsertCell(74123);
-      MuTube5Obj->createAll(*SimPtr,World::masterOrigin());      
+      MuTube5Obj->createAll(*SimPtr,World::masterOrigin(),0);      
       attachSystem::addToInsertForced(*SimPtr,*ShieldPlugObj,*MuTube5Obj);
       // position ring 4    
-      PosRing4Obj->createAll(*SimPtr,World::masterOrigin());        
+      PosRing4Obj->createAll(*SimPtr,World::masterOrigin(),0);        
     }
   return;
 }

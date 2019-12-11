@@ -103,15 +103,13 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
   connectShield(new xraySystem::SqrShield(keyName+"ConnectShield")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  ionPumpA(new constructSystem::PortTube(keyName+"IonPumpA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  flangeA(new constructSystem::VacuumPipe(keyName+"FlangeA")),
+  ionPumpA(new constructSystem::PipeTube(keyName+"IonPumpA")),
+  flangeB(new constructSystem::VacuumPipe(keyName+"FlangeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  ionPumpB(new constructSystem::PortTube(keyName+"IonPumpB")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -121,15 +119,13 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
   OR.addObject(pipeA);
+  OR.addObject(flangeA);
+  OR.addObject(bellowA);
   OR.addObject(ionPumpA);
-  OR.addObject(pipeB);
   OR.addObject(bellowB);
-  OR.addObject(pipeC);
-  OR.addObject(ionPumpB);
-  OR.addObject(pipeD);
-  OR.addObject(bellowC);
+  OR.addObject(flangeB);
+  OR.addObject(pipeB);
 }
   
 danmaxConnectLine::~danmaxConnectLine()
@@ -169,124 +165,39 @@ danmaxConnectLine::buildObjects(Simulation& System,
     buildZone.constructMasterCell(System);
 
   buildZone.createOuterVoidUnit(System,masterCell,beamFC,beamName);
-
-  //  ELog::EM<<"Get cell == "<<getCell("OuterVoid")<<ELog::endDiag;
+  
   // insert first tube:
-  outerCell=xrayConstruct::constructUnit
+  xrayConstruct::constructUnit
     (System,buildZone,masterCell,beamFC,beamName,*pipeA);
 
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*bellowA);
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowA,"back",*flangeA);
+
+  
   ionPumpA->addAllInsertCell(masterCell->getName());
-  ionPumpA->setFront(*pipeA,2);
-  ionPumpA->createAll(System,*pipeA,2);
+  ionPumpA->setFront(*flangeA,2);
+  ionPumpA->createAll(System,*flangeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPumpA,2);
   ionPumpA->insertAllInCell(System,outerCell);
-  /*
-  // SKIP PIPE
-  pipeC->createAll(System,*pipeB,2);
-  // Now build lead box
-  boxB->addInsertCell("FrontWall",pipeB->getCell("BackSpaceVoid"));
-  boxB->addInsertCell("BackWall",pipeC->getCell("FrontSpaceVoid"));
-  boxB->setCutSurf("portCutA",*pipeB,"pipeWall");
-  boxB->setCutSurf("portCutB",*pipeC,"pipeWall");
-  boxB->setCutSurf("leadRadiusA",*pipeB,"outerPipe");
-  boxB->setCutSurf("leadRadiusB",*pipeC,"outerPipe");
-
-  boxB->createAll(System,*pipeB,2);
-  boxB->splitObjectAbsolute(System,1001,
-		    boxB->getCell("Void"),
-		    {{pipeB->getLinkPt(2),pipeC->getLinkPt(1)}},
-		    {{pipeB->getLinkAxis(2),pipeC->getLinkAxis(-1)}});
-  
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxB,-1);
-  pipeB->insertInCell(System,outerCell);
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxB,2);
-  boxB->insertInCell("Main",System,outerCell);
 
 
-  // Bellow goes immediately in next unit
-  bellowB->addInsertCell(boxB->getCell("Void",1));
-  bellowB->setFront(*pipeB,2);  
-  bellowB->setBack(*pipeC,1);
-  bellowB->createAll(System,*pipeB,2);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*ionPumpA,"back",*flangeB);
 
-  pipeB->insertInCell(System,boxB->getCell("Void",0));
-  pipeC->insertInCell(System,boxB->getCell("Void",2));
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*flangeB,"back",*bellowB);
 
-  // SKIP :: pipeD is placed and the ion pump bridges
-  pipeD->createAll(System,*pipeC,2);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowB,"back",*pipeB);
 
-  pumpBoxB->addInsertCell("FrontWall",pipeC->getCell("BackSpaceVoid"));
-  pumpBoxB->addInsertCell("BackWall",pipeD->getCell("FrontSpaceVoid"));
-  
-  pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");
-  pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
-  pumpBoxB->setCutSurf("leadRadiusA",*pipeC,"outerPipe");
-  pumpBoxB->setCutSurf("leadRadiusB",*pipeD,"outerPipe");
-  pumpBoxB->createAll(System,*pipeC,2);  
-  pumpBoxB->splitObjectAbsolute
-    (System,1001,
-     pumpBoxB->getCell("Void"),
-     {{pipeC->getLinkPt(2),pipeD->getLinkPt(1)}},
-     {{pipeC->getLinkAxis(2),pipeD->getLinkAxis(-1)}});
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxB,-1);
-  pipeC->insertInCell(System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxB,2);
-
-  pumpBoxB->insertInCell("Main",System,outerCell);
-  pipeC->insertInCell(System,pumpBoxB->getCell("Void",0));
-  pipeD->insertInCell(System,pumpBoxB->getCell("Void",2));
-
-  ionPumpB->delayPorts();
-  ionPumpB->addAllInsertCell(pumpBoxB->getCell("Void",1));
-  // ionPumpB->setFront(*pipeC,2);
-  // ionPumpB->setBack(*pipeD,1);
-  pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");  // lead line
-  pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
-  pumpBoxB->setCutSurf("leadRadiusA",*pipeC,"outerPipe");
-  pumpBoxB->setCutSurf("leadRadiusB",*pipeD,"outerPipe");
-
-
-  ionPumpB->createAll(System,*pipeC,2);
-  // ionPumpB->createPorts(System);
-
-  // SKIP :: Join PipeC skips bellows
-  JPipe->createAll(System,*pipeD,2);
-
-  // Now build lead box
-  boxC->addInsertCell("FrontWall",pipeD->getCell("BackSpaceVoid"));
-  boxC->addInsertCell("BackWall",JPipe->getCell("FrontSpaceVoid"));
-  boxC->setCutSurf("portCutA",*pipeD,"pipeWall");
-  boxC->setCutSurf("portCutB",*JPipe,"pipeWall");
-  boxC->setCutSurf("leadRadiusA",*pipeD,"outerPipe");
-  boxC->setCutSurf("leadRadiusB",*JPipe,"outerPipe");
-
-  boxC->createAll(System,*pipeD,2);
-  boxC->splitObjectAbsolute(System,1001,
-		    boxC->getCell("Void"),
-		    {{pipeD->getLinkPt(2),JPipe->getLinkPt(1)}},
-		    {{pipeD->getLinkAxis(2),JPipe->getLinkAxis(-1)}});
-
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,-1);
-  pipeD->insertInCell(System,outerCell);
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,2);
-  boxC->insertInCell("Main",System,outerCell);
-
-  pipeD->insertInCell(System,boxC->getCell("Void",0));
-  JPipe->insertInCell(System,boxC->getCell("Void",2));
-  
-    // Bellow goes immediately in next unit
-  bellowC->addInsertCell(boxC->getCell("Void",1));
-  bellowC->setFront(*pipeD,2);  
-  bellowC->setBack(*JPipe,1);
-  bellowC->createAll(System,*pipeD,2);
-
+  outerCell=buildZone.createFinalVoidUnit(System,masterCell);
+  JPipe->createAll(System,*pipeB,2);
   JPipe->insertInCell(System,masterCell->getName());
-  */
+
   return;
 }
 

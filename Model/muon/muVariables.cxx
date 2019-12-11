@@ -73,9 +73,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("TargShieldXStep",0.0);  
   Control.addVariable("TargShieldYStep",13.7);  
   Control.addVariable("TargShieldZStep",0.0);
-  Control.addVariable("TargShieldXangle",0.0);
-  Control.addVariable("TargShieldYangle",0.0);
-  Control.addVariable("TargShieldZangle",0.0);    
+  Control.addVariable("TargShieldXAngle",0.0);
+  Control.addVariable("TargShieldYAngle",0.0);
+  Control.addVariable("TargShieldZAngle",0.0);    
   Control.addVariable("TargShieldHeight",160.5);  
   Control.addVariable("TargShieldDepth",215.2);  
   Control.addVariable("TargShieldWidth",80.0);         
@@ -106,7 +106,7 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("CarbonTrgtXStep",0.0);  
   Control.addVariable("CarbonTrgtYStep",0.0);  
   Control.addVariable("CarbonTrgtZStep",0.0);
-  Control.addVariable("CarbonTrgtXYAngle",45.0);
+  Control.addVariable("CarbonTrgtZAngle",45.0);
   
   Control.addVariable("CarbonTrgtHeight",5.0);  
   Control.addVariable("CarbonTrgtDepth",0.7);  
@@ -119,9 +119,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("EpbInTubeXStep",0.0);  
   Control.addVariable("EpbInTubeYStep",-123.25);  
   Control.addVariable("EpbInTubeZStep",0.0);    
-  Control.addVariable("EpbInTubeXangle",0.0);
-  Control.addVariable("EpbInTubeYangle",0.0);
-  Control.addVariable("EpbInTubeZangle",0.0);          
+  Control.addVariable("EpbInTubeXAngle",0.0);
+  Control.addVariable("EpbInTubeYAngle",0.0);
+  Control.addVariable("EpbInTubeZAngle",0.0);          
   Control.addVariable("EpbInTubeRadius",12.1);
   Control.addVariable("EpbInTubeThick",0.5);
   Control.addVariable("EpbInTubeLength",123.25-15.0);      
@@ -133,9 +133,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("EpbOutTubeXStep",0.0);  
   Control.addVariable("EpbOutTubeYStep",15.0);  
   Control.addVariable("EpbOutTubeZStep",0.0);
-  Control.addVariable("EpbOutTubeXangle",0.0);
-  Control.addVariable("EpbOutTubeYangle",0.0);
-  Control.addVariable("EpbOutTubeZangle",0.0);              
+  Control.addVariable("EpbOutTubeXAngle",0.0);
+  Control.addVariable("EpbOutTubeYAngle",0.0);
+  Control.addVariable("EpbOutTubeZAngle",0.0);              
   Control.addVariable("EpbOutTubeRadius",12.1);
   Control.addVariable("EpbOutTubeThick",0.5);
   Control.addVariable("EpbOutTubeLength",90.0-15.0);      
@@ -177,9 +177,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("FirstTubeXStep",0.0);  
   Control.addVariable("FirstTubeYStep",155.0);  
   Control.addVariable("FirstTubeZStep",0.0);
-  Control.addVariable("FirstTubeXangle",0.0);
-  Control.addVariable("FirstTubeYangle",0.0);
-  Control.addVariable("FirstTubeZangle",0.0);           
+  Control.addVariable("FirstTubeXAngle",0.0);
+  Control.addVariable("FirstTubeYAngle",0.0);
+  Control.addVariable("FirstTubeZAngle",0.0);           
   Control.addVariable("FirstTubeRadius",12.1);
   Control.addVariable("FirstTubeThick",0.5);
   Control.addVariable("FirstTubeLength",44.8);      
@@ -199,9 +199,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("ThirdTubeXStep",0.0);  
   Control.addVariable("ThirdTubeYStep",260.8);  
   Control.addVariable("ThirdTubeZStep",0.0);
-  Control.addVariable("ThirdTubeXangle",0.0);
-  Control.addVariable("ThirdTubeYangle",0.0);
-  Control.addVariable("ThirdTubeZangle",0.0);           
+  Control.addVariable("ThirdTubeXAngle",0.0);
+  Control.addVariable("ThirdTubeYAngle",0.0);
+  Control.addVariable("ThirdTubeZAngle",0.0);           
   Control.addVariable("ThirdTubeRadius",11.15);
   Control.addVariable("ThirdTubeThick",0.5);
   Control.addVariable("ThirdTubeLength",78.0);      
@@ -224,9 +224,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("Q44quadXSize",144.0);      //
   Control.addVariable("Q44quadYSize",62.0);      //
   Control.addVariable("Q44quadZSize",144.0);      //
-  Control.addVariable("Q44quadXangle",0.0);      //
-  Control.addVariable("Q44quadYangle",45.0);      //  
-  Control.addVariable("Q44quadZangle",0.0);      //  
+  Control.addVariable("Q44quadXAngle",0.0);      //
+  Control.addVariable("Q44quadYAngle",45.0);      //  
+  Control.addVariable("Q44quadZAngle",0.0);      //  
   Control.addVariable("Q44quadCutLenOut",30.0);      //
   Control.addVariable("Q44quadCutLenMid",20.0);      //
 
@@ -245,9 +245,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("FinalTubeXStep",0.0);  
   Control.addVariable("FinalTubeYStep",338.8);  
   Control.addVariable("FinalTubeZStep",0.0);
-  Control.addVariable("FinalTubeXangle",0.0);
-  Control.addVariable("FinalTubeYangle",0.0);
-  Control.addVariable("FinalTubeZangle",0.0);           
+  Control.addVariable("FinalTubeXAngle",0.0);
+  Control.addVariable("FinalTubeYAngle",0.0);
+  Control.addVariable("FinalTubeZAngle",0.0);           
   Control.addVariable("FinalTubeRadius",16.0);
   Control.addVariable("FinalTubeThick",0.5);
   Control.addVariable("FinalTubeLength",100.0);      
@@ -261,9 +261,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuRoomXStep",168.45);  
   Control.addVariable("MuRoomYStep",0.0);  
   Control.addVariable("MuRoomZStep",0.0);
-  Control.addVariable("MuRoomXangle",0.0);
-  Control.addVariable("MuRoomYangle",0.0);
-  Control.addVariable("MuRoomZangle",90.0);    
+  Control.addVariable("MuRoomXAngle",0.0);
+  Control.addVariable("MuRoomYAngle",0.0);
+  Control.addVariable("MuRoomZAngle",90.0);    
   Control.addVariable("MuRoomHeight",240.0);  
   Control.addVariable("MuRoomDepth",256.9);  
   Control.addVariable("MuRoomWidth",240.0);         
@@ -284,9 +284,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("Q1quadXSize",81.0);      //
   Control.addVariable("Q1quadYSize",60.9);      //
   Control.addVariable("Q1quadZSize",81.0);      //
-  Control.addVariable("Q1quadXangle",0.0);      //
-  Control.addVariable("Q1quadYangle",45.0);      //  
-  Control.addVariable("Q1quadZangle",90.0);      //  
+  Control.addVariable("Q1quadXAngle",0.0);      //
+  Control.addVariable("Q1quadYAngle",45.0);      //  
+  Control.addVariable("Q1quadZAngle",90.0);      //  
   Control.addVariable("Q1quadCutLenOut",20.0);      //
   Control.addVariable("Q1quadCutLenMid",12.0);      //
 
@@ -308,9 +308,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("Q2quadXSize",120.0);      //
   Control.addVariable("Q2quadYSize",27.2);      // 1.2 x (136mm x 2); 1.2 to account for front and back 'plate'
   Control.addVariable("Q2quadZSize",120.0);      //
-  Control.addVariable("Q2quadXangle",0.0);      //
-  Control.addVariable("Q2quadYangle",45.0);      //  
-  Control.addVariable("Q2quadZangle",90.0);      //  
+  Control.addVariable("Q2quadXAngle",0.0);      //
+  Control.addVariable("Q2quadYAngle",45.0);      //  
+  Control.addVariable("Q2quadZAngle",90.0);      //  
   Control.addVariable("Q2quadCutLenOut",30.0);      //
   Control.addVariable("Q2quadCutLenMid",25.05);      //
 
@@ -329,9 +329,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("CernFrontXStep",177.9);  
   Control.addVariable("CernFrontYStep",0.0);  
   Control.addVariable("CernFrontZStep",0.0);
-  Control.addVariable("CernFrontXangle",0.0);
-  Control.addVariable("CernFrontYangle",0.0);
-  Control.addVariable("CernFrontZangle",90.0);    
+  Control.addVariable("CernFrontXAngle",0.0);
+  Control.addVariable("CernFrontYAngle",0.0);
+  Control.addVariable("CernFrontZAngle",90.0);    
   Control.addVariable("CernFrontHeight",130.0);  
   Control.addVariable("CernFrontDepth",2.72);  
   Control.addVariable("CernFrontWidth",130.0);         
@@ -348,9 +348,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("CernBackXStep",238.3);  
   Control.addVariable("CernBackYStep",0.0);  
   Control.addVariable("CernBackZStep",0.0);
-  Control.addVariable("CernBackXangle",0.0);
-  Control.addVariable("CernBackYangle",0.0);
-  Control.addVariable("CernBackZangle",90.0);    
+  Control.addVariable("CernBackXAngle",0.0);
+  Control.addVariable("CernBackYAngle",0.0);
+  Control.addVariable("CernBackZAngle",90.0);    
   Control.addVariable("CernBackHeight",130.0);  
   Control.addVariable("CernBackDepth",2.72);  
   Control.addVariable("CernBackWidth",130.0);         
@@ -368,9 +368,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("BWin1XStep",12.7);  
   Control.addVariable("BWin1YStep",0.0);  
   Control.addVariable("BWin1ZStep",0.0);
-  Control.addVariable("BWin1Xangle",0.0);      //
-  Control.addVariable("BWin1Yangle",0.0);      //  
-  Control.addVariable("BWin1Zangle",-90.0);      // 
+  Control.addVariable("BWin1XAngle",0.0);      //
+  Control.addVariable("BWin1YAngle",0.0);      //  
+  Control.addVariable("BWin1ZAngle",-90.0);      // 
 
   Control.addVariable("BWin1FlCylOutRadius",7.35);      // 
 //  Control.addVariable("BWin1FlCylInRadius",5.5);      // 
@@ -411,9 +411,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("BWin2XStep",-12.7);  
   Control.addVariable("BWin2YStep",0.0);  
   Control.addVariable("BWin2ZStep",0.0);
-  Control.addVariable("BWin2Xangle",0.0);      //
-  Control.addVariable("BWin2Yangle",0.0);      //  
-  Control.addVariable("BWin2Zangle",90.0);      // 
+  Control.addVariable("BWin2XAngle",0.0);      //
+  Control.addVariable("BWin2YAngle",0.0);      //  
+  Control.addVariable("BWin2ZAngle",90.0);      // 
 
   Control.addVariable("BWin2FlCylOutRadius",7.35);      // 
   Control.addVariable("BWin2FlCylInRadius",4.5);      // 
@@ -452,9 +452,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("PosRing1XStep",38.9);  
   Control.addVariable("PosRing1YStep",0.0);  
   Control.addVariable("PosRing1ZStep",0.0);
-  Control.addVariable("PosRing1Xangle",0.0);
-  Control.addVariable("PosRing1Yangle",0.0);
-  Control.addVariable("PosRing1Zangle",-90.0);           
+  Control.addVariable("PosRing1XAngle",0.0);
+  Control.addVariable("PosRing1YAngle",0.0);
+  Control.addVariable("PosRing1ZAngle",-90.0);           
   Control.addVariable("PosRing1Radius",13.5);
   Control.addVariable("PosRing1Thick",1.25);
   Control.addVariable("PosRing1Length",7.4);      
@@ -464,9 +464,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuTube1XStep",46.3);  
   Control.addVariable("MuTube1YStep",0.0);  
   Control.addVariable("MuTube1ZStep",0.0);
-  Control.addVariable("MuTube1Xangle",0.0);
-  Control.addVariable("MuTube1Yangle",0.0);
-  Control.addVariable("MuTube1Zangle",-90.0);           
+  Control.addVariable("MuTube1XAngle",0.0);
+  Control.addVariable("MuTube1YAngle",0.0);
+  Control.addVariable("MuTube1ZAngle",-90.0);           
   Control.addVariable("MuTube1Radius",13.5);
   Control.addVariable("MuTube1Thick",0.3);
   Control.addVariable("MuTube1Length",73.0);      
@@ -476,9 +476,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuTube2XStep",119.3);  
   Control.addVariable("MuTube2YStep",0.0);  
   Control.addVariable("MuTube2ZStep",0.0);
-  Control.addVariable("MuTube2Xangle",0.0);
-  Control.addVariable("MuTube2Yangle",0.0);
-  Control.addVariable("MuTube2Zangle",-90.0);           
+  Control.addVariable("MuTube2XAngle",0.0);
+  Control.addVariable("MuTube2YAngle",0.0);
+  Control.addVariable("MuTube2ZAngle",-90.0);           
   Control.addVariable("MuTube2Radius",17.5);
   Control.addVariable("MuTube2Thick",0.3);
   Control.addVariable("MuTube2Length",163.0);      
@@ -488,9 +488,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("PosRing2XStep",282.3);  
   Control.addVariable("PosRing2YStep",0.0);  
   Control.addVariable("PosRing2ZStep",0.0);
-  Control.addVariable("PosRing2Xangle",0.0);
-  Control.addVariable("PosRing2Yangle",0.0);
-  Control.addVariable("PosRing2Zangle",-90.0);           
+  Control.addVariable("PosRing2XAngle",0.0);
+  Control.addVariable("PosRing2YAngle",0.0);
+  Control.addVariable("PosRing2ZAngle",-90.0);           
   Control.addVariable("PosRing2Radius",18.0);
   Control.addVariable("PosRing2Thick",2.0);
   Control.addVariable("PosRing2Length",2.7);      
@@ -500,9 +500,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuTube3XStep",285);  
   Control.addVariable("MuTube3YStep",0.0);  
   Control.addVariable("MuTube3ZStep",0.0);
-  Control.addVariable("MuTube3Xangle",0.0);
-  Control.addVariable("MuTube3Yangle",0.0);
-  Control.addVariable("MuTube3Zangle",-90.0);           
+  Control.addVariable("MuTube3XAngle",0.0);
+  Control.addVariable("MuTube3YAngle",0.0);
+  Control.addVariable("MuTube3ZAngle",-90.0);           
   Control.addVariable("MuTube3Radius",17.5);
   Control.addVariable("MuTube3Thick",0.3);
   Control.addVariable("MuTube3Length",9.2);      
@@ -512,9 +512,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("PosRing3XStep",294.2);  
   Control.addVariable("PosRing3YStep",0.0);  
   Control.addVariable("PosRing3ZStep",0.0);
-  Control.addVariable("PosRing3Xangle",0.0);
-  Control.addVariable("PosRing3Yangle",0.0);
-  Control.addVariable("PosRing3Zangle",-90.0);           
+  Control.addVariable("PosRing3XAngle",0.0);
+  Control.addVariable("PosRing3YAngle",0.0);
+  Control.addVariable("PosRing3ZAngle",-90.0);           
   Control.addVariable("PosRing3Radius",18.0);
   Control.addVariable("PosRing3Thick",2.0);
   Control.addVariable("PosRing3Length",2.7);      
@@ -524,9 +524,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuTube4XStep",296.9);  
   Control.addVariable("MuTube4YStep",0.0);  
   Control.addVariable("MuTube4ZStep",0.0);
-  Control.addVariable("MuTube4Xangle",0.0);
-  Control.addVariable("MuTube4Yangle",0.0);
-  Control.addVariable("MuTube4Zangle",-90.0);           
+  Control.addVariable("MuTube4XAngle",0.0);
+  Control.addVariable("MuTube4YAngle",0.0);
+  Control.addVariable("MuTube4ZAngle",-90.0);           
   Control.addVariable("MuTube4Radius",17.5);
   Control.addVariable("MuTube4Thick",0.3);
   Control.addVariable("MuTube4Length",132.3);      
@@ -536,9 +536,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("MuTube5XStep",429.2);  
   Control.addVariable("MuTube5YStep",0.0);  
   Control.addVariable("MuTube5ZStep",0.0);
-  Control.addVariable("MuTube5Xangle",0.0);
-  Control.addVariable("MuTube5Yangle",0.0);
-  Control.addVariable("MuTube5Zangle",-90.0);           
+  Control.addVariable("MuTube5XAngle",0.0);
+  Control.addVariable("MuTube5YAngle",0.0);
+  Control.addVariable("MuTube5ZAngle",-90.0);           
   Control.addVariable("MuTube5Radius",13.5);
   Control.addVariable("MuTube5Thick",0.3);
   Control.addVariable("MuTube5Length",59.25);      
@@ -548,9 +548,9 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("PosRing4XStep",488.45);  
   Control.addVariable("PosRing4YStep",0.0);  
   Control.addVariable("PosRing4ZStep",0.0);
-  Control.addVariable("PosRing4Xangle",0.0);
-  Control.addVariable("PosRing4Yangle",0.0);
-  Control.addVariable("PosRing4Zangle",-90.0);           
+  Control.addVariable("PosRing4XAngle",0.0);
+  Control.addVariable("PosRing4YAngle",0.0);
+  Control.addVariable("PosRing4ZAngle",-90.0);           
   Control.addVariable("PosRing4Radius",13.5);
   Control.addVariable("PosRing4Thick",1.25);
   Control.addVariable("PosRing4Length",7.4);      

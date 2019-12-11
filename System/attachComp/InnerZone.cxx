@@ -443,6 +443,29 @@ InnerZone::singleVoidUnit(Simulation& System,
 }
   
 int
+InnerZone::createFinalVoidUnit(Simulation& System,
+			       MonteCarlo::Object* masterCell)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createFinalVoidUnit()");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+  
+  Out=surroundHR.display()+
+    frontHR.display()+backHR.display();  
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  System.removeCell(masterCell->getName());
+
+  return cellIndex-1;
+}
+
+int
 InnerZone::createOuterVoidUnit(Simulation& System,
 			       MonteCarlo::Object* masterCell,
 			       HeadRule& FDivider,
@@ -648,9 +671,6 @@ InnerZone::constructMasterCell(Simulation& System)
 
   return masterCell;
 }
-
-
-
 
 MonteCarlo::Object*
 InnerZone::constructMasterCell(Simulation& System,

@@ -115,6 +115,8 @@ class InnerZone
 		     const HeadRule&);
 
 
+  int createFinalVoidUnit(Simulation&,
+			  MonteCarlo::Object*);
   
   int createOuterVoidUnit(Simulation&,
 			  MonteCarlo::Object*,

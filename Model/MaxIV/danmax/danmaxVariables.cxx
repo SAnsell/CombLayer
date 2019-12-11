@@ -268,10 +268,15 @@ connectVariables(FuncDataBase& Control,
   
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  
   PItemGen.setCF<setVariable::CF40>(3.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(0.0,"Void");
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setNoWindow();
 
     
   const std::string connectName(beamName+"ConnectShield");
@@ -284,21 +289,29 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
   
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,beamName+"PipeA",0,125.0);
+  PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
 
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setPipeCF<CF40>();
-  PTubeGen.setPortCF<CF40>();
-  PTubeGen.setPortLength(3.0,3.0);
-
+  BellowGen.setCF<setVariable::CF40>(); 
+  BellowGen.generateBellow(Control,beamName+"BellowA",0,16.0);
+  
+  PipeGen.setBFlangeCF<setVariable::CF100>(); 
+  PipeGen.generatePipe(Control,beamName+"FlangeA",0,5.0);
+  
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
   // ystep/length
-  PTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,5.0);
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,8.0);
   Control.addVariable(beamName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
-  
-  
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF100>(); 
+  PipeGen.generatePipe(Control,beamName+"FlangeB",0,5.0);
+
+  BellowGen.generateBellow(Control,beamName+"BellowB",0,16.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,beamName+"PipeB",0,325.0);
   return;
 }
 

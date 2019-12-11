@@ -35,18 +35,12 @@ namespace muSystem
   \brief Q11 type quadrupole object
 */
 
-class muonQ1 : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class muonQ1 :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp
 {
  private:
   
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xAngle;               ///< Angle (rotation)
-  double yAngle;               ///< Angle (rotation)  
-  double zAngle;               ///< Angle (rotation)  
   double xSize;                 ///< Left/Right size
   double ySize;                 ///< length down target
   double zSize;                 ///< Vertical size
@@ -65,8 +59,6 @@ class muonQ1 : public attachSystem::FixedComp,
   int insertMat;                   ///Material: Insert 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,7 +70,8 @@ class muonQ1 : public attachSystem::FixedComp,
   muonQ1& operator=(const muonQ1&);
   virtual ~muonQ1();
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

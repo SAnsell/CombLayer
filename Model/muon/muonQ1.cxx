@@ -3,7 +3,7 @@
  
  * File:   muon/muonQ1.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,13 +65,15 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "muonQ1.h"
 
 namespace muSystem
 {
 
 muonQ1::muonQ1(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -79,9 +81,7 @@ muonQ1::muonQ1(const std::string& Key)  :
 {}
 
 muonQ1::muonQ1(const muonQ1& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   xSize(A.xSize),ySize(A.ySize),zSize(A.zSize),
   cutLenOut(A.cutLenOut),cutLenMid(A.cutLenMid),
   steelThick(A.steelThick),copperThick(A.copperThick),
@@ -104,14 +104,8 @@ muonQ1::operator=(const muonQ1& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xAngle=A.xAngle;
-      yAngle=A.yAngle;
-      zAngle=A.zAngle;
       xSize=A.xSize;
       ySize=A.ySize;
       zSize=A.zSize;
@@ -145,13 +139,8 @@ muonQ1::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("muonQ1","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xAngle=Control.EvalVar<double>(keyName+"Xangle");
-  yAngle=Control.EvalVar<double>(keyName+"Yangle");  
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedRotate::populate(Control);
+  
   xSize=Control.EvalVar<double>(keyName+"XSize");
   ySize=Control.EvalVar<double>(keyName+"YSize");
   zSize=Control.EvalVar<double>(keyName+"ZSize");
@@ -172,25 +161,6 @@ muonQ1::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-muonQ1::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Master origin 
-  */
-{
-  ELog::RegMethod RegA("muonQ1","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(0,0,zAngle);  
-  applyAngleRotate(0,yAngle,0);  
-//  applyShift(xStep,yStep,zStep);
-
-
-  
-  return;
-}
 
 void
 muonQ1::createSurfaces()
@@ -360,17 +330,20 @@ muonQ1::createLinks()
 }
 
 void
-muonQ1::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+muonQ1::createAll(Simulation& System,
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
 
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("muonQ1","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

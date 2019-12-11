@@ -3,7 +3,7 @@
  
  * File:   gammaBuild/makeGamma.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -171,10 +170,11 @@ makeGamma::build(Simulation* SimPtr,
   const int voidCell(74123);
   
   brick->addInsertCell(voidCell);
-  brick->createAll(*SimPtr,World::masterOrigin(),0,0);
+  brick->ModBase::createAll(*SimPtr,World::masterOrigin(),0);
 
   tallyVol->addInsertCell(voidCell);
   tallyVol->createAll(*SimPtr,*brick,0);
+
   makeDetectors(*SimPtr);
 
   return;

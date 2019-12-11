@@ -65,10 +65,11 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "World.h"
-#include "AttachSupport.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "World.h"
+#include "AttachSupport.h"
 
 #include "Building.h"
 #include "EPBline.h"
@@ -115,10 +116,11 @@ makeEPB::makeMagnets(Simulation& System)
     ModelSupport::objectRegister::Instance();
 
   const size_t nItems=Control.EvalVar<size_t>("EPBNMagnets");
+  
   for(size_t i=0;i<nItems;i++)
     {
       std::shared_ptr<Magnet> GA(new Magnet("Magnet",i+1));
-      GA->createAll(System,*LineVoid);
+      GA->createAll(System,*LineVoid,0);
       attachSystem::addToInsertSurfCtrl(System,*Hall,*GA);
       OR.addObject(GA);
       BendMags.push_back(GA);
@@ -128,7 +130,7 @@ makeEPB::makeMagnets(Simulation& System)
   for(size_t i=0;i<nFocus;i++)
     {
       std::shared_ptr<Magnet> GA(new Magnet("Focus",i+1));
-      GA->createAll(System,*LineVoid);
+      GA->createAll(System,*LineVoid,0);
       attachSystem::addToInsertSurfCtrl(System,*Hall,*GA);
       OR.addObject(GA);
       FocusMags.push_back(GA);
@@ -153,7 +155,7 @@ makeEPB::build(Simulation* SimPtr,
   Hall->addInsertCell(voidCell);
   Hall->createAll(*SimPtr,World::masterOrigin(),0);
 
-  LineVoid->createAll(*SimPtr,World::masterOrigin());
+  LineVoid->createAll(*SimPtr,World::masterOrigin(),0);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);
   
   makeMagnets(*SimPtr);
@@ -161,5 +163,5 @@ makeEPB::build(Simulation* SimPtr,
 }
 
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE epbSystem
 
