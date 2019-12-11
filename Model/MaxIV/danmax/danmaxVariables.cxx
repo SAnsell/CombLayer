@@ -180,12 +180,13 @@ frontMaskVariables(FuncDataBase& Control,
   CollGen.setFrontGap(2.13,2.146);
   CollGen.setBackGap(0.756,0.432);
 
-  // approx for 800uRad x 200uRad  
-  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
+  // approx for 400uRad x 200uRad  
+  //  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
+  CollGen.setMinAngleSize(32.0,1600.0, 400.0, 100.0);
   CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
 
   // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
+  CollGen.setMain(1.20,"Void","Void");
   CollGen.setFrontGap(0.84,0.582);
   CollGen.setBackGap(0.750,0.357);
 

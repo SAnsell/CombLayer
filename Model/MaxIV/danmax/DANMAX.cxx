@@ -218,6 +218,8 @@ DANMAX::build(Simulation& System,
   connectUnit->setBack(*exptHut,1);
   connectUnit->construct(System,*opticsHut,"back",*joinPipeB,"back");
 
+  joinPipeB->insertInCell(System,connectUnit->getCell("OuterVoid",0));
+  
   joinPipeC->insertInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
   
