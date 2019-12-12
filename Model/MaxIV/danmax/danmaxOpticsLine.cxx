@@ -307,6 +307,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   // FAKE insertcell: required
   viewTube->addAllInsertCell(masterCell->getName());
   viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  viewTube->setOuterVoid();
   viewTube->createAll(System,initFC,sideName);
   viewTube->intersectPorts(System,1,2);
 
@@ -718,14 +719,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*monoVessel,"back",*gateC);
 
-
-
   constructViewScreen(System,masterCell,*gateC,"back");
-
-  setCell("LastVoid",masterCell->getName());
-  lastComp=gateC;
-  
-  return;
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateD,"back",*bellowF);

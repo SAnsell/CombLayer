@@ -138,6 +138,8 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
       ringWallLen=A.ringWallLen;
       ringWallAngle=A.ringWallAngle;
       ringConcThick=A.ringWallAngle;
+      ringWallFlat=A.ringWallFlat;
+      ringWallBack=A.ringWallBack;
       outWidth=A.outWidth;
       innerThick=A.innerThick;
       pbWallThick=A.pbWallThick;
@@ -179,6 +181,8 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
   ringWallLen=Control.EvalVar<double>(keyName+"RingWallLen");
   ringWallAngle=Control.EvalVar<double>(keyName+"RingWallAngle");
+  ringWallFlat=Control.EvalDefVar<double>(keyName+"RingWallFlat",0.0);
+  ringWallBack=Control.EvalDefVar<double>(keyName+"RingWallBack",0.0);
   ringConcThick=Control.EvalVar<double>(keyName+"RingConcThick");
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
@@ -319,6 +323,18 @@ balderOpticsHutch::createSurfaces()
 	    (SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
 	  ExternalCut::setCutSurf("SideWall",-SMap.realSurf(buildIndex+2004));
 	}
+
+        if (std::abs(ringWallBack)>Geometry::zeroTol)
+	  {
+	    Geometry::Vec3D BPoint(Origin+Y*(length-ringWallBack));
+	    ModelSupport::buildPlane(SMap,buildIndex+202,BPoint,Y);
+	    BPoint+=Y*innerThick;
+	    ModelSupport::buildPlane(SMap,buildIndex+212,BPoint,Y);
+	    BPoint+=Y*pbWallThick;
+	    ModelSupport::buildPlane(SMap,buildIndex+222,BPoint,Y);
+	    BPoint+=Y*outerThick;
+	    ModelSupport::buildPlane(SMap,buildIndex+232,BPoint,Y);
+	  }
     }
   
   if (inletRadius>Geometry::zeroTol)

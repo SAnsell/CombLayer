@@ -364,26 +364,37 @@ GateValveCylinder::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
-
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 11 -12 (-17 : (13 -14 5 -16))");
-  addOuterSurf(Out);
+
   if (portAExtends || portBExtends)
     {
-      Out="";
       if (!portAExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
+	{
+	  addOuterSurf(Out);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
+	}
       else if (!portBExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
+	{
+	  addOuterSurf(Out);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
+	}
       else
 	{
-	  // Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 ");
-	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+frontStr);
-	  // Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
-	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+backStr);
-	  // Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
-	  // makeCell("PortOuterVoid",System,cellIndeX++,0,0.0,Out+backStr);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," (-11 -117) : (12 -217) ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 117 ");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 217 ");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex," -11 -16 13 -14 5 17 ");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex," 12 -16 13 -14 5 17 ");
+	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
+
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex," -17 : (13 -14 5 -16)");
+
 	}
       addOuterUnionSurf(Out+frontStr+backStr);
     }

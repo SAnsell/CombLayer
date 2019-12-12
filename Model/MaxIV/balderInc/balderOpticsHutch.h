@@ -51,6 +51,8 @@ class balderOpticsHutch :
   double ringWidth;             ///< void flat part to ring
   double ringWallLen;           ///< void flat length [before angle]
   double ringWallAngle;         ///< angle on ring side wall
+  double ringWallFlat;          ///< Flat end distance in
+  double ringWallBack;          ///< Flat end distance from back wall
 
   double ringConcThick;         ///< Thickness of concreate on ring side
   
