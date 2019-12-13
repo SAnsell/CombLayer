@@ -341,116 +341,9 @@ getComposite(const surfRegister& SMap,
 
 
 
-std::string
-getSetComposite(const surfRegister& SMap,const int Offset,
-		const int MinorOffset,
-		const std::string& BaseString)
-  /*!
-    Given a base string add an offset to the numbers
-    If a cell does not exist ignore [no error]
-    If a number is preceeded by T then it is a true number.
-    Use T-4000 etc.
-    \param SMap :: Surf register 
-    \param Offset :: Offset nubmer to add
-    \param minorOffset :: minor Offset nubmer to add [M]
-    \param BaseString :: BaseString number
-    \return String with offset components
-   */
-{
-  std::ostringstream cx;
-  
-  int cellN;
-  int TrueNum,MinorNum;
-  std::string segment=spcDelimString(BaseString);
-  std::string OutUnit;
-  cx<<" ";
-  while(StrFunc::section(segment,OutUnit))
-    {
-      const size_t oL=OutUnit.length();
-      if (oL)
-	{
-	  TrueNum=MinorNum=0;
-	  if (OutUnit[oL-1]=='T')
-	    {
-	      OutUnit[oL-1]=' ';
-	      TrueNum=1;
-	    }
-	  else if (OutUnit[oL-1]=='M')
-	    {
-	      OutUnit[oL-1]=' ';
-	      MinorNum=1;
-	    }
-	  if (StrFunc::convert(OutUnit,cellN))
-	    {
-	      int CN(cellN);
-	      if (!TrueNum)
-		{
-		  if (MinorNum)
-		    CN+=(cellN>0) ? MinorOffset : -MinorOffset;
-		  else
-		    CN+=(cellN>0) ? Offset : -Offset;
-		  if (SMap.hasSurf(CN))
-		    cx<<SMap.realSurf(CN)<<" ";
-		}
-	    }
-	  else
-	    cx<<OutUnit<<" ";
-	}
-    }  
-  return removeOpenPair(cx.str());
-}
 
 
   
-std::string
-getSetComposite(const surfRegister& SMap,
-	     const int Offset,const std::string& BaseString)
-  /*!
-    Given a base string add an offset to the numbers
-    If a number is preceeded by T then it is a true number.
-    Use T-4000 etc. However, if a number is missing then 
-    leave its component blank.
-    \param SMap :: Surf register 
-    \param Offset :: Offset nubmer to add
-    \param BaseString :: BaseString number
-    \return String with offset components
-   */
-{
-  std::ostringstream cx;
-  std::string OutUnit;
-  int cellN;
-  int TrueNum=0;
-
-  std::string segment=spcDelimString(BaseString);
- 
-  cx<<" ";
-  while(StrFunc::section(segment,OutUnit))
-    {
-      const size_t oL=OutUnit.length();
-      if (oL)
-	{
-	  TrueNum=0;
-	  if (OutUnit[oL-1]=='T')
-	    {
-	      OutUnit[oL-1]=' ';
-	      TrueNum=1;
-	    }
-	  if (StrFunc::convert(OutUnit,cellN))
-	    {
-	      int CN(cellN);
-	      if (!TrueNum)
-		CN+=(cellN>0) ? Offset : -Offset;
-	      if (SMap.hasSurf(CN))
-		cx<<SMap.realSurf(CN)<<" ";
-	    }
-	  else
-	    cx<<OutUnit<<" ";
-	}
-    }
-
-  return removeOpenPair(cx.str());
-
-}
 
 std::string
 getComposite(const surfRegister& SMap,
@@ -508,6 +401,109 @@ getComposite(const surfRegister& SMap,
     getComposite(SMap,Offset,surfNC);
 }
 
+
+std::string
+getSetComposite(const surfRegister& SMap,
+	     const int Offset,const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc. However, if a number is missing then 
+    leave its component blank.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getSetComposite(SMap,Offset,Offset,Offset,BaseString);
+}
+
+std::string
+getSetComposite(const surfRegister& SMap,
+		const int Offset,const int minorOffset,
+		const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc. However, if a number is missing then 
+    leave its component blank.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getSetComposite(SMap,Offset,minorOffset,Offset,BaseString);
+}
+
+std::string
+getSetComposite(const surfRegister& SMap,const int Offset,
+		const int MinorOffset,const int SecondOffset,
+		const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  std::ostringstream cx;
+  
+  int cellN;
+  int TrueNum,MinorNum,SecondNum;
+  std::string segment=spcDelimString(BaseString);
+  std::string OutUnit;
+  cx<<" ";
+  while(StrFunc::section(segment,OutUnit))
+    {
+      const size_t oL=OutUnit.length();
+      if (oL)
+	{
+	  TrueNum=MinorNum=SecondNum=0;
+	  if (OutUnit[oL-1]=='T')
+	    {
+	      OutUnit[oL-1]=' ';
+	      TrueNum=1;
+	    }
+	  else if (OutUnit[oL-1]=='M')
+	    {
+	      OutUnit[oL-1]=' ';
+	      MinorNum=1;
+	    }
+	  else if (OutUnit[oL-1]=='N')
+	    {
+	      OutUnit[oL-1]=' ';
+	      SecondNum=1;
+	    }
+	  if (StrFunc::convert(OutUnit,cellN))
+	    {
+	      int CN(cellN);
+	      if (!TrueNum)
+		{ 
+		  if (MinorNum)
+		    CN+=(cellN>0) ? MinorOffset : -MinorOffset;
+		  else if (SecondNum)
+		    CN+=(cellN>0) ? SecondOffset : -SecondOffset;
+		  else
+		    CN+=(cellN>0) ? Offset : -Offset;
+		  if (SMap.hasSurf(CN))
+		    cx<<SMap.realSurf(CN)<<" ";
+		}
+	    }
+	  else
+	    cx<<OutUnit<<" ";
+	}
+    }
+  return removeOpenPair(cx.str());
+}
+
+
 std::string
 getSeqIntersection(int A,int B,int step)
   /*!
@@ -552,6 +548,142 @@ getSeqUnion(int A,int B,int step)
     cx<<i<<":";
   cx<<B<<")";
   return cx.str();
+}
+
+std::string
+getAltComposite(const surfRegister& SMap,const int Offset,
+		const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getAltComposite(SMap,Offset,Offset,Offset,BaseString);
+}
+
+std::string
+getAltComposite(const surfRegister& SMap,const int Offset,
+		const int MinorOffset,const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getAltComposite(SMap,Offset,MinorOffset,Offset,BaseString);
+}
+
+std::string
+getAltComposite(const surfRegister& SMap,const int Offset,
+		const int MinorOffset,const int SecondOffset,
+		const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If surfaces A,B,C exist. then choose surface A
+    is A exists , if B then choose B  ...
+    
+    If there are multiple DIFFERENT surf with appendix A, B etc
+    then ALL A,B,C need to be correct for it to take presidence
+    
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param secondOffset :: second minor Offset nubmer to add [N]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  std::ostringstream cx;
+  std::string segment=spcDelimString(BaseString);
+  std::string segmentB=segment;
+
+  std::string OutUnit;
+  int cellN;
+  size_t index(7);         // A,B,C
+  while(StrFunc::section(segment,OutUnit))
+    {
+      const size_t oL=OutUnit.length();
+      if (oL>=2)
+	{
+	  const char Unit=OutUnit[oL-1];
+	  if (Unit=='A' || Unit=='B' || Unit=='C')
+	    {
+	      OutUnit[oL-1]=' ';
+	      int Plus=Offset;
+	      if (OutUnit[oL-2]=='T')
+		{
+		  Plus=0;
+		  OutUnit[oL-2]=' ';
+		}
+	      else if (OutUnit[oL-2]=='N')
+		{
+		  Plus=SecondOffset;
+		  OutUnit[oL-2]=' ';
+		}
+	      else if (OutUnit[oL-2]=='M')
+		{
+		  Plus=MinorOffset;
+		  OutUnit[oL-2]=' ';
+		}
+	      if (StrFunc::convert(OutUnit,cellN))
+		{
+		  const int CN((cellN>0) ? cellN+Plus : cellN-Plus);
+		  if (!SMap.hasSurf(CN))
+		    {
+		      if (Unit=='A') index &= 3;  // 011
+		      if (Unit=='B') index &= 5;  // 101
+		      if (Unit=='C') index &= 6;  // 110
+		    }
+		}
+	    }
+	}
+    }  
+  // preserve either A,B,C,' '.
+  const char preserve=" CBBAAAA"[index];
+  while(StrFunc::section(segmentB,OutUnit))
+    {
+      const size_t oL=OutUnit.length();
+      if (oL)
+	{
+	  const char OU=OutUnit[oL-1];
+	  if (preserve==OU)
+	    OutUnit[oL-1]=' ';
+	  else if (OU=='A' || OU=='B' || OU=='C' )
+	    OutUnit="";
+	    
+	  cx<<OutUnit<<" ";
+	}
+      else
+	cx<<OutUnit<<" ";
+    }
+  return getSetComposite(SMap,Offset,MinorOffset,SecondOffset,cx.str());
 }
 
   

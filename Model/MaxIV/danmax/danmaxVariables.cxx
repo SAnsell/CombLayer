@@ -67,6 +67,7 @@
 #include "MonoShutterGenerator.h"
 #include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
@@ -170,12 +171,23 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
   setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       // 1033.8
-  CollGen.setBackGap(1.54,1.42);
+  setVariable::SqrFMaskGenerator FMaskGen;
+
+    // collimator block
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setFrontGap(3.99,1.97);  //1033.8
+  FMaskGen.setBackGap(0.71,0.71);
+  FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
+  FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
+  
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
+  
+  //  CollGen.setFrontGap(2.62,1.86);       // 1033.8
+  //  CollGen.setBackGap(1.54,1.42);
   // Approximated to get 1.2mrad x 1.1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+  //  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
+  //  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
 
   CollGen.setFrontGap(2.13,2.146);
   CollGen.setBackGap(0.756,0.432);
@@ -211,11 +223,14 @@ opticsHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",999.6);
-  Control.addVariable(hutName+"OutWidth",200.0);
-  Control.addVariable(hutName+"RingWidth",110.0);
-  Control.addVariable(hutName+"RingWallLen",105.0);
+  Control.addVariable(hutName+"OutWidth",200.0);    // should be 242.0
+  Control.addVariable(hutName+"RingWidth",110.0);   // should be 64.5
+  Control.addVariable(hutName+"RingWallLen",105.0);  // correct
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);
+  Control.addVariable(hutName+"RingWallAngle",18.50);
+  Control.addVariable(hutName+"RingWallBack",159.6);  // distance from backwall
+  Control.addVariable(hutName+"RingWallFlat",176.4);   // centre line to wall
   
   Control.addVariable(hutName+"InnerThick",0.2);
   

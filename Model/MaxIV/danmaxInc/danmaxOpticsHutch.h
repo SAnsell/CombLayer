@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/bladerOpticsHutch.h
+ * File:   danmaxInc/danmaxOpticsHutch.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_bladerOpticsHutch_h
-#define xraySystem_balderOpticsHutch_h
+#ifndef xraySystem_danmaxOpticsHutch_h
+#define xraySystem_danmaxOpticsHutch_h
 
 class Simulation;
 
@@ -28,16 +28,16 @@ namespace xraySystem
 {
   class PortChicane;
 /*!
-  \class balderOpticsHutch
+  \class danmaxOpticsHutch
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief balderOpticsHutch unit  
+  \brief danmaxOpticsHutch unit  
 
   Built around the central beam axis
 */
 
-class balderOpticsHutch :
+class danmaxOpticsHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -51,6 +51,8 @@ class balderOpticsHutch :
   double ringWidth;             ///< void flat part to ring
   double ringWallLen;           ///< void flat length [before angle]
   double ringWallAngle;         ///< angle on ring side wall
+  double ringWallFlat;          ///< Flat end distance in
+  double ringWallBack;          ///< Flat end distance from back wall
 
   double ringConcThick;         ///< Thickness of concreate on ring side
   
@@ -91,10 +93,10 @@ class balderOpticsHutch :
 
  public:
 
-  balderOpticsHutch(const std::string&);
-  balderOpticsHutch(const balderOpticsHutch&);
-  balderOpticsHutch& operator=(const balderOpticsHutch&);
-  virtual ~balderOpticsHutch();
+  danmaxOpticsHutch(const std::string&);
+  danmaxOpticsHutch(const danmaxOpticsHutch&);
+  danmaxOpticsHutch& operator=(const danmaxOpticsHutch&);
+  virtual ~danmaxOpticsHutch();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

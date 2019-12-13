@@ -93,6 +93,7 @@
 #include "PortTube.h"
 #include "CrossPipe.h"
 #include "SqrCollimator.h"
+#include "SquareFMask.h"
 #include "BeamMount.h"
 #include "HeatDump.h"
 #include "EPSeparator.h"
@@ -126,7 +127,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
-  collA(new xraySystem::SqrCollimator(newName+"CollA")),
+  collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -604,15 +605,20 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  collTubeA->setFront(*bellowA,2);
-  collTubeA->createAll(System,*bellowA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeA,2);
-  collTubeA->insertAllInCell(System,outerCell);
+  //  collA->setFront(*bellowA,2);
+  collA->createAll(System,*bellowA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
+  collA->insertInCell(System,outerCell);
+    
+  // collTubeA->setFront(*bellowA,2);
+  // collTubeA->createAll(System,*bellowA,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeA,2);
+  // collTubeA->insertAllInCell(System,outerCell);
   
-  collA->addInsertCell(collTubeA->getCell("Void"));
-  collA->createAll(System,*collTubeA,0);
+  //  collA->addInsertCell(collTubeA->getCell("Void"));
+  //  collA->createAll(System,*collTubeA,0);
 
-  bellowB->createAll(System,*collTubeA,2);
+  bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
 

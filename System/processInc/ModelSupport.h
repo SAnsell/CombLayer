@@ -53,6 +53,15 @@ namespace ModelSupport
 			      const std::string&);
   std::string getSetComposite(const surfRegister&,const int,
 			      const int,const std::string&);
+  std::string getSetComposite(const surfRegister&,const int,
+			      const int,const int,const std::string&);
+
+  std::string getAltComposite(const surfRegister&,const int,
+			      const std::string&);
+  std::string getAltComposite(const surfRegister&,const int,
+			      const int,const std::string&);
+  std::string getAltComposite(const surfRegister&,const int,
+			      const int,const int,const std::string&);
 
   std::string getSeqIntersection(int,int,int);
   std::string getSeqUnion(int,int,int);

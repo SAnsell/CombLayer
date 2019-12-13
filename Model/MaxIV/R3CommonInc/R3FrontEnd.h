@@ -113,7 +113,7 @@ class R3FrontEnd :
   /// box for collimator
   std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// collimator A
-  std::shared_ptr<xraySystem::SqrCollimator> collA;
+  std::shared_ptr<xraySystem::SquareFMask> collA;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe

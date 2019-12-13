@@ -75,7 +75,7 @@ class DANMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
+  std::shared_ptr<danmaxOpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/balderOpticsHutch.cxx
+ * File:   danmax/danmaxOpticsHutch.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -77,12 +77,12 @@
 #include "ExternalCut.h"
 #include "PortChicane.h"
 
-#include "balderOpticsHutch.h"
+#include "danmaxOpticsHutch.h"
 
 namespace xraySystem
 {
 
-balderOpticsHutch::balderOpticsHutch(const std::string& Key) : 
+danmaxOpticsHutch::danmaxOpticsHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -98,7 +98,7 @@ balderOpticsHutch::balderOpticsHutch(const std::string& Key) :
   nameSideIndex(17,"frontCut");
 }
 
-balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) : 
+danmaxOpticsHutch::danmaxOpticsHutch(const danmaxOpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -113,15 +113,15 @@ balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) :
   skinMat(A.skinMat),pbMat(A.pbMat)
   /*!
     Copy constructor
-    \param A :: balderOpticsHutch to copy
+    \param A :: danmaxOpticsHutch to copy
   */
 {}
 
-balderOpticsHutch&
-balderOpticsHutch::operator=(const balderOpticsHutch& A)
+danmaxOpticsHutch&
+danmaxOpticsHutch::operator=(const danmaxOpticsHutch& A)
   /*!
     Assignment operator
-    \param A :: balderOpticsHutch to copy
+    \param A :: danmaxOpticsHutch to copy
     \return *this
   */
 {
@@ -138,6 +138,8 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
       ringWallLen=A.ringWallLen;
       ringWallAngle=A.ringWallAngle;
       ringConcThick=A.ringWallAngle;
+      ringWallFlat=A.ringWallFlat;
+      ringWallBack=A.ringWallBack;
       outWidth=A.outWidth;
       innerThick=A.innerThick;
       pbWallThick=A.pbWallThick;
@@ -155,20 +157,20 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
   return *this;
 }
 
-balderOpticsHutch::~balderOpticsHutch() 
+danmaxOpticsHutch::~danmaxOpticsHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-balderOpticsHutch::populate(const FuncDataBase& Control)
+danmaxOpticsHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","populate");
+  ELog::RegMethod RegA("danmaxOpticsHutch","populate");
   
   FixedOffset::populate(Control);
 
@@ -179,6 +181,8 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
   ringWallLen=Control.EvalVar<double>(keyName+"RingWallLen");
   ringWallAngle=Control.EvalVar<double>(keyName+"RingWallAngle");
+  ringWallFlat=Control.EvalVar<double>(keyName+"RingWallFlat");
+  ringWallBack=Control.EvalVar<double>(keyName+"RingWallBack");
   ringConcThick=Control.EvalVar<double>(keyName+"RingConcThick");
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
@@ -208,7 +212,7 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
 }
 
 void
-balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
+danmaxOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -216,7 +220,7 @@ balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","createUnitVector");
+  ELog::RegMethod RegA("danmaxOpticsHutch","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
 
@@ -226,12 +230,12 @@ balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-balderOpticsHutch::createSurfaces()
+danmaxOpticsHutch::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("danmaxOpticsHutch","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -319,6 +323,24 @@ balderOpticsHutch::createSurfaces()
 	    (SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
 	  ExternalCut::setCutSurf("SideWall",-SMap.realSurf(buildIndex+2004));
 	}
+
+      Geometry::Vec3D BPoint(Origin+Y*(length-ringWallBack));
+      ModelSupport::buildPlane(SMap,buildIndex+202,BPoint,Y);
+      BPoint+=Y*innerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+212,BPoint,Y);
+      BPoint+=Y*pbWallThick;
+      ModelSupport::buildPlane(SMap,buildIndex+222,BPoint,Y);
+      BPoint+=Y*outerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+232,BPoint,Y);
+      
+      Geometry::Vec3D SPoint(Origin+X*ringWallFlat);
+      ModelSupport::buildPlane(SMap,buildIndex+204,SPoint,X);
+      SPoint+=X*innerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+214,SPoint,X);
+      SPoint+=X*pbWallThick;
+      ModelSupport::buildPlane(SMap,buildIndex+224,SPoint,X);
+      SPoint+=X*outerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
     }
   
   if (inletRadius>Geometry::zeroTol)
@@ -328,19 +350,18 @@ balderOpticsHutch::createSurfaces()
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+117,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
-
   
   return;
 }
 
 void
-balderOpticsHutch::createObjects(Simulation& System)
+danmaxOpticsHutch::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","createObjects");
+  ELog::RegMethod RegA("danmaxOpticsHutch","createObjects");
 
   // ring wall
   const std::string sideWall=ExternalCut::getRuleStr("SideWall"); 
@@ -352,21 +373,27 @@ balderOpticsHutch::createObjects(Simulation& System)
   
   std::string Out;
 
-  if (innerOutVoid>Geometry::zeroTol)
+  if (innerOutVoid>Geometry::zeroTol)   // void for chicanes
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,"1 -2 1003 (-4:-104) -6 3007 ");
+	(SMap,buildIndex,"1 -2 1003 (-4 : (-104 (-204 : -202) )) -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
     }
   else
     {
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,"1 -2 3 (-4:-104) -6 3007 ");
+	(SMap,buildIndex,"1 -2 3 (-4: (-104 (-204 : -202 ) ) ) -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
     }
 
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex," 234 -134 232 -32 -36 ");
+  makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+
+  
+  
   // walls:
   int HI(buildIndex);
 
@@ -380,8 +407,15 @@ balderOpticsHutch::createObjects(Simulation& System)
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-					"1 -2  4M  104M  (-14M:-114M) -6 ");
+					"1 -202  4M  104M  (-14M:-114M) -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
+
+      if (ringWallBack>Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getSetComposite
+	    (SMap,buildIndex,HI,"202M -2 -134 204M (-214M : -212M)  -6 ");
+	  makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
+	}
       
       //front wall
       Out=ModelSupport::getSetComposite
@@ -391,11 +425,12 @@ balderOpticsHutch::createObjects(Simulation& System)
       makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out+floor);
       
       //back wall
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) -6 117 ");
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,HI,"2M -12M 33 -134B -234A -6 117 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out+floor);
       
       // roof
+      //  "1 -202  4M  104M  (-14M:-114M) -6 "
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
       if (layer=="Outer") Out+=frontWall;
@@ -447,13 +482,13 @@ balderOpticsHutch::createObjects(Simulation& System)
 }
 
 void
-balderOpticsHutch::createLinks()
+danmaxOpticsHutch::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","createLinks");
+  ELog::RegMethod RegA("danmaxOpticsHutch","createLinks");
 
   const double extraFront(innerThick+outerThick+pbFrontThick);
   const double extraBack(innerThick+outerThick+pbBackThick);
@@ -538,13 +573,13 @@ balderOpticsHutch::createLinks()
 }
 
 void
-balderOpticsHutch::createChicane(Simulation& System)
+danmaxOpticsHutch::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
     \param System :: Simulation 
   */
 {
-  ELog::RegMethod Rega("balderOpticsHutch","createChicane");
+  ELog::RegMethod Rega("danmaxOpticsHutch","createChicane");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -581,7 +616,7 @@ balderOpticsHutch::createChicane(Simulation& System)
 }
 
 void
-balderOpticsHutch::createAll(Simulation& System,
+danmaxOpticsHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -591,7 +626,7 @@ balderOpticsHutch::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("balderOpticsHutch","createAll(FC)");
+  ELog::RegMethod RegA("danmaxOpticsHutch","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

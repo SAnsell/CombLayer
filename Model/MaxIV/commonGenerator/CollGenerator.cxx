@@ -147,6 +147,40 @@ CollGenerator::setMinAngleSize(const double L,
   minHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
   return;
 }
+
+void
+CollGenerator::setFrontAngleSize(const double Dist,
+				const double angX,
+				const double angZ)
+  
+  /*!
+    Set min length/width/height
+    \param Dist :: distance from undulator centre 
+    \param angX :: angle full opening [urad]
+    \param angZ :: angle full opening [urad]
+   */
+{
+  AWidth= 2.0*Dist*tan(1e-6*angX/2.0);
+  AHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
+  return;
+}
+
+void
+CollGenerator::setBackAngleSize(const double Dist,
+				const double angX,
+				const double angZ)
+  
+  /*!
+    Set min length/width/height
+    \param Dist :: distance from undulator centre 
+    \param angX :: angle full opening [urad]
+    \param angZ :: angle full opening [urad]
+   */
+{
+  BWidth= 2.0*Dist*tan(1e-6*angX/2.0);
+  BHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
+  return;
+}
   
 void
 CollGenerator::setMain(const double R,const std::string& M,
