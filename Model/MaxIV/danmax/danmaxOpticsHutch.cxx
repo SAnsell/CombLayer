@@ -396,6 +396,7 @@ danmaxOpticsHutch::createObjects(Simulation& System)
   
   // walls:
   int HI(buildIndex);
+  int HIneg(buildIndex+20);
 
   std::list<int> matList({skinMat,pbMat,skinMat});
 
@@ -432,13 +433,26 @@ danmaxOpticsHutch::createObjects(Simulation& System)
       // roof
       //  "1 -202  4M  104M  (-14M:-114M) -6 "
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
+	(SMap,buildIndex,HI,"11M -212M 33 (-34:-134) 6M -16M ");
       if (layer=="Outer") Out+=frontWall;
       makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
+
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,HI," 33 212M -32 -234 6M -16M ");
+      makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
+      
       HI+=10;
     }
-  
 
+  // Inner piece
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,HI," 212 -222 234 -134 6 -16 ");
+  makeCell("RoofCorner",System,cellIndex++,pbMat,0.0,Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,HI," 222 -232 234 -134 6 -26 ");
+  makeCell("RoofCorner",System,cellIndex++,skinMat,0.0,Out);
+  
   // Outer void for pipe
 
   if (inletRadius>Geometry::zeroTol)
