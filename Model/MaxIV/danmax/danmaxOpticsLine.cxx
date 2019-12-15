@@ -662,6 +662,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,TPI,TPI.getSideIndex("OuterPlate"));
 
+
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
@@ -689,6 +690,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   bremColl->addInsertCell(collTubeA->getCell("Void"));
   bremColl->createAll(System,*collTubeA,"OrgOrigin");
+
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,CPI,"OuterPlate",*filterPipe);
@@ -751,7 +753,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::portSet lensBoxPort(*lensBox);
   lensBoxPort.createPorts(System,lensBox->getInsertCells());
   lensBoxPort.splitVoidPorts(System,"OuterVoid",1501,CN);
-    
+
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*lensBox,"back",*gateF);
   xrayConstruct::constructUnit

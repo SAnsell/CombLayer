@@ -160,22 +160,6 @@ PipeShield::populate(const FuncDataBase& Control)
 }
 
 void
-PipeShield::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("PipeShield","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 PipeShield::createSurfaces()
   /*!
     Create All the surfaces

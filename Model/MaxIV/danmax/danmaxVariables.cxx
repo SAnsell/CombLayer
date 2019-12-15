@@ -182,20 +182,20 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
   
   FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
-  
-  //  CollGen.setFrontGap(2.62,1.86);       // 1033.8
-  //  CollGen.setBackGap(1.54,1.42);
-  // Approximated to get 1.2mrad x 1.1mrad
-  //  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
-  //  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
+  // Approximated to get 400urad x 100urad @16m
+  FMaskGen.setMinAngleSize(32.0,1600.0, 400.0,100.0 );
+  // Approximated to get 450urad x 150urad @16m
+  FMaskGen.setBackAngleSize(1600.0, 450.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",0.0,40.0);
+
 
   // approx for 400uRad x 200uRad  
   //  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
-  CollGen.setMinAngleSize(32.0,1600.0, 400.0, 100.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+
+  CollGen.generateColl(Control,preName+"CollB",0.0,24.2);
 
   // FM 3:
   CollGen.setMain(1.20,"Void","Void");
@@ -259,8 +259,8 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",420.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",320.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
 
@@ -969,7 +969,7 @@ opticsVariables(FuncDataBase& Control,
 
   // laue monochromator
   BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,247.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,257.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
 
   opticsSlitPackage(Control,opticsName);
@@ -1037,7 +1037,7 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",30.0,620,5);
+    (Control,"DanmaxFrontBeam",30.0,655,5.0);
   danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
     
   danmaxVar::wallVariables(Control,"DanmaxWallLead");

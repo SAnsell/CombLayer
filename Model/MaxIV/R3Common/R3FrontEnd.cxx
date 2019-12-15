@@ -131,8 +131,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  collTubeB(new constructSystem::PipeTube(newName+"CollimatorTubeB")),
-  collB(new xraySystem::SqrCollimator(newName+"CollB")),
+  collB(new xraySystem::SquareFMask(newName+"CollB")),
   collTubeC(new constructSystem::PipeTube(newName+"CollimatorTubeC")),
   collC(new xraySystem::SqrCollimator(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
@@ -190,7 +189,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
   OR.addObject(bellowC);    
-  OR.addObject(collTubeB);
   OR.addObject(collB);
   OR.addObject(collTubeC);
   OR.addObject(collC);
@@ -610,14 +608,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
     
-  // collTubeA->setFront(*bellowA,2);
-  // collTubeA->createAll(System,*bellowA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeA,2);
-  // collTubeA->insertAllInCell(System,outerCell);
-  
-  //  collA->addInsertCell(collTubeA->getCell("Void"));
-  //  collA->createAll(System,*collTubeA,0);
-
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
@@ -630,17 +620,12 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
-  
-  collTubeB->setFront(*bellowC,2);
-  collTubeB->createAll(System,*bellowC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeB,2);
-  collTubeB->insertAllInCell(System,outerCell);
+  collB->createAll(System,*bellowC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collB,2);
+  collB->insertInCell(System,outerCell);
 
-  collB->addInsertCell(collTubeB->getCell("Void"));
-  collB->createAll(System,*collTubeB,0);
-
-  collTubeC->setFront(*collTubeB,2);
-  collTubeC->createAll(System,*collTubeB,2);
+  collTubeC->setFront(*collB,2);
+  collTubeC->createAll(System,*collB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeC,2);
   collTubeC->insertAllInCell(System,outerCell);
 
@@ -660,8 +645,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*exitPipe,2);
   exitPipe->insertInCell(System,outerCell);
 
-  setCell("MasterVoid",masterCell->getName());
-  
+  setCell("MasterVoid",masterCell->getName());  
   lastComp=exitPipe;
   return;
 }

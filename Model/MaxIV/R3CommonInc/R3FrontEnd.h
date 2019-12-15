@@ -120,10 +120,8 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeB;
   /// collimator B
-  std::shared_ptr<xraySystem::SqrCollimator> collB;
+  std::shared_ptr<xraySystem::SquareFMask> collB;
   /// box for collimator C (joined to B)
   std::shared_ptr<constructSystem::PipeTube> collTubeC;
   /// collimator C
