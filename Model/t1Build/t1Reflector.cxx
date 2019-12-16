@@ -1,4 +1,4 @@
-/********************************************************************* 
+/***************************************************************************** 
   CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/t1Reflector.cxx
@@ -86,7 +86,8 @@ namespace ts1System
 {
 
 t1Reflector::t1Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,11)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,11)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -426,7 +427,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[8]->maskSection(4);
   Boxes[8]->maskSection(5); 
   Boxes[8]->addInsertCell(Boxes[3]->centralCell());
-  Boxes[8]->createAll(System,*this,
+  Boxes[8]->createAll(System,*this,0);
   // Flightline wrapper for LH2:
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>
