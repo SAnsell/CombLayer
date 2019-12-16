@@ -163,15 +163,13 @@ ZoomTank::populate(const FuncDataBase& Control)
   CylDepth.resize(nCylinder);
   CylX.resize(nCylinder);
   CylZ.resize(nCylinder);
-  std::ostringstream cx;
   for(size_t i=0;i<nCylinder;i++)
     {
-      cx.str("");
-      cx<<i+1;
-      CRadius[i]=Control.EvalVar<double>(keyName+"Radius"+cx.str());
-      CylDepth[i]=Control.EvalVar<double>(keyName+"CDepth"+cx.str());
-      CylX[i]=Control.EvalVar<double>(keyName+"CXStep"+cx.str());
-      CylZ[i]=Control.EvalVar<double>(keyName+"CZStep"+cx.str());
+      const std::string NStr(std::to_string(i+1));
+      CRadius[i]=Control.EvalVar<double>(keyName+"Radius"+NStr);
+      CylDepth[i]=Control.EvalVar<double>(keyName+"CDepth"+NStr);
+      CylX[i]=Control.EvalVar<double>(keyName+"CXStep"+NStr);
+      CylZ[i]=Control.EvalVar<double>(keyName+"CZStep"+NStr);
     }
   cylTotalDepth=std::accumulate(CylDepth.begin(),CylDepth.end(),0.0);
 

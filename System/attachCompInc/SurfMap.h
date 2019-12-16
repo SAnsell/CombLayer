@@ -97,6 +97,8 @@ class SurfMap : public BaseMap
   HeadRule getSurfRule(const std::string&,const size_t =0) const;
   HeadRule combine(const std::string&) const;  
 
+  std::string getSurfStringOrNumber(const std::string&) const;
+  std::string getSurfComplementOrNumber(const std::string&) const;
   std::string getSurfString(const std::string&) const;
   std::string getSurfComplement(const std::string&) const;
 

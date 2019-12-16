@@ -267,7 +267,7 @@ Reflector::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(Out);
 
-  makeCell("Reflect",System,cellIndex++,defMat,0.0,Out);
+  makeCell("Reflector",System,cellIndex++,defMat,0.0,Out);
 
   for(CoolPad& PD : Pads)
     PD.addInsertCell(74123);

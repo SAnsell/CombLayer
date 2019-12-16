@@ -426,9 +426,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[8]->maskSection(4);
   Boxes[8]->maskSection(5); 
   Boxes[8]->addInsertCell(Boxes[3]->centralCell());
-  Boxes[8]->createAll(System,*this,0);
-
-
+  Boxes[8]->createAll(System,*this,
   // Flightline wrapper for LH2:
   Boxes.push_back
     (std::shared_ptr<constructSystem::LinkWrapper>

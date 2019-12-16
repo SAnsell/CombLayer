@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-//#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -202,6 +201,22 @@ SurfMap::getSurfRules(const std::string& Key) const
 }
 
 std::string
+SurfMap::getSurfStringOrNumber(const std::string& Key) const
+  /*!
+    Output the rule string
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfStringOrNumber");
+
+  // if valid number return number
+  int N;
+  if (StrFunc::convert(Key,N)) return Key;
+  return getSurfRules(Key).display();
+}
+
+std::string
 SurfMap::getSurfString(const std::string& Key) const
   /*!
     Output the rule string
@@ -212,6 +227,23 @@ SurfMap::getSurfString(const std::string& Key) const
   ELog::RegMethod RegA("SurfMap","getSurfString");
 
   return getSurfRules(Key).display();
+}
+
+std::string
+SurfMap::getSurfComplementOrNumber(const std::string& Key) const
+  /*!
+    Output the rule string [complement]
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfComplementOrNumber");
+  // if valid number return number
+  int N;
+  if (StrFunc::convert(Key,N))
+    return std::to_string(-N);
+  
+  return getSurfRules(Key).complement().display();
 }
 
 std::string
@@ -228,10 +260,10 @@ SurfMap::getSurfComplement(const std::string& Key) const
 }
 
 HeadRule
-SurfMap::combine(const std::string& KeySet) const
+SurfMap::combine(const std::string& surfStr) const
   /*!
     Add the rules as intesection
-    \param KeySet :: Keynames of surfaces (space sparated)
+    \param surfStr :: Keynames of surfaces (space sparated)
     \return HeadRule [form: s1 s2 s3 ]
     \todo make work with full string objects
    */
@@ -240,21 +272,29 @@ SurfMap::combine(const std::string& KeySet) const
 
   std::string HR;
   std::string part;
-  for(const char C : KeySet)
+  bool complement(0);
+  for(const char C : surfStr)
     {
       if (std::isdigit(static_cast<int>(C)) || 
-	  std::isalpha(static_cast<int>(C)) || C=='-')
+	  std::isalpha(static_cast<int>(C)))
 	part+=C;
+      else if (C=='-')
+	complement=1;
       else if (!part.empty())
 	{
-	  int N;
-	  if (StrFunc::convert(part,N))
-	    HR+=part;
-	  else
-	    HR+=getSurfString(part);
+	  HR+=(complement) ? getSurfComplementOrNumber(part) :
+	    getSurfStringOrNumber(part);
+	  HR+=" ";
+	  part="";
+	  complement=0;
 	}
       else
 	HR+=C;
+    }
+  if (!part.empty())
+    {
+      HR+=(complement) ? getSurfComplementOrNumber(part) :
+	getSurfStringOrNumber(part);
     }
   return HeadRule(HR);
 }

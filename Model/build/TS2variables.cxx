@@ -93,15 +93,15 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("beamDY",0.0);        // Shift in beam horrizontal
 
   // REFLECTOR
-  Control.addVariable("reflectXYAngle",-45.0);   // x-y angle
-  Control.addVariable("reflectXStep",0);      // x shift of reflector
-  Control.addVariable("reflectYStep",10.0);     // y shift of reflector
-  Control.addVariable("reflectZStep",0);      // z shift of reflector
-  Control.addVariable("reflectXYSize",35.0);    // half width (xy direction)
-  Control.addVariable("reflectZSize",35.0);     // half height
-  Control.addVariable("reflectCornerAngle",45.0);     // End cut
-  Control.addVariable("reflectCutSize",30.0*sqrt(2.0));     // End cut
-  Control.addVariable("reflectMat","Be300K");     // End cut
+  Control.addVariable("ReflectorXYAngle",-45.0);   // x-y angle
+  Control.addVariable("ReflectorXStep",0);      // x shift of Reflectoror
+  Control.addVariable("ReflectorYStep",10.0);     // y shift of Reflectoror
+  Control.addVariable("ReflectorZStep",0);      // z shift of Reflectoror
+  Control.addVariable("ReflectorXYSize",35.0);    // half width (xy direction)
+  Control.addVariable("ReflectorZSize",35.0);     // half height
+  Control.addVariable("ReflectorCornerAngle",45.0);     // End cut
+  Control.addVariable("ReflectorCutSize",30.0*sqrt(2.0));     // End cut
+  Control.addVariable("ReflectorMat","Be300K");     // End cut
 
 
 // NEW COUPLED STUFF:
@@ -458,7 +458,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cdBucketMat","Cadmium");  // Material
 
   // REFLECTOR COOL PADS:
-  Control.addVariable("reflectNPads",1);      // Number of cooling pads
+  Control.addVariable("ReflectorNPads",1);      // Number of cooling pads
   Control.addVariable("coolPad1FixIndex",2);   // Index
   Control.addVariable("coolPadXStep",0.0);   
   Control.addVariable("coolPad1ZStep",-17.5);   

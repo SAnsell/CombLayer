@@ -148,7 +148,7 @@ makeReflector::makeReflector()  :
   OR.addObject(FLnarrow);
   OR.addObject(PMdec);
   OR.addObject(CdBucket);
-  //  OR.addObject(Reflector);
+  OR.addObject(RefObj);
 }
 
 
@@ -294,7 +294,7 @@ makeReflector::createInternalObjects(Simulation& System,
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
 
-  Out = RefObj->combine("Cornerc Front").display();
+  Out = RefObj->combine("CornerC Front").display();
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
