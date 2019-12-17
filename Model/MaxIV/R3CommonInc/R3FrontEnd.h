@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/R3FrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_R3FrontEnd_h
@@ -39,7 +39,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 /*!
@@ -55,7 +55,7 @@ namespace xraySystem
 
   class HeatDump;
   class LCollimator;
-  class SqrCollimator;
+  class SquareFMask;
   class SquareFMask;
   class BeamMount;
   class PreDipole;
@@ -65,7 +65,7 @@ namespace xraySystem
   class EPSeparator;
   class EPCombine;
   class R3ChokeChamber;
-    
+
   /*!
     \class balderFrontEnd
     \version 1.0
@@ -85,19 +85,19 @@ class R3FrontEnd :
  protected:
 
   /// point to stop [normal none]
-  std::string stopPoint;          
+  std::string stopPoint;
   /// Inner buildzone
   attachSystem::InnerZone buildZone;
-  
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 
-  
+
   std::shared_ptr<xraySystem::EPSeparator> epSeparator;
-  
+
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 
@@ -110,24 +110,18 @@ class R3FrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutMagDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// collimator A
-  std::shared_ptr<xraySystem::SqrCollimator> collA;
+  std::shared_ptr<xraySystem::SquareFMask> collA;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeB;
   /// collimator B
-  std::shared_ptr<xraySystem::SqrCollimator> collB;
-  /// box for collimator C (joined to B)
-  std::shared_ptr<constructSystem::PipeTube> collTubeC;
+  std::shared_ptr<xraySystem::SquareFMask> collB;
   /// collimator C
-  std::shared_ptr<xraySystem::SqrCollimator> collC;
+  std::shared_ptr<xraySystem::SquareFMask> collC;
   /// Pipe from collimator B to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
@@ -166,7 +160,7 @@ class R3FrontEnd :
   /// Exit of movables
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
-   
+
   /// Exit of movables [?]
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// bellows for florescence system
@@ -187,7 +181,7 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Front port connection for shutterbox exit
   std::shared_ptr<constructSystem::Bellows> bellowK;
-  
+
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   double outerRadius;   ///< radius of tube for divisions
@@ -206,17 +200,17 @@ class R3FrontEnd :
   void buildApertureTable(Simulation&,MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,const long int);  
+			 const attachSystem::FixedComp&,const long int);
 
-  
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   virtual void createLinks()=0;
 
   void buildObjects(Simulation&);
-  
+
  public:
-  
+
   R3FrontEnd(const std::string&);
   R3FrontEnd(const R3FrontEnd&);
   R3FrontEnd& operator=(const R3FrontEnd&);
