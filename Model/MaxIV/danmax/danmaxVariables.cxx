@@ -163,7 +163,6 @@ wallVariables(FuncDataBase& Control,
   return;
 }
 
-
 void
 frontMaskVariables(FuncDataBase& Control,
 		   const std::string& preName)
@@ -1037,7 +1036,7 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",30.0,654,5.0);
+    (Control,"DanmaxFrontBeam",30.0,658,5.0);
   Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
   danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
     

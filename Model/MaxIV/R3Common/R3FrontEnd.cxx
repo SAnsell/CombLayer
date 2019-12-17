@@ -636,12 +636,13 @@ R3FrontEnd::buildObjects(Simulation& System)
       collC->insertInCell(System,outerCell);
       linkFC=collC;
     }
-
+  
   collExitPipe->setFront(*linkFC,2);
   collExitPipe->createAll(System,*linkFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
+  
   buildHeatTable(System,masterCell,*collExitPipe,2);
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
