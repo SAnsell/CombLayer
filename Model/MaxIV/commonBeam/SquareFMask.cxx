@@ -348,7 +348,6 @@ SquareFMask::createObjects(Simulation& System)
 			    FC+Out+pipeHR[3].display());
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
-	  Out+=pipeHR[3].display();
 	}
       else
 	{
@@ -357,6 +356,7 @@ SquareFMask::createObjects(Simulation& System)
 			FC+Out+pipeHR[2].display());
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+	  Out+=pipeHR[3].display();
 	}
       CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
     }
