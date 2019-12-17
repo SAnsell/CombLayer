@@ -110,7 +110,7 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(372.0);
+  constexpr double L(372.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
@@ -566,11 +566,11 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
   ////////////////////////
-  const double theta = -1.0; // beam angle in deg
-  const double phi = 0.0;   // rotation angle in deg
+  constexpr double theta = -1.0; // beam angle in deg
+  constexpr double phi = 0.0;   // rotation angle in deg
   //  const double normialAngle=0.2;
   //  const double vAngle=0.0;
-  const double centreDist(0.0); // along the beam line
+  constexpr double centreDist(0.0); // along the beam line
   //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
   //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
@@ -636,9 +636,9 @@ splitterVariables(FuncDataBase& Control,
   setVariable::CollGenerator CollGen;
 
 
-  const double splitAngle(2.0);
-  const double splitLength(1.8);
-  const double splitXStep(3.96);
+  constexpr double splitAngle(2.0);
+  constexpr double splitLength(1.8);
+  constexpr double splitXStep(3.96);
   TwinGen.setCF<CF50>();
   TwinGen.setJoinFlangeCF<CF150>();
   TwinGen.setAPos(-splitXStep,0);
@@ -668,7 +668,7 @@ splitterVariables(FuncDataBase& Control,
   Control.addVariable(m3PumpName+"NPorts",4);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
-  const double port0Length(5.95);
+  constexpr double port0Length(5.95);
   PItemGen.setCF<setVariable::CF50>(port0Length);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-5.02,0,0),ZVec);
@@ -823,7 +823,7 @@ opticsSlitPackage(FuncDataBase& Control,
     /// SLIT PACKAGE
 
   const std::string sName=opticsName+"SlitTube";
-  const double tLen(48.2);
+  constexpr double tLen(48.2);
   PortTubeGen.setPipeCF<CF150>();
 
   PortTubeGen.setPortCF<CF63>();
@@ -843,7 +843,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
-  const double angle(-45*M_PI/180.0);
+  constexpr double angle(-45*M_PI/180.0);
   const Geometry::Vec3D port1Vec(cos(angle),sin(angle),0);
 
   PItemGen.setOuterVoid(1); ///
@@ -972,9 +972,9 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF40>(5.4); // port length
   PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10,0),-XVec);
 
-  const double xyAngle6(70.0*M_PI/180.0);
+  constexpr double xyAngle6(70.0*M_PI/180.0);
   const Geometry::Vec3D pAngVec6(sin(xyAngle6),0.0,-cos(xyAngle6));
-  const double PLen6=14.0-8.05/cos(M_PI*37.0/180.0);
+  const double PLen6(14.0-8.05/cos(M_PI*37.0/180.0));
   PItemGen.setCF<setVariable::CF40>(PLen6);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port6",
@@ -1459,7 +1459,7 @@ exptVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",5);
 
-  const double alpha(30*M_PI/180);
+  constexpr double alpha(30*M_PI/180);
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
   PItemExtraGen.generatePort(Control,segName+"Port2",
