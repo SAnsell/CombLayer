@@ -1,0 +1,71 @@
+\section{Expected Component Structure}
+\label{Sec:Structure}
+
+Definitions:
+
+   An class that builds a placeable object: i.e a FixedComp or
+   derivative. But not a componsite of objects that have their own
+   offset/angles, even if they have a commong starting origin.
+
+     E.g. if many object could have different placement to each other,
+     then they are a composite (e.g. a beamline). But an object that
+     has a few objects within it (for example bolts in a flange) and
+     those included object don't have a variable modified origin relative
+     to the primary origin. E.g they don't have a local xStep,yStep etc.
+
+
+     If a class is a placeable object then it should inherrit from
+     FixedComp directly or via one of the FixedComp derivatives in
+     attachComp.
+
+     It will not inherit from FixedUnit or any of its derivatives.
+
+
+
+ Object:
+
+   The object has to satify a number of abstract virtual methods.
+
+     void createAll(Simulation&,const FixedComp&,const long int);
+
+     This is a public method that builds the object. Typically it will call in order:
+
+     populate(FuncDataBase);
+     createUnitVector(FixedComp,const long int);
+     createSurfaces();
+     createObjects(System);
+     createLinks();
+
+
+     It is strongly discouraged to call any of these sub-methods with
+     different arguments as normally this breaks the expected
+     inheritance system. For example, if cutting surfaces are needed
+     e.g. a front/back cut, then use ExternalCut or FrontBackCut, do
+     not pass an FixedComp and link point to createSurfaces.
+
+
+     It is also highly likely that for simple FixedComp, FixedRotate,
+     and FixedOffset  objects, createUnitVector can be
+     left out because these base classes provided methods
+     are acceptable e.g.
+
+     FixedComp::createUnitVector sets the Origin and basis set.
+
+     FixedOffset::createUnitVector -- applied the pre and post rotations
+     along with the offset movement set by the variables:
+
+     Using preXYAngle,preZAngle,xStep,yStep,zStep,xyAngle,zAngle.
+
+     FixedRotate::createUnitVector applies the pre- post rotations along
+     all three axis
+
+
+     Additional functionality of the reOrientate call is made after
+     applying the rotations and offset. The function is automatically
+     applied (if called for) in all of the FixedXXX class.
+
+     The reOrientate function moves one axis to a another global axis with
+     the minimum rotation
+
+     Example ess model -- e.g. Vespa/Odin/
+     

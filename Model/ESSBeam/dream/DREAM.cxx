@@ -283,7 +283,7 @@ DREAM::build(Simulation& System,
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
-
+  
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
