@@ -114,6 +114,8 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","undulatorVariables");
 
   setVariable::PortTubeGenerator PTubeGen;
+
+  Control.addVariable(frontKey+"FrontOffset",10.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipe(30.0,1.0);
@@ -1032,11 +1034,11 @@ DANMAXvariables(FuncDataBase& Control)
   //  setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
-
-  danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
-  // ystep / dipole pipe / exit pipe
+  
   setVariable::R3FrontEndVariables
     (Control,"DanmaxFrontBeam",30.0,658,5.0);
+  danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
+  // ystep / dipole pipe / exit pipe
   Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
   danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
     

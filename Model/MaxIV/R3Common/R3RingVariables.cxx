@@ -432,19 +432,11 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
-  Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-  // collimator block
-
-
-  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
-
   
-  PipeGen.setCF<CF100>();
+  PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
@@ -459,24 +451,12 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
     (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
   Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
 
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
-  Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
-
-
-  // linked pipe tube
-  SimpleTubeGen.setCF<CF40>();
-  SimpleTubeGen.setAFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
-  Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
-
-
-  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
 
   // Create HEAT DUMP

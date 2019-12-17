@@ -66,6 +66,7 @@
 #include "MonoShutterGenerator.h"
 #include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
@@ -154,30 +155,29 @@ frontMaskVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
+  setVariable::SqrFMaskGenerator FMaskGen;
+  
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
+  FMaskGen.setBackGap(1.54,1.42);
+  FMaskGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad 
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
 
-  setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       // 1033.8
-  CollGen.setBackGap(1.54,1.42);
-  // Approximated to get 1.2mrad x 1.1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
-
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
   // approx for 800uRad x 200uRad  
-  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
+  FMaskGen.generateColl(Control,preName+"CollB",0.0,34.2);
 
   // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
-
+  FMaskGen.setMain(1.20,"Copper","Void");
+  FMaskGen.setFrontGap(0.84,0.582);
+  FMaskGen.setBackGap(0.750,0.357);
   // approx for 400uRad x 100uRad
-  CollGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
+  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
 
   return;
 }
