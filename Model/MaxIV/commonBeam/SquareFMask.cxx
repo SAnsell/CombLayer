@@ -267,6 +267,7 @@ SquareFMask::createSurfaces()
 	      (SMap,BI+1,pipeOrgZ+Y*((pipeYStep[i]+pipeYStep[i+1])/2.0),Y);
 	  BI+=10;
 	}
+
       // divider [only a pair of left/right needed]
       // 45 deg divider
       ModelSupport::buildPlane(SMap,buildIndex+1003,
@@ -336,15 +337,28 @@ SquareFMask::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
       CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
 			FC+Out+pipeHR[1].display());
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -101 ");
-      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			FC+Out+pipeHR[2].display());
       
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
-      CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,
-			Out+pipeHR[3].display());
-
+      if (minLength>(pipeYStep[2]+pipeYStep[3])/2.0)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1021 ");
+	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[2].display());
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -101 ");
+	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			    FC+Out+pipeHR[3].display());
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+	  Out+=pipeHR[3].display();
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -101 ");
+	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[2].display());
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+	}
+      CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
     }
   else   // two simple sections:
     {

@@ -39,6 +39,8 @@ class WallLeadGenerator
 {
  private:
 
+  double xStep;               ///< X offset
+  
   double frontLength;         ///< Front length
   double backLength;          ///< Back length
 
@@ -75,7 +77,8 @@ class WallLeadGenerator
   ~WallLeadGenerator();
 
   void setWidth(const double,const double);
-
+  void setXOffset(const double);
+  
   void generateWall(FuncDataBase&,const std::string&,const double) const;
 
 };

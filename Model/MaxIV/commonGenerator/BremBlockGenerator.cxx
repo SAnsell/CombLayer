@@ -133,7 +133,6 @@ BremBlockGenerator::setHoleXY(const double HX,const double HZ)
   return;
 }
 
-
 void
 BremBlockGenerator::setAperature(const double MLength,
 				 const double frontW,const double frontH,

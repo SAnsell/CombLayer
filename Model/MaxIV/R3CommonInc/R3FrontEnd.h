@@ -122,10 +122,8 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// collimator B
   std::shared_ptr<xraySystem::SquareFMask> collB;
-  /// box for collimator C (joined to B)
-  std::shared_ptr<constructSystem::PipeTube> collTubeC;
   /// collimator C
-  std::shared_ptr<xraySystem::SqrCollimator> collC;
+  std::shared_ptr<xraySystem::SquareFMask> collC;
   /// Pipe from collimator B to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
@@ -188,6 +186,7 @@ class R3FrontEnd :
   
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
+  bool collFM3Active;   ///< Coll C active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
@@ -220,6 +219,8 @@ class R3FrontEnd :
   R3FrontEnd& operator=(const R3FrontEnd&);
   virtual ~R3FrontEnd();
 
+  /// remove FM3
+  void deactivateFM3() { collFM3Active=0; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

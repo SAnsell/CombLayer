@@ -77,6 +77,7 @@
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "insertObject.h"
@@ -132,8 +133,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   collB(new xraySystem::SquareFMask(newName+"CollB")),
-  collTubeC(new constructSystem::PipeTube(newName+"CollimatorTubeC")),
-  collC(new xraySystem::SqrCollimator(newName+"CollC")),
+  collC(new xraySystem::SquareFMask(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
@@ -167,7 +167,9 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
 
-  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
+  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
+
+  collFM3Active(1)
    
   /*!
     Constructor
@@ -190,7 +192,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collABPipe);
   OR.addObject(bellowC);    
   OR.addObject(collB);
-  OR.addObject(collTubeC);
   OR.addObject(collC);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
@@ -603,10 +604,13 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowA,"back",*collA);
+  
   //  collA->setFront(*bellowA,2);
-  collA->createAll(System,*bellowA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
-  collA->insertInCell(System,outerCell);
+  //  collA->createAll(System,*bellowA,2);
+  //  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
+  //  collA->insertInCell(System,outerCell);
     
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
@@ -624,16 +628,17 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collB,2);
   collB->insertInCell(System,outerCell);
 
-  collTubeC->setFront(*collB,2);
-  collTubeC->createAll(System,*collB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeC,2);
-  collTubeC->insertAllInCell(System,outerCell);
+  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  if (collFM3Active)
+    {
+      collC->createAll(System,*collB,2);
+      outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collC,2);
+      collC->insertInCell(System,outerCell);
+      linkFC=collC;
+    }
 
-  collC->addInsertCell(collTubeC->getCell("Void"));
-  collC->createAll(System,*collTubeC,0);
-
-  collExitPipe->setFront(*collTubeC,2);
-  collExitPipe->createAll(System,*collTubeC,2);
+  collExitPipe->setFront(*linkFC,2);
+  collExitPipe->createAll(System,*linkFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
