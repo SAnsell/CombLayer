@@ -74,17 +74,10 @@
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "JawFlangeGenerator.h"
-// #include "MazeGenerator.h"
-// #include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
-// #include "MonoShutterGenerator.h"
 #include "TwinPipeGenerator.h"
 
-// #include "PreDipoleGenerator.h"
-// #include "DipoleChamberGenerator.h"
-
-// #include "R3ChokeChamberGenerator.h"
 #include "DiffPumpGenerator.h"
 
 namespace setVariable
@@ -210,13 +203,6 @@ monoVariables(FuncDataBase& Control,
   setVariable::GratingMonoGenerator MXtalGen;
   setVariable::GratingUnitGenerator MUnitGen;
 
-  // PipeGen.setMat("Stainless304");
-  // PipeGen.setNoWindow();
-  // PipeGen.setCF<setVariable::CF63>();
-  // PipeGen.setBFlange(17.8,1.0);
-  // PipeGen.generatePipe(Control,monoKey+"OffPipeA",0,3.0);
-  // Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
-
   // ystep/width/height/depth/length
   //
   MBoxGen.setCF<CF63>();   // set ports
@@ -225,9 +211,6 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setPortLength(2.3,5.0);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
   Control.addVariable(monoKey+"MonoVesselOuterSize",62);
-  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselPortBZStep",1.4);      // from primary
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
@@ -245,43 +228,8 @@ monoVariables(FuncDataBase& Control,
   // monounit
   MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,0.0);
 
-  // PipeGen.setCF<setVariable::CF63>();
-  // PipeGen.setAFlange(17.8,1.0);
-  // PipeGen.generatePipe(Control,monoKey+"OffPipeB",0,3.0);
-  // Control.addVariable(monoKey+"OffPipeBFlangeFrontZStep",-7.0);
-
   return;
 }
-
-
-// void
-// monoShutterVariables(FuncDataBase& Control,
-// 		     const std::string& preName)
-//   /*!
-//     Construct Mono Shutter variables
-//     \param Control :: Database for variables
-//     \param preName :: Control system
-//    */
-// {
-//   ELog::RegMethod RegA("softimaxVariables","monoShutterVariables");
-
-//   setVariable::GateValveGenerator GateGen;
-//   setVariable::BellowGenerator BellowGen;
-//   setVariable::MonoShutterGenerator MShutterGen;
-
-//   // both shutters up
-//   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
-
-//   // bellows on shield block
-//   BellowGen.setCF<setVariable::CF40>();
-//   BellowGen.setAFlangeCF<setVariable::CF63>();
-//   BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);
-
-//     // joined and open
-//   GateGen.setCubeCF<setVariable::CF40>();
-//   GateGen.generateValve(Control,preName+"GateJ",0.0,0);
-//   return;
-// }
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -331,218 +279,6 @@ opticsHutVariables(FuncDataBase& Control,
 
   return;
 }
-
-// void
-// exptHutVariables(FuncDataBase& Control,const std::string& preName)
-//   /*!
-//     Variable for the main expt hutch walls
-//     \param Control :: Database
-//     \param preName :: Beamline name
-//   */
-// {
-//   ELog::RegMethod RegA("softimaxVariables[F]","exptHutVariables");
-
-//   const std::string hutName(preName+"ExptHut");
-
-//   Control.addVariable(hutName+"YStep",1000.0);
-//   Control.addVariable(hutName+"Depth",120.0);
-//   Control.addVariable(hutName+"Height",200.0);
-//   Control.addVariable(hutName+"Length",858.4);
-//   Control.addVariable(hutName+"OutWidth",198.50);
-//   Control.addVariable(hutName+"RingWidth",248.6);
-//   Control.addVariable(hutName+"InnerThick",0.2);
-//   Control.addVariable(hutName+"PbThick",0.4);
-//   Control.addVariable(hutName+"OuterThick",0.2);
-
-//   Control.addVariable(hutName+"VoidMat","Void");
-//   Control.addVariable(hutName+"SkinMat","Stainless304");
-//   Control.addVariable(hutName+"PbMat","Lead");
-//   Control.addVariable(hutName+"FloorMat","Concrete");
-
-//   Control.addVariable(hutName+"HoleXStep",0.0);
-//   Control.addVariable(hutName+"HoleZStep",5.0);
-//   Control.addVariable(hutName+"HoleRadius",7.0);
-//   Control.addVariable(hutName+"HoleMat","Lead");
-
-//   return;
-// }
-
-
-
-// void
-// mirrorBox(FuncDataBase& Control,const std::string& Name,
-// 	  const std::string& Index,const std::string& vertFlag,
-// 	  const double theta,const double phi)
-//   /*!
-//     Construct variables for the diagnostic units
-//     \param Control :: Database
-//     \param Name :: component name
-//     \param Index :: Index designator
-//     \param theta :: theta angle [beam angle in deg]
-//     \param phi :: phi angle [rotation angle in deg]
-//   */
-// {
-//   ELog::RegMethod RegA("softimaxVariables[F]","mirrorBox");
-
-//   setVariable::MonoBoxGenerator VBoxGen;
-//   setVariable::MirrorGenerator MirrGen;
-
-//   const double normialAngle=0.2;
-//   const double vAngle=(vertFlag[0]=='H') ? 90 : 0.0;
-//   const double centreDist(55.0);
-//   const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-//   const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
-
-//   if (vAngle>45)
-//     VBoxGen.setBPortOffset(heightNormDelta,0.0);
-//   else
-//     VBoxGen.setBPortOffset(0.0,heightNormDelta);
-
-//   VBoxGen.setMat("Stainless304");
-//   VBoxGen.setWallThick(1.0);
-//   VBoxGen.setCF<CF63>();
-//   VBoxGen.setPortLength(5.0,5.0); // La/Lb
-//   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
-
-//   // ystep/width/height/depth/length
-//   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-// 		      0.0,53.1,23.6,29.5,124.0);
-
-
-//   // length thick width
-//   MirrGen.setPlate(50.0,1.0,9.0);  //guess
-//   MirrGen.setPrimaryAngle(0,vAngle,0);
-//   // ystep : zstep : theta : phi : radius
-//   MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
-// 			 -centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
-//   MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
-//   MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
-// 			 0.0,centreDist/2.0,heightDelta,theta,phi,0.0);
-//   return;
-// }
-
-// void
-// diagUnit(FuncDataBase& Control,const std::string& Name)
-//   /*!
-//     Construct variables for the diagnostic units
-//     \param Control :: Database
-//     \param Name :: component name
-//   */
-// {
-//   ELog::RegMethod RegA("softimaxVariables[F]","diagUnit");
-
-
-//   const double DLength(55.0);         // diag length [checked]
-//   setVariable::PortTubeGenerator PTubeGen;
-//   setVariable::PortItemGenerator PItemGen;
-
-//   PTubeGen.setMat("Stainless304");
-
-//   // ports offset by 24.5mm in x direction
-//   // length 425+ 75 (a) 50 b
-//   PTubeGen.setCF<CF63>();
-//   PTubeGen.setBPortCF<CF40>();
-//   PTubeGen.setBFlangeCF<CF63>();
-//   PTubeGen.setPortLength(-5.0,-7.5);
-//   PTubeGen.setAPortOffset(2.45,0);
-//   PTubeGen.setBPortOffset(2.45,0);
-
-//   // ystep/radius length
-//   PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
-//   Control.addVariable(Name+"NPorts",7);
-
-//   const std::string portName=Name+"Port";
-//   const Geometry::Vec3D MidPt(0,0,0);
-//   const Geometry::Vec3D XVec(1,0,0);
-//   const Geometry::Vec3D ZVec(0,0,1);
-//   const Geometry::Vec3D PPos(0.0,DLength/4.0,0);
-
-//   PItemGen.setOuterVoid(1);
-//   PItemGen.setCF<setVariable::CF40>(2.0);
-//   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-//   PItemGen.setCF<setVariable::CF63>(4.0);
-//   PItemGen.generatePort(Control,portName+"1",MidPt,ZVec);
-//   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
-//   // view port
-//   PItemGen.setCF<setVariable::CF63>(8.0);
-//   PItemGen.generatePort(Control,portName+"3",
-// 			Geometry::Vec3D(0,DLength/4.5,0),
-// 			Geometry::Vec3D(-1,-1,0));
-
-//     //  flange for diamond filter view
-//   PItemGen.setCF<setVariable::CF40>(4.0);
-//   PItemGen.generatePort(Control,portName+"4",
-// 			Geometry::Vec3D(0,0.3*DLength,0),XVec);
-//   PItemGen.generatePort(Control,portName+"5",
-// 			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
-
-//   // ion pump port
-//   PItemGen.setCF<setVariable::CF100>(7.5);
-//   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
-
-//   return;
-// }
-
-// void
-// diagUnit2(FuncDataBase& Control,const std::string& Name)
-//   /*!
-//     Construct variables for the small diagnostic units
-//     \param Control :: Database
-//     \param Name :: component name
-//   */
-// {
-//   ELog::RegMethod RegA("softimaxVariables[F]","diagUnit");
-
-
-//   const double DLength(40.0);         // diag length [checked+5cm]
-//   setVariable::PortTubeGenerator PTubeGen;
-//   setVariable::PortItemGenerator PItemGen;
-
-//   PTubeGen.setMat("Stainless304");
-
-//   // ports offset by 24.5mm in x direction
-//   // length 425+ 75 (a) 50 b
-//   PTubeGen.setCF<CF63>();
-//   PTubeGen.setPortLength(-5.0,-5.0);
-//   // ystep/radius length
-//   PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
-//   Control.addVariable(Name+"NPorts",4);
-
-//   const std::string portName=Name+"Port";
-//   const Geometry::Vec3D MidPt(0,0,0);
-//   const Geometry::Vec3D XVec(1,0,0);
-//   const Geometry::Vec3D ZVec(0,0,1);
-//   const Geometry::Vec3D PPos(0.0,DLength/6.0,0);
-
-//   PItemGen.setOuterVoid(1);  // create boundary round flange
-//   PItemGen.setCF<setVariable::CF63>(5.0);
-//   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-//   PItemGen.setCF<setVariable::CF63>(5.0);
-//   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
-//   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
-//   // view port
-//   PItemGen.setCF<setVariable::CF63>(8.0);
-//   PItemGen.generatePort(Control,portName+"3",
-// 			Geometry::Vec3D(0,DLength/5.0,0),
-// 			Geometry::Vec3D(-1,-1,0));
-
-//     //  flange for diamond filter view
-//   PItemGen.setCF<setVariable::CF40>(4.0);
-//   PItemGen.generatePort(Control,portName+"4",
-// 			Geometry::Vec3D(0,0.3*DLength,0),XVec);
-//   PItemGen.generatePort(Control,portName+"5",
-// 			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
-
-//   // ion pump port
-//   PItemGen.setCF<setVariable::CF100>(7.5);
-//   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
-
-//   JawFlangeGenerator JFlanGen;
-//   JFlanGen.generateFlange(Control,Name+"JawUnit0");
-//   JFlanGen.generateFlange(Control,Name+"JawUnit1");
-
-//   return;
-// }
 
 void
 m1MirrorVariables(FuncDataBase& Control,
@@ -1138,110 +874,6 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowJ",0,20.0);
 
   splitterVariables(Control,preName);
-
-
-  // GateGen.setLength(3.5);
-  // GateGen.setCubeCF<setVariable::CF40>();
-  // GateGen.generateValve(Control,preName+"GateA",0.0,0);
-
-  // PTubeGen.setMat("Stainless304");
-  // PTubeGen.setCF<CF63>();
-  // PTubeGen.setBPortCF<CF40>();
-  // PTubeGen.setPortLength(-6.0,-5.0);
-  // // ystep/radius length
-  // PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
-  // Control.addVariable(preName+"FilterBoxANPorts",4);
-
-  // PItemGen.setCF<setVariable::CF40>(4.0);
-  // // 1/4 and 3/4 in main length: [total length 25.0-11.0]
-  // Geometry::Vec3D PPos(0,3.5,0);
-  // const Geometry::Vec3D XVec(-1,0,0);
-  // const std::string portName=preName+"FilterBoxAPort";
-  // PItemGen.generatePort(Control,portName+"0",PPos,XVec);
-  // PItemGen.generatePort(Control,portName+"1",-PPos,XVec);
-
-  // // ion pump port
-  // PItemGen.setCF<setVariable::CF100>(7.5);
-  // PItemGen.generatePort(Control,portName+"2",
-  // 			Geometry::Vec3D(0,0,0),
-  // 			Geometry::Vec3D(0,0,-1));
-  // // Main flange for diamond filter
-  // PItemGen.setCF<setVariable::CF63>(5.0);
-  // PItemGen.generatePort(Control,portName+"3",
-  // 			Geometry::Vec3D(0,0,0),
-  // 			Geometry::Vec3D(0,0,1));
-
-  // FlangeGen.setCF<setVariable::CF63>();
-  // FlangeGen.setPlate(0.0,0.0,"Void");
-  // FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
-  // FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
-
-
-  // SimpleTubeGen.setCF<CF40>();
-  // SimpleTubeGen.setBFlangeCF<CF63>();
-  // SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
-  // Control.addVariable(preName+"ScreenPipeANPorts",1);
-  // PItemGen.setCF<setVariable::CF40>(4.0);
-  // PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
-  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-
-
-  // SimpleTubeGen.setCF<CF63>();
-  // SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
-  // Control.addVariable(preName+"ScreenPipeBNPorts",2);
-  // PItemGen.setCF<setVariable::CF63>(4.0);
-  // PItemGen.setOuterVoid(0);
-  // PItemGen.generatePort(Control,preName+"ScreenPipeBPort0",
-  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
-  // PItemGen.generatePort(Control,preName+"ScreenPipeBPort1",
-  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
-
-
-
-  // // length
-  // DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
-
-  // VBoxGen.setMat("Stainless304");
-  // VBoxGen.setWallThick(1.0);
-  // VBoxGen.setCF<CF63>();
-  // VBoxGen.setPortLength(2.5,2.5); // La/Lb
-  // // ystep/width/height/depth/length
-  // VBoxGen.generateBox(Control,preName+"PrimeJawBox",
-  // 		      0.0,30.0,15.0,15.0,53.15);
-
-  // GateGen.setCubeCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateC",0.0,0);
-
-
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
-
-  // softimaxVar::diagUnit(Control,preName+"DiagBoxA");
-  // BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
-
-  // softimaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
-
-
-  // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
-
-
-  // GateGen.setCubeCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateG",0.0,0);
-
-  // softimaxVar::mirrorBox(Control,preName,"B","Vertial",-0.2,0);
-
-  // GateGen.setCubeCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateH",0.0,0);
-
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
-
-  // softimaxVar::diagUnit2(Control,preName+"DiagBoxC");
-
-  // GateGen.setCubeCF<setVariable::CF63>();
-  // GateGen.generateValve(Control,preName+"GateI",0.0,0);
-
-  // softimaxVar::monoShutterVariables(Control,preName);
 
   return;
 }
