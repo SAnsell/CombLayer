@@ -72,6 +72,7 @@
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "JawFlangeGenerator.h"
 // #include "MazeGenerator.h"
 // #include "RingDoorGenerator.h"
@@ -151,33 +152,24 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","frontMaskVariables");
 
-  setVariable::CollGenerator CollGen;
+  setVariable::SqrFMaskGenerator CollGen;
 
-  CollGen.setFrontGap(2.62,1.86);       //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+  // dimensions are from softimax-description.djvu, page1
+  CollGen.setCF<CF100>();
+  CollGen.setFrontGap(3.99,1.97); // dy,dz
+  CollGen.setBackGap(0.71,0.71); // dy,dz
+  CollGen.setMinSize(10.0,0.71,0.71); // L,dy,dz
+  CollGen.generateColl(Control,preName+"CollA",0.0,15.0);
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
+  CollGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
+  CollGen.generateColl(Control,preName+"CollB",0.0,30.0);
 
-  // approx for 100uRad x 100uRad
-  //  CollGen.setMinSize(32.0,0.680,0.358);
-
-  CollGen.setMinAngleSize(32.0,1600.0,220.0,220.0); // 220 uRad
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
-
-  // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
-
-  // approx for 40uRad x 40uRad
-  CollGen.setMinAngleSize(12.0,1600.0,40.0,40.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
-  Control.addVariable(preName+"CollCMat","Void"); // CollimatorTubeC is still needed
-
+  CollGen.setMinSize(10.0,0.71,0.71); // L,dy,dz
+  CollGen.generateColl(Control,preName+"CollC",0.0,15.0);
+  Control.addVariable(preName+"CollCMat","Void");
+  Control.addVariable(preName+"CollCWaterMat","Void");
+  Control.addVariable(preName+"CollBPipeYStep3",26.5);
+  Control.addVariable(preName+"CollBPipeXWidth",5.0);
 
   return;
 }
@@ -1596,7 +1588,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,724.0,36);
+    (Control,"SoftiMAXFrontBeam",141.0,724.0, 70.0); // last arg is ExitPipe length
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");

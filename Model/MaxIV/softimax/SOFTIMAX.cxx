@@ -160,7 +160,8 @@ namespace xraySystem
     wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
     wallLead->createAll(System,FCOrigin,sideIndex);
 
-    if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+    if (stopPoint=="frontEnd" || stopPoint=="Dipole" || stopPoint=="FM1" || stopPoint=="FM2")
+      return;
 
     opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
     opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
