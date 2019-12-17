@@ -127,7 +127,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
@@ -186,7 +185,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
       
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
-  OR.addObject(collTubeA);
   OR.addObject(collA);
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
@@ -606,12 +604,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*collA);
-  
-  //  collA->setFront(*bellowA,2);
-  //  collA->createAll(System,*bellowA,2);
-  //  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
-  //  collA->insertInCell(System,outerCell);
-    
+      
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
