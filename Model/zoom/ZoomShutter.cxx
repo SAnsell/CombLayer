@@ -494,6 +494,7 @@ ZoomShutter::setTwinComp()
   ELog::EM<<"ac == "<<ELog::endDiag;
   ac->write(ELog::EM.Estream());
 
+ 
   ELog::EM<<"TC == "<<bEnter<<" "<<Z<<" "<<zCShift<<ELog::endDiag;
   ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
   ELog::EM<<"TC == "<<bExit<<ELog::endDiag;

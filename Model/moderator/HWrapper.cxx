@@ -111,7 +111,7 @@ HWrapper::operator=(const HWrapper& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedUnit::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       divideSurf=A.divideSurf;
       sideExt=A.sideExt;
       heightExt=A.heightExt;
@@ -206,6 +206,7 @@ HWrapper::createUnitVector(const attachSystem::FixedComp& VacFC)
   */
 {
   ELog::RegMethod RegA("HWrapper","createUnitVector");
+
   FixedComp::createUnitVector(VacFC,0);
   FixedComp::applyRotation(Z,180.0);
   return;
@@ -416,9 +417,9 @@ HWrapper::build(Simulation& System,
     \param CM :: Central Pre-moderator
   */
 {
-  ELog::RegMethod RegA("HWrapper","createAll");
+  ELog::RegMethod RegA("HWrapper","build");
   populate(System.getDataBase());
-  
+
   createUnitVector(vacFC);
   createSurfaces(vacFC,FLine);
   createObjects(System,CM);

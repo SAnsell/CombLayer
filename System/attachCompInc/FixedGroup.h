@@ -36,6 +36,8 @@ class FixedGroup : public FixedComp
 {
  protected:
 
+  std::string primKey;     ///< Primary key
+  std::string sndKey;      ///< Secondary key
   /// Fixed Storage
   typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
   /// Map storage

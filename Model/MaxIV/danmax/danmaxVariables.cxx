@@ -181,7 +181,6 @@ frontMaskVariables(FuncDataBase& Control,
 
     // collimator block
   FMaskGen.setCF<CF100>();
-  FMaskGen.setBFlangeCF<CF40>();
   FMaskGen.setFrontGap(3.99,1.97);  //1033.8
   FMaskGen.setBackGap(0.71,0.71);
   FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad

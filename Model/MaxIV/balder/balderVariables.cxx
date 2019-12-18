@@ -166,7 +166,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMain(1.20,"Copper","Void");
   FMaskGen.setFrontGap(0.84,0.582);
   FMaskGen.setBackGap(0.750,0.357);
-  // approx for 400uRad x 100uRad
+  // approx for 100uRad x 100uRad
   FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
   FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
 

@@ -86,6 +86,7 @@ class BulkInsert :
   void createObjects(Simulation&);
   std::string divideStr() const;
 
+  void createUnitVector(const FixedComp&,const long int);
   void createLinks();
 
  public:
@@ -98,8 +99,6 @@ class BulkInsert :
   /// Access shutter number
   size_t getShutterNumber() const { return shutterNumber; }
 
-  /// Access plane
-  const Geometry::Plane* getDPlane() const { return DPlane; }
   /// Set inner/outer cells for exclusion
   void setLayers(const int A,const int B)
     { innerCell=A;outerCell=B; }

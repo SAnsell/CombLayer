@@ -127,10 +127,11 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
-
   refObj.build(*SimPtr,IParam);
   bulkObj.build(SimPtr,IParam);
 
+  // this needs to be SELECTED
+  /*
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
@@ -139,6 +140,7 @@ makeTS2::build(Simulation* SimPtr,
       if (!IParam.compValue("E",std::string("zoom")))  
 	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
     }
+  */
   // Insert pipes [make part of makeTS2Bulk]
   refObj.insertPipeObjects(*SimPtr,IParam);
 

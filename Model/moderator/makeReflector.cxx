@@ -174,7 +174,8 @@ makeReflector::createObjects(Simulation& System)
   RefObj->createAll(System,World::masterOrigin(),0);
 
   const int refCell=RefObj->getCell("Reflector");
-  
+
+
   TarObj->addInsertCell(refCell);
   VacObj->addInsertCell(refCell);
   FLgroove->addInsertCell("outer",refCell);
@@ -289,6 +290,7 @@ makeReflector::createInternalObjects(Simulation& System,
   VacObj->buildPair(System,*GrooveObj,*HydObj);
   std::string Out;
 
+
   Out = RefObj->combine("CornerB Back Right").display();
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
@@ -298,6 +300,7 @@ makeReflector::createInternalObjects(Simulation& System,
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
+
 
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
@@ -309,10 +312,8 @@ makeReflector::createInternalObjects(Simulation& System,
   PMhydro->setEdge();
   PMhydro->setRotate();
   PMhydro->createAll(System,*VacObj,6);  
-
   Horn->setDivideSurf(-VacObj->getDivideSurf());
   Horn->build(System,*VacObj,*FLhydro,*PMhydro);
-  
   processDecoupled(System,IParam);
   const attachSystem::ContainedComp* CMod=
     System.getObjectThrow<attachSystem::ContainedComp>

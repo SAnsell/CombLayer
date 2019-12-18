@@ -166,7 +166,8 @@ FixedGroup::FixedGroup(const std::string& mainKey,
 }
 
 FixedGroup::FixedGroup(const FixedGroup& A) : 
-  FixedComp(A),FMap(A.FMap),
+  FixedComp(A),
+  primKey(A.primKey),sndKey(A.sndKey),FMap(A.FMap),
   bX(A.bX),bY(A.bY),bZ(A.bZ),bOrigin(A.bOrigin)
   /*!
     Copy constructor
@@ -185,6 +186,8 @@ FixedGroup::operator=(const FixedGroup& A)
   if (this!=&A)
     {
       FixedComp::operator=(A);
+      primKey=A.primKey;
+      sndKey=A.sndKey;
       FMap=A.FMap;
       bX=A.bX;
       bY=A.bY;
@@ -298,7 +301,8 @@ FixedGroup::setDefault(const std::string& defKey)
   Y=mc->second->getY();
   Z=mc->second->getZ();
   Origin=mc->second->getCentre();
-
+  primKey=defKey;
+  
   return;
   
 }
@@ -340,7 +344,8 @@ FixedGroup::setSecondary(const std::string& defKey)
   bOrigin=mc->second->getCentre();
   bExit= (mc->second->hasLinkPt(2)) ?
     mc->second->getLinkPt(2) : bOrigin;
-    
+
+  sndKey=defKey;
   return;
   
 }
@@ -436,7 +441,8 @@ FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
       for(FTYPE::value_type& MItem : FMap)
 	MItem.second->createUnitVector(FC,sideIndex);
     }
-  FixedComp::createUnitVector(FC,sideIndex);
+  setDefault(primKey);
+  //  FixedComp::createUnitVector();
   return;
 }
 

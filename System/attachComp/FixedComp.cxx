@@ -225,8 +225,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
-
-  createUnitVector(FC,sideIndex,sideIndex);
+  FixedComp::createUnitVector(FC,sideIndex,sideIndex);
   return;
 }
 
@@ -246,7 +245,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
   if (basisIndex==0)
     {
-      createUnitVector(FC);
+      FixedComp::createUnitVector(FC);   // may have derived case
       Origin=FC.getLinkPt(orgIndex);
       return;
     }
@@ -274,7 +273,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
   computeZOffPlane(xTest,yTest,zTest);
 
-  createUnitVector(FC.getLinkPt(orgIndex),
+  FixedComp::createUnitVector(FC.getLinkPt(orgIndex),
 		   yTest*zTest,yTest,zTest);
   
   return;
@@ -382,7 +381,7 @@ FixedComp::createPairVector(const FixedComp& FCA,
   ELog::RegMethod RegA("FixedComp","createPairVector");
 
   FixedUnit tmpFC("tmp",0);
-  createUnitVector(FCA,sideIndexA,sideIndexA);
+  FixedComp::createUnitVector(FCA,sideIndexA,sideIndexA);
   tmpFC.createUnitVector(FCB,sideIndexB,sideIndexB);
   X+=tmpFC.X;
   Y+=tmpFC.Y;
