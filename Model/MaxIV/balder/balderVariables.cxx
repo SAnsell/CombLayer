@@ -21,10 +21,7 @@
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <cmath>
-#include <complex>
 #include <list>
 #include <vector>
 #include <set>
@@ -32,20 +29,15 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -157,12 +149,11 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
   setVariable::SqrFMaskGenerator FMaskGen;
   
-  FMaskGen.setCF<CF63>();
-  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
   FMaskGen.setBackGap(1.54,1.42);
   FMaskGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad 
-  FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,35.0);
 
 
   FMaskGen.setFrontGap(2.13,2.146);
@@ -795,7 +786,7 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",30.0,624,38.0);
+    (Control,"BalderFrontBeam",30.0,633,38.0);
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");
     
   balderVar::wallVariables(Control,"BalderWallLead");

@@ -604,7 +604,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*collA);
-      
+
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
@@ -622,6 +622,8 @@ R3FrontEnd::buildObjects(Simulation& System)
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+
+
   if (collFM3Active)
     {
       collC->createAll(System,*collB,2);
@@ -629,6 +631,7 @@ R3FrontEnd::buildObjects(Simulation& System)
       collC->insertInCell(System,outerCell);
       linkFC=collC;
     }
+
   
   collExitPipe->setFront(*linkFC,2);
   collExitPipe->createAll(System,*linkFC,2);

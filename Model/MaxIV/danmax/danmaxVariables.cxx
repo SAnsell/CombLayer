@@ -180,7 +180,7 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator FMaskGen;
 
     // collimator block
-  FMaskGen.setCF<CF63>();
+  FMaskGen.setCF<CF100>();
   FMaskGen.setBFlangeCF<CF40>();
   FMaskGen.setFrontGap(3.99,1.97);  //1033.8
   FMaskGen.setBackGap(0.71,0.71);

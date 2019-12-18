@@ -248,6 +248,10 @@ CollGenerator::generateColl(FuncDataBase& Control,
   const double MW=(minWidth<0.0) ? -minWidth*AWidth : minWidth;
   const double MH=(minHeight<0.0) ? -minHeight*AHeight : minHeight;
 
+  if (ML>len+Geometry::zeroTol)
+    throw ColErr::SizeError<double>
+      (ML,len,"Length/Min Gap lengths wrong order");
+  
   Control.addVariable(keyName+"MinLength",ML);
     
   Control.addVariable(keyName+"innerMinWidth",MW);
