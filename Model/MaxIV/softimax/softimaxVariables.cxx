@@ -103,7 +103,7 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  constexpr double L(372.0);
+  constexpr double L(376.6); // Undu_Hamed.pptx, page 2
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
