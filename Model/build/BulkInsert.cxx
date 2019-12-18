@@ -235,7 +235,8 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::EM<<"Side == "<<sideIndex<<ELog::endDiag;
   ELog::EM<<"MC == "<<mainFC.getCentre()<<ELog::endDiag;
   ELog::EM<<"BC == "<<beamFC.getCentre()<<ELog::endDiag;
-  /*
+
+  const GeneralShutter& GS=dynamic_cast<const GeneralShutter&>(FC);
   mainFC.createUnitVector(GS.getKey("Main"),2);
   beamFC.createUnitVector(GS.getKey("Beam"),2);
   divideSurf=GS.getDivideSurf();
@@ -243,7 +244,7 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   Origin=GS.getTargetPoint();
   mainFC.setCentre(Origin);
   setDefault("Main","Beam");
-  */
+
   return;
 }
 

@@ -83,7 +83,10 @@ class FixedGroup : public FixedComp
   FixedComp& addKey(const std::string&,const size_t);
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;
+  const FixedComp& getPrimary() const;
+  FixedComp& getPrimary();
 
+  
   virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
 

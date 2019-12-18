@@ -120,6 +120,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
+  transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),

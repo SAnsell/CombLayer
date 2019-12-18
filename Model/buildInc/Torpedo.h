@@ -52,7 +52,6 @@ class Torpedo : public attachSystem::FixedOffset,
   double xyAngle;                     ///< Angle of beamline
   double innerRadius;                 ///< Inner radius
 
-  double zOffset;                     ///< Vertical offset
   double Height;                      ///< Total height 
   double Width;                       ///< Total depth
 

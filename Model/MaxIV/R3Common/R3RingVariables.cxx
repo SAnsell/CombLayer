@@ -389,7 +389,8 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
 void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
-		    const double yStep,const double dipoleLen,
+		    const double yStep,
+		    const double dipoleLen,
 		    const double exitLen) 
 /*!
     Set the variables for the front end

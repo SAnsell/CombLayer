@@ -251,7 +251,7 @@ FixedGroup::addKey(const std::string& Key,const size_t NL)
   mc=FMap.find(Key);
   return *(mc->second);
 }
-
+ 
 FixedComp&
 FixedGroup::getKey(const std::string& Key)
   /*!
@@ -267,7 +267,7 @@ FixedGroup::getKey(const std::string& Key)
     throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
   return *(mc->second);
 }
-  
+ 
 const FixedComp&
 FixedGroup::getKey(const std::string& Key) const
 /*!
@@ -281,6 +281,34 @@ FixedGroup::getKey(const std::string& Key) const
   FTYPE::const_iterator mc=FMap.find(Key);
   if (mc==FMap.end())
     throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
+  return *(mc->second);
+}
+
+FixedComp&
+FixedGroup::getPrimary() 
+  /*!
+    Determine the component from the key
+    \param Key :: Key to look up
+    \return FixedComp 
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","getKey");
+  
+  FTYPE::iterator mc=FMap.find(primKey);  // can't fail
+  return *(mc->second);
+}
+
+const FixedComp&
+FixedGroup::getPrimary() const
+  /*!
+    Determine the component from the key
+    \param Key :: Key to look up
+    \return FixedComp 
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","getKey(const)");
+  
+  FTYPE::const_iterator mc=FMap.find(primKey);  // can't fail
   return *(mc->second);
 }
 
@@ -422,16 +450,22 @@ FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
     dynamic_cast<const attachSystem::FixedGroup*>(&FC);
   if (FCGrp)
     {
+      // first extract primary group:
+      const attachSystem::FixedComp& primFC=FCGrp->getPrimary();
       // key : shared_ptr
       for(FTYPE::value_type& MItem : FMap)
 	{
 	  FTYPE::const_iterator mc=
 	    FCGrp->FMap.find(MItem.first);
 	  // if match apply
-	  if (mc!=FCGrp->FMap.end())
-	    MItem.second->createUnitVector(*mc->second,sideIndex);
+	  // has key and has correct link points:
+	  if (mc!=FCGrp->FMap.end() &&
+	      mc->second->NConnect()<= static_cast<size_t>(std::abs(sideIndex)))
+	    {
+	      MItem.second->createUnitVector(*mc->second,sideIndex);
+	    }
 	  else  // no match [apply default]
-	    MItem.second->createUnitVector(FC,sideIndex);
+	    MItem.second->createUnitVector(primFC,sideIndex);
 	}
     }
   // Only a standard FC unit:

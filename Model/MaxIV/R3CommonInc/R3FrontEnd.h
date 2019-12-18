@@ -92,6 +92,9 @@ class R3FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
+  /// transfer pipe from undulator/wiggler
+  std::shared_ptr<constructSystem::VacuumPipe> transPipe;
+  
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 

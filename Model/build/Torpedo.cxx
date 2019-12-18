@@ -128,7 +128,6 @@ Torpedo::operator=(const Torpedo& A)
       vBox=A.vBox;
       voidXoffset=A.voidXoffset;
       innerRadius=A.innerRadius;
-      zOffset=A.zOffset;
       Height=A.Height;
       Width=A.Width;
       innerSurf=A.innerSurf;
@@ -158,7 +157,6 @@ Torpedo::populate(const FuncDataBase& Control)
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
 
   // why needed?
-  zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
   Width=Control.EvalTail<double>(keyName,baseName,"Width");
   Height=Control.EvalTail<double>(keyName,baseName,"Width");
   
@@ -225,9 +223,8 @@ Torpedo::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(Width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(Width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*(Height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,
-			   Origin+Z*(zOffset+Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(Height/2.0),Z);
 
   return;
 }
@@ -310,7 +307,7 @@ Torpedo::createLinks()
 
   // set Links
   // First point is center line intersect
-  const Geometry::Vec3D OP=Origin+Y*innerRadius+Z*zOffset;
+  const Geometry::Vec3D OP=Origin+Y*innerRadius;
   MonteCarlo::LineIntersectVisit LI(OP,Y);
   
   //  ELog::EM<<"Inner Surf "<<getInnerSurf()<<ELog::endDiag;
@@ -319,8 +316,8 @@ Torpedo::createLinks()
   FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(buildIndex+7),OP),Y);
   FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
-  FixedComp::setConnect(4,Origin+Z*(zOffset-Height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(zOffset+Height/2.0),Z);
+  FixedComp::setConnect(4,Origin-Z*(Height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(Height/2.0),Z);
   return;
 }
 
