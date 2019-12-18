@@ -390,14 +390,14 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 		    const double yStep,
-		    const double dipoleLen,
+		    const double transLen,
 		    const double exitLen) 
 /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
     \param yStep :: offset step
-    \param dipoleLen :: Length of dipole
+    \param transLen :: Length of dipole
     \param exitLeng :: last exit pipe length
   */
 {
@@ -416,9 +416,10 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   
   Control.addVariable(frontKey+"FrontOffset",0.0);  
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setMat("Stainless304");
-
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Copper");
+  PipeGen.generatePipe(Control,frontKey+"TransPipe",0,transLen);
+  
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
@@ -427,7 +428,8 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen); 
+  PipeGen.setMat("Stainless304");
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,870.0); 
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -438,7 +440,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,222.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
@@ -458,7 +460,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,65.5);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);

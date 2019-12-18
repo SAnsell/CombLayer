@@ -180,6 +180,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(transPipe);
   OR.addObject(magBlockM1);
   OR.addObject(epSeparator);
   OR.addObject(chokeChamber);
@@ -558,9 +559,12 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,undulatorFC,"back",*transPipe);
 
-  magBlockM1->setCutSurf("front",undulatorFC,2);
-  magBlockM1->createAll(System,undulatorFC,2);
+  magBlockM1->setCutSurf("front",*transPipe,2);
+  magBlockM1->createAll(System,*transPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
 
@@ -598,6 +602,8 @@ R3FrontEnd::buildObjects(Simulation& System)
       lastComp=dipolePipe;
       return;
     }
+      lastComp=dipolePipe;
+      return;
 
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
@@ -606,13 +612,12 @@ R3FrontEnd::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*collA);
 
-  bellowB->createAll(System,*collA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
-  bellowB->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*collA,"back",*bellowB);
 
-  collABPipe->createAll(System,*bellowB,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collABPipe,2);
-  collABPipe->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowB,"back",*collABPipe);
+
 
   bellowC->createAll(System,*collABPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
@@ -638,7 +643,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   collExitPipe->createAll(System,*linkFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
-
   
   buildHeatTable(System,masterCell,*collExitPipe,2);
   buildApertureTable(System,masterCell,*pipeB,2);

@@ -102,6 +102,7 @@ wigglerVariables(FuncDataBase& Control,
 		      498.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
+  Control.addVariable(frontKey+"WigglerYStep",0.0);
   Control.addVariable(frontKey+"WigglerLength",200.0);
   Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
   Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
@@ -786,9 +787,9 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",30.0,633,38.0);
-  balderVar::frontMaskVariables(Control,"BalderFrontBeam");
-    
+    (Control,"BalderFrontBeam",0.0,15.0,25.0);
+  
+  balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");

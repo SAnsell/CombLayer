@@ -1035,7 +1035,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
   
   setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",30.0,658,5.0);
+    (Control,"DanmaxFrontBeam",100.0,15,25.0);
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
   Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
