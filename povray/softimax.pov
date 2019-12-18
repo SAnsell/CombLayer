@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 2000;
+#declare view = 101;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -101,9 +101,12 @@ global_settings {
     #declare cameraLocation = <3170, 8400, 20>;
     #declare cameraLookAt   = <3270, 8400, 0>;
   #break
-  #case(101) // Front beam Undulator
+  #case(100) // Front beam Undulator
     #declare cameraLocation = <-350, 8450, 10>;
     #declare cameraLookAt   = <-332, 8409, 3.2>;
+  #case(101) // FM1
+    #declare cameraLocation = <1570, 8380, 10>;
+    #declare cameraLookAt   = <1584, 8409, 3.2>;
   #break
   #case(601) // slitTube
     #declare cameraLocation = <2420, 8450, 10>;
