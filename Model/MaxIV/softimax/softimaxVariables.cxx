@@ -156,12 +156,6 @@ frontMaskVariables(FuncDataBase& Control,
 
   CollGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
   CollGen.generateColl(Control,preName+"CollB",0.0,30.0);
-
-  CollGen.setMinSize(10.0,0.71,0.71); // L,dy,dz
-  CollGen.generateColl(Control,preName+"CollC",0.0,15.0);
-  Control.addVariable(preName+"CollCMat","Void");
-  Control.addVariable(preName+"CollCWaterMat","Void");
-  Control.addVariable(preName+"CollBPipeYStep3",26.5);
   Control.addVariable(preName+"CollBPipeXWidth",5.0);
 
   return;
@@ -1228,7 +1222,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126);
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,126+15);
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   softimaxVar::opticsVariables(Control,"SoftiMAX");

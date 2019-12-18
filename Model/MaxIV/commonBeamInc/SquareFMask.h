@@ -38,7 +38,8 @@ class SquareFMask :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  private:
 

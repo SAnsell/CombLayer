@@ -149,6 +149,7 @@ namespace xraySystem
 
     const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
+    frontBeam->deactivateFM3();
     frontBeam->setStopPoint(stopPoint);
     frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
