@@ -3,7 +3,7 @@
  
  * File:   constructInc/WedgeInsert.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace constructSystem
 */
 
 class WedgeInsert : public attachSystem::FixedOffset,
-  attachSystem::ContainedComp
+  public attachSystem::ContainedComp
 {
  private:
   
@@ -54,15 +54,14 @@ class WedgeInsert : public attachSystem::FixedOffset,
   int wallMat;              ///< Material
   double temp;              ///< Temperature [K]
 
+  const attachSystem::LayerComp* LCPtr;
+  size_t layerIndex;        ///< Layer index
+  size_t layerSide;         ///< Layer side of object 
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
-  void createObjects(Simulation&,
-		     const attachSystem::FixedComp&,
-		     const size_t,const size_t);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -73,9 +72,10 @@ class WedgeInsert : public attachSystem::FixedOffset,
   virtual WedgeInsert* clone() const;
   virtual ~WedgeInsert();
 
-  void createAll(Simulation&,const int,
+  void setLayer(const attachSystem::LayerComp&,const size_t,const size_t);
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+		 const long int);
   
 };
 

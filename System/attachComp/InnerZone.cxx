@@ -72,6 +72,7 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -260,7 +261,7 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
   ELog::RegMethod RegA("InnerZone","constructMiddleSurface(FC,FC)");
 
 
-  attachSystem::FixedComp DUnit("Dunit",0);
+  attachSystem::FixedUnit DUnit("Dunit",0);
   DUnit.createPairVector(FCA,sideIndexA,FCB,sideIndexB);
   const Geometry::Vec3D DPoint(DUnit.getCentre());
 
@@ -442,6 +443,32 @@ InnerZone::singleVoidUnit(Simulation& System,
 }
   
 int
+InnerZone::createFinalVoidUnit(Simulation& System,
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
+			       
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createFinalVoidUnit()");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+  
+  Out=surroundHR.display()+
+    FC.getLinkString(sideIndex)+backHR.display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  System.removeCell(masterCell->getName());
+
+  return cellIndex-1;
+}
+
+int
 InnerZone::createOuterVoidUnit(Simulation& System,
 			       MonteCarlo::Object* masterCell,
 			       HeadRule& FDivider,
@@ -516,6 +543,25 @@ InnerZone::createOuterVoidUnit(Simulation& System,
 {
   ELog::RegMethod RegA("InnerZone","createOuterVoidUnit");
   return createOuterVoidUnit(System,masterCell,frontDivider,FC,sideIndex);
+}
+
+int
+InnerZone::createOuterVoidUnit(Simulation& System,
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& FC,
+			       const std::string& sideName)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FC :: FixedComp
+    \param sideName :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit(string)");
+  return createOuterVoidUnit(System,masterCell,frontDivider,
+			     FC,FC.getSideIndex(sideName));
 }
 
 int
@@ -621,7 +667,6 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   std::string Out;
-  ELog::EM<<"Surrount == "<<surroundHR.display()<<ELog::endDiag;
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
   
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -629,9 +674,6 @@ InnerZone::constructMasterCell(Simulation& System)
 
   return masterCell;
 }
-
-
-
 
 MonteCarlo::Object*
 InnerZone::constructMasterCell(Simulation& System,

@@ -51,7 +51,8 @@ class RefBolts : public attachSystem::FixedComp
   RefBolts& operator=(const RefBolts&);
   ~RefBolts();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

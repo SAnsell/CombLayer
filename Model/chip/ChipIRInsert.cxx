@@ -165,7 +165,7 @@ ChipIRInsert::~ChipIRInsert()
 {}
 
 void
-ChipIRInsert::populate(const Simulation& System)
+ChipIRInsert::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -173,7 +173,6 @@ ChipIRInsert::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("ChipIRInsert","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
   try
     {
       zModAngle=Control.EvalDefVar<double>(compName+"ZAngle",0.0);
@@ -492,7 +491,8 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
 void
 ChipIRInsert::createAll(Simulation& System,
-			const shutterSystem::GeneralShutter& GS)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -500,8 +500,8 @@ ChipIRInsert::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("ChipIRInsert","createAll");
-  BulkInsert::createAll(System,GS);
-  populate(System);
+  BulkInsert::createAll(System,FC,sideIndex);
+  populate(System.getDataBase());
   createUnitVector();
   createSurfaces();
   createObjects(System);

@@ -84,6 +84,7 @@ namespace delftSystem
 Rabbit::Rabbit(const std::string& Key,const int index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key+std::to_string(index),3),
+  attachSystem::CellMap(),
   baseName(Key),innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,6 +95,7 @@ Rabbit::Rabbit(const std::string& Key,const int index)  :
 
 Rabbit::Rabbit(const Rabbit& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),
   nLayer(A.nLayer),
   Radii(A.Radii),Mat(A.Mat),length(A.length),capThick(A.capThick),
@@ -116,6 +118,7 @@ Rabbit::operator=(const Rabbit& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       nLayer=A.nLayer;
       Radii=A.Radii;
       Mat=A.Mat;
@@ -205,27 +208,6 @@ Rabbit::createUnitVector(const ReactorGrid& RG)
 }
 
 void
-Rabbit::createUnitVector(const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point [signed]
-  */
-{
-  ELog::RegMethod RegA("Rabbit","createUnitVector");
-
-  // PROCESS Origin of a point
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  FixedOffset::applyOffset();
-		
-  return;
-}
-
-void
 Rabbit::createSurfaces()
   /*!
     Create All the surfaces
@@ -293,8 +275,8 @@ Rabbit::createObjects(Simulation& System)
 
   // Add sample
   Out=ModelSupport::getComposite(SMap,buildIndex," -1007 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
-
+  makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
+  
   // Capsule
   Out=ModelSupport::getComposite(SMap,buildIndex
 ,				 "-507 (-508:501) (-509:-502) 1007 ");
@@ -353,21 +335,17 @@ Rabbit::createLinks()
   return;
 }
 
-
-
 int
-Rabbit::createAll(Simulation& System,
-		  const ReactorGrid& RG)
-  /*!
+Rabbit::build(Simulation& System,const ReactorGrid& RG)
+/*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param RG :: Reactor Grid
-    \return success / failure
   */
 {
   ELog::RegMethod RegA("Rabbit","createAll");
   populate(System.getDataBase());
-  if (!objName.empty())
+  if (!objName.empty() )
     {
       createUnitVector(RG);
       createSurfaces();
@@ -377,8 +355,26 @@ Rabbit::createAll(Simulation& System,
       return 1;
     }
   return 0;
-      
+}
 
+void
+Rabbit::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
+/*!
+    Global creation of the vac-vessel
+    \param System :: Simulation to add vessel to
+    \param FC :: Reactor Grid
+  */
+{
+  ELog::RegMethod RegA("Rabbit","createAll");
+  populate(System.getDataBase());
+  FixedOffset::createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+
+  return;
 }
 
 

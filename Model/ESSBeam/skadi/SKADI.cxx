@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -65,10 +64,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -107,7 +106,7 @@ namespace essSystem
 SKADI::SKADI(const std::string& keyName):
   attachSystem::CopiedComp("skadi",keyName),
   stopPoint(0),
-  skadiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  skadiAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
@@ -363,7 +362,7 @@ SKADI::build(Simulation& System,
   if (stopPoint==2) return;         // Stop at last pipe in Bunker
   
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,FocusF->getKey("Guide0"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
   FocusWallA->addInsertCell(BInsert->getCells("Item"));
   FocusWallA->createAll(System,*BInsert,0,*BInsert,0);
@@ -392,7 +391,7 @@ SKADI::build(Simulation& System,
   CInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   CInsert->addInsertCell(voidCell);
   CInsert->addInsertCell(ShieldA->getCell("Void"));
-  CInsert->createAll(System,*BInsert,2,bunkerObj);
+  CInsert->createAll(System,*BInsert,2);
 
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CInsert);
   

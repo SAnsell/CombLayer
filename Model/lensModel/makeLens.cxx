@@ -3,7 +3,7 @@
  
  * File:   lensModel/makeLens.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,10 +64,12 @@
 #include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
+#include "World.h"
 #include "siModerator.h"
 #include "candleStick.h"
 #include "ProtonFlight.h"
@@ -160,16 +162,17 @@ makeLens::build(Simulation* SimPtr)
 
   layerObj->addInsertCell(74123);  
 
-  SiModObj->createAll(*SimPtr);
-  candleObj->createAll(*SimPtr,*SiModObj);
+  SiModObj->createAll(*SimPtr,World::masterOrigin(),0);
+  candleObj->setBasePoint(SiModObj->getLinkPt(5));
+  candleObj->createAll(*SimPtr,*SiModObj,0);
   //  candleObj->specialExclude(*SimPtr,74123);
   
-  layerObj->createAll(*SimPtr,*candleObj);
+  layerObj->build(*SimPtr,*candleObj);
   return;
 }
 
 const FlightCluster&
-makeLens::getFC() const 
+makeLens::getFlightCluster() const 
   /*!
     Access the flight cluster
     \return FlightCluster object
@@ -179,7 +182,7 @@ makeLens::getFC() const
   if (!layerObj)
     throw ColErr::EmptyValue<void>("LayerObject ");
  
-  return layerObj->getFC();
+  return layerObj->getFlightCluster();
 }
 
 void
@@ -208,7 +211,7 @@ makeLens::createTally(SimMCNP& System,
 	{
 	  ELog::EM<<"Creating tally FL"<<FL+1
 		  <<" at "<<Dist<<" cm "<<ELog::endDiag;
-	  lensSystem::addSurfTally(System,getFC(),FL,Dist);
+	  lensSystem::addSurfTally(System,getFlightCluster(),FL,Dist);
 	}
     }
 

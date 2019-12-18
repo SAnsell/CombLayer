@@ -194,7 +194,7 @@ class chipIRHutch : public attachSystem::FixedGroup,
   // ----------------------------------------------------------
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedGroup&,
+  void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
 
@@ -254,7 +254,7 @@ class chipIRHutch : public attachSystem::FixedGroup,
 		 const attachSystem::FixedGroup&,		 
 		 const attachSystem::ContainedComp&);
 
-  void createAll(Simulation&,const attachSystem::FixedGroup&,
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

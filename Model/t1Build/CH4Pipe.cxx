@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Pipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
@@ -225,7 +226,7 @@ CH4Pipe::insertOuter(Simulation& System,
 		   X*Xoffset+Y*Yoffset-Z*fullLen);
 
   Central.setActive(0,3);
-  Central.setActive(1,7);
+  Central.setActive(1,7); 
   Central.setActive(2,15);
   Central.setActive(3,63);
   Central.setActive(4,63);
@@ -241,15 +242,15 @@ CH4Pipe::insertOuter(Simulation& System,
   Central.addRadius(clearRadius,0,0.0);
  
   Central.setNAngle(18);
-  Central.createAll(System);
+  Central.build(System);
   return;
 }
 
   
 void
 CH4Pipe::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FUnit,
-		      const long int sideIndex)
+		   const attachSystem::FixedComp& FUnit,
+		   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in

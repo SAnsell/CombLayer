@@ -60,6 +60,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "particleConv.h"
@@ -72,7 +73,7 @@ namespace SDef
 {
 
 BeamSource::BeamSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),SourceBase(),
+  FixedOffsetUnit(keyName,0),SourceBase(),
   radius(1.0),angleSpread(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -81,7 +82,7 @@ BeamSource::BeamSource(const std::string& keyName) :
 {}
 
 BeamSource::BeamSource(const BeamSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   radius(A.radius),angleSpread(A.angleSpread)
   /*!
     Copy constructor

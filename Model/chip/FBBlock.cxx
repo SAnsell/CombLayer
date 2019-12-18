@@ -72,9 +72,12 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "boxValues.h"
@@ -95,7 +98,7 @@ namespace hutchSystem
 {
 
 FBBlock::FBBlock(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),nFeed(0)
+  attachSystem::FixedUnit(Key,0),nFeed(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,7 +107,7 @@ FBBlock::FBBlock(const std::string& Key)  :
 {}
   
 FBBlock::FBBlock(const FBBlock& A) : 
-  attachSystem::FixedComp(A),
+  attachSystem::FixedUnit(A),
   nFeed(A.nFeed),fbLength(A.fbLength),
   Offset(A.Offset),FBcent(A.FBcent),FBsize(A.FBsize)
   /*!
@@ -140,15 +143,13 @@ FBBlock::~FBBlock()
 {}
   
 void
-FBBlock::populate(const Simulation& System)
+FBBlock::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("FBBlock","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();  
   
   nFeed=Control.EvalVar<size_t>(keyName+"NFeed");
   fbLength=Control.EvalVar<double>(keyName+"Len");
@@ -165,22 +166,7 @@ FBBlock::populate(const Simulation& System)
     }
   return;
 }
-  
-void
-FBBlock::createUnitVector(const attachSystem::FixedComp& CUnit)
-  /*!
-    Create the unit vectors
-    - Y Points towards WISH
-    - X Across the moderator
-    - Z up (towards the target)
-    \param CUnit :: Fixed unit that it is connected to 
-  */
-{
-  ELog::RegMethod RegA("FBBlock","createUnitVector");
-  FixedComp::createUnitVector(CUnit);
-  return;
-}
-  
+    
 
 void 
 FBBlock::insertBlock(Simulation& System,
@@ -207,15 +193,15 @@ FBBlock::insertBlock(Simulation& System,
 		      Z*FBcent[i].Z()-Y*(fbLength+5.0));
       FTrack.addSection(FBsize[i],FBsize[i],0,0.0);
       FTrack.setInitZAxis(Z);
-      FTrack.createAll(System);
+      FTrack.build(System);
     }
   
   return;
 }
   
 void
-FBBlock::createAll(Simulation& System,
-		       const chipIRHutch& HutUnit)
+FBBlock::build(Simulation& System,
+	       const chipIRHutch& HutUnit)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -224,8 +210,8 @@ FBBlock::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("FBBlock","createAll");
   
-  populate(System);
-  createUnitVector(HutUnit);
+  populate(System.getDataBase());
+  createUnitVector(HutUnit,0);
   insertBlock(System,HutUnit); 
 
   //  insertPipes(System);       

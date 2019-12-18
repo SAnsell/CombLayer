@@ -615,9 +615,9 @@ DelftModel(FuncDataBase& Control)
   // ROG Beamline 
   Control.addVariable("R2Slot1XStep",0.0);
   Control.addVariable("R2Slot1ZStep",4.693);
-  Control.addVariable("R2Slot1AxisAngle",0.0);
+  Control.addVariable("R2Slot1YAngle",0.0);
   Control.addVariable("R2Slot1ZAngle",1.002);
-  Control.addVariable("R2Slot1XYAngle",0.0);
+  Control.addVariable("R2Slot1XAngle",0.0);
   Control.addVariable("R2Slot1XSize",10.0);
   Control.addVariable("R2Slot1ZSize",2.65);
 
@@ -625,8 +625,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("R2Slot2NChannels",1);
   Control.addVariable("R2Slot2XStep",4.175);
   Control.addVariable("R2Slot2ZStep",-1.232);
-  Control.addVariable("R2Slot2AxisAngle",90.0);
-  Control.addVariable("R2Slot2XYAngle",-2.2869);
+  Control.addVariable("R2Slot2YAngle",90.0);
+  Control.addVariable("R2Slot2XAngle",-2.2869);
   Control.addVariable("R2Slot2ZAngle",0.0);
   Control.addVariable("R2Slot2XSize",6.0);
   Control.addVariable("R2Slot2ZSize",1.05);
@@ -634,8 +634,8 @@ DelftModel(FuncDataBase& Control)
   // SESANS
   Control.addVariable("R2Slot3XStep",1.725);
   Control.addVariable("R2Slot3ZStep",-2.432);
-  Control.addVariable("R2Slot3AxisAngle",90.0);
-  Control.addVariable("R2Slot3XYAngle",-1.23736);
+  Control.addVariable("R2Slot3YAngle",90.0);
+  Control.addVariable("R2Slot3XAngle",-1.23736);
   Control.addVariable("R2Slot3ZAngle",0.0);
   Control.addVariable("R2Slot3XSize",10.0);
   Control.addVariable("R2Slot3ZSize",2.65);
@@ -643,8 +643,8 @@ DelftModel(FuncDataBase& Control)
   // SANS
   Control.addVariable("R2Slot4XStep",-1.725);
   Control.addVariable("R2Slot4ZStep",-2.432);
-  Control.addVariable("R2Slot4AxisAngle",90.0);
-  Control.addVariable("R2Slot4XYAngle",1.23736);
+  Control.addVariable("R2Slot4YAngle",90.0);
+  Control.addVariable("R2Slot4XAngle",1.23736);
   Control.addVariable("R2Slot4ZAngle",0.0);
   Control.addVariable("R2Slot4XSize",10.0);
   Control.addVariable("R2Slot4ZSize",2.65);

@@ -3,7 +3,7 @@
  
  * File:   t1Build/MerlinModerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,20 +173,6 @@ MerlinModerator::populate(const FuncDataBase& Control)
   poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
 
   applyModification();
-  return;
-}
-  
-void
-MerlinModerator::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("MerlinModerator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyOffset();
   return;
 }
 
@@ -393,7 +379,8 @@ MerlinModerator::createVanes(Simulation& System)
 
 void
 MerlinModerator::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC)
+			   const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -403,7 +390,7 @@ MerlinModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("MerlinModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/NNBAR.h
+ * File:   ESSBeam/nnbar/NNBAR.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class NNBAR : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> nnbarAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> nnbarAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

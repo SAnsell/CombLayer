@@ -62,10 +62,13 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
@@ -74,8 +77,8 @@
 #include "makeChipIR.h"
 #include "makeZoom.h"
 
-#include "makeIMat.h"
 #include "makeTS2Bulk.h"
+#include "makeReflector.h"
 
 #include "makeTS2.h"
 
@@ -108,9 +111,9 @@ makeTS2::build(Simulation* SimPtr,
   ELog::RegMethod RControl("makeTS2","build");
 
   moderatorSystem::makeTS2Bulk bulkObj;
+  moderatorSystem::makeReflector refObj;
   hutchSystem::makeChipIR chipObj;
   zoomSystem::makeZoom zoomObj;
-  imatSystem::makeIMat imatObj;
   
   if (IParam.flag("isolate") && IParam.compValue("I",std::string("chipIR")))
     {
@@ -124,8 +127,11 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
+  refObj.build(*SimPtr,IParam);
   bulkObj.build(SimPtr,IParam);
 
+  // this needs to be SELECTED
+  /*
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
@@ -133,11 +139,10 @@ makeTS2::build(Simulation* SimPtr,
 	chipObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
       if (!IParam.compValue("E",std::string("zoom")))  
 	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
-      if (!IParam.compValue("E",std::string("imat")))
-	imatObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
     }
+  */
   // Insert pipes [make part of makeTS2Bulk]
-  bulkObj.insertPipeObjects(SimPtr,IParam);
+  refObj.insertPipeObjects(*SimPtr,IParam);
 
   return;
 }

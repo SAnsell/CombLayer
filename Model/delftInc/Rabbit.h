@@ -37,7 +37,8 @@ namespace delftSystem
 */
 
 class Rabbit : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -66,8 +67,6 @@ class Rabbit : public attachSystem::ContainedComp,
   int innerVoid;                ///< Inner void cell
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createUnitVector(const ReactorGrid&);
 
   void createSurfaces();
@@ -84,7 +83,9 @@ class Rabbit : public attachSystem::ContainedComp,
   /// Accessor to inner void cell
   int getInnerVoid() const { return innerVoid; }
 
-  int createAll(Simulation&,const ReactorGrid&);
+  int build(Simulation&,const ReactorGrid&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  
 
 };
 

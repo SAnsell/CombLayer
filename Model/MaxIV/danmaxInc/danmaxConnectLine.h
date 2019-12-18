@@ -49,7 +49,7 @@ namespace xraySystem
   */
 
 class danmaxConnectLine :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap      
@@ -61,31 +61,23 @@ class danmaxConnectLine :
 
   /// Main system
   std::shared_ptr<xraySystem::SqrShield> connectShield;
-  /// First bellow
-  std::shared_ptr<constructSystem::Bellows> bellowA;
 
-  /// Pipe from first bellow
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<constructSystem::PortTube> ionPumpA; ///< Ion pump port
+  /// Pipe out
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;    
+  std::shared_ptr<constructSystem::Bellows> bellowA;    ///< Bellow to pump
+  std::shared_ptr<constructSystem::VacuumPipe> flangeA;  ///< adaptor flange
 
-  /// Pipe from ion pump
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; 
+  std::shared_ptr<constructSystem::PipeTube> ionPumpA; ///< Ion pump port
+  std::shared_ptr<constructSystem::VacuumPipe> flangeB;  ///< adaptor flange
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< Second bellow
-
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< join pipe
-  
-  std::shared_ptr<constructSystem::PortTube> ionPumpB;
-  
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD;  ///< join pipe
-  std::shared_ptr<constructSystem::Bellows> bellowC; ///< third bellow
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   // out pipe
 
   /// REGISTERED Shared_ptr : constructed not owned:
   std::shared_ptr<constructSystem::VacuumPipe> JPipe;
   
-  void populate(const FuncDataBase&);
-  void buildObjects(Simulation&,const attachSystem::FixedComp&,
-		    const std::string&);
-  void createLinks();
+  void buildObjects(Simulation&,
+		    const attachSystem::FixedComp&,const std::string&,
+		    const attachSystem::FixedComp&,const std::string&);
   
  public:
   
@@ -99,8 +91,9 @@ class danmaxConnectLine :
     { JPipe=JP; }
   
   void insertFirstRegion(Simulation&,const int);
-  void construct(Simulation&,const attachSystem::FixedComp&,
-		 const std::string&);
+  void construct(Simulation&,
+		 const attachSystem::FixedComp&,const std::string&,
+		 const attachSystem::FixedComp&,const std::string&);
 
 };
 

@@ -91,7 +91,7 @@ class PipeLine
   const pipeUnit& first() const;
   const pipeUnit& last() const; 
   
-  void createAll(Simulation&);
+  void build(Simulation&);
     
 };
 

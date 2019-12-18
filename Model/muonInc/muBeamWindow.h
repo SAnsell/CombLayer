@@ -3,7 +3,7 @@
  
  * File:   muonInc/muBeamWindow.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,18 +35,11 @@ namespace muSystem
   \brief Muon beam window object
 */
 
-class muBeamWindow : public attachSystem::FixedComp,
+class muBeamWindow : public attachSystem::FixedRotate,
     public attachSystem::ContainedComp
 {
  private:
   
-
-  double xStep;                   ///< XStep value
-  double yStep;                   ///< yStep
-  double zStep;                   ///< Zstep 
-  double xAngle;                  ///< xAxis rotation Angle [applied last]
-  double yAngle;                  ///< yAxis rotation Angle [applied mid]
-  double zAngle;                  ///< zAxis rotation Angle [applied first]
      // flange cylinder
   double flCylOutRadius;          ///< Flange outer radius
   double flCylInRadius;           ///< Flange inner radius
@@ -83,8 +76,6 @@ class muBeamWindow : public attachSystem::FixedComp,
   int windowMat;                 ///< Window mat
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -96,7 +87,8 @@ class muBeamWindow : public attachSystem::FixedComp,
   muBeamWindow& operator=(const muBeamWindow&);
   virtual ~muBeamWindow();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

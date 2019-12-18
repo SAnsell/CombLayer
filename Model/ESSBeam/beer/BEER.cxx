@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/BEER.cxx
+ * File:   ESSBeam/beer/BEER.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -101,7 +102,7 @@ namespace essSystem
 BEER::BEER(const std::string& keyName) :
   attachSystem::CopiedComp("beer",keyName),
   stopPoint(0),
-  beerAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  beerAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 

@@ -650,6 +650,7 @@ VacuumPipe::createLinks()
       FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
 
+      FixedComp::nameSideIndex(7,"outerPipe");
       FixedComp::nameSideIndex(7,"pipeOuterBase");
       FixedComp::nameSideIndex(8,"pipeOuterTop");
     }

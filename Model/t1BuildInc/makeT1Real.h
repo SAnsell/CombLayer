@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/makeT1Real.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ class makeT1Real
   std::shared_ptr<moderatorSystem::FlightLine> WaterNorthFL; 
   std::shared_ptr<moderatorSystem::FlightLine> WaterSouthFL; 
 
-  void flightLines(Simulation*);
+  void flightLines(Simulation&);
 
   std::string buildTarget(Simulation&,const std::string&,const int);
   
@@ -121,7 +121,7 @@ class makeT1Real
   makeT1Real& operator=(const makeT1Real&);
   ~makeT1Real();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

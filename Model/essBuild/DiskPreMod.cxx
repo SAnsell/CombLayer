@@ -66,7 +66,9 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -83,7 +85,7 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedOffset(Key,9),
+  attachSystem::FixedOffsetUnit(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap(),  
   NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
@@ -101,7 +103,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
+  attachSystem::LayerComp(A),attachSystem::FixedOffsetUnit(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),

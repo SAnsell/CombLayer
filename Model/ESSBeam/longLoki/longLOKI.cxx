@@ -63,7 +63,9 @@
 
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -101,7 +103,7 @@ namespace essSystem
 {
 
 longLOKI::longLOKI() : 
-  lokiAxis(new attachSystem::FixedOffset("longLokiAxis",4)),
+  lokiAxis(new attachSystem::FixedOffsetUnit("longLokiAxis",4)),
   BendA(new beamlineSystem::GuideLine("longLokiBA")),
   VacBoxA(new constructSystem::VacuumBox("longLokiVacA")),
   GuideA(new beamlineSystem::GuideLine("longLokiGA")),

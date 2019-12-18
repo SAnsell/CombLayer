@@ -77,6 +77,7 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "FixedGroup.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BulkShield.h"
 #include "ZoomPrimary.h"
@@ -87,7 +88,7 @@ namespace zoomSystem
 ZoomPrimary::ZoomPrimary(const std::string& Key) : 
   attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),
-  populated(0),
+  attachSystem::ExternalCut(),
   nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -97,7 +98,8 @@ ZoomPrimary::ZoomPrimary(const std::string& Key) :
 
 ZoomPrimary::ZoomPrimary(const ZoomPrimary& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
-  populated(A.populated),length(A.length),height(A.height),
+  attachSystem::ExternalCut(A),
+  length(A.length),height(A.height),
   depth(A.depth),leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   cutX(A.cutX),cutZ(A.cutZ),cutWidth(A.cutWidth),
   cutHeight(A.cutHeight),nLayers(A.nLayers),feMat(A.feMat),
@@ -120,7 +122,7 @@ ZoomPrimary::operator=(const ZoomPrimary& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      populated=A.populated;
+      attachSystem::ExternalCut::operator=(A);
       length=A.length;
       height=A.height;
       depth=A.depth;
@@ -144,15 +146,13 @@ ZoomPrimary::~ZoomPrimary()
 {}
 
 void
-ZoomPrimary::populate(const Simulation& System)
+ZoomPrimary::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("ZoomPrimary","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   length=Control.EvalVar<double>(keyName+"Length");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -176,25 +176,11 @@ ZoomPrimary::populate(const Simulation& System)
   ModelSupport::populateDivideLen(Control,nLayers,
 				  keyName+"Frac_",minDist,cFrac);
 
-  populated=1;
   return;
 }
 
 void
-ZoomPrimary::createUnitVector(const attachSystem::FixedGroup& LC)
-  /*!
-    Create the unit vectors
-    \param LC :: Linear Object to attach to [Collimator]
-  */
-{
-  ELog::RegMethod RegA("ZoomPrimary","createUnitVector");
-  FixedGroup::createUnitVector(LC);
-  setDefault("Main","Beam");
-  return;
-}
-
-void
-ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
+ZoomPrimary::createSurfaces()
   /*!
     Create All the surfaces
     \param LC :: Linear Component [to get outer surface]
@@ -203,13 +189,14 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
   ELog::RegMethod RegA("ZoomPrimary","createSurface");
 
   setDefault("Main","Beam");
-    
-  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
+
+
+  
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
-  SMap.addMatch(buildIndex+6,LC.getLinkSurf(6));   // right plane
+
 
   //  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
@@ -235,17 +222,26 @@ ZoomPrimary::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ZoomPrimary","createObjects");
 
+  const std::string frontStr=
+    ExternalCut::getRuleStr("front");
+  const HeadRule cutHR=
+    ExternalCut::getRule("side");
+  const int SN=cutHR.getPrimarySurface();
+  //  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
+  SMap.addMatch(buildIndex+6,SN);   // right plane
+
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 ");
+  addOuterSurf(Out+frontStr+cutHR.display());      
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object
+		 (cellIndex++,feMat,0.0,Out+frontStr+cutHR.display()));
   CDivideList.push_back(cellIndex-1);
 
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 13 -14 15 -16");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontStr));
   innerVoid=cellIndex-1;
 
   return;
@@ -263,14 +259,17 @@ ZoomPrimary::createLinks()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  mainFC.setConnect(0,Origin,-Y);       
+  mainFC.setConnect(0,Origin,-Y);
   mainFC.setConnect(1,Origin+Y*length,Y);     
   mainFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
   mainFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
   mainFC.setConnect(4,Origin-Z*depth,-Z);     
   mainFC.setConnect(5,Origin+Z*height,Z);     
-  
-  for(int i=0;i<6;i++)
+
+  mainFC.setLinkSurf(0,ExternalCut::getRule("front"));
+  mainFC.setLinkSurf(5,ExternalCut::getRule("side"));
+		       
+  for(int i=1;i<6;i++)
     mainFC.setLinkSurf(static_cast<size_t>(i),
 			   SMap.realSurf(buildIndex+i+1));
 
@@ -288,7 +287,7 @@ ZoomPrimary::layerProcess(Simulation& System)
     \param System :: Simulation to work on
   */
 {
-  ELog::RegMethod RegA("ZoomPrimary","LayerProcess");
+  ELog::RegMethod RegA("ZoomPrimary","layerProcess");
 
   if (!nLayers) return;
 
@@ -362,7 +361,8 @@ ZoomPrimary::exitWindow(const double Dist,
 
 void
 ZoomPrimary::createAll(Simulation& System,
-		       const attachSystem::FixedGroup& ZC)
+		       const attachSystem::FixedComp& ZC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -371,9 +371,10 @@ ZoomPrimary::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ZoomPrimary","createAll");
   
-  populate(System);
-  createUnitVector(ZC);
-  createSurfaces(ZC.getKey("Main"));
+  populate(System.getDataBase());
+  createUnitVector(ZC,sideIndex);
+  setDefault("Main","Beam");
+  createSurfaces();
   createObjects(System);
   createLinks();
   layerProcess(System);

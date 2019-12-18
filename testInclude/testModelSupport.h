@@ -36,9 +36,10 @@ class testModelSupport
 {
 private:
 
-  void createSurfaces();
+  void addSurfaces(ModelSupport::surfRegister&,const int,const int);
 
   //Tests 
+  int testAltComposite();
   int testRemoveOpenPair();
 
 public:

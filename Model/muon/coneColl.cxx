@@ -3,7 +3,7 @@
  
  * File:   muon/coneColl.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,13 +73,15 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "coneColl.h"
 
 namespace muSystem
 {
 
 coneColl::coneColl(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,2),attachSystem::ContainedComp()
+  attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -102,10 +104,8 @@ coneColl::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("coneColl","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");   
-
+  FixedRotate::populate(Control);
+  
   outRadius=Control.EvalVar<double>(keyName+"OutRadius");
   inRadius=Control.EvalVar<double>(keyName+"InRadius");   
   radiusStartCone=Control.EvalVar<double>(keyName+"RadiusStartCone");       
@@ -115,21 +115,6 @@ coneColl::populate(const FuncDataBase& Control)
   tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
          
-  return;
-}
-
-void
-coneColl::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("coneColl","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  
   return;
 }
 
@@ -204,16 +189,18 @@ coneColl::createLinks()
 
 void
 coneColl::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
     \param FC :: Origin for system
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("coneColl","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

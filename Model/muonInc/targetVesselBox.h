@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muonInc/targetVesselBox.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,12 @@ namespace muSystem
   \brief mu target vessel box
 */
 
-class targetVesselBox : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class targetVesselBox :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp
 {
  private:
   
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle (rotation)
-
   double height;                ///< Height
   double depth;                 ///< Depth
   double width;                 ///< Width
@@ -56,8 +51,6 @@ class targetVesselBox : public attachSystem::FixedComp,
 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,7 +62,8 @@ class targetVesselBox : public attachSystem::FixedComp,
   targetVesselBox& operator=(const targetVesselBox&);
   virtual ~targetVesselBox();
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

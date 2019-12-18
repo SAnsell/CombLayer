@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class EmptyCyl : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffsetUnit
 {
  private:
 

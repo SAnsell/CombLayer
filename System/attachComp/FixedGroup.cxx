@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedGroup.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "objectRegister.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 
 namespace attachSystem
@@ -166,7 +166,8 @@ FixedGroup::FixedGroup(const std::string& mainKey,
 }
 
 FixedGroup::FixedGroup(const FixedGroup& A) : 
-  FixedComp(A),FMap(A.FMap),
+  FixedComp(A),
+  primKey(A.primKey),sndKey(A.sndKey),FMap(A.FMap),
   bX(A.bX),bY(A.bY),bZ(A.bZ),bOrigin(A.bOrigin)
   /*!
     Copy constructor
@@ -185,6 +186,8 @@ FixedGroup::operator=(const FixedGroup& A)
   if (this!=&A)
     {
       FixedComp::operator=(A);
+      primKey=A.primKey;
+      sndKey=A.sndKey;
       FMap=A.FMap;
       bX=A.bX;
       bY=A.bY;
@@ -211,9 +214,7 @@ FixedGroup::registerKey(const std::string& AKey,const size_t NL)
 {
   ELog::RegMethod RegA("FixedGroup","registerKey");
 
-  //  OR.cell(keyName+AKey);
-  CompTYPE FCUnit(new FixedComp(keyName+AKey,NL));  
-  //  OR.addObject(FCUnit);
+  CompTYPE FCUnit(new FixedUnit(keyName+AKey,NL));  
   FMap.insert(FTYPE::value_type(AKey,FCUnit));
   return;
 }
@@ -300,7 +301,8 @@ FixedGroup::setDefault(const std::string& defKey)
   Y=mc->second->getY();
   Z=mc->second->getZ();
   Origin=mc->second->getCentre();
-
+  primKey=defKey;
+  
   return;
   
 }
@@ -342,7 +344,8 @@ FixedGroup::setSecondary(const std::string& defKey)
   bOrigin=mc->second->getCentre();
   bExit= (mc->second->hasLinkPt(2)) ?
     mc->second->getLinkPt(2) : bOrigin;
-    
+
+  sndKey=defKey;
   return;
   
 }
@@ -352,7 +355,7 @@ FixedGroup::applyRotation(const Geometry::Vec3D& Axis,
 			  const double Angle)
   /*!
     Apply a rotation to all groups
-    \param Axis :: rotation axis 
+f    \param Axis :: rotation axis 
     \param Angle :: rotation angle
   */
 {
@@ -400,6 +403,48 @@ FixedGroup::setAxisControl(const long int axisIndex,
   return;
 }
 
+void
+FixedGroup::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    Applies FC[grp](sideIndex) to each component
+    which has a name match.
+    Then applies FGrp [def](sideIndex) to all 
+    remaining units.
+    \param FC :: Fixed Component (FixedGroup)
+    \param sideIndex :: signed linkpoint			
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","createUnitVector");
+
+  const attachSystem::FixedGroup* FCGrp=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (FCGrp)
+    {
+      // key : shared_ptr
+      for(FTYPE::value_type& MItem : FMap)
+	{
+	  FTYPE::const_iterator mc=
+	    FCGrp->FMap.find(MItem.first);
+	  // if match apply
+	  if (mc!=FCGrp->FMap.end())
+	    MItem.second->createUnitVector(*mc->second,sideIndex);
+	  else  // no match [apply default]
+	    MItem.second->createUnitVector(FC,sideIndex);
+	}
+    }
+  // Only a standard FC unit:
+  else
+    {
+      // key : shared_ptr
+      for(FTYPE::value_type& MItem : FMap)
+	MItem.second->createUnitVector(FC,sideIndex);
+    }
+  setDefault(primKey);
+  //  FixedComp::createUnitVector();
+  return;
+}
 
   
 

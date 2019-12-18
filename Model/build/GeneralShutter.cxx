@@ -306,7 +306,8 @@ GeneralShutter::populate(const FuncDataBase& Control)
 }
 
 void
-GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
+GeneralShutter::createUnitVector(const attachSystem::FixedComp& FC,
+				 const long int sideIndex)
   /*!
     Create unit vectors for shutter along shutter direction
     \param FCPtr :: Previously defined Axis system [if present]
@@ -318,24 +319,23 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   // Initial system down to TSA
-  if (FCPtr)
-    {
-      mainFC.createUnitVector(*FCPtr,0);
-      beamFC.createUnitVector(*FCPtr,0);
-    }
-  else
-    {
-      mainFC.createUnitVector
+  mainFC.createUnitVector(FC,sideIndex);
+  beamFC.createUnitVector(FC,sideIndex);
+
+  /* !  NOT (FC)
+     {
+     mainFC.createUnitVector
+     (Y*voidXoffset,
+     Geometry::Vec3D(0,1,0),
+     Geometry::Vec3D(0,0,-1),
+     Geometry::Vec3D(-1,0,0));
+     beamFC.createUnitVector
 	(Y*voidXoffset,
-         Geometry::Vec3D(0,1,0),
-         Geometry::Vec3D(0,0,-1),
-         Geometry::Vec3D(-1,0,0));
-      beamFC.createUnitVector
-	(Y*voidXoffset,
-         Geometry::Vec3D(0,1,0),
-         Geometry::Vec3D(0,0,-1),
-         Geometry::Vec3D(-1,0,0));
-    }
+	Geometry::Vec3D(0,1,0),
+	Geometry::Vec3D(0,0,-1),
+	Geometry::Vec3D(-1,0,0));
+	}
+  */
   setDefault("Main","Beam");
   return;
 }
@@ -885,8 +885,8 @@ GeneralShutter::createLinks()
 
 void
 GeneralShutter::createAll(Simulation& System,
-			  const double ZOffset,
-			  const attachSystem::FixedComp* FCPtr)
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -898,7 +898,7 @@ GeneralShutter::createAll(Simulation& System,
 
   
   populate(System.getDataBase());
-  createUnitVector(FCPtr);
+  createUnitVector(FC,sideIndex);
   applyRotations(ZOffset);
   createSurfaces();
   createObjects(System);

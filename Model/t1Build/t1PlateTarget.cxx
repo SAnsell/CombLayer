@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,8 +61,10 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "channel.h"
 #include "PressVessel.h"
 #include "PlateTarget.h"
@@ -157,7 +158,8 @@ t1PlateTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
-  PLine->createAll(System,*PressVObj,-7,refFC,index);
+  PLine->setCutSurf("RefBoundary",refFC.getLinkString(index));
+  PLine->createAll(System,*PressVObj,-7);
   createBeamWindow(System,7);
   
   return;
@@ -165,28 +167,30 @@ t1PlateTarget::addProtonLine(Simulation& System,
 
 void
 t1PlateTarget::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: FixedComp for origin [World Origin]
+    \param sideIndex :: link point 
   */
 {
   ELog::RegMethod RegA("t1PlateTarget","createAll");
 
-  PlateTarObj->populate(System);
+  PlateTarObj->populate(System.getDataBase());
   PressVObj->setTargetLength(PlateTarObj->getTargetLength());
-  PressVObj->createAll(System,FC,0);
+  PressVObj->createAll(System,FC,sideIndex);
 
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);
 
   PlateTarObj->addInsertCell(PressVObj->getInnerVoid());
   PlateTarObj->addInsertCell(PressVObj->getOuterWall());
-  PlateTarObj->createAll(System,*PressVObj);
+  PlateTarObj->createAll(System,*PressVObj,0);
 
   DivObj->addInsertCell(PressVObj->getInnerVoid());
-  DivObj->createAll(System,*PlateTarObj,*PressVObj);
+  DivObj->build(System,*PlateTarObj,*PressVObj);
 
   insertObjects(System);
   PlateTarObj->buildFeedThrough(System);

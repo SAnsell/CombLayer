@@ -3,7 +3,7 @@
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -487,7 +489,7 @@ InnerTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("InnerTarget","addProtonLine");
 
   // 0 ::  front fact of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -497,17 +499,19 @@ InnerTarget::addProtonLine(Simulation& System,
   
 void
 InnerTarget::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed Component for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("InnerTarget","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

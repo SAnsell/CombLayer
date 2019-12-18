@@ -73,8 +73,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "channel.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -633,7 +635,8 @@ PressVessel::buildChannels(Simulation& System)
       CItem.push_back(channel("PVesselChannel",i,buildIndex));
       CPtr=&CItem.back();
       CPtr->addInsertCell(outerWallCell);
-      CPtr->createAll(System,*this,CPtr);
+      CPtr->setDefaultValues(Control,CPtr);
+      CPtr->createAll(System,*this,0);
     }
   return;
 }
@@ -664,7 +667,7 @@ PressVessel::buildFeedThrough(Simulation& System)
       SideWaterChannel.addPoint(PEnd);
       SideWaterChannel.addSection(sideWidth,sideHeight,waterMat,0.0);
       SideWaterChannel.setInitZAxis(Z);
-      SideWaterChannel.createAll(System);
+      SideWaterChannel.build(System);
     }
 
   for(size_t i=0;i<nBwch;i++)
@@ -682,7 +685,7 @@ PressVessel::buildFeedThrough(Simulation& System)
       EndWaterChannel.addPoint(PEnd);
       EndWaterChannel.addSection(bigWchbegWidth/2.0,bigWchbegHeight/2.0,waterMat,0.0);
       EndWaterChannel.setInitZAxis(Z);
-      EndWaterChannel.createAll(System);
+      EndWaterChannel.build(System);
     }
 
   return;

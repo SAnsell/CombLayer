@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muonInc/muonCarbonTarget.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,11 @@ namespace muSystem
   \brief Carbon target object
 */
 
-class muonCarbonTarget : public attachSystem::FixedComp,
+class muonCarbonTarget : public attachSystem::FixedRotate,
     public attachSystem::ContainedComp
 {
  private:
   
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle (rotation)
-
   double height;                ///< Height
   double depth;                 ///< Depth
   double width;                 ///< Width
@@ -54,8 +48,6 @@ class muonCarbonTarget : public attachSystem::FixedComp,
   
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -67,7 +59,8 @@ class muonCarbonTarget : public attachSystem::FixedComp,
   muonCarbonTarget& operator=(const muonCarbonTarget&);
   virtual ~muonCarbonTarget();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

@@ -66,6 +66,7 @@
 #include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "sbadDetector.h"
@@ -75,7 +76,7 @@ namespace sinbadSystem
 
 sbadDetector::sbadDetector(const std::string& Key,const size_t ID) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+std::to_string(ID),0),
+  attachSystem::FixedOffset(Key+std::to_string(ID),0),
   baseName(Key),detID(ID),
   active(0)
   /*!
@@ -95,11 +96,10 @@ sbadDetector::clone() const
 }
 
 sbadDetector::sbadDetector(const sbadDetector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   baseName(A.baseName),detID(A.detID),
-  active(A.active),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),length(A.length),
+  active(A.active),
+  radius(A.radius),length(A.length),
   mat(A.mat)
   /*!
     Copy constructor
@@ -118,13 +118,8 @@ sbadDetector::operator=(const sbadDetector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       active=A.active;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       radius=A.radius;
       length=A.length;
       mat=A.mat;
@@ -148,12 +143,9 @@ sbadDetector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("sbadDetector","populate");
 
+  FixedOffset::populate(Control);
+  
   active=Control.EvalVar<int>(keyName+"Active");
-  xStep=Control.EvalTail<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalTail<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalTail<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalTail<double>(keyName,baseName,"XYAngle");
-  zAngle=Control.EvalTail<double>(keyName,baseName,"ZAngle");
 
   radius=Control.EvalTail<double>(keyName,baseName,"Radius");
   length=Control.EvalTail<double>(keyName,baseName,"Length");
@@ -162,23 +154,6 @@ sbadDetector::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-sbadDetector::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComponent for origin
-  */
-{
-  ELog::RegMethod RegA("sbadDetector","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
-  return;
-}
-
 
 void
 sbadDetector::createSurfaces()
@@ -226,7 +201,8 @@ sbadDetector::createLinks()
 
 void
 sbadDetector::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -236,7 +212,7 @@ sbadDetector::createAll(Simulation& System,
   ELog::RegMethod RegA("sbadDetector","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);

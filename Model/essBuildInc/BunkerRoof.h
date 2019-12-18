@@ -39,7 +39,7 @@ namespace essSystem
 */
 
 class BunkerRoof : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedUnit,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -76,8 +76,6 @@ class BunkerRoof : public attachSystem::ContainedComp,
   int outerSurf;                   ///< Real outer surf
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
  public:
 

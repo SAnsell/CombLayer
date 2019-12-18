@@ -3,7 +3,7 @@
  
  * File:   test/testModelSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "Object.h"
+#include "generateSurf.h"
 #include "ModelSupport.h"
 
 #include "testFunc.h"
@@ -71,6 +72,24 @@ testModelSupport::~testModelSupport()
 {
 }
 
+void
+testModelSupport::addSurfaces(ModelSupport::surfRegister& SMap,
+			      const int A,const int B)
+  /*!
+    Add a set of surfaces between A and B
+    \param SMap :: Surface mape to add
+   */
+{
+      
+  Geometry::Vec3D Origin;
+  Geometry::Vec3D XAxis(0,1,0);
+  
+  for(int i=A;i<=B;i++)
+    ModelSupport::buildPlane
+      (SMap,i,Origin+XAxis*static_cast<double>(i),XAxis);
+  return;
+}
+
 int 
 testModelSupport::applyTest(const int extra)
   /*!
@@ -87,11 +106,13 @@ testModelSupport::applyTest(const int extra)
   typedef int (testModelSupport::*testPtr)();
   testPtr TPtr[]=
     {
+      &testModelSupport::testAltComposite,
       &testModelSupport::testRemoveOpenPair
     };
   const std::string TestName[]=
     {
-      "RemoveOpenPair",
+      "AltComposite",
+      "RemoveOpenPair"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -134,7 +155,8 @@ testModelSupport::testRemoveOpenPair()
       TTYPE("1 -2 3 -4","1 -2 3 -4"),
       TTYPE("1 -2 () 3 -4","1 -2 3 -4"),
       TTYPE("1 -2 ( 3 : -4)","1 -2 ( 3 : -4 )"),
-      TTYPE("1 -2 ( 3 : : -4 :)","1 -2 ( 3 : -4 )")
+      TTYPE("1 -2 ( 3 : : -4 :)","1 -2 ( 3 : -4 )"),
+      TTYPE("1 -2 ( 3 : ( -4 ( 6 : 5 )))","1 -2 ( 3: (-4 ( 6 : 5 ) ) )")
     };
   
   
@@ -145,6 +167,49 @@ testModelSupport::testRemoveOpenPair()
 	{
 	  ELog::EM<<"Result  == "<<StrFunc::singleLine(Res)<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<std::get<1>(tc)<<ELog::endTrace;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testModelSupport::testAltComposite()
+  /*!
+    Test to set if various empty strings can be removed
+    \return 0 on success
+  */
+{
+  ELog::RegMethod RegA("testModelSupport","testRemoveOpenPair");
+
+  ModelSupport::surfRegister SMap;
+  addSurfaces(SMap,10,50);
+  
+  typedef std::tuple<std::string,int,int,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 3 -4",10,20,30,"11 -12 13 -14"),
+      TTYPE("1 -2 3M -4",10,20,30,"11 -12 23 -14"),
+      TTYPE("1 -2 3A -4B",10,20,30,"11 -12 13"),
+      TTYPE("1 -2 -4B 3A",10,20,30,"11 -12 13"),
+      TTYPE("1 -2 -43A -4B",10,20,30,"11 -12 -14"),
+      TTYPE("1 -2 -43MA -4MB",10,20,30,"11 -12 -24")
+    };
+  
+  
+  for(const TTYPE& tc : Tests)
+    {
+      const int BA(std::get<1>(tc));
+      const int BB(std::get<2>(tc));
+      const int BC(std::get<3>(tc));
+      const std::string Res=
+	ModelSupport::getAltComposite(SMap,BA,BB,BC,std::get<0>(tc));
+      if (StrFunc::singleLine(Res)!=std::get<4>(tc))
+	{
+	  ELog::EM<<"Result  == "<<StrFunc::singleLine(Res)
+		  <<" == "<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<4>(tc)
+		  <<" == "<<ELog::endTrace;
 	  return -1;
 	}
     }

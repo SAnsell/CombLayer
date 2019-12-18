@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2018 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2019 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ namespace essSystem
 
 BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,8 +88,7 @@ BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
 
 BilbaoWheelInnerStructure::BilbaoWheelInnerStructure
 (const BilbaoWheelInnerStructure& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  xyAngle(A.xyAngle),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   temp(A.temp),brickLen(A.brickLen),brickWidth(A.brickWidth),
   brickGapLen(A.brickGapLen),brickGapWidth(A.brickGapWidth),
   nSectors(A.nSectors),nBrickSectors(A.nBrickSectors),
@@ -114,8 +113,7 @@ BilbaoWheelInnerStructure::operator=(const BilbaoWheelInnerStructure& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      xyAngle=A.xyAngle;
+      attachSystem::FixedOffset::operator=(A);
       temp=A.temp;
       brickLen=A.brickLen;
       brickWidth=A.brickWidth;
@@ -160,9 +158,8 @@ BilbaoWheelInnerStructure::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","populate");
-  
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  
+
+  FixedOffset::populate(Control);
   brickLen=Control.EvalVar<double>(keyName+"BrickLength");
   brickWidth=Control.EvalVar<double>(keyName+"BrickWidth");
   brickMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickMat");
@@ -185,21 +182,6 @@ BilbaoWheelInnerStructure::populate(const FuncDataBase& Control)
   nSteelLayers=Control.EvalVar<size_t>(keyName+"NSteelLayers");
   brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
 
-  return;
-}
-
-void
-BilbaoWheelInnerStructure::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Centre for object
-  */
-{
-  ELog::RegMethod RegA("BilbaoWheelInnerStructure","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  
-  applyAngleRotate(xyAngle,0.0);
-  
   return;
 }
 
@@ -619,7 +601,8 @@ BilbaoWheelInnerStructure::createLinks()
   
 void
 BilbaoWheelInnerStructure::createAll(Simulation& System,
-				     attachSystem::FixedComp& WheelFC)
+				     attachSystem::FixedComp& WheelFC,
+				     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -629,7 +612,7 @@ BilbaoWheelInnerStructure::createAll(Simulation& System,
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(WheelFC);
+  createUnitVector(WheelFC,sideIndex);
   
   createSurfaces(WheelFC);
   createObjects(System, WheelFC);

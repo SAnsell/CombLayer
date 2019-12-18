@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -72,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -193,19 +193,17 @@ Bunker::populate(const FuncDataBase& Control)
   
 void
 Bunker::createUnitVector(const attachSystem::FixedComp& FC,
-			 const long int sideIndex,
-			 const bool reverseX)
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
     \param sideIndex :: Side for linkage centre
-    \param reverseX :: reverse X direction
   */
 {
   ELog::RegMethod RegA("Bunker","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  if (reverseX) X*=-1;
+  if (revFlag) X*=-1;
   return;
 }
 
@@ -254,15 +252,14 @@ Bunker::calcSegPosition(const size_t segIndex,
 
   
 void
-Bunker::createSurfaces(const bool revX)
+Bunker::createSurfaces()
   /*!
     Create All the surfaces
-    \param revX :: reverse rotation axis sign
   */
 {
   ELog::RegMethod RegA("Bunker","createSurface");
 
-  const Geometry::Vec3D ZRotAxis((revX) ? -Z : Z);
+  const Geometry::Vec3D ZRotAxis((revFlag) ? -Z : Z);
 
   Geometry::Vec3D CentAxis(Y);
   Geometry::Vec3D AWallDir(X);
@@ -457,12 +454,12 @@ Bunker::createObjects(Simulation& System,
 	Out+=ModelSupport::getComposite(SMap,buildIndex," -14 ");
       
       System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out+Inner));
-      addCell("roof"+StrFunc::makeString(i),cellIndex-1);
+      addCell("roof"+std::to_string(i),cellIndex-1);
       Out=ModelSupport::getComposite(SMap,buildIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -106 ");
       System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       addCell("frontWall",cellIndex-1);
-      addCell("frontWall"+StrFunc::makeString(i),cellIndex-1);
+      addCell("frontWall"+std::to_string(i),cellIndex-1);
       divIndex++;
     }
 
@@ -504,7 +501,7 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 
   for(size_t i=0;i<nSectors;i++)
     {
-      const std::string SectNum(StrFunc::makeString(i));
+      const std::string SectNum(std::to_string(i));
       const int LW=(i) ? divIndex+1 : lwIndex+3;
       const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;
       const int cellN=getCell("roof"+SectNum);
@@ -550,7 +547,7 @@ Bunker::createMainWall(Simulation& System)
 
   for(size_t i=0;i<nSectors;i++)
     {
-      const std::string SectNum(StrFunc::makeString(i));
+      const std::string SectNum(std::to_string(i));
       const int LW=(i) ? divIndex+1 : lwIndex+3;
       const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;
       const int cellN=getCell("frontWall"+SectNum);
@@ -625,7 +622,7 @@ Bunker::calcSegment(const Simulation& System,
   ELog::RegMethod RegA("Bunker","calcSegment");
   for(size_t i=0;i<nSectors;i++)
     {
-      const std::string SName="frontWall"+StrFunc::makeString(i);
+      const std::string SName="frontWall"+std::to_string(i);
       const int cN=getCell(SName);
       const MonteCarlo::Object* SUnit=System.findObject(cN);
       if (SUnit)
@@ -663,22 +660,20 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
 void
 Bunker::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
-		  const long int linkIndex,
-                  const bool reverseX)
+		  const long int linkIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
-    \param reverseX :: Reverse X direction
   */
 {
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,linkIndex,reverseX);
-  createSurfaces(reverseX);
+  createUnitVector(FC,linkIndex);
+  createSurfaces();
   
   createLinks(FC,linkIndex);
   createObjects(System,FC,linkIndex);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,10 +64,10 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -78,7 +78,8 @@ namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,11),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffsetUnit(Key,11),
   attachSystem::CellMap(),
   engActive(0),
   InnerCompTop(new BeRefInnerStructure(Key+"TopInnerStructure")),
@@ -94,7 +95,8 @@ BeRef::BeRef(const std::string& Key) :
 }
 
 BeRef::BeRef(const BeRef& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffsetUnit(A),
   attachSystem::CellMap(A),
   engActive(A.engActive),InnerCompTop(A.InnerCompTop->clone()),
   InnerCompLow(A.InnerCompLow->clone()),
@@ -177,8 +179,7 @@ BeRef::populateWithDef(const FuncDataBase& Control,
   topWallMat=ModelSupport::EvalMat<int>(Control,keyName+"TopWallMat");   
   lowWallMat=ModelSupport::EvalMat<int>(Control,keyName+"LowWallMat");   
 
-  targSepMat=ModelSupport::EvalMat<int>
-    (Control,StrFunc::makeString(keyName+"TargSepMat"));
+  targSepMat=ModelSupport::EvalMat<int>(Control,keyName+"TargSepMat");
   
   lowVoidThick=(lowVThick<Geometry::zeroTol) ?
     Control.EvalVar<double>(keyName+"LowVoidThick") : lowVThick;

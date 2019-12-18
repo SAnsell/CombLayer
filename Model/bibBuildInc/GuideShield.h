@@ -3,7 +3,7 @@
  
  * File:   bibBuildInc/GuideShield.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ namespace bibSystem
 */
 
 class GuideShield : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -51,13 +52,10 @@ class GuideShield : public attachSystem::ContainedComp,
   std::vector<double> Width;     ///< Width of layer (total)
   std::vector<int> Mat;          ///< Materials for each layer
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const attachSystem::ContainedComp*,
-		     const attachSystem::FixedComp&,const long int,
-		     const attachSystem::FixedComp&,const long int);
+  void createObjects(Simulation&);
   void calcInnerDimensions(const attachSystem::FixedComp&);
 
  public:
@@ -67,9 +65,7 @@ class GuideShield : public attachSystem::ContainedComp,
   GuideShield& operator=(const GuideShield&);
   virtual ~GuideShield();
 
-  std::vector<int> getCells() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,const long int,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int);
   
 };

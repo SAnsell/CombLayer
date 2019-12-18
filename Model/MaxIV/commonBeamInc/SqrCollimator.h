@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SqrCollimator.h
+ * File:   commonBeamInc/SqrCollimator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,6 @@ class SqrCollimator :
   int mat;                      ///< material
   int voidMat;                  ///< inner material
   
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

@@ -3,7 +3,7 @@
  
  * File:   delftInc/BeSurround.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,8 @@ namespace delftSystem
 */
 
 class BeSurround : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -56,11 +57,8 @@ class BeSurround : public attachSystem::ContainedComp,
   int frontMat;                 ///< Front Material 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -71,7 +69,7 @@ class BeSurround : public attachSystem::ContainedComp,
   virtual ~BeSurround();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
+		 const long int);
 
 };
 

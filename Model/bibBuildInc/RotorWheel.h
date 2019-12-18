@@ -36,17 +36,10 @@ namespace bibSystem
 */
 
 class RotorWheel : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
-
   double radius;                  ///< Radius of wheel
   double waterThick;              ///< Middle water thickness
   double wallThick;               ///< Wall thickness
@@ -80,8 +73,6 @@ class RotorWheel : public attachSystem::ContainedGroup,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,7 +84,8 @@ class RotorWheel : public attachSystem::ContainedGroup,
   RotorWheel& operator=(const RotorWheel&);
   virtual ~RotorWheel();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

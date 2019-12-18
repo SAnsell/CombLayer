@@ -3,7 +3,7 @@
  
  * File:   moderator/CouplePipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "VacVessel.h"
 #include "pipeUnit.h"
@@ -78,8 +79,7 @@ namespace moderatorSystem
 {
 
 CouplePipe::CouplePipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
-  populated(0),
+  attachSystem::FixedUnit(Key,0),
   GOuter("gOuter"),HInner("hInner")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -88,8 +88,8 @@ CouplePipe::CouplePipe(const std::string& Key)  :
 {}
 
 CouplePipe::CouplePipe(const CouplePipe& A) : 
-  attachSystem::FixedComp(A),
-  populated(A.populated),GOuter(A.GOuter),HInner(A.HInner),
+  attachSystem::FixedUnit(A),
+  GOuter(A.GOuter),HInner(A.HInner),
   Xoffset(A.Xoffset),Yoffset(A.Yoffset),outMat(A.outMat),
   outAlMat(A.outAlMat),outVacMat(A.outVacMat),innerAlMat(A.innerAlMat),
   innerMat(A.innerMat),outRadius(A.outRadius),outAlRadius(A.outAlRadius),
@@ -114,7 +114,6 @@ CouplePipe::operator=(const CouplePipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
       GOuter=A.GOuter;
       HInner=A.HInner;
       Xoffset=A.Xoffset;
@@ -149,15 +148,13 @@ CouplePipe::~CouplePipe()
 {}
 
 void
-CouplePipe::populate(const Simulation& System)
+CouplePipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation to use
   */
 {
   ELog::RegMethod RegA("CouplePipe","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   hydTemp=Control.EvalVar<double>("hydrogenModTemp");
   hydMat=ModelSupport::EvalMat<int>(Control,"hydrogenModMat");
@@ -186,7 +183,6 @@ CouplePipe::populate(const Simulation& System)
   hRadius=Control.EvalVar<double>(keyName+"HydRad"); 
   hThick=Control.EvalVar<double>(keyName+"HydThick"); 
   
-  populated |= 1;
   return;
 }
   
@@ -243,7 +239,7 @@ CouplePipe::insertOuter(Simulation& System,
   GOuter.addRadius(outAlRadius,outAlMat,0.0);
   GOuter.addRadius(outRadius,outMat,0.0);
  
-  GOuter.createAll(System);
+  GOuter.build(System);
   return;
 }
 
@@ -275,13 +271,13 @@ CouplePipe::insertPipes(Simulation& System,const VacVessel& VC)
   HInner.addRadius(hRadius-hThick,hydMat,hydTemp);
   HInner.addRadius(hRadius,innerAlMat,hydTemp);
  
-  HInner.createAll(System);
+  HInner.build(System);
   return;
 }
 
   
 void
-CouplePipe::createAll(Simulation& System,
+CouplePipe::build(Simulation& System,
 		      const attachSystem::FixedComp& FUnit,
 		      const size_t sideIndex,
 		      const VacVessel& VCell)
@@ -296,7 +292,7 @@ CouplePipe::createAll(Simulation& System,
   ELog::RegMethod RegA("CouplePipe","createAll");
 
 
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit,sideIndex);
   insertOuter(System,VCell);

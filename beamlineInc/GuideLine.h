@@ -116,6 +116,8 @@ class GuideLine : public attachSystem::ContainedComp,
   HeadRule getXSectionOut(const size_t =0,const size_t= 0) const;
   
   virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,const long int);
+  virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,const long int,
 			 const attachSystem::FixedComp&,const long int);
 

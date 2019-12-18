@@ -3,7 +3,7 @@
  
  * File:   constructInc/WallCut.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace constructSystem
 */
 
 class WallCut : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -57,8 +58,8 @@ class WallCut : public attachSystem::FixedOffset,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const HeadRule&);
-  void createLinks(const HeadRule&);
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
 
@@ -71,7 +72,7 @@ class WallCut : public attachSystem::FixedOffset,
   /// Access to insert key
   const std::string& getInsertKey() const { return insertKey; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const HeadRule&);
+		 const long int);
 
 };
 

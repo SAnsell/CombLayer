@@ -67,6 +67,7 @@
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -161,31 +162,29 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","frontMaskVariables");
 
-  setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+  setVariable::SqrFMaskGenerator FMaskGen;
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setFrontAngleSize(1033.0,1300.0,1300.0);  // Approximated to get 1mrad x 1mrad
+  FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad  
+  FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,15);
 
   // approx for 100uRad x 100uRad
   //  CollGen.setMinSize(32.0,0.680,0.358);
-  
-  CollGen.setMinAngleSize(32.0,1600.0,100.0,100.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
-
-  // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
+  FMaskGen.setFrontAngleSize(1600.0,200.0,200.0); 
+  FMaskGen.setMinAngleSize(32.0,1600.0, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(1600.0, 150.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",0.0,34.2);
 
   // approx for 40uRad x 40uRad
-  CollGen.setMinAngleSize(12.0,1600.0,40.0,40.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  FMaskGen.setFrontAngleSize(1600.0,80.0,80.0);  
+  FMaskGen.setMinAngleSize(12.0,1600.0, 40.0, 40.0 );
+  FMaskGen.setBackAngleSize(1600.0, 60.0,60.0 );   
+  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
+
+
 
   return;
 }
@@ -1082,7 +1081,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"CosaxsFrontBeam",310.0,724.0,37.0);
+    (Control,"CosaxsFrontBeam",310.0,751.0,37.0);
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
     
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");

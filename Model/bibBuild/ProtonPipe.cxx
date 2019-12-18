@@ -3,7 +3,7 @@
  
  * File:   bibBuild/ProtonPipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,21 +154,6 @@ ProtonPipe::populate(const FuncDataBase& Control)
 }
 
 void
-ProtonPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("ProtonPipe","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 ProtonPipe::createSurfaces(const attachSystem::FixedComp& TarFC,
 			   const long int targetIndex)
   /*!
@@ -254,7 +239,7 @@ ProtonPipe::createLinks()
 void
 ProtonPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& Target,
-		      const size_t tarIndex)
+		      const long int tarIndex)
 
   /*!
     Extrenal build everything
@@ -266,8 +251,8 @@ ProtonPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("ProtonPipe","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(Target,tarIndex+1);
-  createSurfaces(Target,tarIndex+1);
+  createUnitVector(Target,tarIndex);
+  createSurfaces(Target,tarIndex);
   createObjects(System);
 
   createLinks();

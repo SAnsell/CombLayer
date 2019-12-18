@@ -143,24 +143,6 @@ Bucket::populate(const FuncDataBase& Control)
   return;
 }
   
-
-void
-Bucket::createUnitVector(const attachSystem::FixedComp& CUnit,
-			 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex ::: link point
-  */
-{
-  ELog::RegMethod RegA("Bucket","createUnitVector");
-
-  FixedComp::createUnitVector(CUnit,sideIndex);
-  applyOffset();
-
-  return;
-}
-
 void
 Bucket::createSurfaces()
   /*!

@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class BasicFlightLine : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public attachSystem::CellMap
 {
  private:

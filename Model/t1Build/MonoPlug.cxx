@@ -71,13 +71,16 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "ExternalCut.h"
 #include "MonoPlug.h"
 
 namespace shutterSystem
 {
 
 MonoPlug::MonoPlug(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp()
+  attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -86,6 +89,7 @@ MonoPlug::MonoPlug(const std::string& Key)  :
 
 MonoPlug::MonoPlug(const MonoPlug& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   nPlugs(A.nPlugs),plugRadii(A.plugRadii),
   plugZLen(A.plugZLen),plugClearance(A.plugClearance),
   dividerZLen(A.dividerZLen),steelMat(A.steelMat),
@@ -108,6 +112,7 @@ MonoPlug::operator=(const MonoPlug& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       nPlugs=A.nPlugs;
       plugRadii=A.plugRadii;
       plugZLen=A.plugZLen;
@@ -126,15 +131,13 @@ MonoPlug::~MonoPlug()
 {}
 
 void
-MonoPlug::populate(const Simulation& System)
+MonoPlug::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation to use
   */
 {
   ELog::RegMethod RegA("MonoPlug","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   nPlugs=Control.EvalVar<size_t>(keyName+"NPlugs");   
   const std::string PRad=keyName+"PlugRadius";
@@ -155,21 +158,6 @@ MonoPlug::populate(const Simulation& System)
   return;
 }
 
-void
-MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param VoidFC :: VoidVessel to get top and axises
-    \param sideIndex  :: Top surface
-  */
-{
-  ELog::RegMethod RegA("MonoPlug","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(VoidFC);
-  Origin=VoidFC.getLinkPt(sideIndex);
-  return;
-}
 
 void
 MonoPlug::createSurfaces()
@@ -209,16 +197,10 @@ MonoPlug::createSurfaces()
 }
 
 void
-MonoPlug::createObjects(Simulation& System,
-			const long int vLCIndex,
-			const attachSystem::FixedComp& VoidFC,
-			const attachSystem::FixedComp& BulkFC)
+MonoPlug::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
-    \param vLCIndex :: void link point
-    \param VoidFC :: Main outer void
-    \param BulkFC :: Bulk steel object
   */
 {
   ELog::RegMethod RegA("MonoPlug","createObjects");
@@ -229,13 +211,17 @@ MonoPlug::createObjects(Simulation& System,
   std::string Out;
 
   // The outside stuff
-  const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
-  const std::string outSurf=VoidFC.getLinkString(-1);
+  //  const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
+  //  const std::string outSurf=VoidFC.getLinkString(-1);
+
+  //  const std::string bulkSurf=
+  //    BulkFC.getLinkString(-vLCIndex);
+
+  const std::string voidSurf=ExternalCut::getRuleStr("voidSurf");
+  const std::string outSurf=ExternalCut::getRuleStr("outSurf");
+  const std::string bulkSurf=ExternalCut::getRuleStr("bulkSurf");
+
   
-
-  const std::string bulkSurf=
-    BulkFC.getLinkString(-vLCIndex);
-
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
     {
@@ -315,9 +301,10 @@ MonoPlug::createLinks()
 
 void
 MonoPlug::createAll(Simulation& System,
-		    const long int vLCIndex,
 		    const attachSystem::FixedComp& VoidFC,
-		    const attachSystem::FixedComp& BulkFC)
+		    const long int sideIndex)
+  
+		    //		    const attachSystem::FixedComp& BulkFC)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -327,10 +314,10 @@ MonoPlug::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MonoPlug","createAll");
-  populate(System);
-  createUnitVector(VoidFC,vLCIndex);
+  populate(System.getDataBase());
+  createUnitVector(VoidFC,sideIndex);
   createSurfaces();
-  createObjects(System,vLCIndex,VoidFC,BulkFC);
+  createObjects(System);
   createLinks();
   insertObjects(System);
   return;

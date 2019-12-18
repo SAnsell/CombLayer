@@ -57,8 +57,6 @@ class ZoomMonitor : public attachSystem::FixedOffset,
   int wallMat;                  ///< wallMat outer material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
   void createSurfaces();
 
   void createObjects(Simulation&);
@@ -73,8 +71,7 @@ class ZoomMonitor : public attachSystem::FixedOffset,
 
   /// Set surface
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,
-		 const attachSystem::ContainedComp&);
+		 const long int);
 
 
 };

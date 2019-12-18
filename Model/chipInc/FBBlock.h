@@ -37,20 +37,18 @@ namespace hutchSystem
   \brief Feed through block at the chipIR door
 */
 
-class FBBlock : public attachSystem::FixedComp
+class FBBlock : public attachSystem::FixedUnit
 {
  private:
 
   size_t nFeed;           ///< Number of feed throughs
-
 
   double fbLength;                      ///< Length of block
   Geometry::Vec3D Offset;               ///< Offset value
   std::vector<Geometry::Vec3D> FBcent;  ///< Centre points
   std::vector<double> FBsize;           ///< Feedblock size
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
 
   void insertBlock(Simulation&,const chipIRHutch&);
 
@@ -61,7 +59,7 @@ class FBBlock : public attachSystem::FixedComp
   FBBlock& operator=(const FBBlock&);
   ~FBBlock();
   
-  void createAll(Simulation&,const chipIRHutch&);
+  void build(Simulation&,const chipIRHutch&);
 
 };
 

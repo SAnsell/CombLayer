@@ -62,6 +62,8 @@ class ZoomStack :  public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
+
  public:
 
   ZoomStack(const std::string&);

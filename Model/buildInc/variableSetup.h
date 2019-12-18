@@ -45,7 +45,6 @@ namespace setVariable
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);
-  void IMatVariables(FuncDataBase&);
   void MaxIVVariables(FuncDataBase&,const std::set<std::string>&);
   void MuonVariables(FuncDataBase&);
   void PipeVariables(FuncDataBase&);

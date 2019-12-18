@@ -80,6 +80,7 @@
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "GeneralShutter.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
@@ -802,7 +803,7 @@ ChipIRGuide::addInsertPlate(Simulation& System)
   if (!voidCells.empty())
     SP.addInsertCell(voidCells.front());
 
-  SP.createAll(System,*this);
+  SP.createAll(System,*this,0);
   return;
 }
 
@@ -993,7 +994,7 @@ ChipIRGuide::addFilter(Simulation& System)
   for(const int& VC : voidCells)
     Filter.addInsertCell(VC);
 
-  Filter.createAll(System,*this);
+  Filter.createAll(System,*this,0);
   return;
 }
  
@@ -1106,7 +1107,8 @@ ChipIRGuide::addWallCuts(Simulation& System)
 
       HeadRule Boundary(Out);
       Boundary.populateSurf();
-      WC->createAll(System,*this,0,Boundary);
+      WC->setCutSurf("WallBoundary",Boundary);
+      WC->createAll(System,*this,0);
     }
   
   return;
@@ -1159,11 +1161,13 @@ ChipIRGuide::createAll(Simulation& System,
 
 void
 ChipIRGuide::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createAll[FC]");

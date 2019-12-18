@@ -74,7 +74,7 @@ class FREIA : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> freiaAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> freiaAxis;
 
   /// Elliptic focus in monolith [m5]
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

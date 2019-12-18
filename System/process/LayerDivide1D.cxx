@@ -3,7 +3,7 @@
  
  * File:   process/LayerDivide1D.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -89,7 +90,7 @@ namespace ModelSupport
 {
 
 LayerDivide1D::LayerDivide1D(const std::string& Key)  :
-  FixedComp(Key,0),
+  FixedUnit(Key,0),CellMap(),SurfMap(),
   WallID("Split")
   /*!
     Constructor BUT ALL variable are left unpopulated.

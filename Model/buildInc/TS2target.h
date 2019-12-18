@@ -107,8 +107,6 @@ class TS2target : public constructSystem::TargetBase
   std::vector<double> mainFrac; ///< Main fraction
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-  
   void createSurfaces();  
   void createNoseConeSurfaces();
   void createObjects(Simulation&);
@@ -138,8 +136,7 @@ class TS2target : public constructSystem::TargetBase
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
   void layerProcess(Simulation&);
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
   
 
 };

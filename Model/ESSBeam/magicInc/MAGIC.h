@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/MAGIC.h
+ * File:   ESSbeam/magicInc/MAGIC.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ class MAGIC : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> magicAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> magicAxis;
 
   /// Elliptic focus in bulkshield [m3]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

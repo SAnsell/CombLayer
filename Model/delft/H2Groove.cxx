@@ -3,7 +3,7 @@
  
  * File:   delft/H2Groove.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-// #include "SecondTrack.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -154,28 +154,6 @@ H2Groove::populate(const FuncDataBase& Control)
   
   siMat=ModelSupport::EvalMat<int>(Control,keyNum+"SiMat",keyNum+"SiMat");
   siTemp=Control.EvalPair<double>(keyNum+"SiTemp",keyName+"SiTemp");
-
-  return;
-}
-  
-
-void
-H2Groove::createUnitVector(const attachSystem::FixedComp& FUnit,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Points down the H2Groove direction
-    - X Across the H2Groove
-    - Z up (towards the target)
-    \param FUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("H2Groove","createUnitVector");
-  
-  // Opposite since other face:
-  attachSystem::FixedComp::createUnitVector(FUnit,sideIndex);
-  FixedOffset::applyOffset();
 
   return;
 }

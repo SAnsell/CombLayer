@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/MAGIC.cxx
+ * File:   ESSBeam/magic/MAGIC.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -65,6 +65,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -104,7 +105,7 @@ namespace essSystem
 MAGIC::MAGIC(const std::string& keyName) :
   attachSystem::CopiedComp("magic",keyName),
   startPoint(0),stopPoint(0),
-  magicAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  magicAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),

@@ -74,6 +74,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -92,7 +93,7 @@ namespace hutchSystem
 
 FeedThrough::FeedThrough(const std::string& Key,
 			 const size_t Index)  :
-  attachSystem::FixedComp(Key+std::to_string(Index),0),
+  attachSystem::FixedUnit(Key+std::to_string(Index),0),
   baseName(Key),ID(Index),
   CollTrack(Key+std::to_string(Index))
   /*!
@@ -102,7 +103,7 @@ FeedThrough::FeedThrough(const std::string& Key,
 {}
 
 FeedThrough::FeedThrough(const FeedThrough& A) : 
-  attachSystem::FixedComp(A),baseName(A.baseName),ID(A.ID),
+  attachSystem::FixedUnit(A),baseName(A.baseName),ID(A.ID),
   CollTrack(A.CollTrack),height(A.height),
   width(A.width),Offset(A.Offset),CPts(A.CPts)
   /*!
@@ -175,22 +176,7 @@ FeedThrough::populate(const FuncDataBase& Control)
   
   return;
 }
-  
-void
-FeedThrough::createUnitVector(const attachSystem::FixedComp& CUnit)
-/*!
-  Create the unit vectors
-  - Y Points towards WISH
-  - X Across the moderator
-  - Z up (towards the target)
-  \param CUnit :: Fixed unit that it is connected to 
-*/
-{
-  ELog::RegMethod RegA("FeedThrough","createUnitVector");
-  FixedComp::createUnitVector(CUnit);
-  return;
-}
-  
+    
 
 void 
 FeedThrough::insertColl(Simulation& System,
@@ -227,14 +213,14 @@ FeedThrough::insertColl(Simulation& System,
   CollTrack.addSection(width,height,0,0.0);
   CollTrack.setInitZAxis(Z);
   DegA.activate();
-  CollTrack.createAll(System);
+  CollTrack.build(System);
 
   return;
 }
   
 void
-FeedThrough::createAll(Simulation& System,
-		       const chipIRHutch& HutUnit)
+FeedThrough::build(Simulation& System,
+		   const chipIRHutch& HutUnit)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -245,7 +231,7 @@ FeedThrough::createAll(Simulation& System,
 
   return;
   populate(System.getDataBase());
-  createUnitVector(HutUnit);
+  createUnitVector(HutUnit,0);
   insertColl(System,HutUnit); 
 
   //  insertPipes(System);       

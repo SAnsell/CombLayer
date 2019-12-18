@@ -224,24 +224,6 @@ VoidVessel::populate(const FuncDataBase& Control)
 }
 
 void
-VoidVessel::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp
-  */
-{
-  ELog::RegMethod RegA("VoidVessel","createUnitVector");
-  const masterRotate& MR=masterRotate::Instance();
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin+=Y*vXoffset;
-
-  CS.setCNum(chipIRDatum::voidCentre,MR.calcRotate(Origin));
-  return;
-}
-
-void
 VoidVessel::createSurfaces()
   /*!
     Create all the surfaces
@@ -382,8 +364,7 @@ VoidVessel::createSurfaces()
 }
 
 void
-VoidVessel::createObjects(Simulation& System,
-			  const attachSystem::ContainedComp* Reflector)
+VoidVessel::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -402,15 +383,8 @@ VoidVessel::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Object(cellIndex++,vMat,0.0,Out));
   steelCell=cellIndex-1;
 
-  if (!Reflector)
-  // Add inner object + Intersection 
-    Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 "
-				   "#78000T ");
-  else
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 ")+
-	Reflector->getExclude();
-    }
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 ");
+    // +Reflector->getExclude();
 
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
@@ -523,7 +497,7 @@ VoidVessel::processVoid(Simulation& System)
 void
 VoidVessel::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp* Reflector)
+		      const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -532,9 +506,9 @@ VoidVessel::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("VoidVessel","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,Reflector);
+  createObjects(System);
   createWindows(System);
   return;
 }

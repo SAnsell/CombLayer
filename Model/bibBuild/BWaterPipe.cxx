@@ -3,7 +3,7 @@
  
  * File:   bibBuild/BWaterPipe.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -203,7 +204,7 @@ BWaterPipe::insertPipe(Simulation& System,const attachSystem::FixedComp& FC,
   Central.setActive(0,1);
   Central.setActive(1,1);
 
-  Central.createAll(System);
+  Central.build(System);
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   moderatorInc/Groove.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,12 @@ namespace moderatorSystem
 */
 
 class Groove : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
+  
 {
  private:
-  
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double width;             ///< Total Width
   double height;            ///< Total height
@@ -69,8 +70,7 @@ class Groove : public attachSystem::ContainedComp,
   int alMat;                ///< Al material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,7 +87,8 @@ class Groove : public attachSystem::ContainedComp,
   Geometry::Vec3D getViewPoint() const;
   Geometry::Vec3D getBackGroove() const;
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

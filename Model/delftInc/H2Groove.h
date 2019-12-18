@@ -52,9 +52,6 @@ class H2Groove : public attachSystem::ContainedComp,
   int siMat;                ///< Moderator material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
   void createLinks();

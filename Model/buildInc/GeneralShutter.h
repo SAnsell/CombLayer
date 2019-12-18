@@ -111,13 +111,14 @@ class GeneralShutter :
   int lowerCell;                ///< Block that stops the beam
   int innerVoidCell;            ///< inner void cell
 
+  double ZOffset;               ///< Extra to offset by
 
   //--------------
   // FUNCTIONS:
   //--------------
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp*);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   std::string divideStr() const;
@@ -173,11 +174,14 @@ class GeneralShutter :
   void setGlobalVariables(const double,const double,
 			  const double,const double);
   void setExternal(const int,const int,const int,const int);
-  virtual void createAll(Simulation&,const double,
-			 const attachSystem::FixedComp*);
 
   virtual int exitWindow(const double,std::vector<int>&,
 			 Geometry::Vec3D&) const;
+
+  void setZOffset(const double D) { ZOffset=D; }
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int sideIndex);
+
 }; 
 
 }

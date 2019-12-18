@@ -3,7 +3,7 @@
  
  * File:   delft/BeamInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 #include "BeamInsert.h"
@@ -158,23 +160,6 @@ BeamInsert::populate(const FuncDataBase& Control)
 }
   
 void
-BeamInsert::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: link point side
-  */
-{
-  ELog::RegMethod RegA("BeamInsert","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 BeamInsert::createSurfaces()
   /*!
     Create All the surfaces
@@ -252,7 +237,7 @@ BeamInsert::createAll(Simulation& System,
   for(size_t i=0;i<nSlots;i++)
     {
       Holes[i]->addInsertCell(cellIndex-1);
-      Holes[i]->createAll(System,*this);
+      Holes[i]->createAll(System,*this,0);
     }
   return;
 }

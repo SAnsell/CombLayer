@@ -50,9 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -71,6 +68,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
@@ -357,14 +355,14 @@ SphereModerator::postCreateWork(Simulation& System)
   InnerA.addPoint(APt+Y*pipeLen);
   InnerA.addRadius(pipeRadius,modMat,modTemp);
   InnerA.addRadius(pipeAlRadius,alMat,modTemp); 
-  InnerA.createAll(System);
+  InnerA.build(System);
 
   // Outer Points
   InnerB.addPoint(BPt);
   InnerB.addPoint(BPt+Y*pipeLen);
   InnerB.addRadius(pipeRadius,modMat,modTemp);
   InnerB.addRadius(pipeAlRadius,alMat,modTemp); 
-  InnerB.createAll(System);
+  InnerB.build(System);
 
   return;
 }

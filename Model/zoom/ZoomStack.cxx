@@ -327,7 +327,8 @@ ZoomStack::createObjects(Simulation& System)
 }
 
 void
-ZoomStack::createAll(Simulation& System,const attachSystem::FixedGroup& FC)
+ZoomStack::createAll(Simulation& System,
+		     const attachSystem::FixedGroup& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

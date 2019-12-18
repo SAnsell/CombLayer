@@ -197,8 +197,6 @@ BeamMount::createSurfaces()
   ELog::RegMethod RegA("BeamMount","createSurfaces");
 
 
-  const attachSystem::FixedComp& beamFC=getKey("Beam");
-
   // Not can have a local rotation of the beam component
   // construct support
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,supportRadius);
@@ -284,6 +282,23 @@ BeamMount::createLinks()
 {
   ELog::RegMethod RegA("BeamMount","createLinks");
   
+  return;
+}
+
+void
+BeamMount::createAll(Simulation& ,
+		      const attachSystem::FixedComp&,
+		      const long int)
+ /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param portFC :: FixedComp
+    \param portIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("BeamFlange","createAll(FC)");
+
+  throw ColErr::AbsObjMethod("Single value createAll");
   return;
 }
 

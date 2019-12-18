@@ -66,6 +66,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 
 #include "GuideBox.h"
@@ -75,7 +76,9 @@ namespace bibSystem
 {
 
 GuideBox::GuideBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ExternalCut()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -83,7 +86,9 @@ GuideBox::GuideBox(const std::string& Key) :
 {}
 
 GuideBox::GuideBox(const GuideBox& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   width(A.width),height(A.height),length(A.length),
   NiRadius(A.NiRadius),NiThickness(A.NiThickness),mat(A.mat)
   /*!
@@ -104,6 +109,7 @@ GuideBox::operator=(const GuideBox& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       width=A.width;
       height=A.height;
       length=A.length;
@@ -144,23 +150,6 @@ GuideBox::populate(const FuncDataBase& Control)
 }
 
 void
-GuideBox::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Point for link
-  */
-{
-  ELog::RegMethod RegA("GuideBox","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyOffset();
-
-  return;
-}
-
-void
 GuideBox::createSurfaces()
   /*!
     Create surface for the object
@@ -196,9 +185,7 @@ GuideBox::createSurfaces()
 }
 
 void
-GuideBox::createObjects(Simulation& System,
-			const attachSystem::FixedComp& FC,
-			const long int sideIndex)
+GuideBox::createObjects(Simulation& System)
   /*!
     Create the simple moderator
     \param System :: Simulation to add results
@@ -210,7 +197,8 @@ GuideBox::createObjects(Simulation& System,
   
   std::string Out;
 
-  const std::string boundSurf=FC.getLinkString(sideIndex);
+  
+  const std::string boundSurf=ExternalCut::getRuleStr("Limit");
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 3 -4 5 -6 ");
   Out+=boundSurf;
@@ -272,24 +260,20 @@ GuideBox::createLinks()
 void
 GuideBox::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
-		    const long int orgIndex,
-		    const attachSystem::FixedComp& LimitFC,
 		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
     \param orgIndex :: linkPoint for origin
-    \param LimitFC :: FixedComponent for hard Limit
-    \param sideIndex :: FixedComponent for hard Limit
    */
 {
   ELog::RegMethod RegA("GuideBox","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,orgIndex); 
+  createUnitVector(FC,sideIndex); 
   createSurfaces();
-  createObjects(System,LimitFC,sideIndex);
+  createObjects(System);
 
   createLinks();
   insertObjects(System);       

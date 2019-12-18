@@ -80,6 +80,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "World.h"
 #include "BulkModule.h"
 
@@ -88,7 +89,7 @@ namespace essSystem
 
 BulkModule::BulkModule(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +98,7 @@ BulkModule::BulkModule(const std::string& Key)  :
 
 BulkModule::BulkModule(const BulkModule& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::SurfMap(A),
+  attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
   /*!
@@ -119,6 +120,7 @@ BulkModule::operator=(const BulkModule& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::SurfMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -219,8 +221,7 @@ BulkModule::createSurfaces()
 }
 
 void
-BulkModule::createObjects(Simulation& System,
-			  const attachSystem::ContainedComp& CC)
+BulkModule::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -229,6 +230,9 @@ BulkModule::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BulkModule","createObjects");
 
+  const std::string boundary=
+    ExternalCut::getRuleStr("Reflector");
+  
   std::string Out,OutX;
   int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
@@ -237,7 +241,7 @@ BulkModule::createObjects(Simulation& System,
       if (i)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
       else
-	OutX=CC.getExclude();
+	OutX=boundary;
       System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
     }
@@ -339,21 +343,21 @@ BulkModule::addFlightUnit(Simulation& System,
 void
 BulkModule::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param CC :: Central origin
+    \param sideIndex
   */
 {
   ELog::RegMethod RegA("BulkModule","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createLinks();
-  createObjects(System,CC);
+  createObjects(System);
   insertObjects(System);              
 
   return;

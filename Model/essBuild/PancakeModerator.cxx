@@ -3,7 +3,7 @@
 
  * File:   essBuild/PancakeModerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,8 +67,11 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -419,6 +422,24 @@ PancakeModerator::getRightExclude() const
 
 void
 PancakeModerator::createAll(Simulation& System,
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
+
+  /*!
+    Construct the butterfly components
+    \param System :: Simulation
+    \param FC :: FixedComp to get axis [origin if orgFC == 0]
+    \param sideIndex :: link point for origin if given
+   */
+{
+  ELog::RegMethod RegA("PancakeModerator","createAll(FC)");
+
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+  
+void
+PancakeModerator::createAll(Simulation& System,
 			      const attachSystem::FixedComp& orgFC,
                               const long int orgIndex,
 			      const attachSystem::FixedComp& axisFC,
@@ -427,8 +448,10 @@ PancakeModerator::createAll(Simulation& System,
     Construct the butterfly components
     \param System :: Simulation
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgIndex :: link point for origin if given
     \param orgFC :: Extra origin point if required
-    \param sideIndex :: link point for origin if given
+    \param axisIndex :: link point for origin if given
+
    */
 {
   ELog::RegMethod RegA("PancakeModerator","createAll");
@@ -441,8 +464,10 @@ PancakeModerator::createAll(Simulation& System,
 
   const std::string Exclude=
     ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  LeftWater->createAll(System,*MidH2,4,Exclude);
-  RightWater->createAll(System,*MidH2,3,Exclude);
+  LeftWater->setCutSurf("Container",Exclude);
+  RightWater->setCutSurf("Container",Exclude);
+  LeftWater->createAll(System,*MidH2,4);
+  RightWater->createAll(System,*MidH2,3);
 
   createExternal();  // makes intermediate
 

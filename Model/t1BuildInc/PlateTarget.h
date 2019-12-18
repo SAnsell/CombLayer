@@ -70,7 +70,7 @@ class PlateTarget : public attachSystem::ContainedComp,
   double feedHeight;
   double feedWidth;
 
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const int);
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
   void createObjects(Simulation&);
@@ -84,9 +84,11 @@ class PlateTarget : public attachSystem::ContainedComp,
 
   Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
   void buildFeedThrough(Simulation&);
-  void populate(const Simulation&);  
+  void populate(const FuncDataBase&);  
   double getTargetLength() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

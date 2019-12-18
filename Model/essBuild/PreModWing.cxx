@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,10 +64,9 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "SurInter.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"

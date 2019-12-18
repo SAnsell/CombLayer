@@ -199,21 +199,7 @@ H2Moderator::applyModification()
   modLayer[46]=vacTop;
   return;
 }
-  
-void
-H2Moderator::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("H2Moderator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,0);
-  applyOffset();
-  return;
-}
-
+ 
 void
 H2Moderator::createSurfaces()
   /*!
@@ -494,7 +480,8 @@ H2Moderator::getComposite(const std::string& surfList) const
 
 void
 H2Moderator::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -504,7 +491,7 @@ H2Moderator::createAll(Simulation& System,
   ELog::RegMethod RegA("H2Moderator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

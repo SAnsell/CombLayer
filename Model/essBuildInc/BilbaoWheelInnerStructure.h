@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +36,12 @@ namespace essSystem
 
 class BilbaoWheelInnerStructure :
   public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
 
   // Can't rotate the wheel by itself since ProtonTube uses its coordinate system (\todo fix it)
-  double xyAngle;                ///< xy angle (mainly used to place the sector with bricks in the correct place). 
-
   double temp;                    ///< Temperature (obtained from Inner cell of BilbaoWheel)
   
   double brickLen;                ///< Tungsten brick length (in radial direction)
@@ -67,8 +65,6 @@ class BilbaoWheelInnerStructure :
   int brickMat;                ///< Tungsten brick material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&,attachSystem::FixedComp&);
   void createLinks();
@@ -85,6 +81,8 @@ class BilbaoWheelInnerStructure :
 
   double sideIntersect(const std::string&, const Geometry::Plane*);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
+  
  public:
 
   BilbaoWheelInnerStructure(const std::string&);
@@ -93,7 +91,7 @@ class BilbaoWheelInnerStructure :
   virtual BilbaoWheelInnerStructure* clone() const;
   virtual ~BilbaoWheelInnerStructure();
 
-  void createAll(Simulation&,attachSystem::FixedComp&);
+  void createAll(Simulation&,attachSystem::FixedComp&,const long int);
 
 };
 

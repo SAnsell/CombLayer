@@ -3,7 +3,7 @@
  
  * File:   muon/muonCarbonTarget.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Goron Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goron Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "World.h"
 #include "muonCarbonTarget.h"
 
@@ -77,7 +78,8 @@ namespace muSystem
 {
 
 muonCarbonTarget::muonCarbonTarget(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -100,11 +102,7 @@ muonCarbonTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("muonCarbonTarget","populate");
 
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  FixedRotate::populate(Control);
 
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -112,21 +110,6 @@ muonCarbonTarget::populate(const FuncDataBase& Control)
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
        
-  return;
-}
-
-void
-muonCarbonTarget::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-  */
-{
-  ELog::RegMethod RegA("muonCarbonTarget","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0.0);  
-  
   return;
 }
 
@@ -196,7 +179,8 @@ muonCarbonTarget::createLinks()
 
 void
 muonCarbonTarget::createAll(Simulation& System,
-			    const attachSystem::FixedComp& FC)
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -206,7 +190,7 @@ muonCarbonTarget::createAll(Simulation& System,
   ELog::RegMethod RegA("muonCarbonTarget","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

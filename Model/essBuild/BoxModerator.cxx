@@ -3,7 +3,7 @@
  
  * File:   essBuild/BoxModerator.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2019 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -73,6 +72,7 @@
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "EssModBase.h"
 #include "Box.h"
 #include "EdgeWater.h"
@@ -426,6 +426,17 @@ BoxModerator::getLeftRightWaterSideRule() const
   
 void
 BoxModerator::createAll(Simulation& System,
+                        const attachSystem::FixedComp& FC,
+                        const long int sideIndex)
+{
+  ELog::RegMethod RegA("BoxModerator","createAll");
+  createAll(System,FC,sideIndex,FC,sideIndex);
+  return;
+}
+  
+
+void
+BoxModerator::createAll(Simulation& System,
                         const attachSystem::FixedComp& orgFC,
                         const long int orgIndex,
                         const attachSystem::FixedComp& axisFC,
@@ -448,8 +459,10 @@ BoxModerator::createAll(Simulation& System,
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*MidH2,4,Exclude); 
-  RightWater->createAll(System,*MidH2,3,Exclude);
+  LeftWater->setCutSurf("Container",Exclude);
+  RightWater->setCutSurf("Container",Exclude);
+  LeftWater->createAll(System,*MidH2,4); 
+  RightWater->createAll(System,*MidH2,3);
 
   Origin=MidH2->getCentre();
   createExternal();  // makes intermediate 

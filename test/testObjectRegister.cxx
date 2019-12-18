@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testObjectRegister.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "surfRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "objectRegister.h"
 
 #include "testFunc.h"
@@ -151,8 +152,8 @@ testObjectRegister::testGetObject()
     ModelSupport::objectRegister::Instance();
   //  OR.reset();
 
-  std::shared_ptr<attachSystem::FixedComp> 
-    A(new attachSystem::FixedComp("A",3));
+  std::shared_ptr<attachSystem::FixedUnit> 
+    A(new attachSystem::FixedUnit("A",3));
   OR.cell("A");
   OR.addObject(A);
 

@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -320,18 +321,6 @@ CylPreMod::populate(const FuncDataBase& Control)
   aSide=Control.EvalVar<long int>(keyName+"ABlockSide");   
   bSide=Control.EvalVar<long int>(keyName+"BBlockSide");   
 
-  return;
-}
-
-void
-CylPreMod::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("CylPreMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);  
   return;
 }
 
@@ -731,7 +720,8 @@ CylPreMod::updateLayers(Simulation& System,
 
 void
 CylPreMod::createAll(Simulation& System,
-		     const attachSystem::FixedComp& CylMod)
+		     const attachSystem::FixedComp& CylMod,
+		     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -744,7 +734,7 @@ CylPreMod::createAll(Simulation& System,
     dynamic_cast<const attachSystem::ContainedComp*>(&CylMod);
 
   populate(System.getDataBase());
-  createUnitVector(CylMod);
+  createUnitVector(CylMod,sideIndex);
   checkItems(CylMod);
 
   createSurfaces();

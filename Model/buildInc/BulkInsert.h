@@ -81,13 +81,12 @@ class BulkInsert :
   // FUNCTIONS:
   //--------------
 
-  void populate(const FuncDataBase&,
-		const shutterSystem::GeneralShutter&);
-  void createUnitVector(const shutterSystem::GeneralShutter&);
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   std::string divideStr() const;
 
+  void createUnitVector(const FixedComp&,const long int);
   void createLinks();
 
  public:
@@ -100,8 +99,6 @@ class BulkInsert :
   /// Access shutter number
   size_t getShutterNumber() const { return shutterNumber; }
 
-  /// Access plane
-  const Geometry::Plane* getDPlane() const { return DPlane; }
   /// Set inner/outer cells for exclusion
   void setLayers(const int A,const int B)
     { innerCell=A;outerCell=B; }
@@ -117,7 +114,8 @@ class BulkInsert :
   /// Accessor to include
   const std::string& getOuterInc() const { return outerInclude; }
 
-  virtual void createAll(Simulation&,const shutterSystem::GeneralShutter&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   Main/t1Real.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ main(int argc,char* argv[])
       
       ts1System::makeT1Real T1Obj;
       World::createOuterObjects(*SimPtr);
-      T1Obj.build(SimPtr,IParam);
+      T1Obj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

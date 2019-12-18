@@ -36,7 +36,7 @@ namespace hutchSystem
   \brief FeedThrough [insert object]
 */
 
-class FeedThrough : public attachSystem::FixedComp
+class FeedThrough : public attachSystem::FixedUnit
 {
  private:
 
@@ -52,8 +52,6 @@ class FeedThrough : public attachSystem::FixedComp
 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void insertColl(Simulation&,const chipIRHutch&);
 
  public:
@@ -63,7 +61,7 @@ class FeedThrough : public attachSystem::FixedComp
   FeedThrough& operator=(const FeedThrough&);
   ~FeedThrough();
   
-  void createAll(Simulation&,const chipIRHutch&);
+  void build(Simulation&,const chipIRHutch&);
 
 };
 

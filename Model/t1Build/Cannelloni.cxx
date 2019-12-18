@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,6 +74,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -512,7 +512,7 @@ Cannelloni::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("Cannelloni","addProtonLine");
 
   // 0 ::  front fact of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -522,7 +522,8 @@ Cannelloni::addProtonLine(Simulation& System,
   
 void
 Cannelloni::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -532,7 +533,7 @@ Cannelloni::createAll(Simulation& System,
   ELog::RegMethod RegA("Cannelloni","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

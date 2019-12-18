@@ -138,19 +138,6 @@ Window::~Window()
   */
 {}
 
-void
-Window::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("Window","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-   return;
- }
 
 void
 Window::createCentre(Simulation& System) 
@@ -320,7 +307,8 @@ Window::setBaseCell(const int BNumber)
 
 void
 Window::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -329,7 +317,7 @@ Window::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("Window","createAll");
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createCentre(System);
   createSurfaces();
   createObjects(System);

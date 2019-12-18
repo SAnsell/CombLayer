@@ -94,7 +94,7 @@ PipeTube::PipeTube(const std::string& Key) :
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   
-  delayPortBuild(0),portConnectIndex(1),
+  outerVoid(0),delayPortBuild(0),portConnectIndex(1),
   rotAxis(0,1,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -271,6 +271,38 @@ PipeTube::createSurfaces()
   return;
 }
 
+std::string
+PipeTube::makeOuterVoid(Simulation& System)
+  /*!
+    Build outer void and return the outer volume
+    \param System :: Simulation to build in
+    \return Outer exclude volume
+  */
+{
+  ELog::RegMethod RegA("PipeTube","makeOuterVoid");
+  
+  std::string Out;
+  const std::string frontSurf(frontRule());
+  const std::string backSurf(backRule());
+
+  if (flangeARadius>flangeBRadius+Geometry::zeroTol)
+    {
+      ELog::EM<<"Code unwritten"<<ELog::endErr;
+    }
+  else if (flangeBRadius>flangeARadius+Geometry::zeroTol)
+    {
+      ELog::EM<<"Code unwritten"<<ELog::endErr;
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 ");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"  -107 ")+
+	frontSurf+backSurf;
+    }
+  return Out;
+}
+
 void
 PipeTube::createObjects(Simulation& System)
   /*!
@@ -308,6 +340,7 @@ PipeTube::createObjects(Simulation& System)
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
 
 
+
   if (flangeACapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
@@ -319,16 +352,23 @@ PipeTube::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 202 -207 ");
       makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);
     }
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
-  addOuterSurf("Main",Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
-  addOuterSurf("FlangeA",Out+frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -207 102 ");
-  addOuterSurf("FlangeB",Out+backSurf);
-
+  if (outerVoid)
+    {
+      Out=makeOuterVoid(System);
+      addOuterSurf("Main",Out);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
+      addOuterSurf("Main",Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
+      addOuterSurf("FlangeA",Out+frontSurf);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," -207 102 ");
+      addOuterSurf("FlangeB",Out+backSurf);
+    }
   return;
 }
 

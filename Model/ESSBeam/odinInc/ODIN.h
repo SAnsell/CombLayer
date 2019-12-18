@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/ODIN.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ class ODIN : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> odinAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> odinAxis;
   /// Elliptic guide in monolith
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 

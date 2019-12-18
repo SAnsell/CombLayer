@@ -55,8 +55,7 @@ class channel  : public attachSystem::ContainedComp,
 
   int matN;             ///< Material number  
 
-  void populate(const Simulation&,const channel*);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&,const channel*);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -73,10 +72,10 @@ class channel  : public attachSystem::ContainedComp,
   channel& operator=(const channel&);
   ~channel() {}   ///< Destructor
 
-
+  void setDefaultValues(const FuncDataBase&,const channel*);
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const channel*);
+		 const long int);
 
 };
 

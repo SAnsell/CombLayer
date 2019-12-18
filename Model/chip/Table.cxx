@@ -74,6 +74,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Table.h"
 
@@ -82,8 +83,8 @@ namespace hutchSystem
 
 Table::Table(const int T,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
-  shapeType(T),populated(0)
+  attachSystem::FixedOffset(Key,6),
+  shapeType(T)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param T :: Shape type [0 : Rectangle / 1 Triangle]
@@ -92,10 +93,8 @@ Table::Table(const int T,const std::string& Key)  :
 {}
 
 Table::Table(const Table& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  shapeType(A.shapeType),populated(A.populated),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),
-  fStep(A.fStep),xStep(A.xStep),Centre(A.Centre),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  shapeType(A.shapeType),Centre(A.Centre),
   height(A.height),width(A.width),length(A.length),surThick(A.surThick),
   sideThick(A.sideThick),topMat(A.topMat),defMat(A.defMat),
   floorSurf(A.floorSurf)
@@ -116,12 +115,7 @@ Table::operator=(const Table& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      fStep=A.fStep;
-      xStep=A.xStep;
+      attachSystem::FixedOffset::operator=(A);
       Centre=A.Centre;
       height=A.height;
       width=A.width;
@@ -142,21 +136,15 @@ Table::~Table()
 {}
 
 void
-Table::populate(const Simulation& System)
+Table::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation to use
   */
 {
   ELog::RegMethod RegA("Table","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
-
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-  fStep=Control.EvalVar<double>(keyName+"FStep");
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-
+  FixedOffset::populate(Control);
+  
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -167,31 +155,6 @@ Table::populate(const Simulation& System)
   topMat=ModelSupport::EvalMat<int>(Control,keyName+"TopMat");
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  populated |= 1;
-  return;
-}
-
-
-void
-Table::createUnitVector(const attachSystem::FixedComp& TC)
-  /*!
-    Create the unit vectors
-    \param TC :: LinearComponent to attach to
-  */
-{
-  ELog::RegMethod RegA("Table","createUnitVector");
-
-  //  const masterRotate& MR=masterRotate::Instance();
-  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
-  // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(TC);
-  Origin=TC.getExit();
-
-  applyShift(xStep,fStep,0.0);
-  applyAngleRotate(xyAngle,zAngle);
-
-  Centre=Origin+Y*(length/2.0);  
   return;
 }
 
@@ -337,7 +300,8 @@ Table::exitWindow(const double Dist,
   
 void
 Table::createAll(Simulation& System,
-		 const attachSystem::FixedComp& FC)
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -345,9 +309,9 @@ Table::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Table","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);

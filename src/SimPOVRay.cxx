@@ -157,7 +157,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 	}
     }
 
-
   OX << "#if (file_exists(\"povray/materials.inc\"))" << std::endl;
   OX << "#include \"povray/materials.inc\"" << std::endl;
   OX << "#end"  << std::endl;

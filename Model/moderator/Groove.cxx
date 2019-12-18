@@ -3,7 +3,7 @@
  
  * File:   moderator/Groove.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "Groove.h"
 
@@ -76,67 +79,16 @@ namespace moderatorSystem
 {
 
 Groove::Groove(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,7),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-Groove::Groove(const Groove& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  width(A.width),height(A.height),depth(A.depth),
-  GCentre(A.GCentre),innerRadius(A.innerRadius),
-  innerXShift(A.innerXShift),innerZShift(A.innerZShift),
-  innerWidth(A.innerWidth),innerHeight(A.innerHeight),
-  innerCut(A.innerCut),innerSideAngleE1(A.innerSideAngleE1),
-  innerSideAngleE5(A.innerSideAngleE5),alInnerCurve(A.alInnerCurve),
-  alInnerSides(A.alInnerSides),alInnerUpDown(A.alInnerUpDown),
-  alFront(A.alFront),alTop(A.alTop),alBase(A.alBase),alSide(A.alSide),
-  modTemp(A.modTemp),modMat(A.modMat),alMat(A.alMat)
-  /*!
-    Copy constructor
-    \param A :: Groove to copy
-  */
-{}
-
-Groove&
-Groove::operator=(const Groove& A)
-  /*!
-    Assignment operator
-    \param A :: Groove to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      width=A.width;
-      height=A.height;
-      depth=A.depth;
-      GCentre=A.GCentre;
-      innerRadius=A.innerRadius;
-      innerXShift=A.innerXShift;
-      innerZShift=A.innerZShift;
-      innerWidth=A.innerWidth;
-      innerHeight=A.innerHeight;
-      innerCut=A.innerCut;
-      innerSideAngleE1=A.innerSideAngleE1;
-      innerSideAngleE5=A.innerSideAngleE5;
-      alInnerCurve=A.alInnerCurve;
-      alInnerSides=A.alInnerSides;
-      alInnerUpDown=A.alInnerUpDown;
-      alFront=A.alFront;
-      alTop=A.alTop;
-      alBase=A.alBase;
-      alSide=A.alSide;
-      modTemp=A.modTemp;
-      modMat=A.modMat;
-      alMat=A.alMat;
-    }
-  return *this;
-}
 
 Groove::~Groove() 
   /*!
@@ -181,13 +133,13 @@ Groove::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
-  populated |= 1;
   return;
 }
   
 
 void
-Groove::createUnitVector(const attachSystem::FixedComp& FC)
+Groove::createUnitVector(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the Groove direction
@@ -198,8 +150,7 @@ Groove::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("Groove","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyOffset();
+  FixedOffset::createUnitVector(FC,sideIndex);
     
   // Groove Centre:
   // -- Step in by cut, and  
@@ -219,6 +170,7 @@ Groove::createSurfaces()
 
   // INNER DIVIDE PLANE
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  SurfMap::addSurf("DividePlane",SMap.realSurf(buildIndex+1));
   FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
   // Simple box planes
 
@@ -382,7 +334,8 @@ Groove::getBackGroove() const
 
 void
 Groove::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -392,7 +345,7 @@ Groove::createAll(Simulation& System,
   ELog::RegMethod RegA("Groove","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

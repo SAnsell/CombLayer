@@ -3,7 +3,7 @@
  
  * File:   muonInc/coneColl.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,16 +35,12 @@ namespace muSystem
   \brief Simple Cone collimator object
 */
 
-class coneColl : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class coneColl :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp
 {
  private:
   
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-
   double outRadius;                ///< radius
   double inRadius;                 ///< radius  
   double radiusStartCone;          ///< cone start   
@@ -55,8 +51,6 @@ class coneColl : public attachSystem::FixedComp,
   int innerMat;                      ///< material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,7 +62,7 @@ class coneColl : public attachSystem::FixedComp,
   coneColl& operator=(const coneColl&);
   virtual ~coneColl();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);  
 };
 
 }

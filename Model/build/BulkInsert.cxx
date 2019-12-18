@@ -88,7 +88,7 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
   attachSystem::ContainedGroup("inner","outer"),
   baseName(Key),
   shutterNumber(ID),
-  populated(0),divideSurf(0),DPlane(0)
+  divideSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -99,7 +99,6 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
 BulkInsert::BulkInsert(const BulkInsert& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedGroup(A),
   shutterNumber(A.shutterNumber),
-  populated(A.populated),
   divideSurf(A.divideSurf),DPlane(A.DPlane),
   xyAngle(A.xyAngle),
   innerRadius(A.innerRadius),midRadius(A.midRadius),
@@ -128,7 +127,6 @@ BulkInsert::operator=(const BulkInsert& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
-      populated=A.populated;
       divideSurf=A.divideSurf;
       xyAngle=A.xyAngle;
       innerRadius=A.innerRadius;
@@ -168,18 +166,15 @@ BulkInsert::setGlobalVariables(const double SRad,
   innerRadius=SRad;
   midRadius=IRad;
   outerRadius=ORad;
-  populated |= 2;
   return;
 }
 
 		
 void
-BulkInsert::populate(const FuncDataBase& Control,
-		     const shutterSystem::GeneralShutter& GS)
+BulkInsert::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
-    \param GS :: GeneralShutter that aligns to this hole
   */
 {
   ELog::RegMethod RegA("BulkInsert","populate");
@@ -188,14 +183,11 @@ BulkInsert::populate(const FuncDataBase& Control,
   impZero=Control.EvalDefPair<int>(numName+"ImpZero",keyName+"ImpZero",0);  
   // Global from shutter size:
 
-  if (!(populated & 2))
-    {
-      innerRadius=Control.EvalVar<double>("bulkShutterRadius");
-      midRadius=Control.EvalVar<double>("bulkInnerRadius");  
-      outerRadius=Control.EvalVar<double>("bulkOuterRadius");  
-      populated |= 2;
-    }
-  xyAngle=GS.getAngle();
+  innerRadius=Control.EvalDefVar<double>("bulkShutterRadius",innerRadius);
+  midRadius=Control.EvalDefVar<double>("bulkInnerRadius",midRadius);  
+  outerRadius=Control.EvalDefVar<double>("bulkOuterRadius",outerRadius);  
+
+  //  xyAngle=GS.getAngle();
 
   zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
   innerWidth=Control.EvalTail<double>(keyName,baseName,"IWidth");
@@ -218,12 +210,12 @@ BulkInsert::populate(const FuncDataBase& Control,
   else
     outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",0);
   
-  populated|=1;
   return;
 }
 
 void
-BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
+BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create unit vectors for shutter along shutter direction
     - Z is gravity 
@@ -235,22 +227,26 @@ BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
   */
 {
   ELog::RegMethod RegA("BulkInsert","createUnitVector");
-
+  
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
+  FixedGroup::createUnitVector(FC,2);
+  ELog::EM<<"Side == "<<sideIndex<<ELog::endDiag;
+  ELog::EM<<"MC == "<<mainFC.getCentre()<<ELog::endDiag;
+  ELog::EM<<"BC == "<<beamFC.getCentre()<<ELog::endDiag;
+  /*
   mainFC.createUnitVector(GS.getKey("Main"),2);
   beamFC.createUnitVector(GS.getKey("Beam"),2);
-
-  
   divideSurf=GS.getDivideSurf();
   DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
   mainFC.setCentre(Origin);
   setDefault("Main","Beam");
-  
+  */
   return;
 }
+
 
 void
 BulkInsert::setExternal(const int rInner,const int rMid,
@@ -325,12 +321,13 @@ BulkInsert::createObjects(Simulation& System)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("BulkInsert","constructObjects");
+  ELog::RegMethod RegA("BulkInsert","createObjects");
 
   std::string Out;
   // Create divide string
   
   const std::string dSurf=divideStr();
+  ELog::EM<<"DSurf = "<<dSurf<<ELog::endDiag;
   // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"-5 6 3 -4 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
@@ -426,17 +423,19 @@ BulkInsert::createLinks()
 
 void
 BulkInsert::createAll(Simulation& System,
-		      const shutterSystem::GeneralShutter& GS)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
-    \param GS :: GeneralShutter to use
+    \param FC :: GeneralShutter to use
+    \param sideIndex :: link point
    */
 {
   ELog::RegMethod RegA("BulkInsert","createAll");
 
-  populate(System.getDataBase(),GS);
-  createUnitVector(GS);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

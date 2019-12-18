@@ -61,6 +61,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "LinkSupport.h"
@@ -101,13 +102,13 @@ getCellsContainingZaid(Simulation& System,
 		       const std::string& FuelName,
 		       const size_t zaid)
  /*!
-   
+   \param System :: Simulation 
+   \param FC :: Fixed point to get Cell map from 
+   \param FuelName :: Name to select cell
+   \param zaid :: Integer zaid size
   */
 {
   ELog::RegMethod RegA("","getCellsContainingZaid");
-
-  const ModelSupport::DBMaterial& DB= 
-    ModelSupport::DBMaterial::Instance();
   
   const attachSystem::CellMap* CM=
     dynamic_cast<const attachSystem::CellMap*>(&FC);

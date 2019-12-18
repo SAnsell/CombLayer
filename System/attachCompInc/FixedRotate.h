@@ -44,8 +44,8 @@ class FixedRotate  : public FixedComp
   double xStep;          ///< x step
   double yStep;          ///< y step
   double zStep;          ///< z step
-  double xAngle;         ///< xy Angle
-  double yAngle;         ///< xy Angle
+  double xAngle;         ///< x Angle
+  double yAngle;         ///< y Angle
   double zAngle;         ///< z Angle
   
  public:

@@ -59,7 +59,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "SurInter.h"
 #include "varList.h"
@@ -76,9 +75,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h" 
+#include "FixedGroup.h"
+#include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "ZoomChopper.h"
 #include "ZoomStack.h"
 #include "ZoomOpenStack.h"
@@ -88,8 +90,9 @@ namespace zoomSystem
 {
 
 ZoomCollimator::ZoomCollimator(const std::string& Key) : 
-  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   cStack("zoomColStack"),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -98,8 +101,9 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 {}
 
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
-  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
-  cStack(A.cStack),xStep(A.xStep),zStep(A.zStep),
+  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  cStack(A.cStack),
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   stackWidth(A.stackWidth),stackHeight(A.stackHeight),
@@ -122,8 +126,9 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedGroup::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       cStack=A.cStack;
       xStep=A.xStep;
       zStep=A.zStep;
@@ -153,7 +158,7 @@ ZoomCollimator::~ZoomCollimator()
 {}
 
 void
-ZoomCollimator::populate(const Simulation& System)
+ZoomCollimator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -161,10 +166,6 @@ ZoomCollimator::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("ZoomCollimator","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
   stackXShift=Control.EvalVar<double>(keyName+"StackXShift");
   stackZShift=Control.EvalVar<double>(keyName+"StackZShift");
 
@@ -198,30 +199,9 @@ ZoomCollimator::populate(const Simulation& System)
   return;
 }
 
-void
-ZoomCollimator::createUnitVector(const attachSystem::FixedGroup& TC)
-  /*!
-    Create the unit vectors
-    \param TC :: TwinComp to attach to
-  */
-{
-  ELog::RegMethod RegA("ZoomCollimator","createUnitVector");
-  
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-
-  mainFC.createUnitVector(TC.getKey("Main"));
-  beamFC.createUnitVector(TC.getKey("Beam"));
-
-  mainFC.applyShift(xStep,0,zStep);
-  beamFC.applyShift(xStep,0,zStep);
-
-  setDefault("Main","Beam");
-  return;
-}
 
 void
-ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
+ZoomCollimator::createSurfaces()
   /*!
     Create All the surfaces
     \param LC :: Linear Component [to get outer surface]
@@ -229,8 +209,8 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("ZoomCollimator","createSurface");
   
-  
-  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
+
+  //  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
   //  SMap.addMatch(buildIndex+14,LC.getLinkSurf(4));   // right plane
 
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
@@ -285,27 +265,30 @@ ZoomCollimator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ZoomCollimator","createObjects");
 
+  const std::string frontStr=
+    ExternalCut::getRuleStr("front");
+
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 213 203 -214 -204 5 -6 ");
-  addOuterSurf(Out);
+				 " -2 213 203 -214 -204 5 -6 ");
+  addOuterSurf(Out+frontStr);
 
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 113 3 -114 "
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 113 3 -114 "
 				 " -4 5 -6  (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr));
 
   // Outer Wax
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 (-113:-3) 213 203  5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
+				 " -2 (-113:-3) 213 203  5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out+frontStr));
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 (114:4) -214 -204  5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
+				 " -2 (114:4) -214 -204  5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out+frontStr));
 
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 13 -14 15 -16");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontStr));
   innerVoid=cellIndex-1;
 
   return;
@@ -322,6 +305,7 @@ ZoomCollimator::createLinks()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
+  // front not set
   mainFC.setConnect(0,Origin,-Y);       
   mainFC.setConnect(1,Origin+Y*length,Y);     
   mainFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
@@ -329,7 +313,7 @@ ZoomCollimator::createLinks()
   mainFC.setConnect(4,Origin-Z*depth,-Z);     
   mainFC.setConnect(5,Origin+Z*height,Z);     
   
-  for(size_t i=0;i<6;i++)
+  for(size_t i=1;i<6;i++)
     mainFC.setLinkSurf
       (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
 
@@ -378,7 +362,8 @@ ZoomCollimator::layerProcess(Simulation& System)
 
 void
 ZoomCollimator::createAll(Simulation& System,
-			  const zoomSystem::ZoomChopper& ZC)
+			  const attachSystem::FixedComp& ZC,
+			  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -387,16 +372,13 @@ ZoomCollimator::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ZoomCollimator","createAll");
   
-  populate(System);
-  createUnitVector(ZC);
-  createSurfaces(ZC.getKey("Main"));
+  populate(System.getDataBase());
+  createUnitVector(ZC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks();
   layerProcess(System);
   insertObjects(System);   
-
-  //  cStack.addInsertCell(innerVoid);
-  //  cStack.createAll(System,ZC);
   
   return;
 }

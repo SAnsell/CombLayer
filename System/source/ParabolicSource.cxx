@@ -59,6 +59,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "inputSupport.h"
@@ -70,7 +71,7 @@ namespace SDef
 {
 
 ParabolicSource::ParabolicSource(const std::string& keyName) : 
-  attachSystem::FixedOffset(keyName,0),
+  attachSystem::FixedOffsetUnit(keyName,0),
   SourceBase(),decayPower(2.0),
   nWidth(5),nHeight(5),
   width(1.0),height(1.0),angleSpread(0.0)
@@ -81,7 +82,7 @@ ParabolicSource::ParabolicSource(const std::string& keyName) :
 {}
 
 ParabolicSource::ParabolicSource(const ParabolicSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   decayPower(A.decayPower),
   nWidth(A.nWidth),nHeight(A.nHeight),
   width(A.width),height(A.height),

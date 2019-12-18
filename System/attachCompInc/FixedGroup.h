@@ -36,6 +36,8 @@ class FixedGroup : public FixedComp
 {
  protected:
 
+  std::string primKey;     ///< Primary key
+  std::string sndKey;      ///< Secondary key
   /// Fixed Storage
   typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
   /// Map storage
@@ -68,7 +70,9 @@ class FixedGroup : public FixedComp
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();
 
-		   
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  
   void setDefault(const std::string&);
   void setSecondary(const std::string&);
   void setDefault(const std::string&,const std::string&);

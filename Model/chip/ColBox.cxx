@@ -136,13 +136,14 @@ ColBox::~ColBox()
 {}
 
 void
-ColBox::populate(const Simulation& System)
+ColBox::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DattaBase to use
   */
 {
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("ColBox","populate");
+  
   FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
@@ -164,17 +165,21 @@ ColBox::populate(const Simulation& System)
 }
 
 void
-ColBox::createUnitVector(const attachSystem::FixedGroup& TC)
+ColBox::createUnitVector(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     \param TC :: TwinComponent to attach to
   */
 {
   ELog::RegMethod RegA("ColBox","createUnitVector");
-
-  FixedComp::createUnitVector(TC.getKey("Beam"));
+  const attachSystem::FixedGroup* FGPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (FGPtr)
+    FixedComp::createUnitVector(FGPtr->getKey("Beam"),sideIndex);
+  else
+    FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-      
   return;
 }
 
@@ -278,7 +283,8 @@ ColBox::exitWindow(const double Dist,
 
 void
 ColBox::createPartial(Simulation& System,
-		      const attachSystem::FixedGroup& TC)
+		      const attachSystem::FixedComp& TC,
+		      const long int sideIndex)
   /*!
     Generic function to create just sufficient to get datum points
     \param System :: Simulation item
@@ -286,19 +292,22 @@ ColBox::createPartial(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ColBox","createPartial");
-  populate(System);
+
+  populate(System.getDataBase());
   if (populated!=9)
     {
       ELog::EM<<"ERROR ColBox not populated:"<<populated<<ELog::endErr;
       throw ColErr::ExitAbort(ELog::RegMethod::getFull());
     }
-  ColBox::createUnitVector(TC);  
+  
+  ColBox::createUnitVector(TC,sideIndex);  
   return;
 }
   
 void
 ColBox::createAll(Simulation& System,
-		  const attachSystem::FixedGroup& TC)
+		  const attachSystem::FixedComp& TC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -307,7 +316,7 @@ ColBox::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ColBox","createAll");
 
-  createPartial(System,TC);
+  createPartial(System,TC,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);

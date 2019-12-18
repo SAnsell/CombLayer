@@ -67,6 +67,7 @@
 #include "MonoShutterGenerator.h"
 #include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
@@ -87,9 +88,10 @@ namespace danmaxVar
 
 void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
-void wallVariables(FuncDataBase&,const std::string&);
+void wallVariables(FuncDataBase&,const std::string&,const double);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void connectVariables(FuncDataBase&,const std::string&);
+void opticsHutVariables(FuncDataBase&,const std::string&,const double);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
 void lensPackage(FuncDataBase&,const std::string&);
@@ -112,6 +114,8 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","undulatorVariables");
 
   setVariable::PortTubeGenerator PTubeGen;
+
+  Control.addVariable(frontKey+"FrontOffset",10.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipe(30.0,1.0);
@@ -142,21 +146,24 @@ undulatorVariables(FuncDataBase& Control,
 
 void
 wallVariables(FuncDataBase& Control,
-	      const std::string& wallKey)
+	      const std::string& wallKey,
+	      const double wallXOffset)
  /*!
     Set the variables for the frontend lead wall
     \param Control :: DataBase to use
     \param wallKey :: name before part names
+    \param wallXOffset :: XOffset
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","wallVariables");
  
   WallLeadGenerator LGen;
   LGen.setWidth(70.0,140.0);
+  LGen.setXOffset(wallXOffset);
   LGen.generateWall(Control,wallKey,3.0);
+  
   return;
 }
-
 
 void
 frontMaskVariables(FuncDataBase& Control,
@@ -170,28 +177,31 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
   setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       // 1033.8
-  CollGen.setBackGap(1.54,1.42);
-  // Approximated to get 1.2mrad x 1.1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+  setVariable::SqrFMaskGenerator FMaskGen;
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
+    // collimator block
+  FMaskGen.setCF<CF100>();
+  FMaskGen.setFrontGap(3.99,1.97);  //1033.8
+  FMaskGen.setBackGap(0.71,0.71);
+  FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
+  FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
+  
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
 
-  // approx for 800uRad x 200uRad  
-  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
+  // Approximated to get 100urad x 100urad @16m
+  FMaskGen.setMinAngleSize(32.0,1600.0, 100.0,100.0 );
+  // Approximated to get 150urad x 150urad @16m
+  FMaskGen.setBackAngleSize(1600.0, 150.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",0.0,40.0);
 
-  // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
+  FMaskGen.setFrontGap(0.84,0.582);
+  FMaskGen.setBackGap(0.750,0.357);
 
-  // approx for 400uRad x 100uRad
-  CollGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
+  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
+
 
   return;
 }
@@ -199,22 +209,27 @@ frontMaskVariables(FuncDataBase& Control,
 
 void
 opticsHutVariables(FuncDataBase& Control,
-		   const std::string& hutName)
+		   const std::string& hutName,
+		   const double xOffset)
   /*!
     Optics hut variables
     \param Control :: DataBase to add
     \param hutName :: Optics hut name
+    \param xOffset  :: Wall step as beam line moved
   */
 {
   ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
   
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",999.6);
-  Control.addVariable(hutName+"OutWidth",200.0);
-  Control.addVariable(hutName+"RingWidth",110.0);
-  Control.addVariable(hutName+"RingWallLen",105.0);
+  Control.addVariable(hutName+"OutWidth",243.5-xOffset);    // should be 243.5
+  Control.addVariable(hutName+"RingWidth",66.5+xOffset);   // should be 66.5
+  Control.addVariable(hutName+"RingWallLen",105.0);  // correct
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);
+  Control.addVariable(hutName+"RingWallAngle",18.50);
+  Control.addVariable(hutName+"RingWallBack",159.6);  // distance from backwall
+  Control.addVariable(hutName+"RingWallFlat",176.4);   // centre line to wall
   
   Control.addVariable(hutName+"InnerThick",0.2);
   
@@ -232,19 +247,19 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
 
-  Control.addVariable(hutName+"HoleXStep",-2.0);
+  Control.addVariable(hutName+"HoleXStep",-2.0+xOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.5);
 
-  Control.addVariable(hutName+"InletXStep",0.0);
+  Control.addVariable(hutName+"InletXStep",xOffset);
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",420.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",320.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
 
@@ -263,6 +278,22 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
+  const Geometry::Vec3D OPos(0,0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  
+  PItemGen.setCF<setVariable::CF40>(3.0);
+  PItemGen.setPlate(0.0,"Void");
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setNoWindow();
+
+    
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",100.0);
   Control.addVariable(connectName+"Width",100.0);
@@ -272,21 +303,47 @@ connectVariables(FuncDataBase& Control,
 
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
+  
+  PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
 
+  BellowGen.setCF<setVariable::CF40>(); 
+  BellowGen.generateBellow(Control,beamName+"BellowA",0,16.0);
+  
+  PipeGen.setBFlangeCF<setVariable::CF100>(); 
+  PipeGen.generatePipe(Control,beamName+"FlangeA",0,5.0);
+  
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
+  // ystep/length
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,8.0);
+  Control.addVariable(beamName+"IonPumpANPorts",1);
+  PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF100>(); 
+  PipeGen.generatePipe(Control,beamName+"FlangeB",0,5.0);
+
+  BellowGen.generateBellow(Control,beamName+"BellowB",0,16.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,beamName+"PipeB",0,325.0);
+  
   return;
 }
 
 void
 exptHutVariables(FuncDataBase& Control,
-		 const std::string& hutName)
-/*!
+		 const std::string& beamName)
+  /*!
     Optics hut variables
     \param Control :: DataBase to add
-    \param hutName :: Expt hut name
+    \param beamName :: Beamline name
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
+  const std::string hutName(beamName+"ExptHut");
+  
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"Height",200.0);
@@ -306,11 +363,21 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
-  Control.addVariable(hutName+"HoleRadius",7.0);
-  Control.addVariable(hutName+"HoleMat","Lead");
+  Control.addVariable(hutName+"HoleXStep",-2.0);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleMat","Void");
 
+  // lead shield on pipe
+  Control.addVariable(beamName+"PShieldXStep",-1.26);
+  Control.addVariable(beamName+"PShieldYStep",0.3);
+  Control.addVariable(beamName+"PShieldLength",1.0);
+  Control.addVariable(beamName+"PShieldWidth",10.0);
+  Control.addVariable(beamName+"PShieldHeight",10.0);
+  Control.addVariable(beamName+"PShieldWallThick",0.2);
+  Control.addVariable(beamName+"PShieldClearGap",0.3);
+  Control.addVariable(beamName+"PShieldWallMat","Stainless304");
+  Control.addVariable(beamName+"PShieldMat","Lead");
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -401,7 +468,7 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
 
   PItemGen.setCF<setVariable::CF40>(0.5);
   const Geometry::Vec3D Z(0,0,1);
-  const Geometry::Vec3D YStep(0,48.0/7.0,0);
+  const Geometry::Vec3D YStep(0,48.0/6.5,0);
   Geometry::Vec3D Pt(-YStep*2.5);
   for(size_t i=0;i<NPorts;i++)
     {
@@ -665,7 +732,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(1,0,0));
 
   // crystals gap 4mm
-  MXtalGen.generateMono(Control,monoKey+"MLM",0.0,0.3,0.3);
+  MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
   
   return;
 }
@@ -821,7 +888,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string opticsName(beamName+"OpticsLine");
 
   Control.addVariable(opticsName+"OuterLeft",70.0);
-  Control.addVariable(opticsName+"OuterRight",70.0);
+  Control.addVariable(opticsName+"OuterRight",60.0);
   Control.addVariable(opticsName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
@@ -888,7 +955,7 @@ opticsVariables(FuncDataBase& Control,
 
   BremGen.centre();
   BremGen.setCube(7.5,7.5);
-  BremGen.setAperature(6.0, 1.2,0.6, 0.4,0.3, 0.6,0.45);  // WRONG
+  BremGen.setAperature(6.0, 0.5,0.5, 0.2,0.2, 0.5,0.5);  // WRONG [mid correct]
   BremGen.generateBlock(Control,opticsName+"BremColl",0.0,10.0);
   Control.addVariable(opticsName+"BremCollZStep",5.0);
 
@@ -901,7 +968,7 @@ opticsVariables(FuncDataBase& Control,
 
   // laue monochromator
   BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,247.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,257.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
 
   opticsSlitPackage(Control,opticsName);
@@ -915,6 +982,7 @@ opticsVariables(FuncDataBase& Control,
 
   viewPackage(Control,opticsName+"View");
 
+  GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowF",0,10.0);    
 
@@ -958,38 +1026,40 @@ DANMAXvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
 
+  const double beamXStep(43.5);
   Control.addVariable("sdefType","Wiggler");
 
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
-
+  
+  setVariable::R3FrontEndVariables
+    (Control,"DanmaxFrontBeam",30.0,658,5.0);
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",30.0,620,5);
+  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
   danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
     
-  danmaxVar::wallVariables(Control,"DanmaxWallLead");
+  danmaxVar::wallVariables(Control,"DanmaxWallLead",beamXStep);
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,127.0);
 
-  danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
+  danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut",beamXStep);
   danmaxVar::opticsVariables(Control,"Danmax");
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");
+  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");  
 
-  // note bellow skip
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",10.0,80.0);
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",0,54.0);
 
-  danmaxVar::exptHutVariables(Control,"DanmaxExptHut");
+  danmaxVar::exptHutVariables(Control,"Danmax");
 
   const std::string exptName="DanmaxExptLine";
   

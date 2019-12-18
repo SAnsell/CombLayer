@@ -76,10 +76,6 @@ TS2InputModifications(Simulation* SimPtr,inputParam& IParam,
     setVariable::ChipVariables(SimPtr->getDataBase());
 
   if (!IParam.flag("exclude") ||
-      !IParam.compNoCaseValue("E",std::string("imat")))
-    setVariable::IMatVariables(SimPtr->getDataBase());
-
-  if (!IParam.flag("exclude") ||
       !IParam.compNoCaseValue("E",std::string("zoom")))
     setVariable::ZoomVariables(IParam,SimPtr->getDataBase());
     

@@ -59,6 +59,8 @@ class PipeTube :
   int wallMat;                ///< Fe material layer
   int capMat;                 ///< flange cap material layer
 
+  bool outerVoid;             ///< Is outer void needed
+
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect for new-origin
   Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
@@ -72,6 +74,8 @@ class PipeTube :
   virtual void applyPortRotation();
   Geometry::Vec3D calcCylinderDistance(const size_t) const;
 
+  std::string makeOuterVoid(Simulation&);
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -85,6 +89,8 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
+  /// Set the outer covering volume
+  void setOuterVoid() { outerVoid=1; }
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   int splitVoidPorts(Simulation&,const std::string&,

@@ -3,7 +3,7 @@
  
  * File:   source/GammaSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "inputSupport.h"
@@ -68,7 +69,7 @@ namespace SDef
 {
 
 GammaSource::GammaSource(const std::string& keyName) : 
-  attachSystem::FixedOffset(keyName,0),
+  attachSystem::FixedOffsetUnit(keyName,0),
   SourceBase(),shape("Circle"),
   width(1.0),height(1.0),radius(1.0),
   angleSpread(0.0)
@@ -79,7 +80,7 @@ GammaSource::GammaSource(const std::string& keyName) :
 {}
 
 GammaSource::GammaSource(const GammaSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   shape(A.shape),width(A.width),height(A.height),
   radius(A.radius),angleSpread(A.angleSpread),
   FocusPoint(A.FocusPoint)

@@ -37,7 +37,8 @@ namespace essSystem
 
 class BulkModule : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::ExternalCut
 {
  private:
      
@@ -54,7 +55,7 @@ class BulkModule : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
 
  public:
 
@@ -67,7 +68,7 @@ class BulkModule : public attachSystem::ContainedComp,
 
   void addFlightUnit(Simulation&,const attachSystem::FixedComp&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+		 const long int);
 
 };
 

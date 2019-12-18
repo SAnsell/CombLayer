@@ -73,11 +73,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "GeneralShutter.h"
+#include "ExternalCut.h"
 #include "vertexCalc.h"
 #include "Torpedo.h"
 
@@ -86,8 +87,9 @@ namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  attachSystem::FixedComp(Key+std::to_string(ID),6),
+  attachSystem::FixedOffset(Key+std::to_string(ID),6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ExternalCut(),
   baseName(Key),shutterNumber(ID)
   /*!\
     Constructor BUT ALL variable are left unpopulated.
@@ -97,12 +99,11 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 {}
 
 Torpedo::Torpedo(const Torpedo& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   baseName(A.baseName),shutterNumber(A.shutterNumber),
-  vBox(A.vBox),
-  voidXoffset(A.voidXoffset),
-  xyAngle(A.xyAngle),innerRadius(A.innerRadius),zOffset(A.zOffset),
+  vBox(A.vBox),voidXoffset(A.voidXoffset),
+  innerRadius(A.innerRadius),
   Height(A.Height),Width(A.Width),innerSurf(A.innerSurf)
   /*!
     Copy constructor
@@ -120,12 +121,12 @@ Torpedo::operator=(const Torpedo& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       vBox=A.vBox;
       voidXoffset=A.voidXoffset;
-      xyAngle=A.xyAngle;
       innerRadius=A.innerRadius;
       zOffset=A.zOffset;
       Height=A.Height;
@@ -142,47 +143,25 @@ Torpedo::~Torpedo()
 {}
 				
 void
-Torpedo::populate(const FuncDataBase& Control,
-		     const shutterSystem::GeneralShutter& GS)
+Torpedo::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
-    \param GS :: General shutter that aligns with this torpedo
+    \param Control :: FuncDataBase fot use
   */
 {
   ELog::RegMethod RegA("Torpedo","populate");
 
-
   // Global from shutter size:
-
+  FixedOffset::populate(Control);
+  
   voidXoffset=Control.EvalVar<double>("voidXoffset");
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
-  xyAngle=GS.getAngle();
-  
+
+  // why needed?
   zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
   Width=Control.EvalTail<double>(keyName,baseName,"Width");
   Height=Control.EvalTail<double>(keyName,baseName,"Width");
   
-  return;
-}
-
-void
-Torpedo::createUnitVector(const shutterSystem::GeneralShutter& GS)
-  /*!
-    Create unit vectors for shutter along shutter direction
-    - Z is gravity 
-    - Y is beam XY-axis
-    - X is perpendicular to XY-Axis
-    \param GS :: General shutter
-  */
-{
-  ELog::RegMethod RegA("Torpedo","createUnitVector");
-  
-  attachSystem::FixedComp::createUnitVector(GS.getOrigin(),
-                                            GS.getXYAxis()*GS.getZ(),
-					    GS.getXYAxis(),
-					    GS.getZ());
-  setExit(GS.getOrigin()+GS.getXYAxis()*innerRadius,GS.getXYAxis());
   return;
 }
 
@@ -205,7 +184,7 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
       const double xScale( (i / 2) ? -Width/2.0 : Width/2.0);
       // Advance origin from voidVessel middle to end point
       // and then look back
-      const Geometry::Vec3D OP=Origin+Y*1000.0+Z*(zScale+zOffset)+
+      const Geometry::Vec3D OP=Origin+Y*1000.0+Z*zScale+
 	X*xScale;
       const Geometry::Line LA(OP,-Y);
       const int surfN=CC.surfOuterIntersect(LA);
@@ -215,18 +194,6 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
   return;
 }
 
-
-void
-Torpedo::setExternal(const int rInner)
-  /*!
-    Set the external surfaces
-    \param rInner :: inner cylinder surface
-  */
-{
-  SMap.addMatch(buildIndex+7,rInner);
-  // FixedComp::setExitSurf(SMap.realSurf(buildIndex+7));
-  return;
-}
 
 void
 Torpedo::calcConvex(Simulation& System)
@@ -258,7 +225,7 @@ Torpedo::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(Width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(Width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*(zOffset-Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*(Height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(zOffset+Height/2.0),Z);
 
@@ -296,7 +263,8 @@ Torpedo::createObjects(Simulation& System)
 
   // Calculate Cut WITHOUT inner cylinder:
   dSurf=getInnerSurf();
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ");
+  Out+=ExternalCut::getRuleStr("Outer");
   // ADD INNER SURF HERE:
   CellMap::makeCell("Void",System,cellIndex++,0,0.0,Out+dSurf);
   
@@ -325,7 +293,6 @@ Torpedo::createLinks()
   */
 {
   ELog::RegMethod RegA("Torpedo","createLinks");
-
 
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
   std::set<int>::const_iterator vc;
@@ -418,8 +385,8 @@ Torpedo::findPlane(const Geometry::Face& FC) const
 
 void
 Torpedo::createAll(Simulation& System,
-		   const shutterSystem::GeneralShutter& GS,
-		   const attachSystem::ContainedComp& CC)
+		   const attachSystem::FixedComp& GS,
+		   const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -429,10 +396,10 @@ Torpedo::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("Torpedo","createAll");
 
-  populate(System.getDataBase(),GS);
-  createUnitVector(GS);
+  populate(System.getDataBase());
+  createUnitVector(GS,sideIndex);
   createSurfaces();
-  calcVoidIntercept(CC);
+  //  calcVoidIntercept(CC);  //FIGURE OUT CC
   createObjects(System);
   calcConvex(System);
   createLinks();

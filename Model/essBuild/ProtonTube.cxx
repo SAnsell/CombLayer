@@ -71,8 +71,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "ExternalCut.h"
-#include "FrontBackCut.h"
+#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
@@ -93,7 +92,7 @@ namespace essSystem
 ProtonTube::ProtonTube(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedGroup(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedOffsetUnit(newName,2),
   attachSystem::FrontBackCut(),
   tube(new TelescopicPipe(newName+"Pipe")),
   pbw(new PBW(newName+"PBW"))
@@ -113,7 +112,7 @@ ProtonTube::ProtonTube(const std::string& Key) :
 ProtonTube::ProtonTube(const ProtonTube& A) :
   attachSystem::CopiedComp(A),
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedOffsetUnit(A),
   attachSystem::FrontBackCut(A),
   engActive(A.engActive),
   tube(A.tube->clone()),

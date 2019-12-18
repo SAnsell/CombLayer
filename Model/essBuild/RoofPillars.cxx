@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "ContainedComp.h"
@@ -92,7 +93,7 @@ namespace essSystem
 {
 
 RoofPillars::RoofPillars(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0,30000),
+  attachSystem::FixedUnit(Key,0,30000),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()
   /*!
@@ -924,7 +925,7 @@ RoofPillars::createLinks()
 }
   
 void
-RoofPillars::createAll(Simulation& System,
+RoofPillars::build(Simulation& System,
                        const Bunker& bunkerObj)
   /*!
     Generic function to create everything

@@ -3,7 +3,7 @@
  
  * File:   lensModelInc/candleStick.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ class siModerator;
 */
 
 class candleStick :public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -98,10 +99,12 @@ class candleStick :public attachSystem::ContainedComp,
   
   int outerDepth;            ///< Outer depth values
 
+  Geometry::Vec3D basePoint;  ///< Basee point [absolute]
+  
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -111,6 +114,9 @@ class candleStick :public attachSystem::ContainedComp,
   candleStick& operator=(const candleStick&);
   ~candleStick() {}  ///< Destructor
 
+  /// set base point
+  void setBasePoint(const Geometry::Vec3D& Pt) { basePoint=Pt; }
+  
   /// Get Top boundary object:
   std::string getTopExclude() const 
     { return TopBoundary.getExclude(); }
@@ -119,8 +125,10 @@ class candleStick :public attachSystem::ContainedComp,
   std::string getHeadExclude() const 
     { return HeadBoundary.getExclude(); }
 
-  void createAll(Simulation&,const siModerator&);
   void specialExclude(Simulation&,const int) const;
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  
 };
 
 }

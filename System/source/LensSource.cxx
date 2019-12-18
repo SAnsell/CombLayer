@@ -3,7 +3,7 @@
  
  * File:   source/LensSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
@@ -70,7 +71,7 @@ namespace SDef
 {
 
 LensSource::LensSource(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,0),SourceBase(),
+  attachSystem::FixedOffsetUnit(Key,0),SourceBase(),
   radialArea(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -79,7 +80,7 @@ LensSource::LensSource(const std::string& Key) :
 {}
 
 LensSource::LensSource(const LensSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   radialArea(A.radialArea)
   /*!
     Copy constructor
@@ -545,7 +546,7 @@ LensSource::write(std::ostream& OX) const
 }
 
 void
-LensSource::writePHITS(std::ostream& OX) const
+LensSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
@@ -558,7 +559,7 @@ LensSource::writePHITS(std::ostream& OX) const
 }
 
 void
-LensSource::writeFLUKA(std::ostream& OX) const
+LensSource::writeFLUKA(std::ostream&) const
   /*!
     Write out as a FLUKA source system
     \param OX :: Output stream

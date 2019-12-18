@@ -81,7 +81,8 @@ namespace xraySystem
 MLMono::MLMono(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -148,22 +149,6 @@ MLMono::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-MLMono::createUnitVector(const attachSystem::FixedComp& FC,
-                               const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note that it also set the view point that neutrons come from
-    \param FC :: FixedComp for origin
-    \param sideIndex :: direction for link
-  */
-{
-  ELog::RegMethod RegA("MLMono","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 MLMono::createSurfaces()

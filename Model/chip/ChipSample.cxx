@@ -144,23 +144,6 @@ ChipSample::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-ChipSample::createUnitVector(const FixedComp& TC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param TC :: Table to attach sample to
-    \param sideIndex :: Table link point
-  */
-{
-  ELog::RegMethod RegA("ChipSample","createUnitVector");
-
-  // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(TC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 ChipSample::createSurfaces()
@@ -219,7 +202,7 @@ ChipSample::createLinks()
 void
 ChipSample::createAll(Simulation& System,
 		      const attachSystem::FixedComp& TCA,
-		      const attachSystem::FixedComp& TCB)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -230,10 +213,7 @@ ChipSample::createAll(Simulation& System,
   ELog::RegMethod RegA("ChipSample","createAll");
 
   populate(System.getDataBase());
-  if (tableNum==1)
-    createUnitVector(TCA,5);
-  else
-    createUnitVector(TCB,5);
+  createUnitVector(TCA,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

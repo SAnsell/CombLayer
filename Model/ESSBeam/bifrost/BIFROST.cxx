@@ -65,6 +65,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -103,7 +104,7 @@ namespace essSystem
 BIFROST::BIFROST(const std::string& keyName) :
   attachSystem::CopiedComp("bifrost",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
-  bifrostAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  bifrostAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
@@ -369,7 +370,7 @@ BIFROST::build(Simulation& System,
   // Make bunker insert
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->addInsertCell(74123);
-  BInsert->createAll(System,*AppB,2,bunkerObj);
+  BInsert->createAll(System,*AppB,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   

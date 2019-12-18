@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/Cannelloni.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,6 @@ class Cannelloni : public constructSystem::TargetBase
   
   typedef std::map<int,constructSystem::hexUnit*> MTYPE;
   
-
-
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
   
@@ -111,13 +109,11 @@ class Cannelloni : public constructSystem::TargetBase
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&,	 
-		     const attachSystem::FixedComp& refFC,
-		     const long int index);
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&);
+  void addProtonLine(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
-
 };
 
 }

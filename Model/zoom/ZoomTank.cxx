@@ -76,8 +76,7 @@ namespace zoomSystem
 
 ZoomTank::ZoomTank(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",0,"Beam",2),
-  populated(0)
+  attachSystem::FixedGroup(Key,"Main",0,"Beam",2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -86,7 +85,7 @@ ZoomTank::ZoomTank(const std::string& Key)  :
 
 ZoomTank::ZoomTank(const ZoomTank& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),
+  xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   nCylinder(A.nCylinder),cylThickness(A.cylThickness),
   CRadius(A.CRadius),CylDepth(A.CylDepth),CylX(A.CylX),
@@ -113,7 +112,6 @@ ZoomTank::operator=(const ZoomTank& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
-      populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -145,7 +143,7 @@ ZoomTank::~ZoomTank()
 {}
 
 void
-ZoomTank::populate(const Simulation& System)
+ZoomTank::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
@@ -153,8 +151,6 @@ ZoomTank::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("ZoomTank","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -167,15 +163,13 @@ ZoomTank::populate(const Simulation& System)
   CylDepth.resize(nCylinder);
   CylX.resize(nCylinder);
   CylZ.resize(nCylinder);
-  std::ostringstream cx;
   for(size_t i=0;i<nCylinder;i++)
     {
-      cx.str("");
-      cx<<i+1;
-      CRadius[i]=Control.EvalVar<double>(keyName+"Radius"+cx.str());
-      CylDepth[i]=Control.EvalVar<double>(keyName+"CDepth"+cx.str());
-      CylX[i]=Control.EvalVar<double>(keyName+"CXStep"+cx.str());
-      CylZ[i]=Control.EvalVar<double>(keyName+"CZStep"+cx.str());
+      const std::string NStr(std::to_string(i+1));
+      CRadius[i]=Control.EvalVar<double>(keyName+"Radius"+NStr);
+      CylDepth[i]=Control.EvalVar<double>(keyName+"CDepth"+NStr);
+      CylX[i]=Control.EvalVar<double>(keyName+"CXStep"+NStr);
+      CylZ[i]=Control.EvalVar<double>(keyName+"CZStep"+NStr);
     }
   cylTotalDepth=std::accumulate(CylDepth.begin(),CylDepth.end(),0.0);
 
@@ -190,12 +184,12 @@ ZoomTank::populate(const Simulation& System)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
 
-  populated |= 1;
   return;
 }
   
 void
-ZoomTank::createUnitVector(const attachSystem::FixedGroup& TC)
+ZoomTank::createUnitVector(const attachSystem::FixedGroup& TC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -384,21 +378,30 @@ ZoomTank::createLinks()
 }
 
 void
-ZoomTank::createAll(Simulation& System,const attachSystem::FixedGroup& FC)
+ZoomTank::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: link piont
   */
 {
   ELog::RegMethod RegA("ZoomTank","createAll");
-  populate(System);
 
-  createUnitVector(FC);
+  populate(System.getDataBase());
+
+  const attachSystem::FixedGroup* FGPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (!FGPtr)
+    throw ColErr::DynamicConv("FixedComp","FixedGroup","FC");
+
+  createUnitVector(*FGPtr,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
 
   return;
 }

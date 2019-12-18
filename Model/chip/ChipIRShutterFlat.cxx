@@ -386,15 +386,17 @@ ChipIRShutterFlat::getLastItem() const
 }
 
 void
-ChipIRShutterFlat::createAll(Simulation& System,const double ZOffset,
-			     const attachSystem::FixedComp* FCPtr)
+ChipIRShutterFlat::createAll(Simulation& System,
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
   */
 {
   ELog::RegMethod RegA("ChipIRShutterFlat","createAll");
-  GeneralShutter::createAll(System,ZOffset,FCPtr);
+
+  GeneralShutter::createAll(System,FC,sideIndex);
   populate(System.getDataBase());
   createCInfoTable(System);
   createShutterInsert(System);  

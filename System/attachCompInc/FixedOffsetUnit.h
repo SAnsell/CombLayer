@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/CH4Base.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   attachCompInc/FixedOffsetUnit.h
+ *
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,41 +19,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_CH4Base_h
-#define ts1System_CH4Base_h
+#ifndef attachSystem_FixedOffsetUnit_h
+#define attachSystem_FixedOffsetUnit_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace ts1System
+namespace attachSystem
 {
-
 /*!
-  \class CH4Base
+  \class FixedOffsetUnit
   \version 1.0
   \author S. Ansell
-  \date July 2013
-  \brief TS1 CH4Base upgrade
+  \date  December 2019
+  \brief FixedComp with abstract units removed
 */
 
-class CH4Base : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
-{
- protected:
-  
-  
+class FixedOffsetUnit : public FixedOffset
+{  
  public:
 
-  CH4Base(const std::string&,const size_t);
-  CH4Base(const CH4Base&);
-  CH4Base& operator=(const CH4Base&);
-  virtual CH4Base* clone() const =0;
-  virtual ~CH4Base();
+  FixedOffsetUnit(const std::string& K,const size_t I) :
+    FixedOffset(K,I) {}
+  FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
+  FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}
+  virtual ~FixedOffsetUnit() {}     ///< Destructor
 
-  virtual std::string getComposite(const std::string&) const =0;
-  //  virtual void addToInsertChain(attachSystem::ContainedComp&) const =0;
-
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
-
+  void createAll(Simulation&,const FixedComp&,const long int) {}
 };
 
 }

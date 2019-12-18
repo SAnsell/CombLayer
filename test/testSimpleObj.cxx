@@ -3,7 +3,7 @@
  
  * File:   test/testSimpleObj.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,14 +160,14 @@ testSimpleObj::testCreateObj()
   
   testSystem::simpleObj A("simple");
   A.addInsertCell(74123);
-  A.createAll(ASim,World::masterOrigin());
+  A.createAll(ASim,World::masterOrigin(),0);
 
   testSystem::simpleObj B("simpleB");
   B.addInsertCell(74123);
   B.setOffset(Geometry::Vec3D(-10,0,0));
   B.setMat(5);
   B.setRefFlag(1);
-  B.createAll(ASim,World::masterOrigin());
+  B.createAll(ASim,World::masterOrigin(),0);
 
   std::vector<int> rOffset;
   std::vector<int> rRange;  

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModelInc/layers.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ class siModerator;
 */
 
  class layers :public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedUnit
 {
  private:
 
@@ -46,7 +46,7 @@ class siModerator;
   int innerCompSurf;            ///< InnerCompSurf;
 
   ProtonFlight PA;              ///< Proton flight line
-  FlightCluster FC;             ///< Outgoing Flight Cluster
+  FlightCluster flightCluster;             ///< Outgoing Flight Cluster
 
   // Master radii
   double waterRad;            ///< Water radius
@@ -111,10 +111,11 @@ class siModerator;
   const ProtonFlight& getPF() const { return PA; }
   /// Set inner valued
   void setInnerComp(const int N) { innerCompSurf=N; }
-  void createAll(Simulation&,const candleStick&);
 
   /// Access flight cluster
-  const FlightCluster& getFC() const { return FC; }
+  const FlightCluster& getFlightCluster() const { return flightCluster; }
+
+  void build(Simulation&,const candleStick&);
 
 };
 

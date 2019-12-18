@@ -35,7 +35,7 @@ namespace hutchSystem
   */
   
 class HoleUnit : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedUnit
 {
  private:
 
@@ -76,7 +76,6 @@ class HoleUnit : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void setFaces(const int,const int);
 
-  void createAll(const double,const attachSystem::FixedComp&);
   
   /// Access the angle
   double getAngle() const { return AngleOffset; }
@@ -85,6 +84,9 @@ class HoleUnit : public attachSystem::ContainedComp,
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;
+
+  void build(const double,const attachSystem::FixedComp&);
+  
 };
 
 }

@@ -21,10 +21,7 @@
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <cmath>
-#include <complex>
 #include <list>
 #include <vector>
 #include <set>
@@ -32,20 +29,15 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -66,6 +58,7 @@
 #include "MonoShutterGenerator.h"
 #include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
@@ -154,30 +147,28 @@ frontMaskVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
+  setVariable::SqrFMaskGenerator FMaskGen;
+  
+  FMaskGen.setCF<CF100>();
+  FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
+  FMaskGen.setBackGap(1.54,1.42);
+  FMaskGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad 
+  FMaskGen.generateColl(Control,preName+"CollA",0.0,35.0);
 
-  setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       // 1033.8
-  CollGen.setBackGap(1.54,1.42);
-  // Approximated to get 1.2mrad x 1.1mrad
-  CollGen.setMinAngleSize(29.0,1033.0,1200.0,1100.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
-
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
   // approx for 800uRad x 200uRad  
-  CollGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
+  FMaskGen.generateColl(Control,preName+"CollB",0.0,34.2);
 
   // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
-
-  // approx for 400uRad x 100uRad
-  CollGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  FMaskGen.setMain(1.20,"Copper","Void");
+  FMaskGen.setFrontGap(0.84,0.582);
+  FMaskGen.setBackGap(0.750,0.357);
+  // approx for 100uRad x 100uRad
+  FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
+  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
 
   return;
 }
@@ -795,7 +786,7 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",30.0,624,38.0);
+    (Control,"BalderFrontBeam",30.0,633,38.0);
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");
     
   balderVar::wallVariables(Control,"BalderWallLead");

@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomShutter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
@@ -144,15 +145,13 @@ ZoomShutter::~ZoomShutter()
 {}
 
 void
-ZoomShutter::populate(const Simulation& System)
+ZoomShutter::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("ZoomShutter","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   // Modification to the general shutter populated variables:
   
@@ -495,6 +494,7 @@ ZoomShutter::setTwinComp()
   ELog::EM<<"ac == "<<ELog::endDiag;
   ac->write(ELog::EM.Estream());
 
+ 
   ELog::EM<<"TC == "<<bEnter<<" "<<Z<<" "<<zCShift<<ELog::endDiag;
   ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
   ELog::EM<<"TC == "<<bExit<<ELog::endDiag;
@@ -511,17 +511,23 @@ ZoomShutter::setTwinComp()
 }
 
 void
-ZoomShutter::createAll(Simulation& System,const double,
-		       const attachSystem::FixedComp* FCPtr)
+ZoomShutter::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: Fixed comp
+    \param sideIndex :: Link point 
   */
 {
   ELog::RegMethod RegA("ZoomShutter","createAll");
   GeneralShutter::populate(System.getDataBase());
-  populate(System);  
-  GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
+
+  populate(System.getDataBase());
+
+  this->GeneralShutter::setZOffset(processShutterDrop());
+  GeneralShutter::createAll(System,FC,sideIndex);
 
   createSurfaces();
   createObjects(System);  

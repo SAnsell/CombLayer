@@ -37,7 +37,8 @@ namespace bibSystem
 */
 
 class ConcreteWall : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -50,8 +51,7 @@ class ConcreteWall : public attachSystem::ContainedComp,
   int mat;             ///< Default material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&, const long int );
-  void createSurfaces(const attachSystem::FixedComp&, const long int );
+  void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
@@ -70,9 +70,7 @@ class ConcreteWall : public attachSystem::ContainedComp,
   /// Main cell
   int getInnerCell() const { return buildIndex+1; }
   std::vector<int> getCells() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const size_t,
-		  const attachSystem::FixedComp&,
-	       const size_t );
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

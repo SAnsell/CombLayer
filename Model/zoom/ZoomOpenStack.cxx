@@ -73,6 +73,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ZoomOpenStack.h"
 
@@ -81,7 +83,7 @@ namespace zoomSystem
 
 ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",2,"Beam",2)
+  attachSystem::FixedOffsetGroup(Key,"Main",2,"Beam",2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +91,7 @@ ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
 {}
 
 ZoomOpenStack::ZoomOpenStack(const ZoomOpenStack& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffsetGroup(A),
   nItem(A.nItem),posIndex(A.posIndex),width(A.width),
   height(A.height),length(A.length),wallThick(A.wallThick),
   windowThick(A.windowThick),wallMat(A.wallMat),
@@ -111,7 +113,7 @@ ZoomOpenStack::operator=(const ZoomOpenStack& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedGroup::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
       nItem=A.nItem;
       posIndex=A.posIndex;
       width=A.width;
@@ -143,13 +145,10 @@ ZoomOpenStack::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("ZoomOpenStack","populate");
   
   // Master values
-
+  FixedOffsetGroup::populate(Control);
+  
   nItem=Control.EvalVar<size_t>(keyName+"NItem");
   posIndex=Control.EvalVar<size_t>(keyName+"Index");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
 
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -172,29 +171,7 @@ ZoomOpenStack::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-ZoomOpenStack::createUnitVector(const attachSystem::FixedGroup& TT)
-  /*!
-    Create the unit vectors- Y Down the beamline
-    \param TT :: Twin item 
-  */
-{
-  ELog::RegMethod RegA("ZoomOpenStack","createUnitVector");
-  
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  mainFC.createUnitVector(TT.getKey("Main"));
-  beamFC.createUnitVector(TT.getKey("Beam"));
-  mainFC.setCentre(beamFC.getCentre());
-  
-  mainFC.applyShift(xStep,yStep,zStep);
-  beamFC.applyShift(xStep,yStep,zStep);
-
-  //  bExit=bEnter+Y*length;
-  
-  return;
-}
 
 void
 ZoomOpenStack::createSurfaces()
@@ -312,22 +289,21 @@ ZoomOpenStack::createObjects(Simulation& System)
 }
 
 void
-ZoomOpenStack::createAll(Simulation& System,const int vCell,
-			 const attachSystem::FixedGroup& FC)
+ZoomOpenStack::createAll(Simulation& System,
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param vCell :: Void cell to build object in
     \param FC :: Beamline track to place object within
   */
 {
   ELog::RegMethod RegA("ZoomOpenStack","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  FixedOffsetGroup::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  addInsertCell(vCell);
   insertObjects(System);       
 
   return;

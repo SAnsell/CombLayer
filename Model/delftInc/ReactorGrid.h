@@ -41,7 +41,8 @@ namespace delftSystem
   \brief Grid plate for Delft core elements
 */
 
-class ReactorGrid : public attachSystem::FixedOffset,
+class ReactorGrid :
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
       

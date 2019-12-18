@@ -3,7 +3,7 @@
  
  * File:   construct/BlockMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -463,7 +464,10 @@ BlockMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,mainCell,*this,1,1);  // +ve Y direction [cylinder]
+      WPtr->addInsertCell(mainCell);
+      WPtr->addInsertCell(mainCell+1);  // for wall
+      WPtr->setLayer(*this,1,1);
+      WPtr->createAll(System,*this,0);  // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;
@@ -471,8 +475,9 @@ BlockMod::createWedges(Simulation& System)
 
 void
 BlockMod::createAll(Simulation& System,
+		    const attachSystem::FixedComp& orgFC,
+		    const long int orgIndex,
 		    const attachSystem::FixedComp& axisFC,
-		    const attachSystem::FixedComp* orgFC,
 		    const long int sideIndex)
   /*!
     Extrenal build everything
@@ -485,7 +490,7 @@ BlockMod::createAll(Simulation& System,
   ELog::RegMethod RegA("BlockMod","createAll");
   
   populate(System.getDataBase());
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  ModBase::createUnitVector(orgFC,orgIndex,axisFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -494,5 +499,6 @@ BlockMod::createAll(Simulation& System,
   createWedges(System);
   return;
 }
+
 
 }  // NAMESPACE constructSystem

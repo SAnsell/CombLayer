@@ -44,7 +44,7 @@ namespace SDef
 */
 
 class FlukaSource : 
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetUnit,
   public SourceBase
 {
  private:
@@ -54,7 +54,7 @@ class FlukaSource :
 
   
   void populate(const ITYPE&);
-  
+  virtual void createAll(Simulation&,const FixedComp&,const long int) {}
   
  public:
 

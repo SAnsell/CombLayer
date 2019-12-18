@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadic/SKADI.h
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2019 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ namespace essSystem
     \version 1.0
     \author T. Randriamalala
     \date October 2016
-    \brief TREX beamline constructor for the ESS
+    \brief SKADI beamline constructor for the ESS
   */
 
 
@@ -72,7 +72,7 @@ class SKADI : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis
-  std::shared_ptr<attachSystem::FixedOffset> skadiAxis;
+  std::shared_ptr<attachSystem::FixedOffsetUnit> skadiAxis;
   
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> BendA;

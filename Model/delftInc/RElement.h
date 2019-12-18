@@ -37,7 +37,8 @@ namespace delftSystem
   Holds a general element object of a reactor
 */
 
-class RElement  : public attachSystem::FixedOffset,
+class RElement  :
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
@@ -51,7 +52,8 @@ class RElement  : public attachSystem::FixedOffset,
   int insertCell;               ///< Cell to insert into
 
   void populate(const FuncDataBase&);
-
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
+  
  public:
 
   RElement(const size_t,const size_t,const std::string&);

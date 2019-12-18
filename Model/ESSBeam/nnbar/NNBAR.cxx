@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   nnBar/NNBAR.cxx
+ * File:   ESSBeam/nnBar/NNBAR.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -98,7 +99,7 @@ namespace essSystem
 NNBAR::NNBAR(const std::string& keyName) :
   attachSystem::CopiedComp("nnbar",keyName),
   startPoint(0),stopPoint(0),
-  nnbarAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  nnbarAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),

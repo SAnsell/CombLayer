@@ -74,7 +74,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -141,15 +144,14 @@ BlockShutter::~BlockShutter()
 {}
 
 void
-BlockShutter::populate(const Simulation& System)
+BlockShutter::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation to use
   */
 {
   ELog::RegMethod RegA("BlockShutter","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
   GeneralShutter::populate(Control);
 
   // Modification to the general shutter populated variables:
@@ -590,8 +592,9 @@ BlockShutter::createBackViewPoints() const
 
   
 void
-BlockShutter::createAll(Simulation& System,const double,
-		       const attachSystem::FixedComp* FCPtr)
+BlockShutter::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
@@ -599,8 +602,10 @@ BlockShutter::createAll(Simulation& System,const double,
   */
 {
   ELog::RegMethod RegA("BlockShutter","createAll");
-  populate(System);  
-  GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
+  
+  populate(System.getDataBase());
+  this->GeneralShutter::setZOffset(processShutterDrop());
+  GeneralShutter::createAll(System,FC,sideIndex);
 
 
   createSurfaces();

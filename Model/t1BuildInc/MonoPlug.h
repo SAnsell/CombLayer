@@ -36,11 +36,11 @@ namespace shutterSystem
 */
 
 class MonoPlug : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
-
   size_t nPlugs;                   
   std::vector<double> plugRadii;   ///< Inner plug radii [base to top]
   std::vector<double> plugZLen;    ///< Inner plug lengths [Base to top]
@@ -52,13 +52,9 @@ class MonoPlug : public attachSystem::FixedComp,
 
   // Functions:
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
-  void createObjects(Simulation&,const long int,
-		     const attachSystem::FixedComp&,
-		     const attachSystem::FixedComp&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -68,9 +64,8 @@ class MonoPlug : public attachSystem::FixedComp,
   MonoPlug& operator=(const MonoPlug&);
   virtual ~MonoPlug();
 
-  void createAll(Simulation&,const long int,
-		 const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

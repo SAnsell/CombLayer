@@ -150,24 +150,6 @@ TwinPipe::populate(const FuncDataBase& Control)
 }
 
 void
-TwinPipe::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("TwinPipe","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-
-
-void
 TwinPipe::createSurfaces()
   /*!
     Create the surfaces

@@ -67,6 +67,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "collInsertBase.h"
 
@@ -91,7 +92,7 @@ operator<<(std::ostream& OX,
 collInsertBase::collInsertBase(const std::string& Key,
 			       const int ID) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+std::to_string(ID),4),
+  attachSystem::FixedUnit(Key+std::to_string(ID),4),
   baseName(Key),blockID(ID),
   populated(0),insertCell(0)
   /*!
@@ -103,7 +104,7 @@ collInsertBase::collInsertBase(const std::string& Key,
 {}
 
 collInsertBase::collInsertBase(const collInsertBase& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   blockID(A.blockID),
   populated(A.populated),
   beamOrigin(A.beamOrigin),beamX(A.beamX),beamY(A.beamY),

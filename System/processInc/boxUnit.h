@@ -35,15 +35,12 @@ class surfRegister;
   \brief A single unit of a pipe
 */
 
-class boxUnit : public attachSystem::FixedComp,
+class boxUnit : public attachSystem::FixedUnit,
   public attachSystem::ContainedComp
 
 {
  private:
 
-  using FixedComp::createAll;
-
-  
   boxUnit* prev;            ///< Previous pipe unit
   boxUnit* next;            ///< Next pipe unit
 
@@ -124,7 +121,7 @@ class boxUnit : public attachSystem::FixedComp,
   void connectTo(boxUnit*);
 
 
-  void createAll(Simulation&,const size_t,
+  void buildUnit(Simulation&,const size_t,
 		 const std::vector<boxValues>&);
     
 };

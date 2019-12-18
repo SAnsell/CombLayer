@@ -3,7 +3,7 @@
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -190,23 +192,6 @@ SideCoolTarget::populate(const FuncDataBase& Control)
   externTemp=Control.EvalVar<double>(keyName+"ExternTemp");
   
   ///  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
-
-  return;
-}
-
-void
-SideCoolTarget::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed unit for origin + xyz
-    \param sideIndex :: offset side
-  */
-{
-  ELog::RegMethod RegA("SideCoolTarget","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -390,7 +375,7 @@ SideCoolTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("SideCoolTarget","addProtonLine");
 
   // 0 ::  front face of target
-  PLine->createAll(System,*this,0,refFC,index);
+  PLine->createAll(System,*this,0);
   createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
@@ -412,17 +397,19 @@ SideCoolTarget::getInnerCells() const
 
 void
 SideCoolTarget::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed Component for origin
+    \param sideIndex :: Link poitn
   */
 {
   ELog::RegMethod RegA("SideCoolTarget","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,0);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

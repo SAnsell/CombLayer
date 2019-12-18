@@ -135,7 +135,7 @@ makeSinbad::buildDetectors(Simulation& System)
 	(new sbadDetector(preName+"Detector",i));
       
       detArray.push_back(detPtr);   
-      detArray.back()->createAll(System,*Secondary);
+      detArray.back()->createAll(System,*Secondary,0);
       if (detArray.back()->isActive())
 	attachSystem::addToInsertSurfCtrl(System,*Secondary,*detPtr);
     }

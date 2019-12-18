@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -99,7 +100,7 @@ namespace essSystem
 shortDREAM::shortDREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -232,7 +233,7 @@ shortDREAM::setBeamAxis(const GuideItem& GItem,
 {
   ELog::RegMethod RegA("shortDREAM","setBeamAxis");
 
-  dreamAxis->createUnitVector(GItem);
+  dreamAxis->createUnitVector(GItem,0);
   dreamAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
   dreamAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
   dreamAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);

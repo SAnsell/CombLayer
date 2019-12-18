@@ -3,7 +3,7 @@
  
  * File:   processInc/LayerDivide3D.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace ModelSupport
 */
 
 
-class LayerDivide3D : public attachSystem::FixedComp,
+class LayerDivide3D : public attachSystem::FixedUnit,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -45,7 +45,6 @@ class LayerDivide3D : public attachSystem::FixedComp,
 
   Geometry::Vec3D Centre;          ///< Centre point
   
-
   std::vector<double> AFrac;     ///< Fractions in A direction
   std::vector<double> BFrac;     ///< Fractions of B direction
   std::vector<double> CFrac;     ///< Fractions in C direction 

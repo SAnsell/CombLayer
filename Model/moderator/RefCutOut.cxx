@@ -3,7 +3,7 @@
  
  * File:   moderator/RefCutOut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "RefCutOut.h"
 
@@ -80,7 +81,7 @@ namespace moderatorSystem
 {
 
 RefCutOut::RefCutOut(const std::string& Key)  :
-  attachSystem::FixedComp(Key,1)
+  attachSystem::FixedOffset(Key,1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,8 +89,8 @@ RefCutOut::RefCutOut(const std::string& Key)  :
 {}
 
 RefCutOut::RefCutOut(const RefCutOut& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
   tarLen(A.tarLen),tarOut(A.tarOut),radius(A.radius),matN(A.matN)
   /*!
     Copy constructor
@@ -108,9 +109,7 @@ RefCutOut::operator=(const RefCutOut& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
       tarLen=A.tarLen;
       tarOut=A.tarOut;
       radius=A.radius;
@@ -152,37 +151,18 @@ RefCutOut::populate(const FuncDataBase& Control)
   
 
 void
-RefCutOut::createUnitVector(const attachSystem::FixedComp& CUnit)
+RefCutOut::createUnitVector(const attachSystem::FixedComp& CUnit,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down Target
-    - X Across the target
-    - Z up 
     \param CUnit :: Fixed unit that it is connected to 
   */
 {
   ELog::RegMethod RegA("RefCutOut","createUnitVector");
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
-  FixedComp::createUnitVector(CUnit);
-
-  const masterRotate& MR=masterRotate::Instance();
-  Origin+=Y*tarLen;
-  
-
-
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
-  
-  CS.setCNum(chipIRDatum::chipStartPt,MR.calcRotate(Origin));
-  CS.setCNum(chipIRDatum::tubeAxis,MR.calcAxisRotate(Y));
+  yStep+=tarLen;
+  FixedOffset::createUnitVector(CUnit,sideIndex);
 
   return;
 }
@@ -223,7 +203,8 @@ RefCutOut::createObjects(Simulation& System)
   
 void
 RefCutOut::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FUnit)
+		     const attachSystem::FixedComp& FUnit,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -235,7 +216,7 @@ RefCutOut::createAll(Simulation& System,
 
   if (active)
     {
-      createUnitVector(FUnit);
+      createUnitVector(FUnit,sideIndex);
       createSurfaces();
       createObjects(System);
       insertObjects(System);       

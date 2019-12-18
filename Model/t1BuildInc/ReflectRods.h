@@ -87,7 +87,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   void splitRefObj();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void getZSurf();
 
   void createSurfaces();
@@ -115,7 +115,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   { topCentre=TC; baseCentre=BC; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

@@ -100,13 +100,13 @@ class FixedComp
   void reOrientate(const size_t,const Geometry::Vec3D&);
   
   // Operator Set:
-  void createUnitVector(const FixedComp&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
-  void createUnitVector(const FixedComp&,const long int);
-  void createUnitVector(const FixedComp&,const long int,const long int);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  virtual void createUnitVector(const FixedComp&);
+  virtual void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  virtual void createUnitVector(const FixedComp&,const long int);
+  virtual void createUnitVector(const FixedComp&,const long int,const long int);
+  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  virtual void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void createPairVector(const FixedComp&,const long int,
@@ -255,7 +255,7 @@ class FixedComp
     (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
      const std::vector<Geometry::Vec3D>&);
 
-  virtual void createAll(Simulation&,const FixedComp&,const long int) {}
+  virtual void createAll(Simulation&,const FixedComp&,const long int) =0;
   virtual void createAll(Simulation&,const FixedComp&,const std::string&);
 
 };

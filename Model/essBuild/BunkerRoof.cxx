@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -91,7 +92,7 @@ namespace essSystem
 
 BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Roof",6),
+  attachSystem::FixedUnit(bunkerName+"Roof",6),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
   baseSurf(0),topSurf(0),innerSurf(0),outerSurf(0)
   /*!
@@ -101,7 +102,7 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
 {}
 
 BunkerRoof::BunkerRoof(const BunkerRoof& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   baseName(A.baseName),
@@ -208,20 +209,6 @@ BunkerRoof::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-BunkerRoof::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-/*!
-    Create the unit vectors
-    \param FC :: Linked object (bunker )
-    \param sideIndex :: Side for linkage centre (roof)
-  */
-{
-  ELog::RegMethod RegA("BunkerRoof","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  return;
-}
 
 void
 BunkerRoof::setVertSurf(const int IS,const int OS)

@@ -3,7 +3,7 @@
  
  * File:   bibBuildInc/GuideBox.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,11 @@ namespace bibSystem
 */
 
 class GuideBox : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  private:
   
-
   double width;                   ///< width of GuideBox
   double height;                  ///< height of GuideBox
   double length;                  ///< depth of GuideBox
@@ -52,11 +52,8 @@ class GuideBox : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  void createObjects(Simulation&);
   void createLinks();
 
   public:
@@ -67,8 +64,6 @@ class GuideBox : public attachSystem::ContainedComp,
   virtual ~GuideBox();
   
   void createAll(Simulation&, 
-		 const attachSystem::FixedComp&,
-		 const long int,
 		 const attachSystem::FixedComp&,
 		 const long int);
 

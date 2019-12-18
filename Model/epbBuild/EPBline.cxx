@@ -71,6 +71,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "channel.h"
@@ -163,7 +164,8 @@ EPBline::populate(const Simulation& System)
 }
   
 void
-EPBline::createUnitVector(const attachSystem::FixedComp& FC)
+EPBline::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -172,7 +174,7 @@ EPBline::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("EPBline","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
   for(size_t i=0;i<nSeg;i++)
@@ -288,7 +290,8 @@ EPBline::createLinks()
 
 void
 EPBline::createAll(Simulation& System,
-		   const attachSystem::FixedComp& FC)
+		   const attachSystem::FixedComp& FC,
+		   const long int sideIndex)
 
   /*!
     Global creation of the hutch
@@ -298,7 +301,7 @@ EPBline::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("EPBline","createAll");
   populate(System);
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

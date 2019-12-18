@@ -67,6 +67,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 
 #include "ColdH2Mod.h"
 
@@ -75,7 +76,9 @@ namespace bibSystem
 {
 
 ColdH2Mod::ColdH2Mod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ExternalCut()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,7 +87,9 @@ ColdH2Mod::ColdH2Mod(const std::string& Key) :
 
 
 ColdH2Mod::ColdH2Mod(const ColdH2Mod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   width(A.width),
   height(A.height),depth(A.depth),wallThick(A.wallThick),
   sideGap(A.sideGap),frontGap(A.frontGap),backGap(A.backGap),
@@ -109,6 +114,7 @@ ColdH2Mod::operator=(const ColdH2Mod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -173,28 +179,10 @@ ColdH2Mod::populate(const FuncDataBase& Control)
 
 
 void
-ColdH2Mod::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("ColdH2Mod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
+ColdH2Mod::createSurfaces()
 
-  return;
-}
-
-void
-ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
   /*!
     Create planes for the silicon and Polyethene layers
-    \param FC :: FixedComponent for front surface
-    \param sideIndex :: Index on front surface
   */
 {
   ELog::RegMethod RegA("ColdH2Mod","createSurfaces");
@@ -265,10 +253,6 @@ ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+236,
 			   Origin+Z*(height/2.0+D),Z); 
   
-
-  // all links point outward facgin
-  SMap.addMatch(buildIndex+21,FC.getLinkSurf(sideIndex));
-
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+
 			   Y*(depth/2.0+wallThick+backGap),Y);  
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-
@@ -291,7 +275,8 @@ ColdH2Mod::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("ColdH2Mod","createObjects");
-  
+
+  const std::string frontFace=ExternalCut::getRuleStr("FrontFace");
   std::string Out;
 
   // Water
@@ -325,11 +310,11 @@ ColdH2Mod::createObjects(Simulation& System)
 
   // Box
   Out=ModelSupport::getComposite(SMap,buildIndex,
-	     	 "21 -22 23 -24 25 -26 (-231:202:234:-233:-235:236)");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+	     	 " -22 23 -24 25 -26 (-231:202:234:-233:-235:236)");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontFace));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26" );
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -22 23 -24 25 -26" );
+  addOuterSurf(Out+frontFace);
 
   return; 
 }
@@ -362,16 +347,15 @@ ColdH2Mod::createLinks()
   return;
 }
 
+  
 void
 ColdH2Mod::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t orgIndex,
-		     const size_t sideIndex)
+		     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-    \param orgIndex :: Origin point
     \param sideIndex :: Side index
    */
 {
@@ -379,8 +363,8 @@ ColdH2Mod::createAll(Simulation& System,
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,orgIndex+1);
-  createSurfaces(FC,sideIndex+1);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
 
   createLinks();

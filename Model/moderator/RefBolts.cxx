@@ -67,9 +67,9 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -203,7 +203,7 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
 	      TBolt.setActive(0,3);
 	      TBolt.setActive(1,1);
 	    }
-	  TBolt.createAll(System);
+	  TBolt.build(System);
 	  flag=1;
 	  bolt++;
 	} 
@@ -213,16 +213,18 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
   
 void
 RefBolts::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FUnit)
+		    const attachSystem::FixedComp& FUnit,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link poitn (7)
   */
 {
   ELog::RegMethod RegA("RefBolts","createAll");
 
-  createUnitVector(FUnit,7);
+  createUnitVector(FUnit,sideIndex);
   createBoltGrp(System,"Nim");
   createBoltGrp(System,"Steel");
   createBoltGrp(System,"Buck");

@@ -65,6 +65,7 @@
 #include "sourceDataBase.h"
 
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "PointSource.h"
 
 namespace SDef

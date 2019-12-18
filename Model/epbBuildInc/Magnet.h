@@ -3,7 +3,7 @@
  
  * File:   epbBuildInc/Magnet.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,10 @@ namespace epbSystem
   \brief Magnet for EPB
 */
 
-class Magnet : public attachSystem::FixedOffset,
-    public attachSystem::ContainedComp
+class Magnet :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -52,7 +54,7 @@ class Magnet : public attachSystem::FixedOffset,
   int feMat;                    ///< Iron material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
@@ -65,7 +67,8 @@ class Magnet : public attachSystem::FixedOffset,
   Magnet& operator=(const Magnet&);
   virtual ~Magnet();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

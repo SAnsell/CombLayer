@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -90,7 +91,7 @@ namespace essSystem
 
 simpleITEM::simpleITEM(const std::string& keyN) :
   attachSystem::CopiedComp("simple",keyN),stopPoint(0),
-  simpleAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  simpleAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
   Plate(new insertSystem::insertPlate(newName+"Plate"))
   /*!
     Constructor

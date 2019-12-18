@@ -45,7 +45,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -84,23 +83,24 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "InsertComp.h"
-#include "LinearComp.h"
+#include "ExternalCut.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
 #include "Torpedo.h"
 #include "ChipIRShutterFlat.h"
 #include "ChipIRInsert.h"
-#include "IMatBulkInsert.h"
 #include "collInsertBase.h"
 #include "collInsertBlock.h"
 #include "ZoomShutter.h"
-#include "IMatShutter.h"
 #include "BlockShutter.h"
 #include "BulkShield.h"
 
@@ -108,13 +108,13 @@ namespace shutterSystem
 {
 
 const size_t BulkShield::chipShutter(0);
-const size_t BulkShield::imatShutter(3);
 const size_t BulkShield::zoomShutter(9);
 const size_t BulkShield::letShutter(6);
 
 BulkShield::BulkShield(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
-  populated(0),
+  attachSystem::FixedComp(Key,0),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   numberBeamLines(18)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -124,7 +124,8 @@ BulkShield::BulkShield(const std::string& Key)  :
 
 BulkShield::BulkShield(const BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  populated(A.populated),numberBeamLines(A.numberBeamLines),
+  attachSystem::ExternalCut(A),
+  numberBeamLines(A.numberBeamLines),
   TData(A.TData),GData(A.GData),BData(A.BData),vXoffset(A.vXoffset),
   torpedoRadius(A.torpedoRadius),shutterRadius(A.shutterRadius),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -150,7 +151,6 @@ BulkShield::operator=(const BulkShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      populated=A.populated;
       TData=A.TData;
       GData=A.GData;
       BData=A.BData;
@@ -199,19 +199,19 @@ BulkShield::populate(const FuncDataBase& Control)
 
   CS.setVNum(chipIRDatum::torpedoRing,torpedoRadius);
 
-  populated = 1;
   return;
 }
 
 void
-BulkShield::createUnitVector(const attachSystem::FixedComp& FC)
+BulkShield::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp
   */
 {
   ELog::RegMethod RegA("BulkShield","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   Origin+=Y*vXoffset;
   return;
 }
@@ -244,12 +244,10 @@ BulkShield::createSurfaces()
 }
 
 void 
-BulkShield::createTorpedoes(Simulation& System,
-			    const attachSystem::ContainedComp& CC)
+BulkShield::createTorpedoes(Simulation& System)
   /*!
     Create the torpedo tubes: Must be called after createShutter
     \param System :: Simulation object to add data
-    \param CC :: Void vessel containment
   */
 { 
   ELog::RegMethod RegA("BulkShield","createTorpedoes");
@@ -272,8 +270,8 @@ BulkShield::createTorpedoes(Simulation& System,
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      TData[i]->setExternal(SMap.realSurf(buildIndex+7));
-      TData[i]->createAll(System,*GData[i],CC);          
+      TData[i]->setCutSurf("Outer",SMap.realSurf(buildIndex+7));
+      TData[i]->createAll(System,*GData[i],2);          
       torpedoObj->addSurfString(TData[i]->getExclude());
 
       // Now Torpedos might intersect with there neighbours
@@ -285,8 +283,7 @@ BulkShield::createTorpedoes(Simulation& System,
 }
 
 void
-BulkShield::createShutters(Simulation& System,		      
-			   const mainSystem::inputParam& IParam)
+BulkShield::createShutters(Simulation& System)
   /*!
     Construct and build all the shutters
     \param System :: Simulation object to add data
@@ -300,15 +297,9 @@ BulkShield::createShutters(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const bool chipFlag(!IParam.flag("exclude") || 
-		      !IParam.compNoCaseValue("E",std::string("chipir")));
-  const bool imatFlag(!IParam.flag("exclude") || 
-   		      !IParam.compNoCaseValue("E",std::string("imat")));
-
-  const bool zoomFlag(!IParam.flag("exclude") || 
-   		      !IParam.compNoCaseValue("E",std::string("zoom")));
-  const bool letFlag(!IParam.flag("exclude") || 
-   		      !IParam.compNoCaseValue("E",std::string("LET")));
+  const bool chipFlag(excludeSet.find("chipIR")==excludeSet.end());
+  const bool zoomFlag(excludeSet.find("zoom")==excludeSet.end());
+  const bool letFlag(excludeSet.find("LET")==excludeSet.end());
 
   GData.clear();
   for(size_t i=0;i<numberBeamLines;i++)
@@ -316,9 +307,6 @@ BulkShield::createShutters(Simulation& System,
       if (i==chipShutter && chipFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
-      else if (i==imatShutter && imatFlag)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new IMatShutter(i+1,"shutter","imatShutter")));
       else if (i==zoomShutter && zoomFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ZoomShutter(i+1,"shutter","zoomShutter")));
@@ -344,7 +332,7 @@ BulkShield::createShutters(Simulation& System,
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
       GData[i]->setDivide(40000);
-      GData[i]->createAll(System,0.0,0);
+      GData[i]->createAll(System,*this,0);
       if (i==zoomShutter) ELog::EM<<"GI == "<<
 			    GData[i]->getCentre()<<ELog::endDiag;
 
@@ -355,8 +343,7 @@ BulkShield::createShutters(Simulation& System,
 }
 
 void
-BulkShield::createBulkInserts(Simulation& System,
-			      const mainSystem::inputParam& IParam)
+BulkShield::createBulkInserts(Simulation& System)
 /*!
     Construct and build all the bulk insert
     \param System :: Simulation to use
@@ -367,12 +354,8 @@ BulkShield::createBulkInserts(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  const bool chipFlag(!IParam.flag("exclude") || 
-		      !IParam.compValue("E",std::string("chipIR")));
-  const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("imat")) &&
-		       !IParam.compValue("E",std::string("IMat"))) );
+
+  const bool chipFlag(excludeSet.find("chipIR")==excludeSet.end());
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
@@ -382,9 +365,6 @@ BulkShield::createBulkInserts(Simulation& System,
 	  BItem=std::shared_ptr<BulkInsert>
 	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
 	}
-      else if (i==imatShutter && imatFlag)
-	BItem=std::shared_ptr<BulkInsert>
-	  (new BulkInsert(i,"bulkInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
@@ -393,7 +373,7 @@ BulkShield::createBulkInserts(Simulation& System,
       BItem->setExternal(SMap.realSurf(buildIndex+17),
 			 SMap.realSurf(buildIndex+27),
 			 SMap.realSurf(buildIndex+37) );
-      BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
+      BItem->createAll(System,*GData[static_cast<size_t>(i)],0);    
       OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
     }
@@ -401,23 +381,22 @@ BulkShield::createBulkInserts(Simulation& System,
 }
 
 void
-BulkShield::createObjects(Simulation& System,
-			  const attachSystem::ContainedComp& CC)
+BulkShield::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
-    \param CC :: Excluded object to inner layers [Void vessel]
    */
 {
   ELog::RegMethod RegA("BulkShield","createObjects");
-  
+
+  const std::string bulkInsertStr=ExternalCut::getRuleStr("BulkInsert");
   // Torpedo
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+CC.getExclude();
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+bulkInsertStr;
   System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   torpedoCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+bulkInsertStr;
   System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
@@ -572,26 +551,24 @@ BulkShield::calcOuterPlanes(const int BeamLine,
 
 void
 BulkShield::createAll(Simulation& System,
-		      const mainSystem::inputParam& IParam,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC)
+		      const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
-    \param IParam :: Input Parameters
-    \param CC :: Void Vessel containment
+    \param FC :: Fiixed
    */
 {
   ELog::RegMethod RegA("BulkShield","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,CC);
+  createObjects(System);
   processVoid(System);
 
-  createShutters(System,IParam);
-  createBulkInserts(System,IParam);
-  createTorpedoes(System,CC);
+  createShutters(System);
+  createBulkInserts(System);
+  createTorpedoes(System);
   return;
 }
 

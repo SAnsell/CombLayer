@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -427,7 +429,7 @@ makeESS::buildIradComponent(Simulation& System,
       // is this possible?
       if (NItems<3)
         throw ColErr::SizeError<size_t>
-          (NItems,3,"IradComp["+StrFunc::makeString(j)+"]");
+          (NItems,3,"IradComp["+std::to_string(j)+"]");
 
       const std::string objectName=
         IParam.getValue<std::string>("iradObj",j,0);
@@ -655,7 +657,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           
           std::shared_ptr<BunkerFeed> BF
             (new BunkerFeed("BunkerFeed",j));
-          BF->createAll(System,*BPtr,segNumber,feedName);  
+          BF->buildAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
@@ -682,7 +684,7 @@ makeESS::buildBunkerChicane(Simulation& System,
   ELog::EM<<"Calling bunker Chicane"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
-      const std::string errMess="bunkerChicane "+StrFunc::makeString(j);
+      const std::string errMess="bunkerChicane "+std::to_string(j);
       const std::string bunkerName=
         IParam.getValueError<std::string>
         ("bunkerChicane",j,0,"BunkerName "+errMess);
@@ -702,7 +704,7 @@ makeESS::buildBunkerChicane(Simulation& System,
           (bunkerName,"bunkerName not know");
 
       std::shared_ptr<Chicane> CF
-        (new Chicane("BunkerChicane"+StrFunc::makeString(j)));
+        (new Chicane("BunkerChicane"+std::to_string(j)));
       CF->addInsertCell(74123);
 
       // Positioned relative to segment:
@@ -775,7 +777,7 @@ makeESS::buildBunkerQuake(Simulation& System,
           
           std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,12,0);  
+          BF->buildAll(System,*BPtr,12,0);  
         }
     }
 
@@ -798,9 +800,9 @@ makeESS::buildPillars(Simulation& System,
   for(const std::string& Item : BP)
     {
       if (Item=="ABunker")
-	ABunkerPillars->createAll(System,*ABunker);
+	ABunkerPillars->build(System,*ABunker);
       if (Item=="BBunker")
-	BBunkerPillars->createAll(System,*BBunker);
+	BBunkerPillars->build(System,*BBunker);
     }
   return;
 }
@@ -901,11 +903,11 @@ makeESS::makeBunker(Simulation& System,
   
   ABunker->addInsertCell(voidCell);
   ABunker->setRotationCentre(ShutterBayObj->getCentre());
-  ABunker->createAll(System,*ShutterBayObj,4,false);
+  ABunker->createAll(System,*ShutterBayObj,4);
 
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
-  BBunker->createAll(System,*ShutterBayObj,4,false);
+  BBunker->createAll(System,*ShutterBayObj,4);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
@@ -914,11 +916,13 @@ makeESS::makeBunker(Simulation& System,
   // Other side if needed :
   
   CBunker->addInsertCell(voidCell);
-  CBunker->createAll(System,*ShutterBayObj,3,true);
+  CBunker->setReversed();
+  CBunker->createAll(System,*ShutterBayObj,3);
 
   DBunker->addInsertCell(voidCell);
   DBunker->setCutWall(0,1);
-  DBunker->createAll(System,*ShutterBayObj,3,true);
+  DBunker->setReversed();
+  DBunker->createAll(System,*ShutterBayObj,3);
 
   CBunker->insertComponent(System,"rightWall",*DBunker);
   CBunker->insertComponent(System,"roofFarEdge",*DBunker);
@@ -937,14 +941,14 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
       ABHighBay->setCurtainCut
-	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+	(TopCurtain->combine("-OuterRadius -OuterZStep"));
       ABHighBay->addInsertCell(voidCell);
-      ABHighBay->createAll(System,*ABunker,*BBunker);
+      ABHighBay->buildAll(System,*ABunker,*BBunker);
 
       //      CDHighBay->setCurtainCut
       //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
       CDHighBay->addInsertCell(voidCell);
-      CDHighBay->createAll(System,*CBunker,*DBunker);
+      CDHighBay->buildAll(System,*CBunker,*DBunker);
     }
   if (bunkerType.find("help")!=std::string::npos)
     {
@@ -1141,7 +1145,8 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight(),LMAssembly,TMAssembly);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
-  Bulk->createAll(System,*Reflector,*Reflector);
+  Bulk->setCutSurf("Reflector",Reflector->getExclude());
+  Bulk->createAll(System,*Reflector,0);
 
   // Build flightlines after bulk
   Reflector->deleteCell(System,"topVoid");
@@ -1170,7 +1175,8 @@ makeESS::build(Simulation& System,
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
-  ShutterBayObj->createAll(System,*Bulk,*Bulk);
+  ShutterBayObj->setCutSurf("Bulk",Bulk->getExclude());
+  ShutterBayObj->createAll(System,*Bulk,0);
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,

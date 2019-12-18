@@ -47,8 +47,6 @@ class ZoomBend : public attachSystem::ContainedGroup,
 {
  private:
   
-  int populated;                ///< populated or not
-
   Geometry::Vec3D BCentre;      ///< Rotation centre [centerline]
   Geometry::Vec3D normalOut;    ///< Normal out [To correct angle]
   Geometry::Vec3D zOut;         ///< Z out [to correct angle]
@@ -91,8 +89,8 @@ class ZoomBend : public attachSystem::ContainedGroup,
   int innerCell;           ///< Section for the guide
 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createLinks();
@@ -118,7 +116,8 @@ class ZoomBend : public attachSystem::ContainedGroup,
 		 Geometry::Vec3D&) const;
   
   int getSectionSurf(const int,const int) const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

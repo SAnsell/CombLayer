@@ -3,7 +3,7 @@
  
  * File:   test/testBoxLine.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "ModelSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "ContainedComp.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -226,7 +227,7 @@ testBoxLine::testBasic()
   AP.addPoint(Geometry::Vec3D(0,0,10));
   AP.addSection(1.0,3.0,0,0.0);
   AP.setInitZAxis(Geometry::Vec3D(1,0,0));
-  AP.createAll(ASim);
+  AP.build(ASim);
 
   ASim.renumberAll();
   ASim.write("testBasic.x");
@@ -253,7 +254,7 @@ testBoxLine::testJoin()
   AP.addSection(0.3,0.7,0,0.0);
   AP.addSection(0.3,0.7,5,0.0);
   AP.setInitZAxis(Geometry::Vec3D(1,0,0));
-  AP.createAll(ASim);
+  AP.build(ASim);
 
   ASim.write("testJoinA.x");
   ASim.renumberAll();
@@ -283,7 +284,7 @@ testBoxLine::testZigZag()
 
   AP.addSection(0.3,0.7,0,0.0);
   AP.setInitZAxis(Geometry::Vec3D(1,0,0));
-  AP.createAll(ASim);
+  AP.build(ASim);
 
   ASim.write("testJoinA.x");
   ASim.renumberAll();

@@ -42,16 +42,13 @@ namespace zoomSystem
   line impacts the 40000 outer surface
 */
 
-class ZoomCollimator : public attachSystem::FixedGroup,
-    public attachSystem::ContainedComp
+class ZoomCollimator : public attachSystem::FixedOffsetGroup,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut
 {
  private:
-  
 
   ZoomStack cStack;            ///< Zoom stack
-
-  double xStep;                ///< Master X offset 
-  double zStep;                ///< Master Z offset 
 
   double length;               ///< Full length
   double height;               ///< height
@@ -79,10 +76,8 @@ class ZoomCollimator : public attachSystem::FixedGroup,
   std::vector<int> cMat;          ///< Layer materials
   std::vector<int> CDivideList;   ///< Cell divide List for 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedGroup&);
-  
-  void createSurfaces(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);  
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   void layerProcess(Simulation&);
@@ -94,10 +89,11 @@ class ZoomCollimator : public attachSystem::FixedGroup,
   ZoomCollimator& operator=(const ZoomCollimator&);
   virtual ~ZoomCollimator();
 
-  void createAll(Simulation&,const zoomSystem::ZoomChopper&);
 
   /// access to void cell
   int getVoidCell() const { return innerVoid; }
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
 

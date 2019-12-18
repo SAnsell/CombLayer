@@ -39,7 +39,7 @@ namespace shutterSystem
 
 class collInsertBase  :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedUnit
 {
  protected:
 
@@ -64,7 +64,7 @@ class collInsertBase  :
   int matN;             ///< Material number  
 
   void createUnitVector(const collInsertBase&);
-  void createUnitVector(const FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&);
   
   void createLinks();
   
@@ -98,11 +98,12 @@ class collInsertBase  :
   void initialize(Simulation&,const collInsertBase&);
   void setOrigin(const Geometry::Vec3D&,const double,
 		 const double,const double,const double);
+
+  virtual void write(std::ostream&) const;
+
   void createAll(Simulation&,const int,
 		 const std::string&,const std::string&);
   void createAll(Simulation&,const collInsertBase&);
-
-  virtual void write(std::ostream&) const;
 };
 
 std::ostream& operator<<(std::ostream&,const collInsertBase&);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskLayerMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,9 +64,9 @@
 #include "generateSurf.h"
 #include "support.h"
 #include "SurInter.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -80,7 +80,7 @@ namespace essSystem
 DiskLayerMod::DiskLayerMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedUnit(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -90,7 +90,7 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
 
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedUnit(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   midIndex(A.midIndex),midZ(A.midZ),zStep(A.zStep),
   outerRadius(A.outerRadius),thick(A.thick),radius(A.radius),
@@ -177,7 +177,7 @@ DiskLayerMod::populate(const FuncDataBase& Control,
   double T(0.0);
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string LStr(StrFunc::makeString(i));
+      const std::string LStr(std::to_string(i));
       T+=Control.EvalVar<double>(keyName+"Thick"+LStr);
       thick.push_back(T);
       size_t j(0);
@@ -185,7 +185,7 @@ DiskLayerMod::populate(const FuncDataBase& Control,
       double R(0.0);
       do
         {
-          const std::string RStr(StrFunc::makeString(j));
+          const std::string RStr(std::to_string(j));
           const std::string Num=LStr+"x"+RStr;
           if (Control.hasVariable(keyName+"Radius"+Num))
             {
@@ -439,7 +439,7 @@ DiskLayerMod::getLayerString(const size_t layerIndex,
   ELog::RegMethod RegA("DiskLayerMod","getLayerString");
 
   std::string Out;
-  Out=" "+StrFunc::makeString(getLayerSurf(layerIndex,sideIndex))+" ";
+  Out=" "+std::to_string(getLayerSurf(layerIndex,sideIndex))+" ";
   if (sideIndex<0)
     {
       HeadRule HR(Out);

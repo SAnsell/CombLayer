@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/ChipIRFilter.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,17 +38,9 @@ namespace hutchSystem
 */
 
 class ChipIRFilter :  public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
-  
-  int populated;                ///< populated or not
- 
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target
-  double zStep;                 ///< Offset on Z top Target
-  double xyAngle;               ///< x-y Rotation angle
-  double zAngle;                ///< z Rotation angle
   
   double outerLen;              ///< Outer length
   double outerWidth;            ///< Outer Width
@@ -58,9 +50,7 @@ class ChipIRFilter :  public attachSystem::ContainedComp,
   std::vector<double> fracFrac; ///< guide Layer thicknesss (fractions)
   std::vector<int> fracMat; ///< guide Layer materials
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
-  
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -73,7 +63,8 @@ class ChipIRFilter :  public attachSystem::ContainedComp,
   ChipIRFilter& operator=(const ChipIRFilter&);
   ~ChipIRFilter();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

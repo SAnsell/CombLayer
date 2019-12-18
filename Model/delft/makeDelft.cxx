@@ -78,12 +78,14 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "pipeUnit.h"
@@ -264,7 +266,7 @@ makeDelft::makeRabbit(Simulation& System)
     {
       RPType RB(new Rabbit("Rabbit",index));
 	
-      flag=RB->createAll(System,*GridPlate);	
+      flag=RB->build(System,*GridPlate);	
       if (flag) 
 	{
 	  OR.addObject(RB); 
@@ -392,9 +394,12 @@ makeDelft::buildModerator(Simulation& System,
 	BePtr->addInsertCell(voidCell);
       HeadRule CPCut(ColdPress->getFullRule(1));
       CPCut.addUnion(ColdPress->getFullRule(3));
-      BePtr->createAll(System,FC,sideIndex,
-		       FlightB->getExclude()+FlightC->getExclude()+
-		       CPCut.display());
+      BePtr->setCutSurf("FlightCut",
+			FlightB->getExclude()+FlightC->getExclude()+
+			CPCut.display());
+
+      BePtr->createAll(System,FC,sideIndex);
+      
       R2Be=std::shared_ptr<attachSystem::FixedOffset>(BePtr);
       OR.addObject(R2Be);
     }

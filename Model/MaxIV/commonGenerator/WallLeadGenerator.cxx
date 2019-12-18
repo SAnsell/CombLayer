@@ -57,7 +57,7 @@ namespace setVariable
 {
 
 WallLeadGenerator::WallLeadGenerator() :
-  frontLength(10.0),backLength(10.0),
+  xStep(0.0),frontLength(10.0),backLength(10.0),
   frontWidth(80.0),frontHeight(80.0),
   backWidth(40.0),backHeight(40.0),
   steelOutWidth(145.0),steelRingWidth(140.0),
@@ -78,6 +78,17 @@ WallLeadGenerator::~WallLeadGenerator()
  */
 {}
 
+void
+WallLeadGenerator::setXOffset(const double XS)
+  /*!
+    Set the wall offset 
+    \param XS :: Wall step
+   */
+{
+  xStep=XS;
+  return;
+}
+  
 void
 WallLeadGenerator::setWidth(const double OW,const double RW)
   /*!
@@ -107,21 +118,22 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("WallLeadGenerator","generateWall");
   
+  Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
   Control.addVariable(keyName+"FrontWidth",frontWidth);
   Control.addVariable(keyName+"FrontHeight",frontHeight);
   Control.addVariable(keyName+"BackWidth",backWidth);
   Control.addVariable(keyName+"BackHeight",backHeight);
-  Control.addVariable(keyName+"SteelOutWidth",steelOutWidth);
-  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth);
+  Control.addVariable(keyName+"SteelOutWidth",steelOutWidth+xStep);
+  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth-xStep);
   Control.addVariable(keyName+"SteelHeight",steelHeight);
   Control.addVariable(keyName+"SteelDepth",steelDepth);
   Control.addVariable(keyName+"SteelThick",steelThick);
   Control.addVariable(keyName+"SteelXCut",steelXCut);
   Control.addVariable(keyName+"SteelZCut",steelZCut);
-  Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth);
-  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth);
+  Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth+xStep);
+  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth-xStep);
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);

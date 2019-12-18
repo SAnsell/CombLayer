@@ -209,19 +209,6 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
 }
 
 void
-TS2ModifyTarget::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Target component
-  */
-{
-  ELog::RegMethod RegA("TS2ModifyTarget","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  return;
-}
-
-void
 TS2ModifyTarget::createSurfaces()
   /*!
     Create All the surfaces
@@ -473,19 +460,27 @@ TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
   
 void
 TS2ModifyTarget::createAll(Simulation& System,
-			   const constructSystem::TargetBase& TB)
+			   const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
 /*!
     Generic function to create everything
     \param System :: Simulation item
     \param TB :: Target Base
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("TS2ModifyTarget","createAll");
+
   populate(System.getDataBase());
-  createUnitVector(TB);
+  createUnitVector(FC,sideIndex);
+
+  const constructSystem::TargetBase* TB=
+    dynamic_cast<const constructSystem::TargetBase*>(&FC);
+  if (!TB)
+    throw ColErr::DynamicConv("FixedComp","TargetBase","");
   createSurfaces();
-  addBoundarySurf(TB.getContainer());
-  createObjects(System,TB.getMainBody(),TB.getSkinBody());
+  addBoundarySurf(TB->getContainer());
+  createObjects(System,TB->getMainBody(),TB->getSkinBody());
 
   return;
 }

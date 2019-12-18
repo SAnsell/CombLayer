@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/RoofPillars.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace essSystem
   \brief Roof pillar to hold up bunker roof
 */
 
-class RoofPillars : public attachSystem::FixedComp,
+class RoofPillars : public attachSystem::FixedUnit,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
@@ -151,7 +151,7 @@ class RoofPillars : public attachSystem::FixedComp,
   //  void setTopSurf(const attachSystem::FixedComp&,const long int);
   //  void setBaseSurf(const attachSystem::FixedComp&,const long int);
 
-  void createAll(Simulation&,const Bunker&);
+  void build(Simulation&,const Bunker&);
 
 };
 

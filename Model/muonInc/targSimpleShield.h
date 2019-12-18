@@ -35,19 +35,12 @@ namespace muSystem
   \brief mu target shielding - Simplified
 */
 
-class targSimpleShield : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class targSimpleShield :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp
 {
  private:
-  
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xAngle;               ///< Angle (rotation)
-  double yAngle;               ///< Angle (rotation)
-  double zAngle;               ///< Angle (rotation)
-    
+      
   double height;                ///< Height
   double depth;                 ///< Depth
   double width;                 ///< Width
@@ -63,8 +56,6 @@ class targSimpleShield : public attachSystem::FixedComp,
 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,7 +67,8 @@ class targSimpleShield : public attachSystem::FixedComp,
   targSimpleShield& operator=(const targSimpleShield&);
   virtual ~targSimpleShield();
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

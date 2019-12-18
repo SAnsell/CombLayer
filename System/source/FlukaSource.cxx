@@ -58,6 +58,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "WorkData.h"
 #include "World.h"
 #include "particleConv.h"
@@ -85,7 +86,7 @@ operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
   
   
 FlukaSource::FlukaSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),SourceBase()
+  FixedOffsetUnit(keyName,0),SourceBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -96,7 +97,7 @@ FlukaSource::FlukaSource(const std::string& keyName) :
 }
 
 FlukaSource::FlukaSource(const FlukaSource& A) : 
-  attachSystem::FixedOffset(A),SourceBase(A),
+  attachSystem::FixedOffsetUnit(A),SourceBase(A),
   sourceName(A.sourceName),sValues(A.sValues)
   /*!
     Copy constructor
@@ -250,7 +251,7 @@ FlukaSource::write(std::ostream& OX) const
 }
 
 void
-FlukaSource::writePHITS(std::ostream& OX) const
+FlukaSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream

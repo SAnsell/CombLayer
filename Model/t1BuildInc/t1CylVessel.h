@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/t1CylVessel.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,11 @@ namespace shutterSystem
   \brief Specialized for for the ts1 void vessel
 */
 
-class t1CylVessel : public attachSystem::FixedComp,
+class t1CylVessel : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
   
-  int populated;                  ///< 1:var
-
   double voidYoffset;             ///< Central offset
   double radius;                  ///< Main cylinder radius
   double clearance;               ///< Void clearance
@@ -61,9 +59,7 @@ class t1CylVessel : public attachSystem::FixedComp,
 
   // Functions:
 
-  void populate(const Simulation&);
-  void createUnitVector();
-
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createWindows(Simulation&);
@@ -81,8 +77,12 @@ class t1CylVessel : public attachSystem::FixedComp,
   /// Outer radius
   double getOuterRadius() const 
     { return radius+wallThick+clearance; }
-  void createStatus(const Simulation&);
-  void createAll(Simulation&);
+  void createStatus(const Simulation&,
+		    const attachSystem::FixedComp&,
+		    const long int);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

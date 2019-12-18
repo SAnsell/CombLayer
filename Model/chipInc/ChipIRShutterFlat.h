@@ -74,9 +74,10 @@ class ChipIRShutterFlat : public GeneralShutter
   ChipIRShutterFlat& operator=(const ChipIRShutterFlat&);
   virtual ~ChipIRShutterFlat();
 
-  virtual void createAll(Simulation&,const double,
-			 const attachSystem::FixedComp*);
   const insertBaseInfo& getLastItem() const;
+
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,const long int);
   
 };
 

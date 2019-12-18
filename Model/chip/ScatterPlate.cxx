@@ -137,13 +137,14 @@ ScatterPlate::~ScatterPlate()
 {}
 
 void
-ScatterPlate::populate(const Simulation& System)
+ScatterPlate::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Function database
   */
 {
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("ScatterPlate","populate");
+  
   FixedOffset::populate(Control);
   try
     {      
@@ -171,24 +172,6 @@ ScatterPlate::populate(const Simulation& System)
   return;
 }
 
-void
-ScatterPlate::createUnitVector(const attachSystem::FixedComp& LC)
-  /*!
-    Create the unit vectors
-    \param LC :: LinearComponent to attach to
-  */
-{
-  ELog::RegMethod RegA("ScatterPlate","createUnitVector");
-
-  //  const masterRotate& MR=masterRotate::Instance();
-  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
-  // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(LC,0);
-  applyOffset();
-
-  return;
-}
 
 void
 ScatterPlate::createSurfaces()
@@ -312,18 +295,20 @@ ScatterPlate::exitWindow(const double Dist,
   
 void
 ScatterPlate::createAll(Simulation& System,
-			const attachSystem::FixedComp& LC)
+			const attachSystem::FixedComp& LC,
+			const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param LC :: Linear component to set axis etc
+    \param sideIndex :: link pont 
   */
 {
   ELog::RegMethod RegA("ScatterPlate","createAll");
-  populate(System);
+  populate(System.getDataBase());
   if (populated)
     {
-      createUnitVector(LC);
+      createUnitVector(LC,sideIndex);
       createSurfaces();
       createObjects(System);
       layerProcess(System);

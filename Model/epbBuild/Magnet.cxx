@@ -74,6 +74,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "Magnet.h"
 
 namespace epbSystem
@@ -81,7 +82,9 @@ namespace epbSystem
 
 Magnet::Magnet(const std::string& Key,const size_t Index) : 
   attachSystem::FixedOffset(Key+std::to_string(Index),6),
-  attachSystem::ContainedComp(),baseName(Key)
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -90,7 +93,9 @@ Magnet::Magnet(const std::string& Key,const size_t Index) :
 {}
 
 Magnet::Magnet(const Magnet& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   baseName(A.baseName),
   segIndex(A.segIndex),segLen(A.segLen),length(A.length),height(A.height),
   width(A.width),feMat(A.feMat)
@@ -112,6 +117,7 @@ Magnet::operator=(const Magnet& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       segIndex=A.segIndex;
       segLen=A.segLen;
       length=A.length;
@@ -153,7 +159,8 @@ Magnet::populate(const FuncDataBase& Control)
 }
 
 void
-Magnet::createUnitVector(const attachSystem::FixedComp& FC)
+Magnet::createUnitVector(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp to attach to
@@ -168,7 +175,7 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
 
   //  beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
 
-  FixedComp::createUnitVector(FC,static_cast<long int>(segIndex+1));
+  FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   return;
 }
@@ -196,11 +203,11 @@ Magnet::createObjects(Simulation& System,
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
-    \param FC :: inner guide
    */
 {
   ELog::RegMethod RegA("Magnet","createObjects");
 
+  const std::string inner=ExternalCut::getRuleStr("Inner");
   std::string Out;
   // Outer steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
@@ -240,7 +247,8 @@ Magnet::createLinks()
 
 void
 Magnet::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -250,7 +258,7 @@ Magnet::createAll(Simulation& System,
   ELog::RegMethod RegA("Magnet","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,FC);
   createLinks();

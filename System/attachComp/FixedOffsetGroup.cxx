@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffsetGroup.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -280,5 +280,21 @@ FixedOffsetGroup::applyOffset()
   return;
 }
 
+void
+FixedOffsetGroup::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","createUnitVector");
+
+  FixedGroup::createUnitVector(FC,sideIndex);
+  applyOffset();
+    
+  return;
+}
  
 }  // NAMESPACE attachSystem

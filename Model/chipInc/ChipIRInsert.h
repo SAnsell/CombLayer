@@ -83,7 +83,7 @@ class ChipIRInsert : public BulkInsert
     
   // Function:
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector();
 
   void createSurfaces();
@@ -103,7 +103,8 @@ class ChipIRInsert : public BulkInsert
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;
 
-  void createAll(Simulation&,const shutterSystem::GeneralShutter&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DREAM.cxx
+ * File:   ESSBeam/dream/DREAM.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -64,10 +64,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -103,7 +103,7 @@ namespace essSystem
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedOffsetUnit(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
  
@@ -283,7 +283,7 @@ DREAM::build(Simulation& System,
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
-
+  
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
@@ -376,7 +376,7 @@ DREAM::build(Simulation& System,
   //  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
   BInsertA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsertA->createAll(System,*VPipeG,2,bunkerObj);
+  BInsertA->createAll(System,*VPipeG,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
   
   FocusWallA->addInsertCell(BInsertA->getCell("Item"));
@@ -391,7 +391,7 @@ DREAM::build(Simulation& System,
   BInsertB->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsertB->addInsertCell(ShieldA->getCell("Void"));
   BInsertB->addInsertCell(voidCell);
-  BInsertB->createAll(System,*BInsertA,2,bunkerObj);
+  BInsertB->createAll(System,*BInsertA,2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
   
   if (stopPoint==3) return;                      // STOP At bunker edge

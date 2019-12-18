@@ -86,10 +86,8 @@ class VoidVessel : public attachSystem::FixedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedComp*);
+  void createObjects(Simulation&);
   void createWindows(Simulation&);
 
  public:
@@ -101,7 +99,7 @@ class VoidVessel : public attachSystem::FixedComp,
 
   void processVoid(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp* =0);
+		 const long int);
   
 };
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/CH4PreModBase.h
+ * File:   attachCompInc/FixedUnit.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,40 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_CH4PreModBase_h
-#define ts1System_CH4PreModBase_h
+#ifndef attachSystem_FixedUnit_h
+#define attachSystem_FixedUnit_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace ts1System
+namespace attachSystem
 {
-
 /*!
-  \class CH4PreModBase
+  \class FixedUnit
   \version 1.0
   \author S. Ansell
-  \date July 2013
-  \brief Pre-mod genertic for all CH4 premods
+  \date  December 2019
+  \brief FixedComp with abstract units removed
 */
 
-class CH4PreModBase : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::LayerComp
-{
- protected:
-  
-  
+class FixedUnit : public FixedComp
+{  
  public:
 
-  CH4PreModBase(const std::string&,const size_t);
-  CH4PreModBase(const CH4PreModBase&);
-  CH4PreModBase& operator=(const CH4PreModBase&);
-  virtual ~CH4PreModBase();
-  virtual CH4PreModBase* clone() const =0; 
+  FixedUnit(const std::string& K,const size_t I) :
+    FixedComp(K,I) {}
+ FixedUnit(const std::string& K,const size_t I,const size_t S) :
+    FixedComp(K,I,S) {}
+  FixedUnit(const std::string& K,const size_t I,
+	    const Geometry::Vec3D& OO,const Geometry::Vec3D& XX, 
+	    const Geometry::Vec3D& YY,const Geometry::Vec3D& ZZ) :
+    FixedComp(K,I,OO,XX,YY,ZZ) {}
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int,const long int) =0;
+      
+  FixedUnit(const FixedUnit& A) : FixedComp(A) {}
+  FixedUnit(const FixedComp& A) : FixedComp(A) {}
+  virtual ~FixedUnit() {}     ///< Destructor
 
+  void createAll(Simulation&,const FixedComp&,const long int) {}
 };
 
 }

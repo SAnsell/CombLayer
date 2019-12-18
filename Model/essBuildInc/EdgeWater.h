@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EdgeWater.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ class EdgeWater :
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
   public attachSystem::FixedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -57,11 +58,8 @@ class EdgeWater :
   double modTemp;           ///< Moderator temperature
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
-  void createObjects(Simulation&,const std::string&,const std::string&);
+  void createObjects(Simulation&,const std::string&);
   void createLinks();
 
 
@@ -78,7 +76,7 @@ class EdgeWater :
   virtual int getLayerSurf(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
+		 const long int);
 };
 
 }

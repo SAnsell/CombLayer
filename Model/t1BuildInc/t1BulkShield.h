@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/t1BulkShield.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,11 @@ namespace shutterSystem
   \brief Specialized for for the t1BulkShield
 */
 
-class t1BulkShield : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class t1BulkShield :
+  public attachSystem::FixedComp,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -75,13 +78,12 @@ class t1BulkShield : public attachSystem::FixedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector();
   void createLinks();
 
-  void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
-  void createBulkInserts(Simulation&,const mainSystem::inputParam&);
-  void createShutters(Simulation&,const mainSystem::inputParam&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createBulkInserts(Simulation&);
+  void createShutters(Simulation&);
 
  public:
 
@@ -123,8 +125,7 @@ class t1BulkShield : public attachSystem::FixedComp,
   const shutterSystem::BulkInsert* getInsert(const int) const;
   void processVoid(Simulation&);
 
-  void createAll(Simulation&,const mainSystem::inputParam&,
-		 const t1CylVessel&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 
 

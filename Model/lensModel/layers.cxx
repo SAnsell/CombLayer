@@ -74,9 +74,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "siModerator.h"
 #include "surfDIter.h"
@@ -91,9 +92,10 @@ namespace lensSystem
 {
 
 layers::layers(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
-  populated(0),innerCompSurf(0),
-  PA("proton"),FC("flight")
+  attachSystem::ContainedComp(),
+  attachSystem::FixedUnit(Key,3),
+  innerCompSurf(0),
+  PA("proton"),flightCluster("flight")
   /*!
     Constructor
     \param Key :: KeyName
@@ -101,9 +103,10 @@ layers::layers(const std::string& Key) :
 {}
 
 layers::layers(const layers& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),innerCompSurf(A.innerCompSurf),PA(A.PA),
-  FC(A.FC),waterRad(A.waterRad),DCRad(A.DCRad),leadRad(A.leadRad),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
+  innerCompSurf(A.innerCompSurf),PA(A.PA),
+  flightCluster(A.flightCluster),waterRad(A.waterRad),
+  DCRad(A.DCRad),leadRad(A.leadRad),
   bPolyRad(A.bPolyRad),epoxyRad(A.epoxyRad),outPolyRad(A.outPolyRad),
   outVoidRad(A.outVoidRad),waterAlThick(A.waterAlThick),
   waterHeight(A.waterHeight),
@@ -136,10 +139,9 @@ layers::operator=(const layers& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      populated=A.populated;
       innerCompSurf=A.innerCompSurf;
       PA=A.PA;
-      FC=A.FC;
+      flightCluster=A.flightCluster;
       waterRad=A.waterRad;
       DCRad=A.DCRad;
       leadRad=A.leadRad;
@@ -202,7 +204,7 @@ layers::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("layers","populate");
   
-  FC.clearCells();
+  flightCluster.clearCells();
   waterRad=Control.EvalVar<double>(keyName+"WaterRadius");
   DCRad=Control.EvalVar<double>(keyName+"DCRadius");
   leadRad=Control.EvalVar<double>(keyName+"LeadRadius");
@@ -250,7 +252,6 @@ layers::populate(const FuncDataBase& Control)
 
   ELog::EM<<"Size == "<<wedgeLinerMat[0]<<" "<<wedgeLinerMat.size()
 	  <<ELog::endTrace;
-  populated=1;
   return;
 }
 
@@ -375,7 +376,7 @@ layers::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,"115 -116 -117 (-105:106:107) ");
   Out+=CS.getTopExclude();
   Out+="#("+Wedge+")";
-  FC.addInsertCell(cellIndex);
+  flightCluster.addInsertCell(cellIndex);
   PA.addInsertCell("line",cellIndex);
   System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
@@ -385,7 +386,7 @@ layers::createObjects(Simulation& System,
   Out+=CS.getExclude()+CS.getHeadExclude();
   Out+="#("+Wedge+")";
   System.addCell(MonteCarlo::Object(cellIndex++,DCMat,0.0,Out));  
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // LEAD:
@@ -393,7 +394,7 @@ layers::createObjects(Simulation& System,
   // (56 : -71 : 72 : -73 : 74 : -125)");    
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,leadMat,0.0,Out));
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // BPOLY
@@ -401,7 +402,7 @@ layers::createObjects(Simulation& System,
 				  "(-135 : 136 : 137) ");
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,bPolyMat,0.0,Out));  
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // EPOXY
@@ -409,7 +410,7 @@ layers::createObjects(Simulation& System,
 				  "(-145 : 146 : 147) ");
   Out+=CS.getExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,epoxyMat,0.0,Out));
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT POLY
@@ -417,13 +418,13 @@ layers::createObjects(Simulation& System,
 				 "(-155 : 156 : 157) ");
   Out+=CS.getExclude();
   System.addCell(MonteCarlo::Object(cellIndex++,outPolyMat,0.0,Out));
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT VOID
   Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 167");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  FC.addInsertCell(cellIndex-1);
+  flightCluster.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 ");
@@ -465,7 +466,7 @@ layers::constructFlightLines(Simulation& System,
 {
   ELog::RegMethod RegA("layers","constructFlightLines");
 
-  FC.createAll(System,*this,-SMap.realSurf(buildIndex+177));
+  flightCluster.createAll(System,*this,-SMap.realSurf(buildIndex+177));
 
   // Add outer cylinder
   PA.addBack(SMap.realSurf(buildIndex+177));
@@ -476,7 +477,7 @@ layers::constructFlightLines(Simulation& System,
 
 
 void
-layers::createAll(Simulation& System,const candleStick& CS)
+layers::build(Simulation& System,const candleStick& CS)
   /*!
     Extrenal build everything
     \param System :: Simulation

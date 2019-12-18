@@ -3,7 +3,7 @@
  
  * File:   essBuild/HighBay.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -54,8 +53,6 @@
 #include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -66,12 +63,12 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -85,7 +82,7 @@ namespace essSystem
 {
 
 HighBay::HighBay(const std::string& key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedUnit(key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +91,7 @@ HighBay::HighBay(const std::string& key) :
 {}
 
 HighBay::HighBay(const HighBay& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   baseName(A.baseName),length(A.length),height(A.height),roofThick(A.roofThick),
   wallMat(A.wallMat),roofMat(A.roofMat),curtainCut(A.curtainCut)
@@ -264,9 +261,9 @@ HighBay::createObjects(Simulation& System,
 }
   
 void
-HighBay::createAll(Simulation& System,
-		   const Bunker& leftBunker,
-		   const Bunker& rightBunker)
+HighBay::buildAll(Simulation& System,
+		  const Bunker& leftBunker,
+		  const Bunker& rightBunker)
   
   /*!
     Generic function to initialize everything

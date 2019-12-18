@@ -160,24 +160,6 @@ SqrCollimator::populate(const FuncDataBase& Control)
 }
 
 void
-SqrCollimator::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("SqrCollimator","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-
-void
 SqrCollimator::createSurfaces()
   /*!
     Create All the surfaces
