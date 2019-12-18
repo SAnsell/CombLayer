@@ -103,11 +103,13 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  constexpr double L(376.6); // Undu_Hamed.pptx, page 2
+  // Undulator length:
+  // https://alfresco.maxiv.lu.se/share/page/site/bpo/document-details?nodeRef=workspace://SpacesStore/22a6b9ab-4f3b-4525-bd79-d4a4fd0be33d page 1
+  constexpr double L(390.55);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L+8.0);
+  PipeGen.generatePipe(Control,undKey+"UPipe",0,L+8.0+13.95);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -1219,7 +1221,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   // 616=dipoleLen :: Length of dipole (adjusted to have FM1 in the correct place)
   // 178=exitLeng :: last exit pipe length (adjusted, but in reality it's about 10 cm!)
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,616, 178);
+    (Control,"SoftiMAXFrontBeam",141.0,616, 178-13.95-4);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
