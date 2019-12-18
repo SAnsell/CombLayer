@@ -1212,9 +1212,14 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
-  // ystep / dipole pipe / exit pipe
+  /// Parameters of R3FrontEndVariables:
+  // 141=yStep :: Location of undulator with respect of the bend centre point
+  // (point between the pre- and post dipole bending magnets)
+  //    it must be > 0 because otherwise the undulator clips with the previous sector
+  // 616=dipoleLen :: Length of dipole (adjusted to have FM1 in the correct place)
+  // 178=exitLeng :: last exit pipe length (adjusted, but in reality it's about 10 cm!)
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,724.0, 70.0); // last arg is ExitPipe length
+    (Control,"SoftiMAXFrontBeam",141.0,616, 178);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
