@@ -1,6 +1,6 @@
-/*********************************************************************
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
-
+ 
  * File:   R3Common/R3RingVariables.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -75,14 +75,14 @@
 
 
 namespace setVariable
-{
+{  
 
 void heatDumpTable(FuncDataBase&,const std::string&);
 void heatDumpVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
-
+  
 void
 collimatorVariables(FuncDataBase& Control,
 		    const std::string& collKey)
@@ -135,7 +135,7 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
-
+  
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",0,14.0);
 
@@ -155,7 +155,7 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
-
+  
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowH",0,14.0);
@@ -164,10 +164,10 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
-
+  
   return;
 }
-
+  
 void
 shutterTable(FuncDataBase& Control,
 	     const std::string& frontKey)
@@ -185,15 +185,15 @@ shutterTable(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
-
+    
   // joined and open
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
-
+  
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",0,10.0);
-
+  
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
@@ -205,7 +205,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,1);
 
   PItemGen.setCF<setVariable::CF40>(1.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
   PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
@@ -222,10 +222,10 @@ shutterTable(FuncDataBase& Control,
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
   PItemGen.setCF<setVariable::CF40>(0.45);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
+  
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF40>();
@@ -239,14 +239,14 @@ shutterTable(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
-
+  
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(5.0,0.0);
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");  
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
@@ -254,7 +254,7 @@ shutterTable(FuncDataBase& Control,
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
       const std::string fname=frontKey+"Shutter"+std::to_string(i);
-
+      
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
       CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
@@ -275,7 +275,7 @@ shutterTable(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowK",0,11.05);
-
+  
   return;
 }
 
@@ -296,10 +296,10 @@ heatDumpTable(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-
+    
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
-
+  
   heatDumpVariables(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -315,7 +315,7 @@ heatDumpTable(FuncDataBase& Control,
   Control.addVariable(gateName+"NPorts",2);
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(0.45);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
@@ -328,7 +328,7 @@ heatDumpTable(FuncDataBase& Control,
   return;
 }
 
-
+ 
 void
 heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   /*!
@@ -338,7 +338,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
    */
 {
   ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariables");
-
+  
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
@@ -351,26 +351,26 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 
   // beam ports
   PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(0.0,"Void");  
 
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string heatName=frontKey+"HeatBoxPort";
   const std::string hName=frontKey+"HeatDumpFlange";
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
-
+  
   const std::string hDump(frontKey+"HeatDump");
   HeatGen.setCF<CF100>();
   HeatGen.setTopCF<CF150>();
   HeatGen.generateHD(Control,hDump,1);
-
+  
   return;
 }
 
 void
 R3RingDoors(FuncDataBase& Control,const std::string& preName)
   /*!
-    Construct variables for R3RingDoors
+    Construct variables for R3RingDoors 
     \param Control :: Control value
     \param preName :: Prename (r3ring typically)
   */
@@ -378,9 +378,9 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingDoors");
 
   RingDoorGenerator RGen;
-
+  
   Control.addVariable(preName+"RingDoorWallID",1);
-
+  
   RGen.generateDoor(Control,preName+"RingDoor",2400.0);
   return;
 }
@@ -390,7 +390,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 		    const double yStep,const double dipoleLen,
-		    const double exitLen)
+		    const double exitLen) 
 /*!
     Set the variables for the front end
     \param Control :: DataBase to use
@@ -409,11 +409,11 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
-
-  Control.addVariable(frontKey+"YStep",yStep);
+    
+  Control.addVariable(frontKey+"YStep",yStep);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
-
-  Control.addVariable(frontKey+"FrontOffset",0.0);
+  
+  Control.addVariable(frontKey+"FrontOffset",0.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
@@ -422,29 +422,34 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
   ESGen.generatePipe(Control,frontKey+"EPSeparator");
-
+  
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen); 
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
 
-  // SimpleTubeGen.setMat("Stainless304");
-  // SimpleTubeGen.setCF<CF100>();
-  // SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
-  // Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-  // collimator block
-
-
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
-
+  
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
+
+  Control.addVariable(frontKey+"ECutDiskYStep",5.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",1.0);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
+  // note: CF40::innerRadius is some complex template type 
+  Control.addVariable
+    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -454,30 +459,18 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   PipeGen.setAFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
 
-  Control.addVariable(frontKey+"ECutDiskYStep",5.0);
-  Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",1.0);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
-  // note: CF40::innerRadius is some complex template type
-  Control.addVariable
-    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
-
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
-
-  PipeGen.setCF<setVariable::CF40>();
+  
+  PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,exitLen);
 
   return;
 }
 
-
+  
 void
 R3RingVariables(FuncDataBase& Control)
   /*!
@@ -489,7 +482,7 @@ R3RingVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingVariables");
 
   const std::string preName("R3Ring");
-
+  
   Control.addVariable(preName+"FullOuterRadius",14000.0);
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
   Control.addVariable(preName+"BeamRadius",8409.0);       // 528m circum.
@@ -498,16 +491,16 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OffsetCornerY",558.0);
   Control.addVariable(preName+"OuterWall",100.0);
   Control.addVariable(preName+"RatchetWall",120.0);
-
+  
   Control.addVariable(preName+"Height",160.0);
   Control.addVariable(preName+"Depth",130.0);
   Control.addVariable(preName+"RoofThick",100.0);
   Control.addVariable(preName+"FloorThick",100.0);
 
-  Control.addVariable(preName+"WallMat","Concrete");
+  Control.addVariable(preName+"WallMat","Concrete");  
   Control.addVariable(preName+"FloorMat","Concrete");
   Control.addVariable(preName+"RoofMat","Concrete");
-
+  
   R3RingDoors(Control,preName);
 
   return;
