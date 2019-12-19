@@ -138,3 +138,64 @@
     pigment{rgb 0.1}
     finish{ambient 0 diffuse 1 specular 0.5 roughness 0.07 reflection{0,0.2 fresnel on}}
 }
+
+/////////// Copper
+// http://news.povray.org/povray.general/thread/%3C56908266$1@news.povray.org%3E/?ttop=411080&toff=100
+// http://news.povray.org/povray.text.scene-files/thread/%3C41e52fcd$1@news.povray.org%3E/?ttop=296020&toff=100
+#declare copper_micro_norm = normal
+{
+   spotted .5 scale .3
+
+   slope_map
+   {
+     [0 <1,0>]
+     [0.3 <1,0>]
+     [0.9 <0,0>]
+     [1 <0,0>]
+   }
+}
+
+
+#declare chinks = normal
+{
+   spotted .5 scale 1
+
+   slope_map
+   {
+     [0 <1,0>]
+     [0.60 <1,0>]
+     [0.90 <0,0>]
+     [1 <0,0>]
+   }
+}
+
+#declare copper_norm = normal
+{
+   spotted 1 scale .0125
+
+   normal_map
+   {
+     [0 copper_micro_norm]
+     [.6 copper_micro_norm]
+     [.6 chinks]
+     [1 chinks]
+   }
+}
+
+#declare matCopper1 = texture
+{
+   pigment {color rgb <0.9,0.66,0.42>*1}
+   finish {
+     diffuse 0.07
+     specular 1 roughness 0.0005
+     reflection {0.7,1  metallic}
+     conserve_energy
+     metallic
+   }
+   normal { copper_norm }
+}
+
+// alternative
+#declare matCopper = texture { Copper_Metal }
+
+//////////////////////////////////////////////////////////////////////////////

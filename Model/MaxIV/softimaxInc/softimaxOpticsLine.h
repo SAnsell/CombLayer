@@ -26,6 +26,7 @@ namespace constructSystem
 {
   class PortTube;
   class BiPortTube;
+  class JawValveTube;
 }
 
 namespace xraySystem
@@ -39,6 +40,7 @@ namespace xraySystem
   class FlangeMount;
   class TwinPipe;
   class SqrCollimator;
+  class BremOpticsColl;
 
   /*!
     \class softimaxOpticsLine
@@ -75,6 +77,7 @@ class softimaxOpticsLine :
 
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<constructSystem::PipeTube> pumpM1;
   /// First gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateA;
@@ -90,7 +93,7 @@ class softimaxOpticsLine :
   // Pumping tube for the ion pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
   /// Tungsten bremsstrahlung collimator
-  std::shared_ptr<xraySystem::BremColl> bremCollA;
+  std::shared_ptr<xraySystem::BremOpticsColl> bremCollA;
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   std::shared_ptr<constructSystem::Bellows> bellowD;
@@ -113,46 +116,49 @@ class softimaxOpticsLine :
   // vaccum pipe
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeA;
   std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<constructSystem::JawValveTube> slitsA;
   std::shared_ptr<constructSystem::PipeTube> pumpTubeM3;
   std::shared_ptr<xraySystem::FlangeMount> pumpTubeM3Baffle;
   // Bellow to mirror M3
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// M3 Mirror
+  std::shared_ptr<constructSystem::VacuumPipe> M3Front;
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
   std::shared_ptr<xraySystem::Mirror> M3Mirror;
   std::shared_ptr<xraySystem::BlockStand> M3Stand;
+  std::shared_ptr<constructSystem::VacuumPipe> M3Back;
   std::shared_ptr<constructSystem::Bellows> bellowH;
   // Gate valve for M3
   std::shared_ptr<constructSystem::GateValveCube> gateE;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB; // flange converter
   // M3 Middle pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeC;
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// Vacuum piece
-  std::shared_ptr<constructSystem::PipeTube> vacPiece;
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
   std::shared_ptr<constructSystem::GateValveCube> gateF;
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// M3 STXM
-  std::shared_ptr<constructSystem::PipeTube> M3STXMTube;
-  /// back port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
+  std::shared_ptr<constructSystem::VacuumPipe> M3STXMFront;
+  std::shared_ptr<constructSystem::PipeTube>   M3STXMTube;
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::BiPortTube> M3Pump;
 
   // Left branch STXM
-  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> bellowAB;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeAA;
   /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeAA;
-  std::shared_ptr<xraySystem::SqrCollimator> collAA;
+  std::shared_ptr<xraySystem::BremOpticsColl> bremCollAA;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeAB;
 
   // Right branch CXI
-  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  std::shared_ptr<constructSystem::Bellows> bellowBB;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeBA;
   /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeBA;
-  std::shared_ptr<xraySystem::SqrCollimator> collBA;
+  std::shared_ptr<xraySystem::BremOpticsColl> bremCollBA;
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeBB;
 
 
@@ -246,11 +252,11 @@ class softimaxOpticsLine :
      const long int);
 
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+		     const attachSystem::FixedComp&,const std::string&);
   void buildM3Mirror(Simulation&,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+		     const attachSystem::FixedComp&,const std::string&);
   void buildM3STXMMirror(Simulation&,MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,const long int);
+			 const attachSystem::FixedComp&,const std::string&);
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const std::string&);
   void buildMono(Simulation&,MonteCarlo::Object*,
@@ -269,6 +275,10 @@ class softimaxOpticsLine :
   softimaxOpticsLine(const softimaxOpticsLine&);
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
+
+  void buildOutGoingPipes(Simulation&,const int,const int,
+			  const std::vector<int>&);
+
 
   void setPreInsert
   (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }

@@ -72,17 +72,10 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-// #include "World.h"
-// #include "AttachSupport.h"
 #include "InnerZone.h"
 
 #include "VacuumPipe.h"
-// #include "SplitFlangePipe.h"
-// #include "Bellows.h"
-// #include "LeadPipe.h"
-
 #include "balderOpticsHutch.h"
-// #include "ExperimentalHutch.h"
 #include "JawFlange.h"
 // #include "FlangeMount.h"
 #include "R3FrontEnd.h"
@@ -128,27 +121,28 @@ namespace xraySystem
   */
   {}
 
-  void
-  SOFTIMAX::build(Simulation& System,
-		  const attachSystem::FixedComp& FCOrigin,
-		  const long int sideIndex)
+void
+SOFTIMAX::build(Simulation& System,
+		const attachSystem::FixedComp& FCOrigin,
+		const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
   */
-  {
-    // For output stream
-    ELog::RegMethod RControl("SOFTIMAX","build");
+{
+  // For output stream
+  ELog::RegMethod RControl("SOFTIMAX","build");
+  
+  const size_t NS=r3Ring->getNInnerSurf();
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
+  const size_t SIndex=(PIndex+1) % NS;
+  const size_t prevIndex=(NS+PIndex-1) % NS;
+  
+  const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
-    const size_t NS=r3Ring->getNInnerSurf();
-    const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
-    const size_t SIndex=(PIndex+1) % NS;
-    const size_t prevIndex=(NS+PIndex-1) % NS;
-
-    const std::string exitLink="ExitCentre"+std::to_string(PIndex);
-
+    frontBeam->deactivateFM3();
     frontBeam->setStopPoint(stopPoint);
     frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
@@ -160,7 +154,9 @@ namespace xraySystem
     wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
     wallLead->createAll(System,FCOrigin,sideIndex);
 
-    if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+    if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+	|| stopPoint=="FM1" || stopPoint=="FM2")
+      return;
 
     opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
     opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
@@ -172,11 +168,11 @@ namespace xraySystem
     opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
     opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
-  // Ugly HACK to get the two objects to merge
-  r3Ring->insertComponent
-    (System,"OuterFlat",SIndex,
-     *opticsHut,opticsHut->getSideIndex("frontCut"));
-
+    // Ugly HACK to get the two objects to merge
+    r3Ring->insertComponent
+      (System,"OuterFlat",SIndex,
+       *opticsHut,opticsHut->getSideIndex("frontCut"));
+    
   // Inner space
 
   if (stopPoint=="opticsHut") return;
@@ -196,8 +192,15 @@ namespace xraySystem
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+
+  std::vector<int> cells(opticsHut->getCells("BackWall"));
+  cells.emplace_back(opticsHut->getCell("Extension"));
+  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
+				 opticsBeam->getCell("RightVoid"),
+				 cells);
+
   return;
-  }
+}
 
 
 }   // NAMESPACE xraySystem

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   src/SimPOVRay.cxx
  *
  * Copyright (c) 2004-2019 by Konstantin Batkov/Stuart Ansell
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
 #include <list>
-#include <map> 
+#include <map>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -79,7 +79,7 @@ SimPOVRay::SimPOVRay() : Simulation()
 {}
 
 SimPOVRay::SimPOVRay(const SimPOVRay& A) : Simulation(A)
- /*! 
+ /*!
    Copy constructor
    \param A :: Simulation to copy
  */
@@ -103,13 +103,13 @@ SimPOVRay::operator=(const SimPOVRay& A)
 void
 SimPOVRay::writeCells(std::ostream& OX) const
   /*!
-    Write all the cells in standard POVRay output 
+    Write all the cells in standard POVRay output
     type.
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("SimPOVRay","writeCells");
-    
+
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writePOVRay(OX);
@@ -119,7 +119,7 @@ SimPOVRay::writeCells(std::ostream& OX) const
 void
 SimPOVRay::writeSurfaces(std::ostream& OX) const
   /*!
-    Write all the surfaces in standard MCNPX output 
+    Write all the surfaces in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -132,12 +132,12 @@ SimPOVRay::writeSurfaces(std::ostream& OX) const
 
   OX<<std::endl;
   return;
-} 
+}
 
 void
 SimPOVRay::writeMaterial(std::ostream& OX) const
   /*!
-    Write all the used Materials in standard MCNPX output 
+    Write all the used Materials in standard MCNPX output
     type.
     \param OX :: Output stream
   */
@@ -167,17 +167,17 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 
   return;
 }
-  
+
 void
 SimPOVRay::write(const std::string& Fname) const
   /*!
     Write out all the system for povray
-    \param Fname :: Output file 
+    \param Fname :: Output file
   */
 {
   ELog::RegMethod RegA("SimPOVRay","write");
   ELog::EM<<"WRITE"<<ELog::endDiag;
-  std::ofstream OX(Fname.c_str()); 
+  std::ofstream OX(Fname.c_str());
   OX << "// POV-Ray model from CombLayer."<<std::endl;
   OX << "// This file contains only geomety." << std::endl;
   OX << "// It is supposed to be included from a .pov file with defined camera, light source and material textures" << std::endl;

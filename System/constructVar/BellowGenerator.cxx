@@ -166,6 +166,7 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 ///\cond TEMPLATE
 
   template void BellowGenerator::setCF<CF40>();
+  template void BellowGenerator::setCF<CF50>();
   template void BellowGenerator::setCF<CF63>();
   template void BellowGenerator::setCF<CF100>();
 
