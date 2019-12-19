@@ -132,8 +132,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   buildZone(*this,cellIndex),
 
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
-  gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
+  triggerPipe(new constructSystem::PipeTube(newName+"TriggerPipe")),
+  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
+  gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
@@ -242,7 +243,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
 
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
-  OR.addObject(gaugeA);
+  OR.addObject(gateTubeA);
+  OR.addObject(gateTubeAItem);
   OR.addObject(bellowA);
   OR.addObject(pipeA);
   OR.addObject(pumpM1);
@@ -855,18 +857,31 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
 
-  triggerPipe->setFront(*pipeInit,2);
+  // FAKE insertcell: required due to rotation ::
+  triggerPipe->addAllInsertCell(masterCell->getName());
+  triggerPipe->setPortRotation(3,Geometry::Vec3D(1,0,0));
   triggerPipe->createAll(System,*pipeInit,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
-  triggerPipe->insertInCell(System,outerCell);
 
-  gaugeA->setFront(*triggerPipe,2);
-  gaugeA->createAll(System,*triggerPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
-  gaugeA->insertInCell(System,outerCell);
+  const constructSystem::portItem& TPI=triggerPipe->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,TPI,TPI.getSideIndex("OuterPlate"));
+  triggerPipe->insertAllInCell(System,outerCell);
+
+  // FAKE insertcell: required
+  gateTubeA->addAllInsertCell(masterCell->getName());
+  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeA->createAll(System,TPI,TPI.getSideIndex("OuterPlate"));
+
+  const constructSystem::portItem& GPI1=gateTubeA->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,GPI1,GPI1.getSideIndex("OuterPlate"));
+  gateTubeA->insertAllInCell(System,outerCell);
+
+  gateTubeAItem->addInsertCell("Body",gateTubeA->getCell("Void"));
+  gateTubeAItem->setBladeCentre(*gateTubeA,0);
+  gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
   xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*gaugeA,"back",*bellowA);
+    (System,buildZone,masterCell,GPI1,"OuterPlate",*bellowA);
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
@@ -914,8 +929,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   cellIndex+=5;
   /////////////////////////////////////////
 
-
-  
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);
 

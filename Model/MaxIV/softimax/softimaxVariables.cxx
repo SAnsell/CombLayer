@@ -146,10 +146,13 @@ frontMaskVariables(FuncDataBase& Control,
 
   // dimensions are from softimax-description.djvu, page1
 
-  //FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0); 
-  //  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
-  //  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0); 
-
+  // there are 2 ways to set FM variables, via angles or via front/back/min gaps
+  // I have a drawing with gaps (softimax-description.djvu, page1), so I use the gap approach:
+  // via angles:
+  // FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0);
+  //  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);
+  //  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);
+  // via gaps:
   CollGen.setCF<CF100>();
   CollGen.setFrontGap(3.99,1.97); // dy,dz
   CollGen.setBackGap(0.71,0.71); // dy,dz
@@ -646,21 +649,36 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"InitBellow",0,11.0-1.4);
 
   // TODO:
-  // use PortTubeGenerator instead
   // and set FlangeLength to 1.27 cm (instead of 0.5)
-  Name=preName+"TriggerPipe";
-  CrossGen.setPlates(0.3,2.0,2.0);  // wall/Top/base ???
-  CrossGen.setPorts(-10.2,-10.2);     // len of ports - measured in the STEP file
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
 
-  CrossGen.setPorts(1,1);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,preName+"GaugeA",0.0,10.6,8.0);  // ystep/height/depth
-  Control.addVariable(preName+"GaugeAFlangeLength",0.1);
-  Control.addVariable(preName+"GaugeAFrontLength",3.7);
-  Control.addVariable(preName+"GaugeABackLength",3.7);
+  // will be rotated vertical
+  const std::string pipeName=preName+"TriggerPipe";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,40.0);
 
+  Control.addVariable(pipeName+"NPorts",2);   // beam ports
+  // const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pipeName+"Port0",Geometry::Vec3D(0,5.0,0),ZVec);
+  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,5.0,0),-ZVec);
+
+  // will be rotated vertical
+  const std::string gateAName=preName+"GateTubeA";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,gateAName,0.0,30.0);
+  Control.addVariable(gateAName+"NPorts",2);   // beam ports
+
+  PItemGen.setCF<setVariable::CF40>(3.45);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,gateAName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateAName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
+  FlangeGen.generateMount(Control,preName+"GateTubeAItem",0);  // in beam
 
   BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
@@ -670,7 +688,6 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,preName+"PipeA",0.0,10.9);
   Control.addVariable(preName+"PipeAWindowActive",0);
-
 
   // will be rotated vertical
   const std::string pumpName=preName+"PumpM1";
@@ -1216,7 +1233,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
   /// Parameters of R3FrontEndVariables:
-  // 25 =exitLeng :: last exit pipe length 
+  // 25 =exitLeng :: last exit pipe length
   setVariable::R3FrontEndVariables(Control,"SoftiMAXFrontBeam",25.0);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
