@@ -613,7 +613,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
 
-
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;

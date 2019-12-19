@@ -390,7 +390,6 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 void
 R3FrontEndVariables(FuncDataBase& Control,
 		    const std::string& frontKey,
-		    const double transLen,
 		    const double exitLen) 
 /*!
     Set the variables for the front end
@@ -420,7 +419,8 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
-  PipeGen.generatePipe(Control,frontKey+"TransPipe",0,transLen);
+  // placeholder length (100.0)
+  PipeGen.generatePipe(Control,frontKey+"TransPipe",0,100.0); 
   
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");

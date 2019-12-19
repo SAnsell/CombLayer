@@ -49,7 +49,7 @@ namespace setVariable
   void FORMAXvariables(FuncDataBase&);
 
   void R3FrontEndVariables(FuncDataBase&,const std::string&,
-			   const double,const double);
+			   const double);
     
 }
 

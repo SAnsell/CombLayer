@@ -68,6 +68,7 @@
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
 #include "RingDoorGenerator.h"
@@ -103,15 +104,14 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("formaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(400.0);
+  const double undulatorLen(400.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorLen/2.0,undulatorLen);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
   Control.addVariable(undKey+"UPipeFeThick",0.2);
 
   // undulator  
@@ -134,7 +134,6 @@ undulatorVariables(FuncDataBase& Control,
   return;
 }
 
-  
 void
 frontMaskVariables(FuncDataBase& Control,
 		   const std::string& preName)
@@ -144,30 +143,38 @@ frontMaskVariables(FuncDataBase& Control,
     \param preName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","frontMaskVariables");
+  ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
-  setVariable::CollGenerator CollGen;
-    
-  CollGen.setFrontGap(2.62,1.86);       //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
-  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+  setVariable::SqrFMaskGenerator FMaskGen;
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
+  const double FM1dist(1172.60);
+  const double FM2dist(1624.2);
+  
+    // collimator block
+  FMaskGen.setCF<CF100>();
+  FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
+  //  FMaskGen.setBackGap(0.71,0.71);
+  // Approximated to get 1mrad x 1mrad
+  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
+  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);     // Approximated to get 1mrad x 1mrad  
+  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,15.0);
 
-  // approx for 300uRad x 300uRad
-  CollGen.setMinAngleSize(32.0,1600.0,300.0,300.0);
-  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
+  // Approximated to get 100urad x 100urad @16m
+  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
+  // Approximated to get 150urad x 150urad @16m
+  FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,40.0);
 
-  // FM 3:
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
 
-  // approx for 100uRad x 100uRad
-  CollGen.setMinAngleSize(12.0,1600.0,100.0,100.0);
-  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  // NOT PRESENT ::: 
+  // FMaskGen.setFrontGap(0.84,0.582);
+  // FMaskGen.setBackGap(0.750,0.357);
+
+  // FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
+  // FMaskGen.generateColl(Control,preName+"CollC",17/2.0,17.0);
+
 
   return;
 }
@@ -787,21 +794,21 @@ FORMAXvariables(FuncDataBase& Control)
   
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
-  PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Aluminium");
 
   const std::string frontKey("FormaxFrontBeam");
 
   formaxVar::undulatorVariables(Control,frontKey);
-  // ystep / dipole pipe / exit pipe  :: ystep=310.0
-  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",534.0,40.0);
+  // exit pipe
+  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",25.0);
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
     
   formaxVar::wallVariables(Control,"FormaxWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"FormaxJoinPipe",0,125.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipe",0,150.0);
 
   formaxVar::opticsHutVariables(Control,"FormaxOpticsHut");
   formaxVar::opticsVariables(Control,"Formax");

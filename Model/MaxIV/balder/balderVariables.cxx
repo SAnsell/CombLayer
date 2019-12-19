@@ -788,7 +788,7 @@ BALDERvariables(FuncDataBase& Control)
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep [0] / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables(Control,"BalderFrontBeam",15.0,25.0);
+  setVariable::R3FrontEndVariables(Control,"BalderFrontBeam",25.0);
   
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   balderVar::wallVariables(Control,"BalderWallLead");

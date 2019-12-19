@@ -102,15 +102,15 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(210.0);
+  const double undulatorLen(215.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorLen/2.0,undulatorLen);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
+  //  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
   Control.addVariable(undKey+"UPipeFeThick",0.2);
 
   // undulator I Vacuum
@@ -162,29 +162,31 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","frontMaskVariables");
 
+  const double FM1dist(1172.60);
+  const double FM2dist(1624.2);
+  
   setVariable::SqrFMaskGenerator FMaskGen;
 
-  FMaskGen.setCF<CF63>();
-  FMaskGen.setBFlangeCF<CF40>();
-  FMaskGen.setFrontAngleSize(1033.0,1300.0,1300.0);  // Approximated to get 1mrad x 1mrad
-  FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad  
-  FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
-  FMaskGen.generateColl(Control,preName+"CollA",0.0,15);
+  FMaskGen.setCF<CF100>();
+  // Approximated to get 1mrad x 1mrad  
+  FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0); 
+  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
+  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0); 
+  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,15);
+
 
   // approx for 100uRad x 100uRad
   //  CollGen.setMinSize(32.0,0.680,0.358);
-  FMaskGen.setFrontAngleSize(1600.0,200.0,200.0); 
-  FMaskGen.setMinAngleSize(32.0,1600.0, 100.0, 100.0 );
-  FMaskGen.setBackAngleSize(1600.0, 150.0,150.0 );   
-  FMaskGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setFrontAngleSize(FM2dist,200.0,200.0); 
+  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
 
   // approx for 40uRad x 40uRad
-  FMaskGen.setFrontAngleSize(1600.0,80.0,80.0);  
-  FMaskGen.setMinAngleSize(12.0,1600.0, 40.0, 40.0 );
-  FMaskGen.setBackAngleSize(1600.0, 60.0,60.0 );   
-  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
-
-
+  FMaskGen.setFrontAngleSize(FM2dist,80.0,80.0);  
+  FMaskGen.setMinAngleSize(12.0,FM2dist, 40.0, 40.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 60.0,60.0 );   
+  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
 }
@@ -1075,19 +1077,19 @@ COSAXSvariables(FuncDataBase& Control)
   setVariable::LeadPipeGenerator LeadPipeGen;
   setVariable::PipeShieldGenerator ShieldGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();
 
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
 
-  // ystep (310.0)/ dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam",751.0,37.0);
+  // ystep (310.0)/ trans/ exit pipe
+  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam",25.0);
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
     
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,126.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,150.0);
   
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
