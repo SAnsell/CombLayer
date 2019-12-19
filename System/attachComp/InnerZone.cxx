@@ -104,7 +104,8 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 
 InnerZone::InnerZone(const InnerZone& A) : 
   FCName(A.FCName),cellIndex(A.cellIndex),FCPtr(A.FCPtr),
-  CellPtr(A.CellPtr),surroundHR(A.surroundHR),frontHR(A.frontHR),
+  CellPtr(A.CellPtr),extraHR(A.extraHR),
+  surroundHR(A.surroundHR),frontHR(A.frontHR),
   backHR(A.backHR),middleHR(A.middleHR),frontDivider(A.frontDivider),
   voidMat(A.voidMat)
   /*!
@@ -125,6 +126,7 @@ InnerZone::operator=(const InnerZone& A)
   if (this!=&A)
     {
       FCName=A.FCName;
+      extraHR=A.extraHR;
       surroundHR=A.surroundHR;
       frontHR=A.frontHR;
       backHR=A.backHR;
@@ -152,6 +154,17 @@ InnerZone::buildMiddleZone(const int flag) const
   return BUnit;
 }
   
+void
+InnerZone::setExtra()
+  /*!
+    Set the capture/surround rule
+    \param HR :: Surround rule [inward]
+  */
+{
+  extraHR=frontHR;
+  return;
+}
+
 void
 InnerZone::setSurround(const HeadRule& HR)
   /*!
@@ -321,7 +334,7 @@ InnerZone::triVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+CutA.complement().display();
+    extraHR.display()+FDivider.display()+CutA.complement().display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=surroundHR.display()+CutA.display()+CutB.display();
@@ -361,7 +374,7 @@ InnerZone::cutVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+CutA.complement().display();
+    extraHR.display()+FDivider.display()+CutA.complement().display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   FDivider=CutB;
   FDivider.makeComplement();
@@ -433,7 +446,7 @@ InnerZone::singleVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+CutA.complement().display();
+    extraHR.display()+FDivider.display()+CutA.complement().display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   FDivider=CutA;
 
@@ -491,7 +504,7 @@ InnerZone::createOuterVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+BDivider.display();
+    extraHR.display()+FDivider.display()+BDivider.display();
 
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   FDivider=BDivider;
@@ -667,7 +680,8 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   std::string Out;
-  Out+=surroundHR.display() + backHR.display()+ frontHR.display();
+  Out+=extraHR.display()+surroundHR.display()
+    + backHR.display()+ frontHR.display();
   
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
   masterCell= System.findObject(cellIndex-1);

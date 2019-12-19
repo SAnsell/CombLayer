@@ -81,9 +81,6 @@
 #include "R3FrontEnd.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
-
-// #include "ConnectZone.h"
-// #include "PipeShield.h"
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3Beamline.h"

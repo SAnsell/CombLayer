@@ -56,6 +56,7 @@ class InnerZone
   attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp for object
   attachSystem::CellMap* CellPtr;      ///< Pointer to cell map 
 
+  HeadRule extraHR;
   HeadRule surroundHR;               ///< Rule of surround
   HeadRule frontHR;                  ///< Rule of front
   HeadRule backHR;                   ///< Rule of back
@@ -69,12 +70,13 @@ class InnerZone
   
  public:
 
-
   InnerZone(attachSystem::FixedComp&,int&);
   InnerZone(const InnerZone&);
   InnerZone& operator=(const InnerZone&);
   ~InnerZone() {}         ///< Destructor
 
+  void setExtra();
+  void removeExtra() { extraHR.reset(); };
   void setSurround(const HeadRule&);
   void addMiddleToSurround(const int);
   void setFront(const HeadRule&);

@@ -729,22 +729,21 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
-
   System.removeCell(deadCell);
 
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("PipeA",System,cellA);
-  splitter->insertInCell("PipeB",System,cellA);
 
   splitter->insertInCell("Flange",System,cellB);
-  splitter->insertInCell("PipeA",System,cellB);
   splitter->insertInCell("PipeB",System,cellB);
   ////////////////////////////////////////////////////////////////////////////////////
 
+  leftZone.setExtra();
   xrayConstruct::constructUnit
     (System,leftZone,masterCellA,*splitter,"back",*bellowAA);
+  leftZone.removeExtra();
 
-  bellowBA->setFront(*splitter,3);
+    bellowBA->setFront(*splitter,3);
   bellowBA->createAll(System,*splitter,3);
   int outerCell=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBA,2);
   bellowBA->insertInCell(System,outerCell);
@@ -1045,157 +1044,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCellB(0);
   buildSplitter(System,masterCell,masterCellB,*M3STXMTube,2);
 
-  ELog::EM<<"ASDFSAF "<<ELog::endDiag;
-  lastComp=bellowA; //gateJ;
-  return;
-
-
-  // filterBoxA->addAllInsertCell(masterCell->getName());
-  // filterBoxA->setFront(*bremCollA,2);
-  // filterBoxA->createAll(System,*bremCollA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBoxA,2);
-  // filterBoxA->insertAllInCell(System,outerCell);
-  // filterBoxA->splitObject(System,1001,outerCell,
-  // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  // cellIndex++;
-  // bremCollA->createExtension(System,filterBoxA->getCell("FrontPortVoid"));
-
-  // const constructSystem::portItem& PI=filterBoxA->getPort(3);
-  // filterStick->addInsertCell("Body",PI.getCell("Void"));
-  // filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
-  // filterStick->setBladeCentre(PI,0);
-  // filterStick->createAll(System,PI,PI.getSideIndex("-InnerPlate"));
-
-
-
-  // // fake insert
-  // screenPipeA->addAllInsertCell(masterCell->getName());
-  // screenPipeA->setFront(*gateB,2);
-  // screenPipeA->createAll(System,*gateB,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*screenPipeA,2);
-  // screenPipeA->insertAllInCell(System,outerCell);
-
-  // // fake insert
-  // screenPipeB->addAllInsertCell(masterCell->getName());
-  // screenPipeB->setFront(*screenPipeA,2);
-  // screenPipeB->createAll(System,*screenPipeA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*screenPipeB,2);
-  // screenPipeB->insertAllInCell(System,outerCell);
-  // screenPipeB->intersectPorts(System,0,1);
-
-
-  // diffPumpA->setCutSurf("front",*adaptorPlateA,2);
-  // diffPumpA->createAll(System,*adaptorPlateA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPumpA,2);
-  // diffPumpA->insertInCell(System,outerCell);
-
-
-  // // primeJawBox->setFront(*screenPipeB,2);
-  // // primeJawBox->createAll(System,*screenPipeB,2);
-  // // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*primeJawBox,2);
-  // // primeJawBox->insertInCell(System,outerCell);
-
-
-
-  // // fake insert
-  // monoBox->addInsertCell(masterCell->getName());
-  // monoBox->setFront(*gateC,2);
-  // monoBox->createAll(System,*gateC,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBox,2);
-  // monoBox->insertInCell(System,outerCell);
-  // monoBox->splitObject(System,2001,outerCell,
-  // 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  // cellIndex++;
-
-  // monoXtal->addInsertCell(monoBox->getCell("Void"));
-  // monoXtal->createAll(System,*monoBox,0);
-
-
-  // // fake insert
-  // diagBoxA->addAllInsertCell(masterCell->getName());
-  // diagBoxA->setFront(*bellowD,2);
-  // diagBoxA->createAll(System,*bellowD,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagBoxA,2);
-  // diagBoxA->insertAllInCell(System,outerCell);
-
-
-  // diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
-  //    			   diagBoxA->getCell("Void"),
-  //  			   {0,1, 1,2});
-  // diagBoxA->splitObject(System,-11,outerCell);
-  // diagBoxA->splitObject(System,12,outerCell);
-  // diagBoxA->splitObject(System,-2001,outerCell);
-  // diagBoxA->splitObject(System,-2002,outerCell);
-
-  // //  diagBoxA->intersectPorts(System,3,6);
-  // diagBoxA->intersectVoidPorts(System,6,3);
-  // cellIndex+=4;
-
-  // bremMonoCollA->addInsertCell("Flange",diagBoxA->getCell("Void",0));
-  // bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",0));
-  // bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",1));
-  // bremMonoCollA->setCutSurf("front",diagBoxA->getSurf("VoidFront"));
-  // bremMonoCollA->setCutSurf("wallRadius",diagBoxA->getSurf("VoidCyl"));
-  // bremMonoCollA->setInOrg(monoXtal->getLinkPt(2));
-  // bremMonoCollA->createAll(System,*diagBoxA,0);
-
-  // // ELog::EM<<"Early return here"<<ELog::endDiag;
-  // // setCell("LastVoid",masterCell->getName());
-  // // lastComp=gateJ;
-  // // return;
-
-
-
-
-  // mirrorBoxA->setFront(*gateE,2);
-  // mirrorBoxA->createAll(System,*gateE,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxA,2);
-  // mirrorBoxA->insertInCell(System,outerCell);
-
-  // mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
-  // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-
-  // mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  // mirrorFrontA->createAll(System,*mirrorBoxA,0);
-
-  // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  // mirrorBackA->createAll(System,*mirrorBoxA,0);
-
-  // constructDiag(System,&masterCell,*diagBoxB,jawCompB,*bellowF,2);
-
-  // gateG->setFront(*bellowG,2);
-  // gateG->createAll(System,*bellowG,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateG,2);
-  // gateG->insertInCell(System,outerCell);
-
-  // mirrorBoxB->setFront(*gateG,2);
-  // mirrorBoxB->createAll(System,*gateG,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxB,2);
-  // mirrorBoxB->insertInCell(System,outerCell);
-
-  // mirrorBoxB->splitObject(System,3001,mirrorBoxB->getCell("Void"),
-  // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-
-
-  // mirrorFrontB->addInsertCell(mirrorBoxB->getCell("Void",0));
-  // mirrorFrontB->createAll(System,*mirrorBoxB,0);
-  // mirrorBackB->addInsertCell(mirrorBoxB->getCell("Void",1));
-  // mirrorBackB->createAll(System,*mirrorBoxB,0);
-
-  // gateH->setFront(*mirrorBoxB,2);
-  // gateH->createAll(System,*mirrorBoxB,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateH,2);
-  // gateH->insertInCell(System,outerCell);
-
-  // bellowH->setFront(*gateH,2);
-  // bellowH->createAll(System,*gateH,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
-  // bellowH->insertInCell(System,outerCell);
-
-  // constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
-
-  // constructMonoShutter(System,&masterCell,*bellowI,2);
-
   setCell("LastVoid",masterCell->getName());
   lastComp=bellowA; //gateJ;
   return;
@@ -1203,9 +1051,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
 void
 softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
-					  const int leftCell,
-					  const int rightCell,
-					  const std::vector<int>& hutCells)
+				       const int leftCell,
+				       const int rightCell,
+				       const std::vector<int>& hutCells)
   /*!
     Construct outgoing tracks
     \param System :: Simulation
@@ -1223,14 +1071,6 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   joinPipeBB->addInsertCell(hutCells);
   joinPipeBB->addInsertCell(rightCell);
   joinPipeBB->createAll(System,*bremCollBA,2);
-
-  // screenB->addAllInsertCell(leftCell);
-  // screenB->addAllInsertCell(rightCell);
-
-  // screenB->setCutSurf("inner",joinPipeAB->getSurfRule("OuterRadius"));
-  // screenB->setCutSurf("innerTwo",joinPipeBB->getSurfRule("OuterRadius"));
-
-  // screenB->createAll(System,*joinPipeAB,0);
 
   return;
 }
