@@ -168,19 +168,18 @@ BALDER::build(Simulation& System,
   const size_t prevIndex=(NS+PIndex-1) % NS;
   
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
-  
+ 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
-
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
-
+  
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+  
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));

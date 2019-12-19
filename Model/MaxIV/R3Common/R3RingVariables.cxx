@@ -388,8 +388,8 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
 
 void
-R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
-		    const double yStep,
+R3FrontEndVariables(FuncDataBase& Control,
+		    const std::string& frontKey,
 		    const double transLen,
 		    const double exitLen) 
 /*!
@@ -410,11 +410,13 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
-    
-  Control.addVariable(frontKey+"YStep",yStep);  
+
+  // Master off set from division -- 
+  Control.addVariable(frontKey+"YStep",524.4);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
-  
-  Control.addVariable(frontKey+"FrontOffset",0.0);  
+
+  // BuildZone offset
+  Control.addVariable(frontKey+"FrontOffset",-250.0);  
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
@@ -429,7 +431,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 
   PipeGen.setCF<CF40>();
   PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,870.0); 
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,800.00); 
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

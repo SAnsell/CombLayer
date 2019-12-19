@@ -97,9 +97,9 @@ wigglerVariables(FuncDataBase& Control,
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
-  // ystep/width/height/depth/length 
+  // ystep/width/height/depth/length  (yste =498)
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      498.0,30.0,15.0,15.0,210.0);
+		      0.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
   Control.addVariable(frontKey+"WigglerYStep",0.0);
@@ -150,18 +150,21 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
   setVariable::SqrFMaskGenerator FMaskGen;
   
+  const double FM1dist(1172.60);
+  const double FM2dist(1624.2);
+
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
   FMaskGen.setBackGap(1.54,1.42);
-  FMaskGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad 
-  FMaskGen.generateColl(Control,preName+"CollA",0.0,35.0);
+  FMaskGen.setMinAngleSize(29.0,FM1dist,1000.0,1000.0);  // Approximated to get 1mrad 
+  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,35.0);
 
 
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
   // approx for 800uRad x 200uRad  
-  FMaskGen.setMinAngleSize(32.0,1600.0,800.0,200.0);
-  FMaskGen.generateColl(Control,preName+"CollB",0.0,34.2);
+  FMaskGen.setMinAngleSize(29.0,FM2dist,800.0,200.0);
+  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
 
   // FM 3:
   FMaskGen.setMain(1.20,"Copper","Void");
@@ -169,11 +172,10 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackGap(0.750,0.357);
   // approx for 100uRad x 100uRad
   FMaskGen.setMinAngleSize(12.0,1600.0, 400.0, 100.0);
-  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
 }
-
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -785,16 +787,15 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
-  // ystep / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",0.0,15.0,25.0);
+  // ystep [0] / dipole pipe / exit pipe
+  setVariable::R3FrontEndVariables(Control,"BalderFrontBeam",15.0,25.0);
   
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,125.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,130.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

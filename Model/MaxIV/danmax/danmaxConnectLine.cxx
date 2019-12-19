@@ -157,7 +157,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->setInsertCell(getInsertCells());
   connectShield->setFront(*this);
   connectShield->setBack(*this);
-  connectShield->createAll(System,FC,sideName);
+  connectShield->createAll(System,beamFC,beamName);
   
   buildZone.setSurround(connectShield->getInnerVoid());
 
@@ -170,7 +170,6 @@ danmaxConnectLine::buildObjects(Simulation& System,
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,beamFC,beamName,*pipeA);
 
-  
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*pipeA,"back",*bellowA);
 

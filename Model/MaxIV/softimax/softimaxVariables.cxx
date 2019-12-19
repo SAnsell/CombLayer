@@ -36,16 +36,11 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-// #include "GTKreport.h"
 #include "OutputLog.h"
-// #include "support.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-// #include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -78,11 +73,6 @@
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "TwinPipeGenerator.h"
-
-// #include "PreDipoleGenerator.h"
-// #include "DipoleChamberGenerator.h"
-
-// #include "R3ChokeChamberGenerator.h"
 #include "DiffPumpGenerator.h"
 
 namespace setVariable
@@ -1569,9 +1559,8 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
-  // ystep / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",141.0,724.0,36);
+  // ystep / dipole pipe / exit pipe    (ystep=141)
+  setVariable::R3FrontEndVariables(Control,"SoftiMAXFrontBeam",724.0,36);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");

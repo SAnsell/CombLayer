@@ -94,7 +94,6 @@
 #include "CrossPipe.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
-#include "SquareFMask.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
 #include "HeatDump.h"

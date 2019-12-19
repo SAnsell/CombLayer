@@ -129,9 +129,9 @@ balderFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 balderFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& preFC,
+			       const long int preSideIndex)
   /*!
     Build all the objects relative to the main FC
     point.

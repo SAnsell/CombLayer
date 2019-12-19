@@ -63,7 +63,7 @@ namespace setVariable
 {
 
 MagnetM1Generator::MagnetM1Generator() :
-  blockYStep(10.5),length(220.0),
+  yOffset(234.6),blockYStep(10.5),length(220.0),
   outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
   baseVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")
@@ -89,6 +89,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
+  Control.addVariable(keyName+"YStep",yOffset-blockYStep);
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
 

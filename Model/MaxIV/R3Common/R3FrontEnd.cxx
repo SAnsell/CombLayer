@@ -559,15 +559,20 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
+					      
+  //  xrayConstruct::constructUnit
+  //    (System,buildZone,masterCell,undulatorFC,"back",*transPipe);
   
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,undulatorFC,"back",*transPipe);
+  magBlockM1->createAll(System,*this,0);
+  transPipe->setCutSurf("front",undulatorFC,2);
+  transPipe->setCutSurf("back",*magBlockM1,1);
+  transPipe->createAll(System,undulatorFC,2);
 
-  magBlockM1->setCutSurf("front",*transPipe,2);
-  magBlockM1->createAll(System,*transPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*transPipe,2);
+  transPipe->insertInCell(System,outerCell);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
-
+  
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
   epSeparator->createAll(System,*magBlockM1,2);
@@ -591,45 +596,51 @@ R3FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-electron"));
 
+  // FM1 Built relateive to MASTER coordinate
+  collA->createAll(System,*this,0);
+
+  bellowA->createAll(System,*collA,1);  
   dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
+  dipolePipe->setBack(*bellowA,2);
   dipolePipe->createAll(System,*chokeChamber,
 			chokeChamber->getSideIndex("photon"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
+  bellowA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
+  collA->insertInCell(System,outerCell);
+
 
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;
       return;
     }
-      lastComp=dipolePipe;
-      return;
-
-  bellowA->createAll(System,*dipolePipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
-
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*bellowA,"back",*collA);
-
+      
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*collA,"back",*bellowB);
 
-  xrayConstruct::constructUnit
-    (System,buildZone,masterCell,*bellowB,"back",*collABPipe);
+  // FM2 Built relateive to MASTER coordinate
 
+  collB->createAll(System,*this,0);    
+  bellowC->createAll(System,*collB,1);
 
-  bellowC->createAll(System,*collABPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
+  collABPipe->setFront(*bellowB,2);
+  collABPipe->setBack(*bellowC,2);
+  collABPipe->createAll(System,*bellowB,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collABPipe,2);
+  collABPipe->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,1);
   bellowC->insertInCell(System,outerCell);
 
-  collB->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collB,2);
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
-
-
   if (collFM3Active)
     {
       collC->createAll(System,*collB,2);
@@ -638,7 +649,6 @@ R3FrontEnd::buildObjects(Simulation& System)
       linkFC=collC;
     }
 
-  
   collExitPipe->setFront(*linkFC,2);
   collExitPipe->createAll(System,*linkFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);

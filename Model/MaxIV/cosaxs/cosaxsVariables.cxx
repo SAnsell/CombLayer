@@ -1079,9 +1079,8 @@ COSAXSvariables(FuncDataBase& Control)
 
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
 
-  // ystep / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables
-    (Control,"CosaxsFrontBeam",310.0,751.0,37.0);
+  // ystep (310.0)/ dipole pipe / exit pipe
+  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam",751.0,37.0);
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
     
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");

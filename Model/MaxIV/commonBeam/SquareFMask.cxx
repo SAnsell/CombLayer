@@ -144,24 +144,6 @@ SquareFMask::populate(const FuncDataBase& Control)
 }
 
 void
-SquareFMask::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Create the unit vectors: Note only to construct front/back surf
-    \param FC :: Centre point
-    \param sideIndex :: Side index
-  */
-{
-  ELog::RegMethod RegA("SquareFMask","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  Origin+=Y*(length/2.0); 
-  return;
-}
-
-
-void
 SquareFMask::createSurfaces()
   /*!
     Create All the surfaces

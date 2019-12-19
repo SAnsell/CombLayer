@@ -238,7 +238,7 @@ CollGenerator::generateColl(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("CollGenerator","generateColl");
-  
+
   Control.addVariable(keyName+"YStep",yStep);
 
   Control.addVariable(keyName+"Radius",radius);

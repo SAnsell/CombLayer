@@ -39,20 +39,20 @@ class MagnetM1Generator
 {
  private:
 
-  double blockYStep;            ///< Step forward
-  double length;                ///< frame length
+  double yOffset;                ///< Offset from straight centre
+  double blockYStep;             ///< Step forward
+  double length;                 ///< frame length
 
-  double outerVoid;             ///< Size of outer void gap
-  double ringVoid;             ///< Size of outer void gap
-  double topVoid;             ///< Size of outer void gap
-  double baseVoid;             ///< Size of outer void gap
+  double outerVoid;              ///< Size of outer void gap
+  double ringVoid;               ///< Size of outer void gap
+  double topVoid;                ///< Size of outer void gap
+  double baseVoid;               ///< Size of outer void gap
 
   double baseThick;              ///< base thickness
   double wallThick;              ///< side wall thickness
 
-
-  std::string voidMat;                    ///< void material
-  std::string wallMat;                    ///< wall material
+  std::string voidMat;           ///< void material
+  std::string wallMat;           ///< wall material
 
  public:
 

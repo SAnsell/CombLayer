@@ -161,22 +161,6 @@ MagnetM1::populate(const FuncDataBase& Control)
 }
 
 void
-MagnetM1::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("MagnetM1","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 MagnetM1::createSurfaces()
   /*!
     Create All the surfaces
@@ -312,8 +296,7 @@ MagnetM1::createAll(Simulation& System,
   if (isActive("front"))
     preDipole->copyCutSurf("front",*this,"front");
   
-  //  preDipole->addInsertCell(getCells("Void"));
-  preDipole->createAll(System,FC,sideIndex);
+  preDipole->createAll(System,*this,0);
 
   epCombine->addInsertCell(getCells("Void"));  // needed ????
   epCombine->setEPOriginPair(*preDipole,"Photon","Electron");

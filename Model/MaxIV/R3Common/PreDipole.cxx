@@ -376,7 +376,7 @@ PreDipole::createLinks()
 {
   ELog::RegMethod RegA("PreDipole","createLinks");
 
-  ExternalCut::createLink("front",*this,0x5,Origin,Y);
+  ExternalCut::createLink("front",*this,0,Origin,Y);
 
   // centreline 
   setConnect(1,Origin+Y*length,Y);

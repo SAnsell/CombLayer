@@ -115,15 +115,15 @@ undulatorVariables(FuncDataBase& Control,
 
   setVariable::PortTubeGenerator PTubeGen;
 
-  Control.addVariable(frontKey+"FrontOffset",10.0);
+  Control.addVariable(frontKey+"FrontOffset",-200.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipe(30.0,1.0);
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setPortLength(15.0,15.0);
 
-  // ystep/length ystep == -90cm
-  PTubeGen.generateTube(Control,frontKey+"UndulatorTube",303.0,310.0);
+  // ystep/length ystep == 303
+  PTubeGen.generateTube(Control,frontKey+"UndulatorTube",-150.0,310.0);
   Control.addVariable(frontKey+"UndulatorTubeNPorts",0);
   
   // Undulator
@@ -176,31 +176,35 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
-  setVariable::CollGenerator CollGen;
   setVariable::SqrFMaskGenerator FMaskGen;
 
+  const double FM1dist(1172.60);
+  const double FM2dist(1624.2);
+  
     // collimator block
   FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(3.99,1.97);  //1033.8
-  FMaskGen.setBackGap(0.71,0.71);
-  FMaskGen.setMinAngleSize(10.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
-  FMaskGen.setBackAngleSize(1033.0,1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
-  
-  FMaskGen.generateColl(Control,preName+"CollA",0.0,15.0);
+  FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
+  //  FMaskGen.setBackGap(0.71,0.71);
+  // Approximated to get 1mrad x 1mrad
+  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0); 
+  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);     // Approximated to get 1mrad x 1mrad  
+  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,15.0);
 
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
   // Approximated to get 100urad x 100urad @16m
-  FMaskGen.setMinAngleSize(32.0,1600.0, 100.0,100.0 );
+  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
   // Approximated to get 150urad x 150urad @16m
-  FMaskGen.setBackAngleSize(1600.0, 150.0,150.0 );   
-  FMaskGen.generateColl(Control,preName+"CollB",0.0,40.0);
+  FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );   
+  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,40.0);
 
-  FMaskGen.setFrontGap(0.84,0.582);
-  FMaskGen.setBackGap(0.750,0.357);
 
-  FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
-  FMaskGen.generateColl(Control,preName+"CollC",0.0,17.0);
+  // NOT PRESENT ::: 
+  // FMaskGen.setFrontGap(0.84,0.582);
+  // FMaskGen.setBackGap(0.750,0.357);
+
+  // FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
+  // FMaskGen.generateColl(Control,preName+"CollC",17/2.0,17.0);
 
 
   return;
@@ -1032,10 +1036,9 @@ DANMAXvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   
-  setVariable::R3FrontEndVariables
-    (Control,"DanmaxFrontBeam",100.0,15,25.0);
+  setVariable::R3FrontEndVariables(Control,"DanmaxFrontBeam",15,25.0);
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
   Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
@@ -1045,7 +1048,7 @@ DANMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,127.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,150.0);
 
   danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut",beamXStep);
   danmaxVar::opticsVariables(Control,"Danmax");

@@ -793,9 +793,8 @@ FORMAXvariables(FuncDataBase& Control)
   const std::string frontKey("FormaxFrontBeam");
 
   formaxVar::undulatorVariables(Control,frontKey);
-  // ystep / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables
-    (Control,"FormaxFrontBeam",310.0,534.0,40.0);
+  // ystep / dipole pipe / exit pipe  :: ystep=310.0
+  setVariable::R3FrontEndVariables(Control,"FormaxFrontBeam",534.0,40.0);
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
     
   formaxVar::wallVariables(Control,"FormaxWallLead");
