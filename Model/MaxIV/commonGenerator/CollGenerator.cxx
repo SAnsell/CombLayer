@@ -143,7 +143,7 @@ CollGenerator::setMinAngleSize(const double L,
    */
 {
   minLength=L;
-  minWidth= 2.0*Dist*tan(1e-6*angX/2.0);
+  minWidth = 2.0*Dist*tan(1e-6*angX/2.0);
   minHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
   return;
 }
