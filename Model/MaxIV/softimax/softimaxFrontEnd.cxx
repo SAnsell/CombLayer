@@ -20,30 +20,25 @@
  *
  ****************************************************************************/
 #include <fstream>
-// #include <iomanip>
-// #include <iostream>
+#include <iomanip>
+#include <iostream>
 #include <sstream>
-// #include <cmath>
-// #include <complex>
-// #include <list>
+#include <cmath>
+#include <complex>
+#include <list>
 #include <vector>
 #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <iterator>
+#include <string>
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 // #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-// #include "GTKreport.h"
 #include "OutputLog.h"
-// #include "BaseVisit.h"
-// #include "BaseModVisit.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
 #include "Vec3D.h"
 // #include "inputParam.h"
 // #include "Surface.h"
@@ -60,10 +55,7 @@
 // #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-// #include "FixedGroup.h"
 #include "FixedOffset.h"
-// #include "FixedRotate.h"
-// #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -73,28 +65,6 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-// #include "World.h"
-// #include "AttachSupport.h"
-// #include "generateSurf.h"
-// #include "ModelSupport.h"
-
-// #include "VacuumPipe.h"
-// #include "insertObject.h"
-// #include "insertCylinder.h"
-// #include "SplitFlangePipe.h"
-// #include "Bellows.h"
-// #include "LCollimator.h"
-// #include "GateValveCube.h"
-// #include "OffsetFlangePipe.h"
-// #include "VacuumBox.h"
-// #include "portItem.h"
-// #include "PipeTube.h"
-// #include "PortTube.h"
-// #include "CrossPipe.h"
-// #include "Wiggler.h"
-// #include "SqrCollimator.h"
-// #include "BeamMount.h"
-// #include "HeatDump.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
@@ -163,13 +133,17 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
-  undulatorPipe->insertInCell("FFlange",System,outerCell);
-  undulatorPipe->insertInCell("BFlange",System,outerCell);
-  undulatorPipe->insertInCell("Pipe",System,outerCell);
 
+  undulator->setCutSurf("front",*undulatorPipe,"-front");
+  undulator->setCutSurf("back",*undulatorPipe,"-back");
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
+  
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
+  undulatorPipe->insertInCell("FFlange",System,undulator->getCell("FrontVoid"));
+  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("FrontVoid"));
+  undulatorPipe->insertInCell("BFlange",System,undulator->getCell("BackVoid"));
+  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("BackVoid"));
 
   ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
   return *undulatorPipe;

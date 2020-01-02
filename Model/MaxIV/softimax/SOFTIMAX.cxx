@@ -77,7 +77,6 @@
 #include "VacuumPipe.h"
 #include "balderOpticsHutch.h"
 #include "JawFlange.h"
-// #include "FlangeMount.h"
 #include "R3FrontEnd.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
@@ -139,39 +138,39 @@ SOFTIMAX::build(Simulation& System,
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
-    frontBeam->deactivateFM3();
-    frontBeam->setStopPoint(stopPoint);
-    frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
-
-    frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
-    frontBeam->createAll(System,FCOrigin,sideIndex);
-
-    wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
-    wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-    wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
-    wallLead->createAll(System,FCOrigin,sideIndex);
-
-    if (stopPoint=="frontEnd" || stopPoint=="Dipole"
-	|| stopPoint=="FM1" || stopPoint=="FM2")
-      return;
-
-    opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-    opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
-
-    opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-    opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-    opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-    opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-    opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-    // Ugly HACK to get the two objects to merge
-    r3Ring->insertComponent
-      (System,"OuterFlat",SIndex,
-       *opticsHut,opticsHut->getSideIndex("frontCut"));
-
+  frontBeam->deactivateFM3();
+  frontBeam->setStopPoint(stopPoint);
+  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+  
+  frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->createAll(System,FCOrigin,sideIndex);
+  return;
+  wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+  wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+  wallLead->createAll(System,FCOrigin,sideIndex);
+  
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+      || stopPoint=="FM1" || stopPoint=="FM2")
+    return;
+  
+  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
+  
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
+  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  
+  // Ugly HACK to get the two objects to merge
+  r3Ring->insertComponent
+    (System,"OuterFlat",SIndex,
+     *opticsHut,opticsHut->getSideIndex("frontCut"));
+  
   // Inner space
-
+  
   if (stopPoint=="opticsHut") return;
 
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
