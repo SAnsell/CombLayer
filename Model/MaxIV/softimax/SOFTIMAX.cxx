@@ -19,53 +19,36 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   *
   ****************************************************************************/
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <sstream>
-// #include <cmath>
-// #include <complex>
-// #include <list>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+ #include <list>
 #include <vector>
 #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <iterator>
+#include <string>
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
-// #include "Exception.h"
-// #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
+#include "FileReport.h"
 #include "RegMethod.h"
-// #include "GTKreport.h"
-// #include "OutputLog.h"
-// #include "BaseVisit.h"
-// #include "BaseModVisit.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
+#include "OutputLog.h"
 #include "Vec3D.h"
-// #include "inputParam.h"
-// #include "Surface.h"
-// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-// #include "Rules.h"
-// #include "Code.h"
-// #include "varList.h"
-// #include "FuncDataBase.h"
 #include "HeadRule.h"
-// #include "Object.h"
-// #include "groupRange.h"
-// #include "objectGroups.h"
-// #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-// #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -88,35 +71,35 @@
 namespace xraySystem
 {
 
-  SOFTIMAX::SOFTIMAX(const std::string& KN) :
-    R3Beamline("Balder",KN),
-    frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
-    wallLead(new WallLead(newName+"WallLead")),
+SOFTIMAX::SOFTIMAX(const std::string& KN) :
+  R3Beamline("Balder",KN),
+  frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead")),
     opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-    joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-    opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
-    /*!
+  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+  opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
+  /*!
       Constructor
       \param KN :: Keyname
-    */
-  {
-    ModelSupport::objectRegister& OR=
-      ModelSupport::objectRegister::Instance();
-
-    OR.addObject(frontBeam);
-    OR.addObject(wallLead);
-    OR.addObject(opticsHut);
-    OR.addObject(joinPipe);
-    OR.addObject(opticsBeam);
-
-  }
-
-  SOFTIMAX::~SOFTIMAX()
-  /*!
-    Destructor
   */
-  {}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  OR.addObject(frontBeam);
+  OR.addObject(wallLead);
+  OR.addObject(opticsHut);
+  OR.addObject(joinPipe);
+  OR.addObject(opticsBeam);
+  
+}
 
+SOFTIMAX::~SOFTIMAX()
+/*!
+  Destructor
+*/
+{}
+  
 void
 SOFTIMAX::build(Simulation& System,
 		const attachSystem::FixedComp& FCOrigin,
@@ -144,7 +127,7 @@ SOFTIMAX::build(Simulation& System,
   
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  return;
+
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
