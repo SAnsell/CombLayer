@@ -424,14 +424,14 @@ Algebra::constructShannonExpansion()
 	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
 	      retFlag=1;
-	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
+	      // ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
 	      FX=FaTbT;
 	      FX.addIntersect(SNB);
 	    }
 	  if (FaTbT.isFalse())
 	    {
 	      retFlag=1;
-	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
+	      //  ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
 	      FX.addIntersect(-SNA);	      
 	    }

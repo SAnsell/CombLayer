@@ -178,6 +178,7 @@ class Object
 
   std::vector<std::pair<int,int>> getImplicatePairs(const int) const;
   std::vector<std::pair<int,int>> getImplicatePairs() const;
+  std::set<int> getSelfPairs() const;
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}
