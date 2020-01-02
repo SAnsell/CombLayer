@@ -92,7 +92,7 @@ void wallVariables(FuncDataBase&,const std::string&,const double);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void connectVariables(FuncDataBase&,const std::string&);
 void opticsHutVariables(FuncDataBase&,const std::string&,const double);
-void exptHutVariables(FuncDataBase&,const std::string&);
+void exptHutVariables(FuncDataBase&,const std::string&,const double);
 
 void lensPackage(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
@@ -299,8 +299,8 @@ connectVariables(FuncDataBase& Control,
 
     
   const std::string connectName(beamName+"ConnectShield");
-  Control.addVariable(connectName+"Height",100.0);
-  Control.addVariable(connectName+"Width",100.0);
+  Control.addVariable(connectName+"Height",50.0);
+  Control.addVariable(connectName+"Width",70.0);
   Control.addVariable(connectName+"Length",858.4);
   Control.addVariable(connectName+"Thick",0.5);
   Control.addVariable(connectName+"SkinThick",0.2);
@@ -337,11 +337,13 @@ connectVariables(FuncDataBase& Control,
 
 void
 exptHutVariables(FuncDataBase& Control,
-		 const std::string& beamName)
+		 const std::string& beamName,
+		 const double beamXStep)
   /*!
     Optics hut variables
     \param Control :: DataBase to add
     \param beamName :: Beamline name
+    \param bremXStep :: Offset of beam from main centre line
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
@@ -367,13 +369,13 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",-2.0);
+  Control.addVariable(hutName+"HoleXStep",beamXStep-2.0);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",-1.26);
+  Control.addVariable(beamName+"PShieldXStep",beamXStep-1.26);
   Control.addVariable(beamName+"PShieldYStep",0.3);
   Control.addVariable(beamName+"PShieldLength",1.0);
   Control.addVariable(beamName+"PShieldWidth",10.0);
@@ -417,7 +419,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::FlangeMountGenerator FlangeGen;
   
   // will be rotated vertical
-  const std::string pipeName=viewKey+"Tube";
+  const std::string pipeName=viewKey+"ViewTube";
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   // up 15cm / 32.5cm down : Measured
@@ -434,6 +436,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(0,0,-1));
+  PItemGen.setPlate(0.0,"Stainless304");  
   PItemGen.setCF<setVariable::CF40>(8.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,8.75,0),
@@ -441,7 +444,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
-  FlangeGen.generateMount(Control,viewKey+"TubeScreen",1);  // in beam
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
 
   return;
 }
@@ -905,6 +908,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
 
   PipeGen.setNoWindow();   // no window
+  PipeGen.setMat("Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",0,6.0);
 
@@ -984,7 +988,7 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
 
-  viewPackage(Control,opticsName+"View");
+  viewPackage(Control,opticsName);
 
   GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
@@ -1037,7 +1041,9 @@ DANMAXvariables(FuncDataBase& Control)
   //  setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setNoWindow();   // no window
-  
+
+
+  // join pipe length
   setVariable::R3FrontEndVariables(Control,"DanmaxFrontBeam",25.0);
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
   // ystep / dipole pipe / exit pipe
@@ -1062,7 +1068,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",0,54.0);
 
-  danmaxVar::exptHutVariables(Control,"Danmax");
+  danmaxVar::exptHutVariables(Control,"Danmax",beamXStep);
 
   const std::string exptName="DanmaxExptLine";
   
