@@ -71,9 +71,11 @@ class softimaxOpticsLine :
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vauucm trigger system
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
-  /// first ion pump
-  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
+  std::shared_ptr<constructSystem::PipeTube> triggerPipe;
+  /// Cylindrical gate valve
+  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  /// Gate block [item]
+  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
 
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;

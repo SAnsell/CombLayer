@@ -668,6 +668,24 @@ Object::isValid(const Geometry::Vec3D& Pt,
   return HRule.isValid(Pt,ExSN);
 }
 
+std::set<int>
+Object::getSelfPairs() const
+  /*!
+    Determine all the implicate pairs for the object
+    The map is plane A has (sign A) implies plane B has (sign B)
+    \param SN :: Number of force side
+    \return Map of surf -> surf
+  */
+{
+  ELog::RegMethod RegA("Object","getSelfPairs(int)");
+
+  std::set<int> Out;
+  for(const Geometry::Surface* APtr : logicOppSurf)
+    Out.emplace(APtr->getName());
+  
+  return Out;
+}
+
 std::vector<std::pair<int,int>>
 Object::getImplicatePairs(const int SN) const
   /*!

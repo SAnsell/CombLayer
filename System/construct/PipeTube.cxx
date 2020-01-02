@@ -459,6 +459,7 @@ PipeTube::createPorts(Simulation& System)
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System);
     }
+
   return;
 }
 
@@ -906,8 +907,7 @@ PipeTube::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();    
-  createObjects(System);
-  
+  createObjects(System);  
   createLinks();
 
   insertObjects(System);
