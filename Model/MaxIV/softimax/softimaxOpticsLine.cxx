@@ -886,11 +886,13 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
+  //  setCell("LastVoid",masterCell->getName());  lastComp=pipeA;  return;
+
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->createAll(System,*pipeA,"back");
-  //  pumpM1->intersectPorts(System,1,2);
+  //pumpM1->intersectPorts(System,1,2);
 
   ///////////// split for FLUKA
   //  const constructSystem::portItem& VP0=pumpM1->getPort(0);
@@ -928,6 +930,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   cellIndex+=5;
   /////////////////////////////////////////
+
+  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
+
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);
@@ -1049,6 +1054,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
+
+  //  setCell("LastVoid",masterCell->getName());  lastComp=bellowA;  return;
 
 
   buildM3STXMMirror(System,masterCell,*bellowJ,"back");

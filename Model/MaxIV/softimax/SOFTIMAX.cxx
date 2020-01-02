@@ -131,12 +131,12 @@ SOFTIMAX::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("SOFTIMAX","build");
-  
+
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
-  
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
     frontBeam->deactivateFM3();
@@ -169,7 +169,7 @@ SOFTIMAX::build(Simulation& System,
     r3Ring->insertComponent
       (System,"OuterFlat",SIndex,
        *opticsHut,opticsHut->getSideIndex("frontCut"));
-    
+
   // Inner space
 
   if (stopPoint=="opticsHut") return;
@@ -189,6 +189,7 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  return;
 
   std::vector<int> cells(opticsHut->getCells("BackWall"));
   cells.emplace_back(opticsHut->getCell("Extension"));

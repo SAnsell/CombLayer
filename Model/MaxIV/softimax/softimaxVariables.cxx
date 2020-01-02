@@ -726,7 +726,6 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D pAngVec6(sin(xyAngle6),0.0,-cos(xyAngle6));
   const double PLen6(14.0-8.05/cos(M_PI*37.0/180.0));
   PItemGen.setCF<setVariable::CF40>(PLen6);
-  PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port6",
 			Geometry::Vec3D(0,0,0),-pAngVec6);
 
