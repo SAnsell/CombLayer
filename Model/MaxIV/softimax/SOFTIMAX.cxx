@@ -19,53 +19,36 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   *
   ****************************************************************************/
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <sstream>
-// #include <cmath>
-// #include <complex>
-// #include <list>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+ #include <list>
 #include <vector>
 #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <iterator>
+#include <string>
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
-// #include "Exception.h"
-// #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
+#include "FileReport.h"
 #include "RegMethod.h"
-// #include "GTKreport.h"
-// #include "OutputLog.h"
-// #include "BaseVisit.h"
-// #include "BaseModVisit.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
+#include "OutputLog.h"
 #include "Vec3D.h"
-// #include "inputParam.h"
-// #include "Surface.h"
-// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-// #include "Rules.h"
-// #include "Code.h"
-// #include "varList.h"
-// #include "FuncDataBase.h"
 #include "HeadRule.h"
-// #include "Object.h"
-// #include "groupRange.h"
-// #include "objectGroups.h"
-// #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-// #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -77,7 +60,6 @@
 #include "VacuumPipe.h"
 #include "balderOpticsHutch.h"
 #include "JawFlange.h"
-// #include "FlangeMount.h"
 #include "R3FrontEnd.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"
@@ -89,35 +71,35 @@
 namespace xraySystem
 {
 
-  SOFTIMAX::SOFTIMAX(const std::string& KN) :
-    R3Beamline("Balder",KN),
-    frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
-    wallLead(new WallLead(newName+"WallLead")),
+SOFTIMAX::SOFTIMAX(const std::string& KN) :
+  R3Beamline("Balder",KN),
+  frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead")),
     opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-    joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-    opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
-    /*!
+  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+  opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
+  /*!
       Constructor
       \param KN :: Keyname
-    */
-  {
-    ModelSupport::objectRegister& OR=
-      ModelSupport::objectRegister::Instance();
-
-    OR.addObject(frontBeam);
-    OR.addObject(wallLead);
-    OR.addObject(opticsHut);
-    OR.addObject(joinPipe);
-    OR.addObject(opticsBeam);
-
-  }
-
-  SOFTIMAX::~SOFTIMAX()
-  /*!
-    Destructor
   */
-  {}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  OR.addObject(frontBeam);
+  OR.addObject(wallLead);
+  OR.addObject(opticsHut);
+  OR.addObject(joinPipe);
+  OR.addObject(opticsBeam);
+  
+}
 
+SOFTIMAX::~SOFTIMAX()
+/*!
+  Destructor
+*/
+{}
+  
 void
 SOFTIMAX::build(Simulation& System,
 		const attachSystem::FixedComp& FCOrigin,
@@ -131,47 +113,47 @@ SOFTIMAX::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("SOFTIMAX","build");
-  
+
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
-  
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
-    frontBeam->deactivateFM3();
-    frontBeam->setStopPoint(stopPoint);
-    frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+  frontBeam->deactivateFM3();
+  frontBeam->setStopPoint(stopPoint);
+  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+  
+  frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->createAll(System,FCOrigin,sideIndex);
 
-    frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
-    frontBeam->createAll(System,FCOrigin,sideIndex);
-
-    wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
-    wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-    wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
-    wallLead->createAll(System,FCOrigin,sideIndex);
-
-    if (stopPoint=="frontEnd" || stopPoint=="Dipole"
-	|| stopPoint=="FM1" || stopPoint=="FM2")
-      return;
-
-    opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-    opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
-
-    opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-    opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-
-    opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
-    opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-    opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
-
-    // Ugly HACK to get the two objects to merge
-    r3Ring->insertComponent
-      (System,"OuterFlat",SIndex,
-       *opticsHut,opticsHut->getSideIndex("frontCut"));
-    
+  wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+  wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+  wallLead->createAll(System,FCOrigin,sideIndex);
+  
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
+      || stopPoint=="FM1" || stopPoint=="FM2")
+    return;
+  
+  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
+  
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
+  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  
+  // Ugly HACK to get the two objects to merge
+  r3Ring->insertComponent
+    (System,"OuterFlat",SIndex,
+     *opticsHut,opticsHut->getSideIndex("frontCut"));
+  
   // Inner space
-
+  
   if (stopPoint=="opticsHut") return;
 
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
@@ -189,6 +171,7 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  return;
 
   std::vector<int> cells(opticsHut->getCells("BackWall"));
   cells.emplace_back(opticsHut->getCell("Extension"));

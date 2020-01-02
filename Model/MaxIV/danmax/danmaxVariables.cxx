@@ -436,7 +436,6 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(0,0,-1));
-
   PItemGen.setPlate(0.0,"Stainless304");  
   PItemGen.setCF<setVariable::CF40>(8.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
@@ -909,8 +908,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
 
   PipeGen.setNoWindow();   // no window
-  PipeGen.setMat("Stainless304"); 
-      
+  PipeGen.setMat("Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",0,6.0);
 
@@ -945,7 +943,7 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
   FlangeGen.generateMount(Control,opticsName+"GateTubeAItem",0);  // in beam
   
-  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setCF<setVariable::CF40>(); 
   BellowGen.setCF<setVariable::CF40>();
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",0,16.0);
@@ -970,7 +968,6 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BremCollZStep",5.0);
 
   // filter pipe [add filter later]
-  PipeGen.setCF<setVariable::CF40>();     
   PipeGen.generatePipe(Control,opticsName+"FilterPipe",0,3.0);
 
   GateGen.setCylCF<setVariable::CF40>();

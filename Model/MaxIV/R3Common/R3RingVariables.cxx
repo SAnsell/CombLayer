@@ -433,8 +433,9 @@ R3FrontEndVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,800.00); 
 
+  //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -456,8 +457,9 @@ R3FrontEndVariables(FuncDataBase& Control,
     (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
   Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
+  // note : reversed becaues using fixed FM
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
 
   PipeGen.setCF<setVariable::CF40>();

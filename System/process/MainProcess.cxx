@@ -574,7 +574,7 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 		 const std::string& OName)
   /*!
     Carry out the construction of the geometry
-    and wieght/tallies
+    and weight/tallies
     \param SimPHITSPtr :: Simulation point
     \param IParam :: input pararmeter
     \param OName :: output file name
@@ -599,7 +599,6 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   SDef::sourceSelection(*SimPHITSPtr,IParam);
   //  SimPHITSPtr->masterSourceRotation();
   // Ensure we done loop
-  
   do
     {
       SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);
@@ -641,6 +640,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
 
   SDef::sourceSelection(*SimMCPtr,IParam);
   //  SimMCPtr->masterSourceRotation();
+  SimMCPtr->minimizeObject("All");
   // Ensure we done loop
   do
     {
@@ -704,6 +704,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->createObjSurfMap();
 
 
+  SimPtr->minimizeObject("All");
   if (createVTK(IParam,SimPtr,OName))
     return;
 

@@ -1577,7 +1577,7 @@ int
 Simulation::minimizeObject(const std::string& keyName)
   /*!
     Minimize and remove those objects that are not needed
-    \param System :: Simulation to use
+    \param keyName :: range of object in group
     \return true if an object changed/removed
   */
 {
@@ -1592,7 +1592,6 @@ Simulation::minimizeObject(const std::string& keyName)
     }
   return retFlag;
 }
-
 
 int
 Simulation::minimizeObject(const int CN)
@@ -1617,19 +1616,26 @@ Simulation::minimizeObject(const int CN)
   
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
-  
+  //  CPtr->createLogicOpp();
+  const std::set<int> SPair=CPtr->getSelfPairs();
+
+  bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CPtr->cellCompStr());
+
+  for(const int SN : SPair)
+    activeFlag |= AX.constructShannonDivision(SN);
+
   AX.addImplicates(IP);
-  
-  if (AX.constructShannonExpansion())
+
+  activeFlag |= AX.constructShannonExpansion();
+  if (activeFlag)
     {
       if (AX.isEmpty())
 	{
 	  Simulation::removeCell(CN);
 	  return -1;
 	}
-      
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
@@ -1650,7 +1656,6 @@ Simulation::makeObjectsDNForCNF()
   if (cellCNF || cellDNF)
     {
       size_t cellIndex(0);
-      ELog::EM<<"Cells :"<<ELog::endDiag;;
       for(OTYPE::value_type& OC : OList)
 	{
 	  MonteCarlo::Object* CPtr = OC.second;

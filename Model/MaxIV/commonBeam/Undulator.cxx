@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Undulator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -81,6 +82,7 @@ namespace xraySystem
 Undulator::Undulator(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -128,22 +130,6 @@ Undulator::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-Undulator::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("Undulator","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
  
 void
 Undulator::createSurfaces()
@@ -168,6 +154,7 @@ Undulator::createSurfaces()
   
 
   // Build Support
+  
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(supportLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(supportLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(supportWidth/2.0),X);
@@ -178,8 +165,7 @@ Undulator::createSurfaces()
 			   -Z*(supportThick+sVOffset+vGap/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+116,Origin
 			   +Z*(supportThick+sVOffset+vGap/2.0),Z);
-
-
+  
   // Build stands
   ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(standWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(standWidth/2.0),X);
@@ -205,72 +191,93 @@ Undulator::createObjects(Simulation& System)
   std::string Out;
 
   // Main inner void
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -102 103 -104 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 103 -104 5 -6");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
+  std::string FStr=ModelSupport::getComposite(SMap,buildIndex," 101 ");
+  std::string BStr=ModelSupport::getComposite(SMap,buildIndex," -102 ");
+  // Front/Back voids for pipe
+  if (ExternalCut::isActive("front"))
+    {
+      FStr=ExternalCut::getRuleStr("front");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"-101 103 -104 205 -206");
+      makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+FStr);
+
+    }
+
+  if (ExternalCut::isActive("back"))
+    {
+      BStr=ExternalCut::getRuleStr("back");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"102 103 -104 205 -206");
+      makeCell("BackVoid",System,cellIndex++,0,0.0,Out+BStr);
+    }
+
   // corner voids
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -3 103 -5 105");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3 103 -5 105");
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 4 -104 -5 105");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -104 -5 105");
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -3 103 6 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3 103 6 -106");
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 4 -104 6 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -104 6 -106");
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
 
   // front /back void
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1 103 -104 -106 6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 103 -104 -106 6 ");
   makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1 103 -104 -5 105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 103 -104 -5 105 ");
   makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 -106 6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -106 6 ");
   makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 -5 105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -5 105 ");
   makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
 
   // MAGNET
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 -5 15");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -5 15");
   makeCell("BaseMagnet",System,cellIndex++,magnetMat,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 6 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 6 -16");
   makeCell("TopMagnet",System,cellIndex++,magnetMat,0.0,Out);
 
   // Support
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 103 -104 -105 115 (-1:2:-3:4:-15) ");
   makeCell("BaseSupport",System,cellIndex++,supportMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 103 -104 106 -116 (-1:2:-3:4:16) ");
   makeCell("TopSupport",System,cellIndex++,supportMat,0.0,Out);
 
   // Stand
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 203 -204 -115 205 ");
   makeCell("BaseStand",System,cellIndex++,standMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 203 -204 116 -206 ");
   makeCell("TopStand",System,cellIndex++,standMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 103 -203 116 -206 ");
   makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 204 -104 116 -206 ");
   makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 103 -203 -115 205 ");
   makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"101 -102 204 -104 -115 205 ");
   makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 103 -104 205 -206 ");
-  addOuterSurf(Out);      
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 205 -206 ");
+  addOuterSurf(Out+FStr+BStr);      
 
   return;
 }
