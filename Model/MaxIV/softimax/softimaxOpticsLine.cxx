@@ -891,6 +891,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
   //pumpM1->intersectPorts(System,1,2);
 
