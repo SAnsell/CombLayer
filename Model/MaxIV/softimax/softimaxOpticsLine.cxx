@@ -886,8 +886,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
-  //  setCell("LastVoid",masterCell->getName());  lastComp=pipeA;  return;
-
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
@@ -932,7 +930,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   cellIndex+=5;
   /////////////////////////////////////////
 
-  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
+  //  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
 
 
   xrayConstruct::constructUnit
@@ -1055,9 +1053,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
-
-  //  setCell("LastVoid",masterCell->getName());  lastComp=bellowA;  return;
-
 
   buildM3STXMMirror(System,masterCell,*bellowJ,"back");
 
