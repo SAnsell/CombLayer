@@ -57,7 +57,7 @@ class SqrFMaskGenerator :
   double pipeYStep;       ///< Pipe yStep
   
   std::string flangeMat;         ///< main material    
-  std::string waterMat;         ///< coolant material
+  std::string waterMat;          ///< coolant material
   
  public:
 

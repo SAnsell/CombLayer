@@ -704,7 +704,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->createObjSurfMap();
 
 
-  SimPtr->minimizeObject("All");
+  //  SimPtr->minimizeObject("All");
   if (createVTK(IParam,SimPtr,OName))
     return;
 

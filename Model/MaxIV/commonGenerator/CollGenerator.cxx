@@ -223,7 +223,17 @@ CollGenerator::setBackGap(const double W,const double H)
   BHeight=H;
   return;
 }
-				  
+
+void
+CollGenerator::setMat(const std::string& M)
+  /*!
+    Set the main material
+    \param M :: Material string
+   */
+{
+  mat=M;
+}
+  
 void
 CollGenerator::generateColl(FuncDataBase& Control,
 			    const std::string& keyName,
