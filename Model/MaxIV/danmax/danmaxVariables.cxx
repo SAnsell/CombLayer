@@ -183,6 +183,7 @@ frontMaskVariables(FuncDataBase& Control,
   
     // collimator block
   FMaskGen.setCF<CF100>();
+  FMaskGen.setMat("Copper");
   FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
   //  FMaskGen.setBackGap(0.71,0.71);
   // Approximated to get 1mrad x 1mrad

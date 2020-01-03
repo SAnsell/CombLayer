@@ -73,6 +73,7 @@ class ObjSurfMap
   void clearAll();
   
   void addSurfaces(MonteCarlo::Object*);
+  void updateObject(MonteCarlo::Object*);
   
   MonteCarlo::Object* getObj(const int,const size_t) const;
   const STYPE& getObjects(const int) const;

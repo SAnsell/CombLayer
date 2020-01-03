@@ -177,6 +177,46 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
 }
 
 void
+ObjSurfMap::updateObject(MonteCarlo::Object* OPtr)
+  /*!
+    Updates an existing object
+    \param OPtr :: Object pointer
+   */
+{
+  ELog::RegMethod RegA("ObjSurfMap","updateObject");
+
+  // first do we have the object?
+  const int objName(OPtr->getName());
+  OSTYPE::iterator oc=OSurfMap.find(objName);
+  if (oc!=OSurfMap.end())
+    {
+      // must remove all valid surfaces first as rev surfaces
+      // make a mess
+      const std::set<int>& sSet=oc->second;
+      for(const int SN : sSet)
+	{
+	  OMTYPE::iterator mc=SMap.find(SN);
+	  if (mc!=SMap.end())
+	    {
+	      STYPE& vec=mc->second;
+	      STYPE::iterator vc=std::find(vec.begin(),vec.end(),OPtr);
+	      if (vc!=vec.end())
+		vec.erase(vc);
+	      if (vec.empty())
+		SMap.erase(mc);
+	    }
+	}
+      OSurfMap.erase(oc);
+      
+      // add object as ifnew :
+      addSurfaces(OPtr);
+      return;
+    }
+
+  return;
+}
+
+void
 ObjSurfMap::addObjectSurf(const MonteCarlo::Object* OPtr,
                           const int SurfN)
   /*!
