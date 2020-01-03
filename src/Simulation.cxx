@@ -1639,6 +1639,7 @@ Simulation::minimizeObject(const int CN)
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
+      OSMPtr->updateObject(CPtr);
       return 1;
     }
 
