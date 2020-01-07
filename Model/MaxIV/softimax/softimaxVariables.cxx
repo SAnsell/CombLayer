@@ -302,20 +302,16 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
   ////////////////////////
-  constexpr double theta = 1.0; // beam angle in deg
-  constexpr double phi = 0.0;   // rotation angle in deg
+  constexpr double theta = 1.0; // incident beam angle
+  constexpr double phi = 0.0;   // rotation angle
   //  const double normialAngle=0.2;
   constexpr double vAngle=180.0;
   constexpr double centreDist(0.0); // along the beam line
-  //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-  //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
-  const double centreOffset(0.0); // tube offset
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,mName,0.0,50.0);
-  Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -347,11 +343,10 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,4.5);
+  PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",-2);
-  ELog::EM << "XYAngle = -2   is it correct?????" << ELog::endWarn;
-
+  Control.addVariable(backName+"XYAngle",-2*theta);
+  Control.addVariable(backName+"XStep",0.0);
 
   return;
 }
