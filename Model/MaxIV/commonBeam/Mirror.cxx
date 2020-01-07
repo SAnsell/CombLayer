@@ -239,11 +239,10 @@ Mirror::createSurfaces()
   // (do it here to avoid re-definition of variables in createLinks()
 
   Geometry::Vec3D Yrefl(PY);
-  Geometry::Quaternion::calcQRotDeg(2*theta,X).rotate(Yrefl);
+  Geometry::Quaternion::calcQRotDeg(-theta,X).rotate(Yrefl);
 
   FixedComp::setConnect(1,Origin-PZ*baseDepth,Yrefl);
   FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+206));
-
 
   return;
 }
