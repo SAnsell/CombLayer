@@ -322,13 +322,11 @@ m1MirrorVariables(FuncDataBase& Control,
   constexpr double depth(2.0);
   constexpr double gap(0.5);
   constexpr double extra(1.0);
-  // artificial offset so that reflected beam passes in the centre of BremCollA
-  constexpr double xoffset(1.0);
   MirrGen.setSupport(top, depth, gap, extra);
   MirrGen.setPrimaryAngle(0,vAngle,0);
   // x/y/z/theta/phi/radius
   MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 cos(theta*M_PI/180.0)*depth+xoffset,
+			 cos(theta*M_PI/180.0)*depth,
 			 centreDist/2.0,
 			 0.0,
 			 theta,
@@ -348,7 +346,9 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",-2*theta);
-  Control.addVariable(backName+"XStep",0.0);
+  constexpr double xstep(0.5);
+  Control.addVariable(backName+"XStep",xstep);
+  Control.addVariable(backName+"FlangeFrontXStep",-xstep);
 
   return;
 }

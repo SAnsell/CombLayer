@@ -84,7 +84,7 @@
 // #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-// #include "OffsetFlangePipe.h"
+#include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
 #include "BremOpticsColl.h"
@@ -142,7 +142,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   M1TubeFront(new constructSystem::VacuumPipe(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
-  M1TubeBack(new constructSystem::VacuumPipe(newName+"M1TubeBack")),
+  M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
