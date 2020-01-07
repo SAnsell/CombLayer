@@ -322,11 +322,13 @@ m1MirrorVariables(FuncDataBase& Control,
   constexpr double depth(2.0);
   constexpr double gap(0.5);
   constexpr double extra(1.0);
+  // artificial offset so that reflected beam passes in the centre of BremCollA
+  constexpr double xoffset(1.0);
   MirrGen.setSupport(top, depth, gap, extra);
   MirrGen.setPrimaryAngle(0,vAngle,0);
   // x/y/z/theta/phi/radius
   MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 cos(theta*M_PI/180.0)*depth,
+			 cos(theta*M_PI/180.0)*depth+xoffset,
 			 centreDist/2.0,
 			 0.0,
 			 theta,
