@@ -205,13 +205,14 @@ monoVariables(FuncDataBase& Control,
 
   // ystep/width/height/depth/length
   //
+  constexpr double zstep(1.4);
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(10.2,1.0);
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
   MBoxGen.setPortLength(2.3,5.0);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
   Control.addVariable(monoKey+"MonoVesselOuterSize",63);
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",1.4);      // from primary
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",zstep);      // from primary: 131.4-130.0
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
 
@@ -224,9 +225,13 @@ monoVariables(FuncDataBase& Control,
 			Geometry::Vec3D(1,0,0));
 
   // crystals
-  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
+  //  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
   // monounit
-  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,0.0);
+  constexpr double theta(1.0);
+  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,theta); // yStep, angle
+  Control.addVariable(monoKey+"GratingMirrorTheta",theta);
+  Control.addVariable(monoKey+"GratingZLift",zstep);
+  Control.addVariable(monoKey+"GratingMainBarDepth",1.5);
 
   return;
 }
