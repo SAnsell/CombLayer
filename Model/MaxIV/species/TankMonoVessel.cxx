@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   species/TankMonoVessel.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -65,7 +65,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
@@ -91,7 +91,7 @@ TankMonoVessel::TankMonoVessel(const std::string& Key) :
   */
 {}
 
-TankMonoVessel::~TankMonoVessel() 
+TankMonoVessel::~TankMonoVessel()
   /*!
     Destructor
   */
@@ -105,7 +105,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("TankMonoVessel","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -142,7 +142,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
 					   keyName+"PortTubeRadius");
 
-  
+
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
@@ -173,7 +173,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  
+
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT;
@@ -187,7 +187,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-      
+
       L=Control.EvalTail<double>(portName,portBase,"Length");
       R=Control.EvalTail<double>(portName,portBase,"Radius");
       W=Control.EvalTail<double>(portName,portBase,"Wall");
@@ -208,12 +208,12 @@ TankMonoVessel::populate(const FuncDataBase& Control)
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
-    }					    
+    }
 
-  
+
 
   outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
-  
+
 
   return;
 }
@@ -265,19 +265,19 @@ TankMonoVessel::createSurfaces()
 	      std::abs(portBXStep)+flangeBRadius));
   // mid layer divider
   ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*outerSize,X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);
   ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*outerSize,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+1013,Origin-X*maxPortWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+1014,Origin+X*maxPortWidth,X);
-  
-  
+
+
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
@@ -344,8 +344,8 @@ TankMonoVessel::createObjects(Simulation& System)
   const std::string FPortStr(ExternalCut::getRuleStr("front"));
   const std::string BPortStr(ExternalCut::getRuleStr("back"));
 
-  
-  // Main Void 
+
+  // Main Void
   Out=ModelSupport::getComposite(SMap,buildIndex," (5:-208) (-6:-108) -7 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
@@ -420,8 +420,8 @@ TankMonoVessel::createObjects(Simulation& System)
 				 " 1003 -1004 -5 (218:17) 1005 ");
   CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,Out+fbCut);
 
-  
-  
+
+
   // Main exclusion box
   Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 -1006 ");
 
@@ -447,7 +447,16 @@ TankMonoVessel::createLinks()
   ExternalCut::createLink("front",*this,0,ACentre,-Y);
   ExternalCut::createLink("back",*this,1,BCentre,Y);
 
-  
+  const double xPlus=
+    (voidRadius*voidRadius-topGap*topGap)/(2.0*topGap);
+  const double topRadius=
+    (voidRadius*voidRadius+topGap*topGap)/(2.0*topGap);
+  const Geometry::Vec3D topCent=Origin-Z*(xPlus-voidHeight-topRadius);
+
+  FixedComp::setConnect(2,topCent,Z);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+108));
+
+
   return;
 }
 
@@ -459,7 +468,7 @@ TankMonoVessel::createPorts(Simulation& System)
    */
 {
    ELog::RegMethod RegA("TankMonoVessel","createPorts");
-  
+
   for(size_t i=0;i<Ports.size();i++)
     {
 
@@ -488,16 +497,16 @@ TankMonoVessel::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
 
   if (!delayPortBuild)
     createPorts(System);
-  
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
