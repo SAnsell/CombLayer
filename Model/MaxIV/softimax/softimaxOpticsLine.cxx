@@ -678,7 +678,7 @@ softimaxOpticsLine::buildMono(Simulation& System,
   grating->createAll(System,*monoVessel,0);
 
   zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("Void"));
-  zeroOrderBlock->setBladeCentre(*monoVessel,0);
+  //zeroOrderBlock->setBladeCentre(*monoVessel,0);
   zeroOrderBlock->setFront(*monoVessel,3);
   zeroOrderBlock->createAll(System,*monoVessel,3);
 
