@@ -210,7 +210,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
   MBoxGen.setPortLength(2.3,5.0);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
-  Control.addVariable(monoKey+"MonoVesselOuterSize",62);
+  Control.addVariable(monoKey+"MonoVesselOuterSize",63);
   Control.addVariable(monoKey+"MonoVesselPortBZStep",1.4);      // from primary
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
@@ -218,7 +218,7 @@ monoVariables(FuncDataBase& Control,
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1); // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF120>(5.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF63::flangeLength,"SiO2");
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,0.0),
 			Geometry::Vec3D(1,0,0));
@@ -346,7 +346,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",-2*theta);
-  constexpr double xstep(0.5);
+  constexpr double xstep(0.8);
   Control.addVariable(backName+"XStep",xstep);
   Control.addVariable(backName+"FlangeFrontXStep",-xstep);
 
