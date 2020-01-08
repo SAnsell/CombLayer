@@ -1244,7 +1244,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,150.0);
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,158.95); // length adjusted to place M1 at 2400 from undulator centre
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   softimaxVar::opticsVariables(Control,"SoftiMAX");
