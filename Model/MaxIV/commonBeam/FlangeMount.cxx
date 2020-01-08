@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/FlangeMount.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
@@ -79,12 +79,12 @@
 #include "FrontBackCut.h"
 #include "SurfMap.h"
 
-#include "FlangeMount.h" 
+#include "FlangeMount.h"
 
 namespace xraySystem
 {
 
-FlangeMount::FlangeMount(const std::string& Key) : 
+FlangeMount::FlangeMount(const std::string& Key) :
   attachSystem::FixedOffset(Key,7),
   attachSystem::ContainedGroup("Flange","Body"),
   attachSystem::CellMap(),
@@ -98,10 +98,10 @@ FlangeMount::FlangeMount(const std::string& Key) :
   nameSideIndex(6,"bladeCentre");
 }
 
-FlangeMount::FlangeMount(const FlangeMount& A) : 
+FlangeMount::FlangeMount(const FlangeMount& A) :
   attachSystem::FixedOffset(A),
   attachSystem::ContainedGroup(A),attachSystem::CellMap(A),
-  attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),  
+  attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),
   plateThick(A.plateThick),plateRadius(A.plateRadius),
   threadRadius(A.threadRadius),threadLength(A.threadLength),
   inBeam(A.inBeam),bladeXYAngle(A.bladeXYAngle),
@@ -109,7 +109,10 @@ FlangeMount::FlangeMount(const FlangeMount& A) :
   bladeWidth(A.bladeWidth),bladeHeight(A.bladeHeight),
   threadMat(A.threadMat),bladeMat(A.bladeMat),plateMat(A.plateMat),
   bladeActive(A.bladeCentreActive),
-  bladeCentreActive(A.bladeActive),bladeCentre(A.bladeCentre)
+  bladeCentreActive(A.bladeActive),bladeCentre(A.bladeCentre),
+  holeActive(A.holeActive),
+  holeWidth(A.holeWidth),
+  holeHeight(A.holeHeight)
   /*!
     Copy constructor
     \param A :: FlangeMount to copy
@@ -147,11 +150,14 @@ FlangeMount::operator=(const FlangeMount& A)
       bladeCentreActive=A.bladeCentreActive;
       bladeActive=A.bladeActive;
       bladeCentre=A.bladeCentre;
+      holeActive=A.holeActive;
+      holeWidth=A.holeWidth;
+      holeHeight=A.holeHeight;
     }
   return *this;
 }
 
-FlangeMount::~FlangeMount() 
+FlangeMount::~FlangeMount()
   /*!
     Destructor
   */
@@ -165,7 +171,7 @@ FlangeMount::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("FlangeMount","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -174,7 +180,7 @@ FlangeMount::populate(const FuncDataBase& Control)
 
   threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
   threadLength=Control.EvalVar<double>(keyName+"ThreadLength");
-  
+
   inBeam=Control.EvalDefVar<int>(keyName+"InBeam",inBeam);
 
   bladeXYAngle=Control.EvalVar<double>(keyName+"BladeXYAngle");
@@ -182,7 +188,7 @@ FlangeMount::populate(const FuncDataBase& Control)
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeHeight=Control.EvalVar<double>(keyName+"BladeHeight");
   bladeWidth=Control.EvalVar<double>(keyName+"BladeWidth");
-  
+
   threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
@@ -191,6 +197,10 @@ FlangeMount::populate(const FuncDataBase& Control)
   bladeCentreActive=Control.EvalDefVar<int>
     (keyName+"BladeCentreActive",bladeCentreActive);
   bladeActive=Control.EvalDefVar<int>(keyName+"BladeActive",1);
+
+  holeActive=Control.EvalDefVar<int>(keyName+"HoleActive",0);
+  holeWidth=Control.EvalDefVar<double>(keyName+"HoleWidth", 1.0);
+  holeHeight=Control.EvalDefVar<double>(keyName+"HoleHeight", 1.0);
 
   return;
 }
@@ -211,12 +221,12 @@ FlangeMount::calcThreadLength()
   return;
 }
 
-  
+
 void
 FlangeMount::createSurfaces()
   /*!
     Create the surfaces
-    If front/back given it is at portLen from the wall and 
+    If front/back given it is at portLen from the wall and
     length/2+portLen from origin.
   */
 {
@@ -233,7 +243,7 @@ FlangeMount::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,plateRadius);
     }
-  
+
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,threadRadius);
 
   const double lift((inBeam) ? 0.0 : bladeLift);
@@ -253,6 +263,13 @@ FlangeMount::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+105,BCent-PZ*(bladeHeight/2.0),PZ);
   ModelSupport::buildPlane(SMap,buildIndex+106,BCent+PZ*(bladeHeight/2.0),PZ);
 
+  if (holeActive)
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+203,BCent-PX*(holeWidth/2.0),PX);
+      ModelSupport::buildPlane(SMap,buildIndex+204,BCent+PX*(holeWidth/2.0),PX);
+      ModelSupport::buildPlane(SMap,buildIndex+205,BCent-PZ*(holeHeight/2.0),PZ);
+      ModelSupport::buildPlane(SMap,buildIndex+206,BCent+PZ*(holeHeight/2.0),PZ);
+    }
   return;
 }
 
@@ -267,7 +284,7 @@ FlangeMount::createObjects(Simulation& System)
 
   std::string Out;
 
-  const std::string frontStr=frontRule();  
+  const std::string frontStr=frontRule();
   const std::string frontComp=frontComplement();
   // Flange
   if (plateThick>Geometry::zeroTol)
@@ -276,7 +293,7 @@ FlangeMount::createObjects(Simulation& System)
       makeCell("Plate",System,cellIndex++,plateMat,0.0,Out+frontStr);
       addOuterSurf("Flange",Out+frontStr);
     }
-  
+
   // Thread
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out+frontComp);
@@ -287,13 +304,22 @@ FlangeMount::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-      makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
       addOuterUnionSurf("Body",Out+frontComp);
+
+      if (holeActive)
+	{
+	  const std::string hole=ModelSupport::getComposite
+	    (SMap,buildIndex," 101 -102 203 -204 205 -206 ");
+	  makeCell("Hole",System,cellIndex++,0,0.0,hole);
+
+	  Out += ModelSupport::getComposite(SMap,buildIndex," (-203:204:-205:206) ");
+	}
+      makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
     }
-      
+
   return;
 }
-  
+
 void
 FlangeMount::createLinks()
   /*!
@@ -302,7 +328,7 @@ FlangeMount::createLinks()
   */
 {
   ELog::RegMethod RegA("FlangeMount","createLinks");
-  
+
   Geometry::Vec3D PY(Z);
   const Geometry::Vec3D PZ(-Y);
   const Geometry::Quaternion QR
@@ -310,10 +336,10 @@ FlangeMount::createLinks()
   QR.rotate(PY);
 
   const double lift((inBeam) ? 0.0 : bladeLift);
-  
+
   const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
-  
-  // Mid point of blade centre 
+
+  // Mid point of blade centre
   FixedComp::setConnect(6,BCent,-PY);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+105));
 
@@ -324,7 +350,7 @@ void
 FlangeMount::setBladeCentre(const Geometry::Vec3D& Pt)
   /*!
     Set the blade centre
-    \param Pt :: Centre point 
+    \param Pt :: Centre point
   */
 {
   bladeCentreActive=0;
@@ -345,7 +371,7 @@ FlangeMount::setBladeCentre(const attachSystem::FixedComp& FC,
   bladeCentre=FC.getLinkPt(BIndex);
   return;
 }
-  
+
 void
 FlangeMount::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
@@ -362,12 +388,12 @@ FlangeMount::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   calcThreadLength();
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
