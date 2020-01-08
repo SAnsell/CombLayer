@@ -202,6 +202,7 @@ monoVariables(FuncDataBase& Control,
   setVariable::TankMonoVesselGenerator MBoxGen;
   setVariable::GratingMonoGenerator MXtalGen;
   setVariable::GratingUnitGenerator MUnitGen;
+  setVariable::FlangeMountGenerator FlangeGen;
 
   // ystep/width/height/depth/length
   //
@@ -232,6 +233,13 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable(monoKey+"GratingMirrorTheta",theta);
   Control.addVariable(monoKey+"GratingZLift",zstep);
   Control.addVariable(monoKey+"GratingMainBarDepth",1.5);
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(8.0,15.5,1.0,0.0,"Copper",1);  // w,h,t,ang,active
+  FlangeGen.generateMount(Control,monoKey+"ZeroOrderBlock",0);  // in beam
+  Control.addVariable(monoKey+"ZeroOrderBlockZStep",50.0);
+  Control.addVariable(monoKey+"ZeroOrderBlockBladeLift",0.0);
+
 
   return;
 }

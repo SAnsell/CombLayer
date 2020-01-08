@@ -157,6 +157,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
     }),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   grating(new xraySystem::GratingUnit(newName+"Grating")),
+  zeroOrderBlock(new xraySystem::FlangeMount(newName+"ZeroOrderBlock")),
   gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
@@ -264,6 +265,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(jaws[0]);
   OR.addObject(jaws[1]);
   OR.addObject(monoVessel);
+  OR.addObject(grating);
+  OR.addObject(zeroOrderBlock);
   OR.addObject(gateC);
   OR.addObject(bellowE);
   OR.addObject(pumpTubeB);
@@ -673,6 +676,11 @@ softimaxOpticsLine::buildMono(Simulation& System,
   grating->addInsertCell(monoVessel->getCell("Void"));
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
+
+  zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("Void"));
+  zeroOrderBlock->setBladeCentre(*monoVessel,0);
+  zeroOrderBlock->setFront(*monoVessel,3);
+  zeroOrderBlock->createAll(System,*monoVessel,3);
 
   // offPipeB->createAll(System,*monoVessel,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);

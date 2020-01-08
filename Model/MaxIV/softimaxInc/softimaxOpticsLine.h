@@ -108,6 +108,7 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
   /// Grating
   std::shared_ptr<xraySystem::GratingUnit> grating;
+  std::shared_ptr<xraySystem::FlangeMount> zeroOrderBlock;
   // Gate to isolate mono
   std::shared_ptr<constructSystem::GateValveCube> gateC;
   /// Bellow from gate C
