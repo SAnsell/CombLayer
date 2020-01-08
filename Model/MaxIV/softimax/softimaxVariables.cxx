@@ -238,7 +238,10 @@ monoVariables(FuncDataBase& Control,
   FlangeGen.setBlade(8.0,15.5,1.0,0.0,"Copper",1);  // w,h,t,ang,active
   FlangeGen.generateMount(Control,monoKey+"ZeroOrderBlock",0);  // in beam
   Control.addVariable(monoKey+"ZeroOrderBlockZStep",50.0);
-  Control.addVariable(monoKey+"ZeroOrderBlockBladeLift",0.0);
+  Control.addVariable(monoKey+"ZeroOrderBlockBladeLift",zstep);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleActive",1);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleWidth",1.0);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleHeight",1.0);
 
 
   return;
