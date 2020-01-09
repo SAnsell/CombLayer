@@ -297,14 +297,16 @@ FlangeMount::createObjects(Simulation& System)
   // Thread
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out+frontComp);
-  addOuterSurf("Body",Out+frontComp);
 
   // blade
   if (bladeActive)
     {
+      // void around thread
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 -105 17 ");
+      makeCell("VoidThread",System,cellIndex++,0,0.0,Out+frontComp);
+
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-      addOuterUnionSurf("Body",Out+frontComp);
 
       if (holeActive)
 	{
@@ -315,6 +317,14 @@ FlangeMount::createObjects(Simulation& System)
 	  Out += ModelSupport::getComposite(SMap,buildIndex," (-203:204:-205:206) ");
 	}
       makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -102 103 -104 -106 ");
+      addOuterSurf("Body",Out+frontComp);
+    }
+  else
+    {
+      addOuterSurf("Body",Out+frontComp);
     }
 
   return;
