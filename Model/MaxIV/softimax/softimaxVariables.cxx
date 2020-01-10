@@ -728,6 +728,7 @@ opticsVariables(FuncDataBase& Control,
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
   PItemGen.setCF<setVariable::CF40>(PLen);
   PItemGen.setOuterVoid(1);
+  PItemGen.setPlate(setVariable::CF40::flangeLength,"Stainless304");
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
 
