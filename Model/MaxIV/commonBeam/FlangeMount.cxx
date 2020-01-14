@@ -296,7 +296,7 @@ FlangeMount::createObjects(Simulation& System)
 
   // Thread
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");
-  ELog::EM << "check whether this is OK for Stuart" << ELog::endDiag;
+
   if (threadRadius*2>bladeThick)
     Out += ModelSupport::getComposite(SMap,buildIndex," 101 -102 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out+frontComp);
