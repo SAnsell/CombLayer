@@ -271,10 +271,11 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InnerThick",0.3);
   Control.addVariable(hutName+"Extension",100.0);
 
-  Control.addVariable(hutName+"PbWallThick",1.2);
-  Control.addVariable(hutName+"PbRoofThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",2.0);
-  Control.addVariable(hutName+"PbFrontThick",2.0);
+  // Lead thicknesses are from 06643-03-000\ folio\ 1-2\ IND\ G.PDF
+  Control.addVariable(hutName+"PbWallThick",1.6);
+  Control.addVariable(hutName+"PbRoofThick",1.6);
+  Control.addVariable(hutName+"PbBackThick",9);
+  Control.addVariable(hutName+"PbFrontThick",2.0); // guess
 
   Control.addVariable(hutName+"OuterThick",0.3);
 
