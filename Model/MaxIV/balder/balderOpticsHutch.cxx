@@ -110,7 +110,8 @@ balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) :
   pbRoofThick(A.pbRoofThick),outerThick(A.outerThick),
   holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),holeRadius(A.holeRadius),
-  skinMat(A.skinMat),pbMat(A.pbMat)
+  skinMat(A.skinMat),pbMat(A.pbMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: balderOpticsHutch to copy
@@ -151,6 +152,7 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
       skinMat=A.skinMat;
       ringMat=A.ringMat;
       pbMat=A.pbMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -203,6 +205,7 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat", 0);
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
 
 
@@ -365,7 +368,7 @@ balderOpticsHutch::createObjects(Simulation& System)
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 1003 (-4:-104) -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
     }
   else
     {
