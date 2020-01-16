@@ -53,6 +53,7 @@ namespace xraySystem
   class danmaxOpticsLine;
   class danmaxFrontEnd;
   class danmaxOpticsHutch;
+  class bladerExptBeamline;
   /*!
     \class DANMAX
     \version 1.0
@@ -96,7 +97,7 @@ class DANMAX : public R3Beamline
   std::shared_ptr<xraySystem::PipeShield> pShield;
 
   /// Beamline for experimental hutch
-  //  std::shared_ptr<ExptBeamline> exptBeam;
+  std::shared_ptr<balderExptBeamline> exptBeam;
 
   
  public:

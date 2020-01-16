@@ -829,13 +829,9 @@ exptVariables(FuncDataBase& Control,
   // NOTE: ACTIVE WINDOW:
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setWindow(2.7, 0.005);
+  PipeGen.setWindowMat("Diamond");
   PipeGen.setAFlange(2.7,0.5);
   PipeGen.generatePipe(Control,expName+"TelescopicSystem",0,100.0);
-  // In reality the window is made of 50 um diamond,
-  // but void is a reasonable approximation for our needs:
-  // Graphite#2 is Diamond (graphite with double density)
-  Control.addVariable(expName+"TelescopicSystemWindowBackMat", "Diamond");
-  Control.addVariable(expName+"TelescopicSystemWindowFrontMat", "Diamond");
 
   // sample area dimensions are arbitrary
   Control.addVariable(expName+"SampleAreaWidth",100.0);
@@ -877,7 +873,7 @@ exptVariables(FuncDataBase& Control,
   // front window
   Control.addVariable(noseName+"WindowRadius",setVariable::CF63::wallThick/2.0);
   Control.addVariable(noseName+"WindowThick",0.05);
-  Control.addVariable(noseName+"WindowMat","Graphite");
+  Control.addVariable(noseName+"WindowMat","Diamond");
 
   GateGen.setLength(10.0);
   GateGen.setCylCF<setVariable::CF40>();
