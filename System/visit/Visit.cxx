@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "objectRegister.h"
+//#include "objectRegister.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -219,7 +219,7 @@ Visit::populateLine(const Simulation& System,
   const Geometry::Vec3D longStep=
     (IMax==1) ? (YStep*XStep).unit()*XYZ[IMax] :
     (XStep*YStep).unit()*XYZ[IMax];
-  
+
   for(long int i=0;i<nA;i++)
     for(long int j=0;j<nB;j++)
       { 
@@ -351,6 +351,7 @@ Visit::populatePoint(const Simulation& System,
 		{
 		  const std::string rangeStr=
 		    System.inRange(ObjPtr->getName());
+		  
 		  if (Active.find(rangeStr)!=Active.end())
 		    mesh[i][j][k]=getResult(ObjPtr);
 		  else
@@ -359,6 +360,8 @@ Visit::populatePoint(const Simulation& System,
 	      // OLD Code:
 	      else
 		{
+		  if (!ObjPtr)
+		    ELog::EM<<"Zero Cell == "<<Pt<<ELog::endErr;
 		  mesh[i][j][k]=getResult(ObjPtr);
 		}
 

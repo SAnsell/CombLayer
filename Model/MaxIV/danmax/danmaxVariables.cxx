@@ -549,7 +549,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BremBlockGenerator BremGen;
   setVariable::JawValveGenerator JawGen;
-    
+
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
 
@@ -579,7 +579,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
   BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"BeamStopZStep",11.750);
+  Control.addVariable(viewKey+"BeamStopZStep",10.750);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -644,7 +644,7 @@ revBeamStopPackage(FuncDataBase& Control,
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
   BremGen.generateBlock(Control,viewKey+"RevBeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"RevBeamStopZStep",11.750);
+  Control.addVariable(viewKey+"RevBeamStopZStep",10.750);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -1018,6 +1018,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BellowKYAngle",180.0);
 
   monoShutterVariables(Control,opticsName);
+  GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
   
   return;
 }
@@ -1060,7 +1061,7 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsVariables(Control,"Danmax");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,48.3);
 
   danmaxVar::shieldVariables(Control);
   danmaxVar::connectVariables(Control,"DanmaxConnectUnit");  
