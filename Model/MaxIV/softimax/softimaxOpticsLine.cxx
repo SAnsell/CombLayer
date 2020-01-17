@@ -84,7 +84,7 @@
 // #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-// #include "OffsetFlangePipe.h"
+#include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
 #include "BremOpticsColl.h"
@@ -140,9 +140,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  M1TubeFront(new constructSystem::VacuumPipe(newName+"M1TubeFront")),
+  M1TubeFront(new constructSystem::OffsetFlangePipe(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
-  M1TubeBack(new constructSystem::VacuumPipe(newName+"M1TubeBack")),
+  M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -157,6 +157,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
     }),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   grating(new xraySystem::GratingUnit(newName+"Grating")),
+  zeroOrderBlock(new xraySystem::FlangeMount(newName+"ZeroOrderBlock")),
   gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
@@ -264,6 +265,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(jaws[0]);
   OR.addObject(jaws[1]);
   OR.addObject(monoVessel);
+  OR.addObject(grating);
+  OR.addObject(zeroOrderBlock);
   OR.addObject(gateC);
   OR.addObject(bellowE);
   OR.addObject(pumpTubeB);
@@ -491,8 +494,8 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,initFC,side,*M1TubeFront);
 
-  M1Tube->setFront(*M1TubeFront,2);
-  M1Tube->createAll(System,*M1TubeFront,2);
+  M1Tube->setFront(*M1TubeFront,11);
+  M1Tube->createAll(System,*M1TubeFront,11);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M1Tube,2);
   M1Tube->insertAllInCell(System,outerCell);
 
@@ -673,6 +676,11 @@ softimaxOpticsLine::buildMono(Simulation& System,
   grating->addInsertCell(monoVessel->getCell("Void"));
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
+
+  zeroOrderBlock->addInsertCell("Body", monoVessel->getCell("Void"));
+  //zeroOrderBlock->setBladeCentre(*monoVessel,0);
+  zeroOrderBlock->setFront(*monoVessel,3);
+  zeroOrderBlock->createAll(System,*monoVessel,3);
 
   // offPipeB->createAll(System,*monoVessel,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
@@ -886,8 +894,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
-  //  setCell("LastVoid",masterCell->getName());  lastComp=pipeA;  return;
-
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
@@ -932,7 +938,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   cellIndex+=5;
   /////////////////////////////////////////
 
-  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
+  //  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
 
 
   xrayConstruct::constructUnit
@@ -1055,9 +1061,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
-
-  //  setCell("LastVoid",masterCell->getName());  lastComp=bellowA;  return;
-
 
   buildM3STXMMirror(System,masterCell,*bellowJ,"back");
 

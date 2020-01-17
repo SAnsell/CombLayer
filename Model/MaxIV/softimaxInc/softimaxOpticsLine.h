@@ -27,6 +27,7 @@ namespace constructSystem
   class PortTube;
   class BiPortTube;
   class JawValveTube;
+  class OffsetFlangePipe;
 }
 
 namespace xraySystem
@@ -85,9 +86,9 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// M1 - Mirror box
-  std::shared_ptr<constructSystem::VacuumPipe> M1TubeFront;
+  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
-  std::shared_ptr<constructSystem::VacuumPipe> M1TubeBack;
+  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeBack;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
   std::shared_ptr<xraySystem::BlockStand> M1Stand;
@@ -107,6 +108,7 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
   /// Grating
   std::shared_ptr<xraySystem::GratingUnit> grating;
+  std::shared_ptr<xraySystem::FlangeMount> zeroOrderBlock;
   // Gate to isolate mono
   std::shared_ptr<constructSystem::GateValveCube> gateC;
   /// Bellow from gate C

@@ -202,31 +202,47 @@ monoVariables(FuncDataBase& Control,
   setVariable::TankMonoVesselGenerator MBoxGen;
   setVariable::GratingMonoGenerator MXtalGen;
   setVariable::GratingUnitGenerator MUnitGen;
+  setVariable::FlangeMountGenerator FlangeGen;
 
   // ystep/width/height/depth/length
   //
+  constexpr double zstep(1.4);
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(10.2,1.0);
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
   MBoxGen.setPortLength(2.3,5.0);
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
-  Control.addVariable(monoKey+"MonoVesselOuterSize",62);
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",1.4);      // from primary
+  Control.addVariable(monoKey+"MonoVesselOuterSize",63);
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",zstep);      // from primary: 131.4-130.0
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1); // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF120>(5.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF63::flangeLength,"SiO2");
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,0.0),
 			Geometry::Vec3D(1,0,0));
 
   // crystals
-  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
+  //  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
   // monounit
-  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,0.0);
+  constexpr double theta(1.0);
+  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,theta); // yStep, angle
+  Control.addVariable(monoKey+"GratingMirrorTheta",theta);
+  Control.addVariable(monoKey+"GratingZLift",zstep);
+  Control.addVariable(monoKey+"GratingMainBarDepth",1.5);
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(8.0,15.5,1.0,0.0,"Copper",1);  // w,h,t,ang,active
+  FlangeGen.generateMount(Control,monoKey+"ZeroOrderBlock",0);  // in beam
+  Control.addVariable(monoKey+"ZeroOrderBlockZStep",50.0);
+  Control.addVariable(monoKey+"ZeroOrderBlockBladeLift",zstep);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleActive",1);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleWidth",1.0);
+  Control.addVariable(monoKey+"ZeroOrderBlockHoleHeight",1.0);
+
 
   return;
 }
@@ -255,10 +271,11 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InnerThick",0.3);
   Control.addVariable(hutName+"Extension",100.0);
 
-  Control.addVariable(hutName+"PbWallThick",1.2);
-  Control.addVariable(hutName+"PbRoofThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",2.0);
-  Control.addVariable(hutName+"PbFrontThick",2.0);
+  // Lead thicknesses are from 06643-03-000\ folio\ 1-2\ IND\ G.PDF
+  Control.addVariable(hutName+"PbWallThick",1.6);
+  Control.addVariable(hutName+"PbRoofThick",1.6);
+  Control.addVariable(hutName+"PbBackThick",9);
+  Control.addVariable(hutName+"PbFrontThick",2.0); // guess
 
   Control.addVariable(hutName+"OuterThick",0.3);
 
@@ -301,36 +318,41 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlange(8.05,0.3);
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
+  constexpr double xstep(2.2);
+  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
+
   ////////////////////////
-  constexpr double theta = -1.0; // beam angle in deg
-  constexpr double phi = 0.0;   // rotation angle in deg
+  constexpr double theta = -1.0; // incident beam angle
+  constexpr double phi = 0.0;   // rotation angle
   //  const double normialAngle=0.2;
-  //  const double vAngle=0.0;
+  constexpr double vAngle=180.0;
   constexpr double centreDist(0.0); // along the beam line
-  //  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-  //  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
   ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
-  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,mName,0.0,50.0);
-  Control.addVariable(mName+"XStep",centreOffset);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   // mirror in M1Tube
-  MirrGen.setPlate(28.0,1.0,9.0);  //guess
-  //  MirrGen.setPrimaryAngle(0,vAngle,0);
+  constexpr double thick(6.0); // messured in .step
+  MirrGen.setPlate(28.0, thick, 9.0);  //guess: length, thick, width
+  constexpr double top(0.1);
+  constexpr double depth(thick+1.0);
+  constexpr double gap(0.5);
+  constexpr double extra(1.0);
+  MirrGen.setSupport(top, depth, gap, extra);
+  MirrGen.setPrimaryAngle(0,vAngle,0);
   // x/y/z/theta/phi/radius
   MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 0.0,
-			 -centreDist/2.0,
+			 -xstep,
+			 centreDist/2.0,
 			 0.0,
 			 theta,
 			 phi,
 			 0.0);
-  Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
+  Control.addVariable(mirrorKey+"M1MirrorYAngle",270.0); // to reflect horizontally
 
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
@@ -341,11 +363,11 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,4.5);
+  PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",-2);
-  ELog::EM << "XYAngle = -2   is it correct?????" << ELog::endWarn;
-
+  Control.addVariable(backName+"XYAngle",2*theta);
+  Control.addVariable(backName+"XStep",xstep);
+  Control.addVariable(backName+"FlangeFrontXStep",-xstep);
 
   return;
 }
@@ -709,6 +731,7 @@ opticsVariables(FuncDataBase& Control,
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
   PItemGen.setCF<setVariable::CF40>(PLen);
   PItemGen.setOuterVoid(1);
+  PItemGen.setPlate(setVariable::CF40::flangeLength,"Stainless304");
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
 
@@ -1241,12 +1264,14 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,150.0);
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,158.95); // length adjusted to place M1 at 2400 from undulator centre
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
+  Control.addVariable("SoftiMAXOpticsHutVoidMat", "Air");
+
   softimaxVar::opticsVariables(Control,"SoftiMAX");
   //  softimaxVar::exptHutVariables(Control,"SoftiMAX");
-  softimaxVar::exptVariables(Control,"SoftiMAX");
+  //  softimaxVar::exptVariables(Control,"SoftiMAX");
 
   PipeGen.generatePipe(Control,"SoftiMAXJoinPipeB",0,100.0);
 

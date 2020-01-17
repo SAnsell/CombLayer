@@ -34,31 +34,18 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -67,7 +54,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -110,7 +96,8 @@ balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) :
   pbRoofThick(A.pbRoofThick),outerThick(A.outerThick),
   holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),holeRadius(A.holeRadius),
-  skinMat(A.skinMat),pbMat(A.pbMat)
+  skinMat(A.skinMat),pbMat(A.pbMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: balderOpticsHutch to copy
@@ -151,6 +138,7 @@ balderOpticsHutch::operator=(const balderOpticsHutch& A)
       skinMat=A.skinMat;
       ringMat=A.ringMat;
       pbMat=A.pbMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -203,6 +191,7 @@ balderOpticsHutch::populate(const FuncDataBase& Control)
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat", 0);
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
 
 
@@ -365,7 +354,7 @@ balderOpticsHutch::createObjects(Simulation& System)
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 1003 (-4:-104) -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
     }
   else
     {
