@@ -140,7 +140,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  M1TubeFront(new constructSystem::VacuumPipe(newName+"M1TubeFront")),
+  M1TubeFront(new constructSystem::OffsetFlangePipe(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
@@ -494,8 +494,8 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,initFC,side,*M1TubeFront);
 
-  M1Tube->setFront(*M1TubeFront,2);
-  M1Tube->createAll(System,*M1TubeFront,2);
+  M1Tube->setFront(*M1TubeFront,11);
+  M1Tube->createAll(System,*M1TubeFront,11);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M1Tube,2);
   M1Tube->insertAllInCell(System,outerCell);
 

@@ -318,8 +318,11 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlange(8.05,0.3);
   PipeGen.generatePipe(Control,frontName,0.0,7.6);
   Control.addVariable(frontName+"WindowActive",0);
+  constexpr double xstep(2.2);
+  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
+
   ////////////////////////
-  constexpr double theta = 1.0; // incident beam angle
+  constexpr double theta = -1.0; // incident beam angle
   constexpr double phi = 0.0;   // rotation angle
   //  const double normialAngle=0.2;
   constexpr double vAngle=180.0;
@@ -333,23 +336,23 @@ m1MirrorVariables(FuncDataBase& Control,
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   // mirror in M1Tube
-  constexpr double thick(1.0);
+  constexpr double thick(6.0); // messured in .step
   MirrGen.setPlate(28.0, thick, 9.0);  //guess: length, thick, width
   constexpr double top(0.1);
-  constexpr double depth(2.0);
+  constexpr double depth(thick+1.0);
   constexpr double gap(0.5);
   constexpr double extra(1.0);
   MirrGen.setSupport(top, depth, gap, extra);
   MirrGen.setPrimaryAngle(0,vAngle,0);
   // x/y/z/theta/phi/radius
   MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 cos(theta*M_PI/180.0)*depth,
+			 -xstep,
 			 centreDist/2.0,
 			 0.0,
 			 theta,
 			 phi,
 			 0.0);
-  Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0); // to reflect horizontally
+  Control.addVariable(mirrorKey+"M1MirrorYAngle",270.0); // to reflect horizontally
 
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
@@ -362,8 +365,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setAFlange(8.05,0.3);
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",-2*theta);
-  constexpr double xstep(0.8);
+  Control.addVariable(backName+"XYAngle",2*theta);
   Control.addVariable(backName+"XStep",xstep);
   Control.addVariable(backName+"FlangeFrontXStep",-xstep);
 

@@ -86,7 +86,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// M1 - Mirror box
-  std::shared_ptr<constructSystem::VacuumPipe> M1TubeFront;
+  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeBack;
   /// M1 - Mirror
