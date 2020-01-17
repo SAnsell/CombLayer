@@ -224,7 +224,7 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
-  const double beamMirrorShift(-0.7);
+  const double beamMirrorShift(-0.6);
   
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",999.6);
@@ -349,17 +349,19 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
+  const double beamOffset(-0.6);
+    
   const std::string hutName(beamName+"ExptHut");
-  
+
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"PbThick",0.5);
-  Control.addVariable(hutName+"OuterThick",0.3);
+  Control.addVariable(hutName+"InnerThick",0.1);
+  Control.addVariable(hutName+"PbThick",0.4);
+  Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"FloorThick",50.0);
 
   Control.addVariable(hutName+"InnerOutVoid",10.0);
@@ -370,13 +372,13 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",beamXStep-0.7);
+  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",beamXStep-0.7);
+  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(beamName+"PShieldYStep",0.3);
   Control.addVariable(beamName+"PShieldLength",1.0);
   Control.addVariable(beamName+"PShieldWidth",10.0);
