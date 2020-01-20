@@ -699,8 +699,8 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,gateAName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   FlangeGen.setNoPlate();
-  FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
-  FlangeGen.generateMount(Control,preName+"GateTubeAItem",0);  // in beam
+  FlangeGen.setBlade(4.0,5.0,0.5,0.0,"Aluminium",1);
+  FlangeGen.generateMount(Control,preName+"GateTubeAItem",0);  // 1: in beam
 
   BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
