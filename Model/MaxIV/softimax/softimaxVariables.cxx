@@ -1267,7 +1267,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,158.95); // length adjusted to place M1 at 2400 from undulator centre
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
-  Control.addVariable("SoftiMAXOpticsHutVoidMat", "Air");
+  Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");
 
   softimaxVar::opticsVariables(Control,"SoftiMAX");
   //  softimaxVar::exptHutVariables(Control,"SoftiMAX");
