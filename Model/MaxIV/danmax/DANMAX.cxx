@@ -83,6 +83,7 @@
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
 #include "SqrShield.h"
+#include "balderExptBeamline.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -102,7 +103,8 @@ DANMAX::DANMAX(const std::string& KN) :
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut(new xraySystem::ExperimentalHutch(newName+"ExptHut")),
-  pShield(new xraySystem::PipeShield(newName+"PShield"))
+  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  exptBeam(new balderExptBeamline(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -230,6 +232,9 @@ DANMAX::build(Simulation& System,
   pShield->setCutSurf("inner",*joinPipeC,"outerPipe");
   //  pShield->setCutSurf("front",*opticsHut,"innerBack");
   pShield->createAll(System,*exptHut,"innerFront");
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->createAll(System,*joinPipeC,2);
 
   return;
 }

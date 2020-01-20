@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,6 +183,7 @@ frontMaskVariables(FuncDataBase& Control,
   
     // collimator block
   FMaskGen.setCF<CF100>();
+  FMaskGen.setMat("Copper");
   FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
   //  FMaskGen.setBackGap(0.71,0.71);
   // Approximated to get 1mrad x 1mrad
@@ -223,6 +224,7 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
+  const double beamMirrorShift(-0.6);
   
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",999.6);
@@ -251,7 +253,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
 
-  Control.addVariable(hutName+"HoleXStep",-2.0+xOffset);
+  Control.addVariable(hutName+"HoleXStep",beamMirrorShift+xOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.5);
 
@@ -260,12 +262,11 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
-  Control.addVariable(hutName+"NChicane",4);
+  Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",420.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",320.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
+  PGen.setSize(8.0,80.0,45.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
 
 
   return;
@@ -303,7 +304,7 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"Width",70.0);
   Control.addVariable(connectName+"Length",858.4);
   Control.addVariable(connectName+"Thick",0.5);
-  Control.addVariable(connectName+"SkinThick",0.2);
+  Control.addVariable(connectName+"SkinThick",0.1);
 
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
@@ -348,17 +349,19 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
+  const double beamOffset(-0.6);
+    
   const std::string hutName(beamName+"ExptHut");
-  
+
   Control.addVariable(hutName+"YStep",1850.0);
   Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"PbThick",0.5);
-  Control.addVariable(hutName+"OuterThick",0.3);
+  Control.addVariable(hutName+"InnerThick",0.1);
+  Control.addVariable(hutName+"PbThick",0.4);
+  Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"FloorThick",50.0);
 
   Control.addVariable(hutName+"InnerOutVoid",10.0);
@@ -369,13 +372,13 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",beamXStep-2.0);
+  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",beamXStep-1.26);
+  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(beamName+"PShieldYStep",0.3);
   Control.addVariable(beamName+"PShieldLength",1.0);
   Control.addVariable(beamName+"PShieldWidth",10.0);
@@ -549,7 +552,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BremBlockGenerator BremGen;
   setVariable::JawValveGenerator JawGen;
-    
+
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
 
@@ -579,7 +582,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
   BremGen.generateBlock(Control,viewKey+"BeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"BeamStopZStep",11.750);
+  Control.addVariable(viewKey+"BeamStopZStep",10.750);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -644,7 +647,7 @@ revBeamStopPackage(FuncDataBase& Control,
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
   BremGen.generateBlock(Control,viewKey+"RevBeamStop",0.0,8.0);
-  Control.addVariable(viewKey+"RevBeamStopZStep",11.750);
+  Control.addVariable(viewKey+"RevBeamStopZStep",10.750);
 
    // Single slit pair
   JawGen.setRadius(8.0);
@@ -687,7 +690,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
-  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.7);      // from primary
+  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
@@ -728,7 +731,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   MBoxGen.generateBox
     (Control,monoKey+"MLMVessel",0.0,57.0,12.5,31.0,109.0);
 
-  Control.addVariable(monoKey+"MLMVesselPortBXStep",-0.7);   // from primary
+  Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
@@ -1018,6 +1021,8 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BellowKYAngle",180.0);
 
   monoShutterVariables(Control,opticsName);
+  GateGen.setBladeThick(0.3);
+  GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
   
   return;
 }
@@ -1035,6 +1040,7 @@ DANMAXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
 
   const double beamXStep(43.5);
+  
   Control.addVariable("sdefType","Wiggler");
 
   setVariable::PipeGenerator PipeGen;
@@ -1060,12 +1066,14 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsVariables(Control,"Danmax");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,54.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,48.3);
 
   danmaxVar::shieldVariables(Control);
   danmaxVar::connectVariables(Control,"DanmaxConnectUnit");  
 
   PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setWindow(2.7, 0.005);
+  PipeGen.setWindowMat("Diamond");
   PipeGen.generatePipe(Control,"DanmaxJoinPipeC",0,54.0);
 
   danmaxVar::exptHutVariables(Control,"Danmax",beamXStep);

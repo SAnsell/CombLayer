@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/CollGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ class CollGenerator
   void setFrontGap(const double,const double);
   void setBackGap(const double,const double);
 
+  void setMat(const std::string&);
   void generateColl(FuncDataBase&,const std::string&,
 		    const double,const double) const;
 

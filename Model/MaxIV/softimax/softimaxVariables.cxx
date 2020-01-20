@@ -3,7 +3,7 @@
 
  * File:   softimax/softimaxVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -290,10 +290,13 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
 
-  Control.addVariable(preName+"OpticsNChicane",1);
-  PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,preName+"OpticsChicane0",0,0);
+  Control.addVariable(hutName+"NChicane",2);
 
+  PortChicaneGenerator PGen;
+  PGen.setSize(8.0,80.0,45.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
+  
   return;
 }
 

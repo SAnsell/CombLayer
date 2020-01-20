@@ -3,7 +3,7 @@
  
  * File: danmax/danmaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,7 +178,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  bellowL(new constructSystem::Bellows(newName+"BellowL"))
+  gateG(new constructSystem::GateValveCylinder(newName+"GateG"))
  /*!
     Constructor
     \param Key :: Name of construction key
@@ -238,7 +238,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
   OR.addObject(monoAdaptorB);
-  OR.addObject(bellowL);
+  OR.addObject(gateG);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -418,6 +418,9 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
   revBeamStop->createAll(System,*revBeamStopTube,"OrgOrigin");
 
+  ELog::EM<<"Previous == "<<initFC.getLinkPt(sideName)<<ELog::endDiag;
+  ELog::EM<<"BS == "<<revBeamStop->getLinkPt(0)<<ELog::endDiag;
+
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VPB,"OuterPlate",*bellowK);
 
@@ -558,6 +561,7 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
   beamStopTube->createAll(System,initFC,sideName);
   //  beamStopTube->intersectPorts(System,1,2);
 
+
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
   const int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
@@ -565,7 +569,6 @@ danmaxOpticsLine::constructBeamStopTube(Simulation& System,
   
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
   beamStop->createAll(System,*beamStopTube,"OrgOrigin");
-
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,VPB,"OuterPlate",*slitsA);
 
@@ -763,8 +766,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,masterCell,*bellowK,"back");
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*monoAdaptorB,"back",*gateG);
+
   setCell("LastVoid",masterCell->getName());
-  lastComp=monoAdaptorB;
+  lastComp=gateG;
   return;
 
 }

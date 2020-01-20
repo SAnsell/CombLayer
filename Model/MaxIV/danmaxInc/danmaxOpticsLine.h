@@ -3,7 +3,7 @@
  
  * File:   danmaxInc/danmaxOpticsLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,7 +197,7 @@ class danmaxOpticsLine :
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
   /// bellows from second mono
-  std::shared_ptr<constructSystem::Bellows> bellowL;  
+  std::shared_ptr<constructSystem::GateValveCylinder> gateG;  
 
   
 

@@ -3,7 +3,7 @@
  
  * File:   Main/maxiv.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,12 +64,10 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "SimImportance.h"
 #include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "SimMCNP.h" 
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

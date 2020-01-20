@@ -143,7 +143,7 @@ CollGenerator::setMinAngleSize(const double L,
    */
 {
   minLength=L;
-  minWidth= 2.0*Dist*tan(1e-6*angX/2.0);
+  minWidth = 2.0*Dist*tan(1e-6*angX/2.0);
   minHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
   return;
 }
@@ -223,7 +223,17 @@ CollGenerator::setBackGap(const double W,const double H)
   BHeight=H;
   return;
 }
-				  
+
+void
+CollGenerator::setMat(const std::string& M)
+  /*!
+    Set the main material
+    \param M :: Material string
+   */
+{
+  mat=M;
+}
+  
 void
 CollGenerator::generateColl(FuncDataBase& Control,
 			    const std::string& keyName,

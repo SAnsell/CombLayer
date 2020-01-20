@@ -449,7 +449,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();
 
   // addaptor flange at beginning: [check]
   PipeGen.setCF<CF40>();
@@ -784,7 +784,7 @@ BALDERvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep [0] / dipole pipe / exit pipe
