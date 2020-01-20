@@ -75,7 +75,7 @@ SOFTIMAX::SOFTIMAX(const std::string& KN) :
   R3Beamline("Balder",KN),
   frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-    opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
   /*!
