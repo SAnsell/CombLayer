@@ -290,13 +290,33 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
 
-  Control.addVariable(hutName+"NChicane",2);
+  // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view
+  Control.addVariable(hutName+"NChicane",4);
 
+  const double clearGap(8.0); // horizontal void clearance for the cables
+  const double vGap03(8.0); // vertical void clearance for the cables of chicanes 0 and 3
+  const double vGap12(10.0);
+  const double height(50.0);
+  const double width03(65.0);
+  const double width12(60.0);
+  const double downStep03(height-vGap03);
+  const double downStep12(height-vGap12);
   PortChicaneGenerator PGen;
-  PGen.setSize(8.0,80.0,45.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
-  
+  PGen.setSize(clearGap,width03,height); // width=65: 06643-03-000 folio 1-2 IND G.PDF; height=50.0: measured
+  PGen.generatePortChicane(Control,hutName+"Chicane0",344.0, -12.9); // -12.9 -> 92 from the floor
+  Control.addVariable(hutName+"Chicane0DownStep",downStep03);
+
+  PGen.setSize(clearGap,width12,height);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",155, -25.1);
+  Control.addVariable(hutName+"Chicane1DownStep",downStep12);
+
+  PGen.generatePortChicane(Control,hutName+"Chicane2",-155, -25.1);
+  Control.addVariable(hutName+"Chicane2DownStep",downStep12);
+
+  PGen.setSize(clearGap,width03,height);
+  PGen.generatePortChicane(Control,hutName+"Chicane3",-255.1, -12.9);
+  Control.addVariable(hutName+"Chicane3DownStep",downStep03);
+
   return;
 }
 
