@@ -65,7 +65,8 @@ class PipeShieldGenerator
 		   const std::string&);
 
   void generateShield(FuncDataBase&,const std::string&,
-		      const double,const double) const;
+		      const Geometry::Vec3D&,
+		      const double) const;
 
 };
 

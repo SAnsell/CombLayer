@@ -3,7 +3,7 @@
  
  * File:   commonBeam/PipeShieldGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,19 +144,23 @@ PipeShieldGenerator::setMaterial(const std::string& MainM,
 void
 PipeShieldGenerator::generateShield(FuncDataBase& Control,
 				    const std::string& keyName,
-				    const double yStep,
+				    const Geometry::Vec3D& xyzStep,
 				    const double wingLength) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param xStep :: Step along beam centre
     \param yStep :: Step along beam centre
     \param wingLength :: Length of wings
   */
 {
   ELog::RegMethod RegA("PipeShieldGenerator","generateShield");
   
-  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"XStep",xyzStep[0]);
+  Control.addVariable(keyName+"YStep",xyzStep[1]);
+  Control.addVariable(keyName+"ZStep",xyzStep[2]);
+  
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);

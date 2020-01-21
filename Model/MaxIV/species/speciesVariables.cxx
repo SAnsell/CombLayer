@@ -237,7 +237,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,102.5);
 
   ShieldGen.setPlate(120.0,60.0,7.0);
-  ShieldGen.generateShield(Control,splitKey+"ScreenC",20.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenC",
+			   Geometry::Vec3D(0,20.0,0.0),0.0);
 
   return;
 }
@@ -352,8 +353,8 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,mirrorKey+"PipeB",0,15.5);
 
   // ystep : wing
-  ShieldGen.generateShield(Control,mirrorKey+"ScreenA",-2.0,0.0);
-
+  ShieldGen.generateShield(Control,mirrorKey+"ScreenA",
+			   Geometry::Vec3D(0,-2.0,0.0),0.0);
   // Extra lead brick
   Control.addVariable(mirrorKey+"LeadBrickXStep",12.0);
   Control.addVariable(mirrorKey+"LeadBrickYStep",4.0);  // half depth
@@ -437,8 +438,8 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,slitKey+"PipeD",0,34.0);
 
   // ystep : wing
-  ShieldGen.generateShield(Control,slitKey+"ScreenB",0.0,0.0);
-
+  ShieldGen.generateShield(Control,slitKey+"ScreenB",
+			   Geometry::Vec3D(0,0,0.0),0.0);
   return;
 }
 

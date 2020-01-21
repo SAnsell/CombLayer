@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1095,7 +1095,8 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
   ShieldGen.setPlate(60.0,60.0,10.0);
-  ShieldGen.generateShield(Control,"CosaxsScreenA",4.4,0.0);
+  ShieldGen.generateShield(Control,"CosaxsScreenA",
+			   Geometry::Vec3D(0,4.4,0),0.0);
 
   return;
 }

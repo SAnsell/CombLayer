@@ -1028,8 +1028,8 @@ opticsVariables(FuncDataBase& Control,
   // ystep : wing
   setVariable::PipeShieldGenerator ShieldGen;
   ShieldGen.setPlate(100.0,100,9.0);
-  ShieldGen.generateShield(Control,preName+"ScreenA",60.0,0.0);
-
+  ShieldGen.generateShield(Control,preName+"ScreenA",
+			   Geometry::Vec3D(0,60.0,0.0),0.0);
   return;
 }
 

@@ -82,6 +82,7 @@ namespace softimaxVar
   void frontMaskVariables(FuncDataBase&,const std::string&);
   void wallVariables(FuncDataBase&,const std::string&);
   void monoVariables(FuncDataBase&,const std::string&);
+  void shieldVariables(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -937,320 +938,36 @@ opticsVariables(FuncDataBase& Control,
   return;
 }
 
+
 void
-exptVariables(FuncDataBase& Control,
-		      const std::string& beamName)
-  /*
-    Components in the experimental hutch
-    \param Control :: Function data base
-    \param beamName :: Name of beamline
+shieldVariables(FuncDataBase& Control,
+		const std::string& shieldKey)
+  /*!
+    Set the variables for the front end extra shield
+    \param Control :: DataBase to use
+    \param shieldKey :: name before part names
   */
 {
-  const std::string preName(beamName+"ExptLine");
+  ELog::RegMethod RegA("softimaxVariables[F]","shieldVariables");
 
-  Control.addVariable(preName+"OuterLength",2300.0);
-  Control.addVariable(preName+"OuterLeft",85.0);
-  Control.addVariable(preName+"OuterRight",85.0);
-  Control.addVariable(preName+"OuterTop",85.0);
+  setVariable::PipeShieldGenerator ShieldGen;
+  
+  ShieldGen.setPlate(75.0,75.0,7.0);
+  ShieldGen.setWall(0.1,0.0);
+  ShieldGen.setMaterial("Stainless304","Stainless304","Void");
+  
+  ShieldGen.generateShield(Control,shieldKey+"ScreenA",
+  			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
 
-  setVariable::BellowGenerator BellowGen;
-  setVariable::GateValveGenerator GateGen;
-  setVariable::JawValveGenerator JawGen;
-  setVariable::PipeGenerator PipeGen;
-  setVariable::MonoBoxGenerator VBoxGen;
-  setVariable::DiffPumpGenerator DiffGen;
-  setVariable::PortItemGenerator PItemGen;
-
-  // Gate valve A - round
-  GateGen.setLength(2.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateA",0.0,0);
-
-   // Double slits A and B
-  JawGen.setCF<setVariable::CF100>();
-  JawGen.setAPortCF<setVariable::CF40>();
-  JawGen.setLength(4.0);
-  JawGen.setRadius(4.0);
-  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,preName+"DoubleSlitA",0.0,0.8,0.8);
-
-  JawGen.setCF<setVariable::CF100>();
-  JawGen.setBPortCF<setVariable::CF40>();
-  JawGen.setLength(4.0);
-  JawGen.setRadius(4.0);
-  JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
-  JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
-
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0); // measured
-  VBoxGen.setCF<CF63>();
-  VBoxGen.setAPortCF<CF40>();
-  VBoxGen.setPortLength(2.5,2.5); // La/Lb
-  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
-
-  const std::string duName(preName+"DiagnosticUnit");
-
-  // arguments: ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,duName,
-		      0.0,22.0,8.5,8.5,43.0); // measured
-
-  Control.addVariable(duName+"FilterHolder1YStep",8.2);
-  Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured
-  Control.addVariable(duName+"FilterHolder1Height",1.8);
-  Control.addVariable(duName+"FilterHolder1Depth",1.4);
-  Control.addVariable(duName+"FilterHolder1Width",5.75);
-  Control.addVariable(duName+"FilterHolder1Mat","Stainless304");
-  Control.addVariable(duName+"FilterHolder1LegHeight",1.3);
-  Control.addVariable(duName+"FilterHolder1LegWidth",1.5);
-  Control.addVariable(duName+"FilterHolder1BaseHeight",1.0);
-  Control.addVariable(duName+"FilterHolder1BaseWidth",6.5);
-  Control.addVariable(duName+"FilterHolder1FoilThick",1.0); // arbitrary
-  Control.addVariable(duName+"FilterHolder1FoilMat","Silicon300K"); // arbitrary
-  Control.addVariable(duName+"FilterHolder1NWindows",5); // measured
-  Control.addVariable(duName+"FilterHolder1WindowHeight",0.6); // measured
-  Control.addVariable(duName+"FilterHolder1WindowDepth",0.6); // measured
-  Control.addVariable(duName+"FilterHolder1WindowWidth",0.7); // measured
-
-  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder2");
-  Control.addVariable(duName+"FilterHolder2YStep",2.0);
-
-  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder3");
-  Control.addVariable(duName+"FilterHolder3YStep",2.0);
-
-  // Gate valve B - flat
-  GateGen.setLength(2.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateB",0.0,0);
-
-  DiffGen.generatePump(Control,preName+"DiffPump",53.24);
-  // NOTE: ACTIVE WINDOW:
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setWindow(2.7, 0.005);
-  PipeGen.setAFlange(2.7,0.5);
-  PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
-  // In reality the window is made of 50 um diamond,
-  // but void is a reasonable approximation for our needs:
-  // Graphite#2 is Diamond (graphite with double density)
-  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Diamond");
-  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Diamond");
-
-  // sample area dimensions are arbitrary
-  Control.addVariable(preName+"SampleAreaWidth",100.0);
-  Control.addVariable(preName+"SampleAreaHeight",50.0);
-  Control.addVariable(preName+"SampleAreaDepth",10.0);
-  Control.addVariable(preName+"SampleAreaSampleRadius",0.0);  // sample not made
-  Control.addVariable(preName+"SampleAreaAirMat","Air");
-  Control.addVariable(preName+"SampleAreaSampleMat","Stainless304");
-
-  const std::string tubeName(preName+"Tube");
-
-  // X032_SoftiMAX_\(2019-02-11\)_dimensions.pdf:
-  Control.addVariable(tubeName+"YStep", 454.748); // dummy
-
-  const std::string noseName(tubeName+"NoseCone");
-
-  Control.addVariable(noseName+"Length",35.0); // measured
-  Control.addVariable(noseName+"MainMat","Void"); //
-  Control.addVariable(noseName+"WallMat","Stainless304");
-  Control.addVariable(noseName+"WallThick",1.0); // measured
-
-  Control.addVariable(noseName+"FrontPlateWidth",12.0); // measured
-  Control.addVariable(noseName+"FrontPlateHeight",12.0); // measured
-  Control.addVariable(noseName+"FrontPlateThick",1.5); // measured
-
-  Control.addVariable(noseName+"BackPlateWidth",38.0); // measured
-  Control.addVariable(noseName+"BackPlateHeight",38.0); // measured
-  Control.addVariable(noseName+"BackPlateThick",2.5); // measured
-  Control.addVariable(noseName+"BackPlateRimThick",4.5); // measured
-
-  Control.addVariable(noseName+"PipeRadius",4.0); // ??? guess
-  Control.addVariable(noseName+"PipeLength",4.6); // measured
-  Control.addVariable(noseName+"PipeWallThick",
-		      static_cast<double>(setVariable::CF63::wallThick)); // guess ???
-  Control.addVariable(noseName+"FlangeRadius",
-		      static_cast<double>(setVariable::CF63::flangeRadius));
-  Control.addVariable(noseName+"FlangeLength",2.6); // measured
-
-  // front window
-  Control.addVariable(noseName+"WindowRadius",setVariable::CF63::wallThick/2.0);
-  Control.addVariable(noseName+"WindowThick",0.05);
-  Control.addVariable(noseName+"WindowMat","Graphite");
-
-  GateGen.setLength(10.0);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,tubeName+"GateA",0.0,0);
-  Control.addVariable(tubeName+"GateARadius",17.0); // measured
-
-  // [1] = x032_softimax_-2019-02-11-_dimensions.pdf
-  // [2] = measured in X032_SoftiMAX_(2019-04-25).step
-  Control.addVariable(tubeName+"StartPlateThick", 2.7); // [1]
-  Control.addVariable(tubeName+"StartPlateRadius", 57.8);  // [1], 1156/2.0 mm
-
-  // According to [1], the PortRadius is 50.2/2 = 25.1 cm, but here we set it to
-  // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
-  // (which we do not build)
-  Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
-  Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
-
-
-  const Geometry::Vec3D C(0,0,0);
-  const Geometry::Vec3D C1(0,0.1,0);
-  const Geometry::Vec3D C2(0,55.1,0);
-  const Geometry::Vec3D C3(0,-50.7,0);
-
-  const Geometry::Vec3D PX(1,0,0);
-  const Geometry::Vec3D PY(0,1,0);
-  const Geometry::Vec3D PZ(0,0,1);
-
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  SimpleTubeGen.setPipe(50.2,0.6,57.8,4.3);  // Rad,thick,Flange (Rad,len)
-
-  std::string segName=tubeName+"Segment1";
-  SimpleTubeGen.generateTube(Control,segName,0.0,167.2);
-  Control.addVariable(segName+"NPorts",1);
-
-  PItemGen.setCF<setVariable::CF350>(7.0);
-  PItemGen.setPlate(CF350::flangeLength,"Stainless304");
-  PItemGen.setOuterVoid(1);
-  PItemGen.generatePort(Control,segName+"Port0",C1,PX);
-
-  // segment 2:
-  segName=tubeName+"Segment2";
-  SimpleTubeGen.generateTube(Control,segName,0.0,176);
-  Control.addVariable(segName+"NPorts",1);
-  PItemGen.generatePort(Control,segName+"Port0",C,-PX);
-
-  // segment 3: short without ports before the wall
-  segName=tubeName+"Segment3";
-  setVariable::PipeTubeGenerator WallTubeGen(SimpleTubeGen);
-  WallTubeGen.setAFlange(57.8,3.7);
-  WallTubeGen.setBFlange(70.0,1.0);
-  // [2] 1 added to have distance 378.7 as in [1]
-  WallTubeGen.generateTube(Control,segName,0.0,32.8+1.0);
-  Control.addVariable(segName+"NPorts",0);
-
-
-  // segment 4: longer with 2 ports right after the wall
-  segName=tubeName+"Segment4";
-  SimpleTubeGen.setAFlange(70.0,1.0);
-  SimpleTubeGen.generateTube(Control,segName,0.0,238.2);
-
-  Control.addVariable(segName+"NPorts",2);
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,38.2,0),PX);
-  PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,-67.6,0),-PX);
-  // segments 5-9 are the same length [5 has more ports]
-  setVariable::PortItemGenerator PItemExtraGen(PItemGen);
-  PItemExtraGen.setPort(19.0,17.8,0.6);          // len/rad/wall
-  PItemExtraGen.setFlange(20.0,1.0);
-  PItemExtraGen.setPlate(2.5,"Stainless304");
-
-  // Segment 5
-  segName=tubeName+"Segment5";
-  SimpleTubeGen.setAFlange(57.8,4.3);   // set back to default
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
-  Control.addVariable(segName+"NPorts",5);
-
-  constexpr double alpha(30*M_PI/180);
-  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
-  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
-  PItemExtraGen.generatePort(Control,segName+"Port2",
-			     Geometry::Vec3D(0,3.3,0),
-			     Geometry::Vec3D(0,-sin(alpha),-cos(alpha)));
-  PItemExtraGen.generatePort(Control,segName+"Port3",
-			     Geometry::Vec3D(0,60.9,0),
-			     Geometry::Vec3D(0,-sin(alpha),-cos(alpha)));
-
-  PItemExtraGen.setPort(7.0,10.0,0.6);
-  PItemExtraGen.setFlange(12.0,2.5);
-  PItemExtraGen.generatePort(Control,segName+"Port4",
-			     Geometry::Vec3D(0,-20.0,0),PX);
-
-  // segments 6
-  segName=tubeName+"Segment6";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
-  Control.addVariable(segName+"NPorts",2);
-  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
-  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
-
-  // segments 7
-  segName=tubeName+"Segment7";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
-  Control.addVariable(segName+"NPorts",2);
-  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
-  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
-
-  // segments 8
-  segName=tubeName+"Segment8";
-  SimpleTubeGen.setAFlange(57.8,4.0);
-  SimpleTubeGen.setBFlange(57.8,4.0);
-  SimpleTubeGen.setFlangeCap(0.0,2.7);
-
-  SimpleTubeGen.generateTube(Control,segName,0.0,264);
-  //  SimpleTubeGen.setFlange(4.)
-  Control.addVariable(segName+"NPorts",4);
-  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
-  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
-
-  PItemGen.setPort(6.6,4,1.0);  // len/rad/wall
-  PItemGen.setFlange(8.3,2.0);  // rad/len
-  PItemGen.setPlate(0.7,"Stainless304");
-  PItemGen.generatePort(Control,segName+"Port2",
-			Geometry::Vec3D(34.8,0.0,0),PY);
-  PItemGen.generatePort(Control,segName+"Port3",
-			Geometry::Vec3D(-34.8,0.0,0),PY);
-
-
-  Control.addParse<double>(tubeName+"OuterRadius",
-			   tubeName+"Segment3FlangeBRadius+10.0");
-  Control.addParse<double>(tubeName+"OuterLength",
-			   "SoftiMAXExptLineTubeNoseConeLength+"
-			   "SoftiMAXExptLineTubeSegment1Length+"
-			   "SoftiMAXExptLineTubeSegment2Length+"
-			   "SoftiMAXExptLineTubeSegment3Length+"
-			   "SoftiMAXExptLineTubeSegment4Length+"
-			   "SoftiMAXExptLineTubeSegment5Length+"
-			   "SoftiMAXExptLineTubeSegment6Length+"
-			   "SoftiMAXExptLineTubeSegment7Length+"
-			   "SoftiMAXExptLineTubeSegment8Length+"
-			   "100.0");
-
-
-
-  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
-  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
-  Control.addVariable(tubeName+"CableZStep",  -21.7); // [2]
-  Control.addVariable(tubeName+"CableLength", 870.0); // dummy
-  Control.addVariable(tubeName+"CableTailRadius", 17.0);
-  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
-
-  Control.addVariable(tubeName+"DetYStep", 0.0);
-
-  Control.addVariable(tubeName+"BeamDumpLength", 0.6); // [2]
-  Control.addVariable(tubeName+"BeamDumpRadius", 0.15); // [2]
-  Control.addVariable(tubeName+"BeamDumpMat", "Tantalum");
-
-  Control.addVariable(tubeName+"WAXSLength", 34.5); // [2]
-  Control.addVariable(tubeName+"WAXSWidth", 23.52); // [2]
-  Control.addVariable(tubeName+"WAXSHeight", 22.3); // [2]
-  Control.addVariable(tubeName+"WAXSWallThick", 0.3); // [2]
-  Control.addVariable(tubeName+"WAXSMainMat", "StbTCABL"); // guess
-  Control.addVariable(tubeName+"WAXSWallMat", "Aluminium");
-  Control.addVariable(tubeName+"WAXSYStep", 0.0);
-
-  Control.addVariable(tubeName+"AirBoxLength", 32.0); // [2]
-  Control.addVariable(tubeName+"AirBoxWidth", 30.8); // [2]
-  Control.addVariable(tubeName+"AirBoxHeight", 53.0); // [2]
-  Control.addVariable(tubeName+"AirBoxWallThick", 0.3); // [2]
-  Control.addVariable(tubeName+"AirBoxMainMat", "Air");
-  Control.addVariable(tubeName+"AirBoxWallMat", "Aluminium");
-
-  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
-  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
-  Control.addVariable(tubeName+"CableZStep",  0.1);//-21.7); // [2]
-  Control.addVariable(tubeName+"CableLength", 750.0); // dummy
-  Control.addVariable(tubeName+"CableTailRadius", 17.0);
-  Control.addParse<double>(tubeName+"CableDetYStep", tubeName+"WAXSYStep");
-  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
+  
+  // Extra lead brick
+  Control.addVariable(shieldKey+"LineScreenXYAngle",85.0);
+  Control.addVariable(shieldKey+"LineScreenXStep",-120.0);
+  Control.addVariable(shieldKey+"LineScreenYStep",80.0);  // half depth
+  Control.addVariable(shieldKey+"LineScreenWidth",300.0);
+  Control.addVariable(shieldKey+"LineScreenHeight",40.0);
+  Control.addVariable(shieldKey+"LineScreenDepth",10.0);
+  Control.addVariable(shieldKey+"LineScreenMat","Stainless304");
 
   return;
 }
@@ -1293,13 +1010,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");
 
   softimaxVar::opticsVariables(Control,"SoftiMAX");
-  //  softimaxVar::exptHutVariables(Control,"SoftiMAX");
-  //  softimaxVar::exptVariables(Control,"SoftiMAX");
-
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipeB",0,100.0);
-
-  ShieldGen.setPlate(60.0,60.0,10.0);
-  ShieldGen.generateShield(Control,"SoftiMAXScreenA",4.4,0.0);
+  softimaxVar::shieldVariables(Control,"SoftiMAXOpticsLine");
 
   return;
 }

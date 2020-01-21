@@ -67,7 +67,8 @@ class insertPlate : public insertSystem::insertObject
   void setValues(const double,const double,const double,
 		 const std::string&);
   void setGrid(const size_t);
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,const Geometry::Vec3D&);
 

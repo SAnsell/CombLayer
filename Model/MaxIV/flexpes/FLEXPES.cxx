@@ -157,10 +157,12 @@ FLEXPES::build(Simulation& System,
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
+  return;
+  
   shield->createAll(System,FCOrigin,sideIndex);
   shieldB->createAll(System,FCOrigin,sideIndex);
-  
+
+  return;
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -175,6 +177,7 @@ FLEXPES::build(Simulation& System,
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
 
+  return;
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
