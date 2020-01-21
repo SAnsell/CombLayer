@@ -24,14 +24,14 @@
 #include <iostream>
 // #include <sstream>
 // #include <cmath>
-// #include <complex>
-// #include <list>
+#include <complex>
+#include <list>
 #include <vector>
 #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <iterator>
+#include <string>
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "Exception.h"
@@ -41,15 +41,9 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
 #include "Vec3D.h"
-// #include "inputParam.h"
-// #include "Surface.h"
-// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-// #include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -65,7 +59,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-// #include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -74,47 +67,33 @@
 #include "InnerZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-// #include "World.h"
-// #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
-// #include "insertObject.h"
-// #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
 #include "BremOpticsColl.h"
-// #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 
 #include "BlockStand.h"
 #include "CrossPipe.h"
-// #include "BremColl.h"
-// #include "BremMonoColl.h"
-// #include "MonoVessel.h"
-// #include "MonoCrystals.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawFlange.h"
 #include "JawValveBase.h"
 #include "JawValveTube.h"
-// #include "FlangeMount.h"
 #include "TankMonoVessel.h"
 #include "GratingUnit.h"
 #include "Mirror.h"
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
-// #include "SqrCollimator.h"
-// #include "MonoBox.h"
-// #include "MonoShutter.h"
-// #include "DiffPumpXIADP03.h"
 #include "softimaxOpticsLine.h"
 
 namespace xraySystem
