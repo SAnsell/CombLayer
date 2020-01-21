@@ -951,15 +951,15 @@ shieldVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","shieldVariables");
 
   setVariable::PipeShieldGenerator ShieldGen;
-  
+
   ShieldGen.setPlate(75.0,75.0,7.0);
   ShieldGen.setWall(0.1,0.0);
   ShieldGen.setMaterial("Stainless304","Stainless304","Void");
-  
+
   ShieldGen.generateShield(Control,shieldKey+"ScreenA",
   			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
 
-  
+
   // Extra lead brick
   Control.addVariable(shieldKey+"LineScreenXYAngle",85.0);
   Control.addVariable(shieldKey+"LineScreenXStep",-120.0);
@@ -967,7 +967,7 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"LineScreenWidth",300.0);
   Control.addVariable(shieldKey+"LineScreenHeight",40.0);
   Control.addVariable(shieldKey+"LineScreenDepth",10.0);
-  Control.addVariable(shieldKey+"LineScreenMat","Stainless304");
+  Control.addVariable(shieldKey+"LineScreenMat","Void");
 
   return;
 }
