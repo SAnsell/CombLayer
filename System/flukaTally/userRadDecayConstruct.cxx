@@ -127,6 +127,18 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
 	}
       RadPtr->setIradTime(ATime);
     }
+  else if (keyName=="eCutEnergy")
+    {
+      const double eCutEnergy=
+	IParam.getValueError<double>("tally",Index,2,"tally:eCutEnergy");
+      RadPtr->setECutEnergy(eCutEnergy);
+    }
+  else if (keyName=="pCutEnergy")
+    {
+      const double pCutEnergy=
+	IParam.getValueError<double>("tally",Index,2,"tally:pCutEnergy");
+      RadPtr->setPCutEnergy(eCutEnergy);
+    }
   else if (keyName=="NR")
     {
       const size_t NR=

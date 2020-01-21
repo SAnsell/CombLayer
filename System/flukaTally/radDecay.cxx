@@ -3,7 +3,7 @@
  
  * File:   flukaTally/radDecay.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ namespace flukaSystem
 
 radDecay::radDecay() :
   nReplica(10),gammaTransCut(1.0),
-  iradFlux(1.0)
+  eCutEnergy(-1.0),
+  pCutEnergy(-1.0),iradFlux(1.0)
   /*!
     Constructor
   */
@@ -88,6 +89,8 @@ radDecay::operator=(const radDecay& A)
       nReplica=A.nReplica;
       biasCard=A.biasCard;
       gammaTransCut=A.gammaTransCut;
+      eCutEnergy=A.eCutEnergy;
+      pCutEnergy=A.pCutEnergy;
       iradFlux=A.iradFlux;
       iradTime=A.iradTime;
       decayTime=A.decayTime;
@@ -170,7 +173,8 @@ radDecay::addDetectors(const std::string& TName,
 }
   
 void
-radDecay::write(const SimFLUKA& System,std::ostream& OX) const
+radDecay::write(const SimFLUKA& System,
+		std::ostream& OX) const
   /*!
     Write out decay information			
     \param System :: Simulation for additional tallies
@@ -180,8 +184,13 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
   if (!decayTime.empty())
     {
       std::ostringstream cx;
-      
-      cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" -  - 1.0 ";
+
+      if (pCutEnergy<0.0 && eCutEnergy<0.0)
+	cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" -  - 1.0 ";
+      else
+	{
+	  
+	}
       StrFunc::writeFLUKA(cx.str(),OX);
       
       size_t index(0);
