@@ -241,8 +241,8 @@ Mirror::createSurfaces()
   Geometry::Vec3D Yrefl(PY);
   Geometry::Quaternion::calcQRotDeg(-theta,X).rotate(Yrefl);
 
-  FixedComp::setConnect(1,Origin-PZ*baseDepth,Yrefl);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+206));
+  FixedComp::setConnect(1,Origin+PZ*baseTop,Yrefl);
+  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+205));
 
   return;
 }
