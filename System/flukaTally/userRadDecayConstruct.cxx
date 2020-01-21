@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userRadDecayConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,15 +129,19 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
     }
   else if (keyName=="eCutEnergy")
     {
-      const double eCutEnergy=
-	IParam.getValueError<double>("tally",Index,2,"tally:eCutEnergy");
-      RadPtr->setECutEnergy(eCutEnergy);
+      double eA=IParam.getValueError<double>
+	("tally",Index,2,"tally:eCutEnergy");
+      const double eB=IParam.getDefValue<double>(-1.0,"tally",Index,3);
+      if (eB > -1.0) eA= eB/eA;
+      RadPtr->setECutEnergy(eA);
     }
   else if (keyName=="pCutEnergy")
     {
-      const double pCutEnergy=
-	IParam.getValueError<double>("tally",Index,2,"tally:pCutEnergy");
-      RadPtr->setPCutEnergy(eCutEnergy);
+      double pA=IParam.getValueError<double>
+	("tally",Index,2,"tally:pCutEnergy");
+      const double pB=IParam.getDefValue<double>(-1.0,"tally",Index,3);
+      if (pB > -1.0) pA= pB/pA;
+      RadPtr->setPCutEnergy(pA);
     }
   else if (keyName=="NR")
     {

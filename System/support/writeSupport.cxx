@@ -130,10 +130,12 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 	    OX<<flukaNum(I);
 	  else if (StrFunc::convert(w,D))
 	    OX<<flukaNum(D);
-	  else if (w.size()>10)
-	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
 	  else
 	    {
+	      if (w.size()>2 && w.size()<12 && w[0]=='%')
+		w=w.substr(1);
+	      else if (w.size()>10)
+		throw ColErr::InvalidLine(w,"String to long for FLUKA");
 	      if (i % 8==1)
 		OX<<std::setw(10)<<std::left<<w;	
 	      else

@@ -186,10 +186,18 @@ radDecay::write(const SimFLUKA& System,
       std::ostringstream cx;
 
       if (pCutEnergy<0.0 && eCutEnergy<0.0)
-	cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" -  - 1.0 ";
-      else
+	cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" - - 1.0 ";
+      else 
 	{
-	  
+	  int pPart=static_cast<int>(pCutEnergy*10.0);
+	  int ePart=static_cast<int>(eCutEnergy*10.0);
+	  if (pPart>=100000)  pPart=99999;
+	  if (ePart>=100000)  ePart=99999;
+	  cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" - "
+	    <<"%"<<std::setfill('0')
+	    <<std::setw(5)<<pPart
+	    <<std::setw(5)<<ePart
+	    <<" 1.0 ";
 	}
       StrFunc::writeFLUKA(cx.str(),OX);
       
