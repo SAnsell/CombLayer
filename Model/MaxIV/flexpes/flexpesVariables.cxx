@@ -226,8 +226,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
   ShieldGen.setPlate(150.0,100.0,10.0);
-  ShieldGen.generateShield(Control,splitKey+"ScreenB",-4.0,0.0);
-  
+  ShieldGen.generateShield(Control,splitKey+"ScreenB",
+  			   Geometry::Vec3D(0,-4.0,0.0),0.0);
   return;
 }
   
@@ -399,8 +399,9 @@ slitPackageVariables(FuncDataBase& Control,
 
   // ystep : wing
   ShieldGen.setPlate(80.0,80.0,10.0);
-  ShieldGen.generateShield(Control,slitKey+"ScreenA",-4.0,30.0);
-
+  ShieldGen.generateShield(Control,slitKey+"ScreenA",
+  			   Geometry::Vec3D(0,-4.0,0.0),30.0);
+  
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,slitKey+"PipeD",0,9.9);
@@ -596,8 +597,8 @@ opticsBeamVariables(FuncDataBase& Control,
   // ystep : wing
   ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
   ShieldGen.setPlate(20.0,20.0,7.5);
-  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",-80.0,0.0);
-
+  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",
+			   Geometry::Vec3D(0,-80.0,0.0),0.0);
   // will be rotated vertical
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();

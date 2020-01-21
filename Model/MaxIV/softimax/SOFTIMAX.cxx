@@ -75,7 +75,7 @@ SOFTIMAX::SOFTIMAX(const std::string& KN) :
   R3Beamline("Balder",KN),
   frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-    opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
   /*!
@@ -171,8 +171,10 @@ SOFTIMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+
   std::vector<int> cells(opticsHut->getCells("BackWall"));
   cells.emplace_back(opticsHut->getCell("Extension"));
+  
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
 				 opticsBeam->getCell("RightVoid"),
 				 cells);

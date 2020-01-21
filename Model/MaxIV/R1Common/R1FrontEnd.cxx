@@ -3,7 +3,7 @@
  
  * File: R1Common/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -591,13 +591,21 @@ R1FrontEnd::buildObjects(Simulation& System)
       return;
     }
 
-  bellowA->createAll(System,*dipolePipe,2);
+
+  // FM1 Built relateive to MASTER coordinate
+  collA->createAll(System,*this,0);
+  bellowA->createAll(System,*collA,1);
+  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  collA->createAll(System,*bellowA,2);
+
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
+
+  setCell("MasterVoid",masterCell->getName());
+  lastComp=collA;
+  return;
   
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);

@@ -3,7 +3,7 @@
  
  * File:   maxpeem/maxpeemVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -224,7 +224,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
-  ShieldGen.generateShield(Control,splitKey+"ScreenB",-10.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenB",
+			   Geometry::Vec3D(0,-10.0,0.0),0.0);
   
   return;
 }
@@ -396,8 +397,8 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
   // ystep : wing
-  ShieldGen.generateShield(Control,slitKey+"ScreenA",-4.0,30.0);
-
+  ShieldGen.generateShield(Control,slitKey+"ScreenA",
+			   Geometry::Vec3D(0,-4.0,0.0),30.0);
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -593,8 +594,8 @@ opticsBeamVariables(FuncDataBase& Control,
   ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
   ShieldGen.setPlate(25.0,25.0,5.0);
   // ystep : wing  
-  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",-80.0,0.0);
-
+  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",
+			   Geometry::Vec3D(0,-80.0,0.0),0.0);
   // will be rotated vertical
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();

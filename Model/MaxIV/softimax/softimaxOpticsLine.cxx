@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-// #include <sstream>
-// #include <cmath>
+#include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -70,6 +70,8 @@
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "generalConstruct.h"
+#include "insertObject.h"
+#include "insertPlate.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -94,6 +96,7 @@
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
+#include "PipeShield.h"
 #include "softimaxOpticsLine.h"
 
 namespace xraySystem
@@ -173,9 +176,10 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowBB(new constructSystem::Bellows(newName+"BellowBB")),
   joinPipeBA(new constructSystem::VacuumPipe(newName+"JoinPipeBA")),
   bremCollBA(new xraySystem::BremOpticsColl(newName+"BremCollBA")),
-  joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB"))
+  joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB")),
 
-
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
+  lineScreen(new insertSystem::insertPlate(newName+"LineScreen"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -282,31 +286,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(joinPipeBA);
   OR.addObject(bremCollBA);
   OR.addObject(joinPipeBB);
-
-
-  // OR.addObject(filterBoxA);
-  // OR.addObject(filterStick);
-  // OR.addObject(screenPipeA);
-  // OR.addObject(screenPipeB);
-  // OR.addObject(diffPumpA);
-  // OR.addObject(primeJawBox);
-  // OR.addObject(monoBox);
-  // OR.addObject(diagBoxA);
-  // OR.addObject(bremMonoCollA);
-  // OR.addObject(mirrorBoxA);
-  // OR.addObject(mirrorFrontA);
-  // OR.addObject(mirrorBackA);
-  // OR.addObject(diagBoxB);
-  // OR.addObject(gateG);
-  // OR.addObject(mirrorBoxB);
-  // OR.addObject(mirrorFrontB);
-  // OR.addObject(mirrorBackB);
-  // OR.addObject(gateH);
-  // OR.addObject(bellowH);
-  // OR.addObject(diagBoxC);
-  // OR.addObject(gateI);
-  // OR.addObject(monoShutter);
-  // OR.addObject(gateJ);
+  OR.addObject(screenA);
+  OR.addObject(lineScreen);
 }
 
 softimaxOpticsLine::~softimaxOpticsLine()
@@ -354,51 +335,6 @@ softimaxOpticsLine::createSurfaces()
     }
   return;
 }
-
-int
-softimaxOpticsLine::constructMonoShutter
-  (Simulation& System,MonteCarlo::Object** masterCellPtr,
-   const attachSystem::FixedComp& FC,const long int linkPt)
-/*!
-    Construct a monoshutter system
-    \param System :: Simulation for building
-    \param masterCellPtr Pointer to mast cell
-    \param FC :: FixedComp for start point
-    \param linkPt :: side index
-    \return outerCell
-   */
-{
-  ELog::RegMethod RegA("softimaxOpticsLine","constructMonoShutter");
-
-  int outerCell(0);
-
-  // gateI->setFront(FC,linkPt);
-  // gateI->createAll(System,FC,linkPt);
-  // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
-  // gateI->insertInCell(System,outerCell);
-
-  // monoShutter->addAllInsertCell((*masterCellPtr)->getName());
-  // monoShutter->setCutSurf("front",*gateI,2);
-  // monoShutter->createAll(System,*gateI,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*monoShutter,2);
-
-  // monoShutter->insertAllInCell(System,outerCell);
-  // monoShutter->splitObject(System,"-PortACut",outerCell);
-  // const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  // const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  // monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  // monoShutter->splitObject(System,"PortBCut",outerCell);
-  // cellIndex+=3;
-
-
-  // gateJ->setFront(*bellowJ,2);
-  // gateJ->createAll(System,*bellowJ,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
-  // gateJ->insertInCell(System,outerCell);
-
-  return outerCell;
-}
-
 
 int
 softimaxOpticsLine::constructDiag
@@ -489,21 +425,6 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*M1Tube,"back",*M1TubeBack);
-
-  // gateA->createAll(System,*offPipeB,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
-  // gateA->setCell("OuterVoid",outerCell);
-
-  // pipeC->createAll(System,*gateA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  // pipeC->insertInCell(System,outerCell);
-
-  // screenA->addAllInsertCell(outerCell);
-  // screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
-  // screenA->createAll(System,*pipeC,0);
-  // screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
-  // screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
 
   return;
 }
@@ -1075,6 +996,16 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   joinPipeBB->addInsertCell(rightCell);
   joinPipeBB->createAll(System,*bremCollBA,2);
 
+  screenA->addAllInsertCell(rightCell);
+  screenA->addAllInsertCell(leftCell);
+  screenA->setCutSurf("inner",*joinPipeAB,"pipeOuterTop");
+  screenA->setCutSurf("innerTwo",*joinPipeBA,"pipeOuterTop");
+  screenA->createAll(System,*bremCollAA,2);
+
+  lineScreen->setNoInsert();
+  lineScreen->addInsertCell(ContainedComp::getInsertCells());
+  lineScreen->createAll(System,*gateA,"back");
+  
   return;
 }
 
