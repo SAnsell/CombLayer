@@ -323,11 +323,11 @@ Visit::populatePoint(const Simulation& System,
     \param Active :: Active set of cells to use (ranged)
    */
 {
-  ELog::RegMethod RegA("Visit","populate(set)");
+  ELog::RegMethod RegA("Visit","populatePoint");
 
   MonteCarlo::Object* ObjPtr(0);
   Geometry::Vec3D aVec;
-  
+
   const bool aEmptyFlag=Active.empty();
 
   double stepXYZ[3];
