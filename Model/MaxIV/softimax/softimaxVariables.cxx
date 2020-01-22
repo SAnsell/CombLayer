@@ -390,8 +390,9 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
-  Control.addVariable(backName+"XStep",xstep);
-  Control.addVariable(backName+"FlangeFrontXStep",-xstep);
+  const double xstepFront(xstep+0.9);
+  Control.addVariable(backName+"XStep",xstepFront);
+  Control.addVariable(backName+"FlangeFrontXStep",-xstepFront);
 
   return;
 }
