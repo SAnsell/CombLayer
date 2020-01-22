@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/radDecay.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,9 @@ class radDecay
   std::map<std::string,int> biasCard; ///< Which biases to apply
   double gammaTransCut;              ///< Transport cut off value [1.0 default]
   
-
+  double eCutEnergy;          ///< Electron [active] cut energy
+  double pCutEnergy;          ///< Photon [active] cut energy
+  
   double iradFlux;           ///< Flux on general irradiation
   /// Irradiation decay times / intensity
   std::vector<std::pair<double,double>> iradTime;
@@ -52,7 +54,6 @@ class radDecay
   /// map of detectors to use: [previous named detectors]
   std::map<std::string,size_t> detectors;
 
-  
  public:
 
   radDecay();
@@ -62,6 +63,9 @@ class radDecay
   radDecay& operator=(const radDecay&);
   virtual ~radDecay();
 
+  void setECutEnergy(const double E) { eCutEnergy=E; }
+  void setPCutEnergy(const double E) { pCutEnergy=E; }
+  
   /// Set number of gamma to sample per unit
   void setNReplica(const size_t NR) { nReplica=NR; }
   /// Set total flux during beam

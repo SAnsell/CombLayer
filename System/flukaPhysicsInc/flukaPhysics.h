@@ -3,7 +3,7 @@
  
  * File:   flukaPhysicsInc/flukaPhysics.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,6 @@ class flukaPhysics
 
   void setLAMPair(const std::string&,const std::string&,
 		  const int,const std::string&,const std::string&);
-
 
   void writeFLUKA(std::ostream&) const;
 };

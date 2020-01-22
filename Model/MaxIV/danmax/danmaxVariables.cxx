@@ -388,14 +388,11 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(beamName+"PShieldWallMat","Stainless304");
   Control.addVariable(beamName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",4);
+  Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",270.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",170.0,-25.0);
   PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-70.0,-25.0);
-  PGen.setSize(4.0,30.0,90.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3","Right",70.0,15.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
   /*
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);

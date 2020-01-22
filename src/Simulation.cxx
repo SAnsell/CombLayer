@@ -1639,6 +1639,8 @@ Simulation::minimizeObject(const int CN)
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
+      CPtr->populate();
+      CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
       return 1;
     }
