@@ -955,7 +955,8 @@ shieldVariables(FuncDataBase& Control,
 
   ShieldGen.setPlate(75.0,75.0,7.0);
   ShieldGen.setWall(0.1,0.0);
-  ShieldGen.setMaterial("Stainless304","Stainless304","Void");
+  //  ShieldGen.setMaterial("Stainless304","Stainless304","Void");
+  ShieldGen.setMaterial("Void","Void","Void");
 
   ShieldGen.generateShield(Control,shieldKey+"ScreenA",
   			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
