@@ -37,7 +37,7 @@ class flukaPhysics
 {
  private:
 
-  /// storage for cell system
+  /// storage  [particle(-1)/cell(0)/mat(1)/none(-100)] : cardname
   typedef std::tuple<int,std::string> unitTYPE;
   
   std::vector<int> cellVec;                     ///< Cell numbers in order
