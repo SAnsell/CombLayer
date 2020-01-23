@@ -181,7 +181,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","wallVariables");
 
   WallLeadGenerator LGen;
-  LGen.setWidth(70,140.0);
+  LGen.setWidth(95,140.0);
   LGen.generateWall(Control,wallKey,2.1);
 
   return;
