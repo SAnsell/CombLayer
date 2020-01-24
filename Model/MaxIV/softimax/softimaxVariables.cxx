@@ -955,8 +955,8 @@ shieldVariables(FuncDataBase& Control,
 
   ShieldGen.setPlate(75.0,75.0,7.0);
   ShieldGen.setWall(0.1,0.0);
-  //  ShieldGen.setMaterial("Stainless304","Stainless304","Void");
-  ShieldGen.setMaterial("Void","Void","Void");
+  ShieldGen.setMaterial("Stainless304","Stainless304","Void");
+  //ShieldGen.setMaterial("Void","Void","Void");
 
   ShieldGen.generateShield(Control,shieldKey+"ScreenA",
   			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
@@ -965,11 +965,11 @@ shieldVariables(FuncDataBase& Control,
   // Extra lead brick
   Control.addVariable(shieldKey+"LineScreenXYAngle",85.0);
   Control.addVariable(shieldKey+"LineScreenXStep",-120.0);
-  Control.addVariable(shieldKey+"LineScreenYStep",80.0);  // half depth
-  Control.addVariable(shieldKey+"LineScreenWidth",300.0);
+  Control.addVariable(shieldKey+"LineScreenYStep",130.0);
+  Control.addVariable(shieldKey+"LineScreenWidth",400.0);
   Control.addVariable(shieldKey+"LineScreenHeight",40.0);
   Control.addVariable(shieldKey+"LineScreenDepth",10.0);
-  Control.addVariable(shieldKey+"LineScreenMat","Void");
+  Control.addVariable(shieldKey+"LineScreenMat","Lead");
 
   return;
 }
