@@ -3,7 +3,7 @@
  
  * File:   physics/flukaImpConstructor.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
 				    const std::string* VV) const
  /*!
    Process the actual insert 
-   \param PC :: Physcis to insert to
+   \param PC :: Physics to insert to
    \param cellSize :: cell Unit size
    \param pName :: particle name
    \param keyName :: component keyname
@@ -122,7 +122,9 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
  */
 {
   ELog::RegMethod RegA("flukaImpConstructor","insertParticle");
-  
+
+
+
   switch (cellSize)
     {
     case 0:
@@ -200,32 +202,39 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
   ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
 
   flukaPhysics& PC = *System.getPhysics();
-  const std::string cellM=IParam.getValueError<std::string>
-    (keyName,setIndex,1,"No cell/material for "+keyName);
-
   const size_t cellSize(std::get<0>(cutTuple));
   const int materialFlag(std::get<1>(cutTuple));
   const std::string cardName(std::get<2>(cutTuple));
+  const std::string cellM
+    ((materialFlag==-100) ?  "None" :
+      IParam.getValueError<std::string>
+     (keyName,setIndex,1,"No cell/material for "+keyName));
 
   std::string VV[3];
   for(size_t i=0;i<cellSize;i++)
     VV[i]=IParam.getValueError<std::string>
       (keyName,setIndex,2+i,
-       "No value["+std::to_string(i+1)+"] for "+keyName);      
+       "No value["+std::to_string(i+1)+"] for "+keyName+":"+cardName);      
 
   if (materialFlag>=0)
     {
+      
+      // gets set of cells/materials [0:cells/1 materials]
       const std::set<int> activeCell=
 	getActiveUnit(System,materialFlag,cellM);
       if (activeCell.empty())
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VV);
     }
-  else
+  else if (materialFlag==-1) // particile
     {
       const flukaGenParticle& FG=flukaGenParticle::Instance();
       const std::string& pName=FG.nameToFLUKA(cellM);
       insertParticle(PC,cellSize,pName,cardName,VV);
+    }
+  else  // -100 : Generic
+    {
+      insertParticle(PC,cellSize,"generic",cardName,VV);
     }
   return;
 }
@@ -447,35 +456,35 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
     \param setIndex :: index for the importance set
   */
 {
+
   ELog::RegMethod RegA("flukaImpConstructor","processEMF");
 
-  // V[Size] : particle[-1]/cell[0]/mat[1] : tag name 
-  typedef std::tuple<size_t,bool,std::string> emfTYPE;
-
-  static const std::map<std::string,emfTYPE> EMap
+  // impTYPE==> NValue : particle[-1]/cell[0]/mat[1] : tag name 
+  static const std::map<std::string,impTYPE> EMap
     ({
-      { "cut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
-      { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
-      { "emfray",emfTYPE(0,0,"emfray") },   // cell: [type 4]
-      { "elecnucl",emfTYPE(1,1,"elecnucl") },     // mat
-      { "mupair",emfTYPE(1,1,"mupair") },        // mat
-      { "prodcut",emfTYPE(2,1,"prodcut") }, 
-      { "elpothr",emfTYPE(3,1,"elpothr") },  //
-      { "photthr",emfTYPE(3,1,"photthr") },  // comp/photoeelec/gamma-pair
-      { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
-      { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
+      { "cut",impTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "emfcut",impTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "emfray",impTYPE(0,0,"emfray") },   // cell: [type 4]
+      { "elecnucl",impTYPE(1,1,"elecnucl") },     // mat
+      { "mupair",impTYPE(1,1,"mupair") },        // mat
+      { "prodcut",impTYPE(2,1,"prodcut") }, 
+      { "elpothr",impTYPE(3,1,"elpothr") },  //
+      { "photthr",impTYPE(3,1,"photthr") },  // comp/photoeelec/gamma-pair
+      { "pho2thr",impTYPE(2,1,"pho2thr") },  // photo-nuclear
+      { "pairbrem",impTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
 
-      { "photonuc",emfTYPE(0,1,"photonuc") },      // none
-      { "muphoton",emfTYPE(0,1,"muphoton") },      // none
-      { "emffluo",emfTYPE(1,1,"emffluo") },        // mat
-      { "mulsopt",emfTYPE(3,1,"mulsopt") },        // mat
-      { "lpb",emfTYPE(2,0,"lpb") },        // regions
-      { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
-      { "lambemf",emfTYPE(2,1,"lambemf") },        // mat
+      { "photonuc",impTYPE(0,1,"photonuc") },      // none
+      { "muphoton",impTYPE(0,1,"muphoton") },      // none
+      { "emffluo",impTYPE(1,1,"emffluo") },        // mat
+      { "mulsopt",impTYPE(3,1,"mulsopt") },        // mat
+      { "lpb",impTYPE(2,0,"lpb") },        // regions
+      { "lambbrem",impTYPE(2,1,"lambbrem") },      // mat
+      { "lambemf",impTYPE(2,1,"lambemf") },        // mat
 
-      { "evaporation",emfTYPE(0,-1,"evaporation") },      // none
-      { "coalescence",emfTYPE(0,-1,"coalescence") },       // none
-      { "ionsplit",emfTYPE(0,-1,"ionsplit") }             // none
+      { "evaporation",impTYPE(0,-100,"evaporation") },      // none
+      { "evap-noheavy",impTYPE(0,-100,"evap-noheavy") },      // none
+      { "coalescence",impTYPE(0,-100,"coalescence") },       // none
+      { "ionsplit",impTYPE(0,-100,"ionsplit") }             // none
 
     });
   
@@ -486,7 +495,7 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
   if (type=="help" || type=="Help")
     return writeEMFHelp(ELog::EM.Estream(),&ELog::endBasic);
 
-  std::map<std::string,emfTYPE>::const_iterator mc=EMap.find(type);
+  std::map<std::string,impTYPE>::const_iterator mc=EMap.find(type);
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 

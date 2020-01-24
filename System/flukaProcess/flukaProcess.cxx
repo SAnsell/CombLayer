@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaProcess.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ getActiveUnit(const Simulation& System,
   /*!
     Based on the typeFlag get the cell/material/particle set
     \param System :: Active Group
-    \param typeFlag :: -1 : partilce / cell /material 
+    \param typeFlag :: -1 : particle / cell /material 
     \param cellM :: string to use as id
     \return set of index(s0
   */

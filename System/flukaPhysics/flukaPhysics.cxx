@@ -57,32 +57,35 @@ namespace flukaSystem
 {
 		       
 flukaPhysics::flukaPhysics() :
-  // note flag: -1 particle / 0 cell / 1 material  
+
+  // note flag: -1 particle / 0 cell / 1 material / -100 : generic
+  // secondary values : scaling for value
   flagValue({
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
       { "emfray",cellValueSet<0>("emfray","EMFRAY","") },
       { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
-      { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
       { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") },
-      { "ionsplit",cellValueSet<0>("ionsplit","PHYSICS","IONSPLIT") }
+      { "ionsplit",cellValueSet<0>("ionsplit","PHYSICS","IONSPLIT") },
+      { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
+      { "evap-noheavy",cellValueSet<0>("evap-noheavy","PHYSICS","EVAPORAT") }
     }),
 
   impValue({
-      { "partthr",  cellValueSet<1>("partthr","PART-THR","",{-1e-3}) },
-      { "gas",      cellValueSet<1>("gas","MAT-PROP","") },
-      { "rho",      cellValueSet<1>("rho","MAT-PROP","") },
-      { "all",      cellValueSet<1>("all","BIAS","") },
-      { "hadron",   cellValueSet<1>("hadron","BIAS","") },
-      { "electron", cellValueSet<1>("electron","BIAS","") },
-      { "emffluo",  cellValueSet<1>("emffluo","EMFFLUO","") },
-      { "low",      cellValueSet<1>("low","BIAS","") },
-      { "lowbias",  cellValueSet<1>("lowbias","LOW-BIAS","") },
-      { "exptrans", cellValueSet<1>("exptrans","EXPTRANS","") },
-      { "exppart",  cellValueSet<1>("exppart","EXPTRANS","") },
-      { "plambias", cellValueSet<1>("plambias","LAM-BIAS","INEPRI",{1.0}) },
-      { "lambias",  cellValueSet<1>("lambias","LAM-BIAS","",{1.0}) }
+      { "partthr",    cellValueSet<1>("partthr","PART-THR","",{-1e-3}) },
+      { "gas",        cellValueSet<1>("gas","MAT-PROP","") },
+      { "rho",        cellValueSet<1>("rho","MAT-PROP","") },
+      { "all",        cellValueSet<1>("all","BIAS","") },
+      { "hadron",     cellValueSet<1>("hadron","BIAS","") },
+      { "electron",   cellValueSet<1>("electron","BIAS","") },
+      { "emffluo",    cellValueSet<1>("emffluo","EMFFLUO","") },
+      { "low",        cellValueSet<1>("low","BIAS","") },
+      { "lowbias",    cellValueSet<1>("lowbias","LOW-BIAS","") },
+      { "exptrans",   cellValueSet<1>("exptrans","EXPTRANS","") },
+      { "exppart",    cellValueSet<1>("exppart","EXPTRANS","") },
+      { "plambias",   cellValueSet<1>("plambias","LAM-BIAS","INEPRI",{1.0}) },
+      { "lambias",    cellValueSet<1>("lambias","LAM-BIAS","",{1.0}) }
 
     }),
 
@@ -125,14 +128,15 @@ flukaPhysics::flukaPhysics() :
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "emfray", unitTYPE(0,"4.0 R0 R1 1.0 - - ") },
 
-      { "coalescence", unitTYPE(1,"1.0 - - - - - ") },
+      { "coalescence", unitTYPE(-100,"1.0 - - - - - ") },
       { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
       { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
       { "emffluo", unitTYPE(1,"%2 M0 M1 1.0 - - ") },
-      { "evaporation", unitTYPE(1,"3.0 - - - - - ") },
+      { "evaporation", unitTYPE(-100,"3.0 - - - - - ") },
+      { "evap-noheavy", unitTYPE(-100,"2.0 - - - - - ") },
 
       { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
       { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
