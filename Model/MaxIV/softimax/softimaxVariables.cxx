@@ -968,7 +968,7 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"LineScreenYStep",130.0);
   Control.addVariable(shieldKey+"LineScreenWidth",400.0);
   Control.addVariable(shieldKey+"LineScreenHeight",40.0);
-  Control.addVariable(shieldKey+"LineScreenDepth",10.0);
+  Control.addVariable(shieldKey+"LineScreenDepth",15.0); // 10: outside dose 0.65
   Control.addVariable(shieldKey+"LineScreenMat","Lead");
 
   return;
