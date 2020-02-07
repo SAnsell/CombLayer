@@ -328,10 +328,10 @@ TS2target::createSurfaces()
   const Geometry::Quaternion QR=
     Geometry::Quaternion::calcQRotDeg(wPlaneAngle,Y);
   const Geometry::Quaternion antiQR=
-    Geometry::Quaternion::calcQRotDeg(-wPlaneAngle,Y);
-  Geometry::Vec3D PX(X);
+    Geometry::Quaternion::calcQRotDeg(-wPlaneAngle+90.0,Y);
+  Geometry::Vec3D PX(Z);
   Geometry::Vec3D PZ(Z);
-  QR.rotate(PX);
+  antiQR.rotate(PX);
   QR.rotate(PZ);
 
   // OuterSphere Cut Plane
@@ -387,18 +387,11 @@ TS2target::createSurfaces()
   // Base cut cylinder
   ModelSupport::buildCylinder(SMap,buildIndex+62,
 			      Origin,Y,xFlowOutMidRadius);    
-  // OuterCut left Edge
-  const Geometry::Quaternion QCyl=
-    Geometry::Quaternion::calcQRotDeg(xFlowOutCutAngle,Y);
-  Geometry::Vec3D outerPX(X);
-  Geometry::Vec3D outerPZ(Z);
-  QCyl.rotate(outerPX);
-  QCyl.rotate(outerPZ);
 
   ModelSupport::buildPlane(SMap,buildIndex+63,
 			   Origin-PX*xFlowOPlaneCut,PX);
   ModelSupport::buildPlane(SMap,buildIndex+64,
-			   Origin+PX*xFlowOPlaneCut,PX);
+			   Origin+PX*xFlowIPlaneCut,PX);
   
   // Inner water cut:
   ModelSupport::buildSphere(SMap,buildIndex+71,
@@ -458,21 +451,19 @@ TS2target::createNoseConeObjects(Simulation& System)
   // ----------------- WATER -------------------------------
   // Water Cut Top: 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "-81 61 ((63 -64):(-63 64)) -59 (29:24)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-81 61 63 -64 -59 (29:24)");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  ELog::EM<<"Cell == "<<cellIndex-1<<ELog::endDiag;;
   const std::string watOCap=ModelSupport::getExclude(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-48 62 ((63 -64):(-63 64)) -1 59");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 62 63 -64 -1 59");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICyl=ModelSupport::getExclude(cellIndex-1);
 
 
 
   // Inner Water Cut:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "71 -29 ((73 -74) : (-73 74)) -59");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -29 73 -74 -59 ");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICap=ModelSupport::getExclude(cellIndex-1);
 
