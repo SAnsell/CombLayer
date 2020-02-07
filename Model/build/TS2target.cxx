@@ -271,7 +271,7 @@ TS2target::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   // INNER PLANES    
-  Geometry::Plane* PX;
+
   SMap.addMatch(buildIndex+186,frontPlate);
   SMap.addMatch(buildIndex+190,backPlate);
 
@@ -340,16 +340,10 @@ TS2target::createSurfaces()
 
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+103);
-      PX->setPlane(Origin-Z*(wPlaneCut-surfThick),Z);
-      PX->rotate(QR);
-      SMap.registerSurf(buildIndex+103,PX);
-      
-      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+104);
-      PX->setPlane(Origin+Z*(wPlaneCut-surfThick),Z);
-      PX->rotate(QR);
-      SMap.registerSurf(buildIndex+104,PX);
-
+      ModelSupport::buildPlane(SMap,buildIndex+103,
+			       Origin-PZ*(wPlaneCut-surfThick),PZ);
+      ModelSupport::buildPlane(SMap,buildIndex+104,
+			       Origin+PZ*(wPlaneCut-surfThick),PZ);
     }
   // Ta cladding [Inner]
   // Basic Cylinder
@@ -402,7 +396,7 @@ TS2target::createSurfaces()
   QCyl.rotate(outerPZ);
 
   ModelSupport::buildPlane(SMap,buildIndex+63,
-			   Origin-PX*xFlowPlaneCut,PX);
+			   Origin-PX*xFlowOPlaneCut,PX);
   ModelSupport::buildPlane(SMap,buildIndex+64,
 			   Origin+PX*xFlowOPlaneCut,PX);
   
