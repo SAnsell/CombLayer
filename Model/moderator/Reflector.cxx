@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,15 +92,16 @@ namespace moderatorSystem
 
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,10),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::SurfMap(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
-
+{
+  FixedComp::nameSideIndex(10,"CornerCentre");
+}
 
 Reflector::Reflector(const Reflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
@@ -238,7 +239,8 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setConnect(6,Origin-YR*cutSize,-YR);
   FixedComp::setConnect(7,Origin+YR*cutSize,YR);
   FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
-  FixedComp::setConnect(9,Origin+XR*cutSize,XR);
+
+  FixedComp::setConnect(10,Origin,YR);   // corner centre
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
@@ -250,6 +252,7 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+12));
   FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+13));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+14));
+
 
   return;
 }

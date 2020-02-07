@@ -3,7 +3,7 @@
  
  * File:   moderator/makeReflector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,7 +175,6 @@ makeReflector::createObjects(Simulation& System)
 
   const int refCell=RefObj->getCell("Reflector");
 
-
   TarObj->addInsertCell(refCell);
   VacObj->addInsertCell(refCell);
   FLgroove->addInsertCell("outer",refCell);
@@ -268,17 +267,24 @@ makeReflector::createInternalObjects(Simulation& System,
 {
   ELog::RegMethod RegA("makeReflector","createInternalObjects");
 
+
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
   const std::string DT=IParam.getValue<std::string>("decType");
 
   TarObj->setRefPlates(RefObj->getSurf("CornerB"),
 		       RefObj->getSurf("CornerA"));
-  TarObj->createAll(System,*RefObj,0);
+  TarObj->createAll(System,*RefObj,"CornerCentre");
 
+  ELog::EM<<"Ref = "<<RefObj->getSurf("CornerA")<<ELog::endDiag;
+  ELog::EM<<"Ref = "<<RefObj->getSurf("CornerB")<<ELog::endDiag;
+
+  return;
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System,*RefObj,-7);
 
+  return;
+  
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);

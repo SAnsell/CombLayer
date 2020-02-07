@@ -693,7 +693,6 @@ buildFullSimulation(Simulation* SimPtr,
   ModelSupport::objectAddition(*SimPtr,IParam);
   ModelSupport::materialUpdate(*SimPtr,IParam);
 
-
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
   
@@ -702,7 +701,6 @@ buildFullSimulation(Simulation* SimPtr,
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
-
 
   SimPtr->minimizeObject("All");
   if (createVTK(IParam,SimPtr,OName))

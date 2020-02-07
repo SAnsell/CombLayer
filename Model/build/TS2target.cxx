@@ -3,7 +3,7 @@
  
  * File:   build/TS2target.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -325,21 +325,18 @@ TS2target::createSurfaces()
 			   Origin-Y*wSphDisplace,Y);
 
   // Cut Planes:
-  // Rotation:
-  Geometry::Quaternion QR=
+  const Geometry::Quaternion QR=
     Geometry::Quaternion::calcQRotDeg(wPlaneAngle,Y);
-  Geometry::Quaternion antiQR=
+  const Geometry::Quaternion antiQR=
     Geometry::Quaternion::calcQRotDeg(-wPlaneAngle,Y);
+  Geometry::Vec3D PX(X);
+  Geometry::Vec3D PZ(Z);
+  QR.rotate(PX);
+  QR.rotate(PZ);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+3);
-  PX->setPlane(Origin-Z*wPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+3,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+4);
-  PX->setPlane(Origin+Z*wPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+4,PX);
+  // OuterSphere Cut Plane
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-PZ*wPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+PZ*wPlaneCut,PZ);
 
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
@@ -367,15 +364,8 @@ TS2target::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+39,Origin-Y*taSphDisplace,Y);
   
   // Cut Planes:
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+23);
-  PX->setPlane(Origin-Z*taPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+23,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+24);
-  PX->setPlane(Origin+Z*taPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+24,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-PZ*taPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+PZ*taPlaneCut,PZ);
 
   // --  WATER LAYER:  [40-60] -- 
   // cylinder water
@@ -404,33 +394,27 @@ TS2target::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+62,
 			      Origin,Y,xFlowOutMidRadius);    
   // OuterCut left Edge
-  Geometry::Quaternion QCyl=
+  const Geometry::Quaternion QCyl=
     Geometry::Quaternion::calcQRotDeg(xFlowOutCutAngle,Y);
+  Geometry::Vec3D outerPX(X);
+  Geometry::Vec3D outerPZ(Z);
+  QCyl.rotate(outerPX);
+  QCyl.rotate(outerPZ);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+63);
-  PX->setPlane(Origin-Z*xFlowOPlaneCut,Z);    
-  PX->rotate(antiQR);
-  SMap.registerSurf(buildIndex+63,PX);
-
-  // OuterCut right Edge
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+64);
-  PX->setPlane(Origin+Z*xFlowIPlaneCut,Z);    
-  PX->rotate(antiQR);
-  SMap.registerSurf(buildIndex+64,PX);
-
+  ModelSupport::buildPlane(SMap,buildIndex+63,
+			   Origin-PX*xFlowPlaneCut,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+64,
+			   Origin+PX*xFlowOPlaneCut,PX);
+  
   // Inner water cut:
   ModelSupport::buildSphere(SMap,buildIndex+71,
 			    Origin-Y*xFlowInnerDisplace,xFlowInnerRadius);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+73);
-  PX->setPlane(Origin-Z*xFlowIPlaneCut,Z);    
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+73,PX);
-  // OuterCut right Edge
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+74);
-  PX->setPlane(Origin+Z*xFlowIPlaneCut,Z);    
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+74,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+73,
+			   Origin-PZ*xFlowIPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+74,
+			   Origin+PZ*xFlowIPlaneCut,PZ);
+
 
   // TopCap [80-90]
   ModelSupport::buildSphere(SMap,buildIndex+81,

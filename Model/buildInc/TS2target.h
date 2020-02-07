@@ -46,8 +46,6 @@ class TS2target : public constructSystem::TargetBase
 {
  private:
   
-
-
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
   
@@ -128,7 +126,8 @@ class TS2target : public constructSystem::TargetBase
   virtual int getSkinBody() const { return skinCell; }
 
   void addInnerBoundary(attachSystem::ContainedComp&) const;
-  /// Set the extext of the reflector
+
+  /// Set the surfaces of the reflector
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
@@ -136,7 +135,10 @@ class TS2target : public constructSystem::TargetBase
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
   void layerProcess(Simulation&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 
 };
