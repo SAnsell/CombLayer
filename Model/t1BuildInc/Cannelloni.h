@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/Cannelloni.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ namespace ts1System
   \brief Creates the Canneloni target system
 */
 
-class Cannelloni : public constructSystem::TargetBase
+class Cannelloni :
+  public TMRSystem::TargetBase
 {
  private:
   

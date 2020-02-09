@@ -3,7 +3,7 @@
  
  * File:   snsBuildInc/targetOuter.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,11 +34,9 @@ namespace snsSystem
   \brief Creates the SNS target front nose cone
 */
 
-class targetOuter : public constructSystem::TargetBase
+class targetOuter : public TMRSystem::TargetBase
 {
  private:
-  
-
   
   double totalLength;            ///< Straight length
 

@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/makeT1Real.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,9 @@
 #ifndef t1System_makeT1Real_h
 #define t1System_makeT1Real_h
 
-namespace constructSystem
-{
-  class TargetBase;
-}
-
 namespace TMRSystem
 {
+  class TargetBase;
   class TS2target;
 }  
 
@@ -85,7 +81,7 @@ class makeT1Real
 
 
   /// Target object
-  std::shared_ptr<constructSystem::TargetBase> TarObj;  
+  std::shared_ptr<TMRSystem::TargetBase> TarObj;  
   std::shared_ptr<t1Reflector> RefObj;               ///< Reflector 
   std::shared_ptr<H2Moderator> Lh2ModObj;            ///< LH2 Moderator 
   std::shared_ptr<CH4Moderator> CH4ModObj;           ///< CH4 liquid

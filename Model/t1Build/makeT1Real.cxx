@@ -164,7 +164,7 @@ makeT1Real::makeT1Real() :
 
 makeT1Real::makeT1Real(const makeT1Real& A) : 
   TarObj((A.TarObj) ? 
-	 std::shared_ptr<constructSystem::TargetBase>
+	 std::shared_ptr<TMRSystem::TargetBase>
 	 (A.TarObj->clone()) : A.TarObj),  
   RefObj(new t1Reflector(*A.RefObj)),
   Lh2ModObj(new H2Moderator(*A.Lh2ModObj)),
@@ -299,7 +299,7 @@ makeT1Real::buildTarget(Simulation& System,
 
   if (TType=="t1PlateTarget" || TType=="t1Plate")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new t1PlateTarget("T1PlateTarget"));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
@@ -309,7 +309,7 @@ makeT1Real::buildTarget(Simulation& System,
     }
   else if (TType=="t1CylTarget" || TType=="t1Cyl")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
@@ -318,7 +318,7 @@ makeT1Real::buildTarget(Simulation& System,
     }    
   else if (TType=="t1InnerTarget" || TType=="t1Inner")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
@@ -327,7 +327,7 @@ makeT1Real::buildTarget(Simulation& System,
     }    
   else if (TType=="t1CylFluxTrap" || TType=="t1CylFluxTrapTarget")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(RefObj->getLinkSurf(5),0);
@@ -342,7 +342,7 @@ makeT1Real::buildTarget(Simulation& System,
     }    
   else if (TType=="t1Side" || TType=="t1SideTarget")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
       TarObj->createAll(System,World::masterOrigin(),0);
@@ -350,7 +350,7 @@ makeT1Real::buildTarget(Simulation& System,
     }    
   else if (TType=="t1CannelloniTarget" || TType=="t1Cannelloni")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
@@ -359,7 +359,7 @@ makeT1Real::buildTarget(Simulation& System,
     }    
   else if (TType=="t1Block" || TType=="t1BlockTarget")
     {
-      TarObj=std::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);

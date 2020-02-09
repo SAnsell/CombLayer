@@ -3,7 +3,7 @@
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -87,7 +83,7 @@ namespace ts1System
 {
 
 SideCoolTarget::SideCoolTarget(const std::string& Key) :
-  constructSystem::TargetBase(Key,6)
+  TMRSystem::TargetBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +91,7 @@ SideCoolTarget::SideCoolTarget(const std::string& Key) :
 {}
 
 SideCoolTarget::SideCoolTarget(const SideCoolTarget& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   mainLength(A.mainLength),
   xRadius(A.xRadius),zRadius(A.zRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
@@ -121,10 +117,7 @@ SideCoolTarget::operator=(const SideCoolTarget& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
+      TMRSystem::TargetBase::operator=(A);
       mainLength=A.mainLength;
       xRadius=A.xRadius;
       zRadius=A.zRadius;

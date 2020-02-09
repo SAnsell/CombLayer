@@ -42,7 +42,8 @@ namespace TMRSystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class TS2target : public constructSystem::TargetBase
+class TS2target :
+  public TargetBase
 {
  private:
   

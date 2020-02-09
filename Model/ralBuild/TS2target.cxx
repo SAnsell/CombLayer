@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/TS2target.cxx
+ * File:   ralBuild/TS2target.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -85,7 +85,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key,3),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +94,7 @@ TS2target::TS2target(const std::string& Key) :
 {}
 
 TS2target::TS2target(const TS2target& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   frontPlate(A.frontPlate),
   backPlate(A.backPlate),mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),wSphDisplace(A.wSphDisplace),
@@ -132,7 +132,7 @@ TS2target::operator=(const TS2target& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;

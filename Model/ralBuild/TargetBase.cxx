@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TargetBase.cxx
+ * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -83,7 +83,7 @@
 #include "TargetBase.h"
 
 
-namespace constructSystem
+namespace TMRSystem
 {
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
@@ -203,4 +203,4 @@ TargetBase::getInnerCells() const
   return std::vector<int>();
 }
 
-}  // NAMESPACE constructSystem
+}  // NAMESPACE TMRSystem

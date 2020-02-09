@@ -3,7 +3,7 @@
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -50,9 +49,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -85,7 +81,7 @@ namespace ts1System
 {
 
 InnerTarget::InnerTarget(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key,3),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +90,7 @@ InnerTarget::InnerTarget(const std::string& Key) :
 {}
 
 InnerTarget::InnerTarget(const InnerTarget& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
@@ -123,7 +119,7 @@ InnerTarget::operator=(const InnerTarget& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;
@@ -208,9 +204,9 @@ InnerTarget::populate(const FuncDataBase& Control)
   double R;
   for(size_t i=0;i<nSphere;i++)
     {
-      R=Control.EvalVar<double>(keyName+StrFunc::makeString("SRadius",i+1));
+      R=Control.EvalVar<double>(keyName+"SRadius"+std::to_string(i+1));
       Pt=Control.EvalVar<Geometry::Vec3D>
-	(keyName+StrFunc::makeString("SCent",i+1));
+	(keyName+"SCent"+std::to_string(i+1));
       sRadius.push_back(R);
       sCent.push_back(Pt); // to be origin XYZ corrected later
     }
@@ -234,6 +230,7 @@ InnerTarget::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
+  // Morph offset points by Origin and basis set
   for(Geometry::Vec3D& sPt : sCent)
     sPt= Origin+X* sPt.X()+ Y* (sPt.Y()-sphRadius+sphYStep)+Z*sPt.Z();
 

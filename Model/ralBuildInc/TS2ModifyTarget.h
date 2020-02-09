@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/TS2ModifyTarget.h
+ * File:   ralBuildInc/TS2ModifyTarget.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,8 +114,9 @@ struct sphereCut
   \brief Modification to the Target with Mo/gaps etc.
 */
 
-class TS2ModifyTarget : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+class TS2ModifyTarget :
+  public attachSystem::FixedComp,
+  public attachSystem::ContainedComp
 {
  private:
   
