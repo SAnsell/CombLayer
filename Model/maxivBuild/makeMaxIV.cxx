@@ -111,6 +111,7 @@ makeMaxIV::makeMaxIV() :
 
   OR.addObject(r1Ring);
   OR.addObject(r3Ring);
+  OR.addObject(injectionHall);
 }
 
 
@@ -172,6 +173,40 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
   return;
 }
   
+bool
+makeMaxIV::buildInjection(Simulation& System,
+			  const mainSystem::inputParam& IParam)
+  /*!
+    Build the SPF/linac hall
+    \param System :: Simulation 
+    \param IParam :: Input paramters
+  */
+{
+  ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
+
+  const int voidCell(74123);
+  bool activeHall(0);
+  const size_t NSet=IParam.setCnt("beamlines");
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("beamlines",j);
+      size_t index=0;
+      while(index<NItems)  // min of one name
+	{
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index);
+	  if (BL=="Linac" || BL=="SPF")
+	    {
+	      // BUILD HALL:
+	      injectionHall->addInsertCell(voidCell);
+	      injectionHall->createAll(System,World::masterOrigin(),0);
+	      return 1;
+	    }
+	}
+    }
+  return 0;  // NO BUILD
+}  
+
 bool
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
@@ -363,8 +398,11 @@ makeMaxIV::build(Simulation& System,
   else if(buildR1Ring(System,IParam))
     ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
 
+  else if (buildInjection(System,IParam))  // Injection Hall
+    ELog::EM<<"=Finished Linac/SPF System="<<ELog::endDiag;
+
   else
-    ELog::EM<<"NO R1 / R3 Ring built"<<ELog::endCrit;
+    ELog::EM<<"NO Linac/ SPF / R1 / R3 Ring built"<<ELog::endCrit;
 
   return;
 }

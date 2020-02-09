@@ -25,6 +25,7 @@
 
 namespace xraySystem
 {
+  class InjectionHall;
   class R1Ring;
   class R3Ring;
   /*!
@@ -56,6 +57,8 @@ class makeMaxIV
   bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
 
   bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
+
+  bool buildInjection(Simulation&,const mainSystem::inputParam&);
   
  public:
   
