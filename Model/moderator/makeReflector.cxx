@@ -276,10 +276,6 @@ makeReflector::createInternalObjects(Simulation& System,
 		       RefObj->getSurf("CornerA"));
   TarObj->createAll(System,*RefObj,"CornerCentre");
 
-  ELog::EM<<"Ref = "<<RefObj->getSurf("CornerA")<<ELog::endDiag;
-  ELog::EM<<"Ref = "<<RefObj->getSurf("CornerB")<<ELog::endDiag;
-
-  return;
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System,*RefObj,-7);
 

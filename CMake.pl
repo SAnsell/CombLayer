@@ -29,7 +29,8 @@ my @masterprog=("example","fullBuild","ess","muBeam",
 my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        cuBlockInc d4cModelInc delftInc epbBuildInc
                        essBuildInc gammaBuildInc lensModelInc
-                       moderatorInc muonInc pipeBuildInc photonInc
+                       moderatorInc muonInc pipeBuildInc photonInc 
+                       ralBuildInc
                        singleItemBuildInc sinbadBuildInc snsBuildInc t1BuildInc
                        zoomInc );
 
@@ -117,7 +118,7 @@ my @bilbau = qw( bibBuild );
 push(@bilbau,@mainLib);
 $gM->addDepUnit("bilbau", [@bilbau]),
 
-my @fullBuild = qw( build chip moderator build zoom  );
+my @fullBuild = qw( build chip moderator build ralBuild zoom  );
 push(@fullBuild,@mainLib);
 $gM->addDepUnit("fullBuild", [@fullBuild]),
 
@@ -153,7 +154,7 @@ $gM->addDepUnit("singleItem", [@singleItem,
 			       qw(commonGenerator commonVar
 			       commonBeam R3Common )]);
 
-my @t1Real = qw( t1Build build  moderator chip zoom ) ;
+my @t1Real = qw( t1Build ralBuild  ) ;
 push(@t1Real,@mainLib);
 $gM->addDepUnit("t1Real", [@t1Real]);
 
@@ -175,7 +176,7 @@ push(@sinbad,@mainLib);
 $gM->addDepUnit("sinbad", [@sinbad]);
 
 
-my @sns = qw( snsBuild ) ;
+my @sns = qw( snsBuild ralBuild ) ;
 push(@sns,@mainLib);
 $gM->addDepUnit("sns", [@sns]);
 

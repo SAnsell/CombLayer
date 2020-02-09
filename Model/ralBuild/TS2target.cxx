@@ -654,6 +654,7 @@ TS2target::addProtonLine(Simulation& System,
    */
 {
   ELog::RegMethod RegA("TS2target","addProtonLine");
+
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
   PLine->createAll(System,*this,3);
   createBeamWindow(System,-3);
