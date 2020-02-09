@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuildInc/R3Ring.h
+ * File: maxivBuildInc/InjectionHall.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_R3Ring_h
-#define xraySystem_R3Ring_h
+#ifndef xraySystem_InjectionHall_h
+#define xraySystem_InjectionHall_h
 
 class Simulation;
 
 namespace xraySystem
 {
-  class Maze;
-  class RingDoor;
   
 /*!
-  \class R3Ring
+  \class InjectionHall
   \version 1.0
   \author S. Ansell
   \date February 2018
   \brief Main 1.5GeV ring building and inner void  
 */
 
-class R3Ring :
+class InjectionHall :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -45,34 +43,28 @@ class R3Ring :
 {
  private:
 
-  const size_t NInnerSurf;           ///< Number of inner surf
+  double mainLength;               ///< total length
   
-  double fullOuterRadius;          ///< full outer radius [beamline endpoint]
+  double linearRCutLength;         ///< Length to right out step
+  double linearLTurnLength;        ///< Length to left angle out (inner)
+  double spfAngleLength;           ///< Length to right out step
   
-  double icosagonRadius;           ///< Inner 20 side radius
-  double icosagonWallThick;        ///< Inner 20 side wall thickness
-  double beamRadius;               ///< Beamline radius
-  double offsetCornerX;            ///< Outer wall offset X (tangentially)
-  double offsetCornerY;            ///< Outer wall offset Y (radially outward)
+  double linearWidth;              ///< Wall - Wall width
+  double linearHeight;             ///< Height (floor to under roof)
+  double linearWallThick;          ///< Wall thickness
 
-  double outerWall;                ///< Default outer wall thick
-  double ratchetWall;              ///< Default ratchet wall thick
-  
-  double height;                  ///< Main height
-  double depth;                   ///< Main depth
-  double floorThick;              ///< Floor depth
-  double roofThick;               ///< Roof thickness
-  
+  double spfWallThick;          ///< Wall thickness
+
+  double roofThick;               ///< floor thickness
+  double floorThick;               ///< floor thickness
+
+  int voidMat;               ///< void material
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
-  size_t doorActive;           ///< Flag/sector for door if modeled (+1)
-  std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
-
-
+  
   void createFloor(Simulation&);
-  void createDoor(Simulation&);
     
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -81,13 +73,11 @@ class R3Ring :
   
  public:
 
-  R3Ring(const std::string&);
-  R3Ring(const R3Ring&);
-  R3Ring& operator=(const R3Ring&);
-  virtual ~R3Ring();
+  InjectionHall(const std::string&);
+  InjectionHall(const InjectionHall&);
+  InjectionHall& operator=(const InjectionHall&);
+  virtual ~InjectionHall();
 
-  /// Accessor to Number of inner surfaces
-  size_t getNInnerSurf() const { return  NInnerSurf; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

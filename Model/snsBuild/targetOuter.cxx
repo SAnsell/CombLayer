@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   snsBuild/targetOuter.cxx
+ * File: snsBuild/targetOuter.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *

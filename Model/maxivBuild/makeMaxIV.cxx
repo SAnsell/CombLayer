@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 #include "LinkSupport.h"
 
 
+#include "InjectionHall.h"
 #include "R1Ring.h"
 #include "R1Beamline.h"
 #include "R3Ring.h"
@@ -99,7 +100,8 @@ namespace xraySystem
 
 makeMaxIV::makeMaxIV() :
   r1Ring(new R1Ring("R1Ring")),
-  r3Ring(new R3Ring("R3Ring"))
+  r3Ring(new R3Ring("R3Ring")),
+  injectionHall(new InjectionHall("InjectionHall"))
  /*!
     Constructor
  */

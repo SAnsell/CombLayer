@@ -107,7 +107,8 @@ $gM->addDepUnit("maxiv", [@maxiv,
 			  qw(R3Common balder cosaxs danmax
 			  flexpes formax maxpeem  micromax
 			  softimax
-			  commonGenerator commonBeam R3Common R1Common species)]);
+			  commonGenerator commonBeam Linac
+                          R3Common R1Common species)]);
 
 my @filter = qw( filter photon );
 push(@filter,@mainLib);
