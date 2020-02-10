@@ -43,7 +43,8 @@ namespace TMRSystem
 
 class TargetBase :
   public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut
 {
  protected:
 
@@ -65,8 +66,6 @@ class TargetBase :
   virtual void addProtonLineInsertCell(const int);
   virtual void addProtonLineInsertCell(const std::vector<int>&);
 
-  /// Null op function [for overload]
-  virtual void setRefPlates(const int,const int) {}
   virtual std::vector<int> getInnerCells() const;
   /// Main cell body
   virtual int getMainBody() const  { return 0; }

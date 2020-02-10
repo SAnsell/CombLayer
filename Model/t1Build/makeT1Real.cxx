@@ -312,7 +312,9 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
+      //     TarObj->setCutSurf("BackPlate",);
+
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1CylTarget";
     }    
@@ -321,7 +323,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Inner";
     }    
@@ -330,7 +332,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getLinkSurf(5),0);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -345,6 +347,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1EllCylTarget";
     }    
@@ -353,7 +356,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getLinkSurf(-5),0);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-5));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Cannelloni";
     }    
@@ -363,7 +366,7 @@ makeT1Real::buildTarget(Simulation& System,
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(RefObj->getLinkSurf(-3),0);
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1BlockTarget";
     }    

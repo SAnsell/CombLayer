@@ -46,10 +46,7 @@ class TS2target :
   public TargetBase
 {
  private:
-  
-  int frontPlate;               ///< Front Plate
-  int backPlate;                ///< Back Plate
-  
+    
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
   double surfThick;             ///< Skin thickness on the W main core
@@ -128,9 +125,6 @@ class TS2target :
 
   void addInnerBoundary(attachSystem::ContainedComp&) const;
 
-  /// Set the surfaces of the reflector
-  void setRefPlates(const int A,const int B) 
-    { frontPlate=A; backPlate=B; }
 
   void addProtonLine(Simulation&,	 
 		     const attachSystem::FixedComp& refFC,

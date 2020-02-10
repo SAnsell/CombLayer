@@ -272,8 +272,8 @@ makeReflector::createInternalObjects(Simulation& System,
     IParam.getValue<std::string>("targetType",0);
   const std::string DT=IParam.getValue<std::string>("decType");
 
-  TarObj->setRefPlates(RefObj->getSurf("CornerB"),
-		       RefObj->getSurf("CornerA"));
+  TarObj->setCutSurf("FrontPlate",RefObj->getSurf("CornerB"));
+  TarObj->setCutSurf("BackPlate",RefObj->getSurf("CornerA"));
   TarObj->createAll(System,*RefObj,"CornerCentre");
 
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));

@@ -37,12 +37,11 @@ namespace ts1System
 
 class ProtonVoid : public attachSystem::ContainedComp,
   public attachSystem::FixedComp,
-  public attachSystem::ExternalCut
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
   
-  int protonVoidCell;           ///< Inner void cell
-
   double viewRadius;            ///< Radius of proton tube
   
   void populate(const FuncDataBase&);
@@ -57,8 +56,6 @@ class ProtonVoid : public attachSystem::ContainedComp,
   ProtonVoid& operator=(const ProtonVoid&);
   ~ProtonVoid();
 
-  /// access void cell  
-  int getVoidCell() const { return protonVoidCell; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

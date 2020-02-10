@@ -64,6 +64,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "LayerComp.h"
 #include "World.h"
 #include "AttachSupport.h"

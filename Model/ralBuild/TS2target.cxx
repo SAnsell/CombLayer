@@ -74,6 +74,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -85,8 +87,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3),
-  frontPlate(0),backPlate(0)
+  TMRSystem::TargetBase(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,8 +96,7 @@ TS2target::TS2target(const std::string& Key) :
 
 TS2target::TS2target(const TS2target& A) : 
   TMRSystem::TargetBase(A),
-  frontPlate(A.frontPlate),
-  backPlate(A.backPlate),mainLength(A.mainLength),coreRadius(A.coreRadius),
+  mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),wSphDisplace(A.wSphDisplace),
   wSphRadius(A.wSphRadius),wPlaneCut(A.wPlaneCut),
   wPlaneAngle(A.wPlaneAngle),cladThick(A.cladThick),
@@ -133,8 +133,6 @@ TS2target::operator=(const TS2target& A)
   if (this!=&A)
     {
       TMRSystem::TargetBase::operator=(A);
-      frontPlate=A.frontPlate;
-      backPlate=A.backPlate;
       mainLength=A.mainLength;
       coreRadius=A.coreRadius;
       surfThick=A.surfThick;
@@ -268,12 +266,6 @@ TS2target::createSurfaces()
 {
   ELog::RegMethod RegA("TS2target","createSurface");
   
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
-  // INNER PLANES    
-
-  SMap.addMatch(buildIndex+186,frontPlate);
-  SMap.addMatch(buildIndex+190,backPlate);
 
   // OUTER VOID [Should be a copy of 11 ?]
   ModelSupport::buildCylinder(SMap,buildIndex+101,Origin,Y,voidRadius);
@@ -508,6 +500,9 @@ TS2target::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TS2target","createObjects");
+  // INNER PLANES    
+  const std::string frontPlate(ExternalCut::getRuleStr("FrontPlate"));
+  const std::string backPlate(ExternalCut::getRuleStr("BackPlate"));
 
   std::string Out;
   mainCell=cellIndex;
@@ -550,13 +545,15 @@ TS2target::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 186");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontPlate));
   
 
   // Front spacer [Proton flight line]:
   // if (backPlate)
-  //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -190");
+  //   Out=ModelSupport::getComposite
+  //    (SMap,buildIndex,"-59 91 -101 -190")+backPlate
+  ;
   // else
   //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -202 186");
   // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
@@ -656,8 +653,11 @@ TS2target::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("TS2target","addProtonLine");
 
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
+
+  
   PLine->createAll(System,*this,3);
   createBeamWindow(System,-3);
+
   System.populateCells();
   System.createObjSurfMap();
   return;

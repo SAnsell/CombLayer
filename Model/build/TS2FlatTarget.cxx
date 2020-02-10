@@ -71,6 +71,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"

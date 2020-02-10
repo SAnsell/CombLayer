@@ -70,6 +70,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
