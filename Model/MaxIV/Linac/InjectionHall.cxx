@@ -115,14 +115,20 @@ InjectionHall::populate(const FuncDataBase& Control)
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   linearRCutLength=Control.EvalVar<double>(keyName+"LinearRCutLength");
   linearLTurnLength=Control.EvalVar<double>(keyName+"LinearLTurnLength");
-  spfAngleLength=Control.EvalVar<double>(keyName+"SpfAngleLength");
+  spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
+  spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
   
   linearWidth=Control.EvalVar<double>(keyName+"LinearWidth");
-  linearHeight=Control.EvalVar<double>(keyName+"LinearHeight");
-  linearWallThick=Control.EvalVar<double>(keyName+"LinearWallThick");
-  spfWallThick=Control.EvalVar<double>(keyName+"SpfWallThick");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+
+  floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
+  roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
+
+  boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
+  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
   
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -140,6 +146,68 @@ InjectionHall::createSurfaces()
 {
   ELog::RegMethod RegA("InjectionHall","createSurfaces");
 
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+13,
+			   Origin-X*(linearWidth/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,
+			   Origin+X*(linearWidth/2.0+wallThick),X);
+
+  // right hand step
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,Origin+Y*linearRCutLength,Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+111,Origin+Y*(linearRCutLength+wallThick),Y);
+    
+  ModelSupport::buildPlane
+    (SMap,buildIndex+104,Origin+X*(linearWidth/2.0+rightWallStep),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+114,Origin+X*(linearWidth/2.0+wallThick+rightWallStep),X);
+
+
+  // left hand angle
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQRotDeg(spfAngle,Z);
+  const Geometry::Vec3D PX(QR.makeRotate(X));
+  Geometry::Vec3D LWPoint(Origin-X*(linearWidth/2.0)+Y*linearLTurnLength);
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+201,Origin+Y*linearLTurnLength,Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+211,Origin+Y*(linearLTurnLength+spfAngleLength),Y);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+203,LWPoint,PX);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+213,LWPoint-X*wallThick,PX);
+
+  // out step
+  const double spfAngleStep(spfAngleLength*tan(M_PI*spfAngle/180.0));
+  ModelSupport::buildPlane
+    (SMap,buildIndex+223,Origin-X*(linearWidth/2.0+spfAngleStep),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+233,Origin-X*(linearWidth/2.0+spfAngleStep+wallThick),X);
+
+  // roof / floor
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+15,Origin-Z*(floorDepth+floorThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+16,Origin+Z*(roofHeight+roofThick),Z);
+    
+  // now build externals:
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+53,
+       Origin-X*(linearWidth/2.0+spfAngleStep+boundaryWidth+wallThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+54,
+       Origin+X*(linearWidth/2.0+rightWallStep+boundaryWidth+wallThick),X);
   
   return;
 }
@@ -154,7 +222,83 @@ InjectionHall::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("InjectionHall","createObjects");
 
+  std::string Out;
 
+  // INNER VOIDS:
+  // up to bend anngle
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 3 -4 5 -6");
+  makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -4 5 -6");
+  makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -4 5 -6");
+  makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
+  makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
+  
+  //OUTER WALLS:
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -3 13 5 -6");
+  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 -203 213 5 -6");
+  makeCell("SPFWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -2 -223 233 5 -6");
+  makeCell("LongWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
+  makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -111 14 -114 5 -6");
+  makeCell("CutWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 104 -114 5 -6");
+  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out);
+
+  // OUTER VOIDS:
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
+  makeCell("LeftOuter",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 211 -2 53 -233 5 -16");
+  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -101 -54 14  5 -16");
+  makeCell("RightLinear",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -2 -54 114  5 -16");
+  makeCell("RightCut",System,cellIndex++,voidMat,0.0,Out);
+
+  // ROOF/FLOOR
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 -5 15 ");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -16 ");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -211 213 -14 6 -16 ");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -14 6 -16 ");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 14 -114 6 -16 ");
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
+  addOuterSurf(Out);
+
+
+  
   return;
 }
 

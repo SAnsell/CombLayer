@@ -198,7 +198,7 @@ makeMaxIV::buildInjection(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-	  if (BL=="Linac" || BL=="SPF")  // default build
+	  if (BL=="LINAC" || BL=="SPF")  // default build
 	    activeLinac=1;
 	  index++;
 	}

@@ -43,27 +43,33 @@ class InjectionHall :
 {
  private:
 
-  double mainLength;               ///< total length
+  double mainLength;             ///< total length
   
-  double linearRCutLength;         ///< Length to right out step
-  double linearLTurnLength;        ///< Length to left angle out (inner)
-  double spfAngleLength;           ///< Length to right out step
+  double linearRCutLength;       ///< Length to right out step
+  double linearLTurnLength;      ///< Length to left angle out (inner)
+  double spfAngleLength;         ///< Length to left off angle
+  double spfAngle;               ///< SPF hall diagonal wall
+
+  double rightWallStep;          ///< Extra out step on right
   
-  double linearWidth;              ///< Wall - Wall width
-  double linearHeight;             ///< Height (floor to under roof)
-  double linearWallThick;          ///< Wall thickness
+  double linearWidth;            ///< Wall - Wall width
 
-  double spfWallThick;          ///< Wall thickness
+  double floorDepth;             ///< Depth (floor to under roof)
+  double roofHeight;             ///< Height (floor to under roof)
 
-  double roofThick;               ///< floor thickness
-  double floorThick;               ///< floor thickness
+  double wallThick;             ///< Wall thickness
+  double roofThick;             ///< roof thickness
+  double floorThick;            ///< floor thickness
 
+  double boundaryWidth;           ///< Width after walls
+  double boundaryHeight;          ///< Height after roof
+  
+    
   int voidMat;               ///< void material
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
-  
   void createFloor(Simulation&);
     
   void populate(const FuncDataBase&);
