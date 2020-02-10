@@ -182,11 +182,14 @@ makeMaxIV::buildInjection(Simulation& System,
     \param IParam :: Input paramters
   */
 {
-  ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
+  ELog::RegMethod RegA("makeMaxIV","buildInjection");
+  
 
   const int voidCell(74123);
-  bool activeHall(0);
-  const size_t NSet=IParam.setCnt("beamlines");
+  bool activeLinac(0);
+  const size_t NSet=IParam.setCnt("beamlines");  // converted from
+                                                 //  defaultConfig linac
+
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",j);
@@ -195,16 +198,18 @@ makeMaxIV::buildInjection(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-	  if (BL=="Linac" || BL=="SPF")
-	    {
-	      // BUILD HALL:
-	      injectionHall->addInsertCell(voidCell);
-	      injectionHall->createAll(System,World::masterOrigin(),0);
-	      return 1;
-	    }
+	  if (BL=="Linac" || BL=="SPF")  // default build
+	    activeLinac=1;
+	  index++;
 	}
     }
-  return 0;  // NO BUILD
+  if (!activeLinac) return 0;
+
+  // BUILD HALL:
+  injectionHall->addInsertCell(voidCell);
+  injectionHall->createAll(System,World::masterOrigin(),0);
+
+  return 1;  
 }  
 
 bool
@@ -230,7 +235,6 @@ makeMaxIV::buildR1Ring(Simulation& System,
   std::set<std::string> activeBL;
   bool activeR1(0);
   const size_t NSet=IParam.setCnt("beamlines");
-
 
   for(size_t j=0;j<NSet;j++)
     {

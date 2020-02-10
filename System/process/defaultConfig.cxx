@@ -3,7 +3,7 @@
  
  * File:   process/defaultConfig.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,12 +173,13 @@ void
 defaultConfig::process(FuncDataBase& Control,
 		       mainSystem::inputParam& IParam) const
   /*!
-    Process the cards
+    Convert input parameters into variables based on -v/-va cards
     \param Control :: FuncDataBase to update
     \param IParam :: Input arguments
    */
 {
   ELog::RegMethod RegA("defaultConfig","process");
+
 
   std::map<std::string,double>::const_iterator dc;
   for(dc=varVal.begin();dc!=varVal.end();dc++)
@@ -198,6 +199,7 @@ defaultConfig::process(FuncDataBase& Control,
       if(!IParam.flag(FItem.first))
 	IParam.setValue(FItem.first,FItem.second);
     }
+
 
   // Multi set
   for(const TTYPE& TI : multiSet)

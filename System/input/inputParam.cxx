@@ -613,7 +613,7 @@ inputParam::getObjectItems(const std::string& K,
     \return Set of raw-strings
   */
 {
-  ELog::RegMethod Rega("inputParam","getObjectItems");
+  ELog::RegMethod RegA("inputParam","getObjectItems");
 
   const IItem* IPtr=getIndex(K);
   if (!IPtr)
