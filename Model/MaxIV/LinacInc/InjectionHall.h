@@ -61,6 +61,20 @@ class InjectionHall :
   double roofThick;             ///< roof thickness
   double floorThick;            ///< floor thickness
 
+
+  double midGateOut;            ///< Size outwards from wall 
+  double midGateWidth;          ///< Gate width 
+  double midGateWall;           ///< Gate wall
+
+  double midTXStep;             ///< Step to centre of T
+  double midTYStep;             ///< Step to centre of T
+  double midTThick;             ///< Thickness
+  double midTAngle;             ///< angle of offset
+  double midTLeft;              ///< left flat 
+  double midTRight;             ///< right flat
+  double midTFrontAngleStep;    ///< angle at front extent from mid line
+  double midTBackAngleStep;     ///< angle at back extent from mid line
+
   double boundaryWidth;           ///< Width after walls
   double boundaryHeight;          ///< Height after roof
   

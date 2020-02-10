@@ -127,6 +127,19 @@ InjectionHall::populate(const FuncDataBase& Control)
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
 
+  midTXStep=Control.EvalVar<double>(keyName+"MidTXStep");
+  midTYStep=Control.EvalVar<double>(keyName+"MidTYStep");
+  midTThick=Control.EvalVar<double>(keyName+"MidTThick");
+  midTLeft=Control.EvalVar<double>(keyName+"MidTLeft");
+  midTRight=Control.EvalVar<double>(keyName+"MidTRight");
+  midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
+  midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
+
+  midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
+  midGateWidth=Control.EvalVar<double>(keyName+"MidGateWidth");
+  midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
+  
+  
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
   
@@ -199,7 +212,62 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+15,Origin-Z*(floorDepth+floorThick),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+16,Origin+Z*(roofHeight+roofThick),Z);
-    
+
+
+  // MID T [1000]:
+  const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
+  ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThick/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThick/2.0),X);
+
+  const Geometry::Quaternion QRMid=
+    Geometry::Quaternion::calcQRotDeg(midTAngle,Z);
+  const Geometry::Vec3D MX(QRMid.makeRotate(X));
+  const Geometry::Vec3D MY(QRMid.makeRotate(Y));
+
+  const Geometry::Vec3D FMidPt(MidPt-X*(midTThick/2.0)-Y*midTThick);
+  const Geometry::Vec3D BMidPt(MidPt-X*(midTThick/2.0));
+  // end points of slope
+  const Geometry::Vec3D FMidPtA(FMidPt-MX*midTFrontAngleStep);
+  const Geometry::Vec3D BMidPtA(BMidPt-MX*midTBackAngleStep);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+1111,
+			   FMidPt,
+			   FMidPtA,
+			   FMidPtA+Z,
+			   Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1112,
+			   BMidPt,
+			   BMidPtA,
+			   BMidPtA+Z,
+			   Y);
+  // End divider
+  ModelSupport::buildPlane(SMap,buildIndex+1153,
+			   FMidPtA,
+			   BMidPtA,
+			   BMidPtA+Z,
+			   X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1201,FMidPtA,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1202,BMidPtA,Y);
+  
+  // caps
+  
+  ModelSupport::buildPlane(SMap,buildIndex+1103,MidPt-X*midTLeft,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1104,MidPt+X*midTRight,X);
+
+  // GATE:
+  const Geometry::Vec3D gatePt((FMidPtA+BMidPtA)/2.0);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1511,gatePt-Y*(midGateWall+midGateWidth/2.0),Y);
+  ModelSupport::buildPlane (SMap,buildIndex+1512,gatePt-Y*(midGateWidth/2.0),Y);
+  ModelSupport::buildPlane (SMap,buildIndex+1521,gatePt+Y*(midGateWidth/2.0),Y);  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1522,gatePt+Y*(midGateOut+midGateWidth/2.0),Y);
+
+  
   // now build externals:
   
   ModelSupport::buildPlane
@@ -226,13 +294,17 @@ InjectionHall::createObjects(Simulation& System)
 
   // INNER VOIDS:
   // up to bend anngle
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 3 -4 5 -6");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -201 3 -4 5 -6 (-1003:1004:-1001)");
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 1004 -4 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -1003 5 -6");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
@@ -270,7 +342,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -101 -54 14  5 -16");
+    (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
   makeCell("RightLinear",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -293,7 +365,21 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 14 -114 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  
+  // MID T
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 1003 -1004 -2 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
 
