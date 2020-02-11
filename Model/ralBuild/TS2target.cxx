@@ -654,7 +654,7 @@ TS2target::addProtonLine(Simulation& System,
 
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
 
-  
+  PLine->setCutSurf("RefBoundary",getRule("BackPlate"));
   PLine->createAll(System,*this,3);
   createBeamWindow(System,-3);
 

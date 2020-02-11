@@ -279,8 +279,6 @@ makeReflector::createInternalObjects(Simulation& System,
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System,*RefObj,-7);
 
-  return;
-  
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);
@@ -292,17 +290,19 @@ makeReflector::createInternalObjects(Simulation& System,
   VacObj->buildPair(System,*GrooveObj,*HydObj);
   std::string Out;
 
-
   Out = RefObj->combine("CornerB Back Right").display();
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
 
-  Out = RefObj->combine("CornerC Front").display();
+
+  Out = RefObj->combine("CornerC Front").display(); 
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
 
+  return;
+  
 
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
