@@ -3,7 +3,7 @@
  
  * File:   buildInc/BulkShield.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ namespace shutterSystem
 
 class BulkShield : public attachSystem::FixedComp,
   public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
   public attachSystem::ExternalCut
 {
  private:
@@ -69,12 +70,6 @@ class BulkShield : public attachSystem::FixedComp,
   double totalDepth;               ///< Depth of bulk shiedl
 
   int ironMat;                    ///< Shield material
-
-  // Set during build:
-  int torpedoCell;                ///< torpedo cell
-  int shutterCell;                ///< Shutter cell 
-  int innerCell;                  ///< Inner cell
-  int outerCell;                  ///< Outer cell
 
   std::set<std::string> excludeSet; 
   // Functions:

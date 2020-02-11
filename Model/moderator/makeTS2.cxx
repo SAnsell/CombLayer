@@ -110,6 +110,7 @@ makeTS2::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeTS2","build");
 
+  int excludeCell(74123);
   moderatorSystem::makeTS2Bulk bulkObj;
   moderatorSystem::makeReflector refObj;
   hutchSystem::makeChipIR chipObj;
@@ -127,8 +128,10 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
-  refObj.build(*SimPtr,IParam);
-  bulkObj.build(SimPtr,IParam);
+
+  bulkObj.build(SimPtr,IParam,excludeCell);
+  refObj.build(*SimPtr,IParam,excludeCell);
+  
 
   // this needs to be SELECTED
   /*

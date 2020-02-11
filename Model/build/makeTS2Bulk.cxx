@@ -112,7 +112,8 @@ makeTS2Bulk::~makeTS2Bulk()
 
 void 
 makeTS2Bulk::build(Simulation* SimPtr,
-		   const mainSystem::inputParam& IParam)
+		   const mainSystem::inputParam& IParam,
+		   int& excludeCell)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
@@ -126,9 +127,12 @@ makeTS2Bulk::build(Simulation* SimPtr,
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
       // void vessel
-      VObj->createAll(*SimPtr,World::masterTS2Origin(),0);
-      //      RefObj->getRef()->insertAllInCell(System,VObj->getCell("Void"));
-      BulkObj->createAll(*SimPtr,*VObj,0);
+
+      //      VObj->createAll(*SimPtr,World::masterOrigin(),0);
+      BulkObj->addInsertCell(excludeCell);
+      BulkObj->createAll(*SimPtr,World::masterOrigin(),0);
+      excludeCell=BulkObj->getCell("Torpedo");
+      //      excludeCell=VObj->getCell("");      
     }
   else
     {

@@ -170,7 +170,6 @@ makeReflector::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("makeReflector","createObjects");
 
-  RefObj->addInsertCell(74123);
   RefObj->createAll(System,World::masterOrigin(),0);
 
   const int refCell=RefObj->getCell("Reflector");
@@ -192,8 +191,6 @@ makeReflector::createObjects(Simulation& System)
   CdBucket->addInsertCell(refCell);
   // torpedoCell=refCell;
 
-  //  for(CoolPad& PD : Pads)
-  //    PD.addInsertCell(74123);
   
   return;
 }
@@ -258,7 +255,7 @@ makeReflector::processDecoupled(Simulation& System,
 
 void
 makeReflector::createInternalObjects(Simulation& System,
-				 const mainSystem::inputParam& IParam)
+				     const mainSystem::inputParam& IParam)
   /*!
     Build the inner objects
     \param System :: Simulation to use
@@ -279,6 +276,8 @@ makeReflector::createInternalObjects(Simulation& System,
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System,*RefObj,-7);
 
+  return;
+  
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);
@@ -489,15 +488,18 @@ makeReflector::getExclude() const
 
 void
 makeReflector::build(Simulation& System,
-		     const mainSystem::inputParam& IParam)
+		     const mainSystem::inputParam& IParam,
+		     int& excludeCell)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param IParam :: Parameter table
+    \param excludeCell :: exclude Cell
   */
 {
   ELog::RegMethod RegA("makeReflector","build");
 
+  RefObj->addInsertCell(excludeCell);
   createObjects(System);
   createInternalObjects(System,IParam);
   /*  

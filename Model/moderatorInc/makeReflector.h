@@ -94,7 +94,7 @@ class makeReflector
 
   virtual std::string getExclude() const;
 
-  void build(Simulation&,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&,int&);
 
 
 };

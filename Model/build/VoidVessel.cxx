@@ -3,7 +3,7 @@
  
  * File:   build/VoidVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -83,6 +82,8 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "VoidVessel.h"
 
 
@@ -90,7 +91,9 @@ namespace shutterSystem
 {
 
 VoidVessel::VoidVessel(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,0),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   steelCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -99,7 +102,9 @@ VoidVessel::VoidVessel(const std::string& Key)  :
 {}
 
 VoidVessel::VoidVessel(const VoidVessel& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   voidOrigin(A.voidOrigin),vXoffset(A.vXoffset),
   vThick(A.vThick),vGap(A.vGap),vSide(A.vSide),vBase(A.vBase),
   vTop(A.vTop),vBack(A.vBack),vFront(A.vFront),vFDepth(A.vFDepth),
@@ -131,6 +136,7 @@ VoidVessel::operator=(const VoidVessel& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       voidOrigin=A.voidOrigin;
       vXoffset=A.vXoffset;
@@ -384,9 +390,7 @@ VoidVessel::createObjects(Simulation& System)
   steelCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 ");
-    // +Reflector->getExclude();
-
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("Void",System,cellIndex++,0,0.0,Out);
 
   // Now add Outer surface:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14");
@@ -510,6 +514,8 @@ VoidVessel::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createWindows(System);
+  insertObjects(System);
+  
   return;
 }
   

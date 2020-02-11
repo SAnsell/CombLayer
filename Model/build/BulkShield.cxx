@@ -3,7 +3,7 @@
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,7 @@ const size_t BulkShield::letShutter(6);
 BulkShield::BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),
   attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   numberBeamLines(18)
   /*!
@@ -124,15 +125,13 @@ BulkShield::BulkShield(const std::string& Key)  :
 
 BulkShield::BulkShield(const BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   numberBeamLines(A.numberBeamLines),
   TData(A.TData),GData(A.GData),BData(A.BData),vXoffset(A.vXoffset),
   torpedoRadius(A.torpedoRadius),shutterRadius(A.shutterRadius),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   totalHeight(A.totalHeight),totalDepth(A.totalDepth),
-  ironMat(A.ironMat),torpedoCell(A.torpedoCell),
-  shutterCell(A.shutterCell),innerCell(A.innerCell),
-  outerCell(A.outerCell)
+  ironMat(A.ironMat)
   /*!
     Copy constructor
     \param A :: BulkShield to copy
@@ -151,6 +150,8 @@ BulkShield::operator=(const BulkShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       TData=A.TData;
       GData=A.GData;
       BData=A.BData;
@@ -162,10 +163,6 @@ BulkShield::operator=(const BulkShield& A)
       totalHeight=A.totalHeight;
       totalDepth=A.totalDepth;
       ironMat=A.ironMat;
-      torpedoCell=A.torpedoCell;
-      shutterCell=A.shutterCell;
-      innerCell=A.innerCell;
-      outerCell=A.outerCell;
     }
   return *this;
 }
@@ -264,6 +261,7 @@ BulkShield::createTorpedoes(Simulation& System)
       OR.addObject(TData.back());
     }
 
+  const int torpedoCell=getCell("Torpedo");
   MonteCarlo::Object* torpedoObj=System.findObject(torpedoCell);
   if (!torpedoObj)
     throw ColErr::InContainerError<int>(torpedoCell,"torpedoObject");
@@ -321,21 +319,20 @@ BulkShield::createShutters(Simulation& System)
       //      GData.back());
     }
 
+  const int shutterCell=getCell("Shutter");
   MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
-  for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
+
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
-      GData[i]->setDivide(40000);
+      GData[i]->setDivide(50000); 
       GData[i]->createAll(System,*this,0);
-      if (i==zoomShutter) ELog::EM<<"GI == "<<
-			    GData[i]->getCentre()<<ELog::endDiag;
-
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 
@@ -356,7 +353,9 @@ BulkShield::createBulkInserts(Simulation& System)
     ModelSupport::objectRegister::Instance();
 
   const bool chipFlag(excludeSet.find("chipIR")==excludeSet.end());
-
+  const int innerCell=getCell("Inner");
+  const int outerCell=getCell("Outer");
+  
   for(size_t i=0;i<numberBeamLines;i++)
     {
       std::shared_ptr<BulkInsert> BItem;
@@ -390,23 +389,19 @@ BulkShield::createObjects(Simulation& System)
   ELog::RegMethod RegA("BulkShield","createObjects");
 
   const std::string bulkInsertStr=ExternalCut::getRuleStr("BulkInsert");
-  // Torpedo
+  // Inner volume [for torpedoes etc]
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+bulkInsertStr;
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  torpedoCell=cellIndex-1;
+  makeCell("Torpedo",System,cellIndex++,ironMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+bulkInsertStr;
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  shutterCell=cellIndex-1;
+  makeCell("Shutter",System,cellIndex++,ironMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  innerCell=cellIndex-1;
+  makeCell("Inner",System,cellIndex++,ironMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
-  outerCell=cellIndex-1;
+  makeCell("Outer",System,cellIndex++,ironMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
   addOuterSurf(Out);
@@ -414,22 +409,6 @@ BulkShield::createObjects(Simulation& System)
   return;
 }
 
-void
-BulkShield::processVoid(Simulation& System)
-  /*!
-    Adds this as the outside layer of the void
-    \param System :: Simulation to obtain/add void
-  */
-{
-  ELog::RegMethod RegA("BulkShield","processVoid");
-  // Add void
-  MonteCarlo::Object* Obj=System.findObject(74123);
-  if (Obj)
-    Obj->procString("-1 "+getExclude());
-  else
-    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
-  return;
-}
 
 
 const shutterSystem::Torpedo* 
@@ -564,11 +543,12 @@ BulkShield::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  processVoid(System);
+  //  processVoid(System);
 
   createShutters(System);
   createBulkInserts(System);
-  createTorpedoes(System);
+  //  createTorpedoes(System);
+  insertObjects(System);
   return;
 }
 

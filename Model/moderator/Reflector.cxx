@@ -273,7 +273,7 @@ Reflector::createObjects(Simulation& System)
   makeCell("Reflector",System,cellIndex++,defMat,0.0,Out);
 
   for(CoolPad& PD : Pads)
-    PD.addInsertCell(74123);
+    PD.addInsertCell(this->getInsertCells());
  
   for(CoolPad& PD : Pads)
     PD.createAll(System,*this,3);
