@@ -136,10 +136,18 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
 
+  klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
+  
   midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
   midGateWidth=Control.EvalVar<double>(keyName+"MidGateWidth");
   midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
   
+  klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
+  klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
+  klystronFrontWall=Control.EvalVar<double>(keyName+"KlystronFrontWall");
+  klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
+      
+
   
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
@@ -176,7 +184,8 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+101,Origin+Y*linearRCutLength,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+111,Origin+Y*(linearRCutLength+wallThick),Y);
-    
+
+  
   ModelSupport::buildPlane
     (SMap,buildIndex+104,Origin+X*(linearWidth/2.0+rightWallStep),X);
   ModelSupport::buildPlane
@@ -270,7 +279,23 @@ InjectionHall::createSurfaces()
    // step out
   ModelSupport::buildPlane
     (SMap,buildIndex+1503,Origin-X*(linearWidth/2.0-midGateOut),X);
-  
+
+  // Future KLYSTRON DIVDER
+  ModelSupport::buildPlane
+    (SMap,buildIndex+2111,Origin+Y*
+     (linearRCutLength+wallThick-klysDivThick),Y);
+
+  // Current Klystron box
+  ModelSupport::buildPlane(SMap,buildIndex+3001,Origin+Y*klystronLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3002,
+			   Origin+Y*(+klystronFrontWall+klystronLen),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3004,Origin+X*klystronXStep,X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3014,Origin+X*(klystronXStep-klystronSideWall),X);
+
+
+
   // now build externals:
   
   ModelSupport::buildPlane
@@ -299,18 +324,22 @@ InjectionHall::createObjects(Simulation& System)
   // up to bend anngle
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -201 3 -4 5 -6 "
-     " (-1003:1004:-1001) "        // main mid divider
-     " (-1111:1112:1003) "        // left mid block 
-     " ( -1004:1011:-1001:1104) "        // right mid block
-     " (-1511:1522:1503) "        // gate block
+     " (3002:3004)        "           // kystron wall
+     " (-1003:1004:-1001) "           // main mid divider
+     " (-1111:1112:1003) "           // left mid block 
+     " ( -1004:1011:-1001:1104) "   // right mid block
+     " (-1511:1522:1503) "          // gate block
      );
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2 1004 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 1004 -4 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2111 1004 -4 5 -6");
+  makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -1003 5 -6");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -336,6 +365,10 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 104 -114 5 -6");
   makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out);
+
+  // Klystrong divivde
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -4 5 -6");
+  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   // OUTER VOIDS:
   
@@ -397,6 +430,12 @@ InjectionHall::createObjects(Simulation& System)
           "( -1153 : -1111 : 1112)");
   makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
 
+  // KLYSTRONG WALLS
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
+  makeCell("KystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1 3 -3002 -3004 (3001:3014) 5 -6");
+  makeCell("KystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);

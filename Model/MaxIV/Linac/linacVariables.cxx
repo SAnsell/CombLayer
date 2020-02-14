@@ -110,10 +110,18 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTRight",283.0);  // from mid line
   
 
+  Control.addVariable(wallKey+"KlysDivThick",100.0);
+  
   Control.addVariable(wallKey+"MidGateOut",206.0);
   Control.addVariable(wallKey+"MidGateWidth",432.0);
   Control.addVariable(wallKey+"MidGateWall",100.0);
-      
+
+
+  Control.addVariable(wallKey+"KlystronXStep",28.0);
+  Control.addVariable(wallKey+"KlystronLen",978.0);
+  Control.addVariable(wallKey+"KlystronFrontWall",100.0);
+  Control.addVariable(wallKey+"KlystronSideWall",150.0);
+
   
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
