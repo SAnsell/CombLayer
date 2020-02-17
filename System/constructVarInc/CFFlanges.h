@@ -71,6 +71,7 @@ struct CF25
 };
 
 
+
 /*!
   \struct CF40
   \version 2.0
@@ -228,6 +229,32 @@ struct CF350
   static constexpr size_t nBolts=30;
 };
 
-}
 
+namespace Linac
+{
+/*!
+  \struct CF40
+  \version 2.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF40
+*/
+
+struct CF40
+{
+  static constexpr double innerRadius=1.9;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  static constexpr double bellowStep=1.0;
+  static constexpr double bellowThick=1.0;
+  static constexpr double gasketRadius=1.0;
+  static constexpr double gasketThick=1.3;
+  static constexpr double boltRadius=0.3;
+  static constexpr size_t nBolts=6;
+};
+
+}  // NAMESPACE Linac
+ 
+}  // NAMESPACE CFFlanges
 #endif
