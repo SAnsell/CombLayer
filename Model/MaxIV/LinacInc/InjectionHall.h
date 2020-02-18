@@ -61,11 +61,6 @@ class InjectionHall :
   double roofThick;             ///< roof thickness
   double floorThick;            ///< floor thickness
 
-
-  double midGateOut;            ///< Size outwards from wall 
-  double midGateWidth;          ///< Gate width 
-  double midGateWall;           ///< Gate wall
-
   double midTXStep;             ///< Step to centre of T
   double midTYStep;             ///< Step to centre of T
   double midTThick;             ///< Thickness
@@ -75,6 +70,17 @@ class InjectionHall :
   double midTFrontAngleStep;    ///< angle at front extent from mid line
   double midTBackAngleStep;     ///< angle at back extent from mid line
 
+  double klysDivThick;      ///< Thickness of klystrong divder
+  
+  double midGateOut;            ///< Size outwards from wall 
+  double midGateWidth;          ///< Gate width 
+  double midGateWall;           ///< Gate wall
+
+  double klystronXStep;         ///< Step of inner klystron wall
+  double klystronLen;           ///< Length of klystron wall
+  double klystronFrontWall;      ///< Thick of front kylstron wall
+  double klystronSideWall;      ///< Thickness of klystron divder
+  
   double boundaryWidth;           ///< Width after walls
   double boundaryHeight;          ///< Height after roof
   
