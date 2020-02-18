@@ -95,6 +95,7 @@
 #include "CryoMagnetBase.h"
 #include "Dipole.h"
 #include "Quadrupole.h"
+#include "Sexupole.h"
 #include "Octupole.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
@@ -138,6 +139,18 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
+  std::shared_ptr<xraySystem::Sexupole>
+    SXX(new xraySystem::Sexupole("SXX","SXX"));
+
+  OR.addObject(SXX);
+
+  SXX->addInsertCell(voidCell);
+  SXX->createAll(System,World::masterOrigin(),0);
+  
+  return;
+  
+
+  
   std::shared_ptr<xraySystem::MagnetM1>
     MagBlock(new xraySystem::MagnetM1("M1Block"));
 

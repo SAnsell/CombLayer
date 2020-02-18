@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SexupoleGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,10 +89,10 @@ SexupoleGenerator::setRadius(const double R,const double C)
   
   
 void
-SexupoleGenerator::generateSexu(FuncDataBase& Control,
-				const std::string& keyName,
-				const double yStep,
-				const double length) const
+SexupoleGenerator::generateHex(FuncDataBase& Control,
+			       const std::string& keyName,
+			       const double yStep,
+			       const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -101,7 +101,7 @@ SexupoleGenerator::generateSexu(FuncDataBase& Control,
     \param length :: length
   */
 {
-  ELog::RegMethod RegA("SexupoleGenerator","generateSexu");
+  ELog::RegMethod RegA("SexupoleGenerator","generateHex");
 
   Control.addVariable(keyName+"YStep",yStep);
 
