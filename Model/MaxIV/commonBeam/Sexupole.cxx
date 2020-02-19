@@ -277,9 +277,8 @@ Sexupole::createObjects(Simulation& System)
       BN+=2;
       PN+=10;
     }
-
   Out=ModelSupport::getComposite
-	  (SMap,buildIndex,"501 -502 -1012 -1001 -1002 ");
+    (SMap,buildIndex,BN,"501 -502 -1000M -1001 -1002 ");
   makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
 	   PoleExclude[0].complement().display()+ICell);
   int CN(buildIndex+1);
@@ -289,14 +288,12 @@ Sexupole::createObjects(Simulation& System)
       // three index points
       Out=ModelSupport::getComposite
 	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
-	
       makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
 	       PoleExclude[i].complement().display()+ICell);
       CN+=2;
       TN++;
     }
 
-  ELog::EM<<"Out:"<<Out<<ELog::endDiag;
   Out=ModelSupport::getComposite
 	  (SMap,buildIndex,"506 -501 -1010 -1011 -1012 ");
   makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+

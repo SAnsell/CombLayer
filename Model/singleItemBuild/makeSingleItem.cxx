@@ -97,6 +97,7 @@
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
+#include "LQuad.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
@@ -139,6 +140,16 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
+  std::shared_ptr<xraySystem::LQuad>
+    LQ(new xraySystem::LQuad("LQ","LQ"));
+
+  OR.addObject(LQ);
+
+  LQ->addInsertCell(voidCell);
+  LQ->createAll(System,World::masterOrigin(),0);
+  
+  return;
+  
   std::shared_ptr<xraySystem::Sexupole>
     SXX(new xraySystem::Sexupole("SXX","SXX"));
 
