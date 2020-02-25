@@ -335,11 +335,11 @@ DSIndex::addData(const size_t I,const SrcInfo* SI,
   */
 {
   PMesh.push_back(SrcData(I));
-  if (SI != nullPtr)
+  if (SI != nullptr)
     PMesh.back().addUnit(*SI);
-  if (SB != nullPtr)
+  if (SB != nullptr)
     PMesh.back().addUnit(*SB);
-  if (SP != nullPtr)
+  if (SP != nullptr)
     PMesh.back().addUnit(*SP);
   
   return;
