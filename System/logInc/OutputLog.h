@@ -92,8 +92,12 @@ class OutputLog
   size_t getIndentLength() const;
 
  public:
- 
-  constexpr OutputLog();
+
+  /// basic constructor
+  constexpr OutputLog() :
+    colourFlag(0),activeBits(255),actionBits(0),
+      debugBits(0),typeFlag(1),locFlag(1),
+      storeFlag(0),NBasePtr(0) {}
   OutputLog(const std::string&);
   OutputLog(const OutputLog<RepClass>&);
   OutputLog<RepClass>& operator=(const OutputLog<RepClass>&);

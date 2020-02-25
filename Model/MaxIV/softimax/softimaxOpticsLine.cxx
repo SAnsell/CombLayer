@@ -987,11 +987,10 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   lineScreen->createAll(System,*gateA,"back");
 
   innerScreen->setNoInsert();
-  for(size_t index=14;index<=22;index++)
-    {
-      ELog::EM<<"Cell == "<<this->getCell("OuterVoid",index)<<ELog::endDiag;
-      innerScreen->addInsertCell(this->getCell("OuterVoid",index));
-    }
+  for(size_t index=14;index<=20;index++)
+    innerScreen->addInsertCell(this->getCell("OuterVoid",index));
+
+  innerScreen->addInsertCell(this->getCell("OuterVoid",23));  
   innerScreen->createAll(System,*gateA,"back");
   
   return;

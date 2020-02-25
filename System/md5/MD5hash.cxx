@@ -3,7 +3,7 @@
  
  * File:   md5/MD5hash.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 uint4 
 MD5hash::r[64]=
   {
-    7, 12, 17, 22, 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+    7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
     5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
     4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
     6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
@@ -59,7 +59,7 @@ uint4 MD5hash::k[64]=
     0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
     
     0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-    0xd62f105d, 0x2441453, 0xd8a1e681, 0xe7d3fbc8,
+    0xd62f105d, 0x24414530, 0xd8a1e681, 0xe7d3fbc8,
     0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
     0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
     

@@ -38,17 +38,6 @@ namespace ELog
 {
 
 template<typename RepClass>
-constexpr
-OutputLog<RepClass>::OutputLog() :
-  colourFlag(0),activeBits(255),actionBits(0),
-  debugBits(0),typeFlag(1),locFlag(1),
-  storeFlag(0),NBasePtr(0)
-  /*!
-    Constructor
-  */
-{}
-
-template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const std::string&) :
   colourFlag(0),activeBits(255),actionBits(0),debugBits(0),
   typeFlag(1),locFlag(1),storeFlag(0),NBasePtr(0)
