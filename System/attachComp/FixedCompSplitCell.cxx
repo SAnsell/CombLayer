@@ -259,22 +259,21 @@ FixedComp::splitObject(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FixedComp","splitObject(cell)");
-
-  std::vector<int> OutCell;
-
+  
   const int ASN=std::abs(SN);
   const int signSN=(SN>0) ? 1 : -1;
   const int trueSN= (ASN<100000) ?
     signSN*SMap.realSurf(buildIndex+ASN) : SN;
 
+  
   const int cellExtra=System.splitObject(cellN,cellIndex++,trueSN);
-      
+
   
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
   
-  return OutCell;  
+  return std::vector<int>({cellN,cellExtra});
 }
 
 std::vector<int>
@@ -285,7 +284,7 @@ FixedComp::splitObject(Simulation& System,
     Carries out a splitObject function -- not 100% sure
     is goes here but...
     Note that the NEGATIVE surface constructed is the original cell.
-    \param SN :: Surface number to use [already in cell]
+    \param SName :: Surface name to use [already in cell]
     \param cellN :: Cell number
     \return cellList 
   */

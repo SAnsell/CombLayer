@@ -179,44 +179,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB")),
 
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
-  lineScreen(new insertSystem::insertPlate(newName+"LineScreen"))
+  lineScreen(new insertSystem::insertPlate(newName+"LineScreen")),
+  innerScreen(new insertSystem::insertPlate(newName+"InnerScreen"))
 
-  // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
-  // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  // screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  // screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
-  // diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
-  // primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
-  // gateC(new constructSystem::GateValveCube(newName+"GateC")),
-  // monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
-  // monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
-  // diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
-  // bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
-  // bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  // mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  // mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  // mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-  // diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
-  // jawCompB({
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit1")
-  // 	}),
-
-  // gateG(new constructSystem::GateValveCube(newName+"GateG")),
-  // mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
-  // mirrorFrontB(new xraySystem::Mirror(newName+"MirrorFrontB")),
-  // mirrorBackB(new xraySystem::Mirror(newName+"MirrorBackB")),
-  // gateH(new constructSystem::GateValveCube(newName+"GateH")),
-  // bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  // diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
-  // jawCompC({
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
-  // 	}),
-  // gateI(new constructSystem::GateValveCube(newName+"GateI")),
-  // monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-
-  // gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -288,6 +253,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(joinPipeBB);
   OR.addObject(screenA);
   OR.addObject(lineScreen);
+  OR.addObject(innerScreen);
 }
 
 softimaxOpticsLine::~softimaxOpticsLine()
@@ -517,19 +483,33 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
   slitTube->intersectPorts(System,0,2);
   slitTube->intersectPorts(System,0,1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
-  slitTube->insertAllInCell(System,outerCell);
+  // split front/back ends off
+  const int newCellB=
+    slitTube->splitObject(System,"PortBCut",outerCell).back();
+  this->addCell("OuterVoid",newCellB);
+  const int newCellA=
+    slitTube->splitObject(System,"-PortACut",outerCell).back();
+  this->addCell("OuterVoid",newCellA);
+  cellIndex+=2;  // remember creates an extra cell in  primary
+  
+  slitTube->insertInCell("FlangeA",System,newCellA);
+  slitTube->insertInCell("FlangeB",System,newCellB);
+  slitTube->insertInCell("Main",System,outerCell);
+  slitTube->insertPortInCell(System,outerCell);
 
   slitTube->splitVoidPorts(System,"SplitVoid",1001,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
+  std::vector<int> cellItems=
+    slitTube->splitObject(System,1501,outerCell,
+			  Geometry::Vec3D(0,0,0),
+			  Geometry::Vec3D(0,0,1));
+  this->addCell("OuterVoid",cellItems[1]);
 
-  slitTube->splitObject(System,1501,outerCell,
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(0,0,1));
+  // Note need cell number later
   cellIndex++;  // remember creates an extra cell in  primary
-
-
+  
   for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
@@ -1005,6 +985,14 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   lineScreen->setNoInsert();
   lineScreen->addInsertCell(ContainedComp::getInsertCells());
   lineScreen->createAll(System,*gateA,"back");
+
+  innerScreen->setNoInsert();
+  for(size_t index=14;index<=22;index++)
+    {
+      ELog::EM<<"Cell == "<<this->getCell("OuterVoid",index)<<ELog::endDiag;
+      innerScreen->addInsertCell(this->getCell("OuterVoid",index));
+    }
+  innerScreen->createAll(System,*gateA,"back");
   
   return;
 }
