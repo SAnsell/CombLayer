@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/JawValveGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class JawValveGenerator
   JawValveGenerator();
   JawValveGenerator(const JawValveGenerator&);
   JawValveGenerator& operator=(const JawValveGenerator&);
-  ~JawValveGenerator();
+  ~JawValveGenerator() =default;
 
   template<typename CF> void setCF();
   template<typename CF> void setCylCF();
