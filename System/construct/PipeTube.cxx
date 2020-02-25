@@ -870,6 +870,22 @@ PipeTube::insertMainInCell(Simulation& System,
 }
 
 void
+PipeTube::insertPortInCell(Simulation& System,const int cellN)
+  /*!
+    Allow ports to be intersected into arbitary cell list
+    \param System :: Simulation to use    
+    \param cellN :: Cell for insert
+  */
+{
+  ELog::RegMethod RegA("PipeTube","insertPortInCell(cellN)");
+
+  for(const std::shared_ptr<portItem>& PC : Ports)
+    PC->insertInCell(System,cellN);
+  
+  return;
+}
+
+void
 PipeTube::insertPortInCell(Simulation& System,
 			   const std::vector<std::set<int>>& cellVec)
   /*!
