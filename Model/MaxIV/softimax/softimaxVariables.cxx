@@ -970,13 +970,13 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"LineScreenMat","Void");
 
     // Extra lead brick
-  Control.addVariable(shieldKey+"InnerScreenXYAngle",85.0);
+  Control.addVariable(shieldKey+"InnerScreenXYAngle",115.0);
   Control.addVariable(shieldKey+"InnerScreenXStep",-20.0);
   Control.addVariable(shieldKey+"InnerScreenYStep",100.0);  // half depth
   Control.addVariable(shieldKey+"InnerScreenWidth",125.0);
   Control.addVariable(shieldKey+"InnerScreenHeight",30.0);
-  Control.addVariable(shieldKey+"InnerScreenDepth",5.0);
-  Control.addVariable(shieldKey+"InnerScreenMat","Stainless304");
+  Control.addVariable(shieldKey+"InnerScreenDepth",10.0);
+  Control.addVariable(shieldKey+"InnerScreenMat","HighDensPoly");
 
   return;
 }
