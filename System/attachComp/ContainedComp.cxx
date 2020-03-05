@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,6 +263,10 @@ ContainedComp::addOuterUnionSurf(const std::string& SList)
   ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(std::string)");
   outerSurf.addUnion(SList);
   outerSurf.populateSurf();
+
+  ELog::EM<<"Out == "<<outerSurf<<ELog::endDiag;
+  ELog::EM<<"Comp == "<<outerSurf.complement()<<ELog::endDiag;
+
   return;
 }
 

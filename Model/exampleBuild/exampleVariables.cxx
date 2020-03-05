@@ -70,15 +70,17 @@ linacTubeVariables(FuncDataBase& Control)
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Copper");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,"PipeA",0.0,10.0);
-  PipeGen.generatePipe(Control,"PipeB",0.0,10.0);
+  PipeGen.generatePipe(Control,"PipeA",0.0,12.0);
+  PipeGen.generatePipe(Control,"PipeB",0.0,18.0);
 
   // Gate valve A
   GateGen.setLength(6.3);
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.generateValve(Control,"GateA",0.0,0);
+  
   //  Control.addVariable("GateAPortALen",0.8);
-
+  Control.addVariable("GateAZStep",1.0);
+  Control.addVariable("PipeBYStep",6.0);
 
   const std::string shieldName("LinacRoom");
   

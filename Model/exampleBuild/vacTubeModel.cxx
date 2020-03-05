@@ -125,12 +125,13 @@ vacTubeModel::build(Simulation& System)
   
   //  pipeA->addInsertCell(shieldRoom->getCell("Void"));
   //  pipeA->createAll(System,*shieldRoom,0);
-
+  //  ELog::EM<<"Pipe a== "<<pipeA->getLinkPt(2)<<ELog::endDiag;
+  //  ELog::EM<<"Pipe a== "<<pipeA->getLinkAxis(2)<<ELog::endDiag;
   gateA->addInsertCell(shieldRoom->getCell("Void"));
   gateA->createAll(System,*shieldRoom,0);
 
-  //  pipeB->addInsertCell(shieldRoom->getCell("Void"));
-  //  pipeB->createAll(System,*gateA,2);
+  pipeB->addInsertCell(shieldRoom->getCell("Void"));
+  pipeB->createAll(System,*gateA,2);
 
 
   return;
