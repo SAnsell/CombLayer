@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   exmapleInc/makeExample.h
+ * File:   exmapleInc/vacTubeModel.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef exampleSystem_makeExample_h
-#define exampleSystem_makeExample_h
+#ifndef exampleSystem_vacTubeModel_h
+#define exampleSystem_vacTubeModel_h
 
 
 /*!
@@ -30,32 +30,42 @@
   \date November 2019
   \author S. Ansell
 */
+namespace constructSystem
+{
+  class VacuumPipe;
+  class GateValveCylinder;
+}
 
 namespace exampleSystem
 {
+  class ShieldRoom;
   /*!
-    \class makePipe
+    \class vacTubeModle
     \version 1.0
     \author S. Ansell
-    \date May 2015
-    \brief General pipe building system
+    \date March 2020
+    \brief General pipe for 10Hz model
   */
-  class dipolePipe;
-  class quadPipe;
-  class ShieldRoom;
+
   
-class makeExample
+class vacTubeModel
 {
  private:
-  
+
+  std::shared_ptr<exampleSystem::ShieldRoom> shieldRoom;   ///< shield room
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< vac-tube
+  std::shared_ptr<constructSystem::GateValveCylinder> gateA;   ///< gate valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< vac-tube
+    
  public:
   
-  makeExample();
-  makeExample(const makeExample&);
-  makeExample& operator=(const makeExample&);
-  ~makeExample();
+  vacTubeModel();
+  vacTubeModel(const vacTubeModel&);
+  vacTubeModel& operator=(const vacTubeModel&);
+  ~vacTubeModel();
   
-  void build(Simulation&,const mainSystem::inputParam&);
+  void build(Simulation&);
 
 };
 

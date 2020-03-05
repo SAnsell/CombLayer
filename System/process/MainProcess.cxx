@@ -734,12 +734,9 @@ buildFullSimulation(Simulation* SimPtr,
       buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
-
+ 
   return;
 }
-
-
-
                       
 }  // NAMESPACE mainSystem
 

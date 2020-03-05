@@ -117,7 +117,8 @@ main(int argc,char* argv[])
 
       // The big variable setting
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-      setVariable::ExampleVariables(SimPtr->getDataBase());
+      setVariable::ExampleVariables(SimPtr->getDataBase(),
+				    IParam.getValue<std::string>("Model"));
 
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);

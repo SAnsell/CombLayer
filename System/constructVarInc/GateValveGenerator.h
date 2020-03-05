@@ -65,7 +65,6 @@ class GateValveGenerator
   std::string voidMat;          ///< Void material
   std::string bladeMat;         ///< Void material
   std::string wallMat;          ///< Pipe material
-    
 
  public:
 

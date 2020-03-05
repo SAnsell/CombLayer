@@ -204,9 +204,13 @@ defaultConfig::process(FuncDataBase& Control,
   // Multi set
   for(const TTYPE& TI : multiSet)
     {
+      ELog::EM<<"TI == "<<std::get<0>(TI)<<ELog::endDiag;
       if (!IParam.flag(std::get<0>(TI)))
-	IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
-			     std::get<2>(TI));
+	{
+	  ELog::EM<<"TI == "<<std::get<0>(TI)<<ELog::endDiag;
+	  IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
+			       std::get<2>(TI));
+	}
     }
   // Set active flags:
   for(const std::pair<std::string,std::string>& FItem : flagName)

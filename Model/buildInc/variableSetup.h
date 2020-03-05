@@ -3,7 +3,7 @@
  
  * File:   buildInc/variableSetup.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace setVariable
   void EssLinacVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
-  void ExampleVariables(FuncDataBase&);
+  void ExampleVariables(FuncDataBase&,const std::string&);
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);

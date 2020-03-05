@@ -59,7 +59,8 @@ createExampleInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainProcess::","createESSInputs");
   createInputs(IParam);
-  
+  IParam.regMulti("Model","Model",1000,0);
+  IParam.setValue("Model",std::string("None"));  
 
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   exampleBuild/makeExample.cxx
+ * File:   exampleBuild/vacTubeModel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,64 +69,69 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "VacuumPipe.h"
+#include "GateValveCylinder.h"
+#include "ShieldRoom.h"
 
-#include "dipoleModel.h"
 #include "vacTubeModel.h"
-
-#include "makeExample.h"
 
 namespace exampleSystem
 {
 
-makeExample::makeExample() 
-    
+vacTubeModel::vacTubeModel() :
+  shieldRoom(new ShieldRoom("LinacRoom")),
+  pipeA(new constructSystem::VacuumPipe("PipeA")),
+  gateA(new constructSystem::GateValveCylinder("GateA")),
+  pipeB(new constructSystem::VacuumPipe("PipeB"))
   /*!
     Constructor
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-makeExample::~makeExample()
+  OR.addObject(shieldRoom);
+}
+
+vacTubeModel::~vacTubeModel()
   /*!
     Destructor
    */
 {}
 
 void 
-makeExample::build(Simulation& System,
-		   const mainSystem::inputParam& IParam)
-/*!
-  Carry out the full build
-  \param SimPtr :: Simulation system
-  \param :: Input parameters
-*/
+vacTubeModel::build(Simulation& System)
+  /*!
+    Carry out the full build
+    \param SimPtr :: Simulation system
+    \param :: Input parameters
+  */
 {
   // For output stream
-  ELog::RegMethod RControl("makeExample","build");
+  ELog::RegMethod RControl("vacTubeModel","build");
 
-  const std::string model=IParam.getValue<std::string>("Model");
-  if (model=="DIPOLE")
-    {
-      dipoleModel A;
-      A.build(System);
-    }
-  else if (model=="VACTUBE")
-    {
-      vacTubeModel A;
-      A.build(System);
-    }
-  else
-    {
-      throw ColErr::InContainerError<std::string>
-	(model,"Model unknown");
-    }
+  int voidCell(74123);
+
+  shieldRoom->addInsertCell(voidCell);
+  shieldRoom->createAll(System,World::masterOrigin(),0);
+  
+  //  pipeA->addInsertCell(shieldRoom->getCell("Void"));
+  //  pipeA->createAll(System,*shieldRoom,0);
+
+  gateA->addInsertCell(shieldRoom->getCell("Void"));
+  gateA->createAll(System,*shieldRoom,0);
+
+  //  pipeB->addInsertCell(shieldRoom->getCell("Void"));
+  //  pipeB->createAll(System,*gateA,2);
+
 
   return;
 }
