@@ -394,7 +394,7 @@ GateValveCylinder::createObjects(Simulation& System)
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," ( (13 -14 5 -16):-17 )");
 	}
-      addOuterUnionSurf(Out+"( "+frontStr+backStr+" )");
+      addOuterUnionSurf(Out+frontStr+backStr);
 
     }
 

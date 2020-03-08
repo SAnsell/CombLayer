@@ -66,7 +66,21 @@ linacTubeVariables(FuncDataBase& Control)
 {
   setVariable::PipeGenerator PipeGen;
   setVariable::GateValveGenerator GateGen;
+  
+  Control.addVariable("PlateXYStep",12.0);
+  Control.addVariable("PlateYYStep",22.0);
+  
+  Control.addVariable("PlateYStep",12.0);
+  Control.addVariable("PlateRadius",14.7);
+  Control.addVariable("PlateLength",1.8);
+  Control.addVariable("PlateDefMat","H2Gas#0.1");
 
+  Control.addVariable("PlateBYStep",12.0);
+  Control.addVariable("PlateBRadius",14.7);
+  Control.addVariable("PlateBLength",1.8);
+  Control.addVariable("PlateBDefMat","H2Gas#0.1");
+
+  
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Copper");
   PipeGen.setCF<CF40>();
@@ -79,8 +93,7 @@ linacTubeVariables(FuncDataBase& Control)
   GateGen.generateValve(Control,"GateA",0.0,0);
   
   //  Control.addVariable("GateAPortALen",0.8);
-  Control.addVariable("GateAZStep",1.0);
-  Control.addVariable("PipeBYStep",6.0);
+  //  Control.addVariable("GateAZStep",1.0);
 
   const std::string shieldName("LinacRoom");
   

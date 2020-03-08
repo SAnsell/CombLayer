@@ -194,7 +194,7 @@ insertCylinder::createLinks()
 
   if (!backActive())
     {
-      FixedComp::setConnect(1,Origin+Y*(length/2.0),-Y);
+      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
   

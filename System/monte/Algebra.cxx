@@ -331,14 +331,15 @@ bool
 Algebra::constructShannonDivision(const int mcnpSN)
   /*!
     Given a surface number SN [signed]
-    can we divide base on implicates of that surfac
+    can we divide base on implicates of that surface
     removing the +/- part 
     \parma mcnpSN :: Surface for divide and implicate
     \return true if a surface can be removed
   */
 {
   ELog::RegMethod RegA("Algebra","constructShannonDivision");
-  
+
+  bool outFlag(1);
   const int SN=convertMCNPSurf(mcnpSN);
   const int ASN(std::abs(SN));
   Acomp FX(F);
@@ -347,7 +348,6 @@ Algebra::constructShannonDivision(const int mcnpSN)
 
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
-      
       int SNA=IP.first;
       int SNB=IP.second;
       int ANA=std::abs(SNA);
@@ -359,13 +359,16 @@ Algebra::constructShannonDivision(const int mcnpSN)
 	  SNA*=-1;
 	  SNB*=-1;
 	}
-
       if (SNA==SN)
-	AD.resolveTrue(SNB);
+	{
+	  AD.resolveTrue(SNB);
+	  outFlag=1;
+	}
     }
-  F=AD;
+  if (outFlag)
+    F=AD;
 
-  return 1;  
+  return outFlag;  
 }
   
 bool

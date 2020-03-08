@@ -80,6 +80,9 @@
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
 #include "ShieldRoom.h"
+#include "insertObject.h"
+#include "insertCylinder.h"
+#include "insertPlate.h"
 
 #include "vacTubeModel.h"
 
@@ -99,6 +102,8 @@ vacTubeModel::vacTubeModel() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(shieldRoom);
+  OR.addObject(gateA);
+  //  OR.addObject(plate);
 }
 
 vacTubeModel::~vacTubeModel()
@@ -120,20 +125,20 @@ vacTubeModel::build(Simulation& System)
 
   int voidCell(74123);
 
+
   shieldRoom->addInsertCell(voidCell);
   shieldRoom->createAll(System,World::masterOrigin(),0);
-  
-  //  pipeA->addInsertCell(shieldRoom->getCell("Void"));
-  //  pipeA->createAll(System,*shieldRoom,0);
-  //  ELog::EM<<"Pipe a== "<<pipeA->getLinkPt(2)<<ELog::endDiag;
-  //  ELog::EM<<"Pipe a== "<<pipeA->getLinkAxis(2)<<ELog::endDiag;
+
+  pipeA->addInsertCell(shieldRoom->getCell("Void"));
+  pipeA->createAll(System,*shieldRoom,0);
+
   gateA->addInsertCell(shieldRoom->getCell("Void"));
-  gateA->createAll(System,*shieldRoom,0);
+  gateA->createAll(System,*pipeA,2);
 
   pipeB->addInsertCell(shieldRoom->getCell("Void"));
   pipeB->createAll(System,*gateA,2);
 
-
+  
   return;
 }
 

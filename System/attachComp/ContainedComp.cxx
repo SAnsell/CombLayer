@@ -264,9 +264,6 @@ ContainedComp::addOuterUnionSurf(const std::string& SList)
   outerSurf.addUnion(SList);
   outerSurf.populateSurf();
 
-  ELog::EM<<"Out == "<<outerSurf<<ELog::endDiag;
-  ELog::EM<<"Comp == "<<outerSurf.complement()<<ELog::endDiag;
-
   return;
 }
 

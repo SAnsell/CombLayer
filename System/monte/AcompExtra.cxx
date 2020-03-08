@@ -80,7 +80,7 @@ Acomp::expandIIU(const Acomp& A) const
     Addition to an intersection unit with an Union via intersection
     \param A :: Other object to add
     \return A
-   */
+  */
 {	
   Acomp Out(0);     // union
   for(const int AI : A.Units)
@@ -93,7 +93,6 @@ Acomp::expandIIU(const Acomp& A) const
       Acomp addItem=interCombine(*this,AC);
       Out.primativeAddItem(addItem);
     }
-  
   return Out;
 }
 
@@ -222,13 +221,14 @@ Acomp::expandIUU(const Acomp& A) const
 	  Out.primativeAddItem(addItem);
 	}
     }
-  // this is not correct:
+
   for(const Acomp& AC : Comp)
     {
       // C.aN
-      for(const int BI : A.Units)
+      if (!A.Units.empty())
 	{
-	  Acomp addItem=unionCombine(BI,AC);
+	  Acomp addItem(AC);
+	  addItem.Units.insert(A.Units.begin(),A.Units.end());
 	  Out.primativeAddItem(addItem);
 	}
       // C.aC
@@ -864,8 +864,8 @@ Acomp::expandCNFBracket()
   ELog::RegMethod RegA("Acomp","expandCNFBracket");
 
   static int cnt(0);
-
   cnt++;
+
   // all lower units
   for(Acomp& AC : Comp)
     AC.expandCNFBracket();
@@ -874,9 +874,10 @@ Acomp::expandCNFBracket()
     {
       // remove all true / all false
       removeFalseComp();
-	
+
       if (!Units.empty() && !Comp.empty())
 	{
+	  Acomp testUnit(*this);
 	  Acomp N(0);  // union
 	  N.Units=Units;
 	  Comp[0]=N.componentExpand(0,Comp[0]);
@@ -888,7 +889,6 @@ Acomp::expandCNFBracket()
 	  Comp.erase(Comp.begin()+1);
 	}
     }
-
   do
     {      
       upMoveComp();
@@ -896,6 +896,7 @@ Acomp::expandCNFBracket()
       clearNulls();
     }
   while(removeUnionPair());
+  cnt--;
   return;
 }
 

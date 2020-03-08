@@ -1610,24 +1610,25 @@ Simulation::minimizeObject(const int CN)
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
-  
   CPtr->populate();
   CPtr->createSurfaceList();
-  
+
+
+
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
   //  CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
 
+
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CPtr->cellCompStr());
-
+      
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
 
   AX.addImplicates(IP);
-
   activeFlag |= AX.constructShannonExpansion();
   if (activeFlag)
     {
