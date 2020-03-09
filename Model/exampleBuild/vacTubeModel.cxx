@@ -34,9 +34,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
-
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -85,10 +82,6 @@
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
 #include "ShieldRoom.h"
-#include "insertObject.h"
-#include "insertCylinder.h"
-#include "insertPlate.h"
-
 #include "vacTubeModel.h"
 
 namespace exampleSystem
@@ -160,9 +153,17 @@ vacTubeModel::operator=(const vacTubeModel& A)
 vacTubeModel::~vacTubeModel()
   /*!
     Destructor
-   */
+  */
 {}
 
+void
+vacTubeModel::populate(const FuncDataBase& Control)
+{
+  FixedOffset::populate(Control);
+  boxWidth=Control.EvalVar<double>(keyName+"BixWidth");
+  return;
+}
+  
 void
 vacTubeModel::createSurfaces()
   /*!
@@ -228,6 +229,7 @@ vacTubeModel::createAll(Simulation& System,
     Carry out the full build
     \param System :: Simulation system
     \param FC:: Fixed comp
+    \param sideIndex :: line point
   */
 {
   // For output stream
