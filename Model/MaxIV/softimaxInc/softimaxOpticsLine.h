@@ -227,6 +227,7 @@ class softimaxOpticsLine :
 			  const std::vector<int>&);
 
 
+  /// Set the initial zone for splitting
   void setPreInsert
   (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

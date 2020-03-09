@@ -38,7 +38,8 @@ namespace exampleSystem
 class ShieldRoom :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
@@ -56,8 +57,6 @@ class ShieldRoom :
   double earthDome;           ///< dome height [from concrete roof]
   double earthDepth;           ///< dome height [from concrete roof]
   double earthRadius;         ///< dome radius
-
-
   
   int voidMat;                ///< void material
   int innerMat;                ///< main material

@@ -40,7 +40,7 @@ namespace exampleSystem
 {
   class ShieldRoom;
   /*!
-    \class vacTubeModle
+    \class vacTubeModel
     \version 1.0
     \author S. Ansell
     \date March 2020
@@ -48,24 +48,39 @@ namespace exampleSystem
   */
 
   
-class vacTubeModel
+class vacTubeModel :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
+  /// construction space for main object
+  attachSystem::InnerZone buildZone;
+      
   std::shared_ptr<exampleSystem::ShieldRoom> shieldRoom;   ///< shield room
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< vac-tube
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;          ///< vac-tube
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;   ///< gate valve
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< vac-tube
-    
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;          ///< vac-tube
+
+  double boxWidth;    ///< Size of build zone
+
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  
  public:
   
-  vacTubeModel();
+  vacTubeModel(const std::string&);
   vacTubeModel(const vacTubeModel&);
   vacTubeModel& operator=(const vacTubeModel&);
-  ~vacTubeModel();
-  
-  void build(Simulation&);
+  virtual ~vacTubeModel();
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

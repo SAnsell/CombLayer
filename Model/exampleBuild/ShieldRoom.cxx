@@ -71,6 +71,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ExternalCut.h"
 
 #include "ShieldRoom.h"
@@ -81,7 +82,8 @@ namespace exampleSystem
 ShieldRoom::ShieldRoom(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedComp(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -139,8 +141,11 @@ ShieldRoom::createSurfaces()
 
   // Do outer surfaces (vacuum ports)
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  SurfMap::addSurf("Front",SMap.realSurf(buildIndex+1));
 
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  SurfMap::addSurf("Back",SMap.realSurf(buildIndex+1));
+  
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);

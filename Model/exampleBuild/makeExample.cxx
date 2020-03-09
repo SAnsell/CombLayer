@@ -77,6 +77,7 @@
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "InnerZone.h"
 
 #include "dipoleModel.h"
 #include "vacTubeModel.h"
@@ -119,8 +120,9 @@ makeExample::build(Simulation& System,
     }
   else if (model=="VACTUBE")
     {
-      vacTubeModel A;
-      A.build(System);
+      vacTubeModel A("LTube");
+      A.addInsertCell(74123);
+      A.createAll(System,World::masterOrigin(),0);
     }
   else
     {

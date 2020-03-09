@@ -64,6 +64,9 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -77,6 +80,8 @@
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "InnerZone.h"
+
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
 #include "ShieldRoom.h"
@@ -89,7 +94,14 @@
 namespace exampleSystem
 {
 
-vacTubeModel::vacTubeModel() :
+vacTubeModel::vacTubeModel(const std::string& Key) :
+  attachSystem::FixedOffset(Key,2),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+
+  buildZone(*this,cellIndex),
+  
   shieldRoom(new ShieldRoom("LinacRoom")),
   pipeA(new constructSystem::VacuumPipe("PipeA")),
   gateA(new constructSystem::GateValveCylinder("GateA")),
@@ -103,7 +115,46 @@ vacTubeModel::vacTubeModel() :
 
   OR.addObject(shieldRoom);
   OR.addObject(gateA);
+  OR.addObject(pipeA);
+  OR.addObject(pipeB);
   //  OR.addObject(plate);
+}
+
+vacTubeModel::vacTubeModel(const vacTubeModel& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
+  buildZone(A.buildZone),shieldRoom(A.shieldRoom),
+  pipeA(A.pipeA),gateA(A.gateA),pipeB(A.pipeB),
+  boxWidth(A.boxWidth)
+  /*!
+    Copy constructor
+    \param A :: vacTubeModel to copy
+  */
+{}
+
+vacTubeModel&
+vacTubeModel::operator=(const vacTubeModel& A)
+  /*!
+    Assignment operator
+    \param A :: vacTubeModel to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      buildZone=A.buildZone;
+      shieldRoom=A.shieldRoom;
+      pipeA=A.pipeA;
+      gateA=A.gateA;
+      pipeB=A.pipeB;
+      boxWidth=A.boxWidth;
+    }
+  return *this;
 }
 
 vacTubeModel::~vacTubeModel()
@@ -112,22 +163,50 @@ vacTubeModel::~vacTubeModel()
    */
 {}
 
-void 
-vacTubeModel::build(Simulation& System)
+void
+vacTubeModel::createSurfaces()
   /*!
-    Carry out the full build
-    \param SimPtr :: Simulation system
-    \param :: Input parameters
+    Create surfaces for outer void
   */
 {
-  // For output stream
-  ELog::RegMethod RControl("vacTubeModel","build");
+  ELog::RegMethod RegA("vacTubeModel","createSurface");
 
-  int voidCell(74123);
+  if (boxWidth>Geometry::zeroTol)
+    {
+      std::string Out;
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(boxWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(boxWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(boxWidth/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(boxWidth/2.0),Z);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6");
+      const HeadRule HR(Out);
+      buildZone.setSurround(HR);
+    }
+  
+  return;
+}
+
+void
+vacTubeModel::createObjects(Simulation& System)
+  /*!
+    Build objects
+   */
+{
+  ELog::RegMethod RegA("vacTubeModel","buildObjects");
+  
+  int outerCell;
 
 
-  shieldRoom->addInsertCell(voidCell);
+  shieldRoom->addInsertCell(74123);
   shieldRoom->createAll(System,World::masterOrigin(),0);
+
+
+  buildZone.setFront(shieldRoom->getSurfRule("Front"));
+  buildZone.setBack(shieldRoom->getSurfRule("-Back"));
+
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System,*this);
 
   pipeA->addInsertCell(shieldRoom->getCell("Void"));
   pipeA->createAll(System,*shieldRoom,0);
@@ -138,7 +217,27 @@ vacTubeModel::build(Simulation& System)
   pipeB->addInsertCell(shieldRoom->getCell("Void"));
   pipeB->createAll(System,*gateA,2);
 
+  return;
+}
   
+void 
+vacTubeModel::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param FC:: Fixed comp
+  */
+{
+  // For output stream
+  ELog::RegMethod RControl("vacTubeModel","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+   
   return;
 }
 
