@@ -251,15 +251,16 @@ ExternalCut::setCutSurf(const std::string& extName,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setCutSurf");
+  ELog::RegMethod RegA("ExternalCut","setCutSurf(FC,long)");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
   cutUnit& A=getUnit(extName);
-  
+
   A.main=WFC.getMainRule(sideIndex);
   A.divider=WFC.getCommonRule(sideIndex);
   A.main.populateSurf();
   A.divider.populateSurf();
+  
   return;
 }
 
@@ -273,7 +274,7 @@ ExternalCut::setCutDivider(const std::string& extName,
     \param EDRule :: Divider rule
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setCutDivider");
+  ELog::RegMethod RegA("ExternalCut","setCutDivider(string)");
   
   cutUnit& A=getUnit(extName);
   if (!A.divider.procString(EDRule))

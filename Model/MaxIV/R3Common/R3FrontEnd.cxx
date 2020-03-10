@@ -3,7 +3,7 @@
  
  * File: R3Common/R3FrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -560,7 +560,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 					      
-  //  xrayConstruct::constructUnit
+  //  constructSystem::constructUnit
   //    (System,buildZone,masterCell,undulatorFC,"back",*transPipe);
   
   magBlockM1->createAll(System,*this,0);
@@ -619,7 +619,7 @@ R3FrontEnd::buildObjects(Simulation& System)
       return;
     }
       
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*collA,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate

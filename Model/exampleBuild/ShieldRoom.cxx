@@ -144,7 +144,7 @@ ShieldRoom::createSurfaces()
   SurfMap::addSurf("Front",SMap.realSurf(buildIndex+1));
 
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  SurfMap::addSurf("Back",SMap.realSurf(buildIndex+1));
+  SurfMap::addSurf("Back",SMap.realSurf(buildIndex+2));
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/generalConstruct.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,15 +48,8 @@ namespace xraySystem
   class DCMTank;
 }
 
-/*!
-  \namespace xrayConstruct
-  \brief General xray optics helper system
-  \version 1.0
-  \date October 2019
-  \author S. Ansell
-*/
 
-namespace xrayConstruct
+namespace constructSystem
 {
 
 int
@@ -66,7 +59,7 @@ internalUnit(Simulation&,
 	     const attachSystem::FixedComp&,
 	     const std::string&,
 	     attachSystem::FixedComp&,
-	     attachSystem::FrontBackCut&,
+	     attachSystem::ExternalCut&,
 	     attachSystem::ContainedComp&);
   
 template<typename T>
@@ -81,6 +74,6 @@ int constructUnit(Simulation& System,
 		 buildUnit,buildUnit,buildUnit);
 }
 
-}  // NAMEPSACE xrayConstruct
+}  // NAMEPSACE constructSystem
 
 #endif

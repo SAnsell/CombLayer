@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   exampleBuild/vacTubeModel.cxx
+ * File:   exampleBuild/vacTube.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -78,24 +78,23 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "InnerZone.h"
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "GateValveCylinder.h"
-#include "ShieldRoom.h"
-#include "vacTubeModel.h"
+#include "vacTube.h"
 
 namespace exampleSystem
 {
 
-vacTubeModel::vacTubeModel(const std::string& Key) :
+vacTube::vacTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
   buildZone(*this,cellIndex),
-  
-  shieldRoom(new ShieldRoom("LinacRoom")),
+
   pipeA(new constructSystem::VacuumPipe("PipeA")),
   gateA(new constructSystem::GateValveCylinder("GateA")),
   pipeB(new constructSystem::VacuumPipe("PipeB"))
@@ -106,31 +105,30 @@ vacTubeModel::vacTubeModel(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(shieldRoom);
   OR.addObject(gateA);
   OR.addObject(pipeA);
   OR.addObject(pipeB);
   //  OR.addObject(plate);
 }
 
-vacTubeModel::vacTubeModel(const vacTubeModel& A) : 
+vacTube::vacTube(const vacTube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
-  buildZone(A.buildZone),shieldRoom(A.shieldRoom),
+  buildZone(A.buildZone),
   pipeA(A.pipeA),gateA(A.gateA),pipeB(A.pipeB),
   boxWidth(A.boxWidth)
   /*!
     Copy constructor
-    \param A :: vacTubeModel to copy
+    \param A :: vacTube to copy
   */
 {}
 
-vacTubeModel&
-vacTubeModel::operator=(const vacTubeModel& A)
+vacTube&
+vacTube::operator=(const vacTube& A)
   /*!
     Assignment operator
-    \param A :: vacTubeModel to copy
+    \param A :: vacTube to copy
     \return *this
   */
 {
@@ -141,7 +139,7 @@ vacTubeModel::operator=(const vacTubeModel& A)
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       buildZone=A.buildZone;
-      shieldRoom=A.shieldRoom;
+
       pipeA=A.pipeA;
       gateA=A.gateA;
       pipeB=A.pipeB;
@@ -150,27 +148,27 @@ vacTubeModel::operator=(const vacTubeModel& A)
   return *this;
 }
 
-vacTubeModel::~vacTubeModel()
+vacTube::~vacTube()
   /*!
     Destructor
   */
 {}
 
 void
-vacTubeModel::populate(const FuncDataBase& Control)
+vacTube::populate(const FuncDataBase& Control)
 {
   FixedOffset::populate(Control);
-  boxWidth=Control.EvalVar<double>(keyName+"BixWidth");
+  boxWidth=Control.EvalVar<double>(keyName+"BoxWidth");
   return;
 }
   
 void
-vacTubeModel::createSurfaces()
+vacTube::createSurfaces()
   /*!
     Create surfaces for outer void
   */
 {
-  ELog::RegMethod RegA("vacTubeModel","createSurface");
+  ELog::RegMethod RegA("vacTube","createSurface");
 
   if (boxWidth>Geometry::zeroTol)
     {
@@ -189,40 +187,46 @@ vacTubeModel::createSurfaces()
 }
 
 void
-vacTubeModel::createObjects(Simulation& System)
+vacTube::createObjects(Simulation& System)
   /*!
     Build objects
    */
 {
-  ELog::RegMethod RegA("vacTubeModel","buildObjects");
+  ELog::RegMethod RegA("vacTube","buildObjects");
   
   int outerCell;
 
+  //  buildZone.setFront(shieldRoom->getSurfRule("Front"));
+  //  buildZone.setBack(shieldRoom->getSurfRule("-Back"));
 
-  shieldRoom->addInsertCell(74123);
-  shieldRoom->createAll(System,World::masterOrigin(),0);
-
-
-  buildZone.setFront(shieldRoom->getSurfRule("Front"));
-  buildZone.setBack(shieldRoom->getSurfRule("-Back"));
-
+  buildZone.setFront(getRule("front"));
+  buildZone.setBack(getRule("back"));
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-  pipeA->addInsertCell(shieldRoom->getCell("Void"));
-  pipeA->createAll(System,*shieldRoom,0);
+  pipeA->createAll(System,*this,0);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
+  
 
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*gateA);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*gateA,"back",*pipeB);
+
+  /*
   gateA->addInsertCell(shieldRoom->getCell("Void"));
   gateA->createAll(System,*pipeA,2);
 
   pipeB->addInsertCell(shieldRoom->getCell("Void"));
   pipeB->createAll(System,*gateA,2);
-
+  */
   return;
 }
   
 void 
-vacTubeModel::createAll(Simulation& System,
+vacTube::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
@@ -233,7 +237,7 @@ vacTubeModel::createAll(Simulation& System,
   */
 {
   // For output stream
-  ELog::RegMethod RControl("vacTubeModel","createAll");
+  ELog::RegMethod RControl("vacTube","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

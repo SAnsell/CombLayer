@@ -685,6 +685,7 @@ ContainedComp::insertExternalObject(Simulation& System,
   
   const std::string excludeStr=
     excludeObj.getHeadRule().complement().display();
+
   for(const int CN : insertCells)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);

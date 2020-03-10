@@ -67,6 +67,8 @@ linacTubeVariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::GateValveGenerator GateGen;
   
+
+  
   Control.addVariable("PlateXYStep",12.0);
   Control.addVariable("PlateYYStep",22.0);
   
@@ -94,7 +96,8 @@ linacTubeVariables(FuncDataBase& Control)
   
   //  Control.addVariable("GateAPortALen",0.8);
   //  Control.addVariable("GateAZStep",1.0);
-
+  Control.addVariable("LTubeBoxWidth",40.0);
+  
   const std::string shieldName("LinacRoom");
   
   Control.addVariable(shieldName+"Width",500.0);

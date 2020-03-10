@@ -3,7 +3,7 @@
  
  * File:   exampleBuild/makeExample.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,15 +80,14 @@
 #include "InnerZone.h"
 
 #include "dipoleModel.h"
-#include "vacTubeModel.h"
-
+#include "vacTube.h"
+#include "makeLinacTube.h"
 #include "makeExample.h"
 
 namespace exampleSystem
 {
 
 makeExample::makeExample() 
-    
   /*!
     Constructor
   */
@@ -120,9 +119,8 @@ makeExample::build(Simulation& System,
     }
   else if (model=="VACTUBE")
     {
-      vacTubeModel A("LTube");
-      A.addInsertCell(74123);
-      A.createAll(System,World::masterOrigin(),0);
+      makeLinacTube A;
+      A.build(System,World::masterOrigin(),0);
     }
   else
     {
