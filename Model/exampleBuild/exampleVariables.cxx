@@ -110,7 +110,7 @@ linacTubeVariables(FuncDataBase& Control)
 
   Control.addVariable(shieldName+"SideExtra",600.0);
   Control.addVariable(shieldName+"EarthLevel",200.0);
-  Control.addVariable(shieldName+"EarthDome",340.0);
+  Control.addVariable(shieldName+"EarthDome",260.0);
   Control.addVariable(shieldName+"EarthDepth",100.0);
   Control.addVariable(shieldName+"EarthRadius",1000.0);
 
