@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaDefPhysics.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -242,7 +242,6 @@ setMagneticExternal(SimFLUKA& System,
     }
   return;
 }
-
   
 void
 setModelPhysics(SimFLUKA& System,
@@ -306,7 +305,15 @@ setModelPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processLAM(System,IParam,index);
     }
-  
+
+  nSet=IParam.setCnt("wBIAS");
+  if (nSet)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processBIAS(System,IParam,index);
+    }
+
   return; 
 }
 

@@ -57,6 +57,8 @@ class flukaImpConstructor
   /// Typedef for tuple
   typedef std::tuple<size_t,int,std::string> impTYPE;
 
+  void writeBIASHelp(std::ostream&,ENDL) const;
+
   void writeCUTHelp(std::ostream&,ENDL) const;
 
   void writeIMPHelp(std::ostream&,ENDL) const;
@@ -94,9 +96,14 @@ class flukaImpConstructor
   flukaImpConstructor& operator=(const flukaImpConstructor&) { return *this; }
   ~flukaImpConstructor() {}  ///< Destructor
 
+  
   void processUnit(SimFLUKA&,
 		   const mainSystem::inputParam&,
 		   const size_t);
+
+  void processBIAS(SimFLUKA&,
+		   const mainSystem::inputParam&,
+		   const size_t);  
   void processCUT(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);

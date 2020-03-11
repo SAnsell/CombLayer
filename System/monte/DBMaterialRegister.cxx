@@ -1145,7 +1145,7 @@ DBMaterial::initMaterial()
 		   " 22048.70c -0.0038 "
 		   " 25055.70c -0.0021 "
 		   " 26056.70c -0.0444 "
-		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+		   " 28058.70c -0.0012 ", "lwtr.01t", MLib);
   MObj.setDensity(-2.35);
   setMaterial(MObj);
 
@@ -1288,7 +1288,7 @@ DBMaterial::initMaterial()
 		   "20046.70c 5.10925e-08 20048.70c 2.38858e-06  "
 		   "26054.70c 0.000102832 26056.70c 0.00161425  "
 		   "26057.70c 3.728e-05 26058.70c 4.96128e-06  ",
-		   "lwtr.10t",MLib);
+		   "lwtr.01t",MLib);
 		   
   MObj.setDensity(-1.6104);
   setMaterial(MObj);

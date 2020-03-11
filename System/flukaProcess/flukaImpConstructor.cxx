@@ -123,8 +123,6 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","insertParticle");
 
-
-
   switch (cellSize)
     {
     case 0:
@@ -236,6 +234,41 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
     {
       insertParticle(PC,cellSize,"generic",cardName,VV);
     }
+  return;
+}
+
+void
+flukaImpConstructor::processBIAS(SimFLUKA& System,
+				 const mainSystem::inputParam& IParam,
+				 const size_t setIndex)
+  /*!
+    Set BIAS for particles and stuff
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processBIAS");
+
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> biasTYPE;
+  static const std::map<std::string,biasTYPE> IBias
+    ({
+      { "bias",biasTYPE(1,-1,"bias") },   // region
+      { "user",biasTYPE(1,-1,"bias-user") }   // region 
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wBIAS",setIndex,0,"No type for wBIAS ");
+
+  if (type=="help" || type=="Help")
+    return writeBIASHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,biasTYPE>::const_iterator mc=IBias.find(type);
+  if (mc==IBias.end())
+    throw ColErr::InContainerError<std::string>(type,"wBIAS type unknown");
+
+  processGeneral(System,IParam,setIndex,"wBIAS",mc->second);
   return;
 }
 
@@ -363,10 +396,10 @@ flukaImpConstructor::processEXP(SimFLUKA& System,
   ELog::RegMethod RegA("flukaImpConstructor","processEXP");
 
   // cell/mat : tag name 
-  typedef std::tuple<size_t,bool,std::string> impTYPE;
+  typedef std::tuple<size_t,int,std::string> impTYPE;
   static const std::map<std::string,impTYPE> IMap
     ({
-      { "exp",impTYPE(1,0,"exptrans") },   // cell:
+      { "exp",impTYPE(1,0,"exptrans") },      // cell:
       { "particle",impTYPE(1,0,"exppart") }   // cell: 
     });
 
@@ -403,7 +436,7 @@ flukaImpConstructor::processLAM(SimFLUKA& System,
   typedef std::tuple<size_t,int,std::string> lamTYPE;
   static const std::map<std::string,lamTYPE> IMap
     ({
-      { "length",lamTYPE(1,-1,"lamlength") },   // particle
+      { "length",lamTYPE(1,-1,"lamlength") },    // particle
       { "primlen",lamTYPE(1,-1,"lamprimary") }   // particle
     });
 
@@ -480,6 +513,9 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
       { "lpb",impTYPE(2,0,"lpb") },        // regions
       { "lambbrem",impTYPE(2,1,"lambbrem") },      // mat
       { "lambemf",impTYPE(2,1,"lambemf") },        // mat
+
+      { "bias",impTYPE(2,0,"bias") },                  // cell
+      { "bias-user",impTYPE(2,0,"bias-user") },        // cell
 
       { "evaporation",impTYPE(0,-100,"evaporation") },      // none
       { "evap-noheavy",impTYPE(0,-100,"evap-noheavy") },      // none
@@ -604,6 +640,29 @@ flukaImpConstructor::writeLAMHelp(std::ostream& OX,
   OX<<"-wLAM cell particle  -- ::\n\n";
   OX<<"  exp : "
       "    value objectName" 
+      "        objectAll : object name  \n"
+      "             : object name:cellname\n"
+      "             : cell number range\n"
+      "             : cell number\n"
+      "             : all\n"
+    << (*endDL);
+  return;
+}
+
+void
+flukaImpConstructor::writeBIASHelp(std::ostream& OX,
+				   ENDL endDL) const
+  /*!
+    Write out the help for wLAM
+    \param OX :: Output stream
+    \param endDL :: End of line type
+  */
+{
+  OX<<"wBIAS help :: \n";
+
+  OX<<"-wBIAS cell particle  -- ::\n\n";
+  OX<<"  bias/user : "
+      "     particleType splitting cell:\n"
       "        objectAll : object name  \n"
       "             : object name:cellname\n"
       "             : cell number range\n"
