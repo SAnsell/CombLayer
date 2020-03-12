@@ -107,7 +107,7 @@ setUserFlags(SimFLUKA& System,
 
   if (IParam.flag("userWeight"))  // only one
     {
-      const size_t NIndex=IParam.itemCnt("userWeight");
+      //      const size_t NIndex=IParam.itemCnt("userWeight");
 
       const std::string extra =
 	IParam.getDefValue<std::string>("3","userWeight");

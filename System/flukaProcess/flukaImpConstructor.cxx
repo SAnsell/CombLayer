@@ -75,7 +75,7 @@ flukaImpConstructor::insertPair(flukaPhysics& PC,
 				const std::string& pName,
 				const int cellName,
 				const std::string& keyName,
-				const std::string<std::string>& VV) const
+				const std::vector<std::string>& VV) const
  /*!
    Process the actual insert 
    \param PC :: Physics card to insert into 
@@ -181,7 +181,6 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
   return;
 }				    
 
-
 void
 flukaImpConstructor::processGeneral(SimFLUKA& System,
 				    const mainSystem::inputParam& IParam,
@@ -197,43 +196,22 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
     \param cutTuple :: system for cellStr construction
   */
 {
-  ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
+  ELog::RegMethod RegA("flukaImpConstructor","processGeneral(IParam)");
 
-  flukaPhysics& PC = *System.getPhysics();
   const size_t cellSize(std::get<0>(cutTuple));
   const int materialFlag(std::get<1>(cutTuple));
   const std::string cardName(std::get<2>(cutTuple));
-  const std::string cellM
-    ((materialFlag==-100) ?  "None" :
-      IParam.getValueError<std::string>
-     (keyName,setIndex,1,"No cell/material for "+keyName));
+  
+  std::vector<std::string> VVList(cellSize+1);
+  VVList[0]=IParam.getValueError<std::string>
+    (keyName,setIndex,1,"No cell/material/particle for "+keyName);
 
-  std::string VV[3];
   for(size_t i=0;i<cellSize;i++)
-    VV[i]=IParam.getValueError<std::string>
+    VVList[i+1]=IParam.getValueError<std::string>
       (keyName,setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for "+keyName+":"+cardName);      
 
-  if (materialFlag>=0)
-    {
-      // gets set of cells/materials [0:cells/1 materials]
-      const std::set<int> activeCell=
-	getActiveUnit(System,materialFlag,cellM);
-	
-      if (activeCell.empty())
-	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
-      insertCell(PC,cellSize,activeCell,cardName,VV);
-    }
-  else if (materialFlag==-1) // particile
-    {
-      const flukaGenParticle& FG=flukaGenParticle::Instance();
-      const std::string& pName=FG.nameToFLUKA(cellM);
-      insertParticle(PC,cellSize,pName,cardName,VV);
-    }
-  else  // -100 : Generic
-    {
-      insertParticle(PC,cellSize,"generic",cardName,VV);
-    }
+  processGeneral(System,VVList,keyName,cellSize,materialFlag,cardName);
   return;
 }
 
@@ -247,17 +225,41 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
     \param System :: Fluke Phays
     \param VVlist :: string array
     \param keyName :: wTYPE card
-    \param cutTuple :: system for cellStr construction
+    \param cutTuple :: cellSize/mat/card tuple
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
+
+  const size_t cellSize(std::get<0>(cutTuple));
+  const int materialFlag(std::get<1>(cutTuple));
+  const std::string cardName(std::get<2>(cutTuple));
+
+  processGeneral(System,VVList,keyName,cellSize,materialFlag,cardName);
+  return;
+}
+
+  
+void
+flukaImpConstructor::processGeneral(SimFLUKA& System,
+				    const std::vector<std::string>& VVList,
+				    const std::string& keyName,
+				    const size_t cellSize,
+				    const int materialFlag,
+				    const std::string& cardName) const
+  /*!
+    Handler for constructor of physics cards
+    \param System :: Fluke Phays
+    \param VVlist :: string array
+    \param keyName :: wTYPE card
+    \param cellSize :: number of extra cells 
+    \param materialFlag :: material/region/particle [-1/0/1] (-100 for none)
+    \param cardName :: card name for flukaPhysics to write
   */
 {
   ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
 
   flukaPhysics& PC = *System.getPhysics();
-  const size_t cellSize(std::get<0>(cutTuple));
-  const int materialFlag(std::get<1>(cutTuple));
-  const std::string cardName(std::get<2>(cutTuple));
-  const std::string cellM=
-    ((materialFlag==-100) ?  "None" : VVList[0];
+  const std::string cellM((materialFlag==-100) ?  "None" : VVList[0]);
 
   if (materialFlag>=0)
     {
@@ -317,8 +319,9 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
   if (mc==IBias.end())
     throw ColErr::InContainerError<std::string>(type,"wBIAS type unknown");
 
- 
-  
+
+  std::vector<std::string> VVList(4);
+  VVList[0]=1.0;
   processGeneral(System,VVList,"wBIAS",mc->second);
   return;
 }
@@ -474,9 +477,9 @@ flukaImpConstructor::processLAM(SimFLUKA& System,
   //  const int materialFlag(std::get<1>(mc->second));
   const std::string cardName(std::get<2>(mc->second));
 
-  std::string VV[4];
+  std::vector<std::string> VVList(cellSize);
   for(size_t i=0;i<cellSize;i++)
-    VV[i]=IParam.getValueError<std::string>
+    VVList[i]=IParam.getValueError<std::string>
       ("wLAM",setIndex,3+i,
        "No value["+std::to_string(i+3)+"] for wLAM");      
 
@@ -487,7 +490,7 @@ flukaImpConstructor::processLAM(SimFLUKA& System,
   //  VV[0]=FG.nameToFLUKA(partName);
   for(const int CN : activeMat)
     if (CN)
-      insertPair(PC,cellSize,partName,CN,cardName,VV);
+      insertPair(PC,cellSize,partName,CN,cardName,VVList);
 
   return;
 }

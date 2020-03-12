@@ -73,13 +73,14 @@ class flukaImpConstructor
   
   void insertCell(flukaPhysics&,const size_t,
 		  const std::set<int>&,const std::string&,
-		  const std::string*) const;
+		  const std::vector<std::string>&) const;
   void insertParticle(flukaPhysics&,const size_t,
 		      const std::string&,const std::string&,
-		      const std::string*) const;
+		      const std::vector<std::string>&) const;
   void insertPair(flukaPhysics&,const size_t,
 		  const std::string&,const int,
-		  const std::string&,const std::string*) const;
+		  const std::string&,
+		  const std::vector<std::string>&) const;
   
   void processGeneral(SimFLUKA&,
 		      const mainSystem::inputParam&,
@@ -89,7 +90,11 @@ class flukaImpConstructor
   void processGeneral(SimFLUKA&,
 		      const std::vector<std::string>&,
 		      const std::string&,
-		      const impTYPE&) const;
+		      const size_t,const int,const std::string&) const;
+  void processGeneral(SimFLUKA&,
+		      const std::vector<std::string>&,
+		      const std::string&,const impTYPE&) const;
+
 
  public:
 
