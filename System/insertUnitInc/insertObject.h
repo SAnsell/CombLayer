@@ -63,8 +63,6 @@ class insertObject : public attachSystem::ContainedComp,
 				const Geometry::Vec3D&);
   virtual void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&);
-
-
   
  public:
 
@@ -76,7 +74,9 @@ class insertObject : public attachSystem::ContainedComp,
   /// set delay flag
   void setNoInsert() { delayInsert=1; }
 
-  void setMat(const int M) { defMat=M; } 
+  /// Set the material
+  void setMat(const int M) { defMat=M; }
+  
   void setStep(const double,const double,const double);
   void setStep(const Geometry::Vec3D&);
   void setAngles(const double,const double);

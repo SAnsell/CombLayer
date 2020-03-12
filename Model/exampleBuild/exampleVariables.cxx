@@ -66,16 +66,12 @@ linacTubeVariables(FuncDataBase& Control)
 {
   setVariable::PipeGenerator PipeGen;
   setVariable::GateValveGenerator GateGen;
-  
-
-  
-  Control.addVariable("PlateXYStep",12.0);
-  Control.addVariable("PlateYYStep",22.0);
-  
-  Control.addVariable("PlateYStep",12.0);
-  Control.addVariable("PlateRadius",14.7);
-  Control.addVariable("PlateLength",1.8);
-  Control.addVariable("PlateDefMat","H2Gas#0.1");
+    
+  Control.addVariable("ScorePlaneZStep",650.0);
+  Control.addVariable("ScorePlaneWidth",1000.0);
+  Control.addVariable("ScorePlaneHeight",10.0);
+  Control.addVariable("ScorePlaneDepth",1000.0);
+  Control.addVariable("ScorePlaneDefMat","Void");
 
   Control.addVariable("PlateBYStep",12.0);
   Control.addVariable("PlateBRadius",14.7);

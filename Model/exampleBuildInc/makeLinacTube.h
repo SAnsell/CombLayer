@@ -22,7 +22,10 @@
 #ifndef exampleSystem_makeLinacTube_h
 #define exampleSystem_makeLinacTube_h
 
-
+namespace insertSystem
+{
+  class insertPlate;
+}
 
 namespace exampleSystem
 {
@@ -47,6 +50,9 @@ class makeLinacTube
 
   /// Inner part
   std::shared_ptr<vacTube> VTube;
+
+  /// scoring plane
+  std::shared_ptr<insertSystem::insertPlate> scorePlane;
   
  public:
   

@@ -76,6 +76,8 @@
 #include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
+#include "insertPlate.h"
 
 #include "VacuumPipe.h"
 #include "ShieldRoom.h"
@@ -87,10 +89,10 @@ namespace exampleSystem
 
 makeLinacTube::makeLinacTube() :
   shieldRoom(new ShieldRoom("LinacRoom")),
-  VTube(new vacTube("LTube"))
+  VTube(new vacTube("LTube")),
+  scorePlane(new insertSystem::insertPlate("ScorePlane"))
   /*!
     Constructor
-    \param KN :: Keyname
   */
 {
   ModelSupport::objectRegister& OR=
@@ -98,6 +100,7 @@ makeLinacTube::makeLinacTube() :
 
   OR.addObject(shieldRoom);
   OR.addObject(VTube);
+  OR.addObject(scorePlane);
 }
 
 makeLinacTube::~makeLinacTube()
@@ -129,6 +132,11 @@ makeLinacTube::build(Simulation& System,
 
   VTube->createAll(System,*shieldRoom,0);
 
+  scorePlane->addInsertCell(74123);
+  scorePlane->setNoInsert();
+  scorePlane->createAll(System,*shieldRoom,0);
+
+  
   return;
 }
 
