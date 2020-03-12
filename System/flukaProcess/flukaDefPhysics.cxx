@@ -266,12 +266,12 @@ setModelPhysics(SimFLUKA& System,
 	A.processMAT(System,IParam,index);
     }
 
-  nSet=IParam.setCnt("wIMP");
+  nSet=IParam.setCnt("wBIAS");
   if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processUnit(System,IParam,index);
+	A.processBIAS(System,IParam,index);
     }
   
   nSet=IParam.setCnt("wCUT");    

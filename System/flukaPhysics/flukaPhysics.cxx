@@ -76,11 +76,7 @@ flukaPhysics::flukaPhysics() :
       { "partthr",    cellValueSet<1>("partthr","PART-THR","",{-1e-3}) },
       { "gas",        cellValueSet<1>("gas","MAT-PROP","") },
       { "rho",        cellValueSet<1>("rho","MAT-PROP","") },
-      { "all",        cellValueSet<1>("all","BIAS","") },
-      { "hadron",     cellValueSet<1>("hadron","BIAS","") },
-      { "electron",   cellValueSet<1>("electron","BIAS","") },
       { "emffluo",    cellValueSet<1>("emffluo","EMFFLUO","") },
-      { "low",        cellValueSet<1>("low","BIAS","") },
       { "lowbias",    cellValueSet<1>("lowbias","LOW-BIAS","") },
       { "exptrans",   cellValueSet<1>("exptrans","EXPTRANS","") },
       { "exppart",    cellValueSet<1>("exppart","EXPTRANS","") },
@@ -96,7 +92,9 @@ flukaPhysics::flukaPhysics() :
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
-      { "stepsize",cellValueSet<2>("stepsize","STEPSIZE","",{1.0,1}) }
+      { "stepsize",cellValueSet<2>("stepsize","STEPSIZE","",{1.0,1}) },
+      { "bias",cellValueSet<2>("bias","BIAS","",{1.0,1.0}) },
+      { "bias-user",cellValueSet<2>("bias-user","BIAS","USER",{1.0,1.0}) }
     }),
 
   threeFlag({
@@ -120,14 +118,12 @@ flukaPhysics::flukaPhysics() :
     }),
   
   formatMap({
-      { "all", unitTYPE(0," 0.0 1.0 %2 R0 R1 1.0 ") },
-      { "hadron", unitTYPE(0," 1.0 1.0 %2 R0 R1 1.0 ") },
-      { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
-      { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "emfray", unitTYPE(0,"4.0 R0 R1 1.0 - - ") },
 
+      { "bias", unitTYPE(0,"1 %2 %3 R0 R1 1.0 ") },
+      { "bias-user", unitTYPE(0,"1 %2 %3 R0 R1 1.0 ") },
       { "coalescence", unitTYPE(-100,"1.0 - - - - - ") },
       { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },

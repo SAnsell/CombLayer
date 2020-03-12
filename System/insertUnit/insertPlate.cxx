@@ -179,13 +179,10 @@ insertPlate::createSurfaces()
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
-
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
   setSurf("Left",SMap.realSurf(buildIndex+3));
   setSurf("Right",SMap.realSurf(buildIndex+4));

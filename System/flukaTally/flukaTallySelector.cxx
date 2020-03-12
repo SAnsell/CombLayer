@@ -119,7 +119,7 @@ constructLinkRegion(const Simulation& System,
 
   const attachSystem::FixedComp* FCPtr=
     System.getObject<attachSystem::FixedComp>(FCname);
-  ELog::EM<<"Failed on object ="<<FCPtr<<ELog::endDiag;
+
   if (!FCPtr) return 0;
 
   if (!FCPtr->hasSideIndex(FCindex)) return 0;

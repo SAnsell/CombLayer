@@ -86,6 +86,11 @@ class flukaImpConstructor
 		      const size_t,const std::string&,
 		      const impTYPE&) const;
 
+  void processGeneral(SimFLUKA&,
+		      const std::vector<std::string>&,
+		      const std::string&,
+		      const impTYPE&) const;
+
  public:
 
   /// null constructor
@@ -97,10 +102,6 @@ class flukaImpConstructor
   ~flukaImpConstructor() {}  ///< Destructor
 
   
-  void processUnit(SimFLUKA&,
-		   const mainSystem::inputParam&,
-		   const size_t);
-
   void processBIAS(SimFLUKA&,
 		   const mainSystem::inputParam&,
 		   const size_t);  
