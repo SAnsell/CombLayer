@@ -123,6 +123,8 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","insertParticle");
 
+  if (VV.size()<cellSize)
+    ELog::EM<<"IN PARTICAL"<<VV.size()<<" "<<cellSize<<ELog::endErr;
   switch (cellSize)
     {
     case 0:
@@ -201,16 +203,19 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
   const size_t cellSize(std::get<0>(cutTuple));
   const int materialFlag(std::get<1>(cutTuple));
   const std::string cardName(std::get<2>(cutTuple));
-  
+
   std::vector<std::string> VVList(cellSize+1);
-  VVList[0]=IParam.getValueError<std::string>
-    (keyName,setIndex,1,"No cell/material/particle for "+keyName);
+  if (materialFlag!=-100)
+    {
+      VVList[0]=IParam.getValueError<std::string>
+	(keyName,setIndex,1,"No cell/material/particle for "+keyName);
 
-  for(size_t i=0;i<cellSize;i++)
-    VVList[i+1]=IParam.getValueError<std::string>
-      (keyName,setIndex,2+i,
-       "No value["+std::to_string(i+1)+"] for "+keyName+":"+cardName);      
-
+      for(size_t i=0;i<cellSize;i++)
+	VVList[i+1]=IParam.getValueError<std::string>
+	  (keyName,setIndex,2+i,
+	   "No value["+std::to_string(i+1)+"] for "+keyName+":"+cardName);      
+    }
+  
   processGeneral(System,VVList,keyName,cellSize,materialFlag,cardName);
   return;
 }
@@ -311,17 +316,21 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
   if (type=="help" || type=="Help")
     return writeBIASHelp(ELog::EM.Estream(),&ELog::endBasic);
 
-  const std::string typeX=IParam.getValueError<std::string>
-    ("wBIAS",setIndex,1,"No type for wBIAS ");
-  ELog::EM<<"TYPE == "<< typeX <<ELog::endDiag;
+  const std::string biasParticles=
+    IParam.getValueError<std::string>("wBIAS",setIndex,1,"No type for wBIAS");
+  ELog::EM<<"biasParticles: "<< biasParticles  <<ELog::endDiag;
   
   std::map<std::string,biasTYPE>::const_iterator mc=IBias.find(type);
   if (mc==IBias.end())
     throw ColErr::InContainerError<std::string>(type,"wBIAS type unknown");
 
-
   std::vector<std::string> VVList(4);
-  VVList[0]=1.0;
+  VVList[0]=biasParticles;
+  for(size_t i=0;i<3;i++)
+    VVList[i+1]=IParam.getValueError<std::string>
+      ("wBIAS",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wBias");      
+
   processGeneral(System,VVList,"wBIAS",mc->second);
   return;
 }
@@ -477,17 +486,17 @@ flukaImpConstructor::processLAM(SimFLUKA& System,
   //  const int materialFlag(std::get<1>(mc->second));
   const std::string cardName(std::get<2>(mc->second));
 
-  std::vector<std::string> VVList(cellSize);
+  std::vector<std::string> VVList(cellSize+1);
   for(size_t i=0;i<cellSize;i++)
-    VVList[i]=IParam.getValueError<std::string>
+    VVList[i+1]=IParam.getValueError<std::string>
       ("wLAM",setIndex,3+i,
        "No value["+std::to_string(i+3)+"] for wLAM");      
 
   const std::set<int> activeMat=getActiveUnit(System,1,cellM);
   if (activeMat.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty Materials:");
-  
-  //  VV[0]=FG.nameToFLUKA(partName);
+
+  VVList[0]=partName;
   for(const int CN : activeMat)
     if (CN)
       insertPair(PC,cellSize,partName,CN,cardName,VVList);
@@ -552,6 +561,7 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
+  ELog::EM<<"Process " <<mc->first<<ELog::endDiag;
   processGeneral(System,IParam,setIndex,"wEMF",mc->second);
   return;
 }
