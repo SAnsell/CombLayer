@@ -89,11 +89,10 @@ class flukaImpConstructor
 
   void processGeneral(SimFLUKA&,
 		      const std::vector<std::string>&,
-		      const std::string&,
 		      const size_t,const int,const std::string&) const;
   void processGeneral(SimFLUKA&,
 		      const std::vector<std::string>&,
-		      const std::string&,const impTYPE&) const;
+		      const impTYPE&) const;
 
 
  public:

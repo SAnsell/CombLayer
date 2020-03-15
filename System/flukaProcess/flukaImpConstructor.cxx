@@ -216,14 +216,13 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 	   "No value["+std::to_string(i+1)+"] for "+keyName+":"+cardName);      
     }
   
-  processGeneral(System,VVList,keyName,cellSize,materialFlag,cardName);
+  processGeneral(System,VVList,cellSize,materialFlag,cardName);
   return;
 }
 
 void
 flukaImpConstructor::processGeneral(SimFLUKA& System,
 				    const std::vector<std::string>& VVList,
-				    const std::string& keyName,
 				    const impTYPE& cutTuple) const
   /*!
     Handler for constructor of physics cards
@@ -239,7 +238,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
   const int materialFlag(std::get<1>(cutTuple));
   const std::string cardName(std::get<2>(cutTuple));
 
-  processGeneral(System,VVList,keyName,cellSize,materialFlag,cardName);
+  processGeneral(System,VVList,cellSize,materialFlag,cardName);
   return;
 }
 
@@ -247,7 +246,6 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 void
 flukaImpConstructor::processGeneral(SimFLUKA& System,
 				    const std::vector<std::string>& VVList,
-				    const std::string& keyName,
 				    const size_t cellSize,
 				    const int materialFlag,
 				    const std::string& cardName) const
@@ -295,6 +293,7 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
 				 const size_t setIndex)
   /*!
     Set BIAS for particles and stuff
+    Format : -wBIAS : biasName : cells : particle : value : value
     \param PC :: PhysicsCards
     \param IParam :: input stream
     \param setIndex :: index for the importance set
@@ -302,36 +301,59 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processBIAS");
 
+  static const std::map<std::string,int> nameBias
+    ({
+      { "all", 0 },
+      { "hadron", 1 },{ "muon", 1 },{ "ions", 1 },
+      { "electron", 2 }, { "photon", 2 }, { "positron", 2 },
+      { "neutron", 3 }, { "low", 3 }
+    });
   // cell/mat : tag name 
   typedef std::tuple<size_t,int,std::string> biasTYPE;
   static const std::map<std::string,biasTYPE> IBias
     ({
-      { "bias",biasTYPE(2,0,"bias") },       // region(0)
-      { "user",biasTYPE(2,0,"bias-user") }   // region(0) 
+      { "bias",biasTYPE(3,0,"bias") },    
+      { "user",biasTYPE(3,0,"bias-user") }, 
+      { "useroff",biasTYPE(1,0,"bias-off") }  
     });
 
+  std::vector<std::string> VVList(4);
+  
   const std::string type=IParam.getValueError<std::string>
     ("wBIAS",setIndex,0,"No type for wBIAS ");
-
   if (type=="help" || type=="Help")
     return writeBIASHelp(ELog::EM.Estream(),&ELog::endBasic);
 
-  const std::string biasParticles=
-    IParam.getValueError<std::string>("wBIAS",setIndex,1,"No type for wBIAS");
-  ELog::EM<<"biasParticles: "<< biasParticles  <<ELog::endDiag;
-  
   std::map<std::string,biasTYPE>::const_iterator mc=IBias.find(type);
   if (mc==IBias.end())
-    throw ColErr::InContainerError<std::string>(type,"wBIAS type unknown");
+    throw ColErr::InContainerError<std::string>(type,"Bias Type");
 
-  std::vector<std::string> VVList(4);
-  VVList[0]=biasParticles;
-  for(size_t i=0;i<3;i++)
+  //cells:
+  VVList[0]=IParam.getValueError<std::string>
+    ("wBIAS",setIndex,1,"No cell for wBIAS");
+  
+  const std::string biasParticles=
+    IParam.getValueError<std::string>
+    ("wBIAS",setIndex,2,"No bias-type for wBIAS");
+
+  int value(-1);
+  if (!StrFunc::convert(biasParticles,value))
+    {
+      std::map<std::string,int>::const_iterator mc=
+	nameBias.find(biasParticles);
+      value= (mc==nameBias.end()) ? -1 : mc->second;
+    }
+  if (value<0 || value>4)
+    throw ColErr::InContainerError<std::string>
+      (biasParticles,"wBIAS type unknown");
+  VVList[1]=std::to_string(value);
+
+  for(size_t i=1;i<3;i++)
     VVList[i+1]=IParam.getValueError<std::string>
       ("wBIAS",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wBias");      
 
-  processGeneral(System,VVList,"wBIAS",mc->second);
+  processGeneral(System,VVList,mc->second);
   return;
 }
 
