@@ -964,8 +964,8 @@ transferVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,145.0);
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,147.0);
 
   return;
 }
@@ -998,6 +998,8 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","frontEndVariables");
 
+  const double FMdist(456.0);
+  
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -1006,6 +1008,7 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
+  
   Control.addVariable(frontKey+"OuterRadius",50.0);
   
   PipeGen.setNoWindow();   // no window
@@ -1052,7 +1055,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setFrontGap(3.99,1.97);  //1033.8
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
-  CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+  CollGen.generateColl(Control,frontKey+"CollA",FMdist,15.0);
   
 
   BellowGen.setCF<setVariable::CF40>();

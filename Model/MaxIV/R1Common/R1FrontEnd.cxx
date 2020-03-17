@@ -553,9 +553,9 @@ R1FrontEnd::buildObjects(Simulation& System)
   quadUnit->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
   quadUnit->insertInCell(System,outerCell);
-
   quadUnit->createQuads(System,outerCell);
-  
+
+
   dipoleChamber->setCutSurf("front",*quadUnit,2);
   dipoleChamber->createAll(System,*quadUnit,2);
   // two splits [main / exit]
@@ -569,11 +569,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutWallDisk->createAll(System,*dipoleChamber,
 			 dipoleChamber->getSideIndex("dipoleExit"));
 
-  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
-  dipolePipe->createAll(System,*dipoleChamber,
-			dipoleChamber->getSideIndex("exit"));
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
@@ -584,6 +579,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
+
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());
@@ -591,22 +587,30 @@ R1FrontEnd::buildObjects(Simulation& System)
       return;
     }
 
-
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);
-  
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
 
+  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
+  dipolePipe->setBack(*bellowA,2);
+  dipolePipe->createAll(System,*dipoleChamber,
+			dipoleChamber->getSideIndex("exit"));  
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  dipolePipe->insertInCell(System,outerCell);
+
+  // note : bellowA is reversed
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
+  bellowA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
 
-  setCell("MasterVoid",masterCell->getName());
-  lastComp=collA;
-  return;
-  
+  if (stopPoint=="Dipole")
+    {
+      lastComp=dipolePipe;
+      return;
+    }
+
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);

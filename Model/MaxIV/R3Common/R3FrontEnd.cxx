@@ -598,8 +598,8 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
-
   bellowA->createAll(System,*collA,1);  
+
   dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
   dipolePipe->setBack(*bellowA,2);
   dipolePipe->createAll(System,*chokeChamber,
