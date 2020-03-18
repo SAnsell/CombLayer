@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/targetOuter.cxx
+ * File: snsBuild/targetOuter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,6 +70,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -81,19 +81,35 @@ namespace snsSystem
 {
 
 targetOuter::targetOuter(const std::string& Key) :
-  constructSystem::TargetBase(Key,3)
+  TMRSystem::TargetBase(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-
 targetOuter::targetOuter(const targetOuter& A) : 
-  constructSystem::TargetBase(A),
-  mainLength(A.mainLength),mainHeight(A.mainHeight),
-  mainWidth(A.mainWidth),mercuryMat(A.mercuryMat),
-  mercuryTemp(A.mercuryTemp),mainCell(A.mainCell)
+  TMRSystem::TargetBase(A),
+  totalLength(A.totalLength),mainLength(A.mainLength),
+  mainJoin(A.mainJoin),mainHeight(A.mainHeight),
+  mainWidth(A.mainWidth),innerWall(A.innerWall),
+  heliumLength(A.heliumLength),heliumJoin(A.heliumJoin),
+  heliumStep(A.heliumStep),heliumXStep(A.heliumXStep),
+  heliumThick(A.heliumThick),pressLength(A.pressLength),
+  pressJoin(A.pressJoin),pressStep(A.pressStep),
+  pressXStep(A.pressXStep),pressThick(A.pressThick),
+  waterLength(A.waterLength),waterJoin(A.waterJoin),
+  waterStep(A.waterStep),waterXStep(A.waterXStep),
+  waterThick(A.waterThick),outerLength(A.outerLength),
+  outerJoin(A.outerJoin),outerLift(A.outerLift),
+  outerStep(A.outerStep),outerXStep(A.outerXStep),
+  outerThick(A.outerThick),hgCutAngle(A.hgCutAngle),
+  innerCutAngle(A.innerCutAngle),heCutAngle(A.heCutAngle),
+  pressCutAngle(A.pressCutAngle),waterCutAngle(A.waterCutAngle),
+  outerCutAngle(A.outerCutAngle),mercuryMat(A.mercuryMat),
+  innerWallMat(A.innerWallMat),heMat(A.heMat),pressMat(A.pressMat),
+  waterMat(A.waterMat),outerMat(A.outerMat),mercuryTemp(A.mercuryTemp),
+  mainCell(A.mainCell)
   /*!
     Copy constructor
     \param A :: targetOuter to copy
@@ -110,11 +126,46 @@ targetOuter::operator=(const targetOuter& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
+      totalLength=A.totalLength;
       mainLength=A.mainLength;
+      mainJoin=A.mainJoin;
       mainHeight=A.mainHeight;
       mainWidth=A.mainWidth;
+      innerWall=A.innerWall;
+      heliumLength=A.heliumLength;
+      heliumJoin=A.heliumJoin;
+      heliumStep=A.heliumStep;
+      heliumXStep=A.heliumXStep;
+      heliumThick=A.heliumThick;
+      pressLength=A.pressLength;
+      pressJoin=A.pressJoin;
+      pressStep=A.pressStep;
+      pressXStep=A.pressXStep;
+      pressThick=A.pressThick;
+      waterLength=A.waterLength;
+      waterJoin=A.waterJoin;
+      waterStep=A.waterStep;
+      waterXStep=A.waterXStep;
+      waterThick=A.waterThick;
+      outerLength=A.outerLength;
+      outerJoin=A.outerJoin;
+      outerLift=A.outerLift;
+      outerStep=A.outerStep;
+      outerXStep=A.outerXStep;
+      outerThick=A.outerThick;
+      hgCutAngle=A.hgCutAngle;
+      innerCutAngle=A.innerCutAngle;
+      heCutAngle=A.heCutAngle;
+      pressCutAngle=A.pressCutAngle;
+      waterCutAngle=A.waterCutAngle;
+      outerCutAngle=A.outerCutAngle;
       mercuryMat=A.mercuryMat;
+      innerWallMat=A.innerWallMat;
+      heMat=A.heMat;
+      pressMat=A.pressMat;
+      waterMat=A.waterMat;
+      outerMat=A.outerMat;
       mercuryTemp=A.mercuryTemp;
       mainCell=A.mainCell;
     }

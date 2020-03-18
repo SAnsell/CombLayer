@@ -57,6 +57,8 @@ class flukaImpConstructor
   /// Typedef for tuple
   typedef std::tuple<size_t,int,std::string> impTYPE;
 
+  void writeBIASHelp(std::ostream&,ENDL) const;
+
   void writeCUTHelp(std::ostream&,ENDL) const;
 
   void writeIMPHelp(std::ostream&,ENDL) const;
@@ -71,18 +73,27 @@ class flukaImpConstructor
   
   void insertCell(flukaPhysics&,const size_t,
 		  const std::set<int>&,const std::string&,
-		  const std::string*) const;
+		  const std::vector<std::string>&) const;
   void insertParticle(flukaPhysics&,const size_t,
 		      const std::string&,const std::string&,
-		      const std::string*) const;
+		      const std::vector<std::string>&) const;
   void insertPair(flukaPhysics&,const size_t,
 		  const std::string&,const int,
-		  const std::string&,const std::string*) const;
+		  const std::string&,
+		  const std::vector<std::string>&) const;
   
   void processGeneral(SimFLUKA&,
 		      const mainSystem::inputParam&,
 		      const size_t,const std::string&,
 		      const impTYPE&) const;
+
+  void processGeneral(SimFLUKA&,
+		      const std::vector<std::string>&,
+		      const size_t,const int,const std::string&) const;
+  void processGeneral(SimFLUKA&,
+		      const std::vector<std::string>&,
+		      const impTYPE&) const;
+
 
  public:
 
@@ -94,9 +105,10 @@ class flukaImpConstructor
   flukaImpConstructor& operator=(const flukaImpConstructor&) { return *this; }
   ~flukaImpConstructor() {}  ///< Destructor
 
-  void processUnit(SimFLUKA&,
+  
+  void processBIAS(SimFLUKA&,
 		   const mainSystem::inputParam&,
-		   const size_t);
+		   const size_t);  
   void processCUT(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);

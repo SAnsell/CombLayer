@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,6 +199,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
+  IParam.regMulti("wBIAS","wBIAS",1000,0);
   IParam.regMulti("wFCL","wFCL",1000,0);
   IParam.regMulti("wWWG","wWWG",1000,0);
   IParam.regMulti("wIMP","wIMP",1000,0);

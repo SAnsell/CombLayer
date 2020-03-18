@@ -1,10 +1,9 @@
-
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   maxivBuild/R3Ring.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,22 +136,6 @@ R3Ring::populate(const FuncDataBase& Control)
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  return;
-}
-
-void
-R3Ring::createUnitVector(const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("R3Ring","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
  

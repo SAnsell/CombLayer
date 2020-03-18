@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 #include "LinkSupport.h"
 
 
+#include "InjectionHall.h"
 #include "R1Ring.h"
 #include "R1Beamline.h"
 #include "R3Ring.h"
@@ -99,7 +100,8 @@ namespace xraySystem
 
 makeMaxIV::makeMaxIV() :
   r1Ring(new R1Ring("R1Ring")),
-  r3Ring(new R3Ring("R3Ring"))
+  r3Ring(new R3Ring("R3Ring")),
+  injectionHall(new InjectionHall("InjectionHall"))
  /*!
     Constructor
  */
@@ -109,6 +111,7 @@ makeMaxIV::makeMaxIV() :
 
   OR.addObject(r1Ring);
   OR.addObject(r3Ring);
+  OR.addObject(injectionHall);
 }
 
 
@@ -171,6 +174,45 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 }
   
 bool
+makeMaxIV::buildInjection(Simulation& System,
+			  const mainSystem::inputParam& IParam)
+  /*!
+    Build the SPF/linac hall
+    \param System :: Simulation 
+    \param IParam :: Input paramters
+  */
+{
+  ELog::RegMethod RegA("makeMaxIV","buildInjection");
+  
+
+  const int voidCell(74123);
+  bool activeLinac(0);
+  const size_t NSet=IParam.setCnt("beamlines");  // converted from
+                                                 //  defaultConfig linac
+
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("beamlines",j);
+      size_t index=0;
+      while(index<NItems)  // min of one name
+	{
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index);
+	  if (BL=="LINAC" || BL=="SPF")  // default build
+	    activeLinac=1;
+	  index++;
+	}
+    }
+  if (!activeLinac) return 0;
+
+  // BUILD HALL:
+  injectionHall->addInsertCell(voidCell);
+  injectionHall->createAll(System,World::masterOrigin(),0);
+
+  return 1;  
+}  
+
+bool
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
@@ -193,7 +235,6 @@ makeMaxIV::buildR1Ring(Simulation& System,
   std::set<std::string> activeBL;
   bool activeR1(0);
   const size_t NSet=IParam.setCnt("beamlines");
-
 
   for(size_t j=0;j<NSet;j++)
     {
@@ -361,8 +402,11 @@ makeMaxIV::build(Simulation& System,
   else if(buildR1Ring(System,IParam))
     ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
 
+  else if (buildInjection(System,IParam))  // Injection Hall
+    ELog::EM<<"=Finished Linac/SPF System="<<ELog::endDiag;
+
   else
-    ELog::EM<<"NO R1 / R3 Ring built"<<ELog::endCrit;
+    ELog::EM<<"NO Linac/ SPF / R1 / R3 Ring built"<<ELog::endCrit;
 
   return;
 }

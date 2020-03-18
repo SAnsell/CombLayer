@@ -179,44 +179,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB")),
 
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
-  lineScreen(new insertSystem::insertPlate(newName+"LineScreen"))
+  lineScreen(new insertSystem::insertPlate(newName+"LineScreen")),
+  innerScreen(new insertSystem::insertPlate(newName+"InnerScreen"))
 
-  // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
-  // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  // screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  // screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
-  // diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
-  // primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
-  // gateC(new constructSystem::GateValveCube(newName+"GateC")),
-  // monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
-  // monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
-  // diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
-  // bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
-  // bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  // mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  // mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  // mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-  // diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
-  // jawCompB({
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit1")
-  // 	}),
-
-  // gateG(new constructSystem::GateValveCube(newName+"GateG")),
-  // mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
-  // mirrorFrontB(new xraySystem::Mirror(newName+"MirrorFrontB")),
-  // mirrorBackB(new xraySystem::Mirror(newName+"MirrorBackB")),
-  // gateH(new constructSystem::GateValveCube(newName+"GateH")),
-  // bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  // diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
-  // jawCompC({
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
-  //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
-  // 	}),
-  // gateI(new constructSystem::GateValveCube(newName+"GateI")),
-  // monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-
-  // gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -288,6 +253,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(joinPipeBB);
   OR.addObject(screenA);
   OR.addObject(lineScreen);
+  OR.addObject(innerScreen);
 }
 
 softimaxOpticsLine::~softimaxOpticsLine()
@@ -406,7 +372,7 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   int outerCell;
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,initFC,side,*M1TubeFront);
 
   M1Tube->setFront(*M1TubeFront,11);
@@ -423,7 +389,7 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*M1Tube,"back",*M1TubeBack);
 
   return;
@@ -446,7 +412,7 @@ softimaxOpticsLine::buildM3Mirror(Simulation& System,
 
   int outerCell;
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,initFC,side,*M3Front);
 
   M3Tube->setFront(*M3Front,2);
@@ -463,7 +429,7 @@ softimaxOpticsLine::buildM3Mirror(Simulation& System,
   M3Stand->addInsertCell(outerCell);
   M3Stand->createAll(System,*M3Tube,0);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*M3Tube,"back",*M3Back);
 
   return;
@@ -486,7 +452,7 @@ softimaxOpticsLine::buildM3STXMMirror(Simulation& System,
 
   int outerCell;
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,initFC,side,*M3STXMFront);
 
   M3STXMTube->setFront(*M3STXMFront,2);
@@ -517,19 +483,33 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
   slitTube->intersectPorts(System,0,2);
   slitTube->intersectPorts(System,0,1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
-  slitTube->insertAllInCell(System,outerCell);
+  // split front/back ends off
+  const int newCellB=
+    slitTube->splitObject(System,"PortBCut",outerCell).back();
+  this->addCell("OuterVoid",newCellB);
+  const int newCellA=
+    slitTube->splitObject(System,"-PortACut",outerCell).back();
+  this->addCell("OuterVoid",newCellA);
+  cellIndex+=2;  // remember creates an extra cell in  primary
+  
+  slitTube->insertInCell("FlangeA",System,newCellA);
+  slitTube->insertInCell("FlangeB",System,newCellB);
+  slitTube->insertInCell("Main",System,outerCell);
+  slitTube->insertPortInCell(System,outerCell);
 
   slitTube->splitVoidPorts(System,"SplitVoid",1001,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
+  std::vector<int> cellItems=
+    slitTube->splitObject(System,1501,outerCell,
+			  Geometry::Vec3D(0,0,0),
+			  Geometry::Vec3D(0,0,1));
+  this->addCell("OuterVoid",cellItems[1]);
 
-  slitTube->splitObject(System,1501,outerCell,
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(0,0,1));
+  // Note need cell number later
   cellIndex++;  // remember creates an extra cell in  primary
-
-
+  
   for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
@@ -649,7 +629,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   ////////////////////////////////////////////////////////////////////////////////////
 
   leftZone.setExtra();
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,leftZone,masterCellA,*splitter,"back",*bellowAA);
   leftZone.removeExtra();
 
@@ -673,30 +653,30 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
 
   // now build left/ right
   // LEFT
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,leftZone,masterCellA,CPI2,"OuterPlate",*bellowAB);
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,leftZone,masterCellA,*bellowAB,"back",*joinPipeAA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,leftZone,masterCellA,*joinPipeAA,"back",*bremCollAA);
 
-  // xrayConstruct::constructUnit
+  // constructSystem::constructUnit
   //   (System,leftZone,masterCellA,*bremCollAA,"back",*joinPipeAB);
 
 
 
   // RIGHT
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,rightZone,masterCellB,CPI3,"OuterPlate",*bellowBB);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,rightZone,masterCellB,*bellowBB,"back",*joinPipeBA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,rightZone,masterCellB,*joinPipeBA,"back",*bremCollBA);
 
-  // xrayConstruct::constructUnit
+  // constructSystem::constructUnit
   //   (System,rightZone,masterCellB,*bremCollBA,"back",*joinPipeBB);
 
 
@@ -752,7 +732,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
@@ -788,10 +767,10 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,GPI1,"OuterPlate",*bellowA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
   // FAKE insertcell: required
@@ -841,15 +820,15 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
 
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
   buildM1Mirror(System,masterCell,*bellowB,"back");
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*M1TubeBack,"back",*bellowC);
 
   // FAKE insertcell: required
@@ -864,25 +843,25 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  pumpTubeA->intersectPorts(System,1,2);
 
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,CPI1,"OuterPlate",*bremCollA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bremCollA,"back",*gateB);
 
   //  bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateB,"back",*bellowD);
 
   constructSlitTube(System,masterCell,*bellowD,"back");
 
   buildMono(System,masterCell,*slitTube,2);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*monoVessel,"back",*gateC);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateC,"back",*bellowE);
 
   // FAKE insertcell: required
@@ -896,16 +875,16 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpTubeB->insertAllInCell(System,outerCell);
   //  pumpTubeB->intersectPorts(System,1,2);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,pumpTubeBCPI,"OuterPlate",*gateD);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateD,"back",*joinPipeA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*joinPipeA,"back",*bellowF);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowF,"back",*slitsA);
 
   /////////////////// M3 Pump and baffle
@@ -923,18 +902,18 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpTubeM3Baffle->setBladeCentre(*pumpTubeM3,0);
   pumpTubeM3Baffle->createAll(System,*pumpTubeM3,std::string("InnerBack"));
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,GPI,"OuterPlate",*bellowG);
 
   buildM3Mirror(System,masterCell,*bellowG,"back");
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*M3Back,"back",*bellowH);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowH,"back",*gateE);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateE,"back",*joinPipeB);
 
   //// pumpTubeC
@@ -950,16 +929,16 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   //  pumpTubeC->intersectPorts(System,1,2);
   ///////////////////////////////////////////////
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,pumpTubeCCPI,"back",*bellowI);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowI,"back",*joinPipeC);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*joinPipeC,"back",*gateF);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*gateF,"back",*bellowJ);
 
   buildM3STXMMirror(System,masterCell,*bellowJ,"back");
@@ -1005,6 +984,13 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   lineScreen->setNoInsert();
   lineScreen->addInsertCell(ContainedComp::getInsertCells());
   lineScreen->createAll(System,*gateA,"back");
+
+  innerScreen->setNoInsert();
+  for(size_t index=14;index<=20;index++)
+    innerScreen->addInsertCell(this->getCell("OuterVoid",index));
+
+  innerScreen->addInsertCell(this->getCell("OuterVoid",23));  
+  innerScreen->createAll(System,*gateA,"back");
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   buildInc/TS2FlatTarget.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ namespace TMRSystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class TS2FlatTarget : public constructSystem::TargetBase
+class TS2FlatTarget : public TMRSystem::TargetBase
 {
  private:
   

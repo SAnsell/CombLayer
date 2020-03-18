@@ -3,7 +3,7 @@
  
  * File:   maxivBuildInc/makeMaxIV.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 namespace xraySystem
 {
+  class InjectionHall;
   class R1Ring;
   class R3Ring;
   /*!
@@ -43,6 +44,8 @@ class makeMaxIV
   std::shared_ptr<R1Ring> r1Ring;
   /// Main R1 Ring
   std::shared_ptr<R3Ring> r3Ring;
+  /// Linac/SPF Hall
+  std::shared_ptr<InjectionHall> injectionHall;
 
   
   void populateStopPoint(const mainSystem::inputParam&,
@@ -54,6 +57,8 @@ class makeMaxIV
   bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
 
   bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
+
+  bool buildInjection(Simulation&,const mainSystem::inputParam&);
   
  public:
   

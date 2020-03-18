@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,6 +263,7 @@ ContainedComp::addOuterUnionSurf(const std::string& SList)
   ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(std::string)");
   outerSurf.addUnion(SList);
   outerSurf.populateSurf();
+
   return;
 }
 
@@ -684,6 +685,7 @@ ContainedComp::insertExternalObject(Simulation& System,
   
   const std::string excludeStr=
     excludeObj.getHeadRule().complement().display();
+
   for(const int CN : insertCells)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);

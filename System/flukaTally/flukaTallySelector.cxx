@@ -3,7 +3,7 @@
  
  * File:   flukaTally/flukaTallySelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ checkLinkCells(const Simulation& System,
     \return true if cellA-cellB share common surf
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
+  ELog::RegMethod RegA("flukaTallySelector[F]","checkLinkCells");
   
   const MonteCarlo::Object* APtr=System.findObject(cellA);
   const MonteCarlo::Object* BPtr=System.findObject(cellB);
@@ -115,8 +115,8 @@ constructLinkRegion(const Simulation& System,
     \return true if constructed correctly
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
-  
+  ELog::RegMethod RegA("flukaTallySelector[F]","constructLinkRegion");
+
   const attachSystem::FixedComp* FCPtr=
     System.getObject<attachSystem::FixedComp>(FCname);
 
@@ -160,8 +160,8 @@ constructSurfRegion(const Simulation& System,
     \param cellB :: Secondary region cell number
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","constructSurfRegion");
-  
+  ELog::RegMethod RegA("flukaTallySelector[F]","constructSurfRegion");
+
   const attachSystem::SurfMap* SMPtr=
     System.getObject<attachSystem::SurfMap>(FCname);
 

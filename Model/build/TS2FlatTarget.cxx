@@ -3,7 +3,7 @@
  
  * File:   build/TS2FlatTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -74,6 +71,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -85,7 +84,7 @@ namespace TMRSystem
 {
 
 TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key,3),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +93,7 @@ TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
 {}
 
 TS2FlatTarget::TS2FlatTarget(const TS2FlatTarget& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),cladThick(A.cladThick),
@@ -125,7 +124,7 @@ TS2FlatTarget::operator=(const TS2FlatTarget& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;

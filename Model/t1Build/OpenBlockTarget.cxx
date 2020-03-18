@@ -3,7 +3,7 @@
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,6 +71,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -89,7 +90,7 @@ OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
 {}
 
 OpenBlockTarget::OpenBlockTarget(const OpenBlockTarget& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   frontPlate(A.frontPlate),
   backPlate(A.backPlate),
   height(A.height),width(A.width),
@@ -114,7 +115,7 @@ OpenBlockTarget::operator=(const OpenBlockTarget& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       height=A.height;

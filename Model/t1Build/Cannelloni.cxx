@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -75,6 +72,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
@@ -87,7 +86,7 @@ namespace ts1System
 {
 
 Cannelloni::Cannelloni(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key,3),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -96,7 +95,7 @@ Cannelloni::Cannelloni(const std::string& Key) :
 {}
 
 Cannelloni::Cannelloni(const Cannelloni& A) : 
-  constructSystem::TargetBase(A),
+  TMRSystem::TargetBase(A),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   wallThick(A.wallThick),wallClad(A.wallClad),
@@ -122,7 +121,7 @@ Cannelloni::operator=(const Cannelloni& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
+      TMRSystem::TargetBase::operator=(A);
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;

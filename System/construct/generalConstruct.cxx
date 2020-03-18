@@ -74,7 +74,7 @@
 #include "InnerZone.h"
 #include "FrontBackCut.h"
 
-namespace xrayConstruct
+namespace constructSystem
 {
 
 int
@@ -84,7 +84,7 @@ internalUnit(Simulation& System,
 	     const attachSystem::FixedComp& linkUnit,
 	     const std::string& sideName,
 	     attachSystem::FixedComp& FC,
-	     attachSystem::FrontBackCut& FCut,
+	     attachSystem::ExternalCut& ECut,
 	     attachSystem::ContainedComp& CC)
 
   /*!
@@ -98,7 +98,7 @@ internalUnit(Simulation& System,
 {
   ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
 
-  FCut.setFront(linkUnit,sideName);
+  ECut.setCutSurf("front",linkUnit,sideName);
   FC.createAll(System,linkUnit,"back");
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
@@ -107,5 +107,5 @@ internalUnit(Simulation& System,
   return  outerCell;
 }
 
-}   // NAMESPACE xrayConstruct
+}   // NAMESPACE constructSystem
 

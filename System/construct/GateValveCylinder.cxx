@@ -392,11 +392,10 @@ GateValveCylinder::createObjects(Simulation& System)
 	    (SMap,buildIndex," 12 -16 13 -14 5 17 ");
 	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
 
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex," -17 : (13 -14 5 -16)");
-
+	  Out=ModelSupport::getComposite(SMap,buildIndex," ( (13 -14 5 -16):-17 )");
 	}
       addOuterUnionSurf(Out+frontStr+backStr);
+
     }
 
   //  addOuterUnionSurf(Out+frontStr+backStr);

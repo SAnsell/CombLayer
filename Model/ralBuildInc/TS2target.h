@@ -3,7 +3,7 @@
  
  * File:   buildInc/TS2target.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,15 +42,11 @@ namespace TMRSystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class TS2target : public constructSystem::TargetBase
+class TS2target :
+  public TargetBase
 {
  private:
-  
-
-
-  int frontPlate;               ///< Front Plate
-  int backPlate;                ///< Back Plate
-  
+    
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
   double surfThick;             ///< Skin thickness on the W main core
@@ -128,15 +124,16 @@ class TS2target : public constructSystem::TargetBase
   virtual int getSkinBody() const { return skinCell; }
 
   void addInnerBoundary(attachSystem::ContainedComp&) const;
-  /// Set the extext of the reflector
-  void setRefPlates(const int A,const int B) 
-    { frontPlate=A; backPlate=B; }
+
 
   void addProtonLine(Simulation&,	 
 		     const attachSystem::FixedComp& refFC,
 		     const long int index);
   void layerProcess(Simulation&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 
 };

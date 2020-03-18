@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Sexupole.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,17 +171,18 @@ Sexupole::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
-
   int CN(buildIndex+1000);
   // Note there are 16 surfaces on the inner part of the pole peice
   double angle(M_PI*poleYAngle/180.0);
-  for(size_t i=0;i < 2*NPole;i++)
+  for(size_t i=0;i < 2*NPole; i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
       // const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
 
       // Frame Items:
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
+      ELog::EM<<"NP == "<<CN+51<<ELog::endDiag;
+
       ModelSupport::buildPlane
 	(SMap,CN+51,Origin+QR*(frameRadius+frameThick),QR);
       angle+=M_PI/static_cast<double>(NPole);
@@ -240,13 +241,13 @@ Sexupole::createObjects(Simulation& System)
   
   std::string unitStr=" 1M -2M ";
   unitStr+=ModelSupport::getSeqIntersection
-    (-51,  -(51+2*static_cast<int>(NPole)),1);
+    (-51,  -(50+2*static_cast<int>(NPole)),1);
   Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
+
   addOuterSurf(Out);
 
   unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
   Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
-
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
   const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
@@ -257,7 +258,7 @@ Sexupole::createObjects(Simulation& System)
   std::vector<HeadRule> PoleExclude; 
   int BN(buildIndex); // base
   int PN(buildIndex);
-  for(size_t i=0;i<8;i++)
+  for(size_t i=0; i<NPole;i++)
     {
       const std::string outerCut=
 	ModelSupport::getComposite(SMap,BN," -1001 ");
@@ -276,30 +277,29 @@ Sexupole::createObjects(Simulation& System)
       BN+=2;
       PN+=10;
     }
-
   Out=ModelSupport::getComposite
-	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002 ");
+    (SMap,buildIndex,BN,"501 -502 -1000M -1001 -1002 ");
   makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
 	   PoleExclude[0].complement().display()+ICell);
   int CN(buildIndex+1);
   int TN(buildIndex+1);
-  for(size_t i=1;i<7;i++)
+  for(size_t i=1;i<NPole-1;i++)
     {
       // three index points
       Out=ModelSupport::getComposite
 	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
-	
       makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
 	       PoleExclude[i].complement().display()+ICell);
       CN+=2;
       TN++;
     }
-  Out=ModelSupport::getComposite
-	  (SMap,buildIndex,"508 -501 -1014 -1015 -1016 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[7].complement().display()+ICell);	
 
-  
+  Out=ModelSupport::getComposite
+	  (SMap,buildIndex,"506 -501 -1010 -1011 -1012 ");
+  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
+	   PoleExclude[5].complement().display()+ICell);	
+
+  ELog::EM<<"Out:"<<Out<<ELog::endDiag;
   return;
 }
 

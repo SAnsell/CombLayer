@@ -3,7 +3,7 @@
  
  * File:   maxviBuildInc/DefUnitsExample.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,14 +74,18 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 
       if (Key=="DIPOLE")
 	setExampleEX1(A,LItems);
+      else if (Key=="VACTUBE")
+	setLinacVacTube(A,LItems);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  EX1 : Example 1"<<ELog::endDiag;
+	  ELog::EM<<"  VACTUBE : Linac Vacuum Tube"<<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
     }
   A.setOption("sdefType","Point");        
+  
   A.process(Control,IParam);
   return;
 }
@@ -95,6 +99,20 @@ setExampleEX1(defaultConfig& A,
     \param LItems :: extra items
   */
 {
+  A.setMultiOption("Model",0,"EX1");
+  return;
+}
+
+void
+setLinacVacTube(defaultConfig& A,
+	      const std::vector<std::string>& LItems)
+  /*!
+    Placeholder for Linac Vac Tube
+    \param A :: defaultConfig to set
+    \param LItems :: extra items
+  */
+{
+  A.setMultiOption("Model",0,"VACTUBE");
   return;
 }
 

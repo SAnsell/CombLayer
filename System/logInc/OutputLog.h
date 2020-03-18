@@ -3,7 +3,7 @@
  
  * File:   logInc/OutputLog.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,8 +92,12 @@ class OutputLog
   size_t getIndentLength() const;
 
  public:
- 
-  OutputLog();
+
+  /// basic constructor
+  constexpr OutputLog() :
+    colourFlag(0),activeBits(255),actionBits(0),
+      debugBits(0),typeFlag(1),locFlag(1),
+      storeFlag(0),NBasePtr(0) {}
   OutputLog(const std::string&);
   OutputLog(const OutputLog<RepClass>&);
   OutputLog<RepClass>& operator=(const OutputLog<RepClass>&);

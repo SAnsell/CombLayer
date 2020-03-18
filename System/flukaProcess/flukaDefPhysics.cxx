@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaDefPhysics.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,7 +107,7 @@ setUserFlags(SimFLUKA& System,
 
   if (IParam.flag("userWeight"))  // only one
     {
-      const size_t NIndex=IParam.itemCnt("userWeight");
+      //      const size_t NIndex=IParam.itemCnt("userWeight");
 
       const std::string extra =
 	IParam.getDefValue<std::string>("3","userWeight");
@@ -242,7 +242,6 @@ setMagneticExternal(SimFLUKA& System,
     }
   return;
 }
-
   
 void
 setModelPhysics(SimFLUKA& System,
@@ -267,12 +266,12 @@ setModelPhysics(SimFLUKA& System,
 	A.processMAT(System,IParam,index);
     }
 
-  nSet=IParam.setCnt("wIMP");
+  nSet=IParam.setCnt("wBIAS");
   if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processUnit(System,IParam,index);
+	A.processBIAS(System,IParam,index);
     }
   
   nSet=IParam.setCnt("wCUT");    
@@ -306,7 +305,15 @@ setModelPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processLAM(System,IParam,index);
     }
-  
+
+  nSet=IParam.setCnt("wBIAS");
+  if (nSet)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processBIAS(System,IParam,index);
+    }
+
   return; 
 }
 

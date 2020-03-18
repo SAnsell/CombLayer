@@ -959,6 +959,8 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("speciesVariables[F]","frontEndVariables");
 
+  const double FMdist(456.0);
+  
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -1013,7 +1015,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setFrontGap(3.99,1.97);  //1033.8
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
-  CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+  CollGen.generateColl(Control,frontKey+"CollA",FMdist,15.0);
   
 
   BellowGen.setCF<setVariable::CF40>();

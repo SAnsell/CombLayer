@@ -95,7 +95,9 @@
 #include "CryoMagnetBase.h"
 #include "Dipole.h"
 #include "Quadrupole.h"
+#include "Sexupole.h"
 #include "Octupole.h"
+#include "LQuad.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
@@ -121,10 +123,11 @@ makeSingleItem::~makeSingleItem()
     Destructor
   */
 {}
-  
+
+
 void 
 makeSingleItem::build(Simulation& System,
-	       const mainSystem::inputParam& IParam)
+		      const mainSystem::inputParam& IParam)
 /*!
     Carry out the full build
     \param System :: Simulation system
@@ -138,6 +141,28 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
+  std::shared_ptr<xraySystem::LQuad>
+    LQ(new xraySystem::LQuad("LQ","LQ"));
+
+  OR.addObject(LQ);
+
+  LQ->addInsertCell(voidCell);
+  LQ->createAll(System,World::masterOrigin(),0);
+  
+  return;
+  
+  std::shared_ptr<xraySystem::Sexupole>
+    SXX(new xraySystem::Sexupole("SXX","SXX"));
+
+  OR.addObject(SXX);
+
+  SXX->addInsertCell(voidCell);
+  SXX->createAll(System,World::masterOrigin(),0);
+  
+  return;
+  
+
+  
   std::shared_ptr<xraySystem::MagnetM1>
     MagBlock(new xraySystem::MagnetM1("M1Block"));
 

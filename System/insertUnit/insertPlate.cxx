@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertPlate.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,13 +179,10 @@ insertPlate::createSurfaces()
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
-
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
   setSurf("Left",SMap.realSurf(buildIndex+3));
   setSurf("Right",SMap.realSurf(buildIndex+4));

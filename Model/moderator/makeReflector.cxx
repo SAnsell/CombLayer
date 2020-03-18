@@ -3,7 +3,7 @@
  
  * File:   moderator/makeReflector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,11 +170,9 @@ makeReflector::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("makeReflector","createObjects");
 
-  RefObj->addInsertCell(74123);
   RefObj->createAll(System,World::masterOrigin(),0);
 
   const int refCell=RefObj->getCell("Reflector");
-
 
   TarObj->addInsertCell(refCell);
   VacObj->addInsertCell(refCell);
@@ -193,8 +191,6 @@ makeReflector::createObjects(Simulation& System)
   CdBucket->addInsertCell(refCell);
   // torpedoCell=refCell;
 
-  //  for(CoolPad& PD : Pads)
-  //    PD.addInsertCell(74123);
   
   return;
 }
@@ -259,7 +255,7 @@ makeReflector::processDecoupled(Simulation& System,
 
 void
 makeReflector::createInternalObjects(Simulation& System,
-				 const mainSystem::inputParam& IParam)
+				     const mainSystem::inputParam& IParam)
   /*!
     Build the inner objects
     \param System :: Simulation to use
@@ -268,17 +264,20 @@ makeReflector::createInternalObjects(Simulation& System,
 {
   ELog::RegMethod RegA("makeReflector","createInternalObjects");
 
+
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
   const std::string DT=IParam.getValue<std::string>("decType");
 
-  TarObj->setRefPlates(RefObj->getSurf("CornerB"),
-		       RefObj->getSurf("CornerA"));
-  TarObj->createAll(System,*RefObj,0);
+  TarObj->setCutSurf("FrontPlate",RefObj->getSurf("CornerB"));
+  TarObj->setCutSurf("BackPlate",RefObj->getSurf("CornerA"));
+  TarObj->createAll(System,*RefObj,"CornerCentre");
 
   TarObj->addProtonLineInsertCell(RefObj->getCell("Reflector"));
   TarObj->addProtonLine(System,*RefObj,-7);
 
+  return;
+  
   GrooveObj->createAll(System,*RefObj,0);
   HydObj->setCutSurf("innerWall",GrooveObj->getLinkSurf(1));
   HydObj->createAll(System,*GrooveObj,1);
@@ -290,17 +289,19 @@ makeReflector::createInternalObjects(Simulation& System,
   VacObj->buildPair(System,*GrooveObj,*HydObj);
   std::string Out;
 
-
   Out = RefObj->combine("CornerB Back Right").display();
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
 
-  Out = RefObj->combine("CornerC Front").display();
+
+  Out = RefObj->combine("CornerC Front").display(); 
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
 
+  return;
+  
 
   PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
@@ -487,15 +488,18 @@ makeReflector::getExclude() const
 
 void
 makeReflector::build(Simulation& System,
-		     const mainSystem::inputParam& IParam)
+		     const mainSystem::inputParam& IParam,
+		     int& excludeCell)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param IParam :: Parameter table
+    \param excludeCell :: exclude Cell
   */
 {
   ELog::RegMethod RegA("makeReflector","build");
 
+  RefObj->addInsertCell(excludeCell);
   createObjects(System);
   createInternalObjects(System,IParam);
   /*  

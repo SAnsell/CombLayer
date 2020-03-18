@@ -3,7 +3,7 @@
  
  * File: maxpeem/MAXPEEM.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ MAXPEEM::build(Simulation& System,
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
+  
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -166,6 +166,7 @@ MAXPEEM::build(Simulation& System,
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
+
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,

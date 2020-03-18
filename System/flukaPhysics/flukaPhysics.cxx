@@ -73,14 +73,11 @@ flukaPhysics::flukaPhysics() :
     }),
 
   impValue({
+      { "bias-off",   cellValueSet<1>("bias-off","BIASING","USER")},
       { "partthr",    cellValueSet<1>("partthr","PART-THR","",{-1e-3}) },
       { "gas",        cellValueSet<1>("gas","MAT-PROP","") },
       { "rho",        cellValueSet<1>("rho","MAT-PROP","") },
-      { "all",        cellValueSet<1>("all","BIAS","") },
-      { "hadron",     cellValueSet<1>("hadron","BIAS","") },
-      { "electron",   cellValueSet<1>("electron","BIAS","") },
       { "emffluo",    cellValueSet<1>("emffluo","EMFFLUO","") },
-      { "low",        cellValueSet<1>("low","BIAS","") },
       { "lowbias",    cellValueSet<1>("lowbias","LOW-BIAS","") },
       { "exptrans",   cellValueSet<1>("exptrans","EXPTRANS","") },
       { "exppart",    cellValueSet<1>("exppart","EXPTRANS","") },
@@ -101,6 +98,8 @@ flukaPhysics::flukaPhysics() :
 
   threeFlag({
 
+      { "bias",cellValueSet<3>("bias","BIASING","") },
+      { "bias-user",cellValueSet<3>("bias-user","BIASING","USER")},
       { "elpothr",cellValueSet<3>("elpothr","EMFCUT","ELPO-THR",
 	{1e-3,1e-3,1e-3}) },
       { "photthr", cellValueSet<3>("pho2thr","EMFCUT","PHOT-THR",
@@ -120,14 +119,13 @@ flukaPhysics::flukaPhysics() :
     }),
   
   formatMap({
-      { "all", unitTYPE(0," 0.0 1.0 %2 R0 R1 1.0 ") },
-      { "hadron", unitTYPE(0," 1.0 1.0 %2 R0 R1 1.0 ") },
-      { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
-      { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "emfray", unitTYPE(0,"4.0 R0 R1 1.0 - - ") },
 
+      { "bias", unitTYPE(0,"%2 %3 %4 R0 R1 1.0 ") },
+      { "bias-user", unitTYPE(0,"%2 %3 %4 R0 R1 1.0 ") },
+      { "bias-off", unitTYPE(0,"%2 1.0 1.0 R0 R1 1.0 ") },
       { "coalescence", unitTYPE(-100,"1.0 - - - - - ") },
       { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },

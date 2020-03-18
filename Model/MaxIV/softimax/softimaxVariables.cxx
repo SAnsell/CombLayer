@@ -968,8 +968,17 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"LineScreenYStep",130.0);
   Control.addVariable(shieldKey+"LineScreenWidth",400.0);
   Control.addVariable(shieldKey+"LineScreenHeight",40.0);
-  Control.addVariable(shieldKey+"LineScreenDepth",15.0); // 10: outside dose 0.65
-  Control.addVariable(shieldKey+"LineScreenMat","Lead");
+  Control.addVariable(shieldKey+"LineScreenDepth",10.0);
+  Control.addVariable(shieldKey+"LineScreenMat","Void");
+
+    // Extra lead brick
+  Control.addVariable(shieldKey+"InnerScreenXYAngle",70.0);
+  Control.addVariable(shieldKey+"InnerScreenXStep",-40.0);
+  Control.addVariable(shieldKey+"InnerScreenYStep",100.0);  // half depth
+  Control.addVariable(shieldKey+"InnerScreenWidth",125.0);
+  Control.addVariable(shieldKey+"InnerScreenHeight",50.0);
+  Control.addVariable(shieldKey+"InnerScreenDepth",6.0);
+  Control.addVariable(shieldKey+"InnerScreenMat","HighDensPoly");
 
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/TS2target.cxx
+ * File:   ralBuild/TS2target.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -85,8 +87,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
-  frontPlate(0),backPlate(0)
+  TMRSystem::TargetBase(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,9 +95,8 @@ TS2target::TS2target(const std::string& Key) :
 {}
 
 TS2target::TS2target(const TS2target& A) : 
-  constructSystem::TargetBase(A),
-  frontPlate(A.frontPlate),
-  backPlate(A.backPlate),mainLength(A.mainLength),coreRadius(A.coreRadius),
+  TMRSystem::TargetBase(A),
+  mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),wSphDisplace(A.wSphDisplace),
   wSphRadius(A.wSphRadius),wPlaneCut(A.wPlaneCut),
   wPlaneAngle(A.wPlaneAngle),cladThick(A.cladThick),
@@ -132,9 +132,7 @@ TS2target::operator=(const TS2target& A)
 {
   if (this!=&A)
     {
-      constructSystem::TargetBase::operator=(A);
-      frontPlate=A.frontPlate;
-      backPlate=A.backPlate;
+      TMRSystem::TargetBase::operator=(A);
       mainLength=A.mainLength;
       coreRadius=A.coreRadius;
       surfThick=A.surfThick;
@@ -268,12 +266,6 @@ TS2target::createSurfaces()
 {
   ELog::RegMethod RegA("TS2target","createSurface");
   
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
-  // INNER PLANES    
-  Geometry::Plane* PX;
-  SMap.addMatch(buildIndex+186,frontPlate);
-  SMap.addMatch(buildIndex+190,backPlate);
 
   // OUTER VOID [Should be a copy of 11 ?]
   ModelSupport::buildCylinder(SMap,buildIndex+101,Origin,Y,voidRadius);
@@ -325,34 +317,25 @@ TS2target::createSurfaces()
 			   Origin-Y*wSphDisplace,Y);
 
   // Cut Planes:
-  // Rotation:
-  Geometry::Quaternion QR=
+  const Geometry::Quaternion QR=
     Geometry::Quaternion::calcQRotDeg(wPlaneAngle,Y);
-  Geometry::Quaternion antiQR=
-    Geometry::Quaternion::calcQRotDeg(-wPlaneAngle,Y);
+  const Geometry::Quaternion antiQR=
+    Geometry::Quaternion::calcQRotDeg(-wPlaneAngle+90.0,Y);
+  Geometry::Vec3D PX(Z);
+  Geometry::Vec3D PZ(Z);
+  antiQR.rotate(PX);
+  QR.rotate(PZ);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+3);
-  PX->setPlane(Origin-Z*wPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+3,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+4);
-  PX->setPlane(Origin+Z*wPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+4,PX);
+  // OuterSphere Cut Plane
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-PZ*wPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+PZ*wPlaneCut,PZ);
 
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+103);
-      PX->setPlane(Origin-Z*(wPlaneCut-surfThick),Z);
-      PX->rotate(QR);
-      SMap.registerSurf(buildIndex+103,PX);
-      
-      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+104);
-      PX->setPlane(Origin+Z*(wPlaneCut-surfThick),Z);
-      PX->rotate(QR);
-      SMap.registerSurf(buildIndex+104,PX);
-
+      ModelSupport::buildPlane(SMap,buildIndex+103,
+			       Origin-PZ*(wPlaneCut-surfThick),PZ);
+      ModelSupport::buildPlane(SMap,buildIndex+104,
+			       Origin+PZ*(wPlaneCut-surfThick),PZ);
     }
   // Ta cladding [Inner]
   // Basic Cylinder
@@ -367,15 +350,8 @@ TS2target::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+39,Origin-Y*taSphDisplace,Y);
   
   // Cut Planes:
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+23);
-  PX->setPlane(Origin-Z*taPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+23,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+24);
-  PX->setPlane(Origin+Z*taPlaneCut,Z);
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+24,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-PZ*taPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+PZ*taPlaneCut,PZ);
 
   // --  WATER LAYER:  [40-60] -- 
   // cylinder water
@@ -403,34 +379,21 @@ TS2target::createSurfaces()
   // Base cut cylinder
   ModelSupport::buildCylinder(SMap,buildIndex+62,
 			      Origin,Y,xFlowOutMidRadius);    
-  // OuterCut left Edge
-  Geometry::Quaternion QCyl=
-    Geometry::Quaternion::calcQRotDeg(xFlowOutCutAngle,Y);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+63);
-  PX->setPlane(Origin-Z*xFlowOPlaneCut,Z);    
-  PX->rotate(antiQR);
-  SMap.registerSurf(buildIndex+63,PX);
-
-  // OuterCut right Edge
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+64);
-  PX->setPlane(Origin+Z*xFlowIPlaneCut,Z);    
-  PX->rotate(antiQR);
-  SMap.registerSurf(buildIndex+64,PX);
-
+  ModelSupport::buildPlane(SMap,buildIndex+63,
+			   Origin-PX*xFlowOPlaneCut,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+64,
+			   Origin+PX*xFlowIPlaneCut,PX);
+  
   // Inner water cut:
   ModelSupport::buildSphere(SMap,buildIndex+71,
 			    Origin-Y*xFlowInnerDisplace,xFlowInnerRadius);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+73);
-  PX->setPlane(Origin-Z*xFlowIPlaneCut,Z);    
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+73,PX);
-  // OuterCut right Edge
-  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+74);
-  PX->setPlane(Origin+Z*xFlowIPlaneCut,Z);    
-  PX->rotate(QR);
-  SMap.registerSurf(buildIndex+74,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+73,
+			   Origin-PZ*xFlowIPlaneCut,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+74,
+			   Origin+PZ*xFlowIPlaneCut,PZ);
+
 
   // TopCap [80-90]
   ModelSupport::buildSphere(SMap,buildIndex+81,
@@ -480,21 +443,19 @@ TS2target::createNoseConeObjects(Simulation& System)
   // ----------------- WATER -------------------------------
   // Water Cut Top: 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-		 "-81 61 ((63 -64):(-63 64)) -59 (29:24)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-81 61 63 -64 -59 (29:24)");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  ELog::EM<<"Cell == "<<cellIndex-1<<ELog::endDiag;;
   const std::string watOCap=ModelSupport::getExclude(cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-48 62 ((63 -64):(-63 64)) -1 59");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 62 63 -64 -1 59");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICyl=ModelSupport::getExclude(cellIndex-1);
 
 
 
   // Inner Water Cut:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "71 -29 ((73 -74) : (-73 74)) -59");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -29 73 -74 -59 ");
   System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICap=ModelSupport::getExclude(cellIndex-1);
 
@@ -539,6 +500,9 @@ TS2target::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TS2target","createObjects");
+  // INNER PLANES    
+  const std::string frontPlate(ExternalCut::getRuleStr("FrontPlate"));
+  const std::string backPlate(ExternalCut::getRuleStr("BackPlate"));
 
   std::string Out;
   mainCell=cellIndex;
@@ -581,13 +545,15 @@ TS2target::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 186");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontPlate));
   
 
   // Front spacer [Proton flight line]:
   // if (backPlate)
-  //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -190");
+  //   Out=ModelSupport::getComposite
+  //    (SMap,buildIndex,"-59 91 -101 -190")+backPlate
+  ;
   // else
   //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -202 186");
   // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
@@ -685,9 +651,13 @@ TS2target::addProtonLine(Simulation& System,
    */
 {
   ELog::RegMethod RegA("TS2target","addProtonLine");
+
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
+
+  PLine->setCutSurf("RefBoundary",getRule("BackPlate"));
   PLine->createAll(System,*this,3);
   createBeamWindow(System,-3);
+
   System.populateCells();
   System.createObjSurfMap();
   return;

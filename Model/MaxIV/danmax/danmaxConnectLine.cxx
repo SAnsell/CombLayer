@@ -167,13 +167,13 @@ danmaxConnectLine::buildObjects(Simulation& System,
   buildZone.createOuterVoidUnit(System,masterCell,beamFC,beamName);
   
   // insert first tube:
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,beamFC,beamName,*pipeA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*pipeA,"back",*bellowA);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*flangeA);
 
   
@@ -184,13 +184,13 @@ danmaxConnectLine::buildObjects(Simulation& System,
   ionPumpA->insertAllInCell(System,outerCell);
 
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*ionPumpA,"back",*flangeB);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*flangeB,"back",*bellowB);
 
-  xrayConstruct::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowB,"back",*pipeB);
 
   outerCell=buildZone.createFinalVoidUnit(System,masterCell,*pipeB,2);

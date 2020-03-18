@@ -3,7 +3,7 @@
  
  * File:   exampleBuild/makeExample.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,8 +77,11 @@
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "dipoleModel.h"
+#include "InnerZone.h"
 
+#include "dipoleModel.h"
+#include "vacTube.h"
+#include "makeLinacTube.h"
 #include "makeExample.h"
 
 namespace exampleSystem
@@ -98,7 +101,7 @@ makeExample::~makeExample()
 
 void 
 makeExample::build(Simulation& System,
-		     const mainSystem::inputParam& IParam)
+		   const mainSystem::inputParam& IParam)
 /*!
   Carry out the full build
   \param SimPtr :: Simulation system
@@ -108,16 +111,21 @@ makeExample::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeExample","build");
 
-  const std::string item=IParam.getDefValue<std::string>
-    ("DIPOLE","defaultConfig",0,0);
-  if (item=="DIPOLE")
+  const std::string model=IParam.getValue<std::string>("Model");
+  if (model=="DIPOLE")
     {
       dipoleModel A;
       A.build(System);
     }
+  else if (model=="VACTUBE")
+    {
+      makeLinacTube A;
+      A.build(System,World::masterOrigin(),0);
+    }
   else
     {
-      throw ColErr::InContainerError<std::string>(item,"Model unknown");
+      throw ColErr::InContainerError<std::string>
+	(model,"Model unknown");
     }
 
   return;

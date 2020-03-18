@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,9 +136,9 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","processBdx");
+  ELog::RegMethod RegA("userBdxConstruct","processBDX");
 
-  
+
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
   const std::string FCname=
@@ -158,23 +158,27 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       )
     
     {
+
       // special class because must give regions
       itemIndex+=2;
 
-      const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
+      const std::string errKey("No region from "+FCname+":"+FCindex);
+      const size_t regionIndexA=
+	IParam.getValueError<size_t>("tally",Index,4,errKey);
+
+      const size_t regionIndexB=
+	IParam.getValueError<size_t>("tally",Index,6,errKey);
+
 
       if (!constructSurfRegion(System,FCname,FCindex,
 			       regionIndexA,regionIndexB,cellA,cellB))
 	throw ColErr::InContainerError<std::string>
 	  (FCname+":"+FCindex,"No connecting surface on regions");
     }
-  
   ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
-  
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 

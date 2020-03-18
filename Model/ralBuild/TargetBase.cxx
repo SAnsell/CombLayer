@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TargetBase.cxx
+ * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -53,9 +53,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -77,17 +74,21 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "ProtonVoid.h"
 #include "BeamWindow.h"
 #include "TargetBase.h"
 
 
-namespace constructSystem
+namespace TMRSystem
 {
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,NLink),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,NLink),
+  attachSystem::ExternalCut(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
   /*!
     Constructor
@@ -102,7 +103,9 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
 }
 
 TargetBase::TargetBase(const TargetBase& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),  
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ExternalCut(A),
   BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
   PLine(new ts1System::ProtonVoid(*A.PLine))
   /*!
@@ -124,6 +127,7 @@ TargetBase::operator=(const TargetBase& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       if (A.BWPtr)
 	*BWPtr = *A.BWPtr;
       else
@@ -145,7 +149,7 @@ TargetBase::createBeamWindow(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TargetBase","createBeamWindow");
-  if (PLine->getVoidCell())
+  if (PLine->hasCell("VoidCell"))
     {
       ModelSupport::objectRegister& OR=
 	ModelSupport::objectRegister::Instance();
@@ -157,7 +161,7 @@ TargetBase::createBeamWindow(Simulation& System,
 	  OR.addObject(BWPtr);
 	}      
       BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
+      BWPtr->setInsertCell(PLine->getCell("VoidCell"));
       BWPtr->createAll(System,*this,sideIndex);
     }
   return;
@@ -203,4 +207,4 @@ TargetBase::getInnerCells() const
   return std::vector<int>();
 }
 
-}  // NAMESPACE constructSystem
+}  // NAMESPACE TMRSystem

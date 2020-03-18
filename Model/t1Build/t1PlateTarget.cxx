@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "channel.h"
 #include "PressVessel.h"
 #include "PlateTarget.h"

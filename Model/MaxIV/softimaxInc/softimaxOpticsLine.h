@@ -173,8 +173,12 @@ class softimaxOpticsLine :
 
   /// Shield between pipes
   std::shared_ptr<xraySystem::PipeShield> screenA;
-  /// Extran shield to protect outer wall
+
+  /// Extra shield to protect outer wall
   std::shared_ptr<insertSystem::insertPlate> lineScreen;
+
+  /// Extra shield to protect inner outer wall [close]
+  std::shared_ptr<insertSystem::insertPlate> innerScreen;
   
 
   double outerLeft;    ///< Left Width for cut rectangle
@@ -223,6 +227,7 @@ class softimaxOpticsLine :
 			  const std::vector<int>&);
 
 
+  /// Set the initial zone for splitting
   void setPreInsert
   (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

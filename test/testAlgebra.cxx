@@ -392,11 +392,13 @@ testAlgebra::testExpandCNFBracket()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
+      TTYPE("a+b+c(d+e)","(a+b+c)(a+b+d+e)"),
+      TTYPE("a+b+cd(e+f)","(a+b+c)(a+b+d)(a+b+e+f)"),
       //      TTYPE("a'b'c(b+c')","!!"),   // ALWAY FALSE
       TTYPE("f+(a'b'c(b+c'))","f"),   
 
       TTYPE("n'o'p(a+b+h)(o+p')","!!"),
-      
+      TTYPE("a(b+c)","a(b+c)"),      
       TTYPE("q(q'+r)(o+r)","qr"),
       TTYPE("ab+ac","a(b+c)"),
       TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
@@ -411,7 +413,11 @@ testAlgebra::testExpandCNFBracket()
       TTYPE("(a+bx)(c+d+f)(c+e+f)","(a+b)(a+x)(c+d+f)(c+e+f)"),
       TTYPE("(a+bx)(c+(de+f))","(a+b)(a+x)(c+d+f)(c+e+f)"),
       TTYPE("ac+ad+bc+bd+bd","(a+b)(c+d)"),
-      TTYPE("f'(e'+f)","e'f'")
+      TTYPE("f'(e'+f)","e'f'"),
+      TTYPE("b+c(d+e)","(b+c)(b+d+e)"),
+      TTYPE("x+(b+c)(b+d+e)","(b+c+x)(b+d+e+x)"),
+      //      TTYPE("l+m'+r(n+o'+p+q')","(l+m'+r)(l+n+o'+p+q')(m'+n+o'+p+q')"),
+      //      TTYPE("(a+b)(l+m'+r(n+o'+p+q'))","(l+m'+r)(l+n+o'+p+q')(m'+n+o'+p+q')")
       
       //      TTYPE("ace+acf+ade+adf+bce+bcf+bde+bdf","(a+b)(c+d)(e+f)")
       //      TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
@@ -447,9 +453,9 @@ testAlgebra::testExpandCNFBracket()
 	  ELog::EM<<"Original   :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"CNFform == :"<<Out<<ELog::endDiag;
-	  ELog::EM<<"logic CNF.orig    "<<ABflag<<ELog::endDiag;
-	  ELog::EM<<"logic CNF.expect  "<<ACflag<<ELog::endDiag;
-	  ELog::EM<<"logic orig.expect "<<BCflag<<ELog::endDiag;
+	  ELog::EM<<"logic CNF:orig    "<<ABflag<<ELog::endDiag;
+	  ELog::EM<<"logic CNF:expect  "<<ACflag<<ELog::endDiag;
+	  ELog::EM<<"logic orig:expect "<<BCflag<<ELog::endDiag;
 	  return -1;
 	}
     }

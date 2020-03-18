@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -562,7 +562,6 @@ testHeadRule::testIntersectHeadRule()
 	    0,Geometry::Vec3D(0,0,0))
     };
  
-  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       HeadRule HM(std::get<0>(tc));

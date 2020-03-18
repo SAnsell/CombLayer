@@ -3,7 +3,7 @@
  
  * File:   log/OutputLog.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,6 @@
 
 namespace ELog
 {
-
-template<typename RepClass>
-OutputLog<RepClass>::OutputLog() :
-  colourFlag(0),activeBits(255),actionBits(0),
-  debugBits(0),typeFlag(1),locFlag(1),
-  storeFlag(0),NBasePtr(0)
-  /*!
-    Constructor
-  */
-{}
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const std::string&) :

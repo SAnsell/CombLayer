@@ -3,7 +3,7 @@
 
  * File:   monte/DBMaterialRegister.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1145,7 +1145,7 @@ DBMaterial::initMaterial()
 		   " 22048.70c -0.0038 "
 		   " 25055.70c -0.0021 "
 		   " 26056.70c -0.0444 "
-		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+		   " 28058.70c -0.0012 ", "lwtr.01t", MLib);
   MObj.setDensity(-2.35);
   setMaterial(MObj);
 
@@ -1271,6 +1271,26 @@ DBMaterial::initMaterial()
 		   " 26057.70c  0.021190000 "
 		   " 26058.70c  0.002820000 ", "fe56.12t", MLib);
   MObj.setDensity(-7.85);
+  setMaterial(MObj);
+
+    // Earth :from https://mcnp.lanl.gov/pdf_files/la-ur-13-24293.pdf
+  // ensity 1.6104
+  MObj.setMaterial(148, "Earth",
+		   "1001.70c 0.0010213 1002.70c 1.17462e-07  "
+		   "8016.70c 0.0245038 11023.70c 0.00099556  "
+		   "12024.70c 0.000580795 12025.70c 7.35277e-05  "
+		   "12026.70c 8.0954e-05 13027.70c 0.00286048  "
+		   "14028.70c 0.0089957 14029.70c 0.00045678  "
+		   "14030.70c 0.000301113 19039.70c 0.000904785  "
+		   "19040.70c 1.13513e-07 19041.70c 6.52941e-06  "
+		   "20040.70c 0.00123824 20042.70c 8.26422e-06  "
+		   "20043.70c 1.72437e-06 20044.70c 2.66448e-05  "
+		   "20046.70c 5.10925e-08 20048.70c 2.38858e-06  "
+		   "26054.70c 0.000102832 26056.70c 0.00161425  "
+		   "26057.70c 3.728e-05 26058.70c 4.96128e-06  ",
+		   "lwtr.01t",MLib);
+		   
+  MObj.setDensity(-1.6104);
   setMaterial(MObj);
 
 

@@ -3,7 +3,7 @@
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -75,6 +71,8 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ProtonVoid.h"
 
 namespace ts1System
@@ -84,7 +82,7 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
   attachSystem::ExternalCut(),
-  protonVoidCell(0)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,7 +92,7 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
 ProtonVoid::ProtonVoid(const ProtonVoid& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::ExternalCut(A),
-  protonVoidCell(A.protonVoidCell),
+  attachSystem::CellMap(A),
   viewRadius(A.viewRadius)
   /*!
     Copy constructor
@@ -114,8 +112,8 @@ ProtonVoid::operator=(const ProtonVoid& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      attachSystem::ExternalCut::operator=(A),
-      protonVoidCell=A.protonVoidCell;
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       viewRadius=A.viewRadius;
     }
   return *this;
@@ -168,13 +166,14 @@ ProtonVoid::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ProtonVoid","createObjects");
-  
+
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -7 ");
+  ELog::EM<<"tar Surf == "<<TargetSurfBoundary<<ELog::endDiag;
+  ELog::EM<<"Ref Surf == "<<RefSurfBoundary<<ELog::endDiag;
   Out+=RefSurfBoundary+" "+TargetSurfBoundary;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-  protonVoidCell=cellIndex-1;
+  CellMap::makeCell("VoidCell",System,cellIndex++,0,0.0,Out);
   addOuterSurf(Out);
   addBoundarySurf(-SMap.realSurf(buildIndex+7));    
 
@@ -210,7 +209,6 @@ ProtonVoid::createAll(Simulation& System,
   // This need to be from externalCut:
   const std::string TSurf=TargetFC.getLinkString(tIndex);
   const std::string RSurf=ExternalCut::getRuleStr("RefBoundary");
-  //  const std::string RSurf=RefFC.getLinkString(rIndex);
 
   createObjects(System,TSurf,RSurf);
   createLinks();

@@ -3,7 +3,7 @@
  
  * File:   constructVar/JawValveGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,11 +116,6 @@ JawValveGenerator::operator=(const JawValveGenerator& A)
   return *this;
 }
 
-JawValveGenerator::~JawValveGenerator() 
- /*!
-   Destructor
- */
-{}
 
 void
 JawValveGenerator::setRadius(const double R)
@@ -257,9 +252,9 @@ JawValveGenerator::setCF()
   setAPortCF<CF>();
   setBPortCF<CF>();
 
-  depth=1.1*CF::flangeRadius;
-  height=2.5*CF::flangeRadius;
-  width=2.1*CF::flangeRadius;
+  depth=  1.1*CF::flangeRadius;
+  height= 2.5*CF::flangeRadius;
+  width=  2.1*CF::flangeRadius;
   
   return;
 }

@@ -43,7 +43,7 @@ namespace ts1System
 */
 
 class SideCoolTarget :
-  public constructSystem::TargetBase
+  public TMRSystem::TargetBase
 {
  private:
   

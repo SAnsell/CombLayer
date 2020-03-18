@@ -42,6 +42,7 @@ namespace exampleSystem
   */
   class dipolePipe;
   class quadPipe;
+  class ShieldRoom;
   
 class makeExample
 {

@@ -3,7 +3,7 @@
  
  * File:   maxviBuildInc/DefUnitsMaxIV.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,11 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
       const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
       const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
 
-      if (Key=="Linac")
-	setMaxIVLinac(A);
+      if (Key=="Linac" || Key=="LINAC")
+	{
+	  LItems[0]="LINAC";   // ensure we have case correctness
+	  setMaxIVLinac(A,LItems);
+	}
       else if (Key=="Single")
 	setMaxIVSingle(A,LItems);
       else if (Key=="help")
@@ -90,6 +93,8 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");
 	}
+      // ???
+      
       A.process(Control,IParam);
     }
   return;
@@ -118,12 +123,13 @@ setMaxIVSingle(defaultConfig& A,
       { "FORMAX", "World 0"},
       { "MAXPEEM", "World 0"},
       { "SPECIES", "World 0"},
+      { "LINAC", "World 0"},
       { "RING1", "World 0"},
       { "RING3", "World 0"},
       { "R1RING", "World 0"},
-      { "R3RING", "World 0"}
-      
+      { "R3RING", "World 0"}      
     };
+  
   size_t beamLineIndex(0);
 
   for(const std::string& beamItem : LItems)
@@ -146,11 +152,37 @@ setMaxIVSingle(defaultConfig& A,
 }
 
 void
-setMaxIVLinac(defaultConfig&)
+setMaxIVLinac(defaultConfig& A,
+	      const std::vector<std::string>& LItems)
   /*!
-    Placeholder for linac
-  */
+    Default configuration for MaxIV for linac units
+    \param A :: Paramter for default config
+    \param LItems :: single selection
+   */
 {
+  ELog::RegMethod RegA("DefUnitsMaxIV[F]","setMaxIVLinac");
+  
+  typedef std::map<std::string,std::string> MapTYPE;
+  static const MapTYPE unitDef=
+    {
+      { "LINAC", "World 0"}
+    };
+
+  size_t unitIndex(0);
+  for(const std::string& compItem : LItems)
+    {
+      MapTYPE::const_iterator mc=unitDef.find(compItem);
+      
+      if (mc!=unitDef.end())
+	{
+	  A.setMultiOption("beamlines",unitIndex,
+			   compItem+" "+mc->second);
+	  unitIndex++;
+	}
+      else
+	throw ColErr::InContainerError<std::string>(compItem,"CompItem");
+    }
+    
   return;
 }
 

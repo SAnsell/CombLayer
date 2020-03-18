@@ -3,7 +3,7 @@
  
  * File: species/SPECIES.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -76,14 +75,6 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LeadPipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-
 #include "R1Ring.h"
 #include "R1FrontEnd.h"
 #include "speciesFrontEnd.h"
@@ -173,9 +164,8 @@ SPECIES::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
-  
+  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0)); 
+ 
   std::vector<int> cells(opticsHut->getCells("Back"));
   cells.emplace_back(opticsHut->getCell("Extension"));
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),

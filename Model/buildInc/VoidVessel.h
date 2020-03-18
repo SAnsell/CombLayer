@@ -36,7 +36,8 @@ namespace shutterSystem
 */
 
 class VoidVessel : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
   

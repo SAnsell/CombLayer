@@ -68,8 +68,8 @@ class SexupoleGenerator
   /// Angle in deg for main axis rotation
   void setPoleAngle(const double A) { poleYAngle=A; }
   void setRadius(const double,const double);
-  virtual void generateSexu(FuncDataBase&,const std::string&,
-			    const double,const double) const;
+  virtual void generateHex(FuncDataBase&,const std::string&,
+			   const double,const double) const;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/maxivVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,11 +95,15 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
 
+  const std::set<std::string> Linac
+    ({"LINAC","SPF"});
+
   const std::set<std::string> R1Beam
     ({"R1RING","RING1","FLEXPES","MAXPEEM","SPECIES"});
 
   const std::set<std::string> R3Beam
-    ({"R3RING","RING3","FORMAX","COSAXS", "SOFTIMAX", "DANMAX", "BALDER", "FORMAX"});
+    ({"R3RING","RING3","FORMAX","COSAXS", "SOFTIMAX",
+	"DANMAX", "BALDER", "FORMAX"});
   
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
@@ -117,6 +121,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 
   bool r1Flag(0);
   bool r3Flag(0);
+  bool linacFlag(0);
   for(const std::string& beam : BL)
     {
       
@@ -130,6 +135,12 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	{
 	  R3RingVariables(Control);
 	  r3Flag=1;
+	}
+
+      if (!linacFlag && (Linac.find(beam)!=Linac.end()))
+	{
+	  LINACvariables(Control);
+	  linacFlag=1;
 	}
 	  
       // std::pair<VMap::const_iterator,VMap::const_iterator>

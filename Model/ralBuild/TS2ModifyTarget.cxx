@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/TS2ModifyTarget.cxx
+ * File:   ralBuild/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "TargetBase.h"
 #include "TS2ModifyTarget.h"
 
@@ -80,7 +81,8 @@ namespace TMRSystem
 {
 
 TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
-  attachSystem::FixedComp(MKey,0),attachSystem::ContainedComp()
+  attachSystem::FixedComp(MKey,0),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param MKey :: Name for Moly changers
@@ -474,8 +476,8 @@ TS2ModifyTarget::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
-  const constructSystem::TargetBase* TB=
-    dynamic_cast<const constructSystem::TargetBase*>(&FC);
+  const TMRSystem::TargetBase* TB=
+    dynamic_cast<const TMRSystem::TargetBase*>(&FC);
   if (!TB)
     throw ColErr::DynamicConv("FixedComp","TargetBase","");
   createSurfaces();

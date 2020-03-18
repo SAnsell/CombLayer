@@ -3,7 +3,7 @@
  
  * File:   log/RegMethod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 
-
 namespace ELog
 {
 
@@ -45,7 +44,6 @@ RegMethod::RegMethod(const std::string& CN,
   */
 {
   Base.addComp(CN,MN);
-
 }
 
 RegMethod::RegMethod(const std::string& CN,
@@ -62,7 +60,7 @@ RegMethod::RegMethod(const std::string& CN,
   std::ostringstream cx;
   cx<<"<"<<param<<">";
   Base.addComp(CN+cx.str(),MN);
-}
+} 
 
 RegMethod::~RegMethod() 
   /*!

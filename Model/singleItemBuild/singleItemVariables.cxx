@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,8 @@
 #include "ChopperGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
+#include "LinacQuadGenerator.h"
+#include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
@@ -193,7 +195,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::DipoleGenerator DGen;
   DGen.generateDipole(Control,"M1BlockDIM",0.0,60.0);
-  
+
+  setVariable::SexupoleGenerator SGen;
+  SGen.generateHex(Control,"SXX",20.0,25.0);
+
+  setVariable::LinacQuadGenerator LQGen;
+  LQGen.generateQuad(Control,"LQ",20.0,25.0);
+
   return;
 }
 
