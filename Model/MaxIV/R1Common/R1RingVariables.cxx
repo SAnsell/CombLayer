@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/R1RingVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,23 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"FloorMat","Concrete");
   Control.addVariable(preName+"RoofMat","Concrete");
 
+  // Construct SideWall
+  Control.addVariable(preName+"NSideWall",1);
+  Control.addVariable(preName+"NSideBaseName","");
+  const std::string sWall("MaxPeemSideWall");
+  Control.addVariable(preName+"SideWallName",sWall);
+  Control.addVariable(preName+"SideWallID",9);
+  
+  Control.addVariable(sWall+"XStep",-300.0);
+  Control.addVariable(sWall+"Length",300.0);
+  Control.addVariable(sWall+"Depth",7.5);
+  Control.addVariable(sWall+"Height",60.0);
+  Control.addVariable(sWall+"Mat","Lead");
+  
+  
+  
+
+  
   // construct points and inner
   Control.addVariable(preName+"NPoints",22);
 

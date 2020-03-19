@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/R1Ring.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 #include "SurfMap.h"
 
 #include "RingDoor.h"
+#include "SideShield.h"
 #include "R1Ring.h"
 
 namespace xraySystem
@@ -112,6 +113,9 @@ R1Ring::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R1Ring","populate");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   FixedOffset::populate(Control);
 
   fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
@@ -153,23 +157,21 @@ R1Ring::populate(const FuncDataBase& Control)
   concaveNPoints=concavePts.size();
 
 
+  const size_t nSide=Control.EvalVar<size_t>(keyName+"NSideWall");
+  std::string baseSide=Control.EvalDefVar<std::string>
+    (keyName+"SideWallBaseName","");
+  for(size_t i=0;i<nSide;i++)
+    {
+      const std::string sideKey=
+	Control.EvalVar<std::string>(keyName+"SideWallName");
+      const size_t ID=Control.EvalVar<size_t>(keyName+"SideWallID");
+
+      std::shared_ptr<SideShield>
+	shieldPtr(new SideShield(baseSide,sideKey));
+      OR.addObject(shieldPtr);
+      sideShields.emplace(ID,shieldPtr);
+    }
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  return;
-}
-
-void
-R1Ring::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("R1Ring","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
  
@@ -549,7 +551,8 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam= -BInner->getNormal();
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
-      
+      ELog::EM<<"ID == "<<"OpticCentre"+std::to_string(index)
+	      <<" "<<PtX<<ELog::endDiag;
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);
@@ -589,6 +592,27 @@ R1Ring::createDoor(Simulation& System)
   return;
 }
 
+void
+R1Ring::createSideShields(Simulation& System)
+{
+  ELog::RegMethod RegA("R1Ring","createSideShields");
+
+  for(auto& [ id , SWPtr ] : sideShields)
+    {
+      ELog::EM<<"Id == "<<id<<ELog::endDiag;
+      ELog::EM<<"Cell = "<<CellMap::getCell("Wall",id)<<ELog::endDiag;
+      ELog::EM<<"Surf = "<<SurfMap::getSurf("SideInner",id-1)<<ELog::endDiag;
+      ELog::EM<<"LinkPt = "<<
+	this->getLinkPt("OpticCentre"+std::to_string(id))<<ELog::endDiag;
+      SWPtr->addInsertCell(CellMap::getCell("Wall",id));
+      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id-1));
+      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));
+      
+    }
+  
+  return;
+}
+
 
 void
 R1Ring::createAll(Simulation& System,
@@ -608,10 +632,11 @@ R1Ring::createAll(Simulation& System,
   
   createSurfaces();    
   createObjects(System);
-  
   createLinks();
   insertObjects(System);
 
+  createSideShields(System);
+  
   createDoor(System);
   return;
 }
