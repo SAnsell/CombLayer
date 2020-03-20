@@ -123,7 +123,7 @@ SideShield::populate(const FuncDataBase& Control)
   length=Control.EvalTail<double>(keyName,baseName,"Length");
   outStep=Control.EvalDefTail<double>(keyName,baseName,"OutStep",0.0);
 
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
   
   return;
 }

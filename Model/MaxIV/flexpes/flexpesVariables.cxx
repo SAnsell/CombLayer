@@ -1002,21 +1002,6 @@ shieldVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("flexpesVariables[F]","shieldVariables");
 
-  const std::string AKey=shieldKey+"Shield";
-  Control.addVariable(AKey+"YStep",600.0);
-  Control.addVariable(AKey+"XStep",-70.0);
-  Control.addVariable(AKey+"Width",2.0);
-  Control.addVariable(AKey+"Depth",500.0);
-  Control.addVariable(AKey+"Height",16.0);
-  Control.addVariable(AKey+"DefMat","Stainless304");
-
-  const std::string BKey=shieldKey+"ShieldB";
-  Control.addVariable(BKey+"YStep",600.0);
-  Control.addVariable(BKey+"XStep",-40.0);
-  Control.addVariable(BKey+"Width",2.0);
-  Control.addVariable(BKey+"Depth",500.0);
-  Control.addVariable(BKey+"Height",16.0);
-  Control.addVariable(BKey+"DefMat","Stainless304");
 
   return;
 }

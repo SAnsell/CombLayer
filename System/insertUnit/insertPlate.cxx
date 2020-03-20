@@ -99,6 +99,16 @@ insertPlate::insertPlate(const std::string& Key)  :
   */
 {}
 
+insertPlate::insertPlate(const std::string& baseKey,
+			   const std::string& Key)  :
+  insertObject(baseKey,Key),nGrid(1)
+  /*!
+    Constructor BUT ALL variable are left unpopulated
+    \param baseKey :: base Name for item in search
+    \param Key :: Name for item in search
+  */
+{}
+
 insertPlate::insertPlate(const insertPlate& A) : 
   insertObject(A),
   width(A.width),height(A.height),depth(A.depth),
@@ -146,10 +156,10 @@ insertPlate::populate(const FuncDataBase& Control)
   if (!populated)
     {
       insertObject::populate(Control);
-      width=Control.EvalVar<double>(keyName+"Width");
-      height=Control.EvalVar<double>(keyName+"Height");
-      depth=Control.EvalVar<double>(keyName+"Depth");
-      nGrid=Control.EvalDefVar<size_t>(keyName+"NGrid",1);
+      width=Control.EvalTail<double>(keyName,baseName,"Width");
+      height=Control.EvalTail<double>(keyName,baseName,"Height");
+      depth=Control.EvalTail<double>(keyName,baseName,"Depth");
+      nGrid=Control.EvalDefTail<size_t>(keyName,baseName,"NGrid",1);
     }
   return;
 }

@@ -73,9 +73,12 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "insertObject.h"
+#include "insertPlate.h"
 
 #include "RingDoor.h"
 #include "SideShield.h"
@@ -156,21 +159,35 @@ R1Ring::populate(const FuncDataBase& Control)
     }
   concaveNPoints=concavePts.size();
 
-
+  // SIDE 
   const size_t nSide=Control.EvalVar<size_t>(keyName+"NSideWall");
-  std::string baseSide=Control.EvalDefVar<std::string>
-    (keyName+"SideWallBaseName","");
   for(size_t i=0;i<nSide;i++)
     {
       const std::string sideKey=
-	Control.EvalVar<std::string>(keyName+"SideWallName");
-      const size_t ID=Control.EvalVar<size_t>(keyName+"SideWallID");
-
+	Control.EvalVar<std::string>(keyName+"SideWallName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(sideKey+"ID");
       std::shared_ptr<SideShield>
-	shieldPtr(new SideShield(baseSide,sideKey));
+	shieldPtr(new SideShield(keyName+"SideWall",sideKey));
       OR.addObject(shieldPtr);
       sideShields.emplace(ID,shieldPtr);
     }
+  // FREE
+  const size_t nFree=Control.EvalVar<size_t>(keyName+"NFreeShield");
+  for(size_t i=0;i<nFree;i++)
+    {
+      const std::string freeKey=
+	Control.EvalVar<std::string>
+	(keyName+"FreeShieldName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(freeKey+"ID");
+
+      std::shared_ptr<insertSystem::insertPlate>
+	platePtr(new insertSystem::insertPlate(keyName+"FreeShield",freeKey));
+      OR.addObject(platePtr);
+      plateShields.emplace(ID,platePtr);
+    }
+
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   return;
 }
@@ -592,17 +609,39 @@ R1Ring::createDoor(Simulation& System)
 
 void
 R1Ring::createSideShields(Simulation& System)
+  /*!
+    Create side shields only: 
+    \param System :: Simulation to add data 
+   */
 {
   ELog::RegMethod RegA("R1Ring","createSideShields");
 
   // int : shared_ptr<SideShield>
   for(auto& [ id , SWPtr ] : sideShields)
     {
-      SWPtr->addInsertCell(CellMap::getCell("Wall",id));
-      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id-1));
-      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+      SWPtr->addInsertCell(CellMap::getCell("Wall",id+1));
+      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id));
+      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      
     }
-  
+  return;
+}
+
+void
+R1Ring::createFreeShields(Simulation& System)
+  /*!
+    Create free standing shields 
+    \param System :: Simulation to add data 
+   */
+{
+  ELog::RegMethod RegA("R1Ring","createFreeShields");
+
+  // int : shared_ptr<SideShield>
+  for(auto& [ id , PWPtr ] : plateShields)
+    {
+      PWPtr->setNoInsert();
+      PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+    }
   return;
 }
 
@@ -629,9 +668,10 @@ R1Ring::createAll(Simulation& System,
   insertObjects(System);
 
   createSideShields(System);
+  createFreeShields(System);
   
   createDoor(System);
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
