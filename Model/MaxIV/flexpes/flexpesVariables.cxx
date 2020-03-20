@@ -3,7 +3,7 @@
  
  * File:   flexpes/flexpesVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -227,7 +227,7 @@ splitterVariables(FuncDataBase& Control,
 
   ShieldGen.setPlate(150.0,100.0,10.0);
   ShieldGen.generateShield(Control,splitKey+"ScreenB",
-  			   Geometry::Vec3D(0,-4.0,0.0),0.0);
+  			   Geometry::Vec3D(0,-14.50,0.0),0.0);
   return;
 }
   
@@ -969,7 +969,7 @@ transferVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,145.0);
+  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,147.0);
 
   return;
 }
@@ -1032,6 +1032,8 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("flexpesVariables[F]","frontEndVariables");
 
+  const double FMdist(456.0);
+  
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -1086,7 +1088,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setFrontGap(3.99,1.97);  //1033.8
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
-  CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+  CollGen.generateColl(Control,frontKey+"CollA",FMdist,15.0);
   
 
   BellowGen.setCF<setVariable::CF40>();
@@ -1119,13 +1121,11 @@ FLEXPESvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("flexpesVariables[F]","flexpesVariables");
-  RingDoorGenerator RGen;
+  RingDoorGenerator RGen(1);  // (1) :: make R1 door
   
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
-  RGen.setInner(120.0,120.0,40.0);
-  RGen.setOuter(180.0,180.0);
-  RGen.generateDoor(Control,"R1RingRingDoor",0.0);
+  RGen.generateDoor(Control,"R1RingRingDoor",50.0);
   Control.addVariable("R1RingRingDoorWallID",7);
   
   flexpesVar::frontEndVariables(Control,"FlexPesFrontBeam");  

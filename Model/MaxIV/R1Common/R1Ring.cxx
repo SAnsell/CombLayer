@@ -551,8 +551,6 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam= -BInner->getNormal();
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
-      ELog::EM<<"ID == "<<"OpticCentre"+std::to_string(index)
-	      <<" "<<PtX<<ELog::endDiag;
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);
@@ -597,17 +595,12 @@ R1Ring::createSideShields(Simulation& System)
 {
   ELog::RegMethod RegA("R1Ring","createSideShields");
 
+  // int : shared_ptr<SideShield>
   for(auto& [ id , SWPtr ] : sideShields)
     {
-      ELog::EM<<"Id == "<<id<<ELog::endDiag;
-      ELog::EM<<"Cell = "<<CellMap::getCell("Wall",id)<<ELog::endDiag;
-      ELog::EM<<"Surf = "<<SurfMap::getSurf("SideInner",id-1)<<ELog::endDiag;
-      ELog::EM<<"LinkPt = "<<
-	this->getLinkPt("OpticCentre"+std::to_string(id))<<ELog::endDiag;
       SWPtr->addInsertCell(CellMap::getCell("Wall",id));
       SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id-1));
-      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));
-      
+      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
     }
   
   return;

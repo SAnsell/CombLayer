@@ -147,7 +147,6 @@ SideShield::createUnitVector(const attachSystem::FixedComp& FC,
   const Geometry::Plane* PPtr=
     dynamic_cast<const Geometry::Plane*>(HR.getSurface(SN));
 
-  ELog::EM<<"In populate:"<<HR<<ELog::endDiag;
   if (PPtr)
     {
       Geometry::Vec3D PAxis=PPtr->getNormal();
@@ -155,7 +154,6 @@ SideShield::createUnitVector(const attachSystem::FixedComp& FC,
 	PAxis*=-1;
       FixedComp::reOrientate(1,PAxis);
       Origin=SurInter::getLinePoint(Origin,Y,PPtr);
-      ELog::EM<<"ORigin:"<<Origin<<" :: "<<Y<<" :: "<<ELog::endDiag;
     }
   applyOffset();
   return;
@@ -169,7 +167,6 @@ SideShield::createSurfaces()
 {
   ELog::RegMethod RegA("SideShield","createSurface");
 
-  ELog::EM<<"HERER "<<Origin<<ELog::endDiag;
   // InnerWall and OuterWall MUST be set
   if (!ExternalCut::isActive("Wall") || std::abs(outStep)>Geometry::zeroTol)
     {

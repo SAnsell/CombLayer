@@ -1088,7 +1088,7 @@ MAXPEEMvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","maxpeemVariables");
-  RingDoorGenerator RGen(1);
+  RingDoorGenerator RGen(1);  // (1) :: make R1 door
   
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
