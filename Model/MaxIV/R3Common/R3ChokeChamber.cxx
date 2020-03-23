@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3ChokeChamber.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,7 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
   nameSideIndex(2,"photon");
   nameSideIndex(3,"electron");
   nameSideIndex(4,"side");
+  nameSideIndex(8,"innerSide");
 }
 
 
@@ -242,10 +243,12 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
   sideThick=Control.EvalVar<double>(keyName+"SideThick");
   flangeSideRadius=Control.EvalVar<double>(keyName+"FlangeSideRadius");
   flangeSideLength=Control.EvalVar<double>(keyName+"FlangeSideLength");
+  sideCapThick=Control.EvalVar<double>(keyName+"SideCapThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+  capMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
  
   return;
 }
@@ -385,9 +388,12 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+427,Origin,X,flangeSideRadius);
 
+
   ModelSupport::buildPlane(SMap,buildIndex+402,Origin-X*sideLength,X);
   ModelSupport::buildPlane
     (SMap,buildIndex+412,Origin-X*(sideLength-flangeSideLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+452,Origin-X*(sideLength+sideCapThick),X);
   
   return;
 }
@@ -494,6 +500,9 @@ R3ChokeChamber::createObjects(Simulation& System)
     (SMap,buildIndex," 417 -427 -412 402 ");
   makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -402 452 ");
+  makeCell("SideCap",System,cellIndex++,capMat,0.0,Out);
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -427 417 412 27 -3 ");
   makeCell("SideOuterVoid",System,cellIndex++,0,0.0,Out);
@@ -511,7 +520,7 @@ R3ChokeChamber::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -327 1 -302 ");  
   addOuterSurf("Electron",Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -3 402 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -3 452 ");  
   addOuterSurf("Side",Out);
   return;
 }
@@ -538,6 +547,14 @@ R3ChokeChamber::createLinks()
     (3,elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
+
+  // side (outward)
+  FixedComp::setConnect(4,Origin-X*(sideLength+sideCapThick),-X);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+452));
+
+    // side (inward)
+  FixedComp::setConnect(8,Origin-X*sideLength,X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+402));
   
   return;
 }
