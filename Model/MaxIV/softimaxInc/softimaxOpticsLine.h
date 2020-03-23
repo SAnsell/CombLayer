@@ -175,11 +175,11 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::PipeShield> screenA;
 
   /// Extra shield to protect outer wall
-  std::shared_ptr<insertSystem::insertPlate> lineScreen;
+  //  std::shared_ptr<insertSystem::insertPlate> lineScreen;
 
   /// Extra shield to protect inner outer wall [close]
   std::shared_ptr<insertSystem::insertPlate> innerScreen;
-  
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

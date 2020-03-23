@@ -179,7 +179,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   joinPipeBB(new constructSystem::VacuumPipe(newName+"JoinPipeBB")),
 
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
-  lineScreen(new insertSystem::insertPlate(newName+"LineScreen")),
   innerScreen(new insertSystem::insertPlate(newName+"InnerScreen"))
 
   /*!
@@ -252,7 +251,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bremCollBA);
   OR.addObject(joinPipeBB);
   OR.addObject(screenA);
-  OR.addObject(lineScreen);
   OR.addObject(innerScreen);
 }
 
@@ -491,7 +489,7 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
     slitTube->splitObject(System,"-PortACut",outerCell).back();
   this->addCell("OuterVoid",newCellA);
   cellIndex+=2;  // remember creates an extra cell in  primary
-  
+
   slitTube->insertInCell("FlangeA",System,newCellA);
   slitTube->insertInCell("FlangeB",System,newCellB);
   slitTube->insertInCell("Main",System,outerCell);
@@ -509,7 +507,7 @@ softimaxOpticsLine::constructSlitTube(Simulation& System,
 
   // Note need cell number later
   cellIndex++;  // remember creates an extra cell in  primary
-  
+
   for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
@@ -981,17 +979,17 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   screenA->setCutSurf("innerTwo",*joinPipeBA,"pipeOuterTop");
   screenA->createAll(System,*bremCollAA,2);
 
-  lineScreen->setNoInsert();
-  lineScreen->addInsertCell(ContainedComp::getInsertCells());
-  lineScreen->createAll(System,*gateA,"back");
+  // lineScreen->setNoInsert();
+  // lineScreen->addInsertCell(ContainedComp::getInsertCells());
+  // lineScreen->createAll(System,*gateA,"back");
 
   innerScreen->setNoInsert();
   for(size_t index=14;index<=20;index++)
     innerScreen->addInsertCell(this->getCell("OuterVoid",index));
 
-  innerScreen->addInsertCell(this->getCell("OuterVoid",23));  
+  innerScreen->addInsertCell(this->getCell("OuterVoid",23));
   innerScreen->createAll(System,*gateA,"back");
-  
+
   return;
 }
 
