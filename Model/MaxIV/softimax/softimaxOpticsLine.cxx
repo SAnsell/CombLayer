@@ -983,9 +983,9 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
   // lineScreen->addInsertCell(ContainedComp::getInsertCells());
   // lineScreen->createAll(System,*gateA,"back");
 
-  innerScreen->setNoInsert();
-  for(size_t index=14;index<=20;index++)
-    innerScreen->addInsertCell(this->getCell("OuterVoid",index));
+  // innerScreen->setNoInsert();
+  // for(size_t index=12;index<=20;index++)
+  //   innerScreen->addInsertCell(this->getCell("OuterVoid",index));
 
   innerScreen->addInsertCell(this->getCell("OuterVoid",23));
   innerScreen->createAll(System,*gateA,"back");
@@ -1010,8 +1010,8 @@ softimaxOpticsLine::createLinks()
 
 void
 softimaxOpticsLine::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
+			      const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/R3ChokeChamberGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,10 +74,18 @@ class R3ChokeChamberGenerator
   double sideThick;      ///< Side pipe wall thickness
   double flangeSideRadius;   ///< Side Flange radius
   double flangeSideLength;   ///< Side Flange length
+  double sideCapThick;       ///< Side Cap thickness
+
+  double plateThick;         ///< Insert plate thick [beam direction]
+  double plateGap;           ///< Insert plate gap
+  double plateDepth;         ///< Insert plate thick [up/down]
+  double plateLength;        ///< Insert plate across beam
   
   std::string voidMat;                ///< void material
   std::string wallMat;                ///< Wall material 
-  std::string flangeMat;              ///< Flange material 
+  std::string flangeMat;              ///< Flange material
+  std::string capMat;                 ///< Side Cap material
+  std::string plateMat;               ///< Insert Plate material   
 
 
  public:
@@ -92,6 +100,7 @@ class R3ChokeChamberGenerator
 
   void setMaterial(const std::string&,const std::string&);
   
+  void generateInsert(FuncDataBase&,const std::string&) const;
   void generateChamber(FuncDataBase&,const std::string&) const;
 
 };

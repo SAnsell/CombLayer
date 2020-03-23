@@ -381,7 +381,9 @@ ExternalCut::createLink(const std::string& extName,
 			const Geometry::Vec3D& Org,
 			const Geometry::Vec3D& YAxis) const
   /*!
-    Generate the front/back links if active
+    Generate the front/back links if active from a named surface
+    The intersect of the line Org + lamdba.YAxis with the surface
+    is used as the link point.
     \param extName :: Cut Unit item
     \param FC :: Fixed component [most likely this]
     \param linkIndex :: link point to build
@@ -411,7 +413,9 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
 			     const double length)
   /*!
     Support function to calculate the shifted surface based
-    on surface type and form
+    on surface type and form. Shift is in the YAxis IF a cylinder.
+
+    \todo allow planes to be moved by a distanse in YAxis.
     \param SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index

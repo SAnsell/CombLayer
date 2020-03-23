@@ -58,6 +58,7 @@ class insertPlate : public insertSystem::insertObject
  public:
 
   insertPlate(const std::string&);
+  insertPlate(const std::string&,const std::string&);
   insertPlate(const insertPlate&);
   insertPlate& operator=(const insertPlate&);
   virtual ~insertPlate();

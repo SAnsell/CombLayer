@@ -76,8 +76,6 @@ class FLEXPES :
  private:
 
   std::shared_ptr<flexpesFrontEnd> frontBeam;    ///< in ring front end
-  std::shared_ptr<insertSystem::insertPlate> shield;  ///< extra beam shield
-  std::shared_ptr<insertSystem::insertPlate> shieldB;  ///< extra beam shield
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
   std::shared_ptr<flexpesOpticsHut> opticsHut;   ///< main optics hut
   /// Pipe joining frontend to optics hut

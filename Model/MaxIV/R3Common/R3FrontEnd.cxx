@@ -99,6 +99,7 @@
 #include "HeatDump.h"
 #include "EPSeparator.h"
 #include "R3ChokeChamber.h"
+#include "R3ChokeInsert.h"
 #include "EPCombine.h"
 #include "PreDipole.h"
 #include "MagnetM1.h"
@@ -124,6 +125,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
+  chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
@@ -184,6 +186,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(magBlockM1);
   OR.addObject(epSeparator);
   OR.addObject(chokeChamber);
+  OR.addObject(chokeInsert);
       
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
@@ -585,6 +588,11 @@ R3FrontEnd::buildObjects(Simulation& System)
   chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
+
+  chokeInsert->setCutSurf("front",*chokeChamber,"innerSide");
+  chokeInsert->addInsertCell(chokeChamber->getCell("MainVoid"));
+  chokeInsert->addInsertCell(chokeChamber->getCell("SideVoid"));
+  chokeInsert->createAll(System,*chokeChamber,"innerSide");
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));

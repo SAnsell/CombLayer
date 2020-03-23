@@ -3,7 +3,7 @@
  
  * File:   insertUnitInc/insertGrid.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ class insertGrid : public insertSystem::insertObject
  public:
 
   insertGrid(const std::string&);
+  insertGrid(const std::string&,const std::string&);
   insertGrid(const insertGrid&);
   insertGrid& operator=(const insertGrid&);
   virtual ~insertGrid();

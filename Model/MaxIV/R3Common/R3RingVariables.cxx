@@ -428,6 +428,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   ESGen.generatePipe(Control,frontKey+"EPSeparator");
   
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
+  CCGen.generateInsert(Control,frontKey+"ChokeInsert");
 
   PipeGen.setCF<CF40>();
   PipeGen.setMat("Stainless304");

@@ -3,7 +3,7 @@
  
  * File:   insertUnitInc/insertSphere.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ class insertSphere : public insertObject
  public:
 
   insertSphere(const std::string&);
+  insertSphere(const std::string&,const std::string&);
   insertSphere(const insertSphere&);
   insertSphere& operator=(const insertSphere&);
   virtual ~insertSphere();

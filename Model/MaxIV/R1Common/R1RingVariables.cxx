@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1RingVariables.cxx
+ * File:   R1Common/R1RingVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,77 @@ namespace setVariable
 
 namespace R1RingVar
 {
- 
+
+void
+createR1Shielding(FuncDataBase& Control,
+		  const std::string& preName)
+  /*!
+    Construct the extra R1 shielding pieces : SideWall and 
+    freestanding
+    \param Control :: DataBase for variables
+  */
+{
+    // Construct SideWall
+
+
+  // name : opticsSector : nearOuter/farOuter
+  typedef std::tuple<std::string,size_t,bool> STYPE;
+  const std::vector<STYPE> wallUnits=
+    {
+     STYPE("MaxPeem",8,0),
+     STYPE("Species",7,0),
+     STYPE("FlexPes",6,1)
+    };
+
+  Control.addVariable(preName+"NSideWall",wallUnits.size());
+  size_t index(0);
+  for(const STYPE& tc : wallUnits)
+    {
+      const std::string wallName=preName+std::get<0>(tc)+"SideWall";
+      Control.addVariable
+	(preName+"SideWallName"+std::to_string(index),wallName);
+      Control.addVariable(wallName+"ID",std::get<1>(tc));
+      index++;
+    }
+
+  // Base units:
+  const std::string sWall(preName+"SideWall");
+  Control.addVariable(sWall+"XStep",-270.0);
+  Control.addVariable(sWall+"Length",350.0);
+  Control.addVariable(sWall+"Depth",7.5);
+  Control.addVariable(sWall+"Height",60.0);
+  Control.addVariable(sWall+"Mat","Lead");
+
+
+  // Free standing Shield block:
+
+  Control.addVariable(preName+"NFreeShield",wallUnits.size());
+  index=0;
+  for(const STYPE& tc : wallUnits)
+    {
+      const std::string wallName=preName+std::get<0>(tc)+"FreeShield";
+      Control.addVariable
+	(preName+"FreeShieldName"+std::to_string(index),wallName);
+      Control.addVariable(wallName+"ID",std::get<1>(tc));
+      if (std::get<2>(tc))   //
+	Control.addVariable(wallName+"XStep",-100.0);
+
+      index++;
+    }
+  // Non-beamline version
+  const std::string baseKey=preName+"FreeShield";
+  Control.addVariable(baseKey+"YStep",600.0);
+  Control.addVariable(baseKey+"XStep",-70.0);
+  Control.addVariable(baseKey+"Width",14.0);
+  Control.addVariable(baseKey+"Depth",340.0);
+  Control.addVariable(baseKey+"Height",24.0);
+  Control.addVariable(baseKey+"DefMat","Stainless304");
+
+  // Beam-beamline version
+
+  return;
+}
+  
 }  // NAMESPACE R1RingVar
   
 void
@@ -82,7 +152,7 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"WallMat","Concrete");  
   Control.addVariable(preName+"FloorMat","Concrete");
   Control.addVariable(preName+"RoofMat","Concrete");
-
+  
   // construct points and inner
   Control.addVariable(preName+"NPoints",22);
 
@@ -133,8 +203,10 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OPoint20",Geometry::Vec3D(-950.52,  1824.73,0.0));
   Control.addVariable(preName+"OPoint21",Geometry::Vec3D(-670.54,  1663.08,0.0));
 
-
+  R1RingVar::createR1Shielding(Control,preName);
   return;
 }
+
+
 
 }  // NAMESPACE setVariable

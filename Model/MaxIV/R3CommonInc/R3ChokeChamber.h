@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/R3ChokeChamber.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,10 +78,12 @@ class R3ChokeChamber :
   double sideThick;            ///< Side pipe wall thickness
   double flangeSideRadius;     ///< Side Flange radius
   double flangeSideLength;     ///< Side Flange length
+  double sideCapThick;         ///< Side Cap thickness
   
   int voidMat;                ///< void material
   int wallMat;                ///< Wall material 
-  int flangeMat;              ///< Flange material 
+  int flangeMat;              ///< Flange material
+  int capMat;                 ///< Side cap material 
 
   bool epPairSet;                 ///< Setting of phot/elec Origin.
   Geometry::Vec3D photOrg;        ///< Photon origin

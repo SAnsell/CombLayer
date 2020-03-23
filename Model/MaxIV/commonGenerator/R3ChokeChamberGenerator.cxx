@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/R3ChokeChamberGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,13 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   sideThick(CF63::wallThick),
   flangeSideRadius(CF63::flangeRadius),
   flangeSideLength(CF63::flangeLength),
-  voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304")
+  sideCapThick(CF63::flangeLength),
+
+  plateThick(6.0),plateGap(0.2),
+  plateDepth(3.0),plateLength(15.0),
+
+  voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304"),
+  capMat("Stainless304"),plateMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -121,6 +127,26 @@ R3ChokeChamberGenerator::setMaterial(const std::string& WMat,
   return;
 }
 
+void
+R3ChokeChamberGenerator::generateInsert(FuncDataBase& Control,
+					const std::string& keyName) const
+   /*!
+    Primary funciton for setting the variables for the insert
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+  */
+{
+  ELog::RegMethod RegA("R3ChokeChamberGenerator","generateInsert");
+  
+  Control.addVariable(keyName+"PlateThick",plateThick);
+  Control.addVariable(keyName+"PlateGap",plateGap);
+  Control.addVariable(keyName+"PlateDepth",plateDepth);
+  Control.addVariable(keyName+"PlateLength",plateLength);
+  Control.addVariable(keyName+"PlateMat",plateMat);
+    
+      
+  return;
+}
 				  
 void
 R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
@@ -167,10 +193,12 @@ R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
   Control.addVariable(keyName+"SideThick",sideThick);
   Control.addVariable(keyName+"FlangeSideRadius",flangeSideRadius);
   Control.addVariable(keyName+"FlangeSideLength",flangeSideLength);
+  Control.addVariable(keyName+"SideCapThick",sideCapThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
+  Control.addVariable(keyName+"CapMat",capMat);
 
 
   return;

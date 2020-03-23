@@ -68,6 +68,7 @@ class RingDoorGenerator
  public:
 
   RingDoorGenerator();
+  explicit RingDoorGenerator(const bool);
   RingDoorGenerator(const RingDoorGenerator&);
   RingDoorGenerator& operator=(const RingDoorGenerator&);
   ~RingDoorGenerator();

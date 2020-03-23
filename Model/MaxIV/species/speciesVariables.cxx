@@ -3,7 +3,7 @@
  
  * File:   species/speciesVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1048,11 +1048,11 @@ SPECIESvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("speciesVariables[F]","speciesVariables");
-  RingDoorGenerator RGen;
+  RingDoorGenerator RGen(1);  // (1) :: make R1 door
   
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
-  RGen.generateDoor(Control,"R1RingRingDoor",0.0);
+  RGen.generateDoor(Control,"R1RingRingDoor",50.0);
   Control.addVariable("R1RingRingDoorWallID",8);
   
   speciesVar::frontEndVariables(Control,"SpeciesFrontBeam");  

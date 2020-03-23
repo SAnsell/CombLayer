@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertObject.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,10 +89,24 @@ namespace insertSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   populated(0),defMat(0),delayInsert(0)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: Name for item in search
+  */
+{}
+
+insertObject::insertObject(const std::string& baseKey,
+			   const std::string& Key)  :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
+  attachSystem::FrontBackCut(),
+  baseName(baseKey),populated(0),defMat(0),delayInsert(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -103,8 +117,8 @@ insertObject::insertObject(const insertObject& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  populated(A.populated),defMat(A.defMat),
-  delayInsert(A.delayInsert)
+  baseName(A.baseName),populated(A.populated),
+  defMat(A.defMat),delayInsert(A.delayInsert)
   /*!
     Copy constructor
     \param A :: insertObject to copy
@@ -150,9 +164,9 @@ insertObject::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      FixedOffset::populate(Control);      
+      FixedOffset::populate(baseName,Control);      
       defMat=ModelSupport::EvalMat<int>
-	(Control,keyName+"DefMat",keyName+"Mat");
+	(Control,keyName+"DefMat",baseName+"DefMat");
       populated=1;
     }
   return;

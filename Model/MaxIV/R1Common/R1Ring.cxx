@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/R1Ring.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,11 +73,15 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "insertObject.h"
+#include "insertPlate.h"
 
 #include "RingDoor.h"
+#include "SideShield.h"
 #include "R1Ring.h"
 
 namespace xraySystem
@@ -112,6 +116,9 @@ R1Ring::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("R1Ring","populate");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   FixedOffset::populate(Control);
 
   fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
@@ -152,24 +159,36 @@ R1Ring::populate(const FuncDataBase& Control)
     }
   concaveNPoints=concavePts.size();
 
+  // SIDE 
+  const size_t nSide=Control.EvalVar<size_t>(keyName+"NSideWall");
+  for(size_t i=0;i<nSide;i++)
+    {
+      const std::string sideKey=
+	Control.EvalVar<std::string>(keyName+"SideWallName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(sideKey+"ID");
+      std::shared_ptr<SideShield>
+	shieldPtr(new SideShield(keyName+"SideWall",sideKey));
+      OR.addObject(shieldPtr);
+      sideShields.emplace(ID,shieldPtr);
+    }
+  // FREE
+  const size_t nFree=Control.EvalVar<size_t>(keyName+"NFreeShield");
+  for(size_t i=0;i<nFree;i++)
+    {
+      const std::string freeKey=
+	Control.EvalVar<std::string>
+	(keyName+"FreeShieldName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(freeKey+"ID");
+
+      std::shared_ptr<insertSystem::insertPlate>
+	platePtr(new insertSystem::insertPlate(keyName+"FreeShield",freeKey));
+      OR.addObject(platePtr);
+      plateShields.emplace(ID,platePtr);
+    }
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  return;
-}
-
-void
-R1Ring::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("R1Ring","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
   return;
 }
  
@@ -549,7 +568,6 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam= -BInner->getNormal();
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
-      
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);
@@ -589,6 +607,44 @@ R1Ring::createDoor(Simulation& System)
   return;
 }
 
+void
+R1Ring::createSideShields(Simulation& System)
+  /*!
+    Create side shields only: 
+    \param System :: Simulation to add data 
+   */
+{
+  ELog::RegMethod RegA("R1Ring","createSideShields");
+
+  // int : shared_ptr<SideShield>
+  for(auto& [ id , SWPtr ] : sideShields)
+    {
+      SWPtr->addInsertCell(CellMap::getCell("Wall",id+1));
+      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id));
+      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      
+    }
+  return;
+}
+
+void
+R1Ring::createFreeShields(Simulation& System)
+  /*!
+    Create free standing shields 
+    \param System :: Simulation to add data 
+   */
+{
+  ELog::RegMethod RegA("R1Ring","createFreeShields");
+
+  // int : shared_ptr<SideShield>
+  for(auto& [ id , PWPtr ] : plateShields)
+    {
+      PWPtr->setNoInsert();
+      PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+    }
+  return;
+}
+
 
 void
 R1Ring::createAll(Simulation& System,
@@ -608,12 +664,14 @@ R1Ring::createAll(Simulation& System,
   
   createSurfaces();    
   createObjects(System);
-  
   createLinks();
   insertObjects(System);
 
+  createSideShields(System);
+  createFreeShields(System);
+  
   createDoor(System);
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
