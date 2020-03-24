@@ -3,7 +3,7 @@
  
  * File:   R3Common/ExperimentalHutch.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -115,8 +116,11 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
-  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
+  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
+
+  cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",0.0);
+  cornerAngle=Control.EvalDefVar<double>(keyName+"CornerAngle",45.0);
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbThick=Control.EvalVar<double>(keyName+"PbThick");
@@ -161,6 +165,12 @@ ExperimentalHutch::createSurfaces()
 {
   ELog::RegMethod RegA("ExperimentalHutch","createSurfaces");
 
+  // ROTATION for Corner
+  const Geometry::Quaternion Qxy=
+    Geometry::Quaternion::calcQRotDeg(-cornerAngle,Z);
+  const Geometry::Vec3D CX=Qxy.makeRotate(X);
+  const Geometry::Vec3D CY=Qxy.makeRotate(Y);
+  Geometry::Vec3D cornerPt(Origin+Y*cornerLength-X*outWidth);
   // Inner void
   if (!isActive("frontWall"))
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -169,6 +179,11 @@ ExperimentalHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
+  if (cornerLength>Geometry::zeroTol) // main divider
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+302,cornerPt,CY);
+      ModelSupport::buildPlane(SMap,buildIndex+303,cornerPt,CX);
+    }
 
   SurfMap::setSurf("innerBack",-SMap.realSurf(buildIndex+2));
 
@@ -179,13 +194,14 @@ ExperimentalHutch::createSurfaces()
       ModelSupport::buildPlane
 	(SMap,buildIndex+1004,Origin+X*(ringWidth-innerOutVoid),X);  
     }
-
-  // Walls
+  
+  // Wall
   double extraThick(0.0);
   int HI(buildIndex+10);
   for(const double T : {innerThick,pbThick,outerThick})
     {
       extraThick+=T;
+      cornerPt-=CX*T;
       if (!isActive("frontWall"))
 	ModelSupport::buildPlane(SMap,HI+1,
 				 Origin-Y*extraThick,Y);
@@ -196,7 +212,11 @@ ExperimentalHutch::createSurfaces()
       ModelSupport::buildPlane(SMap,HI+4,
 			       Origin+X*(ringWidth+extraThick),X);
       ModelSupport::buildPlane(SMap,HI+6,
-			       Origin+Z*(height+extraThick),Z);  
+			       Origin+Z*(height+extraThick),Z);
+      if (cornerLength>Geometry::zeroTol)
+	ModelSupport::buildPlane(SMap,HI+303,cornerPt,CX);
+	  //	  (SMap,HI+303,Origin+Y*cornerLength-X*(outWidth+extraThick),CX);
+
       HI+=10;
     }  
   HI-=10;
@@ -236,20 +256,19 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 303 3 -1003 -6 ");
       makeCell("LeftWallVoid",System,cellIndex++,voidMat,0.0,
 	       Out+floor+frontWall);
-
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1004 -4 -6 ");
       makeCell("RightWallVoid",System,cellIndex++,voidMat,0.0,
-	       Out+floor+frontWall);
-
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -1004 -6 ");
+	       Out+floor+frontWall);      
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,"1 -2 303 1003 -1004 -6");
       makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor+frontWall);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 303 3 -4 -6 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floor+frontWall);
     }
 
@@ -261,16 +280,24 @@ ExperimentalHutch::createObjects(Simulation& System)
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M -6 ");
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,HI,"1 303MA -2B -3M 13M -6 ");
       makeCell(layer+"LeftWall",System,cellIndex++,mat,0.0,
 	       Out+floor+frontWall);
-      
+      if (cornerLength>Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getSetComposite
+	    (SMap,buildIndex,HI,"1 -2M -303M 313M 13M -6 ");
+	  makeCell(layer+"LeftCorner",System,cellIndex++,mat,0.0,
+		   Out+floor+frontWall);
+	}
+
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2  4M -14M -6 ");
       makeCell(layer+"RightWall",System,cellIndex++,mat,0.0
 	       ,Out+floor+frontWall);
       //back wall
-      Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"2M -12M 33 -34 -6 ");
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,HI,"2M -12M 313MA 33B -34 -6 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out+floor+frontWall);
 
       //front wall
@@ -282,8 +309,8 @@ ExperimentalHutch::createObjects(Simulation& System)
 	}
       
       // roof
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-					" 31 -32 33 -34 6M -16M ");
+      Out=ModelSupport::getAltComposite(SMap,buildIndex,HI,
+					" 31 -32 333A 33B -34 6M -16M ");
       makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out+frontWall);
       HI+=10;
     }
@@ -293,7 +320,12 @@ ExperimentalHutch::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
       makeCell("EntranceHole",System,cellIndex++,holeMat,0.0,Out);
     }
-
+  if (cornerLength>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,HI," 3M -2M -303M -6M ");
+      makeCell("CornerVoid",System,cellIndex++,0,0.0,Out+floor);
+    }
+  
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
@@ -311,6 +343,7 @@ ExperimentalHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,HI," 1 -2 3 -4 -6 ");
     }
+
 
   addOuterSurf(Out+frontWall);
 

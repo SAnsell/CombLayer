@@ -363,7 +363,10 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"FloorThick",50.0);
-
+  Control.addVariable(hutName+"CornerLength",720.0);
+  Control.addVariable(hutName+"CornerAngle",45.0);
+  
+  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
