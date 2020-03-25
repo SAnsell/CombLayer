@@ -351,7 +351,7 @@ balderOpticsHutch::createObjects(Simulation& System)
   if (innerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("WallVoid",System,cellIndex++,voidMat,0.0,Out+floor);
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 1003 (-4:-104) -6 3007 ");
       makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
@@ -360,7 +360,7 @@ balderOpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 3 (-4:-104) -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
     }
 
   // walls:
@@ -406,26 +406,26 @@ balderOpticsHutch::createObjects(Simulation& System)
   if (inletRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -107 ");
-      makeCell("Inlet",System,cellIndex++,0,0.0,Out+frontWall);
+      makeCell("Inlet",System,cellIndex++,voidMat,0.0,Out+frontWall);
     }
 
 
   if (holeRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2 -2M -117 ");
-      makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
+      makeCell("ExitHole",System,cellIndex++,voidMat,0.0,Out);
     }
 
   // Filler space :
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 34 134 -36 -132");
-  makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor+frontWall);
+  makeCell("Filler",System,cellIndex++,voidMat,0.0,Out+sideWall+floor+frontWall);
 
   //  Extension (void outside back wall)
   if (extension>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2M -132 33 -134 -36");
-      makeCell("Extension",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Extension",System,cellIndex++,voidMat,0.0,Out+floor);
     }
 
   // EXCLUDE:
@@ -433,7 +433,7 @@ balderOpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,HI," -132 1033 -3M -6M ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+floor+frontWall);
 
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,HI," -132 1033 -6M ");
