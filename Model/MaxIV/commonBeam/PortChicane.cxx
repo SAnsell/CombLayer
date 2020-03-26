@@ -277,7 +277,7 @@ PortChicane::createObjects(Simulation& System)
       makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+outerStr);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
-      makeCell("InnerBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+      makeCell("InnerBaseOver",System,cellIndex++,0,0.0,Out+outerStr);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
       makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
@@ -286,7 +286,7 @@ PortChicane::createObjects(Simulation& System)
       makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+innerStr);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
-      makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+innerStr);
+      makeCell("OuterBaseOver",System,cellIndex++,0,0.0,Out+innerStr);
     }
 
   // Out=ModelSupport::getComposite(SMap,buildIndex," 41 ");
