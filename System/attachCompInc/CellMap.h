@@ -108,6 +108,9 @@ class CellMap  : public BaseMap
   const HeadRule& getCellHR(const Simulation&,const std::string&,
 		     const size_t =0) const;
 
+  int getCellMat(const Simulation&,const std::string&,
+		     const size_t =0) const;
+
   /// remmove a cell number [index is offset]
   std::string removeCellNumber(const int CN,const size_t Index =0)
     { return BaseMap::removeItemNumber(CN,Index); }

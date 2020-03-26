@@ -57,7 +57,8 @@ class SqrShield :
 
   int mat;                ///< Main wall materails
   int skinMat;            ///< Skin material
-
+  int voidMat;            ///< void material
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
@@ -71,6 +72,7 @@ class SqrShield :
   virtual ~SqrShield();
 
   HeadRule getInnerVoid() const;
+  int getInnerMat() const { return voidMat; }
   
   /// set delay
   using FixedComp::createAll;

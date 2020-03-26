@@ -3,7 +3,7 @@
  
  * File:   danmaxInc/danmaxOpticsHutch.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,8 @@ class danmaxOpticsHutch :
   
   int skinMat;                ///< Fe layer material for walls
   int ringMat;                ///< Conc layer material for ring walls
-  int pbMat;                  ///< pb layer material for walls 
+  int pbMat;                  ///< pb layer material for walls
+  int voidMat;                ///< void material for inner air
 
   double beamTubeRadius;      ///< Void to construct components in
   

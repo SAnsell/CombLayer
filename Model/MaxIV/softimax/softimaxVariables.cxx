@@ -95,7 +95,7 @@ undulatorVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
 
-setVariable::PipeGenerator PipeGen;
+  setVariable::PipeGenerator PipeGen;
 
   // Undulator length:
   // https://alfresco.maxiv.lu.se/share/page/site/bpo/document-details?nodeRef=workspace://SpacesStore/22a6b9ab-4f3b-4525-bd79-d4a4fd0be33d page 1
@@ -351,11 +351,12 @@ m1MirrorVariables(FuncDataBase& Control,
   //  const double normialAngle=0.2;
   constexpr double vAngle=180.0;
   constexpr double centreDist(0.0); // along the beam line
+  constexpr double tubeLength=100.0;
   ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,50.0);
+  SimpleTubeGen.generateTube(Control,mName,0.0,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -387,12 +388,15 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
+  PipeGen.generatePipe(Control,backName,0.0,16.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
-  Control.addVariable(backName+"XStep",xstep);
-  Control.addVariable(backName+"FlangeFrontXStep",-xstep);
 
+  // negative number:
+  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
+  Control.addVariable(backName+"XStep",xstep-TL);
+  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
+ 
   return;
 }
 
@@ -972,9 +976,9 @@ shieldVariables(FuncDataBase& Control,
     // Extra lead brick
   Control.addVariable(shieldKey+"InnerScreenXYAngle",80.0);
   Control.addVariable(shieldKey+"InnerScreenXStep",-30.0);
-  Control.addVariable(shieldKey+"InnerScreenYStep",100.0);  // half depth
+  Control.addVariable(shieldKey+"InnerScreenYStep",160.0);  // half depth
   Control.addVariable(shieldKey+"InnerScreenWidth",125.0);
-  Control.addVariable(shieldKey+"InnerScreenHeight",125.0);
+  Control.addVariable(shieldKey+"InnerScreenHeight",155.0);
   Control.addVariable(shieldKey+"InnerScreenDepth",12.0);
   Control.addVariable(shieldKey+"InnerScreenDefMat","HighDensPoly");
 

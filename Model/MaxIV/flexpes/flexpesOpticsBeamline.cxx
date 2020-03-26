@@ -247,7 +247,7 @@ flexpesOpticsBeamline::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   const int voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  buildZone.setVoidMat(voidMat);
+  buildZone.setInnerMat(voidMat);
   
   return;
 }

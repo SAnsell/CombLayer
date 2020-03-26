@@ -252,6 +252,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"VoidMat","Void");
 
   Control.addVariable(hutName+"HoleXStep",beamMirrorShift+xOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
@@ -308,7 +309,8 @@ connectVariables(FuncDataBase& Control,
 
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
-  
+  Control.addVariable(connectName+"VoidMat","Void");
+
   PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
 
   BellowGen.setCF<setVariable::CF40>(); 

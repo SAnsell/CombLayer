@@ -77,6 +77,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 
 #include "insertObject.h"
@@ -128,6 +129,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(*this,cellIndex),
+  innerMat(0),
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new constructSystem::PipeTube(newName+"TriggerPipe")),
@@ -258,7 +260,8 @@ danmaxOpticsLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  
+  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",innerMat);
+    
   return;
 }
 
@@ -632,7 +635,8 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
-
+  buildZone.setInnerMat(innerMat);
+  
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 

@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemOpticsBeamline.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -244,6 +245,9 @@ maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  buildZone.setInnerMat(voidMat);
+
   return;
 }
 

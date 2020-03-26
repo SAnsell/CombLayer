@@ -846,6 +846,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,masterCell,CPI1,"OuterPlate",*bremCollA);
 
+
   constructSystem::constructUnit
     (System,buildZone,masterCell,*bremCollA,"back",*gateB);
 

@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetM1.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -202,7 +202,7 @@ MagnetM1::createObjects(Simulation& System)
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
-  buildZone.setVoidMat(voidMat);
+  buildZone.setInnerMat(voidMat);
   buildZone.constructMasterCell(System);
 
   CellMap::setCell("Void",buildZone.getMaster()->getName());

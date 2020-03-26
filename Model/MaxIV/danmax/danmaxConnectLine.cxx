@@ -158,9 +158,10 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->setFront(*this);
   connectShield->setBack(*this);
   connectShield->createAll(System,beamFC,beamName);
-  
-  buildZone.setSurround(connectShield->getInnerVoid());
 
+  buildZone.setSurround(connectShield->getInnerVoid());
+  buildZone.setInnerMat(connectShield->getInnerMat());
+  
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System);
 

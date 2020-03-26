@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnuclei.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,8 +126,8 @@ resnuclei::write(std::ostream& OX) const
 
   std::ostringstream cx;
   
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" 0.0 0.0"
-    <<" R"<<cellA;
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" - - "
+    <<" R"<<cellA<<" 1.0 ";
   cx<<" resn"<<std::to_string(std::abs(outputUnit));
   StrFunc::writeFLUKA(cx.str(),OX);
   return;
