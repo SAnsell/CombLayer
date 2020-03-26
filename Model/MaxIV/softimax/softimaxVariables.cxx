@@ -351,11 +351,12 @@ m1MirrorVariables(FuncDataBase& Control,
   //  const double normialAngle=0.2;
   constexpr double vAngle=180.0;
   constexpr double centreDist(0.0); // along the beam line
+  constexpr double tubeLength=50.0;
   ////////////////////////
 
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,50.0);
+  SimpleTubeGen.generateTube(Control,mName,0.0,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -390,9 +391,9 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
-  const double xstepFront(xstep+0.9);
-  Control.addVariable(backName+"XStep",xstepFront);
-  Control.addVariable(backName+"FlangeFrontXStep",-xstepFront);
+  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
+  Control.addVariable(backName+"XStep",xstep-TL);
+  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
 
   return;
 }
