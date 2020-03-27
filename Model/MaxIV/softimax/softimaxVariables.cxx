@@ -962,13 +962,13 @@ shieldVariables(FuncDataBase& Control,
   ShieldGen.generateShield(Control,shieldKey+"ScreenA",
   			   Geometry::Vec3D(10.0,32.4,0.0),0.0);
 
-  // Extra lead brick
+  // Extra shielding plate near M1
   Control.addVariable(shieldKey+"InnerScreenXYAngle",80.0);
   Control.addVariable(shieldKey+"InnerScreenXStep",-30.0);
   Control.addVariable(shieldKey+"InnerScreenYStep",100.0);  // half depth
   Control.addVariable(shieldKey+"InnerScreenWidth",125.0);
-  Control.addVariable(shieldKey+"InnerScreenHeight",125.0);
-  Control.addVariable(shieldKey+"InnerScreenDepth",12.0);
+  Control.addVariable(shieldKey+"InnerScreenHeight",50.0);
+  Control.addVariable(shieldKey+"InnerScreenDepth",6.0);
   Control.addVariable(shieldKey+"InnerScreenDefMat","HighDensPoly");
 
   return;
