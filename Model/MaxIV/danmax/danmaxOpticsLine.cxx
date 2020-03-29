@@ -421,9 +421,6 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
   revBeamStop->createAll(System,*revBeamStopTube,"OrgOrigin");
 
-  ELog::EM<<"Previous == "<<initFC.getLinkPt(sideName)<<ELog::endDiag;
-  ELog::EM<<"BS == "<<revBeamStop->getLinkPt(0)<<ELog::endDiag;
-
   constructSystem::constructUnit
     (System,buildZone,masterCell,VPB,"OuterPlate",*bellowK);
 

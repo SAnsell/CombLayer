@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/PortItemGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,14 +43,18 @@ class PortItemGenerator
   double radius;          ///< Inner radius
   double wallThick;       ///< wall thickness
   
-  double flangeLen;          ///< Flange length
-  double flangeRadius;       ///< Flange radius
-  double capThick;         ///< Plate thickness
+  double flangeLen;         ///< Flange length
+  double flangeRadius;      ///< Flange radius
+  double capThick;          ///< Plate thickness
+  double windowThick;       ///< Plate thickness
+  double windowRadius;      ///< Plate thickness
 
-  std::string wallMat;       ///< tube wall material
-  std::string capMat;      ///< cover plate material
+  std::string wallMat;         ///< tube wall material
+  std::string capMat;          ///< cover plate material
+  std::string windowMat;       ///< window plate material
+  std::string outerVoidMat;    ///< outer void material
   
-  bool outerVoid;            ///< Construct outer void
+  bool outerVoid;          ///< Construct outer void
   
  public:
 
@@ -67,6 +71,8 @@ class PortItemGenerator
   void setFlange(const double,const double);
   // plate thick / mat
   void setPlate(const double,const std::string&);
+  void setWindowPlate(const double,const double,const double,
+		      const std::string&,const std::string&);
   void setNoPlate(); 
 
   /// accessor to outerVoid

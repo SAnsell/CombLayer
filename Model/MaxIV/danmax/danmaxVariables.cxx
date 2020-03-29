@@ -697,10 +697,10 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
-			Geometry::Vec3D(0,5.0,-10.0),
-			Geometry::Vec3D(1,0,0));
+  			Geometry::Vec3D(0,5.0,-10.0),
+  			Geometry::Vec3D(1,0,0));
 
   // crystals gap 7mm
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
@@ -735,10 +735,10 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 
-  const std::string portName=monoKey+"MonoVessel";
+  const std::string portName=monoKey+"MLMVessel";
   Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(4.0,"LeadGlass");  
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));

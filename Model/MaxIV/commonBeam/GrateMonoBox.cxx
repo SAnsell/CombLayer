@@ -171,28 +171,13 @@ GrateMonoBox::populate(const FuncDataBase& Control)
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
-      constructSystem::portItem windowPort(portName);
+      constructSystem::portItem windowPort(portBase,portName);
+      windowPort.populate(Control);
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
       
-      L=Control.EvalTail<double>(portName,portBase,"Length");
-      R=Control.EvalTail<double>(portName,portBase,"Radius");
-      W=Control.EvalTail<double>(portName,portBase,"Wall");
-      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
-      capMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",wallMat);
-
-      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
-
-      if (OFlag) windowPort.setWrapVolume();
-      windowPort.setMain(L,R,W);
-      windowPort.setFlange(FR,FT);
-      windowPort.setCoverPlate(CT,capMat);
-      windowPort.setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
