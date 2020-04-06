@@ -68,6 +68,7 @@
 #include "DipoleChamberGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetBlockGenerator.h"
 
 namespace setVariable
 {
@@ -201,6 +202,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0,25.0);
+
+  setVariable::MagnetBlockGenerator MBGen;
+  MBGen.generateBlock(Control,"M1",0.0);
 
   return;
 }

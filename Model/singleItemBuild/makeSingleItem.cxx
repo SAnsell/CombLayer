@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,7 @@
 #include "EPCombine.h"
 #include "PreDipole.h"
 #include "MagnetM1.h"
+#include "MagnetBlock.h"
 
 #include "makeSingleItem.h"
 
@@ -140,6 +141,16 @@ makeSingleItem::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
+
+  std::shared_ptr<xraySystem::MagnetBlock>
+    MB(new xraySystem::MagnetBlock("M1"));
+
+  OR.addObject(MB);
+  MB->addInsertCell(voidCell);
+  MB->createAll(System,World::masterOrigin(),0);
+  
+  return;
+
 
   std::shared_ptr<xraySystem::LQuad>
     LQ(new xraySystem::LQuad("LQ","LQ"));

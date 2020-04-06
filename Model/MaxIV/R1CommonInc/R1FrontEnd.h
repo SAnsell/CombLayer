@@ -3,7 +3,7 @@
  
  * File:   R1Inc/R1FrontEnd.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ class R1FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
-  /// dipole connection pipe
+  /// Quad unit
   std::shared_ptr<xraySystem::QuadUnit> quadUnit;
   /// dipole connection pipe
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
