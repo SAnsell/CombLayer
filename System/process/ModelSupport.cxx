@@ -3,7 +3,7 @@
  
  * File:   process/ModelSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -684,6 +684,122 @@ getAltComposite(const surfRegister& SMap,const int Offset,
 	cx<<OutUnit<<" ";
     }
   return getSetComposite(SMap,Offset,MinorOffset,SecondOffset,cx.str());
+}
+
+std::string
+getRangeComposite(const surfRegister& SMap,
+ 		  const int IBase,
+		  const int ILength,
+		  const int IOffset,
+		  const int Offset,
+		  const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getRangeComposite(SMap,IBase,ILength,IOffset,
+			   Offset,0,0,BaseString);
+}
+
+std::string
+getRangeComposite(const surfRegister& SMap,
+ 		  const int IBase,
+		  const int ILength,
+		  const int IOffset,
+		  const int Offset,
+		  const int minorOffset,
+		  const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return getRangeComposite(SMap,IBase,ILength,IOffset,
+			   Offset,minorOffset,0,BaseString);
+}
+
+std::string
+getRangeComposite(const surfRegister& SMap,
+ 		  const int IBase,
+		  const int IEnd,
+		  const int IOffset,
+		  const int Offset,
+		  const int minorOffset,
+		  const int secondOffset,
+		  const std::string& BaseString)
+  /*!
+    Given a base string add an offset to the numbers
+    The index select the equivilent starting point.
+    The post designator R is the index form.
+    
+
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param secondOffset :: second minor Offset nubmer to add [N]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  std::ostringstream cx;
+  std::string segment=spcDelimString(BaseString);
+  const std::string segmentHold=segment;
+  std::string OutUnit;
+  
+  // First count number of R units:
+  const int ILength=1+IEnd-IBase;
+  while(StrFunc::section(segment,OutUnit))
+    {
+      const size_t oL=OutUnit.length();
+      if (OutUnit[oL-1]=='R')
+	{
+	  OutUnit[oL-1]=' ';
+	  char keyUnit(' ');
+	  if (oL>2 && std::isalpha(OutUnit[oL-2]))
+	    {
+	      keyUnit=OutUnit[oL-2];
+	      OutUnit[oL-2]=' ';
+	    }
+	  int surfN;
+	  if (StrFunc::section(OutUnit,surfN))
+	    {
+	      const int signV(surfN>0 ? 1 : -1);
+	      surfN*=signV;
+	      int oNum((surfN-IBase+IOffset) % ILength);
+	      if (oNum<0) oNum+=ILength;
+	      std::cout<<"ONum == "<<oNum<<std::endl;
+	      cx<<signV*(oNum+IBase)<<keyUnit;
+	    }
+	}
+      else
+	cx<<OutUnit<<" ";
+    }
+  return getSetComposite(SMap,Offset,minorOffset,secondOffset,cx.str());
 }
 
   

@@ -66,6 +66,9 @@ class MagnetBlock :
   /// Quad unit
   std::shared_ptr<xraySystem::QuadUnit> quadUnit;
 
+  /// Dipole chamber
+  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+
   
   void populate(const FuncDataBase&);
   void createSurfaces();

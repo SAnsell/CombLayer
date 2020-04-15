@@ -81,6 +81,7 @@
 #include "InnerZone.h"
 #include "Quadrupole.h"
 #include "QuadUnit.h"
+#include "DipoleChamber.h"
 
 #include "MagnetBlock.h"
 
@@ -92,7 +93,8 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit"))
+  quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
+  dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -106,6 +108,7 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
   
   OR.addObject(quadUnit);
+  OR.addObject(dipoleChamber);
 
 }
 
@@ -155,8 +158,11 @@ MagnetBlock::createSurfaces()
     Geometry::Quaternion::calcQRotDeg(sectorAngle/2.0,-Z);
 
   // Do outer surfaces (vacuum ports)
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
-  ExternalCut::setCutSurf("front",-SMap.realSurf(buildIndex+1));
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*blockYStep,Y);
+  ExternalCut::setCutSurf("frontBlock",SMap.realSurf(buildIndex+11));
   
   Geometry::Vec3D POrg(Origin+Y*blockYStep-X*(frontWidth/2.0));
   Geometry::Vec3D QOrg(Origin+Y*blockYStep+X*(frontWidth/2.0));
@@ -177,14 +183,14 @@ MagnetBlock::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+4,QOrg,midX);
   // Project POrg across 
-  ModelSupport::buildPlane(SMap,buildIndex+2,POrg,midY);
-  ExternalCut::setCutSurf("back",SMap.realSurf(buildIndex+2));
+  ModelSupport::buildPlane(SMap,buildIndex+12,POrg,midY);
+  ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+12));
   
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   FixedComp::setConnect(1,POrg,midY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   
   return;
@@ -203,9 +209,15 @@ MagnetBlock::createObjects(Simulation& System)
 
   // Construct the outer sectoin [divide later]
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 3 13 23 33 43 -4 5 -6 ");
+    (SMap,buildIndex," 1 -11 3 -4 5 -6 ");
+  makeCell("Front",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 11 -12 3 13 23 33 43 -4 5 -6 ");
   makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -12 3 13 23 33 43 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;
@@ -221,10 +233,15 @@ MagnetBlock::buildInner(Simulation& System)
   
   //  quadUnit->setCutSurf("front",undulatorFC,2);
   quadUnit->createAll(System,*this,-1);
+  quadUnit->insertInCell(System,CellMap::getCell("Front"));
   quadUnit->insertInCell(System,CellMap::getCell("Outer"));
-  //  quadUnit->createQuads(System,outerCell);
- 
 
+
+  dipoleChamber->setCutSurf("front",*quadUnit,2);
+  dipoleChamber->createAll(System,*quadUnit,2);
+  dipoleChamber->insertInCell("Main",System,CellMap::getCell("Outer"));
+  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("Outer"));
+ 
   return;
   
 }
@@ -237,7 +254,7 @@ MagnetBlock::createLinks()
   ELog::RegMethod RegA("MagnetBlock","createLinks");
 
   // link 0 / 1 from PreDipole / EPCombine
-  FixedComp::setConnect(0,Origin+Y*blockYStep,Y);
+  FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   
   return;

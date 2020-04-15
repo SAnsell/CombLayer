@@ -31,7 +31,7 @@ namespace setVariable
   \class LinacQuadGenerator
   \version 1.0
   \author S. Ansell
-  \date M 2018
+  \date May 2018
   \brief LinacQuadGenerator for variables
 */
 
@@ -42,7 +42,7 @@ class LinacQuadGenerator
   double length;                ///< frame length
 
   double frameRadius;           ///< Gap to start of frame
-  double frameThick;            ///< Thikckness of frame
+  double frameOuter;            ///< Thikckness of frame
 
   double poleYAngle;            ///< Rotation of +X Pole about Y
   double poleGap;               ///< Gap from centre point
@@ -51,7 +51,14 @@ class LinacQuadGenerator
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
+  double coilInner;             ///< Inner plate width
+  double coilBase;              ///< Coil base angle cut width
+  double coilBaseDepth;         ///< Coil Base start height
+  double coilAngle;             ///< Top Cut angle
+  double coilEndExtra;          ///< Length of coil pieces
+  double coilEndRadius;         ///< Coil extra radius [round]
 
+  
   std::string poleMat;          ///< pole piece of magnet
   std::string coreMat;          ///< core of magnet 
   std::string coilMat;          ///< coil material

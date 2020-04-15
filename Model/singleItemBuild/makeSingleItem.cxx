@@ -138,19 +138,10 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
-
-  std::shared_ptr<xraySystem::MagnetBlock>
-    MB(new xraySystem::MagnetBlock("M1"));
-
-  OR.addObject(MB);
-  MB->addInsertCell(voidCell);
-  MB->createAll(System,World::masterOrigin(),0);
-  
-  return;
-
 
   std::shared_ptr<xraySystem::LQuad>
     LQ(new xraySystem::LQuad("LQ","LQ"));
@@ -159,6 +150,16 @@ makeSingleItem::build(Simulation& System,
 
   LQ->addInsertCell(voidCell);
   LQ->createAll(System,World::masterOrigin(),0);
+  
+  return;
+
+  
+  std::shared_ptr<xraySystem::MagnetBlock>
+    MB(new xraySystem::MagnetBlock("M1"));
+
+  OR.addObject(MB);
+  MB->addInsertCell(voidCell);
+  MB->createAll(System,World::masterOrigin(),0);
   
   return;
   

@@ -57,10 +57,13 @@ namespace setVariable
 {
 
 LinacQuadGenerator::LinacQuadGenerator() :
-  frameRadius(4.5),frameThick(0.50),
-  poleYAngle(22.5),poleGap(1.25),
-  poleRadius(1.8),poleWidth(1.3),
-  coilRadius(2.31),coilWidth(1.75),
+  frameRadius(7.5),frameOuter(18.8),
+  poleYAngle(45.0),poleGap(1.25),
+  poleRadius(1.55),poleWidth(2.6),     // pole radius 7mm above flat line
+  coilRadius(2.31),coilWidth(7.0),   // full gpa
+  coilInner(3.86),coilBase(3.86),
+  coilBaseDepth(8.0),coilAngle(45.0),
+  coilEndExtra(3.2),coilEndRadius(6.0),
   poleMat("Iron"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
@@ -101,19 +104,26 @@ LinacQuadGenerator::generateQuad(FuncDataBase& Control,
     \param length :: length
   */
 {
-  ELog::RegMethod RegA("LinacQuadGenerator","generateHex");
+  ELog::RegMethod RegA("LinacQuadGenerator","generateQuad");
 
   Control.addVariable(keyName+"YStep",yStep);
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FrameRadius",frameRadius);
-  Control.addVariable(keyName+"FrameThick",frameThick);
+  Control.addVariable(keyName+"FrameOuter",frameOuter);
   Control.addVariable(keyName+"PoleYAngle",poleYAngle);
   Control.addVariable(keyName+"PoleGap",poleGap);
   Control.addVariable(keyName+"PoleRadius",poleRadius);
   Control.addVariable(keyName+"PoleWidth",poleWidth);
+  
   Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
+  Control.addVariable(keyName+"CoilInner",coilInner);
+  Control.addVariable(keyName+"CoilBase",coilBase);
+  Control.addVariable(keyName+"CoilBaseDepth",coilBaseDepth);
+  Control.addVariable(keyName+"CoilAngle",coilAngle);
+  Control.addVariable(keyName+"CoilEndExtra",coilEndExtra);
+  Control.addVariable(keyName+"CoilEndRadius",coilEndRadius);
 
   Control.addVariable(keyName+"PoleMat",poleMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
