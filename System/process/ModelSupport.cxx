@@ -792,7 +792,6 @@ getRangeComposite(const surfRegister& SMap,
 	      surfN*=signV;
 	      int oNum((surfN-IBase+IOffset) % ILength);
 	      if (oNum<0) oNum+=ILength;
-	      std::cout<<"ONum == "<<oNum<<std::endl;
 	      cx<<signV*(oNum+IBase)<<keyUnit;
 	    }
 	}
