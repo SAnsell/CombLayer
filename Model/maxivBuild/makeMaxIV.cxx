@@ -73,6 +73,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
@@ -92,6 +93,8 @@
 #include "FORMAX.h"
 #include "MICROMAX.h"
 #include "SPECIES.h"
+
+#include "LinacTo3GeV.h"
 
 #include "makeMaxIV.h"
 
@@ -183,13 +186,17 @@ makeMaxIV::buildInjection(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","buildInjection");
-  
+
+  // names : Link point for origin
+  static const std::map<std::string,std::string> injectNAMES
+    ({ {"LinacTo3GeV","Origin"}
+    });
 
   const int voidCell(74123);
   bool activeLinac(0);
   const size_t NSet=IParam.setCnt("beamlines");  // converted from
                                                  //  defaultConfig linac
-
+  std::set<std::string> activeINJ;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",j);
@@ -200,6 +207,11 @@ makeMaxIV::buildInjection(Simulation& System,
 	    IParam.getValue<std::string>("beamlines",j,index);
 	  if (BL=="LINAC" || BL=="SPF")  // default build
 	    activeLinac=1;
+	  else if (injectNAMES.find(BL) != injectNAMES.end())
+	    {
+	      activeLinac=1;
+	      activeINJ.emplace(BL);
+	    }
 	  index++;
 	}
     }
@@ -209,6 +221,19 @@ makeMaxIV::buildInjection(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,World::masterOrigin(),0);
 
+  for(const std::string& BL : activeINJ)
+    {
+      if (BL=="LinacTo3GeV")  // sector
+	{
+	  std::unique_ptr<LinacTo3GeV> BLPtr;
+	  BLPtr.reset(new LinacTo3GeV("L3G"));
+	  BLPtr->createAll(System,*injectionHall,
+			   injectionHall->getSideIndex(injectNAMES.at(BL)));
+	}
+    }
+      
+
+  
   return 1;  
 }  
 
