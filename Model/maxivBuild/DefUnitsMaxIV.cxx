@@ -165,7 +165,8 @@ setMaxIVLinac(defaultConfig& A,
   typedef std::map<std::string,std::string> MapTYPE;
   static const MapTYPE unitDef=
     {
-      { "LINAC", "World 0"}
+     { "LINAC", "World 0"},
+     { "LinacTo3GeV", "World 0"}
     };
 
   size_t unitIndex(0);

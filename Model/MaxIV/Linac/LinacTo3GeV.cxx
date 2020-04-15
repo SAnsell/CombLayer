@@ -229,8 +229,9 @@ LinacTo3GeV::createAll(Simulation& System,
   ELog::RegMethod RControl("LinacTo3GeV","build");
 
   populate(System.getDataBase());
-  
   createUnitVector(FC,sideIndex);
+  ELog::EM<<"Populate  == "<<Origin<<ELog::endDiag;
+
   createSurfaces();
   
   buildObjects(System);
