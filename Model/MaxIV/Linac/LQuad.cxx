@@ -289,7 +289,7 @@ LQuad::createObjects(Simulation& System)
 
   std::vector<HeadRule> PoleExclude;
   std::vector<HeadRule> frontExclude;
-  HeadRule backExclude;
+  std::vector<HeadRule> backExclude;
 
   int BN(buildIndex); // base
   int PN(buildIndex);
@@ -305,64 +305,52 @@ LQuad::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018 (-2203:2204) ");
       makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
-      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018");
-
+      Out=ModelSupport::getComposite
+	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018");
       PoleExclude.back().addUnion(Out);
       
-      // Front back pieces
+      // Front extra pieces
       Out=ModelSupport::getComposite
 	(SMap,PN,buildIndex," 2003 -2004 2001 2013 2014 2017 2018 -2009 ");
       makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out+frontSurf);
       frontExclude.push_back(HeadRule(Out));
-      
+
+      // back extra pieces
+      Out=ModelSupport::getComposite
+	(SMap,PN,buildIndex," 2003 -2004 2001 2013 2014 2017 2018 -2019 ");
+      makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out+backSurf);
+      backExclude.push_back(HeadRule(Out));
+
       BN+=2;
       PN+=20;
     }
 
-  
-  std::string OutX=ModelSupport::getRangeComposite
-    (SMap,1001,1008,-1,buildIndex,"501 -502 -1001R -1002R -1003R ");
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,BN,"501 -502 -1000M -1001 -1002 ");
-  ELog::EM<<"Out A == "<<Out<<" :: "<<OutX<<ELog::endDiag;
-  
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[0].complement().display()+ICell);
-  
-  int CN(buildIndex+1);
-  int TN(buildIndex+1);
-  for(size_t i=1;i<NPole-1;i++)
+  int aOffset(-1);
+  int bOffset(0);
+  std::string OutA,OutB;
+  const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5",});
+  for(size_t i=0;i<NPole;i++)
     {
-      // three index points
-      Out=ModelSupport::getComposite
-	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
-	
-      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	       PoleExclude[i].complement().display()+ICell);
-      ELog::EM<<"Out == "<<Out<<ELog::endDiag;
-      //      Out=ModelSupport::getComposite(SMap,CN," 3 -4 ");
-      //      Out+=ModelSupport::getComposite(SMap,TN," 501 -502  ");
+      OutA=ModelSupport::getRangeComposite
+	(SMap,501,504,bOffset,buildIndex,"501R -502R ");
+      OutB=ModelSupport::getRangeComposite
+	(SMap,1001,1008,aOffset,buildIndex,"-1001R -1002R -1003R ");
+      makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
+	   PoleExclude[i].complement().display()+ICell);
 
-      //      makeCell("FrontVoid",System,cellIndex++,0,0.0,
-      //	       Out+frontExclude[i].complement().display()+ICell+frontRegion);
-      CN+=2;
-      TN++;
+      OutB=ModelSupport::getComposite(SMap,buildIndex,sides[i]);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 ");
+      makeCell("FrontVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
+	   frontExclude[i].complement().display()+ICell);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 ");
+      makeCell("BackVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
+	       backExclude[i].complement().display()+ICell);
+      
+      
+      aOffset+=2;
+      bOffset+=1;
     }
-  ELog::EM<<"CN == "<<TN<<" "<<CN<<ELog::endDiag;
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,TN,CN,"501M -501 -1001N -1002N -1003N ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[NPole-1].complement().display()+ICell);	
-  ELog::EM<<"Out B == "<<Out<<ELog::endDiag;
-  // pre/post boundary regions
-  //  frontExclude.makeComplement();
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1  3 -4 5 -6" );
-  //  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+frontExclude.display());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 5 -6" );
-  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
-
-
   return;
 }
 
