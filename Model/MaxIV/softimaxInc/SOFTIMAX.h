@@ -3,7 +3,7 @@
  
   * File:   softimaxInc/SOFTIMAX.h
   *
-  * Copyright (c) 2004-2019 by Konstantin Batkov
+  * Copyright (c) 2004-2020 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,8 @@ namespace xraySystem
     SOFTIMAX& operator=(const SOFTIMAX&);
     virtual ~SOFTIMAX();
 
-    virtual void build(Simulation&,const attachSystem::FixedComp&,
+    virtual void build(Simulation&,
+		       const attachSystem::FixedComp&,
 		       const long int);
 
   };

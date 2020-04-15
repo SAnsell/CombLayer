@@ -3,7 +3,7 @@
  
  * File:   flukaTally/flukaTallySelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@ getActiveTally(const SimFLUKA& Sim,const std::string& tName)
     {
       std::string KN=mc.second->getKeyName();
       const size_t knSize(KN.size());
+
       if (!tName.empty() && tName.size()<knSize &&
 	  tName.back()=='*')
 	{

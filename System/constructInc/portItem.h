@@ -3,7 +3,7 @@
  
  * File:   constructInc/portItem.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,16 +65,19 @@ class portItem :
   double flangeRadius;       ///< flange radius
   double flangeLength;       ///< flange thick(length)
   double capThick;           ///< Plate on flange [if thick>0]
+  double windowRadius;       ///< window radius in plate flange [if thick>0]
+  double windowThick;        ///< window thick in plate flange [if thick>0]
 
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
   int capMat;                ///< plate Material
+  int windowMat;             ///< window Material 
+  int outerVoidMat;          ///< outer void Material [window outer/surround]
 
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
  
-  virtual void populate(const FuncDataBase&);
   virtual void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
@@ -94,6 +97,9 @@ class portItem :
   portItem& operator=(const portItem&);
   ~portItem();
 
+  // make public as accessor function:
+  virtual void populate(const FuncDataBase&);
+  
   double getExternalLength() const { return externalLength; }
   
   void createUnitVector(const attachSystem::FixedComp&,const long int);

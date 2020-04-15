@@ -95,7 +95,7 @@ undulatorVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
 
-setVariable::PipeGenerator PipeGen;
+  setVariable::PipeGenerator PipeGen;
 
   // Undulator length:
   // https://alfresco.maxiv.lu.se/share/page/site/bpo/document-details?nodeRef=workspace://SpacesStore/22a6b9ab-4f3b-4525-bd79-d4a4fd0be33d page 1
@@ -391,6 +391,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
+
   const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
   Control.addVariable(backName+"XStep",xstep-TL);
   Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);

@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,24 +106,28 @@ portItem::portItem(const std::string& Key) :
   statusFlag(0),outerFlag(0),
   externalLength(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
-  voidMat(0),wallMat(0),capMat(-1)
+  windowRadius(0.0),windowThick(0.0),
+  voidMat(0),wallMat(0),capMat(-1),windowMat(-1),
+  outerVoidMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-portItem::portItem(const portItem& A) :
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+portItem::portItem(const portItem& A) : 
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  portBase(keyName),
-  statusFlag(A.statusFlag),outerFlag(A.outerFlag),
-  externalLength(A.externalLength),
+  portBase(A.portBase),statusFlag(A.statusFlag),
+  outerFlag(A.outerFlag),centreOffset(A.centreOffset),
+  axisOffset(A.axisOffset),externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),capThick(A.capThick),
-  voidMat(A.voidMat),wallMat(A.wallMat),
-  capMat(A.capMat),outerCell(A.outerCell),
-  refComp(A.refComp),exitPoint(A.exitPoint)
+  windowRadius(A.windowRadius),windowThick(A.windowThick),
+  voidMat(A.voidMat),wallMat(A.wallMat),capMat(A.capMat),
+  windowMat(A.windowMat),outerVoidMat(A.outerVoidMat),
+  outerCell(A.outerCell),refComp(A.refComp),exitPoint(A.exitPoint)
   /*!
     Copy constructor
     \param A :: portItem to copy
@@ -143,24 +147,31 @@ portItem::operator=(const portItem& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-
       statusFlag=A.statusFlag;
       outerFlag=A.outerFlag;
+      centreOffset=A.centreOffset;
+      axisOffset=A.axisOffset;
       externalLength=A.externalLength;
       radius=A.radius;
       wall=A.wall;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
       capThick=A.capThick;
+      windowRadius=A.windowRadius;
+      windowThick=A.windowThick;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       capMat=A.capMat;
+      windowMat=A.windowMat;
+      outerVoidMat=A.outerVoidMat;
+      outerCell=A.outerCell;
       refComp=A.refComp;
       exitPoint=A.exitPoint;
     }
   return *this;
 }
 
+  
 portItem::~portItem()
   /*!
     Destructor
@@ -251,15 +262,25 @@ portItem::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
   flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
   capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
+  windowThick=Control.EvalDefTail<double>(keyName,portBase,"WindowThick",0.0);
 
+  windowRadius=Control.EvalDefTail<double>(keyName,portBase,"WindowRadius",0.0);
+  
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
+
+  outerVoidMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"OuterVoidMat",portBase+"OuterVoidMat",0);
 
   wallMat=ModelSupport::EvalMat<int>
     (Control,keyName+"WallMat",portBase+"WallMat");
   capMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"CapMat",portBase+"CapMat",capMat);
   if (capMat<0) capMat=wallMat;
+
+  windowMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"WindowMat",portBase+"WindowMat",windowMat);
+  if (windowMat<0) windowMat=capMat;
 
   outerFlag=
     static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",outerFlag));
@@ -425,10 +446,35 @@ portItem::constructOuterFlange(Simulation& System,
   ModelSupport::buildPlane(SMap,buildIndex+102,
 			   exitPoint+Y*(externalLength-flangeLength),Y);
 
-  if (capThick>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,buildIndex+202,
-			     exitPoint+Y*(externalLength+capThick),Y);
+  const bool capFlag(capThick>Geometry::zeroTol);
+  const bool windowFlag (capFlag &&
+			 windowThick>Geometry::zeroTol &&
+			 windowThick+Geometry::zeroTol <capThick &&
+			 windowRadius>Geometry::zeroTol &&
+			 windowRadius+Geometry::zeroTol < flangeRadius);
 
+
+  // 
+  // This builds a window cap if required:
+  // 
+  if (capFlag)
+    {
+      Geometry::Vec3D capPt(exitPoint+Y*(externalLength+capThick));
+      ModelSupport::buildPlane(SMap,buildIndex+202,capPt,Y);
+      // if we have a cap we might have a window:
+      if (windowFlag)
+	{
+	  capPt-= Y*(capThick/2.0);   // move to mid point
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+211,capPt-Y*(windowThick/2.0),Y);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+212,capPt+Y*(windowThick/2.0),Y);
+	  ModelSupport::buildCylinder
+	    (SMap,buildIndex+207,capPt,Y,windowRadius);
+	}
+    }
+  /// ----  END : Cap/Window
+ 
   // determine start surface:
   std::string frontSurf,midSurf;
   if (startIndex!=0)
@@ -451,24 +497,42 @@ portItem::constructOuterFlange(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
 
-  if (capThick>Geometry::zeroTol)
+  if (capFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -27 -202 2 ");
-      makeCell("Plate",System,cellIndex++,capMat,0.0,Out);
+      // we have window AND flange:
+      if (windowFlag)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 -211 2 ");
+	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 212 -202 ");
+	  makeCell("AbovePlate",System,cellIndex++,outerVoidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 211 -212 ");
+	  makeCell("Plate",System,cellIndex++,windowMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 207 -202 2 ");
+	  makeCell("PlateSurround",System,cellIndex++,capMat,0.0,Out);
+	}
+      else // just a cap
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
+	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	}
     }
 
   if (outerFlag)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
-      makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
-      Out= (capThick>Geometry::zeroTol) ?
+      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,Out+midSurf);
+      Out= (capFlag) ?
 	ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
 	ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
       addOuterSurf(Out+midSurf);
     }
   else
     {
-      Out= (capThick>Geometry::zeroTol) ?
+      Out= (capFlag) ?
 	ModelSupport::getComposite(SMap,buildIndex," -202 -27 102 ") :
 	ModelSupport::getComposite(SMap,buildIndex," -2 -27 102 ");
       addOuterSurf(Out);
@@ -619,9 +683,6 @@ portItem::constructTrack(Simulation& System)
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;
     }
-  if (keyName=="DanmaxOpticsLineBeamStopTubePort0")
-    ELog::EM<<"keyname == "<<keyName<<ELog::endDiag;
-
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();

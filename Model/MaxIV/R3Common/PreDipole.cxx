@@ -265,7 +265,7 @@ PreDipole::createObjects(Simulation& System)
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
-  buildZone.setVoidMat(0);
+  buildZone.setInnerMat(0);
   buildZone.constructMasterCell(System);
 
     // Construct the second inner zone a
@@ -275,7 +275,7 @@ PreDipole::createObjects(Simulation& System)
   bendZone.setSurround(HeadRule(Out));
   bendZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
   bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+102)));
-  bendZone.setVoidMat(voidMat);
+  bendZone.setInnerMat(voidMat);
   bendZone.constructMasterCell(System);
 
   // Construct the third inner zone a
@@ -284,7 +284,7 @@ PreDipole::createObjects(Simulation& System)
   exitZone.setSurround(HeadRule(Out));
   exitZone.setFront(HeadRule(SMap.realSurf(buildIndex+102)));
   exitZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2001)));
-  exitZone.setVoidMat(voidMat);
+  exitZone.setInnerMat(voidMat);
   exitZone.constructMasterCell(System);
 
   // cylinder half

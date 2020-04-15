@@ -3,7 +3,7 @@
  
  * File: danmax/DANMAX.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,6 +193,7 @@ DANMAX::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
+  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));

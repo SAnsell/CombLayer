@@ -92,6 +92,7 @@ class danmaxOpticsLine :
   std::shared_ptr<attachSystem::ContainedComp> preInsert;
   /// construction space for main object
   attachSystem::InnerZone buildZone;
+  int innerMat;                         ///< inner material if used
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -246,6 +247,8 @@ class danmaxOpticsLine :
   danmaxOpticsLine& operator=(const danmaxOpticsLine&);
   ~danmaxOpticsLine();
 
+  /// Assignment to inner void
+  void setInnerMat(const int M) { innerMat=M; }
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }

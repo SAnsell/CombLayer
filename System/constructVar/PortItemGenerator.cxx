@@ -3,7 +3,7 @@
 
  * File:   constructVar/PortItemGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,20 +60,22 @@ namespace setVariable
 PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
   flangeLen(1.0),flangeRadius(1.0),
-  capThick(0.0),
-  wallMat("Stainless304"),
-  capMat("Aluminium"),
+  capThick(0.0),windowThick(0.0),windowRadius(0.0),
+  wallMat("Stainless304"),capMat("Aluminium"),
+  windowMat("LeadGlass"),outerVoidMat("Void"),
   outerVoid(1)
   /*!
     Constructor and defaults
   */
 {}
 
-PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) :
+PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
-  capThick(A.capThick),wallMat(A.wallMat),
-  capMat(A.capMat),outerVoid(A.outerVoid)
+  capThick(A.capThick),windowThick(A.windowThick),
+  windowRadius(A.windowRadius),wallMat(A.wallMat),
+  capMat(A.capMat),windowMat(A.windowMat),outerVoidMat(A.outerVoidMat),
+  outerVoid(A.outerVoid)
   /*!
     Copy constructor
     \param A :: PortItemGenerator to copy
@@ -96,8 +98,12 @@ PortItemGenerator::operator=(const PortItemGenerator& A)
       flangeLen=A.flangeLen;
       flangeRadius=A.flangeRadius;
       capThick=A.capThick;
+      windowThick=A.windowThick;
+      windowRadius=A.windowRadius;
       wallMat=A.wallMat;
       capMat=A.capMat;
+      windowMat=A.windowMat;
+      outerVoidMat=A.outerVoidMat;
       outerVoid=A.outerVoid;
     }
   return *this;
@@ -172,6 +178,29 @@ PortItemGenerator::setPlate(const double T,const std::string& PM)
 }
 
 void
+PortItemGenerator::setWindowPlate(const double capT,
+				  const double winT,
+				  const double winRad,
+				  const std::string& CM,
+				  const std::string& WM)
+  /*!
+    Set the support flange (top) plate thickness and material
+    \param capT :: Plate thickness
+    \param winT :: window thickness
+    \param winRad :: window radius [-ve for fractional]
+    \param CM :: material for cap
+    \param WM :: material for window
+   */
+{
+  capThick=capT;
+  windowThick=winT;
+  windowRadius=winRad;
+  capMat=CM;
+  windowMat=WM;
+  return;
+}
+
+void
 PortItemGenerator::setNoPlate()
   /*!
     Remove the outer plate
@@ -200,6 +229,12 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("PortItemGenerator","generatorPort");
 
+  const double WThick((windowThick < -Geometry::zeroTol) ?
+		      -windowThick*capThick : windowThick);
+  
+  const double WRadius((windowRadius < -Geometry::zeroTol)  ?
+		       -windowRadius*flangeRadius : windowRadius);
+  
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Wall",wallThick);
@@ -207,6 +242,8 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
   Control.addVariable(keyName+"CapThick",capThick);
+  Control.addVariable(keyName+"WindowThick",WThick);
+  Control.addVariable(keyName+"WindowRadius",WRadius);
 
   Control.addVariable(keyName+"Centre",C);
   Control.addVariable(keyName+"Axis",A.unit());
@@ -214,6 +251,9 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterVoid",static_cast<int>(outerVoid));
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"CapMat",capMat);
+  Control.addVariable(keyName+"WindowMat",windowMat);
+  Control.addVariable(keyName+"OuterVoidMat",outerVoidMat);
+      
 
   return;
 

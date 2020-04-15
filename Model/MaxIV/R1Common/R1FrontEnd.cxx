@@ -243,7 +243,6 @@ R1FrontEnd::createSurfaces()
 
   if (outerRadius>Geometry::zeroTol)
     {
-      ELog::EM<<"Outer radius == "<<outerRadius<<ELog::endDiag;
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
       buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
     }

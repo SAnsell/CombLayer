@@ -3,7 +3,7 @@
  
  * File:   commonBeam/QuadUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,21 +152,6 @@ QuadUnit::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-QuadUnit::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("QuadUnit","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
 
 void
 QuadUnit::createSurfaces()

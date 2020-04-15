@@ -153,7 +153,7 @@ my @singleItem = qw( singleItemBuild ) ;
 push(@singleItem,@mainLib);
 $gM->addDepUnit("singleItem", [@singleItem,
 			       qw(commonGenerator commonVar
-			       commonBeam R3Common Linac )]);
+			       commonBeam R1Common R3Common Linac )]);
 
 my @t1Real = qw( t1Build ralBuild  ) ;
 push(@t1Real,@mainLib);

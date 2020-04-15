@@ -53,7 +53,6 @@ class doublePortItem :
   double externPartLen;     ///< Length of larger item
   double radiusB;           ///< larger radius of pipe
 
-  void populate(const FuncDataBase&);
   void createSurfaces();
   
   virtual void constructOuterFlange(Simulation&,
@@ -66,9 +65,12 @@ class doublePortItem :
   doublePortItem(const std::string&,const std::string&);
   doublePortItem(const doublePortItem&);
   doublePortItem& operator=(const doublePortItem&);
-  ~doublePortItem();
+  virtual ~doublePortItem();
 
+  virtual void populate(const FuncDataBase&);
+  
   void setLarge(const double,const double);
+  
 };
   
 

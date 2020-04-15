@@ -252,6 +252,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"VoidMat","Void");
 
   Control.addVariable(hutName+"HoleXStep",beamMirrorShift+xOffset);
   Control.addVariable(hutName+"HoleZStep",0.0);
@@ -308,7 +309,8 @@ connectVariables(FuncDataBase& Control,
 
   Control.addVariable(connectName+"SkinMat","Stainless304");
   Control.addVariable(connectName+"Mat","Lead");
-  
+  Control.addVariable(connectName+"VoidMat","Void");
+
   PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
 
   BellowGen.setCF<setVariable::CF40>(); 
@@ -363,7 +365,10 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"FloorThick",50.0);
-
+  Control.addVariable(hutName+"CornerLength",720.0);
+  Control.addVariable(hutName+"CornerAngle",45.0);
+  
+  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
@@ -692,10 +697,10 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
-			Geometry::Vec3D(0,5.0,-10.0),
-			Geometry::Vec3D(1,0,0));
+  			Geometry::Vec3D(0,5.0,-10.0),
+  			Geometry::Vec3D(1,0,0));
 
   // crystals gap 7mm
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
@@ -730,10 +735,10 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 
-  const std::string portName=monoKey+"MonoVessel";
+  const std::string portName=monoKey+"MLMVessel";
   Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(4.0,"LeadGlass");  
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));

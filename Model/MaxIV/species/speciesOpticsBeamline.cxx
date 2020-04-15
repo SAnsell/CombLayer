@@ -245,7 +245,7 @@ speciesOpticsBeamline::populate(const FuncDataBase& Control)
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
   const int voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  buildZone.setVoidMat(voidMat);
+  buildZone.setInnerMat(voidMat);
   return;
 }
 

@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/danmax/SqrShield.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,8 @@ SqrShield::SqrShield(const std::string& Key)  :
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  voidMat(0)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -123,7 +124,7 @@ SqrShield::populate(const FuncDataBase& Control)
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
-
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
 
   return;
 }

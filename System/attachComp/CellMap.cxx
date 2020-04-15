@@ -506,6 +506,28 @@ CellMap::deleteCellWithData(Simulation& System,
   return Out;
 }
 
+int
+CellMap::getCellMat(const Simulation& System,
+		    const std::string& Key,
+		    const size_t Index) const
+    /*!
+    Obtain the material for a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param Index :: Cell index
+    \return material number
+  */
+{
+  ELog::RegMethod RegA("CellMap","getCellMat");
+  
+  const int cellN=getCell(Key,Index);
+  const MonteCarlo::Object* cellObj=System.findObject(cellN);
+  if (!cellObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+
+  return cellObj->getMatID();  
+}
+
 void
 CellMap::renumberCell(const int oldCell,const int newCell)
   /*!

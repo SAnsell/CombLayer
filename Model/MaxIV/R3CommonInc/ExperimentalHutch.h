@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/ExperimentalHutch.h
+ * File:   R3CommonInc/ExperimentalHutch.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,9 @@ class ExperimentalHutch :
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double outWidth;              ///< out side width
+
+  double cornerAngle;           ///< angle at corner
+  double cornerLength;          ///< length to corner
 
   double innerThick;            ///< Inner wall/roof skin
   double pbThick;               ///< Thickness of lead in walls

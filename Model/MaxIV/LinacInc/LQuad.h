@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/LQuad.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,21 +36,21 @@ namespace xraySystem
   \brief LQuad for Max-IV
 */
 
-class LQuad : public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class LQuad :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
-  const size_t NPole; 
   const std::string baseName;   ///< Base key
   
   double length;                ///< frame length
 
   double frameRadius;           ///< Gap to start of frame
-  double frameThick;            ///< Thikckness of frame
+  double frameOuter;            ///< Thikckness of frame [full]
 
   double poleYAngle;            ///< Rotation of +X Pole about Y
   double poleGap;               ///< Gap from centre point
@@ -59,8 +59,14 @@ class LQuad : public attachSystem::FixedRotate,
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
+  double coilInner;             ///< Cross width of at top
+  double coilBase;              ///< Coil base angle cut width
+  double coilBaseDepth;         ///< Coil base angle cut depth [from centre]
+  double coilAngle;             ///< Angle of coil cut
+  double coilEndExtra;          ///< Coil extra length [round]
+  double coilEndRadius;         ///< Coil extra radius [round]
   
-  int poleMat;                     ///< pole piece of magnet
+  int poleMat;                     ///<` pole piece of magnet
   int coreMat;                     ///< core of magnet 
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material

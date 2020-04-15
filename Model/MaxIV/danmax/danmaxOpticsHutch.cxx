@@ -110,7 +110,7 @@ danmaxOpticsHutch::danmaxOpticsHutch(const danmaxOpticsHutch& A) :
   pbRoofThick(A.pbRoofThick),outerThick(A.outerThick),
   holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),holeRadius(A.holeRadius),
-  skinMat(A.skinMat),pbMat(A.pbMat)
+  skinMat(A.skinMat),pbMat(A.pbMat),voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: danmaxOpticsHutch to copy
@@ -153,6 +153,7 @@ danmaxOpticsHutch::operator=(const danmaxOpticsHutch& A)
       skinMat=A.skinMat;
       ringMat=A.ringMat;
       pbMat=A.pbMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -206,6 +207,7 @@ danmaxOpticsHutch::populate(const FuncDataBase& Control)
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   
   return;
@@ -379,18 +381,18 @@ danmaxOpticsHutch::createObjects(Simulation& System)
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 1003 (-4 : (-104 (-204 : -202) )) -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
     }
   else
     {
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"1 -2 3 (-4: (-104 (-204 : -202 ) ) ) -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
     }
 
   Out=ModelSupport::getSetComposite
     (SMap,buildIndex," 234 -134 232 -32 -36 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor);
 
   
   

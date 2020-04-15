@@ -3,7 +3,7 @@
  
  * File:   test/testModelSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,9 +78,11 @@ testModelSupport::addSurfaces(ModelSupport::surfRegister& SMap,
   /*!
     Add a set of surfaces between A and B
     \param SMap :: Surface mape to add
+						
    */
 {
-      
+  ELog::RegMethod RegA("testModelSupport","addSurfaces");
+  
   Geometry::Vec3D Origin;
   Geometry::Vec3D XAxis(0,1,0);
   
@@ -107,11 +109,13 @@ testModelSupport::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testModelSupport::testAltComposite,
+      &testModelSupport::testRangeComposite,
       &testModelSupport::testRemoveOpenPair
     };
   const std::string TestName[]=
     {
       "AltComposite",
+      "RangeComposite",
       "RemoveOpenPair"
     };
   
@@ -206,6 +210,56 @@ testModelSupport::testAltComposite()
 	ModelSupport::getAltComposite(SMap,BA,BB,BC,std::get<0>(tc));
       if (StrFunc::singleLine(Res)!=std::get<4>(tc))
 	{
+	  ELog::EM<<"Result  == "<<StrFunc::singleLine(Res)
+		  <<" == "<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<4>(tc)
+		  <<" == "<<ELog::endTrace;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testModelSupport::testRangeComposite()
+  /*!
+    Test to set if various empty strings can be removed
+    \return 0 on success
+  */
+{
+  ELog::RegMethod RegA("testModelSupport","testRemoveOpenPair");
+
+  ModelSupport::surfRegister SMap;
+  addSurfaces(SMap,100,50);
+  addSurfaces(SMap,500,550);
+  addSurfaces(SMap,1500,1550);
+  
+  typedef std::tuple<std::string,int,int,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+     TTYPE("501 -502 503 -504",501,504,0,"1501 -1502 1503 -1504"),
+     TTYPE("501R -502R 503R -504R",501,504,0,"1501 -1502 1503 -1504"),
+     TTYPE("501R -502R 503R -504R",501,504,1,"1502 -1503 1504 -1501"),
+     TTYPE("501R -502R 503R ",501,504,1,"1502 -1503 1504"),
+     TTYPE("501R -502R 503R -504R",501,504,-1,"1504 -1501 1502 -1503")
+    };
+  
+  
+  for(const TTYPE& tc : Tests)
+    {
+      const std::string item(std::get<0>(tc));
+      const int iBase(std::get<1>(tc));
+      const int iEnd(std::get<2>(tc));
+      const int iOffset(std::get<3>(tc));
+      const std::string Res=
+	ModelSupport::getRangeComposite
+	(SMap,iBase,iEnd,iOffset,1000,item);
+
+      if (StrFunc::singleLine(Res)!=std::get<4>(tc))
+	{
+	  ELog::EM<<"Input   == "<<StrFunc::singleLine(item)
+		  <<" == "
+		  <<iBase<<" to "<<iEnd<<" Off= "<<iOffset<<ELog::endTrace;
 	  ELog::EM<<"Result  == "<<StrFunc::singleLine(Res)
 		  <<" == "<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<std::get<4>(tc)

@@ -102,8 +102,8 @@ resnucConstruct::createTally(SimFLUKA& System,
 
 void
 resnucConstruct::processResNuc(SimFLUKA& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+			       const mainSystem::inputParam& IParam,
+			       const size_t Index) 
   /*!
     Add TRACK tally (s) as needed
     - Input:
@@ -119,6 +119,9 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   const std::string objectName=
     IParam.getValueError<std::string>("tally",Index,1,"tally:objectName");
 
+  if (objectName=="help" ||  objectName=="Help")
+    return writeHelp(ELog::EM.Estream());
+  
   const std::vector<int> cellVec=
     System.getObjectRange(objectName);
 
