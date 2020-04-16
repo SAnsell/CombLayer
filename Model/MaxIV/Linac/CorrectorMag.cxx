@@ -131,7 +131,6 @@ CorrectorMag::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
   magOffset=Control.EvalVar<double>(keyName+"MagOffset");
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");
@@ -175,23 +174,23 @@ CorrectorMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1003,
 			   LOrg-X*(magWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,
-			   LOrg+Y*(magWidth/2.0),X);
+			   LOrg+X*(magWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+1013,
-			   LOrg-Y*(magInnerWidth/2.0),Y);
+			   LOrg-X*(magInnerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1014,
-			   LOrg+Y*(magInnerWidth/2.0),Y);
+			   LOrg+X*(magInnerWidth/2.0),X);
 
   const Geometry::Vec3D ROrg(Origin+X*magOffset);
   ModelSupport::buildPlane(SMap,buildIndex+2003,
 			   ROrg-X*(magWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+2004,
-			   ROrg+Y*(magWidth/2.0),X);
+			   ROrg+X*(magWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+2013,
-			   ROrg-Y*(magInnerWidth/2.0),Y);
+			   ROrg-X*(magInnerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+2014,
-			   ROrg+Y*(magInnerWidth/2.0),Y);
+			   ROrg+X*(magInnerWidth/2.0),X);
 
   // frame stuff
 
@@ -200,8 +199,21 @@ CorrectorMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(frameHeight+magHeight/2.0),Z);
 
-  
-	
+
+  // calc corner:
+  double XScale(magCorner-magWidth/2.0);   // note: make negative!
+  double YScale(magCorner-magLength/2.0);
+  int CIndex(buildIndex+1007);
+  for(size_t i=0;i<4;i++)
+    {
+      const Geometry::Vec3D cylLOrg=LOrg+X*XScale+Y*YScale;
+      const Geometry::Vec3D cylROrg=ROrg+X*XScale+Y*YScale;
+      ModelSupport::buildCylinder(SMap,CIndex,cylLOrg,Z,magCorner);
+      ModelSupport::buildCylinder(SMap,CIndex+1000,cylROrg,Z,magCorner);
+      CIndex+=10;
+      if (i % 2) YScale *= -1.0;
+      XScale *= -1.0;
+    }
   return;
 }
 
@@ -231,27 +243,58 @@ CorrectorMag::createObjects(Simulation& System)
   makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);  
 
   // Magnets
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -1004 5 -6 (-1013 : 1014) ");
-  makeCell("LeftMag",System,cellIndex++,coilMat,0.0,Out);  
+  int BI(buildIndex);
+  for(const std::string partName : {"Left","Right"} )
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,BI,
+		 " 1 -2 1003M -1013M 5 -6 (-1007M:11) (-1027M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);  
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 2003 -2004 5 -6 (-2013 : 2014) ");
-  makeCell("RightMag",System,cellIndex++,coilMat,0.0,Out);  
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1 -2 -1004M 1014M 5 -6 (-1017M:11) (-1037M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+  
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1 -2 1013M -1014M 5 -6 (-11:12) ");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+  
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1003M -1013M 1 -11  5 -6 1007M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," -1004M 1014M 1 -11 5 -6 1017M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1003M -1013M -2 12 5 -6 1027M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," -1004M 1014M -2 12 5 -6 1037M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      BI+=1000;
+    }
 
   // Voids
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 1003 -2004 6 -16 (-1013:2014)" );
-  makeCell("TopViod",System,cellIndex++,voidMat,0.0,Out);  
+    (SMap,buildIndex," 1 -2 1003 -2004 6 -16 (-11:12:-1013:2014)" );
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);  
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 1003 -2004 -5 15 (-1013:2014)" );
-  makeCell("BaseViod",System,cellIndex++,voidMat,0.0,Out);  
+    (SMap,buildIndex," 1 -2 1003 -2004 -5 15 (-11:12:-1013:2014)" );
+  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out);  
+
+  // MAIN VOID
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 1004 -2003 5 -6 " );
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);  
 
 
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 1003 -2004 -15 16 " );
+    (SMap,buildIndex," 1 -2 1003 -2004 15 -16 " );
   addOuterSurf(Out);
 
   return;
@@ -265,8 +308,8 @@ CorrectorMag::createLinks()
 {
   ELog::RegMethod RegA("CorrectorMag","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
+  FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));

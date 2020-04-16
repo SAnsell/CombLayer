@@ -49,8 +49,6 @@ class CorrectorMag :
 
   const std::string baseName;   ///< Base key
   
-  double length;                ///< frame length
-
   double magOffset;             ///< Magnet offset from pipe centre
   double magHeight;             ///< Magnet thickness
   double magWidth;              ///< Magnet thickness

@@ -45,10 +45,12 @@ class CorrectorMagGenerator
   double magHeight;             ///< Magnet height
   double magWidth;              ///< Magnet segment width 
   double magLength;             ///< Magnet full length
-  double magCorner;             ///< Magnet corner radius
   double magInnerWidth;         ///< Magnet inner width
   double magInnerLength;        ///< Magnet inner length
 
+
+  double magCorner;             ///< Magnet corner radius
+  
   double frameHeight;            ///< height of plate
 
   std::string voidMat;          ///< void material

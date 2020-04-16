@@ -57,10 +57,10 @@ namespace setVariable
 {
 
 CorrectorMagGenerator::CorrectorMagGenerator() :
-  length(10.30),magOffset(6.185),
-  magHeight(2.4),magWidth(5.62),magLength(14.04),
-  magCorner(1.72),magInnerWidth(2.13),
-  magInnerLength(11.5),frameHeight(2.0),
+  magOffset(6.185),
+  magHeight(2.4),magWidth(5.62),magLength(14.20),
+  magInnerWidth(2.13),magInnerLength(11.5),
+  magCorner((magWidth-magInnerWidth)/2.0),frameHeight(2.0),
   voidMat("Void"),coilMat("Copper"),frameMat("Iron")
   /*!
     Constructor and defaults
@@ -93,7 +93,6 @@ CorrectorMagGenerator::generateMag(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"YAngle",yAngle);
   
-  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"MagOffset",magOffset);
   Control.addVariable(keyName+"MagWidth",magWidth);
   Control.addVariable(keyName+"MagHeight",magHeight);
@@ -103,7 +102,7 @@ CorrectorMagGenerator::generateMag(FuncDataBase& Control,
   Control.addVariable(keyName+"MagInnerLength",magInnerLength);
   Control.addVariable(keyName+"FrameHeight",frameHeight);
 
-  Control.addVariable(keyName+"VoidMat",coilMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"FrameMat",frameMat);
   
