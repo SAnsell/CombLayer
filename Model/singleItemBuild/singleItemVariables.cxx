@@ -69,6 +69,7 @@
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
 #include "MagnetBlockGenerator.h"
+#include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
 
 namespace setVariable
@@ -207,11 +208,16 @@ SingleItemVariables(FuncDataBase& Control)
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
   MBGen.generateBlock(Control,"M1",0.0);
+
   setVariable::QuadUnitGenerator PGen;
   PGen.generatePipe(Control,"M1QuadUnit",0.0);
 
   //  setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"M1DipoleChamber",0.0);
+
+  //  corrector mag
+  setVariable::CorrectorMagGenerator CMGen;
+  CMGen.generateMag(Control,"CM",0.0,0);
 
   return;
 }

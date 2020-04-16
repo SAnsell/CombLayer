@@ -98,6 +98,7 @@
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuad.h"
+#include "CorrectorMag.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
@@ -106,6 +107,8 @@
 #include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
+
+
 
 #include "makeSingleItem.h"
 
@@ -142,6 +145,16 @@ makeSingleItem::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
+
+  std::shared_ptr<xraySystem::CorrectorMag>
+    CM(new xraySystem::CorrectorMag("CM","CM"));
+
+  OR.addObject(CM);
+
+  CM->addInsertCell(voidCell);
+  CM->createAll(System,World::masterOrigin(),0);
+  
+  return;
 
   std::shared_ptr<xraySystem::LQuad>
     LQ(new xraySystem::LQuad("LQ","LQ"));
