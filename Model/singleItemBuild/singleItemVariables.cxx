@@ -50,8 +50,10 @@
 #include "variableSetup.h"
 #include "singleItemVariables.h"
 
+#include "CFFlanges.h"
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
+#include "PipeGenerator.h"
 #include "RectPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
@@ -209,8 +211,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetBlockGenerator MBGen;
   MBGen.generateBlock(Control,"M1",0.0);
 
-  setVariable::QuadUnitGenerator PGen;
-  PGen.generatePipe(Control,"M1QuadUnit",0.0);
+  setVariable::QuadUnitGenerator M1QGen;
+  M1QGen.generatePipe(Control,"M1QuadUnit",0.0);
 
   //  setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"M1DipoleChamber",0.0);
@@ -218,7 +220,12 @@ SingleItemVariables(FuncDataBase& Control)
   //  corrector mag
   setVariable::CorrectorMagGenerator CMGen;
   CMGen.generateMag(Control,"CM",0.0,0);
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>(); 
+  PGen.generatePipe(Control,"VC",-40.0,80.0);
 
+
+  
   return;
 }
 

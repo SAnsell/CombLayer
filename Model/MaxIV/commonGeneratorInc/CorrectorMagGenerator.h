@@ -48,6 +48,11 @@ class CorrectorMagGenerator
   double magInnerWidth;         ///< Magnet inner width
   double magInnerLength;        ///< Magnet inner length
 
+  double pipeClampYStep;        ///< Pipe clamp oit step
+  double pipeClampZStep;        ///< Pipe clamp up step
+  double pipeClampThick;        ///< Pipe clamp thickness     
+  double pipeClampWidth;        ///< Pipe clamp width
+  double pipeClampHeight;       ///< Pipe clamp height
 
   double magCorner;             ///< Magnet corner radius
   
@@ -55,6 +60,7 @@ class CorrectorMagGenerator
 
   std::string voidMat;          ///< void material
   std::string coilMat;          ///< coil material
+  std::string clampMat;         ///< clamp material
   std::string frameMat;         ///< Iron material
 
 

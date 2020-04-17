@@ -146,11 +146,18 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
+  std::shared_ptr<constructSystem::VacuumPipe>
+    VC(new constructSystem::VacuumPipe("VC"));
   std::shared_ptr<xraySystem::CorrectorMag>
     CM(new xraySystem::CorrectorMag("CM","CM"));
 
+  OR.addObject(VC);
   OR.addObject(CM);
 
+  VC->addInsertCell(voidCell);
+  VC->createAll(System,World::masterOrigin(),0);
+
+  CM->setCutSurf("Inner",*VC,"outerPipe");
   CM->addInsertCell(voidCell);
   CM->createAll(System,World::masterOrigin(),0);
   

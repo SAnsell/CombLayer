@@ -57,10 +57,17 @@ class CorrectorMag :
   double magInnerWidth;         ///< Magnet inner width
   double magInnerLength;        ///< Magnet inner length
 
+  double pipeClampYStep;        ///< Pipe clamp out step
+  double pipeClampZStep;        ///< Pipe clamp up step
+  double pipeClampThick;        ///< Pipe clamp thickness     
+  double pipeClampWidth;        ///< Pipe clamp width
+  double pipeClampHeight;       ///< Pipe clamp height
+  
   double frameHeight;            ///< hegiht of plate
 
   int voidMat;                     ///< coil material
   int coilMat;                     ///< coil material
+  int clampMat;                    ///< clamp material
   int frameMat;                    ///< Iron material
 
   void populate(const FuncDataBase&);  

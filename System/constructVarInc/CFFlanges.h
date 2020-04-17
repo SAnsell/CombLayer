@@ -48,6 +48,7 @@ struct CF16
   static constexpr size_t nBolts=6;
 };
 
+
 /*!
   \struct CF25
   \version 1.0
@@ -94,6 +95,27 @@ struct CF40
   static constexpr size_t nBolts=6;
 };
 
+/*!
+  \struct CF40_22
+  \version 1.0
+  \author S. Ansell
+  \date April 2020
+  \brief CFFlanges for CF40 with 22mm outer/ 19mm inner diameter
+*/
+struct CF40_22
+{
+  static constexpr double innerRadius=0.95;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  static constexpr double bellowStep=1.0;
+  static constexpr double bellowThick=1.0;
+  static constexpr double gasketRadius=1.0;
+  static constexpr double gasketThick=1.3;
+  static constexpr double boltRadius=0.3;
+  static constexpr size_t nBolts=6;
+};
+ 
 /*!
   \struct CF50
   \version 1.0
