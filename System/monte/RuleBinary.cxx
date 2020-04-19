@@ -314,7 +314,7 @@ RuleBinary::createTree() const
     }
 
   // Join up all the EPI rule groups
-  if (EPIrules.size()==0)       // No work/no rule
+  if (EPIrules.empty())       // No work/no rule
     return 0;
   if (EPIrules.size()==1)
     return EPIrules.front();
