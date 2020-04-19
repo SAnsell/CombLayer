@@ -12,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -228,6 +228,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	{
 	  std::unique_ptr<L2SPFsegment1> BLPtr;
 	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
+	  BLPtr->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  BLPtr->setCutSurf("front",injectionHall->getSurf("Front"));
 	  BLPtr->createAll(System,*injectionHall,
 			   injectionHall->getSideIndex(injectNAMES.at(BL)));
 	}

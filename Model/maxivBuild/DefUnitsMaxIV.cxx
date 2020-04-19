@@ -12,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -166,8 +166,8 @@ setMaxIVLinac(defaultConfig& A,
   static const MapTYPE unitDef=
     {
      { "LINAC", "World 0"},
-     { "LToSPF", "World 0"},
-     { "LToSPFsegment1", "World 0"}
+     { "L2SPF", "World 0"},
+     { "L2SPFsegment1", "World 0"}
     };
 
   size_t unitIndex(0);

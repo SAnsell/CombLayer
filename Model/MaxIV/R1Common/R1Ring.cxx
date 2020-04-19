@@ -224,11 +224,12 @@ R1Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height+roofThick+roofExtra),Z);
-
+  // transfer for later
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+    
   surfN=buildIndex+1000;
   for(size_t i=0;i<NPoints;i++)
     {
