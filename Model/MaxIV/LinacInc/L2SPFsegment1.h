@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/LinacTo3GeV.h
+ * File:   LinacInc/L2SPFsegment1.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_LinacTo3GeV_h
-#define xraySystem_LinacTo3GeV_h
+#ifndef xraySystem_L2SPFsegment1_h
+#define xraySystem_L2SPFsegment1_h
 
 namespace insertSystem
 {
@@ -53,14 +53,14 @@ namespace constructSystem
 namespace xraySystem
 {    
   /*!
-    \class LinacTo3GeV
+    \class L2SPFsegment1
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class LinacTo3GeV :
+class L2SPFsegment1 :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -72,7 +72,9 @@ class LinacTo3GeV :
   /// System for building a divided inner
   attachSystem::InnerZone buildZone;
 
-  double outerRadius;           ///< Radius for inner void
+  double outerLeft;         ///< left for inner void
+  double outerRight;        ///< right for inner void
+  double outerHeight;       ///< lift from origin for inner void
 
   
   void populate(const FuncDataBase&);
@@ -82,10 +84,10 @@ class LinacTo3GeV :
   
  public:
   
-  LinacTo3GeV(const std::string&);
-  LinacTo3GeV(const LinacTo3GeV&);
-  LinacTo3GeV& operator=(const LinacTo3GeV&);
-  ~LinacTo3GeV();
+  L2SPFsegment1(const std::string&);
+  L2SPFsegment1(const L2SPFsegment1&);
+  L2SPFsegment1& operator=(const L2SPFsegment1&);
+  ~L2SPFsegment1();
 
   
   void createAll(Simulation&,const attachSystem::FixedComp&,

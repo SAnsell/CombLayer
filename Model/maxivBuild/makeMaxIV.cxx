@@ -94,7 +94,7 @@
 #include "MICROMAX.h"
 #include "SPECIES.h"
 
-#include "LinacTo3GeV.h"
+#include "L2SPFsegment1.h"
 
 #include "makeMaxIV.h"
 
@@ -189,7 +189,8 @@ makeMaxIV::buildInjection(Simulation& System,
 
   // names : Link point for origin
   static const std::map<std::string,std::string> injectNAMES
-    ({ {"LinacTo3GeV","Origin"}
+    ({ {"L2SPF","Origin"},                         // all components
+       {"L2SPFsegment1","Origin"}                  // first only
     });
 
   const int voidCell(74123);
@@ -223,10 +224,10 @@ makeMaxIV::buildInjection(Simulation& System,
 
   for(const std::string& BL : activeINJ)
     {
-      if (BL=="LinacTo3GeV")  // sector
+      if (BL=="L2SPFsegment1" || BL=="L2SPF")  // sector
 	{
-	  std::unique_ptr<LinacTo3GeV> BLPtr;
-	  BLPtr.reset(new LinacTo3GeV("L3G"));
+	  std::unique_ptr<L2SPFsegment1> BLPtr;
+	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
 	  BLPtr->createAll(System,*injectionHall,
 			   injectionHall->getSideIndex(injectNAMES.at(BL)));
 	}

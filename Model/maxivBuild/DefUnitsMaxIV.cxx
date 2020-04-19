@@ -166,7 +166,8 @@ setMaxIVLinac(defaultConfig& A,
   static const MapTYPE unitDef=
     {
      { "LINAC", "World 0"},
-     { "LinacTo3GeV", "World 0"}
+     { "LToSPF", "World 0"},
+     { "LToSPFsegment1", "World 0"}
     };
 
   size_t unitIndex(0);

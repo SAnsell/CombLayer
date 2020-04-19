@@ -64,6 +64,26 @@ namespace setVariable
 namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
+  void linac2SPFsegment1(FuncDataBase&,const std::string&);
+
+void
+linac2SPFsegment1(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+
+  Control.addVariable(lKey+"XStep",100.0);
+  Control.addVariable(lKey+"OuterLeft",80.0);
+  Control.addVariable(lKey+"OuterRight",140.0);
+  Control.addVariable(lKey+"OuterHeight",100.0);
+
+  return;
+}
 
   
 void
@@ -109,7 +129,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",283.0);  // from mid line
   
-
   Control.addVariable(wallKey+"KlysDivThick",100.0);
   
   Control.addVariable(wallKey+"MidGateOut",206.0);
@@ -145,6 +164,7 @@ LINACvariables(FuncDataBase& Control)
 
   
   linacVar::wallVariables(Control,"InjectionHall");
+  linacVar::linac2SPFsegment1(Control,"L2SPFsegment1");
 
   return;
 }

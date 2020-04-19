@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/LinacTo3GeV.cxx
+ * File: Linac/L2SPFsegment1.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -92,14 +92,14 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "LinacTo3GeV.h"
+#include "L2SPFsegment1.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-LinacTo3GeV::LinacTo3GeV(const std::string& Key) :
+L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -115,23 +115,26 @@ LinacTo3GeV::LinacTo3GeV(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 }
   
-LinacTo3GeV::~LinacTo3GeV()
+L2SPFsegment1::~L2SPFsegment1()
   /*!
     Destructor
    */
 {}
 
 void
-LinacTo3GeV::populate(const FuncDataBase& Control)
+L2SPFsegment1::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("LinacTo3GeV","populate");
+  ELog::RegMethod RegA("L2SPFsegment1","populate");
   FixedOffset::populate(Control);
 
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",0.0);
+  outerHeight=Control.EvalDefVar<double>(keyName+"OuterHeight",0.0);
+
   const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   buildZone.setInnerMat(voidMat);
 
@@ -140,34 +143,22 @@ LinacTo3GeV::populate(const FuncDataBase& Control)
 
 
 void
-LinacTo3GeV::createSurfaces()
+L2SPFsegment1::createSurfaces()
   /*!
-    Create surfaces
+    Create surfaces for the buildZone [if used]
   */
 {
-  ELog::RegMethod RegA("LinacTo3GeV","createSurfaces");
+  ELog::RegMethod RegA("L2SPFsegment1","createSurfaces");
 
-  if (outerRadius>Geometry::zeroTol)
+  if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
-
-      if (isActive("floor"))
-	{
-	  std::string Out;
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3,Origin-X*outerRadius,X);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+4,Origin+X*outerRadius,X);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+6,Origin+Z*outerRadius,Z);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-	  const HeadRule HR(Out+getRuleStr("floor"));
-	  buildZone.setSurround(HR);
-	}
-      else
-	{
-	  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-	  buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
-	}
+      std::string Out;
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
     }
 
   if (!isActive("front"))
@@ -175,21 +166,23 @@ LinacTo3GeV::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*100.0,Y);
+      setCutSurf("back",SMap.realSurf(buildIndex+2));
+    }
   return;
 }
 
-
-
-
 void
-LinacTo3GeV::buildObjects(Simulation& System)
+L2SPFsegment1::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("LinacTo3GeV","buildObjects");
+  ELog::RegMethod RegA("L2SPFsegment1","buildObjects");
 
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -202,7 +195,7 @@ LinacTo3GeV::buildObjects(Simulation& System)
 }
 
 void
-LinacTo3GeV::createLinks()
+L2SPFsegment1::createLinks()
   /*!
     Create a front/back link
    */
@@ -211,13 +204,11 @@ LinacTo3GeV::createLinks()
   //  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
-  
-
 
 void 
-LinacTo3GeV::createAll(Simulation& System,
-				 const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
+L2SPFsegment1::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -226,12 +217,10 @@ LinacTo3GeV::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("LinacTo3GeV","build");
+  ELog::RegMethod RControl("L2SPFsegment1","build");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  ELog::EM<<"Populate  == "<<Origin<<ELog::endDiag;
-
   createSurfaces();
   
   buildObjects(System);
