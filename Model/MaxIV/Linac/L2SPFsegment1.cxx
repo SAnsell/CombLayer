@@ -131,7 +131,7 @@ L2SPFsegment1::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("L2SPFsegment1","populate");
   FixedOffset::populate(Control);
 
-  outerLeft=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",0.0);
   outerHeight=Control.EvalDefVar<double>(keyName+"OuterHeight",0.0);
 
@@ -150,6 +150,7 @@ L2SPFsegment1::createSurfaces()
 {
   ELog::RegMethod RegA("L2SPFsegment1","createSurfaces");
 
+  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
       std::string Out;
@@ -166,11 +167,14 @@ L2SPFsegment1::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
+
   if (!isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*100.0,Y);
-      setCutSurf("back",SMap.realSurf(buildIndex+2));
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+  
+    
   return;
 }
 
@@ -187,9 +191,11 @@ L2SPFsegment1::buildObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
+  
+
+
   MonteCarlo::Object* masterCellA=
     buildZone.constructMasterCell(System,*this);
-
 
   return;
 }

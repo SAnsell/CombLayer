@@ -164,7 +164,7 @@ LINACvariables(FuncDataBase& Control)
 
   
   linacVar::wallVariables(Control,"InjectionHall");
-  linacVar::linac2SPFsegment1(Control,"L2SPFsegment1");
+  linacVar::linac2SPFsegment1(Control,"L2SPFseg1");
 
   return;
 }
