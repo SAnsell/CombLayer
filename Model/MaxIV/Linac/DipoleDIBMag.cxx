@@ -85,6 +85,7 @@ DipoleDIBMag::DipoleDIBMag(const DipoleDIBMag& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
+  magInnerRadius(A.magInnerRadius),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -111,6 +112,7 @@ DipoleDIBMag::operator=(const DipoleDIBMag& A)
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
+      magInnerRadius=A.magInnerRadius;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -148,6 +150,7 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  magInnerRadius=Control.EvalVar<double>(keyName+"MagInnerRadius");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

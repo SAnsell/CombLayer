@@ -79,6 +79,7 @@ DipoleDIBMagGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"MagInnerRadius",magInnerRadius);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 

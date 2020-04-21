@@ -43,6 +43,7 @@ class DipoleDIBMagGenerator
   double width;                 ///< Width
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
+  double magInnerRadius; ///< Magnet inner radius
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
