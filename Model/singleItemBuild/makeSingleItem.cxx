@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   singleItemBuild/makeSingleItem.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -108,14 +108,14 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 
-
+#include "DipoleDIBMag.h"
 
 #include "makeSingleItem.h"
 
 namespace singleItemSystem
 {
 
-makeSingleItem::makeSingleItem() 
+makeSingleItem::makeSingleItem()
  /*!
     Constructor
  */
@@ -129,7 +129,7 @@ makeSingleItem::~makeSingleItem()
 {}
 
 
-void 
+void
 makeSingleItem::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
 /*!
@@ -141,10 +141,21 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
+
+
+  std::shared_ptr<xraySystem::DipoleDIBMag>
+    DIB(new xraySystem::DipoleDIBMag("DIB"));
+
+  OR.addObject(DIB);
+
+  DIB->addInsertCell(voidCell);
+  DIB->createAll(System,World::masterOrigin(),0);
+
+  return;
 
   std::shared_ptr<xraySystem::CorrectorMag>
     CM(new xraySystem::CorrectorMag("CM","CM"));
@@ -153,7 +164,7 @@ makeSingleItem::build(Simulation& System,
 
   CM->addInsertCell(voidCell);
   CM->createAll(System,World::masterOrigin(),0);
-  
+
   return;
 
   std::shared_ptr<xraySystem::LQuad>
@@ -163,19 +174,19 @@ makeSingleItem::build(Simulation& System,
 
   LQ->addInsertCell(voidCell);
   LQ->createAll(System,World::masterOrigin(),0);
-  
+
   return;
 
-  
+
   std::shared_ptr<xraySystem::MagnetBlock>
     MB(new xraySystem::MagnetBlock("M1"));
 
   OR.addObject(MB);
   MB->addInsertCell(voidCell);
   MB->createAll(System,World::masterOrigin(),0);
-  
+
   return;
-  
+
   std::shared_ptr<xraySystem::Sexupole>
     SXX(new xraySystem::Sexupole("SXX","SXX"));
 
@@ -183,11 +194,11 @@ makeSingleItem::build(Simulation& System,
 
   SXX->addInsertCell(voidCell);
   SXX->createAll(System,World::masterOrigin(),0);
-  
-  return;
-  
 
-  
+  return;
+
+
+
   std::shared_ptr<xraySystem::MagnetM1>
     MagBlock(new xraySystem::MagnetM1("M1Block"));
 
@@ -195,7 +206,7 @@ makeSingleItem::build(Simulation& System,
 
   MagBlock->addAllInsertCell(voidCell);
   MagBlock->createAll(System,World::masterOrigin(),0);
-  
+
   return;
 
   std::shared_ptr<xraySystem::Octupole>
@@ -205,19 +216,19 @@ makeSingleItem::build(Simulation& System,
 
   OXX->addInsertCell(voidCell);
   OXX->createAll(System,World::masterOrigin(),0);
-  
+
   return;
-  
+
   std::shared_ptr<xraySystem::EPSeparator>
     EPsep(new xraySystem::EPSeparator("EPSeparator"));
   OR.addObject(EPsep);
-  
+
   EPsep->addInsertCell(voidCell);
   EPsep->createAll(System,World::masterOrigin(),0);
 
   return;
-  
-  
+
+
   std::shared_ptr<xraySystem::R3ChokeChamber>
     CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
   OR.addObject(CChamber);
@@ -225,9 +236,9 @@ makeSingleItem::build(Simulation& System,
   CChamber->createAll(System,World::masterOrigin(),0);
 
   return;
-  
 
-  
+
+
   std::shared_ptr<xraySystem::QuadUnit>
     PDipole(new xraySystem::QuadUnit("PreDipole"));
   OR.addObject(PDipole);
@@ -257,7 +268,7 @@ makeSingleItem::build(Simulation& System,
   return;
 
 
-   std::shared_ptr<insertSystem::insertSphere> 
+   std::shared_ptr<insertSystem::insertSphere>
     Target(new insertSystem::insertSphere("Target"));
   std::shared_ptr<insertSystem::insertShell>
     Surround(new insertSystem::insertShell("Shield"));
@@ -275,12 +286,12 @@ makeSingleItem::build(Simulation& System,
   TubeA->createAll(System,World::masterOrigin(),0);
   TubeB->addInsertCell(voidCell);
   TubeB->createAll(System,*TubeA,2);
-  
-  
+
+
   return;
-  
-	    
-	  
+
+
+
   Target->addInsertCell(voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
@@ -303,4 +314,3 @@ makeSingleItem::build(Simulation& System,
 
 
 }   // NAMESPACE singleItemSystem
-
