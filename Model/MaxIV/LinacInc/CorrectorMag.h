@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_CorrectorMag_h
-#define xraySystem_CorrectorMag_h
+#ifndef tdcSystem_CorrectorMag_h
+#define tdcSystem_CorrectorMag_h
 
 class Simulation;
 
 
-namespace xraySystem
+namespace tdcSystem
 {
 /*!
   \class CorrectorMag

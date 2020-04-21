@@ -148,8 +148,8 @@ makeSingleItem::build(Simulation& System,
 
   std::shared_ptr<constructSystem::VacuumPipe>
     VC(new constructSystem::VacuumPipe("VC"));
-  std::shared_ptr<xraySystem::CorrectorMag>
-    CM(new xraySystem::CorrectorMag("CM","CM"));
+  std::shared_ptr<tdcSystem::CorrectorMag>
+    CM(new tdcSystem::CorrectorMag("CM","CM"));
 
   OR.addObject(VC);
   OR.addObject(CM);
@@ -163,8 +163,8 @@ makeSingleItem::build(Simulation& System,
   
   return;
 
-  std::shared_ptr<xraySystem::LQuad>
-    LQ(new xraySystem::LQuad("LQ","LQ"));
+  std::shared_ptr<tdcSystem::LQuad>
+    LQ(new tdcSystem::LQuad("LQ","LQ"));
 
   OR.addObject(LQ);
 

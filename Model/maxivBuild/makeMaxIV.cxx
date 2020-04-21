@@ -94,7 +94,7 @@
 #include "MICROMAX.h"
 #include "SPECIES.h"
 
-#include "L2SPFsegment1.h"
+#include "TDC.h"
 
 #include "makeMaxIV.h"
 
@@ -104,7 +104,8 @@ namespace xraySystem
 makeMaxIV::makeMaxIV() :
   r1Ring(new R1Ring("R1Ring")),
   r3Ring(new R3Ring("R3Ring")),
-  injectionHall(new InjectionHall("InjectionHall"))
+  tdc(new tdcSystem::TDC("TDC"))
+
  /*!
     Constructor
  */
@@ -114,7 +115,7 @@ makeMaxIV::makeMaxIV() :
 
   OR.addObject(r1Ring);
   OR.addObject(r3Ring);
-  OR.addObject(injectionHall);
+  OR.addObject(tdc);
 }
 
 
@@ -187,10 +188,11 @@ makeMaxIV::buildInjection(Simulation& System,
 {
   ELog::RegMethod RegA("makeMaxIV","buildInjection");
 
-  // names : Link point for origin
-  static const std::map<std::string,std::string> injectNAMES
-    ({ {"L2SPF","Origin"},                         // all components
-       {"L2SPFsegment1","Origin"}                  // first only
+  // names : {set of real components to build}
+  typedef const std::map<std::string,std::set<std::string> > ITYPE;
+  static ITYPE injectNAMES
+    ({ {"L2SPF",{"L2SPFsegment1"} },               // all components
+       {"L2SPFsegment1",{} }                       // first only
     });
 
   const int voidCell(74123);
@@ -208,10 +210,22 @@ makeMaxIV::buildInjection(Simulation& System,
 	    IParam.getValue<std::string>("beamlines",j,index);
 	  if (BL=="LINAC" || BL=="SPF")  // default build
 	    activeLinac=1;
-	  else if (injectNAMES.find(BL) != injectNAMES.end())
+	  else
 	    {
-	      activeLinac=1;
-	      activeINJ.emplace(BL);
+	      ITYPE::const_iterator mc=injectNAMES.find(BL);
+	    if (mc != injectNAMES.end())
+	      {
+		if (mc->second.empty())
+		  {
+		    activeLinac=1;
+		    activeINJ.emplace(BL);
+		  }
+		else
+		  {
+		    for(const std::string& item : mc->second)
+		      activeINJ.emplace(item);
+		  }
+	      }
 	    }
 	  index++;
 	}
@@ -219,24 +233,9 @@ makeMaxIV::buildInjection(Simulation& System,
   if (!activeLinac) return 0;
 
   // BUILD HALL:
-  injectionHall->addInsertCell(voidCell);
-  injectionHall->createAll(System,World::masterOrigin(),0);
+  tdc->setActive(activeINJ);
+  tdc->createAll(System,World::masterOrigin(),0);
 
-  for(const std::string& BL : activeINJ)
-    {
-      if (BL=="L2SPFsegment1" || BL=="L2SPF")  // sector
-	{
-	  std::unique_ptr<L2SPFsegment1> BLPtr;
-	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
-	  BLPtr->setCutSurf("floor",injectionHall->getSurf("Floor"));
-	  BLPtr->setCutSurf("front",injectionHall->getSurf("Front"));
-	  BLPtr->createAll(System,*injectionHall,
-			   injectionHall->getSideIndex(injectNAMES.at(BL)));
-	}
-    }
-      
-
-  
   return 1;  
 }  
 

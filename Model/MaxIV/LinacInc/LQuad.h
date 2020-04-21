@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/LQuad.h
+ * File:   LinacInc/LQuad.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_LQuad_h
-#define xraySystem_LQuad_h
+#ifndef tdcSystem_LQuad_h
+#define tdcSystem_LQuad_h
 
 class Simulation;
 
 
-namespace xraySystem
+namespace tdcSystem
 {
 /*!
   \class LQuad

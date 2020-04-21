@@ -82,7 +82,7 @@
 
 #include "CorrectorMag.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 CorrectorMag::CorrectorMag(const std::string& Key) :
@@ -441,4 +441,4 @@ CorrectorMag::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem

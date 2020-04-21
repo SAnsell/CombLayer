@@ -94,7 +94,7 @@
 
 #include "L2SPFsegment1.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 // Note currently uncopied:
@@ -235,5 +235,5 @@ L2SPFsegment1::createAll(Simulation& System,
 }
 
 
-}   // NAMESPACE xraySystem
+}   // NAMESPACE tdcSystem
 

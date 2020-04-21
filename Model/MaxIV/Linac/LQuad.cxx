@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/LQuad.cxx
+ * File:   Linac/LQuad.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -82,7 +82,7 @@
 
 #include "LQuad.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 LQuad::LQuad(const std::string& Key) :
@@ -394,4 +394,4 @@ LQuad::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem

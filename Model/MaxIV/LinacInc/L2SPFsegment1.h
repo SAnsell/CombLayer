@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_L2SPFsegment1_h
-#define xraySystem_L2SPFsegment1_h
+#ifndef tdcSystem_L2SPFsegment1_h
+#define tdcSystem_L2SPFsegment1_h
 
 namespace insertSystem
 {
@@ -50,7 +50,7 @@ namespace constructSystem
   \author S. Ansell
 */
 
-namespace xraySystem
+namespace tdcSystem
 {    
   /*!
     \class L2SPFsegment1

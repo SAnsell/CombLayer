@@ -22,6 +22,11 @@
 #ifndef xraySystem_makeMaxIV_h
 #define xraySystem_makeMaxIV_h
 
+namespace tdcSystem
+{
+  class TDC;
+}
+
 
 namespace xraySystem
 {
@@ -45,7 +50,7 @@ class makeMaxIV
   /// Main R1 Ring
   std::shared_ptr<R3Ring> r3Ring;
   /// Linac/SPF Hall
-  std::shared_ptr<InjectionHall> injectionHall;
+  std::shared_ptr<tdcSystem::TDC> tdc;
 
   
   void populateStopPoint(const mainSystem::inputParam&,

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/InjectionHall.cxx
+ * File:   Linac/InjectionHall.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -80,7 +80,7 @@
 
 #include "InjectionHall.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 InjectionHall::InjectionHall(const std::string& Key) : 
@@ -488,4 +488,4 @@ InjectionHall::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem
