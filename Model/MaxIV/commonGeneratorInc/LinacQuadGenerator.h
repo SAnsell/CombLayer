@@ -76,7 +76,7 @@ class LinacQuadGenerator
   void setPoleAngle(const double A) { poleYAngle=A; }
   void setRadius(const double,const double);
   virtual void generateQuad(FuncDataBase&,const std::string&,
-			   const double,const double) const;
+			   const double) const;
 
 };
 

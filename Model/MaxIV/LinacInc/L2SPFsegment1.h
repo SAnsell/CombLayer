@@ -51,7 +51,9 @@ namespace constructSystem
 */
 
 namespace tdcSystem
-{    
+{
+  class LQuad;
+  class CorrectorMag;
   /*!
     \class L2SPFsegment1
     \version 1.0
@@ -61,9 +63,8 @@ namespace tdcSystem
   */
 
 class L2SPFsegment1 :
-  public attachSystem::CopiedComp,
-  public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -76,6 +77,29 @@ class L2SPFsegment1 :
   double outerRight;        ///< right for inner void
   double outerHeight;       ///< lift from origin for inner void
 
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< start pipe
+  std::shared_ptr<constructSystem::Bellows> bellowA;    ///< first bellow
+  ///< connect with two corrector magnets
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrA;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+  /// exit pipe from corrector magnet
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// pipe from  corrector block+Quad
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrB;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertB;   ///< corrector mag
+  std::shared_ptr<tdcSystem::LQuad> QuadA;
+
+  // THIS is the double pipe
+  //  std::shared_ptr<tdcSystem::VacuumPipe> pipeE;
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrC;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
+  /// ion pump [rotated]
+  std::shared_ptr<constructSystem::PipeTube> pumpA;   
   
   void populate(const FuncDataBase&);
   void createSurfaces();

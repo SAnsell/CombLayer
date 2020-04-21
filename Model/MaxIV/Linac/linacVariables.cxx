@@ -57,6 +57,8 @@
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
 #include "FlangeMountGenerator.h"
+#include "CorrectorMagGenerator.h"
+#include "LinacQuadGenerator.h"
 
 namespace setVariable
 {
@@ -76,12 +78,36 @@ linac2SPFsegment1(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
 
-  Control.addVariable(lKey+"XStep",100.0);
+  
+  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
   Control.addVariable(lKey+"OuterLeft",80.0);
   Control.addVariable(lKey+"OuterRight",140.0);
   Control.addVariable(lKey+"OuterHeight",100.0);
 
+  PGen.setCF<setVariable::CF40_22>(); 
+  PGen.generatePipe(Control,"PipeA",0.0,16.15);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,"BellowA",0.0,74.6);
+    //  corrector mag
+
+  CMGen.generateMag(Control,"CMagHorrA",0.0,0);
+  CMGen.generateMag(Control,"CMagVertA",0.0,1);
+
+  CMGen.generateMag(Control,"CMagHorrB",0.0,0);
+  CMGen.generateMag(Control,"CMagVertB",0.0,1);
+  
+  CMGen.generateMag(Control,"CMagHorrC",0.0,0);
+  CMGen.generateMag(Control,"CMagVertC",0.0,1);
+
+
+  LQGen.generateQuad(Control,"QuadA",0.0);
+  
   return;
 }
 

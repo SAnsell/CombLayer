@@ -66,7 +66,6 @@
 #include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -81,16 +80,13 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 
-#include "insertObject.h"
-#include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "portItem.h"
 #include "PipeTube.h"
-#include "PortTube.h"
-#include "PipeShield.h"
+#include "LQuad.h"
+#include "CorrectorMag.h"
 
 #include "L2SPFsegment1.h"
 
@@ -100,12 +96,26 @@ namespace tdcSystem
 // Note currently uncopied:
   
 L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
-  attachSystem::CopiedComp(Key,Key),
+  attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex)
+  buildZone(*this,cellIndex),
+
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  cMagHorrA(new tdcSystem::CorrectorMag(keyName+"CMagHorrA")),
+  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
+  cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
+  cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
+  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
+  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
+  cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
+  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
+  pumpA(new constructSystem::PipeTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -113,6 +123,11 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  OR.addObject(pipeA);
+  OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(pipeD);
 }
   
 L2SPFsegment1::~L2SPFsegment1()
@@ -150,11 +165,13 @@ L2SPFsegment1::createSurfaces()
 {
   ELog::RegMethod RegA("L2SPFsegment1","createSurfaces");
 
-  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
+  const double totalLength(400.0);
+  
   if (outerLeft>Geometry::zeroTol && isActive("floor"))
     {
       std::string Out;
       ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ELog::EM<<"L3 == "<<Origin-X*outerLeft<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight,Z);
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
@@ -170,7 +187,7 @@ L2SPFsegment1::createSurfaces()
 
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*100.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*totalLength,Y);
       setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
   
@@ -192,11 +209,17 @@ L2SPFsegment1::buildObjects(Simulation& System)
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
   
-
-
-  MonteCarlo::Object* masterCellA=
+  MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
+  pipeA->createAll(System,*this,0);
+  // dump cell for joinPipe
+  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  //if (preInsert)
+  //preInsert->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  
   return;
 }
 

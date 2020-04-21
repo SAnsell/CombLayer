@@ -57,7 +57,7 @@ namespace setVariable
 {
 
 LinacQuadGenerator::LinacQuadGenerator() :
-  frameRadius(7.5),frameOuter(18.8),
+  length(25.0),frameRadius(7.5),frameOuter(18.8),
   poleYAngle(45.0),poleGap(1.25),
   poleRadius(1.55),poleWidth(2.6),     // pole radius 7mm above flat line
   coilRadius(2.31),coilWidth(7.0),   // full gpa
@@ -94,21 +94,19 @@ LinacQuadGenerator::setRadius(const double R,const double C)
 void
 LinacQuadGenerator::generateQuad(FuncDataBase& Control,
 				 const std::string& keyName,
-				 const double yStep,
-				 const double length) const
+				 const double yStep)  const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param length :: length
   */
 {
   ELog::RegMethod RegA("LinacQuadGenerator","generateQuad");
 
   Control.addVariable(keyName+"YStep",yStep);
 
-  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Length",length);   
   Control.addVariable(keyName+"FrameRadius",frameRadius);
   Control.addVariable(keyName+"FrameOuter",frameOuter);
   Control.addVariable(keyName+"PoleYAngle",poleYAngle);

@@ -205,7 +205,7 @@ SingleItemVariables(FuncDataBase& Control)
   SGen.generateHex(Control,"SXX",20.0,25.0);
 
   setVariable::LinacQuadGenerator LQGen;
-  LQGen.generateQuad(Control,"LQ",20.0,25.0);
+  LQGen.generateQuad(Control,"LQ",20.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;

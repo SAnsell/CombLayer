@@ -679,6 +679,7 @@ ContainedComp::insertExternalObject(Simulation& System,
   /*!
     Insert the ContainedComp into the cell list
     \param System :: Simulation to get objects from
+    \param excludeObj :: object that is added to insert cells
   */
 {
   ELog::RegMethod RegA("ContainedComp","insertExternalObject");
