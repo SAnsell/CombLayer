@@ -79,6 +79,7 @@
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -88,6 +89,7 @@
 #include "LQuad.h"
 #include "CorrectorMag.h"
 
+#include "LObjectSupport.h"
 #include "L2SPFsegment1.h"
 
 namespace tdcSystem
@@ -171,7 +173,6 @@ L2SPFsegment1::createSurfaces()
     {
       std::string Out;
       ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
-      ELog::EM<<"L3 == "<<Origin-X*outerLeft<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight,Z);
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
@@ -190,8 +191,7 @@ L2SPFsegment1::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*totalLength,Y);
       setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  
-    
+
   return;
 }
 
@@ -213,13 +213,41 @@ L2SPFsegment1::buildObjects(Simulation& System)
     buildZone.constructMasterCell(System,*this);
 
   pipeA->createAll(System,*this,0);
-  // dump cell for joinPipe
-  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
-  //if (preInsert)
-  //preInsert->insertInCell(System,outerCell);
-
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
   
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*bellowA);
+
+  //
+  // build pipe + corrector magnets together:
+  // THIS becomes a function:
+  //
+  pipeB->createAll(System,*bellowA,"back");
+  correctorMagnetPair(System,buildZone,pipeB,cMagHorrA,cMagVertA);
+  // cMagHorrA->setCutSurf("Inner",*pipeB,"outerPipe");
+  // cMagHorrA->createAll(System,*bellowA,"back");
+
+  // cMagVertA->setCutSurf("Inner",*pipeB,"outerPipe");
+  // cMagVertA->createAll(System,*bellowA,"back");
+
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagHorrA,-1);
+  // pipeB->insertInCell(System,outerCell);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagHorrA,2);
+  // cMagHorrA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagVertA,-1);
+  pipeB->insertInCell(System,outerCell);
+  
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagVertA,2);
+  cMagVertA->insertInCell(System,outerCell);
+
+  
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
+  pipeB->insertInCell(System,outerCell);
+
+
+
   return;
 }
 

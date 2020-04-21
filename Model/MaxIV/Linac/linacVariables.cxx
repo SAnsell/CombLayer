@@ -89,24 +89,27 @@ linac2SPFsegment1(FuncDataBase& Control,
   Control.addVariable(lKey+"OuterRight",140.0);
   Control.addVariable(lKey+"OuterHeight",100.0);
 
-  PGen.setCF<setVariable::CF40_22>(); 
-  PGen.generatePipe(Control,"PipeA",0.0,16.15);
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
 
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,"BellowA",0.0,74.6);
-    //  corrector mag
+  // note larget unit
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
-  CMGen.generateMag(Control,"CMagHorrA",0.0,0);
-  CMGen.generateMag(Control,"CMagVertA",0.0,1);
+  //  corrector mag and pie
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,55.73);
+  CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
+  CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
 
-  CMGen.generateMag(Control,"CMagHorrB",0.0,0);
-  CMGen.generateMag(Control,"CMagVertB",0.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHorrB",0.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVertB",0.0,1);
   
-  CMGen.generateMag(Control,"CMagHorrC",0.0,0);
-  CMGen.generateMag(Control,"CMagVertC",0.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHorrC",0.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",0.0,1);
 
 
-  LQGen.generateQuad(Control,"QuadA",0.0);
+  LQGen.generateQuad(Control,lKey+"QuadA",0.0);
   
   return;
 }

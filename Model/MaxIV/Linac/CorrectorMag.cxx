@@ -277,7 +277,6 @@ CorrectorMag::createObjects(Simulation& System)
   const int extraFlag((extraValue<Geometry::zeroTol) ? 1 :
 		      ((extraValue>-Geometry::zeroTol) ? -1 : 0));
   
-  ELog::EM<<"Extra Flag= = "<<extraValue<<" "<<extraFlag<<ELog::endDiag;
   const std::string fullSurf = (extraFlag>0) ?
     ModelSupport::getComposite(SMap,buildIndex," 3001 -3102" ) :
     ModelSupport::getComposite(SMap,buildIndex," 1 -2" );
@@ -398,23 +397,41 @@ CorrectorMag::createObjects(Simulation& System)
     (SMap,buildIndex,"  1003 -2004 15 -16 " );
   addOuterSurf(Out+fullSurf);
 
+  createLinks(extraFlag);
+
   return;
 }
 
 void 
-CorrectorMag::createLinks()
+CorrectorMag::createLinks(const bool extraFlag)
   /*!
     Create the linked units
    */
 {
   ELog::RegMethod RegA("CorrectorMag","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
+  if (!extraFlag)
+    {
+      FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
+      FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
+      
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+    }
+  else
+    {
+      const Geometry::Vec3D COrgA
+	(Origin-Y*(magInnerLength/2.0+pipeClampThick+pipeClampYStep));
+      const Geometry::Vec3D COrgB
+	(Origin+Y*(magInnerLength/2.0+pipeClampThick+pipeClampYStep));
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+      FixedComp::setConnect(0,COrgA,-Y);     
+      FixedComp::setConnect(1,COrgB,Y);     
+      
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+3001));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+3102));
+    }
+      
   return;
 }
 
@@ -435,7 +452,6 @@ CorrectorMag::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();
   insertObjects(System);   
   
   return;

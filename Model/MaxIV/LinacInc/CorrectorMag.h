@@ -73,7 +73,7 @@ class CorrectorMag :
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
-  void createLinks();
+  void createLinks(const bool);
 
  public:
 
@@ -83,6 +83,7 @@ class CorrectorMag :
   CorrectorMag& operator=(const CorrectorMag&);
   virtual ~CorrectorMag();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
