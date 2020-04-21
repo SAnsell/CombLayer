@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 DipoleDIBMagGenerator::DipoleDIBMagGenerator() :
-  length(10.0),width(5.0),height(15.0),
+  length(70.7),width(19.0),height(2.8),
   wallThick(1.0),
   mainMat(0),wallMat(0)
   /*!
