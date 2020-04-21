@@ -115,6 +115,7 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
   QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
+  pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
   cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
   pumpA(new constructSystem::PipeTube(keyName+"PumpA"))
@@ -128,8 +129,14 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
 
   OR.addObject(pipeA);
   OR.addObject(pipeB);
+  OR.addObject(cMagHorrA);
+  OR.addObject(cMagVertA);
   OR.addObject(pipeC);
   OR.addObject(pipeD);
+  OR.addObject(cMagHorrB);
+  OR.addObject(cMagVertB);
+  OR.addObject(QuadA);
+  OR.addObject(pipeE);
 }
   
 L2SPFsegment1::~L2SPFsegment1()
@@ -225,28 +232,24 @@ L2SPFsegment1::buildObjects(Simulation& System)
   //
   pipeB->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,buildZone,pipeB,cMagHorrA,cMagVertA);
-  // cMagHorrA->setCutSurf("Inner",*pipeB,"outerPipe");
-  // cMagHorrA->createAll(System,*bellowA,"back");
-
-  // cMagVertA->setCutSurf("Inner",*pipeB,"outerPipe");
-  // cMagVertA->createAll(System,*bellowA,"back");
-
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagHorrA,-1);
-  // pipeB->insertInCell(System,outerCell);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagHorrA,2);
-  // cMagHorrA->insertInCell(System,outerCell);
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagVertA,-1);
-  pipeB->insertInCell(System,outerCell);
-  
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*cMagVertA,2);
-  cMagVertA->insertInCell(System,outerCell);
-
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeB,"back",*pipeC);
+ 
+  pipeD->createAll(System,*pipeC,"back");  
+  correctorMagnetPair(System,buildZone,pipeD,cMagHorrB,cMagVertB);
+ 
+  pipeMagUnit(System,buildZone,pipeD,QuadA);
+  pipeTerminate(System,buildZone,pipeD);
 
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeD,"back",*pipeE);
+
+  pipeF->createAll(System,*pipeE,"back");  
+  correctorMagnetPair(System,buildZone,pipeF,cMagHorrC,cMagVertC);
 
   return;
 }

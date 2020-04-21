@@ -362,11 +362,12 @@ LQuad::createLinks()
 {
   ELog::RegMethod RegA("LQuad","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
+  FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
+  FixedComp::setConnect(1,Origin+(ePt*1.001),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   return;
 }

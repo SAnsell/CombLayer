@@ -84,6 +84,7 @@ class LQuad :
   LQuad& operator=(const LQuad&);
   virtual ~LQuad();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

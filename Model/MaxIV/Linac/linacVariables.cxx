@@ -102,15 +102,24 @@ linac2SPFsegment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
 
-  CMGen.generateMag(Control,lKey+"CMagHorrB",0.0,0);
-  CMGen.generateMag(Control,lKey+"CMagVertB",0.0,1);
   
-  CMGen.generateMag(Control,lKey+"CMagHorrC",0.0,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",0.0,1);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,33.85);
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,112.7);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
+  CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
+  
+  LQGen.generateQuad(Control,lKey+"QuadA",94.0);
 
 
-  LQGen.generateQuad(Control,lKey+"QuadA",0.0);
-  
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,21.30);
+  PGen.generatePipe(Control,lKey+"PipeF",0.0,128.0);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
+
+
   return;
 }
 
