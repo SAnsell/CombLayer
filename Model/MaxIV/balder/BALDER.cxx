@@ -74,17 +74,12 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LeadPipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
 
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"

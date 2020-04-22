@@ -82,6 +82,7 @@
 #include "FrontBackCut.h"
 
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 
@@ -363,31 +364,4 @@ PortTube::createLinks()
   return;
 }
 
-void
-PortTube::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC,
-		    const long int FIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-  */
-{
-  ELog::RegMethod RegA("PortTube","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);
-
-  createLinks();
-  insertObjects(System);
-
-  if (!delayPortBuild)
-    createPorts(System);
-  
-  return;
-}
-  
 }  // NAMESPACE constructSystem

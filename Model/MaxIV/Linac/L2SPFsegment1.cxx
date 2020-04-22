@@ -85,7 +85,9 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
+#include "BlankTube.h"
 #include "LQuad.h"
 #include "CorrectorMag.h"
 

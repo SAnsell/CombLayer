@@ -59,6 +59,8 @@
 #include "FlangeMountGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
+#include "PipeTubeGenerator.h"
+#include "PortItemGenerator.h"
 
 namespace setVariable
 {
@@ -82,8 +84,9 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
-
-  
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+    
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
   Control.addVariable(lKey+"OuterLeft",80.0);
   Control.addVariable(lKey+"OuterRight",140.0);
@@ -118,6 +121,16 @@ linac2SPFsegment1(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
+  // ystep/length
+  const Geometry::Vec3D OPos(0,0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+
+  SimpleTubeGen.generateTube(Control,lKey+"PumpA",0.0,8.0);
+  Control.addVariable(lKey+"PumpANPorts",1);
+  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,ZVec);
 
 
   return;

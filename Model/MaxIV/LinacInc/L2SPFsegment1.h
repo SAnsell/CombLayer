@@ -22,22 +22,13 @@
 #ifndef tdcSystem_L2SPFsegment1_h
 #define tdcSystem_L2SPFsegment1_h
 
-namespace insertSystem
-{
-  class insertPlate;
-}
-
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
   class VacuumPipe;
   class Bellows;
-  class VacuumBox;
   class portItem;
-  class PortTube;
-  class GateValveCube;
-  class JawValveCube;
+  class BlankTube;
+  class PipeTube;
 }
 
 

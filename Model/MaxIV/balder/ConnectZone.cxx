@@ -3,7 +3,7 @@
  
  * File: balder/ConnectZone.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,7 @@
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "CrossPipe.h"

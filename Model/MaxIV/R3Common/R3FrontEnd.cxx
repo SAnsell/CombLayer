@@ -90,6 +90,7 @@
 #include "OffsetFlangePipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "CrossPipe.h"

@@ -66,13 +66,6 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LeadPipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
 
 #include "danmaxOpticsHutch.h"
 #include "ExperimentalHutch.h"
