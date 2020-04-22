@@ -51,8 +51,7 @@ namespace setVariable
 
 DipoleDIBMagGenerator::DipoleDIBMagGenerator() :
   magOffset(6.0),magHeight(2.0),magWidth(5.0),
-  magLength(14),
-  magInnerWidth(2.13),magInnerLength(11.5),
+  magLength(14),magInnerWidth(2.13),
   frameHeight(2.0),
   voidMat("Void"),coilMat("Copper"),frameMat("Iron")
   /*!
@@ -82,7 +81,6 @@ DipoleDIBMagGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"MagWidth",magWidth);
   Control.addVariable(keyName+"MagLength",magLength);
   Control.addVariable(keyName+"MagInnerWidth",magInnerWidth);
-  Control.addVariable(keyName+"MagInnerLength",magInnerLength);
   Control.addVariable(keyName+"FrameHeight",frameHeight);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"CoilMat",coilMat);

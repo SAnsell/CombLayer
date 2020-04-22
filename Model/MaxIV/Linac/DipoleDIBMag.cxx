@@ -86,7 +86,6 @@ DipoleDIBMag::DipoleDIBMag(const DipoleDIBMag& A) :
   magOffset(A.magOffset),magHeight(A.magHeight),magWidth(A.magWidth),
   magLength(A.magLength),
   magInnerWidth(A.magInnerWidth),
-  magInnerLength(A.magInnerLength),
   frameHeight(A.frameHeight),
   voidMat(A.voidMat),coilMat(A.coilMat),
   frameMat(A.frameMat)
@@ -116,7 +115,6 @@ DipoleDIBMag::operator=(const DipoleDIBMag& A)
       magWidth=A.magWidth;
       magLength=A.magLength;
       magInnerWidth=A.magInnerWidth;
-      magInnerLength=A.magInnerLength;
       frameHeight=A.frameHeight;
       voidMat=A.voidMat;
       coilMat=A.coilMat;
@@ -157,7 +155,6 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");
   magLength=Control.EvalVar<double>(keyName+"MagLength");
   magInnerWidth=Control.EvalVar<double>(keyName+"MagInnerWidth");
-  magInnerLength=Control.EvalVar<double>(keyName+"MagInnerLength");
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -213,26 +210,6 @@ DipoleDIBMag::createSurfaces()
   const Geometry::Vec3D TOrg(Origin+Z*magOffset); // upper tier
   ModelSupport::buildPlane(SMap,buildIndex+2005,TOrg-Z*(magHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+2006,TOrg+Z*(magHeight/2.0),Z);
-
-  // frame stuff
-
-  // ModelSupport::buildPlane(SMap,buildIndex+15,
-  // 			   Origin-Z*(frameHeight+magHeight/2.0),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+16,
-  // 			   Origin+Z*(frameHeight+magHeight/2.0),Z);
-
-
-  // HeadRule corner(ModelSupport::getComposite(SMap,buildIndex," 1003 -2 "));
-  // corner.populateSurf();
-  // std::tuple<Geometry::Vec3D, Geometry::Vec3D, Geometry::Vec3D> c =
-  //   Geometry::findCornerCircle(corner,
-  // 			       *SMap.realPtr<Geometry::Plane>(buildIndex+1003),
-  // 			       *SMap.realPtr<Geometry::Plane>(buildIndex+2),
-  // 			       *SMap.realPtr<Geometry::Plane>(60000),
-  // 			       magCorner);
-  // const Geometry::Vec3D& centre = std::get<0>(c);
-
-  // ELog::EM << centre << ELog::endDiag;
 
   const double Rout = magWidth/2.0;
   const double t = (magWidth-magInnerWidth)/2.0; // magnet core thickness (in horizontal plane)

@@ -49,7 +49,6 @@ class DipoleDIBMag :
   double magWidth;              ///< Magnet full width
   double magLength;             ///< Magnet full length
   double magInnerWidth; ///< Magnet inner width
-  double magInnerLength; ///< Magnet inner length
   double frameHeight; ///< Frame height
 
   int voidMat;                  ///< Void material
