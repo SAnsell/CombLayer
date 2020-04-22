@@ -50,8 +50,8 @@ namespace setVariable
 {
 
 DipoleDIBMagGenerator::DipoleDIBMagGenerator() :
-  magOffset(6.0),magHeight(2.0),magWidth(5.0),
-  magLength(14),magInnerWidth(2.13),
+  magOffset(6.0),magHeight(2.0),magWidth(19.3),
+  magLength(70.71),magInnerWidth(6.58),
   frameHeight(2.0),
   voidMat("Void"),coilMat("Copper"),frameMat("Iron")
   /*!
