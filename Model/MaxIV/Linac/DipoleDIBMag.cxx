@@ -85,7 +85,6 @@ DipoleDIBMag::DipoleDIBMag(const DipoleDIBMag& A) :
   attachSystem::ExternalCut(A),
   magOffset(A.magOffset),magHeight(A.magHeight),magWidth(A.magWidth),
   magLength(A.magLength),
-  magCorner(A.magCorner),
   magInnerWidth(A.magInnerWidth),
   magInnerLength(A.magInnerLength),
   frameHeight(A.frameHeight),
@@ -116,7 +115,6 @@ DipoleDIBMag::operator=(const DipoleDIBMag& A)
       magHeight=A.magHeight;
       magWidth=A.magWidth;
       magLength=A.magLength;
-      magCorner=A.magCorner;
       magInnerWidth=A.magInnerWidth;
       magInnerLength=A.magInnerLength;
       frameHeight=A.frameHeight;
@@ -158,7 +156,6 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");
   magLength=Control.EvalVar<double>(keyName+"MagLength");
-  magCorner=Control.EvalVar<double>(keyName+"MagCorner");
   magInnerWidth=Control.EvalVar<double>(keyName+"MagInnerWidth");
   magInnerLength=Control.EvalVar<double>(keyName+"MagInnerLength");
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
@@ -198,58 +195,62 @@ DipoleDIBMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(magLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(magLength/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(magHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(magHeight/2.0),Z);
-
-
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(magInnerLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(magInnerLength/2.0),Y);
-
-  //
-  const Geometry::Vec3D LOrg(Origin-X*magOffset);
+  // magnets
   ModelSupport::buildPlane(SMap,buildIndex+1003,
-			   LOrg-X*(magWidth/2.0),X);
+			   Origin-X*(magWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,
-			   LOrg+X*(magWidth/2.0),X);
+			   Origin+X*(magWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+1013,
-			   LOrg-X*(magInnerWidth/2.0),X);
+			   Origin-X*(magInnerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1014,
-			   LOrg+X*(magInnerWidth/2.0),X);
+			   Origin+X*(magInnerWidth/2.0),X);
 
-  const Geometry::Vec3D ROrg(Origin+X*magOffset);
-  ModelSupport::buildPlane(SMap,buildIndex+2003,
-			   ROrg-X*(magWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+2004,
-			   ROrg+X*(magWidth/2.0),X);
+  const Geometry::Vec3D LOrg(Origin-Z*magOffset); // lower tier
+  ModelSupport::buildPlane(SMap,buildIndex+1005,LOrg-Z*(magHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,LOrg+Z*(magHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+2013,
-			   ROrg-X*(magInnerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+2014,
-			   ROrg+X*(magInnerWidth/2.0),X);
+  const Geometry::Vec3D TOrg(Origin+Z*magOffset); // upper tier
+  ModelSupport::buildPlane(SMap,buildIndex+2005,TOrg-Z*(magHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,TOrg+Z*(magHeight/2.0),Z);
 
   // frame stuff
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,
-			   Origin-Z*(frameHeight+magHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(frameHeight+magHeight/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+15,
+  // 			   Origin-Z*(frameHeight+magHeight/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+16,
+  // 			   Origin+Z*(frameHeight+magHeight/2.0),Z);
 
 
-  // calc corner:
-  double XScale(magCorner-magWidth/2.0);   // note: make negative!
-  double YScale(magCorner-magLength/2.0);
-  int CIndex(buildIndex+1007);
-  for(size_t i=0;i<4;i++)
-    {
-      const Geometry::Vec3D cylLOrg=LOrg+X*XScale+Y*YScale;
-      const Geometry::Vec3D cylROrg=ROrg+X*XScale+Y*YScale;
-      ModelSupport::buildCylinder(SMap,CIndex,cylLOrg,Z,magCorner);
-      ModelSupport::buildCylinder(SMap,CIndex+1000,cylROrg,Z,magCorner);
-      CIndex+=10;
-      if (i % 2) YScale *= -1.0;
-      XScale *= -1.0;
-    }
+  // HeadRule corner(ModelSupport::getComposite(SMap,buildIndex," 1003 -2 "));
+  // corner.populateSurf();
+  // std::tuple<Geometry::Vec3D, Geometry::Vec3D, Geometry::Vec3D> c =
+  //   Geometry::findCornerCircle(corner,
+  // 			       *SMap.realPtr<Geometry::Plane>(buildIndex+1003),
+  // 			       *SMap.realPtr<Geometry::Plane>(buildIndex+2),
+  // 			       *SMap.realPtr<Geometry::Plane>(60000),
+  // 			       magCorner);
+  // const Geometry::Vec3D& centre = std::get<0>(c);
+
+  // ELog::EM << centre << ELog::endDiag;
+
+  const double Rout = magWidth/2.0;
+  const double t = (magWidth-magInnerWidth)/2.0; // magnet core thickness (in horizontal plane)
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,
+			      Origin-Y*(magLength/2.0-Rout),Z,Rout);
+  ModelSupport::buildCylinder(SMap,buildIndex+1008,
+			      Origin+Y*(magLength/2.0-Rout),Z,Rout);
+
+  const double Rin = magInnerWidth/2.0;
+  ModelSupport::buildCylinder(SMap,buildIndex+1017,
+			      Origin-Y*(magLength/2.0-Rout),Z,Rin);
+  ModelSupport::buildCylinder(SMap,buildIndex+1018,
+			      Origin+Y*(magLength/2.0-Rout),Z,Rin);
+
+  // auxillary planes
+  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*(magLength/2.0-Rout),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(magLength/2.0-Rout),Y);
+
   return;
 }
 
@@ -265,72 +266,75 @@ DipoleDIBMag::createObjects(Simulation& System)
   std::string Out;
 
 
-  // Frame
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
-  makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);
+  // // Frame
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
+  // makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 2013 -2014 5 -6" );
-  makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 2013 -2014 5 -6" );
+  // makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 -5 15" );
-  makeCell("FrameBase",System,cellIndex++,frameMat,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 -5 15" );
+  // makeCell("FrameBase",System,cellIndex++,frameMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 6 -16" );
-  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 6 -16" );
+  // makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
 
   // Magnets
   int BI(buildIndex);
-  for(const std::string partName : {"Left","Right"} )
+  for(const std::string partName : {"Bottom", "Top"} )
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,BI,
-		 " 1 -2 1003M -1013M 5 -6 (-1007M:11) (-1027M:-12)");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+      const std::string tb(ModelSupport::getComposite(SMap,BI," 1005 -1006 "));
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1 -2 -1004M 1014M 5 -6 (-1017M:11) (-1037M:-12)");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+		 " 1003 -1013 1001 -1002 ");
+      makeCell(partName+"MagLeftRec",System,cellIndex++,coilMat,0.0,Out+tb);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1 -2 1013M -1014M 5 -6 (-11:12) ");
-      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      		 " 1014 -1004 1001 -1002 ");
+      makeCell(partName+"MagRightRec",System,cellIndex++,coilMat,0.0,Out+tb);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1003M -1013M 1 -11  5 -6 1007M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      		 " 1002 -1008 1018 ");
+      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," -1004M 1014M 1 -11 5 -6 1017M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      		 " -1001 -1007 1017 ");
+      makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," 1003M -1013M -2 12 5 -6 1027M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      // void in the rec section
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1013 -1014 1001 -1002 ");
+      makeCell(partName+"MagVoidRec",System,cellIndex++,voidMat,0.0,Out+tb);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,BI," -1004M 1014M -2 12 5 -6 1037M ");
-      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+      // void inside inner cylinders
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      				     " 1002 -1018 ");
+      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,Out+tb);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      				     " -1001 -1017 ");
+      makeCell(partName+"MagVoidCylIn",System,cellIndex++,voidMat,0.0,Out+tb);
+
+      // void outside outer cylinders
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      				     " 1003 -1004 1002 1008 -2 ");
+      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,Out+tb);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+      				     " 1 1003 -1004 -1001 1007 ");
+      makeCell(partName+"MagVoidCylOut",System,cellIndex++,voidMat,0.0,Out+tb);
 
       BI+=1000;
     }
 
-  // Voids
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 6 -16 (-11:12:-1013:2014)" );
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 -5 15 (-11:12:-1013:2014)" );
-  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  // MAIN VOID
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1004 -2003 5 -6 " );
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 1 -2 1003 -1004 1006 -2005 ");
+  makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 15 -16 " );
+    (SMap,buildIndex," 1 -2 1003 -1004 1005 -2006 " );
   addOuterSurf(Out);
 
   return;

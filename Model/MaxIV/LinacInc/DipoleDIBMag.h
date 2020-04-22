@@ -48,7 +48,6 @@ class DipoleDIBMag :
   double magHeight;             ///< Magnet thickness
   double magWidth;              ///< Magnet full width
   double magLength;             ///< Magnet full length
-  double magCorner;             ///< Magnet corner radius
   double magInnerWidth; ///< Magnet inner width
   double magInnerLength; ///< Magnet inner length
   double frameHeight; ///< Frame height
