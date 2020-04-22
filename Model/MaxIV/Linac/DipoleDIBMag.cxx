@@ -58,7 +58,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
+#include "ExternalCut.h"
 
 #include "DipoleDIBMag.h"
 
@@ -70,7 +70,7 @@ DipoleDIBMag::DipoleDIBMag(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::ExternalCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -82,11 +82,15 @@ DipoleDIBMag::DipoleDIBMag(const DipoleDIBMag& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  magInnerRadius(A.magInnerRadius),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  attachSystem::ExternalCut(A),
+  magOffset(A.magOffset),magHeight(A.magHeight),magWidth(A.magWidth),
+  magLength(A.magLength),
+  magCorner(A.magCorner),
+  magInnerWidth(A.magInnerWidth),
+  magInnerLength(A.magInnerLength),
+  frameHeight(A.frameHeight),
+  voidMat(A.voidMat),coilMat(A.coilMat),
+  frameMat(A.frameMat)
   /*!
     Copy constructor
     \param A :: DipoleDIBMag to copy
@@ -107,14 +111,18 @@ DipoleDIBMag::operator=(const DipoleDIBMag& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
-      wallThick=A.wallThick;
-      magInnerRadius=A.magInnerRadius;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      attachSystem::ExternalCut::operator=(A);
+      magOffset=A.magOffset;
+      magHeight=A.magHeight;
+      magWidth=A.magWidth;
+      magLength=A.magLength;
+      magCorner=A.magCorner;
+      magInnerWidth=A.magInnerWidth;
+      magInnerLength=A.magInnerLength;
+      frameHeight=A.frameHeight;
+      voidMat=A.voidMat;
+      coilMat=A.coilMat;
+      frameMat=A.frameMat;
     }
   return *this;
 }
@@ -146,14 +154,18 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  magInnerRadius=Control.EvalVar<double>(keyName+"MagInnerRadius");
+  magOffset=Control.EvalVar<double>(keyName+"MagOffset");
+  magHeight=Control.EvalVar<double>(keyName+"MagHeight");
+  magWidth=Control.EvalVar<double>(keyName+"MagWidth");
+  magLength=Control.EvalVar<double>(keyName+"MagLength");
+  magCorner=Control.EvalVar<double>(keyName+"MagCorner");
+  magInnerWidth=Control.EvalVar<double>(keyName+"MagInnerWidth");
+  magInnerLength=Control.EvalVar<double>(keyName+"MagInnerLength");
+  frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
+  frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
 
   return;
 }
@@ -183,44 +195,61 @@ DipoleDIBMag::createSurfaces()
 {
   ELog::RegMethod RegA("DipoleDIBMag","createSurfaces");
 
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(magLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(magLength/2.0),Y);
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(magHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(magHeight/2.0),Z);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(magInnerLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(magInnerLength/2.0),Y);
+
+  //
+  const Geometry::Vec3D LOrg(Origin-X*magOffset);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,
+			   LOrg-X*(magWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,
+			   LOrg+X*(magWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1013,
+			   LOrg-X*(magInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1014,
+			   LOrg+X*(magInnerWidth/2.0),X);
+
+  const Geometry::Vec3D ROrg(Origin+X*magOffset);
+  ModelSupport::buildPlane(SMap,buildIndex+2003,
+			   ROrg-X*(magWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2004,
+			   ROrg+X*(magWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2013,
+			   ROrg-X*(magInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2014,
+			   ROrg+X*(magInnerWidth/2.0),X);
+
+  // frame stuff
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,
+			   Origin-Z*(frameHeight+magHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,
+			   Origin+Z*(frameHeight+magHeight/2.0),Z);
+
+
+  // calc corner:
+  double XScale(magCorner-magWidth/2.0);   // note: make negative!
+  double YScale(magCorner-magLength/2.0);
+  int CIndex(buildIndex+1007);
+  for(size_t i=0;i<4;i++)
     {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      const Geometry::Vec3D cylLOrg=LOrg+X*XScale+Y*YScale;
+      const Geometry::Vec3D cylROrg=ROrg+X*XScale+Y*YScale;
+      ModelSupport::buildCylinder(SMap,CIndex,cylLOrg,Z,magCorner);
+      ModelSupport::buildCylinder(SMap,CIndex+1000,cylROrg,Z,magCorner);
+      CIndex+=10;
+      if (i % 2) YScale *= -1.0;
+      XScale *= -1.0;
     }
-
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
-    }
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
-
   return;
 }
 
@@ -234,18 +263,75 @@ DipoleDIBMag::createObjects(Simulation& System)
   ELog::RegMethod RegA("DipoleDIBMag","createObjects");
 
   std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  // Frame
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
+  makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 2013 -2014 5 -6" );
+  makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 -5 15" );
+  makeCell("FrameBase",System,cellIndex++,frameMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 6 -16" );
+  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
+
+  // Magnets
+  int BI(buildIndex);
+  for(const std::string partName : {"Left","Right"} )
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,BI,
+		 " 1 -2 1003M -1013M 5 -6 (-1007M:11) (-1027M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1 -2 -1004M 1014M 5 -6 (-1017M:11) (-1037M:-12)");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1 -2 1013M -1014M 5 -6 (-11:12) ");
+      makeCell(partName+"Mag",System,cellIndex++,coilMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1003M -1013M 1 -11  5 -6 1007M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," -1004M 1014M 1 -11 5 -6 1017M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," 1003M -1013M -2 12 5 -6 1027M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,BI," -1004M 1014M -2 12 5 -6 1037M ");
+      makeCell(partName+"CornerVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      BI+=1000;
+    }
+
+  // Voids
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 1003 -2004 6 -16 (-11:12:-1013:2014)" );
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 1003 -2004 -5 15 (-11:12:-1013:2014)" );
+  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  // MAIN VOID
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 1004 -2003 5 -6 " );
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+
+
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 1003 -2004 15 -16 " );
+  addOuterSurf(Out);
 
   return;
 }
@@ -259,19 +345,11 @@ DipoleDIBMag::createLinks()
 {
   ELog::RegMethod RegA("DipoleDIBMag","createLinks");
 
-  FrontBackCut::createLinks(*this,Origin,Y);
+  FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }

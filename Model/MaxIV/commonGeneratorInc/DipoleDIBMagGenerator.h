@@ -31,7 +31,7 @@ namespace setVariable
   \class DipoleDIBMagGenerator
   \version 1.0
   \author Konstantin Batkov
-  \date 21 Apr 2020
+  \date Apr 2020
   \brief DipoleDIBMagGenerator for variables
 */
 
@@ -39,14 +39,18 @@ class DipoleDIBMagGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
-  double magInnerRadius; ///< Magnet inner radius
+  double magOffset;             ///< Magnet offset from pipe centre
+  double magHeight;             ///< Magnet thickness
+  double magWidth;              ///< Magnet full width
+  double magLength;             ///< Magnet full length
+  double magCorner;             ///< Magnet corner radius
+  double magInnerWidth; ///< Magnet inner width
+  double magInnerLength; ///< Magnet inner length
+  double frameHeight; ///< Frame height
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  std::string voidMat;                  ///< Void material
+  std::string coilMat;                  ///< Coil material
+  std::string frameMat; ///< Frame material
 
  public:
 

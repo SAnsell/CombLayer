@@ -31,7 +31,7 @@ namespace xraySystem
   \class DipoleDIBMag
   \version 1.0
   \author Konstantin Batkov
-  \date 21 Apr 2020
+  \date Apr 2020
   \brief DIB Dipole magnet
 */
 
@@ -40,18 +40,22 @@ class DipoleDIBMag :
     public attachSystem::ContainedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
-    public attachSystem::FrontBackCut
+    public attachSystem::ExternalCut
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
-  double magInnerRadius; ///< Magnet inner radius
+  double magOffset;             ///< Magnet offset from pipe centre
+  double magHeight;             ///< Magnet thickness
+  double magWidth;              ///< Magnet full width
+  double magLength;             ///< Magnet full length
+  double magCorner;             ///< Magnet corner radius
+  double magInnerWidth; ///< Magnet inner width
+  double magInnerLength; ///< Magnet inner length
+  double frameHeight; ///< Frame height
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  int voidMat;                  ///< Void material
+  int coilMat;                  ///< Coil material
+  int frameMat; ///< Frame material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

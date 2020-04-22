@@ -50,9 +50,12 @@ namespace setVariable
 {
 
 DipoleDIBMagGenerator::DipoleDIBMagGenerator() :
-  length(70.7),width(19.0),height(2.8),
-  wallThick(1.0),
-  mainMat(0),wallMat(0)
+  magOffset(6.0),magHeight(2.0),magWidth(5.0),
+  magLength(14),
+  magInnerWidth(2.13),magInnerLength(11.5),
+  magCorner((magWidth-magInnerWidth)/2.0),
+  frameHeight(2.0),
+  voidMat("Void"),coilMat("Copper"),frameMat("Iron")
   /*!
     Constructor and defaults
   */
@@ -75,13 +78,17 @@ DipoleDIBMagGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DipoleDIBMagGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MagInnerRadius",magInnerRadius);
-  Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"MagOffset",magOffset);
+  Control.addVariable(keyName+"MagHeight",magHeight);
+  Control.addVariable(keyName+"MagWidth",magWidth);
+  Control.addVariable(keyName+"MagLength",magLength);
+  Control.addVariable(keyName+"MagCorner",magCorner);
+  Control.addVariable(keyName+"MagInnerWidth",magInnerWidth);
+  Control.addVariable(keyName+"MagInnerLength",magInnerLength);
+  Control.addVariable(keyName+"FrameHeight",frameHeight);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"CoilMat",coilMat);
+  Control.addVariable(keyName+"FrameMat",frameMat);
 
   return;
 
