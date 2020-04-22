@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class DipoleDIBMag :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::FrontBackCut
