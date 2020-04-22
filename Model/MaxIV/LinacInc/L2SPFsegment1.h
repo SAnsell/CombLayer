@@ -90,7 +90,7 @@ class L2SPFsegment1 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrC;   ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::PipeTube> pumpA;   
+  std::shared_ptr<constructSystem::BlankTube> pumpA;   
   
   void populate(const FuncDataBase&);
   void createSurfaces();

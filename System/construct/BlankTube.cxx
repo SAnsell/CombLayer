@@ -225,15 +225,11 @@ BlankTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 ");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
-
-
   if (flangeCapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
       makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
     }
-  
-
   if (outerVoid)
     {
       Out=makeOuterVoid(System);
@@ -241,7 +237,7 @@ BlankTube::createObjects(Simulation& System)
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -2 -17 ");
       addOuterSurf("Main",Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");

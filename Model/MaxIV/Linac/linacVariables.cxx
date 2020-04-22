@@ -122,16 +122,21 @@ linac2SPFsegment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF100>();
-  // ystep/length
-  const Geometry::Vec3D OPos(0,0,0);
+  const Geometry::Vec3D OPos(0,2.0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
 
-  SimpleTubeGen.generateTube(Control,lKey+"PumpA",0.0,8.0);
-  Control.addVariable(lKey+"PumpANPorts",1);
-  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,ZVec);
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40>(6.5);    
+  PItemGen.setNoPlate();
 
+  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
+  Control.addVariable(lKey+"PumpANPorts",2);
+
+  PItemGen.setLength(6.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
+  PItemGen.setLength(2.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
 
   return;
 }

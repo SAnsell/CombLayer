@@ -86,7 +86,6 @@
 #include "Bellows.h"
 #include "portItem.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
 #include "BlankTube.h"
 #include "LQuad.h"
 #include "CorrectorMag.h"
@@ -120,7 +119,7 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
   cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
-  pumpA(new constructSystem::PipeTube(keyName+"PumpA"))
+  pumpA(new constructSystem::BlankTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -139,6 +138,7 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   OR.addObject(cMagVertB);
   OR.addObject(QuadA);
   OR.addObject(pipeE);
+  OR.addObject(pumpA);
 }
   
 L2SPFsegment1::~L2SPFsegment1()
@@ -252,6 +252,18 @@ L2SPFsegment1::buildObjects(Simulation& System)
 
   pipeF->createAll(System,*pipeE,"back");  
   correctorMagnetPair(System,buildZone,pipeF,cMagHorrC,cMagVertC);
+  pipeTerminate(System,buildZone,pipeF);
+
+    // FAKE INSERT REQUIRED
+  pumpA->addAllInsertCell(masterCell->getName());
+  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpA->createAll(System,*pipeF,"back");
+
+  const constructSystem::portItem& VPB=pumpA->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  pumpA->insertAllInCell(System,outerCell);
+
 
   return;
 }

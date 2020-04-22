@@ -85,6 +85,8 @@ class PipeTubeGenerator
   
   void generateTube(FuncDataBase&,const std::string&,
 		    const double,const double) const;
+  void generateBlank(FuncDataBase&,const std::string&,
+		    const double,const double) const;
 
 };
 
