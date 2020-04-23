@@ -43,12 +43,14 @@ class DipoleDIBMagGenerator
   double magHeight;             ///< Magnet thickness
   double magWidth;              ///< Magnet full width
   double magLength;             ///< Magnet full length
-  double magInnerWidth; ///< Magnet inner width
-  double frameHeight; ///< Frame height
+  double magInnerWidth;         ///< Magnet inner width
+  double frameHeight;           ///< Frame height
+  double frameWidth;            ///< Frame full width
+  double frameLength;           ///< Frame full length
 
-  std::string voidMat;                  ///< Void material
-  std::string coilMat;                  ///< Coil material
-  std::string frameMat; ///< Frame material
+  std::string voidMat;          ///< Void material
+  std::string coilMat;          ///< Coil material
+  std::string frameMat;         ///< Frame material
 
  public:
 

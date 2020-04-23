@@ -48,8 +48,10 @@ class DipoleDIBMag :
   double magHeight;             ///< Magnet thickness
   double magWidth;              ///< Magnet full width
   double magLength;             ///< Magnet full length
-  double magInnerWidth; ///< Magnet inner width
-  double frameHeight; ///< Frame height
+  double magInnerWidth;         ///< Magnet inner width
+  double frameHeight;           ///< Frame full height
+  double frameWidth;            ///< Frame full width
+  double frameLength;           ///< Frame full length
 
   int voidMat;                  ///< Void material
   int coilMat;                  ///< Coil material

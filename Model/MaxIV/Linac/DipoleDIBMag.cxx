@@ -87,6 +87,8 @@ DipoleDIBMag::DipoleDIBMag(const DipoleDIBMag& A) :
   magLength(A.magLength),
   magInnerWidth(A.magInnerWidth),
   frameHeight(A.frameHeight),
+  frameWidth(A.frameWidth),
+  frameLength(A.frameLength),
   voidMat(A.voidMat),coilMat(A.coilMat),
   frameMat(A.frameMat)
   /*!
@@ -116,6 +118,8 @@ DipoleDIBMag::operator=(const DipoleDIBMag& A)
       magLength=A.magLength;
       magInnerWidth=A.magInnerWidth;
       frameHeight=A.frameHeight;
+      frameWidth=A.frameWidth;
+      frameLength=A.frameLength;
       voidMat=A.voidMat;
       coilMat=A.coilMat;
       frameMat=A.frameMat;
@@ -156,6 +160,8 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   magLength=Control.EvalVar<double>(keyName+"MagLength");
   magInnerWidth=Control.EvalVar<double>(keyName+"MagInnerWidth");
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
+  frameWidth=Control.EvalVar<double>(keyName+"FrameWidth");
+  frameLength=Control.EvalVar<double>(keyName+"FrameLength");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
@@ -191,6 +197,14 @@ DipoleDIBMag::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(magLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(magLength/2.0),Y);
+
+  // frame
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(frameLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(frameLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(frameWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(frameWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(frameHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(frameHeight/2.0),Z);
 
   // magnets
   ModelSupport::buildPlane(SMap,buildIndex+1003,
@@ -242,19 +256,33 @@ DipoleDIBMag::createObjects(Simulation& System)
 
   std::string Out;
 
-
   // // Frame
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
-  // makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 2006 -16" );
+  makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 2013 -2014 5 -6" );
-  // makeCell("FrameInnerRight",System,cellIndex++,frameMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -1005 " );
+  makeCell("FrameBottom",System,cellIndex++,frameMat,0.0,Out);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 -5 15" );
-  // makeCell("FrameBase",System,cellIndex++,frameMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -1003 1005 -2006 " );
+  makeCell("FrameLeft",System,cellIndex++,frameMat,0.0,Out);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -2014 6 -16" );
-  // makeCell("FrameTop",System,cellIndex++,frameMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1004 -14 1005 -2006 " );
+  makeCell("FrameRight",System,cellIndex++,frameMat,0.0,Out);
+
+  for (const std::string side : {" 12 -2 ", " 1 -11 "}) // front/back ends
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 13 -1003 15 -16 " );
+      makeCell("FrameLeftVoidCorner",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1004 -14 15 -16 " );
+      makeCell("FrameRightVoidCorner",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1003 -1004 2006 -16 " );
+      makeCell("FrameTopVoidMiddle",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,side+" 1003 -1004 15 -1005 " );
+      makeCell("FrameBottomVoidMiddle",System,cellIndex++,voidMat,0.0,Out);
+    }
 
   // Magnets
   int BI(buildIndex);
@@ -281,7 +309,7 @@ DipoleDIBMag::createObjects(Simulation& System)
       // void in the rec section
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 1013 -1014 1001 -1002 ");
-      makeCell(partName+"MagVoidRec",System,cellIndex++,voidMat,0.0,Out+tb);
+      makeCell(partName+"MagVoidRec",System,cellIndex++,frameMat,0.0,Out+tb);
 
       // void inside inner cylinders
       Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -308,10 +336,8 @@ DipoleDIBMag::createObjects(Simulation& System)
 				 " 1 -2 1003 -1004 1006 -2005 ");
   makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out);
 
-
-
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -1004 1005 -2006 " );
+    (SMap,buildIndex," 1 -2 13 -14 15 -16 " );
   addOuterSurf(Out);
 
   return;
