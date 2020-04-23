@@ -217,13 +217,13 @@ DipoleDIBMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1014,
 			   Origin+X*(magInnerWidth/2.0),X);
 
-  const Geometry::Vec3D LOrg(Origin-Z*magOffset); // lower tier
-  ModelSupport::buildPlane(SMap,buildIndex+1005,LOrg-Z*(magHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,LOrg+Z*(magHeight/2.0),Z);
+  const Geometry::Vec3D LOrg(Origin-Z*(magOffset/2.0)); // lower tier
+  ModelSupport::buildPlane(SMap,buildIndex+1005,LOrg-Z*magHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,LOrg,Z);
 
-  const Geometry::Vec3D TOrg(Origin+Z*magOffset); // upper tier
-  ModelSupport::buildPlane(SMap,buildIndex+2005,TOrg-Z*(magHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+2006,TOrg+Z*(magHeight/2.0),Z);
+  const Geometry::Vec3D TOrg(Origin+Z*(magOffset/2.0)); // upper tier
+  ModelSupport::buildPlane(SMap,buildIndex+2005,TOrg,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,TOrg+Z*magHeight,Z);
 
   const double Rout = magWidth/2.0;
   const double t = (magWidth-magInnerWidth)/2.0; // magnet core thickness (in horizontal plane)

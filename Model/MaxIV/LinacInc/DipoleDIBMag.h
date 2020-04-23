@@ -44,7 +44,7 @@ class DipoleDIBMag :
 {
  private:
 
-  double magOffset;             ///< Magnet offset from pipe centre
+  double magOffset;             ///< Distance between inner planes of the magnets
   double magHeight;             ///< Magnet thickness
   double magWidth;              ///< Magnet full width
   double magLength;             ///< Magnet full length
