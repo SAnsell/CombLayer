@@ -55,6 +55,7 @@ DipoleDIBMagGenerator::DipoleDIBMagGenerator() :
   frameHeight(19.0),
   frameWidth(28.4),
   frameLength(55.0),
+  hGap(0.7),vGap(0.2),
   voidMat("Void"),coilMat("Copper"),frameMat("Iron")
   /*!
     Constructor and defaults
@@ -86,6 +87,8 @@ DipoleDIBMagGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FrameHeight",frameHeight);
   Control.addVariable(keyName+"FrameWidth",frameWidth);
   Control.addVariable(keyName+"FrameLength",frameLength);
+  Control.addVariable(keyName+"HGap",hGap);
+  Control.addVariable(keyName+"VGap",vGap);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"FrameMat",frameMat);

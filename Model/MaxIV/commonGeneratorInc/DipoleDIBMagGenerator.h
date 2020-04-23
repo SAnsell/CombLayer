@@ -47,6 +47,8 @@ class DipoleDIBMagGenerator
   double frameHeight;           ///< Frame height
   double frameWidth;            ///< Frame full width
   double frameLength;           ///< Frame full length
+  double hGap;                  ///< Horizontal gap betwen frame and magnet
+  double vGap;                  ///< Vertical gap betwen frame and magnet
 
   std::string voidMat;          ///< Void material
   std::string coilMat;          ///< Coil material

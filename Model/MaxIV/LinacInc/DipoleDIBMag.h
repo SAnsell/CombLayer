@@ -52,6 +52,8 @@ class DipoleDIBMag :
   double frameHeight;           ///< Frame full height
   double frameWidth;            ///< Frame full width
   double frameLength;           ///< Frame full length
+  double hGap;                  ///< Horizontal gap betwen frame and magnet
+  double vGap;                  ///< Vertical gap betwen frame and magnet
 
   int voidMat;                  ///< Void material
   int coilMat;                  ///< Coil material
