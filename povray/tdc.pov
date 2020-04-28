@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 1000;
+#declare view = 1001;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -15,7 +15,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -75,10 +75,15 @@ global_settings {
     #declare cameraAngle = 90;
   #break
   #case(1000) // beamline view
-    #declare cameraLocation = <80, 130, 40>;
-    #declare cameraLookAt   = <130, 100, 0>;
+    #declare cameraLocation = <200, 160, 40>;
+    #declare cameraLookAt   = <125, 160, 0>;
     #declare cameraAngle = 170;
     #declare projection = 1;
+  #break
+  #case(1001) // beamline back view
+    #declare cameraLocation = <300, 300, 40>;
+    #declare cameraLookAt   = <125, 220, 0>;
+    #declare cameraAngle = 90;
   #break
   #else
     #declare cameraLocation = <100, 100, 100>;
