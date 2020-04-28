@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/LObjectSupport.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,11 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_generalConstruct_h
-#define constructSystem__generalConstruct_h
+#ifndef constructSystem_LObjectSupport_h
+#define constructSystem_LObjectSupport_h
 
 
 namespace constructSystem
@@ -47,8 +47,8 @@ int
 pipeTerminate(Simulation&,
 	      attachSystem::InnerZone& buildZone,
 	      const std::shared_ptr<constructSystem::VacuumPipe>&);
-		    
-  
+
+
 int
 correctorMagnetPair(Simulation&,
 		    attachSystem::InnerZone& buildZone,
