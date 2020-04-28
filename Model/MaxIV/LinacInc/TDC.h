@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Bellows.h
+ * File:   LinacInc/TDC.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,36 +19,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_Bellows_h
-#define constructSystem_Bellows_h
+#ifndef tdcSystem_TDC_h
+#define tdcSystem_TDC_h
 
-class Simulation;
 
-namespace constructSystem
+namespace tdcSystem
 {
 
-/*!
-  \class Bellows
-  \version 1.0
-  \author S. Ansell
-  \date January 2018
-  \brief Bellows unit [simplified round pipe]
-*/
+  class InjectionHall;
+  class L2SPFsegment1;
+  /*!
+    \class TDC
+    \version 1.0
+    \author S. Ansell
+    \date April 2020
+    \brief Manager of the TDC build
 
-class Bellows :
-  public SplitFlangePipe
+    Note it is a FixedComp to allow link point transfer.
+    -- May need Cellmap/SurfMap etc
+  */
+
+class TDC :
+  public attachSystem::FixedOffset
 {
+ private:
+
+  std::set<std::string> activeINJ;   ///< active components
+  
+  std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
+  std::shared_ptr<L2SPFsegment1> l2spf1;        ///< segment 1
 
  public:
-
-  Bellows(const std::string&);
-  Bellows(const Bellows&);
-  Bellows& operator=(const Bellows&);
-  virtual ~Bellows();
   
+  TDC(const std::string&);
+  TDC(const TDC&);
+  TDC& operator=(const TDC&);
+  virtual ~TDC();
+
+  /// set active range
+  void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
+
 };
 
 }
 
 #endif
- 

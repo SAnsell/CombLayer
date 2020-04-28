@@ -12,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,6 +21,11 @@
  ****************************************************************************/
 #ifndef xraySystem_makeMaxIV_h
 #define xraySystem_makeMaxIV_h
+
+namespace tdcSystem
+{
+  class TDC;
+}
 
 
 namespace xraySystem
@@ -45,7 +50,7 @@ class makeMaxIV
   /// Main R1 Ring
   std::shared_ptr<R3Ring> r3Ring;
   /// Linac/SPF Hall
-  std::shared_ptr<InjectionHall> injectionHall;
+  std::shared_ptr<tdcSystem::TDC> tdc;
 
   
   void populateStopPoint(const mainSystem::inputParam&,

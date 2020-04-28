@@ -69,6 +69,8 @@ class PortItemGenerator
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
   void setFlange(const double,const double);
+  /// set only length
+  void setLength(const double L) { length=L; }
   // plate thick / mat
   void setPlate(const double,const std::string&);
   void setWindowPlate(const double,const double,const double,

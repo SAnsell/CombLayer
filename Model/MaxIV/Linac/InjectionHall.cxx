@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/InjectionHall.cxx
+ * File:   Linac/InjectionHall.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -80,7 +80,7 @@
 
 #include "InjectionHall.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 InjectionHall::InjectionHall(const std::string& Key) : 
@@ -171,6 +171,9 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
 
+  // transfor for later
+  SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
   
@@ -216,13 +219,15 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+233,Origin-X*(linearWidth/2.0+spfAngleStep+wallThick),X);
 
   // roof / floor
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);  
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+15,Origin-Z*(floorDepth+floorThick),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+16,Origin+Z*(roofHeight+roofThick),Z);
 
+  // transfer for later
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
 
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
@@ -483,4 +488,4 @@ InjectionHall::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem

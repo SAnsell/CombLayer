@@ -3,7 +3,7 @@
 
  * File:   constructVar/SplitPipeGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,13 +212,16 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+  template void SplitPipeGenerator::setCF<CF40_22>();
   template void SplitPipeGenerator::setCF<CF40>();
   template void SplitPipeGenerator::setCF<CF50>();
   template void SplitPipeGenerator::setCF<CF63>();
   template void SplitPipeGenerator::setCF<CF100>();
   template void SplitPipeGenerator::setAFlangeCF<CF40>();
+  template void SplitPipeGenerator::setAFlangeCF<CF40_22>();
   template void SplitPipeGenerator::setAFlangeCF<CF63>();
   template void SplitPipeGenerator::setAFlangeCF<CF100>();
+  template void SplitPipeGenerator::setBFlangeCF<CF40_22>();
   template void SplitPipeGenerator::setBFlangeCF<CF40>();
   template void SplitPipeGenerator::setBFlangeCF<CF63>();
   template void SplitPipeGenerator::setBFlangeCF<CF100>();

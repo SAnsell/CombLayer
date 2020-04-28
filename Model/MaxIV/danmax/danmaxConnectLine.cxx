@@ -73,7 +73,6 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -81,12 +80,10 @@
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "LeadPipe.h"
 #include "Bellows.h"
-#include "VacuumBox.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
-#include "PortTube.h"
 #include "SqrShield.h"
 
 #include "danmaxConnectLine.h"

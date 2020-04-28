@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_CorrectorMag_h
-#define xraySystem_CorrectorMag_h
+#ifndef tdcSystem_CorrectorMag_h
+#define tdcSystem_CorrectorMag_h
 
 class Simulation;
 
 
-namespace xraySystem
+namespace tdcSystem
 {
 /*!
   \class CorrectorMag
@@ -57,16 +57,23 @@ class CorrectorMag :
   double magInnerWidth;         ///< Magnet inner width
   double magInnerLength;        ///< Magnet inner length
 
+  double pipeClampYStep;        ///< Pipe clamp out step
+  double pipeClampZStep;        ///< Pipe clamp up step
+  double pipeClampThick;        ///< Pipe clamp thickness     
+  double pipeClampWidth;        ///< Pipe clamp width
+  double pipeClampHeight;       ///< Pipe clamp height
+  
   double frameHeight;            ///< hegiht of plate
 
   int voidMat;                     ///< coil material
   int coilMat;                     ///< coil material
+  int clampMat;                    ///< clamp material
   int frameMat;                    ///< Iron material
 
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
-  void createLinks();
+  void createLinks(const bool);
 
  public:
 
@@ -76,6 +83,7 @@ class CorrectorMag :
   CorrectorMag& operator=(const CorrectorMag&);
   virtual ~CorrectorMag();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

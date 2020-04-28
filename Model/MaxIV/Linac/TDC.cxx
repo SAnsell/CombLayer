@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: species/speciesFrontEnd.cxx
+ * File: maxpeem/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -61,9 +61,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "FixedOffset.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,87 +70,93 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
+#include "CopiedComp.h"
+#include "World.h"
 #include "AttachSupport.h"
-#include "ModelSupport.h"
-#include "generateSurf.h"
 
-#include "UTubePipe.h"
-#include "Undulator.h"
-#include "R1FrontEnd.h"
-#include "speciesFrontEnd.h"
+// #include "VacuumPipe.h"
+// #include "SplitFlangePipe.h"
+// #include "Bellows.h"
+// #include "LeadPipe.h"
+// #include "VacuumBox.h"
+// #include "portItem.h"
+// #include "PipeTube.h"
+// #include "PortTube.h"
 
-namespace xraySystem
+#include "InjectionHall.h"
+#include "L2SPFsegment1.h"
+
+#include "TDC.h"
+
+namespace tdcSystem
 {
 
-// Note currently uncopied:
-  
-speciesFrontEnd::speciesFrontEnd(const std::string& Key) :
-  R1FrontEnd(Key),
-  undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
-  undulator(new xraySystem::Undulator(newName+"Undulator"))
+TDC::TDC(const std::string& KN) :
+  attachSystem::FixedOffset(KN,6),
+  injectionHall(new InjectionHall("InjectionHall")),
+  l2spf1(new L2SPFsegment1("L2SPF1"))
   /*!
     Constructor
-    \param Key :: Name of construction key
+    \param KN :: Keyname
   */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(undulatorPipe);
-  OR.addObject(undulator);
+  OR.addObject(injectionHall);
+  OR.addObject(l2spf1);
 }
-  
-speciesFrontEnd::~speciesFrontEnd()
+
+TDC::~TDC()
   /*!
     Destructor
-  */
+   */
 {}
 
-const attachSystem::FixedComp&
-speciesFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+void 
+TDC::createAll(Simulation& System,
+	       const attachSystem::FixedComp& FCOrigin,
+	       const long int sideIndex)
   /*!
-    Build all the objects relative to the main FC
-    point.
-    \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
-    \param preFC :: Initial cell
-    \param preSideIndex :: Initial side index
-    \return fixed object for link point
-  */
+    Carry out the full build
+    \param System :: Simulation system
+    \param FCOrigin :: Start origin
+    \param sideIndex :: link point for origin
+   */
 {
-  ELog::RegMethod RegA("speciesFrontEnd","buildObjects");
+  // For output stream
+  ELog::RegMethod RControl("TDC","build");
 
-  int outerCell;
-  undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  static const std::map<std::string,std::string> segmentLinkMap
+    ({
+      {"L2SPFsegment1","Origin"}
+    });
+  const int voidCell(74123);
+  
+  // build injection hall first:
+  injectionHall->addInsertCell(voidCell);
+  injectionHall->createAll(System,FCOrigin,sideIndex);
+    
+  for(const std::string& BL : activeINJ)
+    {
+      if (BL=="L2SPFsegment1")  
+	{
+	  std::unique_ptr<L2SPFsegment1> BLPtr;
+	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
+	  BLPtr->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  BLPtr->setCutSurf("front",injectionHall->getSurf("Front"));
 
-  CellMap::addCell("UndulatorOuter",outerCell);
-  undulatorPipe->insertInCell("FFlange",System,outerCell);
-  undulatorPipe->insertInCell("BFlange",System,outerCell);
-  undulatorPipe->insertInCell("Pipe",System,outerCell);
+	  BLPtr->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  BLPtr->createAll
+	    (System,*injectionHall,
+	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	}
+    }
 
-  undulator->addInsertCell(outerCell);
-  undulator->createAll(System,*undulatorPipe,0);
-  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
-
-  return *undulatorPipe;
-}
-
-void
-speciesFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-  */
-{
-  setLinkSignedCopy(0,*undulatorPipe,1);
-  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
+
 
 }   // NAMESPACE xraySystem
 

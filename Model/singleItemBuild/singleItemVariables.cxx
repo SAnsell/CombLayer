@@ -206,7 +206,7 @@ SingleItemVariables(FuncDataBase& Control)
   SGen.generateHex(Control,"SXX",20.0,25.0);
 
   setVariable::LinacQuadGenerator LQGen;
-  LQGen.generateQuad(Control,"LQ",20.0,25.0);
+  LQGen.generateQuad(Control,"LQ",20.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
@@ -221,6 +221,9 @@ SingleItemVariables(FuncDataBase& Control)
   //  corrector mag
   setVariable::CorrectorMagGenerator CMGen;
   CMGen.generateMag(Control,"CM",0.0,0);
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,"VC",-40.0,80.0);
 
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
@@ -228,7 +231,6 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PipeGenerator PGen;
   PGen.setCF<setVariable::CF25>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
-
 
   return;
 }

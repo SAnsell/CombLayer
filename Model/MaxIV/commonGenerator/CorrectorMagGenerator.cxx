@@ -61,7 +61,10 @@ CorrectorMagGenerator::CorrectorMagGenerator() :
   magHeight(2.4),magWidth(5.62),magLength(14.20),
   magInnerWidth(2.13),magInnerLength(11.5),
   magCorner((magWidth-magInnerWidth)/2.0),frameHeight(2.0),
-  voidMat("Void"),coilMat("Copper"),frameMat("Iron")
+  pipeClampYStep(0.8),pipeClampZStep(0.7),
+  pipeClampThick(0.7),pipeClampWidth(5.5),pipeClampHeight(2.0),
+  voidMat("Void"),coilMat("Copper"),clampMat("Stainless304"),
+  frameMat("Iron")
   /*!
     Constructor and defaults
   */
@@ -100,10 +103,19 @@ CorrectorMagGenerator::generateMag(FuncDataBase& Control,
   Control.addVariable(keyName+"MagCorner",magCorner);
   Control.addVariable(keyName+"MagInnerWidth",magInnerWidth);
   Control.addVariable(keyName+"MagInnerLength",magInnerLength);
+
+
+  Control.addVariable(keyName+"PipeClampYStep",pipeClampYStep);
+  Control.addVariable(keyName+"PipeClampZStep",pipeClampZStep);
+  Control.addVariable(keyName+"PipeClampThick",pipeClampThick);
+  Control.addVariable(keyName+"PipeClampWidth",pipeClampWidth);
+  Control.addVariable(keyName+"PipeClampHeight",pipeClampHeight);
+
   Control.addVariable(keyName+"FrameHeight",frameHeight);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
+  Control.addVariable(keyName+"ClampMat",clampMat);
   Control.addVariable(keyName+"FrameMat",frameMat);
   
   return;

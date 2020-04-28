@@ -54,10 +54,10 @@ class PortTube :
   double portBLen;         ///< Out Port Length inc flange 
   double portBThick;       ///< Out Port Pipe thickness    
   
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
 
   virtual void applyPortRotation();
   
@@ -68,9 +68,6 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
 
 };
 

@@ -72,17 +72,9 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "World.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LeadPipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
 
 #include "R1Ring.h"
 #include "R1FrontEnd.h"

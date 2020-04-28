@@ -79,10 +79,6 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LeadPipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
 
 #include "R1Ring.h"
 #include "R1FrontEnd.h"
@@ -90,8 +86,6 @@
 #include "maxpeemOpticsHut.h"
 #include "maxpeemOpticsBeamline.h"
 #include "ExperimentalHutch.h"
-#include "GateValveCube.h"
-#include "FlangeMount.h"
 #include "WallLead.h"
 
 

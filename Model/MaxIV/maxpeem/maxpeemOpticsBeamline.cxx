@@ -88,6 +88,7 @@
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "PipeShield.h"

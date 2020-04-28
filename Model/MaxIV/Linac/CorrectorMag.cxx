@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CorrectorMag.cxx
+ * File:   Linac/CorrectorMag.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -82,7 +82,7 @@
 
 #include "CorrectorMag.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 CorrectorMag::CorrectorMag(const std::string& Key) :
@@ -138,10 +138,18 @@ CorrectorMag::populate(const FuncDataBase& Control)
   magCorner=Control.EvalVar<double>(keyName+"MagCorner");
   magInnerWidth=Control.EvalVar<double>(keyName+"MagInnerWidth");
   magInnerLength=Control.EvalVar<double>(keyName+"MagInnerLength");
+
+  pipeClampYStep=Control.EvalVar<double>(keyName+"PipeClampYStep");
+  pipeClampZStep=Control.EvalVar<double>(keyName+"PipeClampZStep");
+  pipeClampThick=Control.EvalVar<double>(keyName+"PipeClampThick");
+  pipeClampWidth=Control.EvalVar<double>(keyName+"PipeClampWidth");
+  pipeClampHeight=Control.EvalVar<double>(keyName+"PipeClampHeight");
+
   frameHeight=Control.EvalVar<double>(keyName+"FrameHeight");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
+  clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
 
   return;
@@ -156,7 +164,6 @@ CorrectorMag::createSurfaces()
 {
   ELog::RegMethod RegA("CorrectorMag","createSurface");
 
-
   // left at 1000 / right at 2000
  
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(magLength/2.0),Y);
@@ -169,7 +176,8 @@ CorrectorMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(magInnerLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(magInnerLength/2.0),Y);
 
-  // 
+     
+  // Left/Right magnet surfaces:
   const Geometry::Vec3D LOrg(Origin-X*magOffset);
   ModelSupport::buildPlane(SMap,buildIndex+1003,
 			   LOrg-X*(magWidth/2.0),X);
@@ -200,6 +208,7 @@ CorrectorMag::createSurfaces()
 			   Origin+Z*(frameHeight+magHeight/2.0),Z);
 
 
+  
   // calc corner:
   double XScale(magCorner-magWidth/2.0);   // note: make negative!
   double YScale(magCorner-magLength/2.0);
@@ -214,6 +223,39 @@ CorrectorMag::createSurfaces()
       if (i % 2) YScale *= -1.0;
       XScale *= -1.0;
     }
+
+
+  // Front/back clamp :
+  const Geometry::Vec3D COrgA
+    (Origin-Y*(magInnerLength/2.0+pipeClampThick/2.0+pipeClampYStep));
+  const Geometry::Vec3D COrgB
+    (Origin+Y*(magInnerLength/2.0+pipeClampThick/2.0+pipeClampYStep));
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3001,COrgA-Y*(pipeClampThick/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3002,COrgA+Y*(pipeClampThick/2.0),Y);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3101,COrgB-Y*(pipeClampThick/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3102,COrgB+Y*(pipeClampThick/2.0),Y);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3003,COrgA-X*(pipeClampWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3004,COrgA+X*(pipeClampWidth/2.0),X);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3005,COrgA-Z*pipeClampZStep,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3015,COrgA-Z*(pipeClampZStep+pipeClampHeight),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3006,COrgA+Z*pipeClampZStep,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+3016,COrgA+Z*(pipeClampZStep+pipeClampHeight),Z);
+
+
   return;
 }
 
@@ -227,8 +269,18 @@ CorrectorMag::createObjects(Simulation& System)
   ELog::RegMethod RegA("CorrectorMag","createObjects");
   
   std::string Out;
+  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
 
+  const double extraValue
+    (magLength-(magInnerLength+2.0*pipeClampThick+2.0*pipeClampYStep));
 
+  const int extraFlag((extraValue<Geometry::zeroTol) ? 1 :
+		      ((extraValue>-Geometry::zeroTol) ? -1 : 0));
+  
+  const std::string fullSurf = (extraFlag>0) ?
+    ModelSupport::getComposite(SMap,buildIndex," 3001 -3102" ) :
+    ModelSupport::getComposite(SMap,buildIndex," 1 -2" );
+  
   // Frame
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 1013 -1014 5 -6" );
   makeCell("FrameInnerLeft",System,cellIndex++,frameMat,0.0,Out);  
@@ -277,43 +329,109 @@ CorrectorMag::createObjects(Simulation& System)
       BI+=1000;
     }
 
+  // clamp:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3001 -3002 3003 -3004 -3005 3015 " );
+  makeCell("BaseClampA",System,cellIndex++,clampMat,0.0,Out+ICell);  
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3001 -3002 3003 -3004 3006 -3016 " );
+  makeCell("TopClampA",System,cellIndex++,clampMat,0.0,Out+ICell);  
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3101 -3102 3003 -3004 -3005 3015 " );
+  makeCell("BaseClampB",System,cellIndex++,clampMat,0.0,Out+ICell);  
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3101 -3102 3003 -3004 3006 -3016 " );
+  makeCell("TopClampB",System,cellIndex++,clampMat,0.0,Out+ICell);  
+
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3001 -3002 3003 -3004 3005 -3006 " );
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,Out+ICell);  
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3101 -3102 3003 -3004 3005 -3006 " );
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+  
+  if (extraFlag>0)
+    {    
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 3001 -1 1003 -1004 5 -6 " );
+      makeCell("MagAVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 3001 -1 2003 -2004 5 -6 " );
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," -3102 2 1003 -1004 5 -6 " );
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," -3102 2 2003 -2004 5 -6 " );
+      makeCell("MagRightVoid",System,cellIndex++,voidMat,0.0,Out+ICell);
+    }
+  
   // Voids
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 6 -16 (-11:12:-1013:2014)" );
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);  
+    (SMap,buildIndex,
+     " 1003 -2004 6 -16 (-11:12:-1013:2014) "
+      " ( -3001 : 3002 : -3003 : 3004 : -3006 : 3016 ) "
+      " ( -3101 : 3102 : -3003 : 3004 : -3006 : 3016 ) ");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out+fullSurf);  
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 -5 15 (-11:12:-1013:2014)" );
-  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out);  
-
+    (SMap,buildIndex,
+     " 1003 -2004 -5 15 (-11:12:-1013:2014) "
+     " ( -3001 : 3002 : -3003 : 3004 : 3005 : -3015 ) "
+     " ( -3101 : 3102 : -3003 : 3004 : 3005 : -3015 ) ");
+  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,Out+fullSurf);  
+  
   // MAIN VOID
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1004 -2003 5 -6 "
+     " ( -3001 : 3002 : -3003 : 3004 ) "
+     " ( -3101 : 3102 : -3003 : 3004 ) " );
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+ICell+fullSurf);  
+
+
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1004 -2003 5 -6 " );
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);  
+    (SMap,buildIndex,"  1003 -2004 15 -16 " );
+  addOuterSurf(Out+fullSurf);
 
-
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 1003 -2004 15 -16 " );
-  addOuterSurf(Out);
+  createLinks(extraFlag);
 
   return;
 }
 
 void 
-CorrectorMag::createLinks()
+CorrectorMag::createLinks(const bool extraFlag)
   /*!
     Create the linked units
    */
 {
   ELog::RegMethod RegA("CorrectorMag","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
+  if (!extraFlag)
+    {
+      FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
+      FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
+      
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+    }
+  else
+    {
+      const Geometry::Vec3D COrgA
+	(Origin-Y*(magInnerLength/2.0+pipeClampThick+pipeClampYStep));
+      const Geometry::Vec3D COrgB
+	(Origin+Y*(magInnerLength/2.0+pipeClampThick+pipeClampYStep));
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+      FixedComp::setConnect(0,COrgA,-Y);     
+      FixedComp::setConnect(1,COrgB,Y);     
+      
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+3001));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+3102));
+    }
+      
   return;
 }
 
@@ -334,10 +452,9 @@ CorrectorMag::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();
   insertObjects(System);   
   
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE tdcSystem

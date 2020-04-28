@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeTubeGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,6 +260,43 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeCapMat",capMat);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"CapMat",capMat);
+  
+  return;
+
+}
+
+void
+PipeTubeGenerator::generateBlank(FuncDataBase& Control,
+				 const std::string& keyName,
+				 const double yStep,
+				 const double length) const
+ /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+    \param yStep :: y-offset
+    \param length :: length of box - ports
+  */
+{
+  ELog::RegMethod RegA("PipeTubeGenerator","generatorBlank");
+
+  Control.addVariable(keyName+"YStep",yStep);   // step + flange
+
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"BlankThick",wallThick);
+
+  Control.addVariable(keyName+"FlangeRadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeLength",flangeALen);
+
+  Control.addVariable(keyName+"FlangeCapThick",ACap);
+  Control.addVariable(keyName+"FlangeCapMat",capMat);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"CapMat",capMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
   return;

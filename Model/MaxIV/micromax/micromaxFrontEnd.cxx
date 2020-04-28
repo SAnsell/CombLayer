@@ -3,7 +3,7 @@
  
  * File: micromax/micromaxFrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,28 +73,11 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 
 #include "VacuumPipe.h"
-#include "insertObject.h"
-#include "insertCylinder.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LCollimator.h"
-#include "GateValveCube.h"
-#include "OffsetFlangePipe.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-#include "CrossPipe.h"
-#include "Wiggler.h"
-#include "SqrCollimator.h"
-#include "BeamMount.h"
-#include "HeatDump.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"

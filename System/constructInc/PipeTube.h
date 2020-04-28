@@ -36,17 +36,9 @@ namespace constructSystem
 */
 
 class PipeTube :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public VirtualTube
 {
  protected:
-
-  double radius;              ///< radius of main tube
-  double wallThick;           ///< wall thickness of main tube
-  double length;              ///< Main length
   
   double flangeARadius;        ///< Joining Flange radius
   double flangeALength;        ///< Joining Flange length
@@ -55,32 +47,12 @@ class PipeTube :
   double flangeACapThick;           ///< Thickness of Flange cap if present
   double flangeBCapThick;           ///< Thickness of Flange cap if present
   
-  int voidMat;                ///< void material
-  int wallMat;                ///< Fe material layer
-  int capMat;                 ///< flange cap material layer
-
-  bool outerVoid;             ///< Is outer void needed
-
-  bool delayPortBuild;        ///< Delay port to manual construct
-  size_t portConnectIndex;    ///< Port to connect for new-origin
-  Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
-
-  std::set<int> portCells;               ///< Extra cells for the port
-  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
-  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  /// Vector of ports FixedComp
-  std::vector<std::shared_ptr<portItem>> Ports;     
-
-  virtual void applyPortRotation();
-  Geometry::Vec3D calcCylinderDistance(const size_t) const;
-
   std::string makeOuterVoid(Simulation&);
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
   
  public:
 
@@ -88,38 +60,6 @@ class PipeTube :
   PipeTube(const PipeTube&);
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
-
-  /// Set the outer covering volume
-  void setOuterVoid() { outerVoid=1; }
-  /// Set a port delay
-  void delayPorts() { delayPortBuild=1; }
-  int splitVoidPorts(Simulation&,const std::string&,
-		     const int,const int);
-  int splitVoidPorts(Simulation&,const std::string&,const int,
-		     const int,const Geometry::Vec3D&);
-  int splitVoidPorts(Simulation&,const std::string&,const int,
-		     const int,const std::vector<size_t>&);
-
-  void setPortRotation(const size_t,const Geometry::Vec3D&);
-
-  void addInsertPortCells(const int);
-  void intersectPorts(Simulation&,const size_t,const size_t) const;
-  void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
-  const portItem& getPort(const size_t) const;
-
-  void createPorts(Simulation&);
-
-  virtual void insertAllInCell(Simulation&,const int);
-  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
-  virtual void insertMainInCell(Simulation&,const int);
-  virtual void insertMainInCell(Simulation&,const std::vector<int>&);
-  virtual void insertPortInCell(Simulation&,const int);
-  virtual void insertPortInCell(Simulation&,
-				const std::vector<std::set<int>>&);
-
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
 
 };
 

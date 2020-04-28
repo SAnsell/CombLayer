@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxivBuildInc/InjectionHall.h
+ * File: LinacInc/InjectionHall.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_InjectionHall_h
-#define xraySystem_InjectionHall_h
+#ifndef tdcSystem_InjectionHall_h
+#define tdcSystem_InjectionHall_h
 
 class Simulation;
 
-namespace xraySystem
+namespace tdcSystem
 {
   
 /*!

@@ -80,6 +80,7 @@
 #include "FlangeMount.h"
 #include "BremOpticsColl.h"
 #include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 

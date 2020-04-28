@@ -83,69 +83,56 @@
 #include "portItem.h"
 #include "doublePortItem.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
+#include "BlankTube.h"
 
 namespace constructSystem
 {
 
-PipeTube::PipeTube(const std::string& Key) :
-  constructSystem::VirtualTube(Key)  
+BlankTube::BlankTube(const std::string& Key) :
+  VirtualTube(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"FlangeA");
-  nameSideIndex(3,"FlangeB");
-  ContainedGroup::addCC("FlangeA");
-  ContainedGroup::addCC("FlangeB");
+  nameSideIndex(2,"Flange");
+  ContainedGroup::addCC("Flange");
 }
 
   
-PipeTube::~PipeTube() 
+BlankTube::~BlankTube() 
   /*!
     Destructor
   */
 {}
 
 void
-PipeTube::populate(const FuncDataBase& Control)
+BlankTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("PipeTube","populate");
+  ELog::RegMethod RegA("BlankTube","populate");
   
   VirtualTube::populate(Control);
 
-  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
-					 keyName+"FlangeRadius");
+  blankThick=Control.EvalVar<double>(keyName+"BlankThick");
 
-  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
-					 keyName+"FlangeLength");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
-					 keyName+"FlangeRadius");
-
-  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
-					 keyName+"FlangeLength");
-
-  flangeACapThick=Control.EvalDefPair<double>(keyName+"FlangeACapThick",
-					 keyName+"FlangeCapThick",0.0);
-  flangeBCapThick=Control.EvalDefPair<double>(keyName+"FlangeBCapThick",
-					 keyName+"FlangeCapThick",0.0);
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  flangeCapThick=Control.EvalDefVar<double>(keyName+"FlangeCapThick",0.0);
   
-
   return;
 }
 
 void
-PipeTube::createSurfaces()
+BlankTube::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("PipeTube","createSurfaces");
+  ELog::RegMethod RegA("BlankTube","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
   if (!frontActive())
@@ -169,105 +156,80 @@ PipeTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   SurfMap::addSurf("OuterCyl",SMap.realSurf(buildIndex+17));
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,
-			   Origin-Y*(length/2.0-(flangeALength+flangeACapThick)),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,
+     Origin-Y*(length/2.0-(flangeLength+flangeCapThick)),Y);
+  
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length/2.0-(flangeBLength+flangeBCapThick)),Y);
+			   Origin+Y*(length/2.0-blankThick),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin-Y*(length/2.0-flangeACapThick),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(length/2.0-flangeBCapThick),Y);
+			   Origin-Y*(length/2.0-flangeCapThick),Y);
 
   // flange:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
   
   return;
 }
 
 std::string
-PipeTube::makeOuterVoid(Simulation& System)
+BlankTube::makeOuterVoid(Simulation& System)
   /*!
     Build outer void and return the outer volume
     \param System :: Simulation to build in
     \return Outer exclude volume
   */
 {
-  ELog::RegMethod RegA("PipeTube","makeOuterVoid");
+  ELog::RegMethod RegA("BlankTube","makeOuterVoid");
   
   std::string Out;
   const std::string frontSurf(frontRule());
   const std::string backSurf(backRule());
 
-  if (flangeARadius>flangeBRadius+Geometry::zeroTol)
-    {
-      ELog::EM<<"Code unwritten"<<ELog::endErr;
-    }
-  else if (flangeBRadius>flangeARadius+Geometry::zeroTol)
-    {
-      ELog::EM<<"Code unwritten"<<ELog::endErr;
-    }
-  else
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"  -107 ")+
-	frontSurf+backSurf;
-    }
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  -107 ")+
+    frontSurf+backSurf;
   return Out;
 }
 
 void
-PipeTube::createObjects(Simulation& System)
+BlankTube::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("PipeTube","createObjects");
+  ELog::RegMethod RegA("BlankTube","createObjects");
 
   const std::string frontSurf(frontRule());
   const std::string backSurf(backRule());
 
   const std::string frontVoidSurf=
-    (flangeACapThick<Geometry::zeroTol) ? frontSurf :
+    (flangeCapThick<Geometry::zeroTol) ? frontSurf :
     ModelSupport::getComposite(SMap,buildIndex," 201 ");
-  const std::string backVoidSurf=
-    (flangeBCapThick<Geometry::zeroTol) ? backSurf :
-    ModelSupport::getComposite(SMap,buildIndex," -202 ");
-  
-  
+ 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -102 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+
-	   frontVoidSurf+backVoidSurf);
+	   frontVoidSurf);
   // main walls
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 ");
   makeCell("MainTube",System,cellIndex++,wallMat,0.0,
-	   Out+frontVoidSurf+backVoidSurf);
+	   Out+frontVoidSurf+backSurf);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontVoidSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 ");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
-
-
-  if (flangeACapThick>Geometry::zeroTol)
+  if (flangeCapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
       makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
     }
-  
-  if (flangeBCapThick>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 202 -207 ");
-      makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);
-    }
-
   if (outerVoid)
     {
       Out=makeOuterVoid(System);
@@ -275,20 +237,18 @@ PipeTube::createObjects(Simulation& System)
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -2 -17 ");
       addOuterSurf("Main",Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
-      addOuterSurf("FlangeA",Out+frontSurf);
+      addOuterSurf("Flange",Out+frontSurf);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," -207 102 ");
-      addOuterSurf("FlangeB",Out+backSurf);
     }
   return;
 }
 
 void
-PipeTube::createLinks()
+BlankTube::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane.
@@ -296,12 +256,12 @@ PipeTube::createLinks()
     Note that 0/1 are the flange surfaces
   */
 {
-  ELog::RegMethod RegA("PipeTube","createLinks");
+  ELog::RegMethod RegA("BlankTube","createLinks");
 
   // port centre
   FrontBackCut::createFrontLinks(*this,Origin,Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  
-  // getlinke points
+  // get link points
   FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
   FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
 
@@ -311,38 +271,28 @@ PipeTube::createLinks()
   const std::string backSurf(backRule());
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
   FixedComp::setLinkComp(2,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  FixedComp::setLinkComp(3,Out+backSurf);
+
 
   // inner links
-  int innerFrontSurf, innerBackSurf;
-  Geometry::Vec3D innerFrontVec, innerBackVec;
-  if (flangeACapThick<Geometry::zeroTol)
+  int innerFrontSurf;
+  Geometry::Vec3D innerFrontVec;
+  if (flangeCapThick<Geometry::zeroTol)
     {
       innerFrontSurf = getFrontRule().getPrimarySurface();
       innerFrontVec = Origin-Y*(length/2.0);
-    } else
+    }
+  else
     {
       innerFrontSurf = buildIndex+201;
-      innerFrontVec = Origin-Y*(length/2.0-flangeACapThick);
-    }
-
-  if (flangeBCapThick<Geometry::zeroTol)
-    {
-      innerBackSurf  = getBackRule().getPrimarySurface();
-      innerBackVec  = Origin+Y*(length/2.0);
-    } else
-    {
-      innerBackSurf  = buildIndex+202;
-      innerBackVec  = Origin+Y*(length/2.0-flangeBCapThick);
+      innerFrontVec = Origin-Y*(length/2.0-flangeCapThick);
     }
   
   FixedComp::setConnect(4,innerFrontVec,Y);
   FixedComp::setLinkSurf(4,innerFrontSurf);
   nameSideIndex(4,"InnerFront");
 
-  FixedComp::setConnect(5,innerBackVec,Y);
-  FixedComp::setLinkSurf(5,-innerBackSurf);
+  FixedComp::setConnect(5,Origin+Y*(length/2.0-blankThick),Y);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+102));
   nameSideIndex(5,"InnerBack");
 
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
@@ -354,6 +304,5 @@ PipeTube::createLinks()
 
   
 
-  
   
 }  // NAMESPACE constructSystem

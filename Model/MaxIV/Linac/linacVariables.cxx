@@ -57,6 +57,10 @@
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
 #include "FlangeMountGenerator.h"
+#include "CorrectorMagGenerator.h"
+#include "LinacQuadGenerator.h"
+#include "PipeTubeGenerator.h"
+#include "PortItemGenerator.h"
 
 namespace setVariable
 {
@@ -64,6 +68,78 @@ namespace setVariable
 namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
+  void linac2SPFsegment1(FuncDataBase&,const std::string&);
+
+void
+linac2SPFsegment1(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+    
+  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
+  Control.addVariable(lKey+"OuterLeft",80.0);
+  Control.addVariable(lKey+"OuterRight",140.0);
+  Control.addVariable(lKey+"OuterHeight",100.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
+
+  // note larget unit
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  //  corrector mag and pie
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,55.73);
+  CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
+  CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
+
+  
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,33.85);
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,112.7);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
+  CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
+  
+  LQGen.generateQuad(Control,lKey+"QuadA",94.0);
+
+
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,21.30);
+  PGen.generatePipe(Control,lKey+"PipeF",0.0,128.0);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
+
+  const Geometry::Vec3D OPos(0,2.0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40>(6.5);    
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
+  Control.addVariable(lKey+"PumpANPorts",2);
+
+  PItemGen.setLength(6.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
+  PItemGen.setLength(2.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
+
+  return;
+}
 
   
 void
@@ -109,7 +185,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",283.0);  // from mid line
   
-
   Control.addVariable(wallKey+"KlysDivThick",100.0);
   
   Control.addVariable(wallKey+"MidGateOut",206.0);
@@ -145,6 +220,7 @@ LINACvariables(FuncDataBase& Control)
 
   
   linacVar::wallVariables(Control,"InjectionHall");
+  linacVar::linac2SPFsegment1(Control,"L2SPFseg1");
 
   return;
 }

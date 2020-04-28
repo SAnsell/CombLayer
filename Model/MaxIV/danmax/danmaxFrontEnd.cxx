@@ -3,7 +3,7 @@
  
  * File: danmax/danmaxFrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,13 +73,11 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 
-#include "VacuumPipe.h"
-#include "portItem.h"
+#include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "Wiggler.h"

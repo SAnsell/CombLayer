@@ -3,7 +3,7 @@
  
  * File:   support/Tensor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +58,9 @@ Tensor<T>::~Tensor()
 {
   if (U)
     {
-      delete U[0][0];
-      delete U[0];
-      delete U;
+      delete [] U[0][0];
+      delete [] U[0];
+      delete [] U;
     }
 
 }
@@ -140,7 +140,7 @@ Tensor<T>::copyMem(const Tensor<T>& A)
       setMem(A.nx,A.ny,A.nz);
       if (U)
 	{
-	  T* Wu=U[0][0];           //Write point 
+	  T* Wu=U[0][0];             //Write point 
 	  T* Ru=A.U[0][0];           //Read point
 	  for(ITYPE i=0;i<nx*ny*nz;i++)
 	    {
@@ -190,7 +190,7 @@ Tensor<T>::deleteMem()
       delete [] U[0][0];
       delete [] U[0];
       delete [] U;
-      U=0;
+      U=nullptr;
     }
   return;
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/generalConstruct.h
+ * File:   LinacInc/LObjectSupport.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -20,7 +20,7 @@
  *
  ****************************************************************************/
 #ifndef constructSystem_generalConstruct_h
-#define constructSystem_xrayConstruct_generalConstruct_h
+#define constructSystem__generalConstruct_h
 
 
 namespace constructSystem
@@ -40,40 +40,29 @@ namespace constructSystem
 
 }
 
-namespace xraySystem
-{
-  class OpticsHutch;
-  class Mirror;
-  class MonoBlockXstals;
-  class DCMTank;
-}
-
-
-namespace constructSystem
+namespace tdcSystem
 {
 
 int
-internalUnit(Simulation&,
-	     attachSystem::InnerZone&,
-	     MonteCarlo::Object*,
-	     const attachSystem::FixedComp&,
-	     const std::string&,
-	     attachSystem::FixedComp&,
-	     attachSystem::ExternalCut&,
-	     attachSystem::ContainedComp&);
+pipeTerminate(Simulation&,
+	      attachSystem::InnerZone& buildZone,
+	      const std::shared_ptr<constructSystem::VacuumPipe>&);
+		    
   
-template<typename T>
-int constructUnit(Simulation& System,
-		  attachSystem::InnerZone& buildZone,
-		  MonteCarlo::Object* masterCell,
-		  const attachSystem::FixedComp& linkUnit,
-		  const std::string& sideName,
-		  T& buildUnit)
-{
-  return internalUnit(System,buildZone,masterCell,linkUnit,sideName,
-		 buildUnit,buildUnit,buildUnit);
-}
+int
+correctorMagnetPair(Simulation&,
+		    attachSystem::InnerZone& buildZone,
+		    const std::shared_ptr<constructSystem::VacuumPipe>&,
+		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
+		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
 
-}  // NAMEPSACE constructSystem
+template<typename magTYPE>
+int
+pipeMagUnit(Simulation&,
+	    attachSystem::InnerZone& buildZone,
+	    const std::shared_ptr<constructSystem::VacuumPipe>&,
+	    const std::shared_ptr<magTYPE>&);
+
+}
 
 #endif

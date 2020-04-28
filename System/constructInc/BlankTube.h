@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuildInc/DefUnitsMaxIV.h
+ * File:   constructInc/BlankTube.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,23 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef mainSystem_DefUnitsMaxIV_h
-#define mainSystem_DefUnitsMaxIV_h
+#ifndef constructSystem_BlankTube_h
+#define constructSystem_BlankTube_h
 
 class Simulation;
-class FuncDataBase;
 
-namespace mainSystem
+namespace constructSystem
 {
-  class defaultConfig;
-  class inputParam;
+  
+/*!
+  \class BlankTube
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief BlankTube unit  
+*/
 
-  void setDefUnits(FuncDataBase&,inputParam&);
-  void setMaxIVSingle(defaultConfig&,const std::vector<std::string>&);
-  void setMaxIVLinac(defaultConfig&,const std::vector<std::string>&);
+class BlankTube :
+  public VirtualTube
+{
+ protected:
+  
+  double flangeRadius;        ///< Joining Flange radius
+  double flangeLength;        ///< Joining Flange length
+  double flangeCapThick;       ///< Thickness of Flange cap if present
+  double blankThick;           ///< Thickness of blank cap 
+  
+  
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
+
+  std::string makeOuterVoid(Simulation&);
+  
+ public:
+
+  BlankTube(const std::string&);
+  BlankTube(const BlankTube&);
+  BlankTube& operator=(const BlankTube&);
+  virtual ~BlankTube();
+
+};
 
 }
-
 
 #endif
  
