@@ -41,15 +41,12 @@ namespace constructSystem
   \author S. Ansell
 */
 
-namespace xraySystem
-{
-  class DipoleDIBMag;
-}
 
 namespace tdcSystem
 {
   class LQuad;
   class CorrectorMag;
+  class DipoleDIBMag;
   /*!
     \class L2SPFsegment14
     \version 1.0
@@ -75,7 +72,7 @@ class L2SPFsegment14 :
 
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< first bellow
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< pipe through dm1
-  std::shared_ptr<xraySystem::DipoleDIBMag> dm1;     ///< first dipole magnet
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dm1;     ///< first dipole magnet
 
   void populate(const FuncDataBase&);
   void createSurfaces();

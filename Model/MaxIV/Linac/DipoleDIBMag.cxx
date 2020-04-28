@@ -62,7 +62,7 @@
 
 #include "DipoleDIBMag.h"
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 DipoleDIBMag::DipoleDIBMag(const std::string& Key)  :
@@ -448,4 +448,4 @@ DipoleDIBMag::createAll(Simulation& System,
   return;
 }
 
-}  // xraySystem
+}  // tdcSystem

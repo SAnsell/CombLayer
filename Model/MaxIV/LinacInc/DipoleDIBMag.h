@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_DipoleDIBMag_h
-#define xraySystem_DipoleDIBMag_h
+#ifndef tdcSystem_DipoleDIBMag_h
+#define tdcSystem_DipoleDIBMag_h
 
 class Simulation;
 
-namespace xraySystem
+namespace tdcSystem
 {
 
 /*!

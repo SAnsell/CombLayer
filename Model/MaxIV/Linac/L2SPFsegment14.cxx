@@ -109,7 +109,7 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  dm1(new xraySystem::DipoleDIBMag(keyName+"DM1"))
+  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1"))
   /*!
     Constructor
     \param Key :: Name of construction key
