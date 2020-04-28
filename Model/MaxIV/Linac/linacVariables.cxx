@@ -170,6 +170,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
   PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
 
