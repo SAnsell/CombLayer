@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: maxpeem/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -86,6 +86,7 @@
 
 #include "InjectionHall.h"
 #include "L2SPFsegment1.h"
+#include "L2SPFsegment14.h"
 
 #include "TDC.h"
 
@@ -114,7 +115,7 @@ TDC::~TDC()
    */
 {}
 
-void 
+void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
 	       const long int sideIndex)
@@ -130,17 +131,18 @@ TDC::createAll(Simulation& System,
 
   static const std::map<std::string,std::string> segmentLinkMap
     ({
-      {"L2SPFsegment1","Origin"}
+      {"L2SPFsegment1","Origin"},
+      {"L2SPFsegment14","Origin"}
     });
   const int voidCell(74123);
-  
+
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
-    
+
   for(const std::string& BL : activeINJ)
     {
-      if (BL=="L2SPFsegment1")  
+      if (BL=="L2SPFsegment1")
 	{
 	  std::unique_ptr<L2SPFsegment1> BLPtr;
 	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
@@ -152,6 +154,18 @@ TDC::createAll(Simulation& System,
 	    (System,*injectionHall,
 	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
 	}
+      else if (BL=="L2SPFsegment14")
+	{
+	  std::unique_ptr<L2SPFsegment14> BLPtr14;
+	  BLPtr14.reset(new L2SPFsegment14("L2SPFseg14"));
+	  BLPtr14->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  BLPtr14->setCutSurf("front",injectionHall->getSurf("Front"));
+
+	  BLPtr14->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  BLPtr14->createAll
+	    (System,*injectionHall,
+	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	}
     }
 
   return;
@@ -159,4 +173,3 @@ TDC::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-
