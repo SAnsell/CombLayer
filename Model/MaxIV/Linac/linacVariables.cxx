@@ -80,7 +80,7 @@ linac2SPFsegment1(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment1");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -151,7 +151,7 @@ linac2SPFsegment14(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment14");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -164,51 +164,12 @@ linac2SPFsegment14(FuncDataBase& Control,
   Control.addVariable(lKey+"OuterRight",140.0);
   Control.addVariable(lKey+"OuterHeight",100.0);
 
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
-
-  // note larget unit
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
-
-  //  corrector mag and pie
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,55.73);
-  CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
-  CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
-
-
-
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,33.85);
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,112.7);
-
-  CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
-  CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
-
-  LQGen.generateQuad(Control,lKey+"QuadA",94.0);
-
-
-  PGen.generatePipe(Control,lKey+"PipeE",0.0,21.30);
-  PGen.generatePipe(Control,lKey+"PipeF",0.0,128.0);
-
-  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
-
-  const Geometry::Vec3D OPos(0,2.0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);
-  PItemGen.setNoPlate();
-
-  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
-  Control.addVariable(lKey+"PumpANPorts",2);
-
-  PItemGen.setLength(6.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
-  PItemGen.setLength(2.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
 
   return;
 }

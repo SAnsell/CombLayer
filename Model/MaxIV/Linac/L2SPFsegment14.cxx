@@ -105,21 +105,8 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
 
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHorrA(new tdcSystem::CorrectorMag(keyName+"CMagHorrA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
-  cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
-  cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
-  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA"))
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -128,17 +115,8 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(bellowA);
   OR.addObject(pipeA);
-  OR.addObject(pipeB);
-  OR.addObject(cMagHorrA);
-  OR.addObject(cMagVertA);
-  OR.addObject(pipeC);
-  OR.addObject(pipeD);
-  OR.addObject(cMagHorrB);
-  OR.addObject(cMagVertB);
-  OR.addObject(QuadA);
-  OR.addObject(pipeE);
-  OR.addObject(pumpA);
 }
 
 L2SPFsegment14::~L2SPFsegment14()
@@ -221,49 +199,12 @@ L2SPFsegment14::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-  pipeA->createAll(System,*this,0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  bellowA->createAll(System,*this,0);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*bellowA);
-
-  //
-  // build pipe + corrector magnets together:
-  // THIS becomes a function:
-  //
-  pipeB->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,buildZone,pipeB,cMagHorrA,cMagVertA);
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeB,"back",*pipeC);
-
-  pipeD->createAll(System,*pipeC,"back");
-  correctorMagnetPair(System,buildZone,pipeD,cMagHorrB,cMagVertB);
-
-  pipeMagUnit(System,buildZone,pipeD,QuadA);
-  pipeTerminate(System,buildZone,pipeD);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeD,"back",*pipeE);
-
-  pipeF->createAll(System,*pipeE,"back");
-  correctorMagnetPair(System,buildZone,pipeF,cMagHorrC,cMagVertC);
-  pipeTerminate(System,buildZone,pipeF);
-
-    // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*pipeF,"back");
-
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
-
+    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
   return;
 }
