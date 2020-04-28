@@ -91,6 +91,7 @@
 #include "CorrectorMag.h"
 
 #include "DipoleDIBMag.h"
+#include "GateValveCube.h"
 
 #include "LObjectSupport.h"
 #include "L2SPFsegment14.h"
@@ -109,7 +110,12 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1"))
+  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
+  gateA(new constructSystem::GateValveCube(keyName+"GateA")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -121,6 +127,11 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeA);
   OR.addObject(dm1);
+  OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(dm2);
+  OR.addObject(gateA);
+  OR.addObject(bellowB);
 }
 
 L2SPFsegment14::~L2SPFsegment14()
@@ -213,6 +224,22 @@ L2SPFsegment14::buildObjects(Simulation& System)
   dm1->setCutSurf("Inner", *pipeA, "outerPipe");
   dm1->createAll(System,*pipeA,0);
   dm1->insertInCell(System,outerCell+1);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*pipeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeB,"back",*pipeC);
+
+  dm2->setCutSurf("Inner", *pipeC, "outerPipe");
+  dm2->createAll(System,*pipeC,0);
+  dm2->insertInCell(System,outerCell+3);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*pipeC,"back",*gateA);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
   return;
 }

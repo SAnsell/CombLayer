@@ -159,6 +159,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
 
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
   Control.addVariable(lKey+"OuterLeft",80.0);
@@ -175,7 +176,18 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
 
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
+
+  DIBGen.generate(Control,lKey+"DM2");
+
+  GateGen.setLength(6.3);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,lKey+"GateA",0.0,0);
+  Control.addVariable(lKey+"GateAPortALen",2.0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
 
   return;
 }
