@@ -65,8 +65,8 @@ global_settings {
 
 #switch ( view )
   #case(0)
-    #declare cameraLocation = <50, 150, 30>;
-    #declare cameraLookAt   = <0, 10, 0>;
+    #declare cameraLocation = <-50, -150, 30>;
+    #declare cameraLookAt   = <0, -10, 0>;
     #declare cameraAngle = 20;
   #break
   #else
