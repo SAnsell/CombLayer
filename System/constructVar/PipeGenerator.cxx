@@ -382,6 +382,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 }
 
 ///\cond TEMPLATE
+  template void PipeGenerator::setCF<CF25>();
   template void PipeGenerator::setCF<CF40>();
   template void PipeGenerator::setCF<CF50>();
   template void PipeGenerator::setCF<CF63>();
