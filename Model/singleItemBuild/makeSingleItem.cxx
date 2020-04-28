@@ -147,11 +147,18 @@ makeSingleItem::build(Simulation& System,
   const int voidCell(74123);
 
 
+  std::shared_ptr<constructSystem::VacuumPipe>
+    VC(new constructSystem::VacuumPipe("VC"));
   std::shared_ptr<xraySystem::DipoleDIBMag>
     DIB(new xraySystem::DipoleDIBMag("DIB"));
 
+  OR.addObject(VC);
   OR.addObject(DIB);
 
+  VC->addInsertCell(voidCell);
+  VC->createAll(System,World::masterOrigin(),0);
+
+  DIB->setCutSurf("Inner",*VC,"outerPipe");
   DIB->addInsertCell(voidCell);
   DIB->createAll(System,World::masterOrigin(),0);
 
