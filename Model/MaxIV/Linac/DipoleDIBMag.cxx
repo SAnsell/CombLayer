@@ -280,6 +280,8 @@ DipoleDIBMag::createObjects(Simulation& System)
   ELog::RegMethod RegA("DipoleDIBMag","createObjects");
 
   std::string Out;
+  // insert cell [e.g. pipe]
+  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
 
   // // Frame
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 26 -16" );
@@ -396,7 +398,7 @@ DipoleDIBMag::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 1003 -1004 1006 -2005 ");
-  makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out+ICell);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -2 13 -14 15 -16 " );
