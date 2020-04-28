@@ -61,6 +61,7 @@
 #include "LinacQuadGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "DipoleDIBMagGenerator.h"
 
 namespace setVariable
 {
@@ -169,7 +170,12 @@ linac2SPFsegment14(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
+
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  DIBGen.generate(Control,lKey+"DM1");
+
+
 
   return;
 }

@@ -41,6 +41,11 @@ namespace constructSystem
   \author S. Ansell
 */
 
+namespace xraySystem
+{
+  class DipoleDIBMag;
+}
+
 namespace tdcSystem
 {
   class LQuad;
@@ -69,7 +74,8 @@ class L2SPFsegment14 :
   double outerHeight;       ///< lift from origin for inner void
 
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< first bellow
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< start pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< pipe through dm1
+  std::shared_ptr<xraySystem::DipoleDIBMag> dm1;     ///< first dipole magnet
 
   void populate(const FuncDataBase&);
   void createSurfaces();

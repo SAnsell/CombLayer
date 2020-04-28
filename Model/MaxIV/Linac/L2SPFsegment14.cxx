@@ -90,6 +90,8 @@
 #include "LQuad.h"
 #include "CorrectorMag.h"
 
+#include "DipoleDIBMag.h"
+
 #include "LObjectSupport.h"
 #include "L2SPFsegment14.h"
 
@@ -106,7 +108,8 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   buildZone(*this,cellIndex),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA"))
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  dm1(new xraySystem::DipoleDIBMag(keyName+"DM1"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -117,6 +120,7 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
 
   OR.addObject(bellowA);
   OR.addObject(pipeA);
+  OR.addObject(dm1);
 }
 
 L2SPFsegment14::~L2SPFsegment14()
@@ -205,6 +209,10 @@ L2SPFsegment14::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+
+  dm1->setCutSurf("Inner", *pipeA, "outerPipe");
+  dm1->createAll(System,*pipeA,0);
+  dm1->insertInCell(System,outerCell+1);
 
   return;
 }
