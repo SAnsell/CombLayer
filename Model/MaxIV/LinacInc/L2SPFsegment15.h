@@ -71,14 +71,7 @@ class L2SPFsegment15 :
   double outerRight;        ///< right for inner void
   double outerHeight;       ///< lift from origin for inner void
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;   ///< First bellow
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dm1
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dm1;        ///< First dipole magnet
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dm2
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dm2;        ///< Second dipole magnet
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
-  std::shared_ptr<constructSystem::Bellows> bellowB;   ///< Last bellow
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< #1 - VC
 
   void populate(const FuncDataBase&);
   void createSurfaces();

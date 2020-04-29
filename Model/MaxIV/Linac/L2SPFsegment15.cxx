@@ -108,14 +108,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
 
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
-  gateA(new constructSystem::GateValveCube(keyName+"GateA")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -124,14 +117,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
   OR.addObject(pipeA);
-  OR.addObject(dm1);
-  OR.addObject(pipeB);
-  OR.addObject(pipeC);
-  OR.addObject(dm2);
-  OR.addObject(gateA);
-  OR.addObject(bellowB);
 }
 
 L2SPFsegment15::~L2SPFsegment15()
@@ -214,32 +200,13 @@ L2SPFsegment15::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-  bellowA->createAll(System,*this,0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  pipeA->createAll(System,*this,0);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+  // constructSystem::constructUnit
+  //   (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
-  dm1->setCutSurf("Inner", *pipeA, "outerPipe");
-  dm1->createAll(System,*pipeA,0);
-  dm1->insertInCell(System,outerCell+1);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*pipeB);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeB,"back",*pipeC);
-
-  dm2->setCutSurf("Inner", *pipeC, "outerPipe");
-  dm2->createAll(System,*pipeC,0);
-  dm2->insertInCell(System,outerCell+3);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeC,"back",*gateA);
-
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
   return;
 }
@@ -250,8 +217,8 @@ L2SPFsegment15::createLinks()
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+   setLinkSignedCopy(0,*pipeA,1);
+   setLinkSignedCopy(1,*pipeA,2);
   return;
 }
 
