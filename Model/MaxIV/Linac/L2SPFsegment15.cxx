@@ -89,6 +89,7 @@
 #include "BlankTube.h"
 #include "LQuad.h"
 #include "CorrectorMag.h"
+#include "PipeTube.h"
 
 #include "DipoleDIBMag.h"
 #include "GateValveCube.h"
@@ -108,7 +109,10 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
 
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA"))
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
+  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -118,6 +122,9 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(mirrorChamber);
+  OR.addObject(ionPump);
+  OR.addObject(pipeB);
 }
 
 L2SPFsegment15::~L2SPFsegment15()
@@ -204,9 +211,41 @@ L2SPFsegment15::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
-  // constructSystem::constructUnit
-  //   (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+  // Mirror chamber
+  mirrorChamber->addAllInsertCell(masterCell->getName());
+  mirrorChamber->setPortRotation(3, Geometry::Vec3D(1,0,0));
+  mirrorChamber->createAll(System,*pipeA,2);
+  for (size_t i=2; i<=3; ++i)
+    for (size_t j=0; j<=1; ++j)
+      mirrorChamber->intersectPorts(System,i,j);
 
+  const constructSystem::portItem& mirrorChamberPort1=mirrorChamber->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit(System,
+					  masterCell,
+					  mirrorChamberPort1,
+					  mirrorChamberPort1.getSideIndex("OuterPlate"));
+  mirrorChamber->insertAllInCell(System,outerCell);
+
+  // Ion pump
+  ionPump->addAllInsertCell(masterCell->getName());
+  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
+  ionPump->createAll(System,mirrorChamberPort1,2);
+  for (size_t i=2; i<=3; ++i)
+    for (size_t j=0; j<=1; ++j)
+      ionPump->intersectPorts(System,i,j);
+
+  const constructSystem::portItem& ionPumpPort1=ionPump->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit(System,
+					  masterCell,
+					  ionPumpPort1,
+					  ionPumpPort1.getSideIndex("OuterPlate"));
+  ionPump->insertAllInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,ionPumpPort1,"OuterPlate",*pipeB);
+
+  System.removeCell(buildZone.getMaster()->getName());
+  System.substituteAllSurface(buildIndex+2,pipeB->getLinkSurf("back"));
 
   return;
 }
@@ -218,7 +257,7 @@ L2SPFsegment15::createLinks()
    */
 {
    setLinkSignedCopy(0,*pipeA,1);
-   setLinkSignedCopy(1,*pipeA,2);
+   setLinkSignedCopy(1,*pipeB,2);
   return;
 }
 

@@ -81,8 +81,8 @@ global_settings {
     #declare projection = 1;
   #break
   #case(1001) // beamline back view
-    #declare cameraLocation = <300, 300, 40>;
-    #declare cameraLookAt   = <125, 220, 0>;
+    #declare cameraLocation = <200, 550, 40>;
+    #declare cameraLookAt   = <125, 400, 0>;
     #declare cameraAngle = 90;
   #break
   #else

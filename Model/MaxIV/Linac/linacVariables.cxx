@@ -224,6 +224,50 @@ linac2SPFsegment15(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,30.0);
 
+  // Mirror chamber
+  std::string name=lKey+"MirrorChamber";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  Control.addVariable(name+"NPorts",4);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  // Ion pump
+  name=lKey+"IonPump";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  Control.addVariable(name+"NPorts",4);
+
+  PItemGen.setLength(2.5);
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setLength(6.5);
+  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
+
   return;
 }
 
