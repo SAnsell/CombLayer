@@ -167,7 +167,8 @@ linac2SPFsegment14(FuncDataBase& Control,
   Control.addVariable(lKey+"OuterHeight",100.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
@@ -177,7 +178,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
-  PGen.setMat("Stainless316L","Stainless304");
+  PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
 
   PGen.setMat("Stainless316L","Stainless316L");
