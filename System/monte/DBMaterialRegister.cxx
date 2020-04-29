@@ -80,11 +80,6 @@ DBMaterial::initMaterial()
 		   "74183.70c 0.0089819772 74184.70c 0.0192722  74186.70c "
 		   " 0.018014274","",MLib);
   setMaterial(MObj);
-  // Material #4 : Methane + 10% Al.
-  MObj.setMaterial(4,"CH4inFoam",
-		   "6000.70c 0.0167364 1001.70c 0.066945 13027.70c 0.0060185",
-		   "smeth.26t al.20t",MLib);
-  setMaterial(MObj);
 
   // Density --> 7.65g/cc
   MObj.setMaterial(3,"Stainless304",
@@ -96,6 +91,13 @@ DBMaterial::initMaterial()
                    "28000.50c 8.15128e-3",
 		   "",MLib);
   setMaterial(MObj);
+
+  // Material #4 : Methane + 10% Al.
+  MObj.setMaterial(4,"CH4inFoam",
+		   "6000.70c 0.0167364 1001.70c 0.066945 13027.70c 0.0060185",
+		   "smeth.26t al.20t",MLib);
+  setMaterial(MObj);
+
   // Material #5: Aluminum 5083
   MObj.setMaterial(5,"Aluminium",
 		   "13027.70c 0.054381 12024.70c 0.002070 12025.70c "
@@ -1273,8 +1275,8 @@ DBMaterial::initMaterial()
   MObj.setDensity(-7.85);
   setMaterial(MObj);
 
-    // Earth :from https://mcnp.lanl.gov/pdf_files/la-ur-13-24293.pdf
-  // ensity 1.6104
+  // Earth: from https://mcnp.lanl.gov/pdf_files/la-ur-13-24293.pdf
+  // Density 1.6104
   MObj.setMaterial(148, "Earth",
 		   "1001.70c 0.0010213 1002.70c 1.17462e-07  "
 		   "8016.70c 0.0245038 11023.70c 0.00099556  "
@@ -1289,9 +1291,39 @@ DBMaterial::initMaterial()
 		   "26054.70c 0.000102832 26056.70c 0.00161425  "
 		   "26057.70c 3.728e-05 26058.70c 4.96128e-06  ",
 		   "lwtr.01t",MLib);
-		   
+
   MObj.setDensity(-1.6104);
   setMaterial(MObj);
+
+  // SS304L composition from ESS Design Update WP3
+  // Reference: Material Data Compilation 29 Mar 2017
+  MObj.setMaterial(149, "Stainless304L",
+		   " 6000.70c      0.001366050 "
+		   " 14028.70c      0.017958587 "
+		   " 14029.70c      0.000912310 "
+		   " 14030.70c      0.000602105 "
+		   " 15031.70c      0.000794573 "
+		   " 16032.70c      0.000486055 "
+		   " 16033.70c      0.000003838 "
+		   " 16034.70c      0.000021747 "
+		   " 16036.70c      0.000000051 "
+		   " 24050.70c      0.008683351 "
+		   " 24052.70c      0.167449786 "
+		   " 24053.70c      0.018987462 "
+		   " 24054.70c      0.004726381 "
+		   " 25055.70c      0.019910026 "
+		   " 26054.70c      0.038864395 "
+		   " 26056.70c      0.610087892 "
+		   " 26057.70c      0.014089590 "
+		   " 26058.70c      0.001875066 "
+		   " 28058.70c      0.063434555 "
+		   " 28060.70c      0.024434877 "
+		   " 28061.70c      0.001062167 "
+		   " 28062.70c      0.003386654 "
+		   " 28064.70c      0.000862481 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  MDB.resetMaterial(MObj);
 
 
   return;
