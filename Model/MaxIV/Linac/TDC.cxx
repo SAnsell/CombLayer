@@ -87,6 +87,7 @@
 #include "InjectionHall.h"
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment14.h"
+#include "L2SPFsegment15.h"
 
 #include "TDC.h"
 
@@ -96,7 +97,9 @@ namespace tdcSystem
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   injectionHall(new InjectionHall("InjectionHall")),
-  l2spf1(new L2SPFsegment1("L2SPF1"))
+  l2spf1(new L2SPFsegment1("L2SPF1")),
+  l2spf14(new L2SPFsegment14("L2SPF14")),
+  l2spf15(new L2SPFsegment15("L2SPF15"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -107,6 +110,8 @@ TDC::TDC(const std::string& KN) :
 
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
+  OR.addObject(l2spf14);
+  OR.addObject(l2spf15);
 }
 
 TDC::~TDC()
@@ -156,15 +161,22 @@ TDC::createAll(Simulation& System,
 	}
       else if (BL=="L2SPFsegment14")
 	{
-	  std::unique_ptr<L2SPFsegment14> BLPtr14;
-	  BLPtr14.reset(new L2SPFsegment14("L2SPFseg14"));
-	  BLPtr14->setCutSurf("floor",injectionHall->getSurf("Floor"));
-	  BLPtr14->setCutSurf("front",injectionHall->getSurf("Front"));
+	  l2spf14->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  l2spf14->setCutSurf("front",injectionHall->getSurf("Front"));
 
-	  BLPtr14->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  BLPtr14->createAll
+	  l2spf14->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf14->createAll
 	    (System,*injectionHall,
 	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	}
+      else if (BL=="L2SPFsegment15")
+	{
+	  l2spf15->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  l2spf15->setCutSurf("front",l2spf14->getLinkSurf("back"));
+
+	  l2spf15->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf15->createAll
+	    (System,*l2spf14,l2spf14->getSideIndex("back"));
 	}
     }
 

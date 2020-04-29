@@ -71,6 +71,7 @@ namespace linacVar
   void wallVariables(FuncDataBase&,const std::string&);
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment14(FuncDataBase&,const std::string&);
+  void linac2SPFsegment15(FuncDataBase&,const std::string&);
 
 void
 linac2SPFsegment1(FuncDataBase& Control,
@@ -196,6 +197,57 @@ linac2SPFsegment14(FuncDataBase& Control,
   return;
 }
 
+void
+linac2SPFsegment15(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment15");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+
+  Control.addVariable(lKey+"OuterLeft",80.0);
+  Control.addVariable(lKey+"OuterRight",140.0);
+  Control.addVariable(lKey+"OuterHeight",100.0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
+
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  DIBGen.generate(Control,lKey+"DM1");
+
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
+
+  PGen.setMat("Stainless316L","Stainless316L");
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
+
+  DIBGen.generate(Control,lKey+"DM2");
+
+  GateGen.setLength(6.3);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,lKey+"GateA",0.0,0);
+  Control.addVariable(lKey+"GateAPortALen",2.0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+
+  return;
+}
 
 void
 wallVariables(FuncDataBase& Control,
@@ -276,7 +328,8 @@ LINACvariables(FuncDataBase& Control)
 
   linacVar::wallVariables(Control,"InjectionHall");
   linacVar::linac2SPFsegment1(Control,"L2SPFseg1");
-  linacVar::linac2SPFsegment14(Control,"L2SPFseg14");
+  linacVar::linac2SPFsegment14(Control,"L2SPF14");
+  linacVar::linac2SPFsegment15(Control,"L2SPF15");
 
   return;
 }

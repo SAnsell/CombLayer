@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/L2SPFsegment14.h
+ * File:   LinacInc/L2SPFsegment15.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment14_h
-#define tdcSystem_L2SPFsegment14_h
+#ifndef tdcSystem_L2SPFsegment15_h
+#define tdcSystem_L2SPFsegment15_h
 
 namespace constructSystem
 {
@@ -49,14 +49,14 @@ namespace tdcSystem
   class CorrectorMag;
   class DipoleDIBMag;
   /*!
-    \class L2SPFsegment14
+    \class L2SPFsegment15
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class L2SPFsegment14 :
+class L2SPFsegment15 :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -87,10 +87,10 @@ class L2SPFsegment14 :
 
  public:
 
-  L2SPFsegment14(const std::string&);
-  L2SPFsegment14(const L2SPFsegment14&);
-  L2SPFsegment14& operator=(const L2SPFsegment14&);
-  ~L2SPFsegment14();
+  L2SPFsegment15(const std::string&);
+  L2SPFsegment15(const L2SPFsegment15&);
+  L2SPFsegment15& operator=(const L2SPFsegment15&);
+  ~L2SPFsegment15();
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,

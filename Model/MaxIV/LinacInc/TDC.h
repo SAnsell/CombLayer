@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/TDC.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_TDC_h
@@ -28,6 +28,8 @@ namespace tdcSystem
 
   class InjectionHall;
   class L2SPFsegment1;
+  class L2SPFsegment14;
+  class L2SPFsegment15;
   /*!
     \class TDC
     \version 1.0
@@ -45,12 +47,14 @@ class TDC :
  private:
 
   std::set<std::string> activeINJ;   ///< active components
-  
-  std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
+
+  std::shared_ptr<InjectionHall> injectionHall; ///< in ring front end
   std::shared_ptr<L2SPFsegment1> l2spf1;        ///< segment 1
+  std::shared_ptr<L2SPFsegment14> l2spf14;      ///< segment 14
+  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 14
 
  public:
-  
+
   TDC(const std::string&);
   TDC(const TDC&);
   TDC& operator=(const TDC&);
@@ -58,7 +62,7 @@ class TDC :
 
   /// set active range
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 

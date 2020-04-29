@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment14.cxx
+ * File: Linac/L2SPFsegment15.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,14 +94,14 @@
 #include "GateValveCube.h"
 
 #include "LObjectSupport.h"
-#include "L2SPFsegment14.h"
+#include "L2SPFsegment15.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
+L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -134,20 +134,20 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   OR.addObject(bellowB);
 }
 
-L2SPFsegment14::~L2SPFsegment14()
+L2SPFsegment15::~L2SPFsegment15()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment14::populate(const FuncDataBase& Control)
+L2SPFsegment15::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","populate");
+  ELog::RegMethod RegA("L2SPFsegment15","populate");
   FixedOffset::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
@@ -162,12 +162,12 @@ L2SPFsegment14::populate(const FuncDataBase& Control)
 
 
 void
-L2SPFsegment14::createSurfaces()
+L2SPFsegment15::createSurfaces()
   /*!
     Create surfaces for the buildZone [if used]
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","createSurfaces");
+  ELog::RegMethod RegA("L2SPFsegment15","createSurfaces");
 
   const double totalLength(400.0);
 
@@ -198,14 +198,14 @@ L2SPFsegment14::createSurfaces()
 }
 
 void
-L2SPFsegment14::buildObjects(Simulation& System)
+L2SPFsegment15::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","buildObjects");
+  ELog::RegMethod RegA("L2SPFsegment15","buildObjects");
 
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -245,7 +245,7 @@ L2SPFsegment14::buildObjects(Simulation& System)
 }
 
 void
-L2SPFsegment14::createLinks()
+L2SPFsegment15::createLinks()
   /*!
     Create a front/back link
    */
@@ -256,7 +256,7 @@ L2SPFsegment14::createLinks()
 }
 
 void
-L2SPFsegment14::createAll(Simulation& System,
+L2SPFsegment15::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -267,7 +267,7 @@ L2SPFsegment14::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment14","build");
+  ELog::RegMethod RControl("L2SPFsegment15","build");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
