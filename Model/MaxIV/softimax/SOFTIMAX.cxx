@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "NameStack.h"
 #include "FileReport.h"
 #include "RegMethod.h"

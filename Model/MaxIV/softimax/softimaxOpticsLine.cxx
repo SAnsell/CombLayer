@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -85,7 +84,6 @@
 #include "PortTube.h"
 
 #include "BlockStand.h"
-#include "CrossPipe.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawFlange.h"

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
   * File:   softimaxInc/SOFTIMAX.h
   *
   * Copyright (c) 2004-2020 by Konstantin Batkov
@@ -16,16 +16,11 @@
   * GNU General Public License for more details.
   *
   * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   *
   ****************************************************************************/
 #ifndef xraySystem_SOFTIMAX_h
 #define xraySystem_SOFTIMAX_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-}
 
 /*!
   \namespace xraySystem
@@ -38,9 +33,8 @@ namespace constructSystem
 namespace xraySystem
 {
   class softimaxFrontEnd;
-  class balderOpticsHutch;
   class softimaxOpticsLine;
-  
+
   /*!
     \class SOFTIMAX
     \version 1.0
@@ -64,7 +58,7 @@ namespace xraySystem
     std::shared_ptr<softimaxOpticsLine> opticsBeam;
 
   public:
-  
+
     SOFTIMAX(const std::string&);
     SOFTIMAX(const SOFTIMAX&);
     SOFTIMAX& operator=(const SOFTIMAX&);
