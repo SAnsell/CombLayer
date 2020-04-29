@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/VacuumPipe.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_VacuumPipe_h
@@ -42,13 +42,13 @@ struct windowInfo
   double width;           ///< Window Width
   int mat;                ///< Material
 };
-  
+
 /*!
   \class VacuumPipe
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief VacuumPipe unit  
+  \brief VacuumPipe unit
 */
 
 class VacuumPipe :
@@ -59,7 +59,7 @@ class VacuumPipe :
   public attachSystem::FrontBackCut
 {
  private:
-  
+
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
   Geometry::Vec3D FAxis;        ///< Front point
@@ -71,7 +71,7 @@ class VacuumPipe :
   double radius;                ///< void radius [inner]
   double height;                ///< void radius [inner]
   double width;                 ///< void radius [inner]
-  
+
   double length;                ///< void length [total]
 
   double feThick;               ///< pipe thickness
@@ -90,13 +90,14 @@ class VacuumPipe :
   int activeWindow;             ///< Flag on window activity
   windowInfo windowFront;       ///< Front window info
   windowInfo windowBack;        ///< Back window info
-    
+
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
-  int claddingMat;              ///< Pipe cladding material 
-  
+  int claddingMat;              ///< Pipe cladding material
+  int flangeMat;                ///< Flange material
+
   size_t nDivision;             ///< Number divisions
-  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -105,7 +106,7 @@ class VacuumPipe :
 
   void applyActiveFrontBack();
   void createDivision(Simulation&);
-  
+
  public:
 
   VacuumPipe(const std::string&);
@@ -125,4 +126,3 @@ class VacuumPipe :
 }
 
 #endif
- 

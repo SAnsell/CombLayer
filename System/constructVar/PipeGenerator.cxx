@@ -65,7 +65,7 @@ PipeGenerator::PipeGenerator() :
   windowRadius(-2.0),windowThick(0.1),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
-  voidMat("Void"),claddingMat("B4C")
+  voidMat("Void"),claddingMat("B4C"),flangeMat("Aluminium")
   /*!
     Constructor and defaults
   */
@@ -80,7 +80,7 @@ PipeGenerator::PipeGenerator(const PipeGenerator& A) :
   windowRadius(A.windowRadius),windowThick(A.windowThick),
   pipeMat(A.pipeMat),frontWindowMat(A.frontWindowMat),
   backWindowMat(A.backWindowMat),voidMat(A.voidMat),
-  claddingMat(A.claddingMat)
+  claddingMat(A.claddingMat),flangeMat(A.flangeMat)
   /*!
     Copy constructor
     \param A :: PipeGenerator to copy
@@ -114,6 +114,7 @@ PipeGenerator::operator=(const PipeGenerator& A)
       backWindowMat=A.backWindowMat;
       voidMat=A.voidMat;
       claddingMat=A.claddingMat;
+      flangeMat=A.flangeMat;
     }
   return *this;
 }
@@ -376,13 +377,13 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"CladdingThick",claddingThick);
   Control.addVariable(keyName+"CladdingMat",claddingMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
 
   return;
 
 }
 
 ///\cond TEMPLATE
-  template void PipeGenerator::setCF<CF25>();
   template void PipeGenerator::setCF<CF40_22>();
   template void PipeGenerator::setCF<CF40>();
   template void PipeGenerator::setCF<CF50>();

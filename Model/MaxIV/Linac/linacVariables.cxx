@@ -177,8 +177,10 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
+  PGen.setMat("Stainless316L","Stainless304");
   PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
 
+  PGen.setMat("Stainless316L","Stainless316L");
   PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
 
   DIBGen.generate(Control,lKey+"DM2");
