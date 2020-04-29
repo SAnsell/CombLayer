@@ -24,11 +24,6 @@
 
 namespace constructSystem
 {
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
   class GateValveCube;
 }
 
@@ -45,8 +40,6 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuad;
-  class CorrectorMag;
   class DipoleDIBMag;
   /*!
     \class L2SPFsegment14

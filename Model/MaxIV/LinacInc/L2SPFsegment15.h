@@ -22,18 +22,6 @@
 #ifndef tdcSystem_L2SPFsegment15_h
 #define tdcSystem_L2SPFsegment15_h
 
-namespace constructSystem
-{
-  class VacuumPipe;
-  class PipeTube;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-  class GateValveCube;
-}
-
-
 
 /*!
   \namespace xraySystem
@@ -46,9 +34,6 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuad;
-  class CorrectorMag;
-  class DipoleDIBMag;
   /*!
     \class L2SPFsegment15
     \version 1.0
