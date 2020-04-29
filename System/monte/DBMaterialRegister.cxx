@@ -1323,7 +1323,7 @@ DBMaterial::initMaterial()
 		   " 28064.70c      0.000862481 ", "fe56.12t", MLib);
   MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-7.85);
-  MDB.resetMaterial(MObj);
+  setMaterial(MObj);
 
 
   return;
