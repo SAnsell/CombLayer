@@ -3,7 +3,7 @@
 
  * File: Linac/L2SPFsegment14.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,9 +241,6 @@ L2SPFsegment14::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
-  System.removeCell(buildZone.getMaster()->getName());
-  System.substituteAllSurface(buildIndex+2,bellowB->getLinkSurf("back"));
-
   return;
 }
 
@@ -253,9 +250,8 @@ L2SPFsegment14::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowB,2);
-
+  //  setLinkSignedCopy(0,*bellowA,1);
+  //  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
 
