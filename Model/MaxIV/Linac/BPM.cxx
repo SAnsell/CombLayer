@@ -120,7 +120,6 @@ BPM::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
   
-  claddingThick=Control.EvalVar<double>(keyName+"CladdingThick");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
@@ -139,6 +138,7 @@ BPM::populate(const FuncDataBase& Control)
   electrodeYStep=Control.EvalVar<double>(keyName+"ElectrodeYStep");
   
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   electrodeMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
 
@@ -164,6 +164,7 @@ BPM::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+
   // main pipe and thicness
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
@@ -171,14 +172,16 @@ BPM::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0-flangeALength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(length/2.0-flangeBLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,
+			   Origin-Y*(length/2.0-flangeALength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,
+			   Origin+Y*(length/2.0-flangeBLength),Y);
 
-  // Electrodes
+  // Field shaping [300]
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,Y,innerRadius+innerThick);
 
-  const double ang(M_PI*innerAngle/(2.0*180));
+  const double ang(M_PI*innerAngle/(2.0*180.0));
   double midAngle(innerAngleOffset*M_PI/180.0);
   int BI(buildIndex+300);
   for(size_t i=0;i<4;i++)
@@ -191,10 +194,27 @@ BPM::createSurfaces()
       BI+=10;
     }
       
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(length/2.0-flangeBLength),Y);
+  // end point on electrons (solid)
+  ModelSupport::buildPlane(SMap,buildIndex+302,
+			   Origin+Y*(length/2.0-electrodeEnd),Y);
 
   
+  // Electode holder
+  const double angleStep(M_PI/(4.0*180.0));
 
+  BI=buildIndex+411;
+  for(size_t i=0;i<8;i++)
+    {
+      const double angle(angleStep*static_cast<double>(i));
+      const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
+      ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,-axis);
+    }
+
+  const Geometry::Vec3D eCent(Origin+Y*(electrodeYStep-length/2.0));
+  ModelSupport::buildPlane
+    (SMap,buildIndex+401,eCent-Y*(electrodeThick/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+402,eCent+Y*(electrodeThick/2.0),Y);
   
   return;
 }
@@ -207,7 +227,60 @@ BPM::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BPM","createObjects");
-  const size_t NPole(4);
+
+  std::string Out;
+  
+  const std::string frontStr=getRuleStr("front");
+  const std::string backStr=getRuleStr("back");
+
+  // inner void
+  Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+
+  // front void
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 ");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+
+  // main walll
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 7 -17 ");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+
+  // front flange
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 7 -107 ");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+
+  // back flange
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 7 -207 ");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 307 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("ElectronPlate",System,cellIndex++,electrodeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -102 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 102 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  
+  Out=ModelSupport::getComposite
+      (SMap,buildIndex," 102 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite
+      (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
+  addOuterSurf(Out);
   
   return;
 }

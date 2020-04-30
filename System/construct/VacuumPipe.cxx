@@ -511,20 +511,18 @@ VacuumPipe::createObjects(Simulation& System)
     { 
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,windowFront.mat,0.0,
-				       Out+frontBridgeRule()));
-      addCell("Window",cellIndex-1);
-
+      makeCell("Window",System,cellIndex++,windowFront.mat,0.0,
+				       Out+frontBridgeRule());
       HeadRule WHR(Out);
       WHR.makeComplement();
       windowFrontExclude=WHR.display();
     }
   if (activeWindow & 2)
     { 
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,windowBack.mat,0.0,
-				       Out+backBridgeRule()));
-      addCell("Window",cellIndex-1);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
+      makeCell("Window",System,cellIndex++,windowBack.mat,0.0,
+	       Out+backBridgeRule());
       HeadRule WHR(Out);
       WHR.makeComplement();
       windowBackExclude=WHR.display();
@@ -534,10 +532,8 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 3 -4 5 -6");
   HeadRule InnerVoid(Out);
   InnerVoid.makeComplement();
-  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,
-				   Out+frontStr+backStr+
-				   windowFrontExclude+windowBackExclude));
-  addCell("Void",cellIndex-1);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,
+	   Out+frontStr+backStr+windowFrontExclude+windowBackExclude);
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -17 13 -14 15 -16");
   HeadRule WallLayer(Out);
@@ -547,40 +543,38 @@ VacuumPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
   Out+=WallLayer.display()+InnerVoid.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  makeCell("Steel",System,cellIndex++,feMat,0.0,Out);
   addCell("MainSteel",cellIndex-1);
   // cladding
   if (claddingThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
       Out+=WallLayer.complement().display()+CladdingLayer.display();
-      System.addCell(MonteCarlo::Object(cellIndex++,claddingMat,0.0,Out));
-      addCell("Cladding",cellIndex-1);
+      makeCell("Cladding",System,cellIndex++,claddingMat,0.0,Out);
     }
 
   // FLANGE: 107 OR 103-106 valid 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
+  Out=ModelSupport::getSetComposite
+  (SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+
-				   frontStr+windowFrontExclude));
-  addCell("Steel",cellIndex-1);
+  makeCell("Steel",System,cellIndex++,feMat,0.0,
+	   Out+frontStr+windowFrontExclude);
 
   // FLANGE: 207 OR 203-206 valid 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"102 -207 203 -204 205 -106 ");
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"102 -207 203 -204 205 -106 ");
 
   Out+=InnerVoid.display()+backStr+windowBackExclude;
-	    
-  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  makeCell("Steel",System,cellIndex++,feMat,0.0,Out);
 
   // outer boundary [flange front]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
+  Out=ModelSupport::getSetComposite
+		    (SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   addOuterSurf(Out+frontStr);
 
-
   // outer boundary [flange back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 102 -207 203 -204 205 -206 ");
+  Out=ModelSupport::getSetComposite
+		    (SMap,buildIndex," 102 -207 203 -204 205 -206 ");
   addOuterUnionSurf(Out+backStr);
   // outer boundary mid tube
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");

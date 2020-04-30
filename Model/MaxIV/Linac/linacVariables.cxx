@@ -61,6 +61,7 @@
 #include "LinacQuadGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "BPMGenerator.h"
 
 namespace setVariable
 {
@@ -69,6 +70,42 @@ namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
+  void linac2SPFsegment2(FuncDataBase&,const std::string&);
+
+void
+linac2SPFsegment2(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+    
+  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",128.0);   // if segment 1 not built
+  Control.addVariable(lKey+"OuterLeft",80.0);     // same as Segment1
+  Control.addVariable(lKey+"OuterRight",140.0);
+  Control.addVariable(lKey+"OuterHeight",100.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,33.0);
+
+  BPMGen.setCF<setVariable::CF40>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
+
+
+  return;
+}
+
 
 void
 linac2SPFsegment1(FuncDataBase& Control,

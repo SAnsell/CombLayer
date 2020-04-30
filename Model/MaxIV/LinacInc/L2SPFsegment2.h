@@ -45,6 +45,7 @@ namespace tdcSystem
 {
   class LQuad;
   class CorrectorMag;
+  class BPM;
   /*!
     \class L2SPFsegment2
     \version 1.0
@@ -74,7 +75,7 @@ class L2SPFsegment2 :
   std::shared_ptr<tdcSystem::LQuad> QuadA;
 
   /// \todo BUILD A BPM
-  std::shared_ptr<constructSystem::VacuumPipe> bpmA;   ///< Beam pos mo
+  std::shared_ptr<tdcSystem::BPM> bpmA;   ///< Beam pos mo
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< bpm to gateVale
   std::shared_ptr<tdcSystem::LQuad> QuadB;    /// quad B 

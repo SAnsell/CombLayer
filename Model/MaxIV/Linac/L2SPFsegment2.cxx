@@ -89,6 +89,7 @@
 #include "BlankTube.h"
 #include "LQuad.h"
 #include "CorrectorMag.h"
+#include "BPM.h"
 
 #include "LObjectSupport.h"
 #include "L2SPFsegment2.h"
@@ -107,7 +108,7 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  bpmA(new constructSystem::VacuumPipe(keyName+"BPMA")),
+  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
   gateTube(new constructSystem::BlankTube(keyName+"gateTube")),
@@ -234,7 +235,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,*pipeA,"back",*bpmA);
-
+  return;
   //
   // build pipe + corrector magnets together:
   // THIS becomes a function:

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/BPM.h
+ * File:   commonGeneratorInc/BPMGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,29 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_BPM_h
-#define tdcSystem_BPM_h
+#ifndef setVariable_BPMGenerator_h
+#define setVariable_BPMGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace tdcSystem
+namespace setVariable
 {
+
 /*!
-  \class BPM
+  \class BPMGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
-
-  \brief BPM for Max-IV
+  \date April 2020
+  \brief BPMGenerator for variables
 */
 
-class BPM :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class BPMGenerator 
 {
  private:
 
@@ -66,27 +60,25 @@ class BPM :
   double electrodeYStep;        ///< Electrode YStep
   double electrodeEnd;          ///< Electrode end piece length
   
-  int voidMat;                  ///< void material
-  int electrodeMat;             ///< electrode material
-  int flangeMat;                ///< flange material  
-  int outerMat;                 ///< pipe material
+  std::string voidMat;                  ///< void material
+  std::string electrodeMat;             ///< electrode material
+  std::string flangeMat;                ///< flange material  
+  std::string outerMat;                 ///< pipe material
 
-  void populate(const FuncDataBase&);  
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-
+  
  public:
 
-  BPM(const std::string&);
-  BPM(const std::string&,const std::string&);
-  BPM(const BPM&);
-  BPM& operator=(const BPM&);
-  virtual ~BPM();
+  BPMGenerator();
+  BPMGenerator(const BPMGenerator&);
+  BPMGenerator& operator=(const BPMGenerator&);
+  virtual ~BPMGenerator();
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  template<typename T> void setCF();
+  template<typename T> void setAFlangeCF();
+  template<typename T> void setBFlangeCF();
+  
+  virtual void generateBPM(FuncDataBase&,const std::string&,
+			   const double) const;
 
 };
 
