@@ -38,8 +38,38 @@ class FixedOffsetUnit : public FixedOffset
 {  
  public:
 
+  /// Simple constructor
   FixedOffsetUnit(const std::string& K,const size_t I) :
     FixedOffset(K,I) {}
+  /// Simple constructor [extra range]
+  FixedOffsetUnit(const std::string& K,const size_t I,const size_t S) :
+    FixedOffset(K,I,S) {}
+
+  /// System to get axis from existing FC
+  FixedOffsetUnit(const std::string& K,const FixedComp& FC,
+		  const long int index) :
+    FixedOffset(K,0)
+  { createUnitVector(FC,index); }
+
+  /// System to get axis from existing FC and variables
+  FixedOffsetUnit(const std::string& K,const FuncDataBase& Control,
+		  const FixedComp& FC,const long int index) :
+    FixedOffset(K,0)
+  { FixedOffset::populate(Control); createUnitVector(FC,index); }
+
+  /// System to get axis from existing FC and variables (and no unit)
+  FixedOffsetUnit(const FuncDataBase& Control,
+		  const FixedComp& FC,const long int index) :
+    FixedOffset(0)
+  { FixedOffset::populate(Control); createUnitVector(FC,index); }
+
+  /// System to get axis from existing FC and variables
+  FixedOffsetUnit(const std::string& K,const FuncDataBase& Control,
+		  const FixedComp& FC,const std::string& linkName) :
+    FixedOffset(K,0)
+  { FixedOffset::populate(Control);
+    createUnitVector(FC,FC.getSideIndex(linkName)); }
+
   FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
   FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}
   virtual ~FixedOffsetUnit() {}     ///< Destructor

@@ -167,7 +167,8 @@ setMaxIVLinac(defaultConfig& A,
     {
      { "LINAC", "World 0"},
      { "L2SPF", "World 0"},
-     { "L2SPFsegment1", "World 0"}
+     { "L2SPFsegment1", "World 0"},
+     { "L2SPFsegment2", "World 0"}
     };
 
   size_t unitIndex(0);

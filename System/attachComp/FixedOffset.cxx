@@ -75,6 +75,20 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
+  FixedOffset::FixedOffset(const std::string& KN,const size_t NL,
+			 const size_t resSize) :
+  FixedComp(KN,NL,resSize),
+  preXYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param KN :: KeyName
+    \param NL :: Number of links
+    \param resSize :: Reserved space
+  */
+{}
+
 FixedOffset::FixedOffset(const FixedOffset& A) : 
   FixedComp(A),
   preXYAngle(A.preXYAngle),preZAngle(A.preZAngle),

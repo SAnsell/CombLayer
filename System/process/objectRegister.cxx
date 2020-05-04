@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,6 +154,23 @@ objectRegister::cell(const std::string& Name,const size_t size)
   if (!GPtr)
     throw ColErr::EmptyValue<objectGroups*>("orderGroup Unregistered");
   return GPtr->cell(Name,size);
+}
+
+void
+objectRegister::removeCell(const std::string& Name)
+  /*!
+    Remove a component and get clear cell number
+    \param Name :: Name of the unit
+    \return the start number of the cellvalue
+  */
+{
+  ELog::RegMethod RegA("objectRegister","cell");
+
+  if (!GPtr)
+    throw ColErr::EmptyValue<objectGroups*>("orderGroup Unregistered");
+  
+  GPtr->removeObject(Name);
+  return;
 }
 
 

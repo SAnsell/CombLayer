@@ -81,16 +81,16 @@ linac2SPFsegment2(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment2");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-    
+
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",128.0);   // if segment 1 not built
+  Control.addVariable(lKey+"YStep",395.2);   // if segment 1 not built
   Control.addVariable(lKey+"OuterLeft",80.0);     // same as Segment1
   Control.addVariable(lKey+"OuterRight",140.0);
   Control.addVariable(lKey+"OuterHeight",100.0);
@@ -99,6 +99,8 @@ linac2SPFsegment2(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,33.0);
 
+  LQGen.generateQuad(Control,lKey+"QuadA",33.0/2.0);
+  
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
@@ -116,7 +118,7 @@ linac2SPFsegment1(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFvariables");
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment1");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -125,10 +127,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
     
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
-  Control.addVariable(lKey+"OuterLeft",80.0);
-  Control.addVariable(lKey+"OuterRight",140.0);
-  Control.addVariable(lKey+"OuterHeight",100.0);
-
+  
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
@@ -141,8 +140,6 @@ linac2SPFsegment1(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",0.0,55.73);
   CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
-
-  
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,33.85);
   PGen.generatePipe(Control,lKey+"PipeD",0.0,112.7);
@@ -257,7 +254,14 @@ LINACvariables(FuncDataBase& Control)
 
   
   linacVar::wallVariables(Control,"InjectionHall");
-  linacVar::linac2SPFsegment1(Control,"L2SPFseg1");
+  // Segment 1-14
+  Control.addVariable("TDCl2spfXStep",128.0);   // exactly 1m from wall.
+  Control.addVariable("TDCl2spfOuterLeft",80.0);
+  Control.addVariable("TDCl2spfOuterRight",140.0);
+  Control.addVariable("TDCl2spfOuterTop",100.0);
+
+  linacVar::linac2SPFsegment1(Control,"L2SPF1");
+  linacVar::linac2SPFsegment2(Control,"L2SPF2");
 
   return;
 }

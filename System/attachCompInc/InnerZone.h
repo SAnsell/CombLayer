@@ -72,6 +72,7 @@ class InnerZone
 
   InnerZone(attachSystem::FixedComp&,int&);
   InnerZone(const InnerZone&);
+  InnerZone(InnerZone&&);
   InnerZone& operator=(const InnerZone&);
   ~InnerZone() {}         ///< Destructor
 

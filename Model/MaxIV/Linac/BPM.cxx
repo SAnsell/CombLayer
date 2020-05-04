@@ -125,12 +125,16 @@ BPM::populate(const FuncDataBase& Control)
 
   innerAngle=Control.EvalVar<double>(keyName+"InnerAngle");
   innerAngleOffset=Control.EvalVar<double>(keyName+"InnerAngleOffset");
-  
-  flangeARadius=Control.EvalTail<double>(keyName,"FlangeARadius","FlangeRadius");
-  flangeALength=Control.EvalTail<double>(keyName,"FlangeALength","FlangeLength");
 
-  flangeBRadius=Control.EvalTail<double>(keyName,"FlangeBRadius","FlangeRadius");
-  flangeBLength=Control.EvalTail<double>(keyName,"FlangeBLength","FlangeLength");
+  flangeARadius=Control.EvalHead<double>
+    (keyName,"FlangeARadius","FlangeRadius");
+  flangeALength=Control.EvalHead<double>
+    (keyName,"FlangeALength","FlangeLength");
+
+  flangeBRadius=Control.EvalHead<double>
+    (keyName,"FlangeBRadius","FlangeRadius");
+  flangeBLength=Control.EvalHead<double>
+    (keyName,"FlangeBLength","FlangeLength");
 
   electrodeRadius=Control.EvalVar<double>(keyName+"ElectrodeRadius");
   electrodeThick=Control.EvalVar<double>(keyName+"ElectrodeThick");
@@ -152,7 +156,7 @@ BPM::createSurfaces()
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("BPM","createSurface");
+  ELog::RegMethod RegA("BPM","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -183,7 +187,7 @@ BPM::createSurfaces()
 
   const double ang(M_PI*innerAngle/(2.0*180.0));
   double midAngle(innerAngleOffset*M_PI/180.0);
-  int BI(buildIndex+300);
+  int BI(buildIndex+310);
   for(size_t i=0;i<4;i++)
     {
       const Geometry::Vec3D lowAxis(X*cos(midAngle-ang)+Z*sin(midAngle-ang));
@@ -199,7 +203,7 @@ BPM::createSurfaces()
 			   Origin+Y*(length/2.0-electrodeEnd),Y);
 
   
-  // Electode holder
+  // Electrode holder
   const double angleStep(M_PI/(4.0*180.0));
 
   BI=buildIndex+411;
@@ -208,6 +212,7 @@ BPM::createSurfaces()
       const double angle(angleStep*static_cast<double>(i));
       const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
       ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,-axis);
+      BI++;
     }
 
   const Geometry::Vec3D eCent(Origin+Y*(electrodeYStep-length/2.0));
@@ -242,7 +247,7 @@ BPM::createObjects(Simulation& System)
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   // main walll
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -202 7 -17 ");
   makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
 
   // front flange
@@ -250,7 +255,7 @@ BPM::createObjects(Simulation& System)
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
 
   // back flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 7 -207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 202 7 -207 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
   
@@ -263,7 +268,7 @@ BPM::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -102 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
+    (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   
   Out=ModelSupport::getComposite
@@ -271,13 +276,9 @@ BPM::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 102 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
+    (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
   
-  Out=ModelSupport::getComposite
-      (SMap,buildIndex," 102 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-
   Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
   addOuterSurf(Out);

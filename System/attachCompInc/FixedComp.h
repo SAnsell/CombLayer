@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,12 +85,14 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
+  explicit FixedComp(const size_t);
   FixedComp(const std::string&,const size_t,const size_t =10000);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
   FixedComp(const std::string&,const size_t,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&);
   FixedComp(const FixedComp&);
+  FixedComp(const FixedComp&&);
   FixedComp& operator=(const FixedComp&);
   virtual ~FixedComp() {}     ///< Destructor
 

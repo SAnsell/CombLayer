@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxpeem/TDC.cxx
+ * File: linac/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -61,7 +61,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -74,18 +76,13 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
-
-// #include "VacuumPipe.h"
-// #include "SplitFlangePipe.h"
-// #include "Bellows.h"
-// #include "LeadPipe.h"
-// #include "VacuumBox.h"
-// #include "portItem.h"
-// #include "PipeTube.h"
-// #include "PortTube.h"
+#include "ModelSupport.h"
+#include "generateSurf.h"
 
 #include "InjectionHall.h"
+#include "TDCsegment.h"
 #include "L2SPFsegment1.h"
+#include "L2SPFsegment2.h"
 
 #include "TDC.h"
 
@@ -94,8 +91,10 @@ namespace tdcSystem
 
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
+  attachSystem::CellMap(),
   injectionHall(new InjectionHall("InjectionHall")),
-  l2spf1(new L2SPFsegment1("L2SPF1"))
+  l2spf1(new L2SPFsegment1("L2SPF1")),
+  l2spf2(new L2SPFsegment2("L2SPF2"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -106,6 +105,7 @@ TDC::TDC(const std::string& KN) :
 
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
+  OR.addObject(l2spf2);
 }
 
 TDC::~TDC()
@@ -114,6 +114,105 @@ TDC::~TDC()
    */
 {}
 
+HeadRule
+TDC::buildSurround(const FuncDataBase& Control,
+		   const std::string& regionName,
+		   const std::string& injectionPt) 
+  /*!
+    Given a region name build a surround
+    \param regionName :: region to used
+    \param injectionPt :: link poin in the injection hall to use
+  */
+{
+  ELog::RegMethod RegA("TDC","buildSurround");
+
+  static int BI(buildIndex);   // keep regions in order and unique
+  
+  const double outerLeft=
+    Control.EvalTail<double>(keyName+regionName,keyName,"OuterLeft");
+  const double outerRight=
+    Control.EvalTail<double>(keyName+regionName,keyName,"OuterRight");
+  const double outerTop=
+    Control.EvalTail<double>(keyName+regionName,keyName,"OuterTop");
+  const double outerFloor=
+    Control.EvalDefTail<double>(keyName+regionName,
+				keyName,"OuterFloor",-5e10); // large-neg
+
+  const attachSystem::FixedOffsetUnit injFC
+    (Control,*injectionHall,injectionPt);
+
+  // rotation if needed in a bit
+  const Geometry::Vec3D& Org=injFC.getCentre();
+  const Geometry::Vec3D& InjectX=injFC.getX();
+  const Geometry::Vec3D& InjectZ=injFC.getZ();
+  std::string Out;
+
+  ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
+  ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
+  ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
+
+  if (outerFloor < -4e10)
+    {
+      Out=ModelSupport::getComposite(SMap,BI," 3 -4 -6");
+      BI+=10;
+      return HeadRule(Out+injectionHall->getSurfString("Floor"));
+    }
+  
+  ModelSupport::buildPlane(SMap,BI+5,Org-Z*outerFloor,InjectZ);
+  Out=ModelSupport::getComposite(SMap,BI," 3 -4 5 -6");
+  BI+=10;
+  return HeadRule(Out);
+		      
+}
+
+attachSystem::InnerZone&
+TDC::getBuildZone(const FuncDataBase& Control,
+		  const std::string& regionName)
+  /*!
+    Set the regional buildzone
+    \param Control :: FuncData base for building if needed
+    \param regionName :: Zone name
+  */
+{
+  ELog::RegMethod RegA("TDC","getBuildZone");
+
+  typedef std::map<std::string,attachSystem::InnerZone> BTYPE;
+  typedef std::tuple<std::string,std::string,std::string> RTYPE;
+  typedef std::map<std::string,RTYPE> RMAP;
+  
+  const static RMAP regZones
+    ({
+      {"l2spf",{"Front","#MidWall","Origin"}}
+    });
+  
+  
+  BTYPE::iterator mc=buildUnits.find(regionName);
+
+  if (mc==buildUnits.end()) 
+    {
+      RMAP::const_iterator rc=regZones.find(regionName);
+      if (rc==regZones.end())
+	throw ColErr::InContainerError<std::string>(regionName,"regionZones");
+
+
+      const RTYPE& walls=rc->second;
+      attachSystem::InnerZone buildZone(*this,cellIndex);
+	    
+      buildZone.setFront(injectionHall->getSurfRule(std::get<0>(walls)));
+      buildZone.setBack(injectionHall->getSurfRule(std::get<1>(walls)));
+      buildZone.setSurround
+	(buildSurround(Control,regionName,std::get<2>(walls)));
+      std::tie(mc,std::ignore)=
+	buildUnits.emplace(regionName,std::move(buildZone));
+      ELog::EM<<"Surround == "<<
+	buildSurround(Control,regionName,std::get<2>(walls))
+	      <<ELog::endDiag;
+
+    }
+      
+  return mc->second;
+}
+  
 void 
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
@@ -126,31 +225,47 @@ TDC::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("TDC","build");
+  ELog::RegMethod RControl("TDC","createAll");
 
   static const std::map<std::string,std::string> segmentLinkMap
     ({
-      {"L2SPFsegment1","Origin"}
+      {"L2SPFsegment1","Origin"},
+      {"L2SPFsegment2","Origin"}
     });
   const int voidCell(74123);
   
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
-    
+
+  size_t index(0);
+
   for(const std::string& BL : activeINJ)
     {
       if (BL=="L2SPFsegment1")  
 	{
-	  std::unique_ptr<L2SPFsegment1> BLPtr;
-	  BLPtr.reset(new L2SPFsegment1("L2SPFseg1"));
-	  BLPtr->setCutSurf("floor",injectionHall->getSurf("Floor"));
-	  BLPtr->setCutSurf("front",injectionHall->getSurf("Front"));
+	  l2spf1->setInnerZone
+	    (&getBuildZone(System.getDataBase(),"l2spf"));
+	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 
-	  BLPtr->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  BLPtr->createAll
+	  l2spf1->createAll
 	    (System,*injectionHall,
 	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	  index=1;
+	}
+      if (BL=="L2SPFsegment2")  
+	{
+	  /*	  l2spf2->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  if (index==1)
+	    l2spf2->setCutSurf("join",*l2spf1,"back");
+	  else
+	    l2spf2->setCutSurf("front",injectionHall->getSurf("Front"));
+	  l2spf2->createAll
+	    (System,*injectionHall,
+	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	  index=2;
+	  */
 	}
     }
 
@@ -158,5 +273,5 @@ TDC::createAll(Simulation& System,
 }
 
 
-}   // NAMESPACE xraySystem
+}   // NAMESPACE tdcSystem
 

@@ -409,6 +409,7 @@ void
 objectGroups::removeObject(const std::string& FCName)
   /*! 
     Remove the cells an component from the object
+    \throw InContainerError if FCName not founc
     \param FCname :: Cell name
   */
 {

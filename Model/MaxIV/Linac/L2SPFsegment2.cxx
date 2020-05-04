@@ -220,19 +220,34 @@ L2SPFsegment2::buildObjects(Simulation& System)
   ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
 
   int outerCell;
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
+  bool joinFlag(0);
+  if (isActive("join"))
+    {
+      buildZone.setFront(getRule("join"));
+      buildZone.setBack(getRule("back"));
+      joinFlag=1;
+    }
+  else
+    {
+      buildZone.setFront(getRule("front"));
+      buildZone.setBack(getRule("back"));
+    }
   
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
-
   pipeA->createAll(System,*this,0);
+  if (joinFlag)
+    buildZone.createOuterVoidUnit(System,masterCell,*pipeA,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
   
-  pipeMagUnit(System,buildZone,pipeA,QuadA);
   pipeTerminate(System,buildZone,pipeA);
+  
+  return;
+  pipeMagUnit(System,buildZone,pipeA,QuadA);
 
+
+  return;
   constructSystem::constructUnit
     (System,buildZone,masterCell,*pipeA,"back",*bpmA);
   return;

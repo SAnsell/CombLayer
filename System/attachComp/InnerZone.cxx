@@ -115,6 +115,24 @@ InnerZone::InnerZone(const InnerZone& A) :
 {}
 
 
+InnerZone::InnerZone(InnerZone&& A) : 
+  FCName(std::move(A.FCName)),
+  cellIndex(A.cellIndex),     
+  FCPtr(A.FCPtr),CellPtr(A.CellPtr),extraHR(A.extraHR),
+  surroundHR(std::move(A.surroundHR)),frontHR(std::move(A.frontHR)),
+  backHR(std::move(A.backHR)),middleHR(std::move(A.middleHR)),
+  frontDivider(std::move(A.frontDivider)),
+  voidMat(A.voidMat),masterCell(A.masterCell)
+  /*!
+    Move constructor
+    Note : cellIndex is a reference              (good to copy)
+           FCPtr / CellPtr / masterCell are external pointers (good to copy)
+    \param A :: InnerZone to copy
+  */
+{
+}
+
+
 InnerZone&
 InnerZone::operator=(const InnerZone& A)
   /*!

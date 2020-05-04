@@ -92,8 +92,7 @@ InjectionHall::InjectionHall(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-}
+{}
 
 InjectionHall::~InjectionHall() 
   /*!
@@ -146,8 +145,6 @@ InjectionHall::populate(const FuncDataBase& Control)
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
   klystronFrontWall=Control.EvalVar<double>(keyName+"KlystronFrontWall");
   klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
-      
-
   
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
@@ -232,6 +229,7 @@ InjectionHall::createSurfaces()
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
   ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
+  SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1));
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThick/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThick/2.0),X);
