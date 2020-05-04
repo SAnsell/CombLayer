@@ -49,6 +49,7 @@ class FixedOffset  : public FixedComp
  public:
 
   explicit FixedOffset(const size_t);
+  FixedOffset(const size_t,const std::string&);
   FixedOffset(const std::string&,const size_t);
   FixedOffset(const std::string&,const size_t,const size_t);
   FixedOffset(const FixedOffset&);

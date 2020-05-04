@@ -168,8 +168,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
 
-  // transfor for later
-  SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
@@ -223,13 +221,10 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+16,Origin+Z*(roofHeight+roofThick),Z);
 
-  // transfer for later
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
-
   // MID T [1000]:
   const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
   ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
-  SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1));
+
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThick/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThick/2.0),X);
@@ -297,8 +292,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+3014,Origin+X*(klystronXStep-klystronSideWall),X);
 
-
-
   // now build externals:
   
   ModelSupport::buildPlane
@@ -307,7 +300,13 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+54,
        Origin+X*(linearWidth/2.0+rightWallStep+boundaryWidth+wallThick),X);
-  
+
+
+  // transfer for later
+  SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+  SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
+
   return;
 }
 

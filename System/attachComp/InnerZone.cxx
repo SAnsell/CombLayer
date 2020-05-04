@@ -104,7 +104,8 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 
 InnerZone::InnerZone(const InnerZone& A) : 
   FCName(A.FCName),cellIndex(A.cellIndex),FCPtr(A.FCPtr),
-  CellPtr(A.CellPtr),extraHR(A.extraHR),
+  CellPtr(A.CellPtr),insertCells(A.insertCells),
+  extraHR(A.extraHR),
   surroundHR(A.surroundHR),frontHR(A.frontHR),
   backHR(A.backHR),middleHR(A.middleHR),frontDivider(A.frontDivider),
   voidMat(A.voidMat)
@@ -118,7 +119,9 @@ InnerZone::InnerZone(const InnerZone& A) :
 InnerZone::InnerZone(InnerZone&& A) : 
   FCName(std::move(A.FCName)),
   cellIndex(A.cellIndex),     
-  FCPtr(A.FCPtr),CellPtr(A.CellPtr),extraHR(A.extraHR),
+  FCPtr(A.FCPtr),CellPtr(A.CellPtr),
+  insertCells(std::move(A.insertCells)),
+  extraHR(std::move(A.extraHR)),
   surroundHR(std::move(A.surroundHR)),frontHR(std::move(A.frontHR)),
   backHR(std::move(A.backHR)),middleHR(std::move(A.middleHR)),
   frontDivider(std::move(A.frontDivider)),
@@ -144,6 +147,8 @@ InnerZone::operator=(const InnerZone& A)
   if (this!=&A)
     {
       FCName=A.FCName;
+      
+      insertCells=A.insertCells;
       extraHR=A.extraHR;
       surroundHR=A.surroundHR;
       frontHR=A.frontHR;
@@ -720,10 +725,49 @@ InnerZone::constructMasterCell(Simulation& System,
   ELog::RegMethod RegA("InnerZone","constructMasterCell(CC)");
  
   masterCell=constructMasterCell(System);
-  CC.insertExternalObject(System,*masterCell);
 
+  // get and RECORD external cells:
+  insertCells.clear();
+  const std::vector<int>& cells=CC.getInsertCells();
+  for(const int CN : cells)
+    {
+      const MonteCarlo::Object* cellObj=System.findObject(CN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      cellObj->getHeadRule();
+      insertCells.emplace(CN,cellObj->getHeadRule());
+    }
+
+  CC.insertExternalObject(System,*masterCell);
+  ELog::EM<<"Master cell ="<<*masterCell<<ELog::endDiag;
   return masterCell;
 }
 
+void
+InnerZone::removeLastMaster(Simulation& System)
+ /*! 
+   This effectively removes the tail of the insert
+   from all of the cells. 
+ */
+{
+  ELog::RegMethod RegA("InnerZone","removeLastMaster");
+
+  std::string Out=
+    extraHR.display()+surroundHR.display()+frontHR.display();
+  Out+= frontDivider.complement();
+
+  for(const auto& [CN, HR] : insertCells)
+    {
+      const MonteCarlo::Object* cellObj=System.findObject(CN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      
+      //      cellObj->procString(Out);
+    }
+
+  
+  
+  return;
+}
 
 }  // NAMESPACE attachSystem

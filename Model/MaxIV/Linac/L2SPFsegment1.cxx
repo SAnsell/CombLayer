@@ -216,7 +216,6 @@ L2SPFsegment1::buildObjects(Simulation& System)
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
 
-
   return;
 }
 
@@ -248,8 +247,6 @@ L2SPFsegment1::createAll(Simulation& System,
   populate(System.getDataBase());	  
   createUnitVector(FC,sideIndex);
 
-	  
-  ELog::EM<<"ORing:"<<Origin<<ELog::endDiag;
   buildObjects(System);
   createLinks();
   return;

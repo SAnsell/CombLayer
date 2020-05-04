@@ -63,6 +63,26 @@
 namespace attachSystem
 {
 
+FixedOffset::FixedOffset(const size_t NL,const std::string& KN) :
+  FixedComp(NL,KN),
+  preXYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)
+ /*!
+    Null version Constructor 
+    \param NL :: Number of links
+    \param KN :: KeyName [not registered]
+  */
+{}
+
+FixedOffset::FixedOffset(const size_t NL) :
+  FixedOffset(NL,"Null")
+ /*!
+    Null version Constructor 
+    \param NL :: Number of links
+  */
+{}
+
 FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   FixedComp(KN,NL),
   preXYAngle(0.0),preZAngle(0.0),
@@ -75,7 +95,7 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
-  FixedOffset::FixedOffset(const std::string& KN,const size_t NL,
+FixedOffset::FixedOffset(const std::string& KN,const size_t NL,
 			 const size_t resSize) :
   FixedComp(KN,NL,resSize),
   preXYAngle(0.0),preZAngle(0.0),
@@ -88,6 +108,7 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
     \param resSize :: Reserved space
   */
 {}
+
 
 FixedOffset::FixedOffset(const FixedOffset& A) : 
   FixedComp(A),

@@ -57,7 +57,7 @@ class FixedOffsetUnit : public FixedOffset
     FixedOffset(K,0)
   { FixedOffset::populate(Control); createUnitVector(FC,index); }
 
-  /// System to get axis from existing FC and variables (and no unit)
+  /// System to get axis from existing FC and variables (and no name)
   FixedOffsetUnit(const FuncDataBase& Control,
 		  const FixedComp& FC,const long int index) :
     FixedOffset(0)
@@ -69,6 +69,15 @@ class FixedOffsetUnit : public FixedOffset
     FixedOffset(K,0)
   { FixedOffset::populate(Control);
     createUnitVector(FC,FC.getSideIndex(linkName)); }
+
+  /// System to get axis from existing FC and variables [no name]
+  FixedOffsetUnit(const FuncDataBase& Control,const std::string& K,
+		  const FixedComp& FC,const std::string& linkName) :
+    FixedOffset(0,K)
+  {
+    FixedOffset::populate(Control);
+    createUnitVector(FC,FC.getSideIndex(linkName));
+  }
 
   FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
   FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}

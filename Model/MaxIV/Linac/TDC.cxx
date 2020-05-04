@@ -139,7 +139,7 @@ TDC::buildSurround(const FuncDataBase& Control,
 				keyName,"OuterFloor",-5e10); // large-neg
 
   const attachSystem::FixedOffsetUnit injFC
-    (Control,*injectionHall,injectionPt);
+    (Control,keyName+regionName,*injectionHall,injectionPt);
 
   // rotation if needed in a bit
   const Geometry::Vec3D& Org=injFC.getCentre();
@@ -150,6 +150,7 @@ TDC::buildSurround(const FuncDataBase& Control,
   ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
   ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
   ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
+  ELog::EM<<" Suide == "<<Org<<ELog::endDiag;
 
   if (outerFloor < -4e10)
     {
@@ -204,10 +205,6 @@ TDC::getBuildZone(const FuncDataBase& Control,
 	(buildSurround(Control,regionName,std::get<2>(walls)));
       std::tie(mc,std::ignore)=
 	buildUnits.emplace(regionName,std::move(buildZone));
-      ELog::EM<<"Surround == "<<
-	buildSurround(Control,regionName,std::get<2>(walls))
-	      <<ELog::endDiag;
-
     }
       
   return mc->second;
