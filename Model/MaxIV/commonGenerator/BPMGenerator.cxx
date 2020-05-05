@@ -63,7 +63,7 @@ BPMGenerator::BPMGenerator() :
   innerAngle(30.0),innerAngleOffset(45.0),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
-  electrodeRadius(2.4),electrodeThick(2.4),
+  electrodeRadius(3.7),electrodeThick(2.4),
   electrodeYStep(3.1),electrodeEnd(4.0),
   voidMat("Void"),electrodeMat("Copper"),
   flangeMat("Stainless304"),outerMat("Stainless304")

@@ -22,7 +22,6 @@
 #ifndef tdcSystem_TDCsegment_h
 #define tdcSystem_TDCsegment_h
 
-
 namespace tdcSystem
 {
   /*!

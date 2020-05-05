@@ -58,8 +58,8 @@ class TDC :
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
   
-  attachSystem::InnerZone&
-  getBuildZone(const FuncDataBase&,const std::string&);
+  std::unique_ptr<attachSystem::InnerZone>
+  buildInnerZone(const FuncDataBase&,const std::string&);
 
 
  public:

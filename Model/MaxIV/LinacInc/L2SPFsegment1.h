@@ -40,7 +40,7 @@ namespace tdcSystem
     \version 1.0
     \author S. Ansell
     \date April 2020
-    \brief First segment in the 
+    \brief First segment in the TCD from the linac
   */
 
 class L2SPFsegment1 :
@@ -71,7 +71,6 @@ class L2SPFsegment1 :
   /// ion pump [rotated]
   std::shared_ptr<constructSystem::BlankTube> pumpA;   
   
-  void populate(const FuncDataBase&);
   void buildObjects(Simulation&);
   void createLinks();
   

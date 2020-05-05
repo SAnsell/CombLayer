@@ -150,7 +150,6 @@ TDC::buildSurround(const FuncDataBase& Control,
   ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
   ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
   ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
-  ELog::EM<<" Suide == "<<Org<<ELog::endDiag;
 
   if (outerFloor < -4e10)
     {
@@ -166,9 +165,9 @@ TDC::buildSurround(const FuncDataBase& Control,
 		      
 }
 
-attachSystem::InnerZone&
-TDC::getBuildZone(const FuncDataBase& Control,
-		  const std::string& regionName)
+std::unique_ptr<attachSystem::InnerZone>
+TDC::buildInnerZone(const FuncDataBase& Control,
+		    const std::string& regionName) 
   /*!
     Set the regional buildzone
     \param Control :: FuncData base for building if needed
@@ -177,7 +176,6 @@ TDC::getBuildZone(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDC","getBuildZone");
 
-  typedef std::map<std::string,attachSystem::InnerZone> BTYPE;
   typedef std::tuple<std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
   
@@ -185,31 +183,25 @@ TDC::getBuildZone(const FuncDataBase& Control,
     ({
       {"l2spf",{"Front","#MidWall","Origin"}}
     });
+    
+
+  RMAP::const_iterator rc=regZones.find(regionName);
+  if (rc==regZones.end())
+    throw ColErr::InContainerError<std::string>(regionName,"regionZones");
   
+
+  const RTYPE& walls=rc->second;
+  std::unique_ptr<attachSystem::InnerZone> buildZone=
+    std::make_unique<attachSystem::InnerZone>(*this,cellIndex);
   
-  BTYPE::iterator mc=buildUnits.find(regionName);
-
-  if (mc==buildUnits.end()) 
-    {
-      RMAP::const_iterator rc=regZones.find(regionName);
-      if (rc==regZones.end())
-	throw ColErr::InContainerError<std::string>(regionName,"regionZones");
-
-
-      const RTYPE& walls=rc->second;
-      attachSystem::InnerZone buildZone(*this,cellIndex);
-	    
-      buildZone.setFront(injectionHall->getSurfRule(std::get<0>(walls)));
-      buildZone.setBack(injectionHall->getSurfRule(std::get<1>(walls)));
-      buildZone.setSurround
-	(buildSurround(Control,regionName,std::get<2>(walls)));
-      std::tie(mc,std::ignore)=
-	buildUnits.emplace(regionName,std::move(buildZone));
-    }
+  buildZone->setFront(injectionHall->getSurfRule(std::get<0>(walls)));
+  buildZone->setBack(injectionHall->getSurfRule(std::get<1>(walls)));
+  buildZone->setSurround
+    (buildSurround(Control,regionName,std::get<2>(walls)));
       
-  return mc->second;
+  return buildZone;
 }
-  
+
 void 
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
@@ -241,8 +233,10 @@ TDC::createAll(Simulation& System,
     {
       if (BL=="L2SPFsegment1")  
 	{
-	  l2spf1->setInnerZone
-	    (&getBuildZone(System.getDataBase(),"l2spf"));
+	  std::unique_ptr<attachSystem::InnerZone> buildZone=
+	    buildInnerZone(System.getDataBase(),"l2spf");
+	  
+	  l2spf1->setInnerZone(buildZone.get());
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 
 	  l2spf1->createAll
@@ -252,6 +246,17 @@ TDC::createAll(Simulation& System,
 	}
       if (BL=="L2SPFsegment2")  
 	{
+	  std::unique_ptr<attachSystem::InnerZone> buildZone=
+	    buildInnerZone(System.getDataBase(),"l2spf");
+	  
+	  l2spf2->setInnerZone(buildZone.get());
+	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
+
+	  l2spf2->createAll
+	    (System,*injectionHall,
+	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	  index=2;
+
 	  /*	  l2spf2->setCutSurf("floor",injectionHall->getSurf("Floor"));
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  if (index==1)

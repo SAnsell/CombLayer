@@ -92,6 +92,7 @@
 #include "BPM.h"
 
 #include "LObjectSupport.h"
+#include "TDCsegment.h"
 #include "L2SPFsegment2.h"
 
 namespace tdcSystem
@@ -100,11 +101,7 @@ namespace tdcSystem
 // Note currently uncopied:
   
 L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
-  attachSystem::ContainedComp(),
-  attachSystem::ExternalCut(),
-  attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
+  TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
@@ -153,63 +150,6 @@ L2SPFsegment2::~L2SPFsegment2()
 {}
 
 void
-L2SPFsegment2::populate(const FuncDataBase& Control)
-  /*!
-    Populate the intial values [movement]
-    \param Control :: Database of variables
-  */
-{
-  ELog::RegMethod RegA("L2SPFsegment2","populate");
-  FixedOffset::populate(Control);
-
-  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
-  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",0.0);
-  outerHeight=Control.EvalDefVar<double>(keyName+"OuterHeight",0.0);
-
-  const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  buildZone.setInnerMat(voidMat);
-
-  return;
-}
-
-
-void
-L2SPFsegment2::createSurfaces()
-  /*!
-    Create surfaces for the buildZone [if used]
-  */
-{
-  ELog::RegMethod RegA("L2SPFsegment2","createSurfaces");
-
-  const double totalLength(400.0);
-  
-  if (outerLeft>Geometry::zeroTol && isActive("floor"))
-    {
-      std::string Out;
-      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
-      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
-      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
-      buildZone.setSurround(HR);
-    }
-
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
-      setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*totalLength,Y);
-      setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
-
-  return;
-}
-
-void
 L2SPFsegment2::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -220,43 +160,24 @@ L2SPFsegment2::buildObjects(Simulation& System)
   ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
 
   int outerCell;
-  bool joinFlag(0);
-  if (isActive("join"))
-    {
-      buildZone.setFront(getRule("join"));
-      buildZone.setBack(getRule("back"));
-      joinFlag=1;
-    }
-  else
-    {
-      buildZone.setFront(getRule("front"));
-      buildZone.setBack(getRule("back"));
-    }
-  
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+
+  MonteCarlo::Object* masterCell=buildZone->getMaster();
+  if (!masterCell)
+    masterCell=buildZone->constructMasterCell(System,*this);
+
   pipeA->createAll(System,*this,0);
-  if (joinFlag)
-    buildZone.createOuterVoidUnit(System,masterCell,*pipeA,-1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-  
-  pipeTerminate(System,buildZone,pipeA);
-  
-  return;
-  pipeMagUnit(System,buildZone,pipeA,QuadA);
+  pipeMagUnit(System,*buildZone,pipeA,QuadA);
+  pipeTerminate(System,*buildZone,pipeA);
 
-
-  return;
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
   return;
   //
   // build pipe + corrector magnets together:
   // THIS becomes a function:
   //
   pipeB->createAll(System,*bellowA,"back");  
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
 
@@ -288,9 +209,8 @@ L2SPFsegment2::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("L2SPFsegment2","build");
 
-  populate(System.getDataBase());
+  FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  createSurfaces();
   
   buildObjects(System);
   createLinks();

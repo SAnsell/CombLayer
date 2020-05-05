@@ -50,31 +50,20 @@ namespace tdcSystem
     \class L2SPFsegment2
     \version 1.0
     \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \date April 2020
+    \brief Second segment in the TCD from the linac
   */
 
 class L2SPFsegment2 :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public TDCsegment
 {
  private:
-
-  /// System for building a divided inner
-  attachSystem::InnerZone buildZone;
-
-  double outerLeft;         ///< left for inner void
-  double outerRight;        ///< right for inner void
-  double outerHeight;       ///< lift from origin for inner void
-
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< start pipe
   /// quad
   std::shared_ptr<tdcSystem::LQuad> QuadA;
 
-  /// \todo BUILD A BPM
+  /// Beam position monitor
   std::shared_ptr<tdcSystem::BPM> bpmA;   ///< Beam pos mo
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< bpm to gateVale
@@ -103,8 +92,6 @@ class L2SPFsegment2 :
   std::shared_ptr<tdcSystem::LQuad> QuadD;    /// quad D
   std::shared_ptr<tdcSystem::LQuad> QuadE;    /// quad E 
   
-  void populate(const FuncDataBase&);
-  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

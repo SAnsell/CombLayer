@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedRotate.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,9 @@ class FixedRotate  : public FixedComp
   virtual void populate(const std::string&,const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
+  virtual void createCentredUnitVector
+    (const attachSystem::FixedComp&,const long int,const double);
+
   
   void setOffset(const double,const double,const double);
   void setPreRotation(const double,const double,const double);

@@ -255,6 +255,26 @@ FixedOffset::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
+FixedOffset::createCentredUnitVector(const attachSystem::FixedComp& FC,
+				     const long int sideIndex,
+				     const double length)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+    \param length :: full length of object
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector");
+
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+
+  Origin+=Y*(length/2.0);
+  return;
+}
+
+void
 FixedOffset::setPreRotation(const double XYA,const double ZA)
   /*!
     Set the Pre-rotation values 

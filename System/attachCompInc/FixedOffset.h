@@ -64,6 +64,8 @@ class FixedOffset  : public FixedComp
 
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
+  virtual void createCentredUnitVector
+    (const attachSystem::FixedComp&,const long int,const double);
   
   void setOffset(const double,const double,const double);
   void setPreRotation(const double,const double);

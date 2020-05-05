@@ -357,8 +357,8 @@ SideCoolTarget::createLinks()
 
 void
 SideCoolTarget::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+			      const attachSystem::FixedComp& refFC,
+			      const long int index)
   /*!
     Add a proton void cell
     \param System :: Simualation

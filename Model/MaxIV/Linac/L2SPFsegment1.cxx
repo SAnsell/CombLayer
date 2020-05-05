@@ -144,20 +144,6 @@ L2SPFsegment1::~L2SPFsegment1()
 {}
 
 void
-L2SPFsegment1::populate(const FuncDataBase& Control)
-  /*!
-    Populate the intial values [movement]
-    \param Control :: Database of variables
-  */
-{
-  ELog::RegMethod RegA("L2SPFsegment1","populate");
-  FixedRotate::populate(Control);
-
-  return;
-}
-
-
-void
 L2SPFsegment1::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -233,8 +219,8 @@ L2SPFsegment1::createLinks()
 
 void 
 L2SPFsegment1::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -245,7 +231,7 @@ L2SPFsegment1::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("L2SPFsegment1","build");
 
-  populate(System.getDataBase());	  
+  FixedRotate::populate(System.getDataBase());	  
   createUnitVector(FC,sideIndex);
 
   buildObjects(System);

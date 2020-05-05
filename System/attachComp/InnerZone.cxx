@@ -739,7 +739,6 @@ InnerZone::constructMasterCell(Simulation& System,
     }
 
   CC.insertExternalObject(System,*masterCell);
-  ELog::EM<<"Master cell ="<<*masterCell<<ELog::endDiag;
   return masterCell;
 }
 
@@ -764,7 +763,6 @@ InnerZone::removeLastMaster(Simulation& System)
 
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
-      ELog::EM<<"cell == "<<*cellObj<<ELog::endDiag;
     }
   System.removeCell(masterCell->getName());
   masterCell=0;

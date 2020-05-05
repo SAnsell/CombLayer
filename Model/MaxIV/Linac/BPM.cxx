@@ -98,7 +98,6 @@ BPM::BPM(const std::string& Key) :
 {}
 
 
-
 BPM::~BPM() 
   /*!
     Destructor
@@ -183,11 +182,12 @@ BPM::createSurfaces()
 
   // Field shaping [300]
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,Y,innerRadius+innerThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+317,Origin,Y,innerRadius+innerThick);
 
   const double ang(M_PI*innerAngle/(2.0*180.0));
   double midAngle(innerAngleOffset*M_PI/180.0);
-  int BI(buildIndex+310);
+  int BI(buildIndex+350);
   for(size_t i=0;i<4;i++)
     {
       const Geometry::Vec3D lowAxis(X*cos(midAngle-ang)+Z*sin(midAngle-ang));
@@ -195,7 +195,7 @@ BPM::createSurfaces()
       ModelSupport::buildPlane(SMap,BI+1,Origin,lowAxis);
       ModelSupport::buildPlane(SMap,BI+2,Origin,highAxis);
       midAngle+=M_PI/2.0;
-      BI+=10;
+      BI+=2;
     }
       
   // end point on electrons (solid)
@@ -204,14 +204,14 @@ BPM::createSurfaces()
 
   
   // Electrode holder
-  const double angleStep(M_PI/(4.0*180.0));
+  const double angleStep(M_PI/4.0);
 
   BI=buildIndex+411;
   for(size_t i=0;i<8;i++)
     {
       const double angle(angleStep*static_cast<double>(i));
       const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
-      ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,-axis);
+      ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,axis);
       BI++;
     }
 
@@ -242,8 +242,9 @@ BPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
+  
   // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   // main walll
@@ -258,10 +259,10 @@ BPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 202 7 -207 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
-  
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 307 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
+    (SMap,buildIndex," 17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("ElectronPlate",System,cellIndex++,electrodeMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
@@ -278,7 +279,28 @@ BPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-  
+
+  int BI(0);
+  const std::string IOut=
+    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 "); 
+  for(size_t i=0;i<4;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex+BI," 351 -352");
+      makeCell("Electrode",System,cellIndex++,electrodeMat,0.0,IOut+Out);
+      Out=ModelSupport::getRangeComposite
+	(SMap,351,358,BI,buildIndex," 352R -353R");
+      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,IOut+Out);
+      BI+=2;
+    }
+  // edge electrod void
+  Out=ModelSupport::getComposite(SMap,buildIndex," 401 -302 317 -7");
+  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  // edge electrod void
+  Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
+  makeCell("ElectrodeEnd",System,cellIndex++,electrodeMat,0.0,Out+backStr);
+
+
   Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
   addOuterSurf(Out);
@@ -294,21 +316,16 @@ BPM::createLinks()
 {
   ELog::RegMethod RegA("BPM","createLinks");
 
-  /*
-  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
-  FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
-  FixedComp::setConnect(1,Origin+(ePt*1.001),Y);
-
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  */
+  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
+  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
+      
   return;
 }
 
 void
 BPM::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+	       const attachSystem::FixedComp& FC,
+	       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -319,7 +336,7 @@ BPM::createAll(Simulation& System,
   ELog::RegMethod RegA("BPM","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,length);
   createSurfaces();
   createObjects(System);
   createLinks();

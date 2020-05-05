@@ -97,9 +97,9 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,33.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,63.0);  // +30-
 
-  LQGen.generateQuad(Control,lKey+"QuadA",33.0/2.0);
+  LQGen.generateQuad(Control,lKey+"QuadA",63.0/2.0);   // +30
   
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
