@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsSampleArea.cxx
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,7 +210,7 @@ cosaxsSampleArea::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
@@ -245,7 +245,7 @@ cosaxsSampleArea::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
       makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
     }
-  
+
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(Out+frontStr+backStr);
