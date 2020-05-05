@@ -251,6 +251,115 @@ HeadRule::operator==(const HeadRule& A) const
   return 1;
 }
 
+HeadRule&
+HeadRule::operator+=(const HeadRule& AHead) 
+  /*!
+    Add a rule in union (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator+=[union]");
+  addUnion(AHead);  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator-=(const HeadRule& AHead) 
+  /*!
+    Add a rule in union (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator-=[union]");
+  addUnion(AHead.complement());  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator*=(const HeadRule& AHead) 
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator*=[inter]");
+  addIntersection(AHead);  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator/=(const HeadRule& AHead) 
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator/=[inter]");
+  addIntersection(AHead.complement());  
+  return *this;
+}
+
+HeadRule
+HeadRule::operator+(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator+[union]");
+  HeadRule HR(*this);
+  HR.addUnion(AHead);  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator-(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator-[ #union]");
+  HeadRule HR(*this);
+  HR.addUnion(AHead.complement());  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator*(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator*[inter]");
+  HeadRule HR(*this);
+  HR.addIntersection(AHead);  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator/(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (/ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator/[ #inter]");
+  HeadRule HR(*this);
+  HR.addIntersection(AHead.complement());  
+  return HR;
+}
+
+
 bool
 HeadRule::partMatched(const HeadRule& A) const		      
   /*!

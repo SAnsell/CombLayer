@@ -216,6 +216,7 @@ L2SPFsegment1::buildObjects(Simulation& System)
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
 
+  buildZone->removeLastMaster(System);
   return;
 }
 

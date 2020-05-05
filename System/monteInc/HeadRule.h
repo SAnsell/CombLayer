@@ -68,7 +68,15 @@ class HeadRule
   ~HeadRule();
   bool operator==(const HeadRule&) const;
   bool operator!=(const HeadRule&) const;
-
+  HeadRule& operator+=(const HeadRule&);
+  HeadRule& operator*=(const HeadRule&);
+  HeadRule& operator-=(const HeadRule&);
+  HeadRule& operator/=(const HeadRule&);
+  HeadRule operator+(const HeadRule&) const;
+  HeadRule operator*(const HeadRule&) const;
+  HeadRule operator-(const HeadRule&) const;
+  HeadRule operator/(const HeadRule&) const;
+  
   /// access main rule
   const Rule* getTopRule() const { return HeadNode; }
 

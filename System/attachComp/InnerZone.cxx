@@ -752,19 +752,22 @@ InnerZone::removeLastMaster(Simulation& System)
 {
   ELog::RegMethod RegA("InnerZone","removeLastMaster");
 
-  std::string Out=
-    extraHR.display()+surroundHR.display()+frontHR.display();
-  Out+= frontDivider.complement();
 
-  for(const auto& [CN, HR] : insertCells)
+  HeadRule masterHR(extraHR*surroundHR*frontHR/frontDivider);
+  masterHR.makeComplement();
+
+  for(auto& [CN, HR] : insertCells)
     {
-      const MonteCarlo::Object* cellObj=System.findObject(CN);
+      MonteCarlo::Object* cellObj=System.findObject(CN);
       if (!cellObj)
 	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
-      
-      //      cellObj->procString(Out);
-    }
 
+      HR.addIntersection(masterHR);
+      cellObj->procHeadRule(HR);
+      ELog::EM<<"cell == "<<*cellObj<<ELog::endDiag;
+    }
+  System.removeCell(masterCell->getName());
+  masterCell=0;
   
   
   return;
