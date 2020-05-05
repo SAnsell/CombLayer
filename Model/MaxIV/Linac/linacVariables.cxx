@@ -169,21 +169,21 @@ linac2SPFsegment14(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,8.82); // measured yStep, length
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.7); // measured
 
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,94.4); // measured
 
   PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.7); // measured
 
   DIBGen.generate(Control,lKey+"DM2");
 
@@ -192,7 +192,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   GateGen.generateValve(Control,lKey+"GateA",0.0,0);
   Control.addVariable(lKey+"GateAPortALen",2.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.44); // measured
 
   return;
 }
