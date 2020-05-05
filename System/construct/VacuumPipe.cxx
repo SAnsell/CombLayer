@@ -623,8 +623,6 @@ VacuumPipe::createLinks()
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
   //stuff for intersection
-
-
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   // Round pipe

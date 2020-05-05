@@ -106,13 +106,14 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
   bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
   gateTube(new constructSystem::BlankTube(keyName+"gateTube")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   beamArrivalMon(new constructSystem::Bellows(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
   bpmB(new constructSystem::VacuumPipe(keyName+"BPMB")),  
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
@@ -129,13 +130,14 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(QuadA);
   OR.addObject(bpmA);
+  OR.addObject(bellowA);
   OR.addObject(pipeB);
   OR.addObject(QuadB);
   OR.addObject(gateTube);
   OR.addObject(pipeC);
   OR.addObject(beamArrivalMon);
   OR.addObject(pipeD);
-  OR.addObject(bellowA);
+  OR.addObject(bellowB);
   OR.addObject(bpmB);
   OR.addObject(pipeE);
   OR.addObject(QuadC);
@@ -171,6 +173,14 @@ L2SPFsegment2::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
+
+  pipeB->createAll(System,*bellowA,"back");
+  pipeMagUnit(System,*buildZone,pipeB,QuadB);
+  pipeTerminate(System,*buildZone,pipeB);
+  
   return;
   //
   // build pipe + corrector magnets together:

@@ -97,14 +97,38 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,63.0);  // +30-
 
-  LQGen.generateQuad(Control,lKey+"QuadA",63.0/2.0);   // +30
+  // lengthened to fit quad +2cm
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0); 
+
+  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);   
   
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
+  // note larger unit
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
 
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0); 
+
+  LQGen.generateQuad(Control,lKey+"QuadB",72.0);   
+
+  // This could be a standard component:
+  /*
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40>(6.5);    
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
+  Control.addVariable(lKey+"PumpANPorts",2);
+
+  PItemGen.setLength(6.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
+  PItemGen.setLength(2.5);
+  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
+  */
   return;
 }
 
@@ -132,7 +156,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
 
-  // note larget unit
+  // note larger unit
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 

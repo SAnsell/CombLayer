@@ -66,7 +66,12 @@ class L2SPFsegment2 :
   /// Beam position monitor
   std::shared_ptr<tdcSystem::BPM> bpmA;   ///< Beam pos mo
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< bpm to gateVale
+  /// Bellows from BPM
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+
+  /// Long connecter pipe to gate valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; 
+  
   std::shared_ptr<tdcSystem::LQuad> QuadB;    /// quad B 
 
   /// Gate valve holder
@@ -82,7 +87,7 @@ class L2SPFsegment2 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD; 
 
   /// Bellows
-  std::shared_ptr<constructSystem::Bellows> bellowA;
+  std::shared_ptr<constructSystem::Bellows> bellowB;
   /// BPM \todo BUILD A BPM
   std::shared_ptr<constructSystem::VacuumPipe> bpmB; 
 
