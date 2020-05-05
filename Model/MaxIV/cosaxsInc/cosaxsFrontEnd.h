@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   cosaxsInc/cosaxsFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,30 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_cosaxsFrontEnd_h
 #define xraySystem_cosaxsFrontEnd_h
-
-namespace insertSystem
-{
-  class insertCylinder;
-}
-
-namespace constructSystem
-{
-  class Bellows;
-  class CrossPipe;
-  class GateValveCube;
-  class OffsetFlangePipe;
-  class portItem;
-  class PipeTube;
-  class PortTube;
-  class SupplyPipe;
-  class VacuumBox;
-  class VacuumPipe; 
-}
 
 /*!
   \namespace xraySystem
@@ -52,15 +33,10 @@ namespace constructSystem
 namespace xraySystem
 {
 
-  class HeatDump;
-  class LCollimator;
-  class SqrCollimator;
-  class SquareFMask;
   class UTubePipe;
   class Undulator;
-  class Wiggler;
 
-    
+
   /*!
     \class cosaxsFrontEnd
     \version 1.0
@@ -82,13 +58,13 @@ class cosaxsFrontEnd :
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,MonteCarlo::Object*,
 		   const attachSystem::FixedComp&,const long int);
-			      
+
   void createSurfaces();
   void buildObjects(Simulation&);
   virtual void createLinks();
-  
+
  public:
-  
+
   cosaxsFrontEnd(const std::string&);
   cosaxsFrontEnd(const cosaxsFrontEnd&);
   cosaxsFrontEnd& operator=(const cosaxsFrontEnd&);

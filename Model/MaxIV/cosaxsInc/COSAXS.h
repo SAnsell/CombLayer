@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   cosaxsInc/COSAXS.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,29 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_COSAXS_h
 #define xraySystem_COSAXS_h
-
-namespace constructSystem
-{
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class LeadPipe;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class GateValveCube;
-  class JawValveCube;
-  class JawFlange;
-    
-}
-
-
 
 /*!
   \namespace xraySystem
@@ -50,15 +32,10 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class balderOpticsHutch;
-  class ExperimentalHutch;
   class cosaxsFrontEnd;
   class cosaxsOpticsLine;
   class cosaxsExptLine;
-  class FrontEndCave;
-  class ConnectZone;
-  class PipeShield;
-  
+
   /*!
     \class COSAXS
     \version 1.0
@@ -76,13 +53,13 @@ class COSAXS : public R3Beamline
 
   /// lead in beam wall
   std::shared_ptr<WallLead> wallLead;
-  
+
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
   std::shared_ptr<balderOpticsHutch> opticsHut;
-  /// Optics beamlines 
+  /// Optics beamlines
   std::shared_ptr<cosaxsOpticsLine> opticsBeam;
 
   /// Pipe joining frontend to optics hut
@@ -90,14 +67,14 @@ class COSAXS : public R3Beamline
   /// Screening shield
   std::shared_ptr<xraySystem::PipeShield> screenA;
 
-  /// Main experimental hutch 
+  /// Main experimental hutch
   std::shared_ptr<ExperimentalHutch> exptHut;
 
   /// Experimental beamline
   std::shared_ptr<cosaxsExptLine> exptBeam;
 
  public:
-  
+
   COSAXS(const std::string&);
   COSAXS(const COSAXS&);
   COSAXS& operator=(const COSAXS&);

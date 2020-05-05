@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   cosaxsInc/cosaxsOpticsLine.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,33 +16,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_cosaxsOpticsLine_h
 #define xraySystem_cosaxsOpticsLine_h
 
-namespace insertSystem
-{
-  class insertPlate;
-}
-
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class PipeTube;
-  class GateValveCube;
-  class JawValveCube;
   class DiffPumpXIADP03;
 }
-
-
 
 /*!
   \namespace xraySystem
@@ -54,7 +37,6 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
   class BremColl;
   class BremMonoColl;
   class FlangeMount;
@@ -62,7 +44,7 @@ namespace xraySystem
   class MonoBox;
   class MonoCrystals;
   class MonoShutter;
-  
+
   /*!
     \class cosaxsOpticsLine
     \version 1.0
@@ -106,7 +88,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   /// bellows after gateA ->view
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  
+
   /// diamond screen(?)
   std::shared_ptr<constructSystem::PipeTube> screenPipeA;
   /// View/something(?)/Ion pump
@@ -115,7 +97,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
   /// Diffusion pump
   std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
-  
+
   /// Primary jaw (Box)
   std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
   /// Bellow to gate on mono
@@ -124,7 +106,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateC;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
-  /// Mono Xstal 
+  /// Mono Xstal
   std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   // Gate to isolate mono
   std::shared_ptr<constructSystem::GateValveCube> gateD;
@@ -139,7 +121,7 @@ class cosaxsOpticsLine :
   // Gate for first mirror
   std::shared_ptr<constructSystem::GateValveCube> gateE;
 
-  /// Mirror box 
+  /// Mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
   /// Mirror front
   std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
@@ -182,7 +164,7 @@ class cosaxsOpticsLine :
 
   /// Shutter pipe
   std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-    
+
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
@@ -210,14 +192,14 @@ class cosaxsOpticsLine :
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   cosaxsOpticsLine(const std::string&);
   cosaxsOpticsLine(const cosaxsOpticsLine&);
   cosaxsOpticsLine& operator=(const cosaxsOpticsLine&);
   ~cosaxsOpticsLine();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
