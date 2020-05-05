@@ -42,6 +42,9 @@ class TDCsegment :
 
   /// System for building a divided inner
   attachSystem::InnerZone* buildZone;
+
+  // last component
+  std::shared_ptr<attachSystem::FixedComp> lastComp;
   
  public:
   

@@ -202,7 +202,7 @@ L2SPFsegment1::buildObjects(Simulation& System)
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
 
-  buildZone->removeLastMaster(System);
+  buildZone->removeLastMaster(System);  
   return;
 }
 
@@ -212,8 +212,9 @@ L2SPFsegment1::createLinks()
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  const constructSystem::portItem& VPB=pumpA->getPort(1);
+  setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
   return;
 }
 

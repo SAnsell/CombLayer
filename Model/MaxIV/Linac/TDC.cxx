@@ -216,10 +216,11 @@ TDC::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("TDC","createAll");
 
-  static const std::map<std::string,std::string> segmentLinkMap
+  typedef std::tuple<std::string,std::string> ITYPE;
+  static const std::map<std::string,ITYPE> segmentLinkMap
     ({
-      {"L2SPFsegment1","Origin"},
-      {"L2SPFsegment2","Origin"}
+      {"L2SPFsegment1",{"l2spf","Origin"}},
+      {"L2SPFsegment2",{"l2spf","Origin"}}
     });
   const int voidCell(74123);
   
@@ -227,47 +228,31 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  size_t index(0);
-
+  const attachSystem::FixedComp* FCPtr(nullptr);
   for(const std::string& BL : activeINJ)
     {
+      const std::string& bzName=std::get<0>(segmentLinkMap.at(BL));
+      const std::string& orgName=std::get<1>(segmentLinkMap.at(BL));
+      std::unique_ptr<attachSystem::InnerZone> buildZone=
+	buildInnerZone(System.getDataBase(),bzName);
+      
       if (BL=="L2SPFsegment1")  
 	{
-	  std::unique_ptr<attachSystem::InnerZone> buildZone=
-	    buildInnerZone(System.getDataBase(),"l2spf");
-	  
 	  l2spf1->setInnerZone(buildZone.get());
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
-
 	  l2spf1->createAll
-	    (System,*injectionHall,
-	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
-	  index=1;
+	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
+	  FCPtr=l2spf1.get();
 	}
       if (BL=="L2SPFsegment2")  
 	{
-	  std::unique_ptr<attachSystem::InnerZone> buildZone=
-	    buildInnerZone(System.getDataBase(),"l2spf");
+	  if (FCPtr)
+	    buildZone->setFront(FCPtr->getFullRule("back"));
 	  
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
-
 	  l2spf2->createAll
-	    (System,*injectionHall,
-	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
-	  index=2;
-
-	  /*	  l2spf2->setCutSurf("floor",injectionHall->getSurf("Floor"));
-	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  if (index==1)
-	    l2spf2->setCutSurf("join",*l2spf1,"back");
-	  else
-	    l2spf2->setCutSurf("front",injectionHall->getSurf("Front"));
-	  l2spf2->createAll
-	    (System,*injectionHall,
-	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
-	  index=2;
-	  */
+	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
 	}
     }
 
