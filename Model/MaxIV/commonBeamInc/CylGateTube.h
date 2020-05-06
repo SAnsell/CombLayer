@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_CylGateTube_h
-#define constructSystem_CylGateTube_h
+#ifndef xraySystem_CylGateTube_h
+#define xraySystem_CylGateTube_h
 
 class Simulation;
 
-namespace constructSystem
+namespace xraySystem
 {
   
 /*!
@@ -40,7 +40,7 @@ class CylGateTube :
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::ExternalCut
 {
  private:
   
@@ -78,7 +78,6 @@ class CylGateTube :
   int wallMat;                  ///< Pipe material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

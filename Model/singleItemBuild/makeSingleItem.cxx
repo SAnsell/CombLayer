@@ -107,6 +107,7 @@
 #include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
+#include "CylGateValve.h"
 
 
 
@@ -128,7 +129,6 @@ makeSingleItem::~makeSingleItem()
   */
 {}
 
-
 void 
 makeSingleItem::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
@@ -143,9 +143,10 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CorrectorMag","LQuad","MagnetBlock","MagnetM1",
-      "Octupole","EPSeparator","R3ChokeChamber","QuadUnit",
-      "DipoleChamber","EPSeparator","Quadrupole","TargetShield"
+      "default","CylGateValve","CorrectorMag","LQuad",
+      "MagnetBlock","MagnetM1","Octupole","EPSeparator",
+      "R3ChokeChamber","QuadUnit","DipoleChamber",
+      "EPSeparator","Quadrupole","TargetShield"
       "Help","help"
     });
   
@@ -160,7 +161,20 @@ makeSingleItem::build(Simulation& System,
     throw ColErr::InContainerError<std::string>
       (item,"Item no a single component");
 
-  if (item=="default" || item == "CorrectorMag" )
+  if (item=="default" || item == "CylGateValve" )
+    {
+      std::shared_ptr<xraySystem::CylGateValve>
+	GV(new xraySystem::CylGateValve("VC"));
+      
+      OR.addObject(GV);
+      
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "CorrectorMag" )
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	VC(new constructSystem::VacuumPipe("VC"));

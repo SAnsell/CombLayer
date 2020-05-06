@@ -80,7 +80,7 @@
 
 #include "CylGateTube.h" 
 
-namespace constructSystem
+namespace xraySystem
 {
 
 CylGateTube::CylGateTube(const std::string& Key) : 
@@ -120,7 +120,6 @@ CylGateTube::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  portZStep=Control.EvalVar<double>(keyName+"PortZStep");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   portFlangeRadius=Control.EvalVar<double>(keyName+"PortFlangeRadius");
   portInner=Control.EvalVar<double>(keyName+"PortInner");
@@ -189,21 +188,21 @@ CylGateTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+wallThick);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   // Flange at top
-  ModelSupport::buildCylinder
+  ModelSupport::buildPlane
     (SMap,buildIndex+106,Origin+Z*(height+topThick),Z);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Z,topRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Z,topHoleRadius);
   
   // lift port
-  ModelSupport::buildCylinder
+  ModelSupport::buildPlane
     (SMap,buildIndex+206,Origin+Z*(height+topThick+liftHeight),Z);
-  ModelSupport::buildCylinder
+  ModelSupport::buildPlane
     (SMap,buildIndex+216,Origin+Z*(height+topThick+liftHeight+liftPlate),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Z,liftRadius);
@@ -216,7 +215,7 @@ CylGateTube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+402,bladeOrg+Y*(bladeThick/2.0),Y);
 
   // blade support rod
-  ModelSupport::buildPlane(SMap,buildIndex+507,Origin,Z,driveRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,Z,driveRadius);
 
   return;
 }
@@ -233,17 +232,20 @@ CylGateTube::createObjects(Simulation& System)
   std::string Out;
 
 
-  const std::string frontStr=frontRule();  //  1
-  const std::string backStr=backRule();    // -2
+  const std::string frontStr=getRuleStr("front"); // 1
+  const std::string backStr=getRuleStr("back");    // -2
 
 
   // Main Void [exclude flange cylinder/ blade and blade tube]
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 -7 107 (407 : -401 : 402) (307 : -405)");
+    (SMap,buildIndex," 5 -6 -7 107 (407 : -401 : 402) (507 : -405)");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 107 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 -17 ");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
 
   // Front/Back flanges:
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -117 ");
@@ -257,95 +259,30 @@ CylGateTube::createObjects(Simulation& System)
       (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402)");
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 -117 ");
-  
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // blade:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
-  // blade supprot
-  Out=ModelSupport::getComposite(SMap,buildIndex,"407 405 206 ");
+  // blade support
+  Out=ModelSupport::getComposite(SMap,buildIndex,"407 405 206 -507 ");
   makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,Out);
 
-  // Main body
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 (-3:4:-5) ");
-  makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
-  // Top body
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 17 13 -14 -16 5 (-1:2:-3:4:6) ");
-  makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
+  // top flange
+  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -207 217");
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out);
 
-  // blade
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 301 -302 ");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+  // top clearance
+  if (topRadius-driveRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -217 507");
+      makeCell("TopGap",System,cellIndex++,voidMat,0.0,Out);
+    }
 
-  // front plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
-  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
-  if (!portAExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
-    }
-       
-  // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 217 ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -217 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-  
-  if (!portBExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
-    }
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 (-17 : (13 -14 5 -16))");
-
-  if (portAExtends || portBExtends)
-    {
-      if (!portAExtends)
-	{
-	  addOuterSurf(Out);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
-	}
-      else if (!portBExtends)
-	{
-	  addOuterSurf(Out);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 117 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 217 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex," -11 -16 13 -14 5 17 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+frontStr);
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex," 12 -16 13 -14 5 17 ");
-	  makeCell("PortOuterVoid",System,cellIndex++,0,0.0,Out+backStr);
-
-	  Out=ModelSupport::getComposite(SMap,buildIndex," ( (13 -14 5 -16):-17 )");
-	}
-      addOuterUnionSurf(Out+frontStr+backStr);
-
-    }
-
-  //  addOuterUnionSurf(Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -106 -207 ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -362,7 +299,8 @@ CylGateTube::createLinks()
   //stuff for intersection
 
 
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
+  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
   return;
 }
@@ -382,7 +320,8 @@ CylGateTube::createAll(Simulation& System,
   ELog::RegMethod RegA("CylGateTube","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  const double offset(radius+wallThick+portThick);
+  createCentredUnitVector(FC,FIndex,offset);
   createSurfaces();    
   createObjects(System);
   createLinks();
@@ -391,4 +330,4 @@ CylGateTube::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE xraySystem
