@@ -262,7 +262,7 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"CapMat",capMat);
-  
+
   return;
 
 }
@@ -304,6 +304,7 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
 }
 
 ///\cond TEMPLATE
+  template void PipeTubeGenerator::setCF<CF40_22>();
   template void PipeTubeGenerator::setCF<CF40>();
   template void PipeTubeGenerator::setCF<CF63>();
   template void PipeTubeGenerator::setCF<CF100>();
