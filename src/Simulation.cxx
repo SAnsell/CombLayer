@@ -1626,8 +1626,6 @@ Simulation::minimizeObject(const int CN)
     activeFlag |= AX.constructShannonDivision(SN);
 
   AX.addImplicates(IP);
-  if (CPtr->getName()==1010001)
-    ELog::EM<<"Cell = "<<*CPtr<<ELog::endDiag;
   activeFlag |= AX.constructShannonExpansion();
 
   if (activeFlag)
@@ -1643,9 +1641,6 @@ Simulation::minimizeObject(const int CN)
       CPtr->populate();
       CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
-
-      if (CPtr->getName()==1010001)
-	ELog::EM<<"NEW Cell = "<<*CPtr<<ELog::endDiag;
 
       return 1;
     }

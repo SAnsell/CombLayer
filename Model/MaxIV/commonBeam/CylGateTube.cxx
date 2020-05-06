@@ -144,6 +144,8 @@ CylGateTube::populate(const FuncDataBase& Control)
   driveMat=ModelSupport::EvalMat<int>(Control,keyName+"DriveMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  closed=ModelSupport::EvalMat<int>(Control,keyName+"Closed");
+
   return;
 }
 
@@ -158,7 +160,7 @@ CylGateTube::createSurfaces()
 {
   ELog::RegMethod RegA("CylGateTube","createSurfaces");
 
-  const double bladeZStep((closed) ? bladeLift : 0.0);
+  const double bladeZStep((!closed) ? bladeLift : 0.0);
     
   // front/back planes
   if (!isActive("front"))
@@ -234,9 +236,6 @@ CylGateTube::createObjects(Simulation& System)
 
   const std::string frontStr=getRuleStr("front"); // 1
   const std::string backStr=getRuleStr("back");    // -2
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -106 -207 ");
-  addOuterSurf(Out);
 
 
   // Main Void [exclude flange cylinder/ blade and blade tube]
@@ -248,7 +247,6 @@ CylGateTube::createObjects(Simulation& System)
   // blade:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
-
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 117 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
@@ -263,26 +261,28 @@ CylGateTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -117 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  return;
-  
   if (closed)
     Out=ModelSupport::getComposite
-      (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402)");
+      (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402) (507:-405)");
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 -117 ");
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
+  // end caps
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 -107 ");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
-  // blade:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"102 -107 ");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
 
   // blade support
-  Out=ModelSupport::getComposite(SMap,buildIndex,"407 405 206 -507 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"(-401:402:407) 405 -206 -507 ");
   makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,Out);
 
-  // top flange
+  ELog::EM<<"front == "<<frontStr<<ELog::endDiag;
+  // top flange [artifical cut on port flanges for FLUKA convinence]
   Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -207 217");
-  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
 
   // top clearance
   if (topRadius-driveRadius>Geometry::zeroTol)
@@ -291,9 +291,24 @@ CylGateTube::createObjects(Simulation& System)
       makeCell("TopGap",System,cellIndex++,voidMat,0.0,Out);
     }
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -206 507 -307");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -106 -207 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -206 -317 307 ");
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-216 206 -317 ");
+  makeCell("TopCap",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"106 -216 -207 317");
+  makeCell("TopSpace",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"117 17 -6 -207 15 ");
+  makeCell("LowSpace",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -216 -207 ");
+  addOuterSurf(Out+frontStr+backStr);
 
   return;
 }
