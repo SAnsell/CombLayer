@@ -72,7 +72,7 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-
+#include "YagScreen.h"
 
 #include "L2SPFsegment15.h"
 
@@ -91,6 +91,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
   ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -103,6 +104,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(mirrorChamber);
   OR.addObject(ionPump);
+  OR.addObject(yagScreen);
   OR.addObject(pipeB);
 }
 
@@ -219,6 +221,11 @@ L2SPFsegment15::buildObjects(Simulation& System)
 					  ionPumpPort1,
 					  ionPumpPort1.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
+
+  // here
+  const constructSystem::portItem& ionPumpPort3=ionPump->getPort(3);
+  yagScreen->addInsertCell(outerCell);
+  yagScreen->createAll(System,ionPumpPort3, 2);
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,ionPumpPort1,"OuterPlate",*pipeB);

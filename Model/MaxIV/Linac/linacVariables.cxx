@@ -62,6 +62,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "YagScreenGenerator.h"
 
 namespace setVariable
 {
@@ -214,6 +215,7 @@ linac2SPFsegment15(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::YagScreenGenerator YagGen;
 
   Control.addVariable(lKey+"OuterLeft",80.0);
   Control.addVariable(lKey+"OuterRight",140.0);
@@ -265,6 +267,8 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
   PItemGen.setLength(10.0);
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  YagGen.generate(Control,lKey+"YagScreen");
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
 
