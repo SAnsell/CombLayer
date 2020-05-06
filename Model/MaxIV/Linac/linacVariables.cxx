@@ -269,9 +269,6 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   YagGen.generate(Control,lKey+"YagScreen");
-  SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.generateBlank(Control,lKey+"YagScreenTube",0.0,10.0);
-  Control.addVariable(lKey+"YagScreenTubeNPorts",0);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
 

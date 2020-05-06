@@ -57,13 +57,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 
-#include "ExternalCut.h"
-#include "objectRegister.h"
-#include "FrontBackCut.h"
-#include "SurfMap.h"
-#include "ContainedGroup.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 #include "YagScreen.h"
 
 namespace tdcSystem
@@ -72,19 +65,12 @@ namespace tdcSystem
 YagScreen::YagScreen(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap(),
-  tube(new constructSystem::PipeTube(keyName+"Tube"))
+  attachSystem::CellMap()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(tube);
-
- }
+{}
 
 YagScreen::YagScreen(const YagScreen& A) :
   attachSystem::ContainedComp(A),
@@ -201,17 +187,11 @@ YagScreen::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("YagScreen","createObjects");
 
-  tube->setOuterVoid();
-  tube->createAll(System,*this, 0);
+  std::string Out;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
-  // std::string Out;
-  // Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  // makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
-
-  //  addOuterSurf(Out);
-  //  addOuterSurf(tube->getOuterSurf("FlangeA").display());
-  //  addOuterUnionSurf(tube->getOuterSurf("FlangeB").display());
-  addOuterUnionSurf(tube->getOuterSurf("Main").display());
+  addOuterSurf(Out);
 
   return;
 }
