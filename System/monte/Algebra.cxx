@@ -405,11 +405,7 @@ Algebra::constructShannonExpansion()
       const int& SNB=IP.second;
       const int realSNA=getSurfIndex(SNA);
       const int realSNB=getSurfIndex(SNB);
-      if (realSNA==1010117)
-	{
-	  ELog::EM<<"SNA = "<<realSNA<<" "<<realSNB<<ELog::endDiag;
-	  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
-	}
+
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
       FaFbT.resolveTrue(SNB);      // b=1
@@ -431,13 +427,7 @@ Algebra::constructShannonExpansion()
 	      retFlag=1;
 	      // ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
 	      FX=FaTbT;
-	      if (realSNA==1010117)
-		ELog::EM<<"NEW == "<<FX<<ELog::endDiag;
-
 	      FX.addIntersect(SNB);
-	      if (realSNA==1010117)
-		ELog::EM<<"NEW == "<<FX<<ELog::endDiag;
-
 	    }
 	  if (FaTbT.isFalse())
 	    {
