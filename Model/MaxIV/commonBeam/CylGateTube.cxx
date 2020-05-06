@@ -139,7 +139,7 @@ CylGateTube::populate(const FuncDataBase& Control)
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
 
-  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   driveMat=ModelSupport::EvalMat<int>(Control,keyName+"DriveMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -207,7 +207,7 @@ CylGateTube::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Z,liftRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,Z,liftRadius+liftThick);
-  // blade 
+  // blade
   const Geometry::Vec3D bladeOrg(Origin+Z*bladeZStep);
   ModelSupport::buildPlane(SMap,buildIndex+405,bladeOrg,Z);
   ModelSupport::buildCylinder(SMap,buildIndex+407,bladeOrg,Y,bladeRadius);
@@ -234,13 +234,29 @@ CylGateTube::createObjects(Simulation& System)
 
   const std::string frontStr=getRuleStr("front"); // 1
   const std::string backStr=getRuleStr("back");    // -2
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -106 -207 ");
+  //  addOuterSurf(Out);
 
 
   // Main Void [exclude flange cylinder/ blade and blade tube]
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 -7 107 (407 : -401 : 402) (507 : -405)");
+    (SMap,buildIndex," 5 -6 -7 117 (407 : -401 : 402) (507 : -405)");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 117 (507 : -405)");
+  if (!closed)
+    Out+=ModelSupport::getComposite(SMap,buildIndex," (407:-401:402)");
+  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
+  addOuterSurf(Out);
+  // blade:
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
+  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+
+  ///  addOuterSurf(Out);
+
+  return;
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 107 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 

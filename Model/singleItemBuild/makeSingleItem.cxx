@@ -107,9 +107,7 @@
 #include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
-#include "CylGateValve.h"
-
-
+#include "CylGateTube.h"
 
 #include "makeSingleItem.h"
 
@@ -143,10 +141,10 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuad",
+      "default","CylGateTube","CorrectorMag","LQuad",
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
-      "EPSeparator","Quadrupole","TargetShield"
+      "EPSeparator","Quadrupole","TargetShield",
       "Help","help"
     });
   
@@ -155,21 +153,22 @@ makeSingleItem::build(Simulation& System,
   const int voidCell(74123);
 
   const std::string item=
-    IParam.getDefValue<std::string>("singleItem","default");
+    IParam.getDefValue<std::string>("default","singleItem");
 
   if (validItems.find(item)==validItems.end())
     throw ColErr::InContainerError<std::string>
       (item,"Item no a single component");
 
-  if (item=="default" || item == "CylGateValve" )
+  ELog::EM<<"Conponent == "<<item<<ELog::endDiag;
+  if (item=="default" || item == "CylGateTube" )
     {
-      std::shared_ptr<xraySystem::CylGateValve>
-	GV(new xraySystem::CylGateValve("VC"));
+      std::shared_ptr<xraySystem::CylGateTube>
+	GV(new xraySystem::CylGateTube("GV"));
       
       OR.addObject(GV);
       
-      VC->addInsertCell(voidCell);
-      VC->createAll(System,World::masterOrigin(),0);
+      GV->addInsertCell(voidCell);
+      GV->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -281,7 +280,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="QuadUnit" || item=="DipoleChamber" || "EPSeparator")
+  if (item=="QuadUnit" || item=="DipoleChamber" || item=="EPSeparator")
     {
       std::shared_ptr<xraySystem::QuadUnit>
 	PDipole(new xraySystem::QuadUnit("PreDipole"));

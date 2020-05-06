@@ -3,7 +3,7 @@
  
  * File:   monte/Algebra.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -304,8 +304,7 @@ Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
     Adds the implicates to the from a list of surface numbers
     [signed]
     \param IM :: Implicate list 
-    
-   */
+  */
 {
   ELog::RegMethod RegA("Algebra","addImplicates");
 
@@ -379,7 +378,7 @@ Algebra::constructShannonExpansion()
        - for each +/- pair resolve shannon expansion
        - Compute F=a'F(00)+a'bF(01)+bF(11)
           assuming that a->b is true 
-       -- if a -> -b then apply -1 to flag of b
+       -- if a -> -b then apply -1 to flag of b etc
        - if F(01) is null and either F(11) or F(00) is null
              then remove either/and  a and b from the equation.
        - re-resolve for next literal
@@ -397,21 +396,21 @@ Algebra::constructShannonExpansion()
 
   if (FX.isEmpty())  // object null
     retFlag=1;
-
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
       //
       // now do shannon expansion about both literals [together]
-      // if the literals are opposite signed then we reverse one nad
-      // continue/
+      // note that a -> b does not imply b' -> a'. It does for plane
+      // but not cylinder/plane etc.
 
+
+      
       const int& SNA=IP.first;
       const int& SNB=IP.second;
-      
+
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
       FaFbT.resolveTrue(SNB);      // b=1
-
 
       if (FaFbT.isFalse())
 	{
@@ -436,7 +435,8 @@ Algebra::constructShannonExpansion()
 	      retFlag=1;
 	      //  ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
-	      FX.addIntersect(-SNA);	      
+	      FX.addIntersect(-SNA);
+	      ELog::EM<<"FALSE FX == "<<FX<<ELog::endDiag;
 	    }
 	}
     }

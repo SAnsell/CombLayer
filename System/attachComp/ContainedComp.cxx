@@ -712,8 +712,7 @@ ContainedComp::insertObjects(Simulation& System)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
-	outerObj->addSurfString(getExclude());
-
+	  outerObj->addSurfString(getExclude());
       else
 	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }
@@ -727,11 +726,11 @@ ContainedComp::insertObjects(Simulation& System,
   /*!
     Insert the ContainedComp into the cell list
     \param System :: Simulation to get objects from
-    \param testPts  :: unless TestPts are in teh cell no 
+    \param testPts  :: unless TestPts are in the cell no insert.
     insertion takes place
   */
 {
-  ELog::RegMethod RegA("ContainedComp","insertObjects");
+  ELog::RegMethod RegA("ContainedComp","insertObjects(testPts)");
   if (!hasOuterSurf()) return;
 
   for(const int CN : insertCells)

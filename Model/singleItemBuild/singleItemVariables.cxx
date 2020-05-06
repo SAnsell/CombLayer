@@ -73,6 +73,7 @@
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
+#include "CylGateTubeGenerator.h"
 
 namespace setVariable
 {
@@ -224,6 +225,9 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setCF<setVariable::CF40_22>(); 
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
+  // CylGateTube
+  setVariable::CylGateTubeGenerator GVGen;  
+  GVGen.generateGate(Control,"GV",1);
 
   
   return;

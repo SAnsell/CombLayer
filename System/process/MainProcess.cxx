@@ -640,7 +640,6 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
 
   SDef::sourceSelection(*SimMCPtr,IParam);
   //  SimMCPtr->masterSourceRotation();
-  SimMCPtr->minimizeObject("All");
   // Ensure we done loop
   do
     {
@@ -690,8 +689,8 @@ buildFullSimulation(Simulation* SimPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 
-  ModelSupport::objectAddition(*SimPtr,IParam);
-  ModelSupport::materialUpdate(*SimPtr,IParam);
+  static int count(0);
+  count++;
 
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();

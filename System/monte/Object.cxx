@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,8 @@ Object::Object(const std::string& FCName,const int N,const int M,
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
   trcl(0),imp(1),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
+  magMinStep(1e-3),magMaxStep(1e-1),
+  objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -137,9 +138,10 @@ Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
-  activeMag(A.activeMag),magVec(A.magVec),
+  activeMag(A.activeMag),
   magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
-  HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
+  magVec(A.magVec),HRule(A.HRule),objSurfValid(0),
+  SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
     \param A :: Object to copy
@@ -745,10 +747,14 @@ Object::getImplicatePairs() const
 	const Geometry::Surface* APtr=SurList[i];
 	const Geometry::Surface* BPtr=SurList[j];
 
+	// This is JUST surface SIGNS:
 	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
-
 	if (dirFlag.first)
-	  Out.push_back(dirFlag);
+	  {
+	    Out.push_back(std::pair<int,int>
+			(dirFlag.first * APtr->getName(),
+			 dirFlag.second * BPtr->getName()));
+	  }
       }
   return Out;
 }

@@ -3,7 +3,7 @@
  
  * File:   test/testAlgebra.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -392,7 +392,8 @@ testAlgebra::testExpandCNFBracket()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("a+b+c(d+e)","(a+b+c)(a+b+d+e)"),
+      TTYPE("a(b+c+de)","a(b+c+d)(b+c+e)"),
+      TTYPE("g'(a+b+c+d'ef')","g'(b+c+d')(b+c+f')(b+c+e)"),
       TTYPE("a+b+cd(e+f)","(a+b+c)(a+b+d)(a+b+e+f)"),
       //      TTYPE("a'b'c(b+c')","!!"),   // ALWAY FALSE
       TTYPE("f+(a'b'c(b+c'))","f"),   

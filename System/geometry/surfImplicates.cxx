@@ -87,7 +87,7 @@ surfImplicates::isImplicate(const Surface* ASPtr,
     \return -1 / 1 if implicate 0 if not
   */
 {
-  ELog::RegMethod RegA("surfaceImplicates","isImplicate");
+  ELog::RegMethod RegA("surfImplicates","isImplicate");
 
   const std::string AType=ASPtr->className();
   const std::string BType=BSPtr->className();
@@ -151,9 +151,15 @@ surfImplicates::cylinderPlane(const Geometry::Surface* APtr,
    */
 {
   // we already know these are planes/cylinders
+  // note there is NO reverse when signs differ:
+  //       -Cyl -> +Plane
+  //       -Plane -> +Cyl
+  //
+  //  BUT
+  //      Cyl -> Plane  [NEVER TRUE]
+  //      -Cyl -> -Plane  [NEVER TRUE]
+
   std::pair<int,int> Out=planeCylinder(BPtr,APtr);
-  Out.first*=-1;
-  Out.second*=-1;
   return Out;
 }
   
@@ -181,8 +187,10 @@ surfImplicates::planeCylinder(const Geometry::Surface* APtr,
     {
       const double D=APlane->distance(BCent);
       if (std::abs(D)>R)
-	return (D>0) ? std::pair<int,int>(-1,1) :
-	  std::pair<int,int>(1,1);
+	{
+	  return (D>0) ? std::pair<int,int>(-1,1) :
+	    std::pair<int,int>(1,-1);
+	}
     }
   return std::pair<int,int>(0,0);
 }
