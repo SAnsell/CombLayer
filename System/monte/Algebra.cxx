@@ -400,14 +400,16 @@ Algebra::constructShannonExpansion()
     {
       //
       // now do shannon expansion about both literals [together]
-      // note that a -> b does not imply b' -> a'. It does for plane
-      // but not cylinder/plane etc.
-
-
-      
+      // note that a -> b does not imply b' -> a'. 
       const int& SNA=IP.first;
       const int& SNB=IP.second;
-
+      const int realSNA=getSurfIndex(SNA);
+      const int realSNB=getSurfIndex(SNB);
+      if (realSNA==1010117)
+	{
+	  ELog::EM<<"SNA = "<<realSNA<<" "<<realSNB<<ELog::endDiag;
+	  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+	}
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
       FaFbT.resolveTrue(SNB);      // b=1
@@ -425,10 +427,17 @@ Algebra::constructShannonExpansion()
 	  // POST PROCESS
 	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
+
 	      retFlag=1;
 	      // ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
 	      FX=FaTbT;
+	      if (realSNA==1010117)
+		ELog::EM<<"NEW == "<<FX<<ELog::endDiag;
+
 	      FX.addIntersect(SNB);
+	      if (realSNA==1010117)
+		ELog::EM<<"NEW == "<<FX<<ELog::endDiag;
+
 	    }
 	  if (FaTbT.isFalse())
 	    {
@@ -436,7 +445,6 @@ Algebra::constructShannonExpansion()
 	      //  ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
 	      FX.addIntersect(-SNA);
-	      ELog::EM<<"FALSE FX == "<<FX<<ELog::endDiag;
 	    }
 	}
     }

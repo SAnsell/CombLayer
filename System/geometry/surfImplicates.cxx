@@ -145,21 +145,19 @@ std::pair<int,int>
 surfImplicates::cylinderPlane(const Geometry::Surface* APtr,
 			      const Geometry::Surface* BPtr) const
   /*!
-    Determine if two planes are implicates
+    Determine if a cyliner and a planes are implicates
+    Condition is that the plane normal -- CylAxis are orthoganal
+    We know that +Cyl can imply nothing BUT
+     -Cyl can imply either +/- Plane.
     \param APtr :: First cylinder pointer
     \param BPtr :: second plane pointer
    */
 {
-  // we already know these are planes/cylinders
-  // note there is NO reverse when signs differ:
-  //       -Cyl -> +Plane
-  //       -Plane -> +Cyl
-  //
-  //  BUT
-  //      Cyl -> Plane  [NEVER TRUE]
-  //      -Cyl -> -Plane  [NEVER TRUE]
+  // possible results: -1,1 : 1,1 : 0,0
+  const std::pair<int,int> Out=planeCylinder(BPtr,APtr);
+  if (Out.first)
+    return std::pair<int,int>(-1,-Out.first);
 
-  std::pair<int,int> Out=planeCylinder(BPtr,APtr);
   return Out;
 }
   
@@ -169,6 +167,7 @@ surfImplicates::planeCylinder(const Geometry::Surface* APtr,
   /*!
     Determine if plane / cylinder are implicates
     Condition is that the plane normal -- CylAxis are orthoganal
+
     \param APtr :: First plane pointer
     \param BPtr :: second cylinder pointer
    */
@@ -189,7 +188,7 @@ surfImplicates::planeCylinder(const Geometry::Surface* APtr,
       if (std::abs(D)>R)
 	{
 	  return (D>0) ? std::pair<int,int>(-1,1) :
-	    std::pair<int,int>(1,-1);
+	    std::pair<int,int>(1,1);
 	}
     }
   return std::pair<int,int>(0,0);

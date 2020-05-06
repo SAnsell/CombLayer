@@ -236,28 +236,21 @@ CylGateTube::createObjects(Simulation& System)
   const std::string backStr=getRuleStr("back");    // -2
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 15 -106 -207 ");
-  //  addOuterSurf(Out);
+  addOuterSurf(Out);
 
 
   // Main Void [exclude flange cylinder/ blade and blade tube]
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 5 -6 -7 117 (407 : -401 : 402) (507 : -405)");
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 117 (507 : -405)");
   if (!closed)
     Out+=ModelSupport::getComposite(SMap,buildIndex," (407:-401:402)");
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
-  addOuterSurf(Out);
   // blade:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-407 401 -402 ");
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
-  ///  addOuterSurf(Out);
 
-  return;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17 117 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 -17 ");
@@ -270,7 +263,9 @@ CylGateTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -117 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  if (!closed)
+  return;
+  
+  if (closed)
     Out=ModelSupport::getComposite
       (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402)");
   else
