@@ -141,171 +141,200 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
+  std::set<std::string> validItems
+    ({
+      "default","CorrectorMag","LQuad","MagnetBlock","MagnetM1",
+      "Octupole","EPSeparator","R3ChokeChamber","QuadUnit",
+      "DipoleChamber","EPSeparator","Quadrupole","TargetShield"
+      "Help","help"
+    });
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
-  std::shared_ptr<constructSystem::VacuumPipe>
-    VC(new constructSystem::VacuumPipe("VC"));
-  std::shared_ptr<tdcSystem::CorrectorMag>
-    CM(new tdcSystem::CorrectorMag("CM","CM"));
+  const std::string item=
+    IParam.getDefValue<std::string>("singleItem","default");
 
-  OR.addObject(VC);
-  OR.addObject(CM);
+  if (validItems.find(item)==validItems.end())
+    throw ColErr::InContainerError<std::string>
+      (item,"Item no a single component");
 
-  VC->addInsertCell(voidCell);
-  VC->createAll(System,World::masterOrigin(),0);
+  if (item=="default" || item == "CorrectorMag" )
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VC"));
+      std::shared_ptr<tdcSystem::CorrectorMag>
+	CM(new tdcSystem::CorrectorMag("CM","CM"));
+      
+      OR.addObject(VC);
+      OR.addObject(CM);
+      
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
 
-  CM->setCutSurf("Inner",*VC,"outerPipe");
-  CM->addInsertCell(voidCell);
-  CM->createAll(System,World::masterOrigin(),0);
+      CM->setCutSurf("Inner",*VC,"outerPipe");
+      CM->addInsertCell(voidCell);
+      CM->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="LQuad")
+    {
+      std::shared_ptr<tdcSystem::LQuad>
+	LQ(new tdcSystem::LQuad("LQ","LQ"));
+      
+      OR.addObject(LQ);
+      
+      LQ->addInsertCell(voidCell);
+      LQ->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="MagnetBlock")
+    {
   
+      std::shared_ptr<xraySystem::MagnetBlock>
+	MB(new xraySystem::MagnetBlock("M1"));
+      
+      OR.addObject(MB);
+      MB->addInsertCell(voidCell);
+      MB->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="Seupole")
+    {
+      std::shared_ptr<xraySystem::Sexupole>
+	SXX(new xraySystem::Sexupole("SXX","SXX"));
+      
+      OR.addObject(SXX);
+      
+      SXX->addInsertCell(voidCell);
+      SXX->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="MagnetM1")
+    {
+      std::shared_ptr<xraySystem::MagnetM1>
+	MagBlock(new xraySystem::MagnetM1("M1Block"));
+      
+      OR.addObject(MagBlock);
+      
+      MagBlock->addAllInsertCell(voidCell);
+      MagBlock->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="Octupole")
+    {
+      
+      std::shared_ptr<xraySystem::Octupole>
+	OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
+      OR.addObject(OXX);
+      OXX->addInsertCell(voidCell);
+      OXX->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="EPSeparator")
+    {
+      std::shared_ptr<xraySystem::EPSeparator>
+	EPsep(new xraySystem::EPSeparator("EPSeparator"));
+      OR.addObject(EPsep);
+      
+      EPsep->addInsertCell(voidCell);
+      EPsep->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item=="R3ChokeChamber")
+    {
+      std::shared_ptr<xraySystem::R3ChokeChamber>
+	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
+      OR.addObject(CChamber);
+      CChamber->addAllInsertCell(voidCell);
+      CChamber->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="QuadUnit" || item=="DipoleChamber" || "EPSeparator")
+    {
+      std::shared_ptr<xraySystem::QuadUnit>
+	PDipole(new xraySystem::QuadUnit("PreDipole"));
+      OR.addObject(PDipole);
+      PDipole->addInsertCell(voidCell);
+      PDipole->createAll(System,World::masterOrigin(),0);
+      
+      
+      std::shared_ptr<xraySystem::DipoleChamber>
+	DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
+      OR.addObject(DCSep);
+      DCSep->addAllInsertCell(voidCell);
+      DCSep->createAll(System,*PDipole,2);
+      
+      std::shared_ptr<xraySystem::EPSeparator>
+	EPSep(new xraySystem::EPSeparator("EPSep"));
+      OR.addObject(EPSep);
+      EPSep->addInsertCell(voidCell);
+      EPSep->createAll(System,*PDipole,2);
+      return;
+    }
+
+  if (item=="Quadrupole")
+    {
+
+      std::shared_ptr<xraySystem::Quadrupole>
+	Quad(new xraySystem::Quadrupole("Quad","Quad"));
+      OR.addObject(Quad);
+      Quad->addInsertCell(voidCell);
+      Quad->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+  if (item=="TargetShield")
+    {
+      std::shared_ptr<insertSystem::insertSphere> 
+	Target(new insertSystem::insertSphere("Target"));
+      std::shared_ptr<insertSystem::insertShell>
+	Surround(new insertSystem::insertShell("Shield"));
+      std::shared_ptr<insertSystem::insertCylinder>
+	TubeA(new insertSystem::insertCylinder("TubeA"));
+      std::shared_ptr<insertSystem::insertCylinder>
+	TubeB(new insertSystem::insertCylinder("TubeB"));
+      
+      OR.addObject(Target);
+      OR.addObject(TubeA);
+      OR.addObject(TubeB);
+      OR.addObject(Surround);
+      
+      TubeA->addInsertCell(voidCell);
+      TubeA->createAll(System,World::masterOrigin(),0);
+      TubeB->addInsertCell(voidCell);
+      TubeB->createAll(System,*TubeA,2);
+      return;
+    }
+
+  if (item=="Help" || item=="help")
+    {
+
+      ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
+      
+      for(const std::string& Name : validItems)
+	ELog::EM<<"Item : "<<Name<<"\n";
+  
+      ELog::EM<<"-----------"<<ELog::endDiag;
+    }
   return;
-
-  std::shared_ptr<tdcSystem::LQuad>
-    LQ(new tdcSystem::LQuad("LQ","LQ"));
-
-  OR.addObject(LQ);
-
-  LQ->addInsertCell(voidCell);
-  LQ->createAll(System,World::masterOrigin(),0);
   
-  return;
-
-  
-  std::shared_ptr<xraySystem::MagnetBlock>
-    MB(new xraySystem::MagnetBlock("M1"));
-
-  OR.addObject(MB);
-  MB->addInsertCell(voidCell);
-  MB->createAll(System,World::masterOrigin(),0);
-  
-  return;
-  
-  std::shared_ptr<xraySystem::Sexupole>
-    SXX(new xraySystem::Sexupole("SXX","SXX"));
-
-  OR.addObject(SXX);
-
-  SXX->addInsertCell(voidCell);
-  SXX->createAll(System,World::masterOrigin(),0);
-  
-  return;
-  
-
-  
-  std::shared_ptr<xraySystem::MagnetM1>
-    MagBlock(new xraySystem::MagnetM1("M1Block"));
-
-  OR.addObject(MagBlock);
-
-  MagBlock->addAllInsertCell(voidCell);
-  MagBlock->createAll(System,World::masterOrigin(),0);
-  
-  return;
-
-  std::shared_ptr<xraySystem::Octupole>
-    OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
-
-  OR.addObject(OXX);
-
-  OXX->addInsertCell(voidCell);
-  OXX->createAll(System,World::masterOrigin(),0);
-  
-  return;
-  
-  std::shared_ptr<xraySystem::EPSeparator>
-    EPsep(new xraySystem::EPSeparator("EPSeparator"));
-  OR.addObject(EPsep);
-  
-  EPsep->addInsertCell(voidCell);
-  EPsep->createAll(System,World::masterOrigin(),0);
-
-  return;
-  
-  
-  std::shared_ptr<xraySystem::R3ChokeChamber>
-    CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
-  OR.addObject(CChamber);
-  CChamber->addAllInsertCell(voidCell);
-  CChamber->createAll(System,World::masterOrigin(),0);
-
-  return;
-  
-
-  
-  std::shared_ptr<xraySystem::QuadUnit>
-    PDipole(new xraySystem::QuadUnit("PreDipole"));
-  OR.addObject(PDipole);
-  PDipole->addInsertCell(voidCell);
-  PDipole->createAll(System,World::masterOrigin(),0);
-
-
-  std::shared_ptr<xraySystem::DipoleChamber>
-    DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
-  OR.addObject(DCSep);
-  DCSep->addAllInsertCell(voidCell);
-  DCSep->createAll(System,*PDipole,2);
-  return;
-
-  std::shared_ptr<xraySystem::EPSeparator>
-    EPSep(new xraySystem::EPSeparator("EPSep"));
-  OR.addObject(EPSep);
-  EPSep->addInsertCell(voidCell);
-  EPSep->createAll(System,*PDipole,2);
-  return;
-
-  std::shared_ptr<xraySystem::Quadrupole>
-    Quad(new xraySystem::Quadrupole("Quad","Quad"));
-  OR.addObject(Quad);
-  Quad->addInsertCell(voidCell);
-  Quad->createAll(System,World::masterOrigin(),0);
-  return;
-
-
-   std::shared_ptr<insertSystem::insertSphere> 
-    Target(new insertSystem::insertSphere("Target"));
-  std::shared_ptr<insertSystem::insertShell>
-    Surround(new insertSystem::insertShell("Shield"));
-  std::shared_ptr<insertSystem::insertCylinder>
-    TubeA(new insertSystem::insertCylinder("TubeA"));
-  std::shared_ptr<insertSystem::insertCylinder>
-    TubeB(new insertSystem::insertCylinder("TubeB"));
-
-  OR.addObject(Target);
-  OR.addObject(TubeA);
-  OR.addObject(TubeB);
-  OR.addObject(Surround);
-
-  TubeA->addInsertCell(voidCell);
-  TubeA->createAll(System,World::masterOrigin(),0);
-  TubeB->addInsertCell(voidCell);
-  TubeB->createAll(System,*TubeA,2);
-  
-  
-  return;
-  
-	    
-	  
-  Target->addInsertCell(voidCell);
-  Target->createAll(System,World::masterOrigin(),0);
-
-  Surround->addInsertCell(voidCell);
-  Surround->createAll(System,World::masterOrigin(),0);
-
-  TubeA->addInsertCell(voidCell);
-  TubeA->addInsertCell(Surround->getCell("Main"));
-  TubeA->createAll(System,World::masterOrigin(),0);
-
-
-  //  constructSystem::SingleChopper AS("singleChopper");
-  //  AS.addInsertCell(voidCell);
-  //  AS.createAll(System,World::masterOrigin(),0);
-
-//  constructSystem::CryoMagnetBase A("CryoB");
-//  A.addInsertCell(voidCell);
-//  A.createAll(System,World::masterOrigin(),0);
 }
 
 

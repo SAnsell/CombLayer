@@ -148,7 +148,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
-  
+  IParam.regItem("singleItem","singleItem");  
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
@@ -277,6 +277,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("sdefSource","Extra data for source.F");
+  IParam.setDesc("singleItem","Single item for singleItem method");
   
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
