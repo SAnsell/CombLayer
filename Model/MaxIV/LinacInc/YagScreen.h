@@ -47,6 +47,8 @@ class YagScreen : public attachSystem::ContainedComp,
 
   int mainMat;                   ///< Main material
 
+  std::shared_ptr<constructSystem::PipeTube> tube;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
