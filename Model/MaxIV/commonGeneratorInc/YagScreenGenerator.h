@@ -48,6 +48,8 @@ class YagScreenGenerator
   double ffLength;              ///< linear pneumatics feedthrough length
   double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
   double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
+  double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
+  double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
   std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
 
   std::string voidMat;          ///< void material
@@ -58,6 +60,9 @@ class YagScreenGenerator
   YagScreenGenerator(const YagScreenGenerator&);
   YagScreenGenerator& operator=(const YagScreenGenerator&);
   virtual ~YagScreenGenerator();
+
+  template<typename CF> void setCF();
+  template<typename CF> void setFlangeCF();
 
   virtual void generate(FuncDataBase&,const std::string&) const;
 

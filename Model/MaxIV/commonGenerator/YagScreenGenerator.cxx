@@ -43,6 +43,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 
 #include "YagScreenGenerator.h"
 
@@ -54,8 +55,10 @@ YagScreenGenerator::YagScreenGenerator() :
   jbWallThick(0.15),
   jbMat("Aluminium"),
   ffLength(19.5),
-  ffInnerRadius(1.5),
-  ffWallThick(0.2),
+  ffInnerRadius(0.95),
+  ffWallThick(0.95),
+  ffFlangeLen(1.2),
+  ffFlangeRadius(3.5),
   ffWallMat("Stainless304L"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -67,6 +70,34 @@ YagScreenGenerator::~YagScreenGenerator()
    Destructor
  */
 {}
+
+template<typename CF>
+void
+YagScreenGenerator::setCF()
+  /*!
+    Set pipe and flange to CF-X format
+  */
+{
+  ffInnerRadius=CF::innerRadius;
+  ffWallThick=CF::wallThick;
+  setFlangeCF<CF>();
+
+  return;
+}
+
+template<typename CF>
+void
+YagScreenGenerator::setFlangeCF()
+  /*!
+    Setter for flange
+   */
+{
+  ffFlangeRadius=CF::flangeRadius;
+  ffFlangeLen=CF::flangeLength;
+
+  return;
+}
+
 
 void
 YagScreenGenerator::generate(FuncDataBase& Control,
@@ -86,6 +117,8 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FFLength",ffLength);
   Control.addVariable(keyName+"FFInnerRadius",ffInnerRadius);
   Control.addVariable(keyName+"FFWallThick",ffWallThick);
+  Control.addVariable(keyName+"FFFlangeLength",ffFlangeLen);
+  Control.addVariable(keyName+"FFFlangeRadius",ffFlangeRadius);
   Control.addVariable(keyName+"FFWallMat",ffWallMat);
   Control.addVariable(keyName+"JBMat",jbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
@@ -94,5 +127,9 @@ YagScreenGenerator::generate(FuncDataBase& Control,
 
 }
 
+///\cond TEMPLATE
+  template void YagScreenGenerator::setCF<CF40_22>();
+  template void YagScreenGenerator::setFlangeCF<CF40_22>();
+///\endcond TEMPLATE
 
-}  // tdcSystem setVariable
+}  // namespace setVariable

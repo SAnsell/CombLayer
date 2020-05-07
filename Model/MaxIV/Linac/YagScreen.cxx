@@ -81,6 +81,8 @@ YagScreen::YagScreen(const YagScreen& A) :
   ffLength(A.ffLength),
   ffInnerRadius(A.ffInnerRadius),
   ffWallThick(A.ffWallThick),
+  ffFlangeLen(A.ffFlangeLen),
+  ffFlangeRadius(A.ffFlangeRadius),
   ffWallMat(A.ffWallMat),
   voidMat(A.voidMat)
   /*!
@@ -109,6 +111,8 @@ YagScreen::operator=(const YagScreen& A)
       ffLength=A.ffLength;
       ffInnerRadius=A.ffInnerRadius;
       ffWallThick=A.ffWallThick;
+      ffFlangeLen=A.ffFlangeLen;
+      ffFlangeRadius=A.ffFlangeRadius;
       ffWallMat=A.ffWallMat;
       voidMat=A.voidMat;
     }
@@ -150,6 +154,8 @@ YagScreen::populate(const FuncDataBase& Control)
   ffLength=Control.EvalVar<double>(keyName+"FFLength");
   ffInnerRadius=Control.EvalVar<double>(keyName+"FFInnerRadius");
   ffWallThick=Control.EvalVar<double>(keyName+"FFWallThick");
+  ffFlangeLen=Control.EvalVar<double>(keyName+"FFFlangeLength");
+  ffFlangeRadius=Control.EvalVar<double>(keyName+"FFFlangeRadius");
   ffWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FFWallMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
@@ -181,10 +187,14 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
+  // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ffLength,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,ffInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,ffInnerRadius+ffWallThick);
+  // flange
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*ffFlangeLen,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ffFlangeRadius);
 
   return;
 }
@@ -199,13 +209,22 @@ YagScreen::createObjects(Simulation& System)
   ELog::RegMethod RegA("YagScreen","createObjects");
 
   std::string Out;
+
+  // linear pneumatics feedthrough
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   makeCell("FFInner",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
   makeCell("FFWall",System,cellIndex++,ffWallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
+  // flange
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 17 -27 ");
+  makeCell("FFFlange",System,cellIndex++,ffWallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 17 -27 ");
+  makeCell("FFFlangeAir",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
   addOuterSurf(Out);
 
   return;

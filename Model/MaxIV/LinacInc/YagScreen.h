@@ -49,6 +49,8 @@ class YagScreen : public attachSystem::ContainedComp,
   double ffLength;              ///< linear pneumatics feedthrough length
   double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
   double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
+  double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
+  double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
   int    ffWallMat;             ///< linear pneumatics feedthrough wall material
   int    voidMat;               ///< void material
 
