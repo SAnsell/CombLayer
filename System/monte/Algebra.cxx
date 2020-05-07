@@ -406,6 +406,7 @@ Algebra::constructShannonExpansion()
       const int realSNA=getSurfIndex(SNA);
       const int realSNB=getSurfIndex(SNB);
 
+
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
       FaFbT.resolveTrue(SNB);      // b=1
@@ -423,18 +424,15 @@ Algebra::constructShannonExpansion()
 	  // POST PROCESS
 	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
-
 	      retFlag=1;
-	      // ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
 	      FX=FaTbT;
-	      FX.addIntersect(SNB);
+	      FX.addIntersect(SNA);
 	    }
 	  if (FaTbT.isFalse())
 	    {
 	      retFlag=1;
-	      //  ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
-	      FX.addIntersect(-SNA);
+	      FX.addIntersect(-SNB);
 	    }
 	}
     }

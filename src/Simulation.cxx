@@ -1607,15 +1607,17 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
+  // DEBUG
+
+  
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   CPtr->populate();
   CPtr->createSurfaceList();
-
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
-
+  
   //  CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
 

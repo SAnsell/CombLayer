@@ -176,9 +176,11 @@ L2SPFsegment1::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
- 
+
+  
   pipeD->createAll(System,*pipeC,"back");  
   correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
  
@@ -213,6 +215,8 @@ L2SPFsegment1::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
+
+  
   const constructSystem::portItem& VPB=pumpA->getPort(1);
   setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
   return;
