@@ -60,7 +60,12 @@ YagScreenGenerator::YagScreenGenerator() :
   ffWallThick(0.95),
   ffFlangeLen(1.2),
   ffFlangeRadius(3.5),
-  ffWallMat("Stainless304L"),voidMat("Void")
+  ffWallMat("Stainless304L"),
+  holderLift(7.0),
+  holderRad(ffInnerRadius*0.9),
+  holderMat("Aluminium"),
+  voidMat("Void"),
+  closed(false)
   /*!
     Constructor and defaults
   */
@@ -121,9 +126,13 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FFFlangeLength",ffFlangeLen);
   Control.addVariable(keyName+"FFFlangeRadius",ffFlangeRadius);
   Control.addVariable(keyName+"FFWallMat",ffWallMat);
+  Control.addVariable(keyName+"HolderLift",holderLift);
+  Control.addVariable(keyName+"HolderRadius",holderRad);
+  Control.addVariable(keyName+"HolderMat",holderMat);
   Control.addVariable(keyName+"JBWallMat",jbWallMat);
   Control.addVariable(keyName+"JBMat",jbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"Closed",static_cast<int>(closed));
 
   return;
 

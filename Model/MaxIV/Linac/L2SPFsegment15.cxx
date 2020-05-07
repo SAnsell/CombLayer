@@ -224,7 +224,9 @@ L2SPFsegment15::buildObjects(Simulation& System)
 
   // here
   const constructSystem::portItem& ionPumpPort3=ionPump->getPort(3);
-  yagScreen->addInsertCell(outerCell);
+  yagScreen->addInsertCell("Body",outerCell);
+  yagScreen->addInsertCell("Holder",ionPumpPort3.getCell("Void"));
+
   yagScreen->createAll(System,ionPumpPort3, 2);
 
   constructSystem::constructUnit

@@ -35,9 +35,9 @@ namespace tdcSystem
   \brief Yag screen
 */
 
-class YagScreen : public attachSystem::ContainedComp,
-		    public attachSystem::FixedRotate,
-		    public attachSystem::CellMap
+class YagScreen : public attachSystem::ContainedGroup,
+		  public attachSystem::FixedRotate,
+		  public attachSystem::CellMap
 {
  private:
 
@@ -51,11 +51,16 @@ class YagScreen : public attachSystem::ContainedComp,
   double ffLength;              ///< linear pneumatics feedthrough length
   double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
   double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
-  double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
-  double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
+  double ffFlangeLen;           ///< linear pneumatics feedthrough flange length
+  double ffFlangeRadius;        ///< linear pneumatics feedthrough flange radius
   int    ffWallMat;             ///< linear pneumatics feedthrough wall material
-  int    voidMat;               ///< void material
 
+  double holderLift;            ///< screen holder lift
+  double holderRad;             ///< screen holder inner radius
+  int    holderMat;             ///< screen holder material
+
+  int    voidMat;               ///< void material
+  bool   closed;                ///< screen and mirror are in the beam
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

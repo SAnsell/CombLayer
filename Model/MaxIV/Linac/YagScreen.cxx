@@ -54,8 +54,10 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Exception.h"
 
 #include "YagScreen.h"
 
@@ -63,9 +65,10 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Holder", "Body"),
   attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  closed(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -73,7 +76,7 @@ YagScreen::YagScreen(const std::string& Key)  :
 {}
 
 YagScreen::YagScreen(const YagScreen& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   jbLength(A.jbLength),jbWidth(A.jbWidth),jbHeight(A.jbHeight),
@@ -86,6 +89,9 @@ YagScreen::YagScreen(const YagScreen& A) :
   ffFlangeLen(A.ffFlangeLen),
   ffFlangeRadius(A.ffFlangeRadius),
   ffWallMat(A.ffWallMat),
+  holderLift(A.holderLift),
+  holderRad(A.holderRad),
+  holderMat(A.holderMat),
   voidMat(A.voidMat)
   /*!
     Copy constructor
@@ -103,7 +109,7 @@ YagScreen::operator=(const YagScreen& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       jbLength=A.jbLength;
@@ -118,6 +124,9 @@ YagScreen::operator=(const YagScreen& A)
       ffFlangeLen=A.ffFlangeLen;
       ffFlangeRadius=A.ffFlangeRadius;
       ffWallMat=A.ffWallMat;
+      holderLift=A.holderLift;
+      holderRad=A.holderRad;
+      holderMat=A.holderMat;
       voidMat=A.voidMat;
     }
   return *this;
@@ -163,7 +172,17 @@ YagScreen::populate(const FuncDataBase& Control)
   ffFlangeLen=Control.EvalVar<double>(keyName+"FFFlangeLength");
   ffFlangeRadius=Control.EvalVar<double>(keyName+"FFFlangeRadius");
   ffWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FFWallMat");
+  holderLift=Control.EvalVar<double>(keyName+"HolderLift");
+  holderRad=Control.EvalVar<double>(keyName+"HolderRadius");
+  holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
+
+  if (holderRad>=ffInnerRadius)
+    throw ColErr::RangeError<double>(holderRad,0,ffInnerRadius,
+				     "HolderInnerRad >= FFFlangeRadius:");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+
+  closed=Control.EvalVar<int>(keyName+"Closed");
 
   return;
 }
@@ -192,6 +211,8 @@ YagScreen::createSurfaces()
   */
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
+
+  const double holderZStep(closed ? holderLift : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -234,6 +255,13 @@ YagScreen::createSurfaces()
   				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
  				  jbWallThick);
 
+  // screen holder
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+201,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
+				  -holderZStep);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,holderRad);
+
+
   return;
 }
 
@@ -249,7 +277,7 @@ YagScreen::createObjects(Simulation& System)
   std::string Out;
 
   // linear pneumatics feedthrough
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 207 -7 ");
   makeCell("FFInner",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
@@ -263,7 +291,7 @@ YagScreen::createObjects(Simulation& System)
   makeCell("FFFlangeAir",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
-  addOuterSurf(Out);
+  addOuterSurf("Body",Out);
 
   // electronics junction box
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
@@ -273,8 +301,16 @@ YagScreen::createObjects(Simulation& System)
   				 " 111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106) ");
   makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
 
-   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
-   addOuterUnionSurf(Out);
+  // mirror/screen holder
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
+  makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
+  makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
+  addOuterSurf("Holder",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
+  addOuterUnionSurf("Body",Out);
 
   return;
 }

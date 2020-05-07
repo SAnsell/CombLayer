@@ -52,8 +52,12 @@ class YagScreenGenerator
   double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
   double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
   std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
+  double holderLift;            ///< screen holder lift inside vacuum system
+  double holderRad;             ///< screen holder inner radius
+  std::string holderMat;        ///< screen holder material
 
   std::string voidMat;          ///< void material
+  bool closed;                  ///< screen and mirror are in the beam
 
  public:
 
