@@ -31,6 +31,10 @@ namespace constructSystem
   class PipeTube;
 }
 
+namespace xraySystem
+{
+  class CylGateTube;
+}
 
 
 /*!
@@ -75,7 +79,7 @@ class L2SPFsegment2 :
   std::shared_ptr<tdcSystem::LQuad> QuadB;    /// quad B 
 
   /// Gate valve holder
-  std::shared_ptr<constructSystem::BlankTube> gateTube;   
+  std::shared_ptr<xraySystem::CylGateTube> gateTube;   
 
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; 

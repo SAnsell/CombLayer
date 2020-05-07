@@ -66,7 +66,7 @@ CylGateTubeGenerator::CylGateTubeGenerator() :
   topThick(CF63::flangeLength),liftHeight(7.8),
   liftRadius(2.3),liftThick(0.2),liftPlate(1.2),
   driveRadius(0.6),bladeLift(7.0),bladeThick(0.4),
-  bladeRadius(2.2),voidMat("Air"),bladeMat("Copper"),
+  bladeRadius(2.2),voidMat("Void"),bladeMat("Copper"),
   driveMat("Nickel"),wallMat("Stainless304")
   /*!
     Constructor and defaults

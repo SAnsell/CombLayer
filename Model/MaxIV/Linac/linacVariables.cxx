@@ -62,6 +62,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "BPMGenerator.h"
+#include "CylGateTubeGenerator.h"
 
 namespace setVariable
 {
@@ -88,6 +89,7 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::CylGateTubeGenerator CGateGen;
 
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2);   // if segment 1 not built
@@ -114,6 +116,8 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadB",72.0);   
 
+  CGateGen.generateGate(Control,lKey+"GateTube",0);   
+  
   // This could be a standard component:
   /*
   SimpleTubeGen.setMat("Stainless304");
