@@ -59,7 +59,7 @@ class TDC :
   std::shared_ptr<L2SPFsegment1> l2spf1;              ///< segment 1
   std::shared_ptr<L2SPFsegment2> l2spf2;              ///< segment 2
   std::shared_ptr<L2SPFsegment14> l2spf14;      ///< segment 14
-  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 14
+  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 15
 
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);

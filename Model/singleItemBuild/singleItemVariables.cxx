@@ -234,7 +234,7 @@ SingleItemVariables(FuncDataBase& Control)
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
-  setVariable::PipeGenerator PGen;
+
   PGen.setCF<setVariable::CF25>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 

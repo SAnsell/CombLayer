@@ -343,8 +343,8 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	VC(new constructSystem::VacuumPipe("VC"));
-      std::shared_ptr<xraySystem::DipoleDIBMag>
-	DIB(new xraySystem::DipoleDIBMag("DIB"));
+      std::shared_ptr<tdcSystem::DipoleDIBMag>
+	DIB(new tdcSystem::DipoleDIBMag("DIB"));
       
       OR.addObject(VC);
       OR.addObject(DIB);

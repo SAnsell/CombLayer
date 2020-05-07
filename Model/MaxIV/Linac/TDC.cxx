@@ -189,7 +189,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","Origin"}}
+      {"l2spf",{"Front","#MidWall","Origin"}},
+      {"tdc",{"TDCStart","#TDCMid","Origin"}}
     });
     
 
@@ -238,7 +239,6 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  const attachSystem::FixedComp* FCPtr(nullptr);
   int segmentIndex(0);
   for(const std::string& BL : activeINJ)
     {
@@ -253,7 +253,7 @@ TDC::createAll(Simulation& System,
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf1->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
-	  segmentIndex=1
+	  segmentIndex=1;
 	}
       if (BL=="L2SPFsegment2")  
 	{
@@ -264,20 +264,19 @@ TDC::createAll(Simulation& System,
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
-	  segmentIndex=2
+	  segmentIndex=2;
 	}
       else if (BL=="L2SPFsegment14")
 	{
-	  if (segmentIndex==13)
-	    buildZone->setFront(l2spf13->getFullRule("back"));
+	  //	  if (segmentIndex==13)
+	  //	    buildZone->setFront(l2spf13->getFullRule("back"));
 	  l2spf14->setCutSurf("floor",injectionHall->getSurf("Floor"));
 	  l2spf14->setCutSurf("front",injectionHall->getSurf("Front"));
 
 	  l2spf14->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf14->createAll
-	    (System,*injectionHall,
-	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
-	  segmentIndex=14
+	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
+	  segmentIndex=14;
 	}
       else if (BL=="L2SPFsegment15")
 	{
@@ -289,7 +288,7 @@ TDC::createAll(Simulation& System,
 
 	  l2spf15->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf15->createAll
-	    (System,*l2spf14,l2spf14->getSideIndex("back"));
+	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
 	  segmentIndex=15;
 	}
     }

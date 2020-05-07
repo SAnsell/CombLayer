@@ -86,7 +86,6 @@ linac2SPFsegment2(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment2");
 
   setVariable::PipeGenerator PGen;
@@ -99,9 +98,6 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2);   // if segment 1 not built
-  Control.addVariable(lKey+"OuterLeft",80.0);     // same as Segment1
-  Control.addVariable(lKey+"OuterRight",140.0);
-  Control.addVariable(lKey+"OuterHeight",100.0);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -227,11 +223,11 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
 
-  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
-  Control.addVariable(lKey+"OuterLeft",80.0);
-  Control.addVariable(lKey+"OuterRight",140.0);
-  Control.addVariable(lKey+"OuterHeight",100.0);
-
+  // number form drawing
+  Control.addVariable(lKey+"XStep",-622.286+128.0);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4226.013);        // 
+  Control.addVariable(lKey+"XYAngle",0.0);   // this should be 3.1183 deg
+    
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
@@ -415,13 +411,18 @@ LINACvariables(FuncDataBase& Control)
 
   linacVar::wallVariables(Control,"InjectionHall");
 
-  <<<<<<< HEAD
-
   // Segment 1-14
   Control.addVariable("TDCl2spfXStep",128.0);   // exactly 1m from wall.
   Control.addVariable("TDCl2spfOuterLeft",80.0);
   Control.addVariable("TDCl2spfOuterRight",140.0);
   Control.addVariable("TDCl2spfOuterTop",100.0);
+
+  Control.addVariable("TDCtdcXStep",-622.286+128.0);   // exactly 1m from wall.
+  Control.addVariable("TDCtdcYStep",4226.013);   // exactly 1m from wall.
+  Control.addVariable("TDCtdcOuterLeft",100.0);
+  Control.addVariable("TDCtdcOuterRight",100.0);
+  Control.addVariable("TDCtdcOuterTop",100.0);
+
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
