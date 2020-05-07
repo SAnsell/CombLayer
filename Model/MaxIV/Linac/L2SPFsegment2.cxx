@@ -181,15 +181,9 @@ L2SPFsegment2::buildObjects(Simulation& System)
   pipeB->createAll(System,*bellowA,"back");
   pipeMagUnit(System,*buildZone,pipeB,QuadB);
   pipeTerminate(System,*buildZone,pipeB);
-  
-  return;
-  //
-  // build pipe + corrector magnets together:
-  // THIS becomes a function:
-  //
-  pipeB->createAll(System,*bellowA,"back");  
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
 
 
   return;
@@ -208,8 +202,8 @@ L2SPFsegment2::createLinks()
 
 void 
 L2SPFsegment2::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -225,6 +219,7 @@ L2SPFsegment2::createAll(Simulation& System,
   
   buildObjects(System);
   createLinks();
+
   return;
 }
 

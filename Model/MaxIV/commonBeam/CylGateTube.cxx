@@ -347,7 +347,7 @@ CylGateTube::createAll(Simulation& System,
 
   populate(System.getDataBase());
   const double offset(radius+wallThick+portThick);
-  createCentredUnitVector(FC,FIndex,offset);
+  createCentredUnitVector(FC,FIndex,2.0*offset);
   createSurfaces();    
   createObjects(System);
   createLinks();
