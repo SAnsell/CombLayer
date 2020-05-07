@@ -39,13 +39,18 @@ class YagScreenGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double jbLength;              ///< electronics junction box length
+  double jbWidth;               ///< electronics junction box width
+  double jbHeight;              ///< electronics junction box height
+  double jbWallThick;           ///< electronics junction box wall thickness
+  std::string jbMat;            ///< electronics junction box material
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  double ffLength;              ///< linear pneumatics feedthrough length
+  double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
+  double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
+  std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
+
+  std::string voidMat;          ///< void material
 
  public:
 

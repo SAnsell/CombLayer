@@ -76,8 +76,13 @@ YagScreen::YagScreen(const YagScreen& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
-  length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  jbLength(A.jbLength),jbWidth(A.jbWidth),jbHeight(A.jbHeight),
+  jbWallThick(A.jbWallThick),
+  ffLength(A.ffLength),
+  ffInnerRadius(A.ffInnerRadius),
+  ffWallThick(A.ffWallThick),
+  ffWallMat(A.ffWallMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: YagScreen to copy
@@ -97,10 +102,15 @@ YagScreen::operator=(const YagScreen& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
-      mainMat=A.mainMat;
+      jbLength=A.jbLength;
+      jbWidth=A.jbWidth;
+      jbHeight=A.jbHeight;
+      jbWallThick=A.jbWallThick;
+      ffLength=A.ffLength;
+      ffInnerRadius=A.ffInnerRadius;
+      ffWallThick=A.ffWallThick;
+      ffWallMat=A.ffWallMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -132,11 +142,16 @@ YagScreen::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  jbLength=Control.EvalVar<double>(keyName+"JBLength");
+  jbWidth=Control.EvalVar<double>(keyName+"JBWidth");
+  jbHeight=Control.EvalVar<double>(keyName+"JBHeight");
+  jbWallThick=Control.EvalVar<double>(keyName+"JBWallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  ffLength=Control.EvalVar<double>(keyName+"FFLength");
+  ffInnerRadius=Control.EvalVar<double>(keyName+"FFInnerRadius");
+  ffWallThick=Control.EvalVar<double>(keyName+"FFWallThick");
+  ffWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FFWallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -166,14 +181,10 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ffLength,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,ffInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,ffInnerRadius+ffWallThick);
 
   return;
 }
@@ -188,9 +199,13 @@ YagScreen::createObjects(Simulation& System)
   ELog::RegMethod RegA("YagScreen","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
+  makeCell("FFInner",System,cellIndex++,voidMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
+  makeCell("FFWall",System,cellIndex++,ffWallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
   addOuterSurf(Out);
 
   return;
@@ -205,22 +220,22 @@ YagScreen::createLinks()
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(jbLength/2.0),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(jbLength/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(jbWidth/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(jbWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(jbHeight/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(jbHeight/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

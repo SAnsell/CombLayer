@@ -41,11 +41,17 @@ class YagScreen : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double jbLength;              ///< electronics junction box length
+  double jbWidth;               ///< electronics junction box width
+  double jbHeight;              ///< electronics junction box height
+  double jbWallThick;           ///< electronics junction box wall thickness
 
-  int mainMat;                   ///< Main material
+  double ffLength;              ///< linear pneumatics feedthrough length
+  double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
+  double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
+  int    ffWallMat;             ///< linear pneumatics feedthrough wall material
+  int    voidMat;               ///< void material
+
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

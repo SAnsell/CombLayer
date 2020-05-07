@@ -50,9 +50,13 @@ namespace setVariable
 {
 
 YagScreenGenerator::YagScreenGenerator() :
-  length(10.0),width(5.0),height(15.0),
-  wallThick(1.0),
-  mainMat(0),wallMat(0)
+  jbLength(10.0),jbWidth(5.0),jbHeight(15.0),
+  jbWallThick(0.15),
+  jbMat("Aluminium"),
+  ffLength(19.5),
+  ffInnerRadius(1.5),
+  ffWallThick(0.2),
+  ffWallMat("Stainless304L"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -75,12 +79,16 @@ YagScreenGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"JBLength",jbLength);
+  Control.addVariable(keyName+"JBWidth",jbWidth);
+  Control.addVariable(keyName+"JBHeight",jbHeight);
+  Control.addVariable(keyName+"JBWallThick",jbWallThick);
+  Control.addVariable(keyName+"FFLength",ffLength);
+  Control.addVariable(keyName+"FFInnerRadius",ffInnerRadius);
+  Control.addVariable(keyName+"FFWallThick",ffWallThick);
+  Control.addVariable(keyName+"FFWallMat",ffWallMat);
+  Control.addVariable(keyName+"JBMat",jbMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 
