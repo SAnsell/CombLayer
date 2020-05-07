@@ -1,6 +1,5 @@
-/********************************************************************* 
-  CombLayer : MCNP(X) Input builder
- 
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder 
  * File: linac/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -84,6 +83,9 @@
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment2.h"
 
+#include "L2SPFsegment14.h"
+#include "L2SPFsegment15.h"
+
 #include "TDC.h"
 
 namespace tdcSystem
@@ -94,7 +96,9 @@ TDC::TDC(const std::string& KN) :
   attachSystem::CellMap(),
   injectionHall(new InjectionHall("InjectionHall")),
   l2spf1(new L2SPFsegment1("L2SPF1")),
-  l2spf2(new L2SPFsegment2("L2SPF2"))
+  l2spf2(new L2SPFsegment2("L2SPF2")),
+  l2spf14(new L2SPFsegment14("L2SPF14")),
+  l2spf15(new L2SPFsegment15("L2SPF15"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -106,6 +110,9 @@ TDC::TDC(const std::string& KN) :
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
+  OR.addObject(l2spf14);
+  OR.addObject(l2spf15);
+
 }
 
 TDC::~TDC()
@@ -113,6 +120,7 @@ TDC::~TDC()
     Destructor
    */
 {}
+
 
 HeadRule
 TDC::buildSurround(const FuncDataBase& Control,
@@ -202,7 +210,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   return buildZone;
 }
 
-void 
+void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
 	       const long int sideIndex)
@@ -220,15 +228,18 @@ TDC::createAll(Simulation& System,
   static const std::map<std::string,ITYPE> segmentLinkMap
     ({
       {"L2SPFsegment1",{"l2spf","Origin"}},
-      {"L2SPFsegment2",{"l2spf","Origin"}}
+      {"L2SPFsegment2",{"l2spf","Origin"}},
+      {"L2SPFsegment14",{"tdc","Origin"}},
+      {"L2SPFsegment15",{"tdc","Origin"}}
     });
   const int voidCell(74123);
-  
+
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
   const attachSystem::FixedComp* FCPtr(nullptr);
+  int segmentIndex(0);
   for(const std::string& BL : activeINJ)
     {
       const std::string& bzName=std::get<0>(segmentLinkMap.at(BL));
@@ -242,17 +253,44 @@ TDC::createAll(Simulation& System,
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf1->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
-	  FCPtr=l2spf1.get();
+	  segmentIndex=1
 	}
       if (BL=="L2SPFsegment2")  
 	{
-	  if (FCPtr)
-	    buildZone->setFront(FCPtr->getFullRule("back"));
+	  if (segmentIndex==1)
+	    buildZone->setFront(l2spf1->getFullRule("back"));
 	  
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
+	  segmentIndex=2
+	}
+      else if (BL=="L2SPFsegment14")
+	{
+	  if (segmentIndex==13)
+	    buildZone->setFront(l2spf13->getFullRule("back"));
+	  l2spf14->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  l2spf14->setCutSurf("front",injectionHall->getSurf("Front"));
+
+	  l2spf14->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf14->createAll
+	    (System,*injectionHall,
+	     injectionHall->getSideIndex(segmentLinkMap.at(BL)));
+	  segmentIndex=14
+	}
+      else if (BL=="L2SPFsegment15")
+	{
+	  if (segmentIndex==14)
+	    buildZone->setFront(l2spf14->getFullRule("back"));
+
+	  l2spf15->setCutSurf("floor",injectionHall->getSurf("Floor"));
+	  l2spf15->setCutSurf("front",l2spf14->getLinkSurf("back"));
+
+	  l2spf15->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf15->createAll
+	    (System,*l2spf14,l2spf14->getSideIndex("back"));
+	  segmentIndex=15;
 	}
     }
 

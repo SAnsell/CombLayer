@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   singleItemBuild/singleItemVariables.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -74,6 +74,7 @@
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "CylGateTubeGenerator.h"
+#include "DipoleDIBMagGenerator.h"
 
 namespace setVariable
 {
@@ -109,16 +110,16 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("TubeWidth",20.0);
   Control.addVariable("TubeHeight",20.0);
   Control.addVariable("TubeMat","Stainless304");
-  
+
   Control.addVariable("TubeARadius",5.0);
   Control.addVariable("TubeALength",25.0);
   Control.addVariable("TubeBRadius",5.0);
   Control.addVariable("TubeBLength",5.0);
   Control.addVariable("TubeAMat","Stainless304");
   Control.addVariable("TubeBMat","Lead");
-  
+
   Control.addVariable("CryoBOuterRadius",20.0);
-  
+
   Control.addVariable("CryoBNLayers",0);
   Control.addVariable("CryoBLRadius0",1.0);
   Control.addVariable("CryoBLRadius1",3.0);
@@ -126,7 +127,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("CryoBLRadius3",8.0);
   Control.addVariable("CryoBLThick",0.5);
   Control.addVariable("CryoBLTemp",300.0);
-  
+
   Control.addVariable("CryoBTopOffset",1.0);
   Control.addVariable("CryoBBaseOffset",1.0);
   Control.addVariable("CryoBCutTopAngle",10.0);
@@ -141,17 +142,17 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("CryoBMat","Aluminium");
 
 
-  
+
   setVariable::CryoGenerator CryGen;
   CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
 
   setVariable::TwinGenerator TGen;
-  TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);  
+  TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);
 
   setVariable::TwinFlatGenerator TCGen;
-  TCGen.generateChopper(Control,"singleTwinC",0.0,16.0,10.0);  
+  TCGen.generateChopper(Control,"singleTwinC",0.0,16.0,10.0);
 
-  TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);  
+  TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);
 
   setVariable::RectPipeGenerator PipeGen;
   PipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
@@ -161,7 +162,7 @@ SingleItemVariables(FuncDataBase& Control)
   CGen.setMotorRadius(10.0);
   CGen.generateChopper(Control,"singleChopper",10.0,12.0,5.55);
   Control.addVariable("singleChopperMotorBodyLength",15.0);
-  
+
 
   setVariable::BladeGenerator BGen;
   // Single Blade chopper
@@ -192,7 +193,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
-  
+
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"QFend",20.0,25.0);
 
@@ -222,14 +223,21 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::CorrectorMagGenerator CMGen;
   CMGen.generateMag(Control,"CM",0.0,0);
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>(); 
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
+
 
   // CylGateTube
   setVariable::CylGateTubeGenerator GVGen;  
   GVGen.generateGate(Control,"GV",1);
 
-  
+  //  dipole magnet DIB
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  DIBGen.generate(Control,"DIB");
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF25>();
+  PGen.generatePipe(Control,"VC",-40.0,80.0);
+
   return;
 }
 

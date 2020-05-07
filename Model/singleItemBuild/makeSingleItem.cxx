@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   singleItemBuild/makeSingleItem.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -108,13 +108,14 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateTube.h"
+#include "DipoleDIBMag.h"
 
 #include "makeSingleItem.h"
 
 namespace singleItemSystem
 {
 
-makeSingleItem::makeSingleItem() 
+makeSingleItem::makeSingleItem()
  /*!
     Constructor
  */
@@ -127,10 +128,10 @@ makeSingleItem::~makeSingleItem()
   */
 {}
 
-void 
+void
 makeSingleItem::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
-/*!
+  /*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters
@@ -145,6 +146,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
+      "DipoleDIBMag"
       "Help","help"
     });
   
@@ -336,6 +338,27 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+
+  if (item=="DipoleDIBMag")
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VC"));
+      std::shared_ptr<xraySystem::DipoleDIBMag>
+	DIB(new xraySystem::DipoleDIBMag("DIB"));
+      
+      OR.addObject(VC);
+      OR.addObject(DIB);
+      
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+      
+      DIB->setCutSurf("Inner",*VC,"outerPipe");
+      DIB->addInsertCell(voidCell);
+      DIB->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+  
   if (item=="Help" || item=="help")
     {
 
@@ -347,9 +370,7 @@ makeSingleItem::build(Simulation& System,
       ELog::EM<<"-----------"<<ELog::endDiag;
     }
   return;
-  
 }
 
 
 }   // NAMESPACE singleItemSystem
-

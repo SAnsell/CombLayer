@@ -69,7 +69,7 @@ PortItemGenerator::PortItemGenerator() :
   */
 {}
 
-PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
+PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) :
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
   capThick(A.capThick),windowThick(A.windowThick),
@@ -231,10 +231,10 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 
   const double WThick((windowThick < -Geometry::zeroTol) ?
 		      -windowThick*capThick : windowThick);
-  
+
   const double WRadius((windowRadius < -Geometry::zeroTol)  ?
 		       -windowRadius*flangeRadius : windowRadius);
-  
+
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Wall",wallThick);
@@ -253,7 +253,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"CapMat",capMat);
   Control.addVariable(keyName+"WindowMat",windowMat);
   Control.addVariable(keyName+"OuterVoidMat",outerVoidMat);
-      
+
 
   return;
 
@@ -263,6 +263,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void PortItemGenerator::setCF<CF40>(const double);
+template void PortItemGenerator::setCF<CF40_22>(const double);
 template void PortItemGenerator::setCF<CF50>(const double);
 template void PortItemGenerator::setCF<CF63>(const double);
 template void PortItemGenerator::setCF<CF100>(const double);
