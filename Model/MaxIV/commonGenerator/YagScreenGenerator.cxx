@@ -51,9 +51,10 @@ namespace setVariable
 {
 
 YagScreenGenerator::YagScreenGenerator() :
-  jbLength(10.0),jbWidth(5.0),jbHeight(15.0),
-  jbWallThick(0.15),
-  jbMat("Aluminium"),
+  jbLength(11.5),jbWidth(8.0),jbHeight(8.0),
+  jbWallThick(0.3),
+  jbWallMat("Aluminium"),
+  jbMat("StbTCABL"),
   ffLength(19.5),
   ffInnerRadius(0.95),
   ffWallThick(0.95),
@@ -120,6 +121,7 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FFFlangeLength",ffFlangeLen);
   Control.addVariable(keyName+"FFFlangeRadius",ffFlangeRadius);
   Control.addVariable(keyName+"FFWallMat",ffWallMat);
+  Control.addVariable(keyName+"JBWallMat",jbWallMat);
   Control.addVariable(keyName+"JBMat",jbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 

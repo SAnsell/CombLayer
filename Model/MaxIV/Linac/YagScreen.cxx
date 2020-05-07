@@ -78,6 +78,8 @@ YagScreen::YagScreen(const YagScreen& A) :
   attachSystem::CellMap(A),
   jbLength(A.jbLength),jbWidth(A.jbWidth),jbHeight(A.jbHeight),
   jbWallThick(A.jbWallThick),
+  jbWallMat(A.jbWallMat),
+  jbMat(A.jbMat),
   ffLength(A.ffLength),
   ffInnerRadius(A.ffInnerRadius),
   ffWallThick(A.ffWallThick),
@@ -108,6 +110,8 @@ YagScreen::operator=(const YagScreen& A)
       jbWidth=A.jbWidth;
       jbHeight=A.jbHeight;
       jbWallThick=A.jbWallThick;
+      jbWallMat=A.jbWallMat;
+      jbMat=A.jbMat;
       ffLength=A.ffLength;
       ffInnerRadius=A.ffInnerRadius;
       ffWallThick=A.ffWallThick;
@@ -150,6 +154,8 @@ YagScreen::populate(const FuncDataBase& Control)
   jbWidth=Control.EvalVar<double>(keyName+"JBWidth");
   jbHeight=Control.EvalVar<double>(keyName+"JBHeight");
   jbWallThick=Control.EvalVar<double>(keyName+"JBWallThick");
+  jbWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JBWallMat");
+  jbMat=ModelSupport::EvalMat<int>(Control,keyName+"JBMat");
 
   ffLength=Control.EvalVar<double>(keyName+"FFLength");
   ffInnerRadius=Control.EvalVar<double>(keyName+"FFInnerRadius");
@@ -196,6 +202,38 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*ffFlangeLen,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ffFlangeRadius);
 
+  // electronics junction box
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(ffLength+jbWallThick),Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+102,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+101),jbLength);
+
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(jbWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(jbWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(jbHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(jbHeight/2.0),Z);
+
+
+  SMap.addMatch(buildIndex+111, SMap.realSurf(buildIndex+2));
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+112,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+2),
+				  jbLength+jbWallThick*2);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+113,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+103),
+				  -jbWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+104),
+				  jbWallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
+  				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
+  				  -jbWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+116,
+  				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
+ 				  jbWallThick);
+
   return;
 }
 
@@ -226,6 +264,17 @@ YagScreen::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
   addOuterSurf(Out);
+
+  // electronics junction box
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  makeCell("JBVoid",System,cellIndex++,jbMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+  				 " 111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106) ");
+  makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
+
+   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
+   addOuterUnionSurf(Out);
 
   return;
 }

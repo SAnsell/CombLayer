@@ -45,6 +45,8 @@ class YagScreen : public attachSystem::ContainedComp,
   double jbWidth;               ///< electronics junction box width
   double jbHeight;              ///< electronics junction box height
   double jbWallThick;           ///< electronics junction box wall thickness
+  int    jbWallMat;             ///< electronics junction box wall material
+  int    jbMat;                 ///< electronics junction box cable/inside material
 
   double ffLength;              ///< linear pneumatics feedthrough length
   double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius

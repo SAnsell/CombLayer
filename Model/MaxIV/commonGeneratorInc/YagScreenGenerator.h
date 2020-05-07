@@ -43,7 +43,8 @@ class YagScreenGenerator
   double jbWidth;               ///< electronics junction box width
   double jbHeight;              ///< electronics junction box height
   double jbWallThick;           ///< electronics junction box wall thickness
-  std::string jbMat;            ///< electronics junction box material
+  std::string jbWallMat;        ///< electronics junction box material
+  std::string jbMat;            ///< electronics junction box cable/inside material
 
   double ffLength;              ///< linear pneumatics feedthrough length
   double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
