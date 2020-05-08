@@ -224,29 +224,30 @@ linac2SPFsegment15(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,30.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,22.0); // measured
 
   // Mirror chamber
   std::string name=lKey+"MirrorChamber";
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setCF<setVariable::CF40_22>(10.0); // 10 is ummy since we set up all port lenght later
   PItemGen.setNoPlate();
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  SimpleTubeGen.setFlangeCap(setVariable::CF63::flangeLength,setVariable::CF63::flangeLength);
+  SimpleTubeGen.generateTube(Control,name,0.0,22.6); // measured but wrong - it's top/bottom asymmetric and the lower part does not have flange
   Control.addVariable(name+"NPorts",4);
 
   const Geometry::Vec3D OPos(0,0.0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
   const Geometry::Vec3D XVec(1,0,0);
 
-  PItemGen.setLength(3.0);
+  PItemGen.setLength(2.2); // measured
   PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
-  PItemGen.setLength(10.0);
+  PItemGen.setLength(4.6); // measured
   PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
-  PItemGen.setLength(3.0);
+  PItemGen.setLength(2.25); // measured
   PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
-  PItemGen.setLength(10.0);
+  PItemGen.setLength(2.25); // measured
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   // Ion pump
