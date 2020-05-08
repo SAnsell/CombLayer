@@ -27,17 +27,6 @@ namespace constructSystem
   class GateValveCube;
 }
 
-
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
-
 namespace tdcSystem
 {
   class DipoleDIBMag;
@@ -50,19 +39,9 @@ namespace tdcSystem
   */
 
 class L2SPFsegment14 :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public TDCsegment
 {
  private:
-
-  /// System for building a divided inner
-  attachSystem::InnerZone buildZone;
-
-  double outerLeft;         ///< left for inner void
-  double outerRight;        ///< right for inner void
-  double outerHeight;       ///< lift from origin for inner void
 
   std::shared_ptr<constructSystem::Bellows> bellowA;   ///< First bellow
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dm1
@@ -73,8 +52,6 @@ class L2SPFsegment14 :
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   std::shared_ptr<constructSystem::Bellows> bellowB;   ///< Last bellow
 
-  void populate(const FuncDataBase&);
-  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
 
@@ -85,7 +62,7 @@ class L2SPFsegment14 :
   L2SPFsegment14& operator=(const L2SPFsegment14&);
   ~L2SPFsegment14();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

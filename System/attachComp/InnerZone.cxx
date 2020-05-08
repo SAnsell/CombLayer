@@ -249,6 +249,17 @@ InnerZone::setMiddle(const HeadRule& HR)
 }
 
 void
+InnerZone::setInsertCells(const std::vector<int>& CN)
+  /*!
+    Set the insert cells
+    \param CN :: List of cells to set for insert
+   */
+{
+  insertCN=CN;
+  return;
+}
+
+void
 InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
 				  const int surfID,
 				  const attachSystem::FixedComp& FC,
@@ -690,55 +701,72 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
   return;
 }
 
+MonteCarlo::Object*
+InnerZone::constructMasterCell(Simulation& System,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
+ /*!
+    Construct outer void object 
+    \param System :: Simulation
+    \param FC :: FixedComp for front surf
+    \param sideIndex :: link point for front
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC,FC,int)");
 
- 
+  frontHR= FC.getFullRule(sideIndex);
+  return constructMasterCell(System);
+}
+
+MonteCarlo::Object*
+InnerZone::constructMasterCell(Simulation& System,
+			       const attachSystem::FixedComp& FC,
+			       const std::string& sideName)
+ /*!
+    Construct outer void object 
+    \param System :: Simulation
+    \param FC :: FixedComp for front surf
+    \param sideName :: link point for front
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC,FC,string)");
+
+  frontHR= FC.getFullRule(sideName);
+  return constructMasterCell(System);
+}
+
+
 MonteCarlo::Object*
 InnerZone::constructMasterCell(Simulation& System)
  /*!
-    Construct outer void object 
+    Construct outer void object main pipe
     \param System :: Simulation
     \return cell object
   */
 {
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
-  std::string Out;
-  Out+=extraHR.display()+surroundHR.display()
-    + backHR.display()+ frontHR.display();
+  HeadRule MCell(extraHR*surroundHR*backHR*frontHR);
   
-  CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
+  CellPtr->makeCell("MasterVoid",System,
+		    cellIndex++,voidMat,0.0,MCell.display());  
   masterCell= System.findObject(cellIndex-1);
-
-  return masterCell;
-}
-
-MonteCarlo::Object*
-InnerZone::constructMasterCell(Simulation& System,
-			       const attachSystem::ContainedComp& CC)
- /*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \param CC :: Contained Comp
-    \return cell object
-  */
-{
-  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC)");
- 
-  masterCell=constructMasterCell(System);
-
+  MCell.makeComplement();
+  
   // get and RECORD external cells:
   insertCells.clear();
-  const std::vector<int>& cells=CC.getInsertCells();
-  for(const int CN : cells)
+  for(const int CN : insertCN)
     {
-      const MonteCarlo::Object* cellObj=System.findObject(CN);
+      MonteCarlo::Object* cellObj=System.findObject(CN);
       if (!cellObj)
 	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
       cellObj->getHeadRule();
       insertCells.emplace(CN,cellObj->getHeadRule());
+      cellObj->addIntersection(MCell);
     }
 
-  CC.insertExternalObject(System,*masterCell);
   return masterCell;
 }
 
@@ -766,7 +794,6 @@ InnerZone::removeLastMaster(Simulation& System)
     }
   System.removeCell(masterCell->getName());
   masterCell=0;
-  
   
   return;
 }

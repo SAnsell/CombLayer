@@ -147,7 +147,9 @@ class Object
   void createLogicOpp();
   int isObjSurfValid() const { return objSurfValid; }  ///< Check validity needed
   void setObjSurfValid()  { objSurfValid=1; }          ///< set as valid
-  int addSurfString(const std::string&);   
+  int addSurfString(const std::string&);
+  void addUnion(const HeadRule&);
+  void addIntersection(const HeadRule&);
   int removeSurface(const int);        
   int substituteSurf(const int,const int,Geometry::Surface*);  
   void makeComplement();

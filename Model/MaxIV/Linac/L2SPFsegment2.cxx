@@ -166,7 +166,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*this);
+    masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,QuadA);

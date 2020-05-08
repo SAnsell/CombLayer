@@ -77,6 +77,9 @@ namespace linacVar
   void linac2SPFsegment14(FuncDataBase&,const std::string&);
   void linac2SPFsegment15(FuncDataBase&,const std::string&);
 
+  const double zeroX(152.0);   // coordiated offset to master
+  const double zeroY(81.0);    // drawing README.pdf
+  
 void
 linac2SPFsegment2(FuncDataBase& Control,
 		   const std::string& lKey)
@@ -96,8 +99,8 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::CylGateTubeGenerator CGateGen;
 
-  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",395.2);   // if segment 1 not built
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -156,7 +159,8 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
     
-  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",linacVar::zeroY);   // exactly 1m from wall.
   
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -224,8 +228,8 @@ linac2SPFsegment14(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
 
   // number form drawing
-  Control.addVariable(lKey+"XStep",-622.286+128.0);   // include 1m offset
-  Control.addVariable(lKey+"YStep",4226.013);        // 
+  Control.addVariable(lKey+"XStep",-622.286+linacVar::zeroX);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        // 
   Control.addVariable(lKey+"XYAngle",0.0);   // this should be 3.1183 deg
     
   BellowGen.setCF<setVariable::CF40_22>();
@@ -276,9 +280,10 @@ linac2SPFsegment15(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
 
-  Control.addVariable(lKey+"OuterLeft",80.0);
-  Control.addVariable(lKey+"OuterRight",140.0);
-  Control.addVariable(lKey+"OuterHeight",100.0);
+    // number form drawing
+  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        // 
+  Control.addVariable(lKey+"XYAngle",0.0);  
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -412,13 +417,14 @@ LINACvariables(FuncDataBase& Control)
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
-  Control.addVariable("TDCl2spfXStep",128.0);   // exactly 1m from wall.
+  Control.addVariable("TDCl2spfXStep",linacVar::zeroX);
+  Control.addVariable("TDCl2spfYStep",linacVar::zeroY); 
   Control.addVariable("TDCl2spfOuterLeft",80.0);
   Control.addVariable("TDCl2spfOuterRight",140.0);
   Control.addVariable("TDCl2spfOuterTop",100.0);
 
-  Control.addVariable("TDCtdcXStep",-622.286+128.0);   // exactly 1m from wall.
-  Control.addVariable("TDCtdcYStep",4226.013);   // exactly 1m from wall.
+  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);   
+  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);   
   Control.addVariable("TDCtdcOuterLeft",100.0);
   Control.addVariable("TDCtdcOuterRight",100.0);
   Control.addVariable("TDCtdcOuterTop",100.0);

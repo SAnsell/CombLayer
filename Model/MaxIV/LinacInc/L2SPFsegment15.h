@@ -22,16 +22,6 @@
 #ifndef tdcSystem_L2SPFsegment15_h
 #define tdcSystem_L2SPFsegment15_h
 
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
-
 namespace tdcSystem
 {
   /*!
@@ -43,27 +33,15 @@ namespace tdcSystem
   */
 
 class L2SPFsegment15 :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public TDCsegment
 {
  private:
-
-  /// System for building a divided inner
-  attachSystem::InnerZone buildZone;
-
-  double outerLeft;         ///< left for inner void
-  double outerRight;        ///< right for inner void
-  double outerHeight;       ///< lift from origin for inner void
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
   std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
   std::shared_ptr<constructSystem::PipeTube> ionPump;       ///< #4 Ion pump 75l cf63
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
-  void populate(const FuncDataBase&);
-  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
 
@@ -74,7 +52,7 @@ class L2SPFsegment15 :
   L2SPFsegment15& operator=(const L2SPFsegment15&);
   ~L2SPFsegment15();
 
-
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -639,8 +639,9 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
+  buildZone.setInsertCells(this->getInsertCells());
   MonteCarlo::Object* masterCellA=
-    buildZone.constructMasterCell(System,*this);
+    buildZone.constructMasterCell(System);
 
   // dummy space for first item
   // This is a mess but want to preserve insert items already

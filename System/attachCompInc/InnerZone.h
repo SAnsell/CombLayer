@@ -56,6 +56,7 @@ class InnerZone
   attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp for object
   attachSystem::CellMap* CellPtr;      ///< Pointer to cell map 
 
+  std::vector<int> insertCN;            ///< InsertCell numbers
   std::map<int,HeadRule> insertCells;   ///< InsertCell BEFORE insertion
   
   HeadRule extraHR;
@@ -174,9 +175,17 @@ class InnerZone
 		     const HeadRule&,
 		     const HeadRule&) const;
 
+  void setInsertCells(const std::vector<int>&);
+  
   MonteCarlo::Object* constructMasterCell(Simulation&);
-  MonteCarlo::Object* constructMasterCell(Simulation&,const ContainedComp&);
-
+  MonteCarlo::Object* constructMasterCell(Simulation&,
+					  const attachSystem::FixedComp&,
+					  const long int);
+  MonteCarlo::Object* constructMasterCell(Simulation&,
+					  const attachSystem::FixedComp&,
+					  const std::string&);
+  
+  
   void removeLastMaster(Simulation&);
   
   /// accessor to local master cell

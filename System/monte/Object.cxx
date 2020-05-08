@@ -478,6 +478,42 @@ Object::rePopulate()
   return;
 }
 
+void
+Object::addIntersection(const HeadRule& HR)
+  /*!
+    Adds a HR as an intersection
+    \param HR :: headrule to add
+  */
+{
+  ELog::RegMethod RegA("Object","addIntersection");
+  
+  const double Temp=Tmp;                   // need to set later
+
+  HRule.addIntersection(HR);
+  
+  populated=0;
+  objSurfValid=0;
+  return;
+}
+
+void
+Object::addUnion(const HeadRule& HR)
+  /*!
+    Adds a HR as an union
+    \param HR :: headrule to add
+  */
+{
+  ELog::RegMethod RegA("Object","addIntersection");
+  
+  const double Temp=Tmp;                   // need to set later
+
+  HRule.addUnion(HR);
+  
+  populated=0;
+  objSurfValid=0;
+  return;
+}
+
 int
 Object::addSurfString(const std::string& XE)
   /*!
