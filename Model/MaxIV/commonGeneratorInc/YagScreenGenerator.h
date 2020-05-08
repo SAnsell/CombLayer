@@ -60,6 +60,11 @@ class YagScreenGenerator
   double mirrorThick;           ///< quartz mirror thickness
   std::string mirrorMat;        ///< mirror material
 
+  double screenRadius;          ///< screen radius
+  double screenHolderRadius;    ///< screen holder outer radius
+  double screenHolderThick;    ///< screen holder thickness
+  std::string screenHolderMat;       ///< screen holder material
+
   std::string voidMat;          ///< void material
   bool closed;                  ///< screen and mirror are in the beam
 

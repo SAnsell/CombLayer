@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Mirror", "Holder", "Body"),
+  attachSystem::ContainedGroup("Screen", "Mirror", "Holder", "Body"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   screenCentreActive(false),
@@ -98,6 +98,10 @@ YagScreen::YagScreen(const YagScreen& A) :
   mirrorAngle(A.mirrorAngle),
   mirrorThick(A.mirrorThick),
   mirrorMat(A.mirrorMat),
+  screenRadius(A.screenRadius),
+  screenHolderRadius(A.screenHolderRadius),
+  screenHolderThick(A.screenHolderThick),
+  screenHolderMat(A.screenHolderMat),
   screenCentreActive(A.screenCentreActive),
   screenCentre(A.screenCentre),
   voidMat(A.voidMat)
@@ -139,6 +143,10 @@ YagScreen::operator=(const YagScreen& A)
       mirrorAngle=A.mirrorAngle;
       mirrorThick=A.mirrorThick;
       mirrorMat=A.mirrorMat;
+      screenRadius=A.screenRadius;
+      screenHolderRadius=A.screenHolderRadius;
+      screenHolderThick=A.screenHolderThick;
+      screenHolderMat=A.screenHolderMat;
       screenCentreActive=A.screenCentreActive;
       screenCentre=A.screenCentre;
       voidMat=A.voidMat;
@@ -213,6 +221,10 @@ YagScreen::populate(const FuncDataBase& Control)
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
+  screenHolderRadius=Control.EvalVar<double>(keyName+"ScreenHolderRadius");
+  screenHolderThick=Control.EvalVar<double>(keyName+"ScreenHolderThick");
+  screenHolderMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenHolderMat");
   screenCentreActive=Control.EvalDefVar<int>(keyName+"ScreenCentreActive",
    					     screenCentreActive);
 
@@ -295,7 +307,7 @@ YagScreen::createSurfaces()
   				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
  				  jbWallThick);
 
-  // screen holder
+  // screen+mirror holder
   ModelSupport::buildShiftedPlane(SMap,buildIndex+201,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
 				  -holderZStep);
@@ -320,6 +332,15 @@ YagScreen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+307,
 			      or307,
 			      MVec,mirrorRadius);
+
+  // screen
+  const double dx(mirrorThick); // just some arbitrary distance from the mirror
+  ModelSupport::buildPlane(SMap,buildIndex+403,Origin+X*(dx),X);
+  ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(dx+screenHolderThick),X);
+
+  const Geometry::Vec3D vScreen(or307.X(),Origin.Y(),Origin.Z());
+  ModelSupport::buildCylinder(SMap,buildIndex+407,vScreen,X,screenRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+408,vScreen,X,screenHolderRadius);
 
   return;
 }
@@ -372,6 +393,16 @@ YagScreen::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
   makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
   addOuterSurf("Mirror",Out);
+
+  // screen
+  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
+  makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
+  makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -408 ");
+  addOuterSurf("Screen",Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
   addOuterUnionSurf("Body",Out);

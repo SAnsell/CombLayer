@@ -225,6 +225,7 @@ L2SPFsegment15::buildObjects(Simulation& System)
   yagScreen->addInsertCell("Body",outerCell);
   yagScreen->addInsertCell("Holder",ionPump->getCell("Void"));
   yagScreen->addInsertCell("Mirror",ionPump->getCell("Void"));
+  yagScreen->addInsertCell("Screen",ionPump->getCell("Void"));
 
   yagScreen->setScreenCentre(*ionPump,0);
 

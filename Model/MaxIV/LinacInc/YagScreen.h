@@ -63,6 +63,12 @@ class YagScreen : public attachSystem::ContainedGroup,
   double mirrorThick;           ///< quartz mirror thickness
   int    mirrorMat;             ///< mirror  material
 
+  double screenRadius;          ///< screen radius
+  double screenHolderRadius;    ///< screen holder outer radius
+
+  double screenHolderThick;    ///< screen holder thickness
+  int    screenHolderMat;       ///< screen holder material
+
   bool screenCentreActive;      ///< flag to use screen centre
   /// Norminal point to get screen centre from [over-writes holderLift]
   Geometry::Vec3D screenCentre;
