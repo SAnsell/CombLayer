@@ -54,7 +54,7 @@ YagScreenGenerator::YagScreenGenerator() :
   jbLength(11.5),jbWidth(8.0),jbHeight(8.0),
   jbWallThick(0.3),
   jbWallMat("Aluminium"),
-  jbMat("StbTCABL"),
+  jbMat("StbTCABL%Void%50"), // guess
   ffLength(19.5),
   ffInnerRadius(0.95),
   ffWallThick(0.95),
@@ -62,10 +62,10 @@ YagScreenGenerator::YagScreenGenerator() :
   ffFlangeRadius(3.5),
   ffWallMat("Stainless304L"),
   holderLift(7.0),
-  holderRad(ffInnerRadius*0.9),
+  holderRad(ffInnerRadius*0.7), // guess
   holderMat("Aluminium"),
   mirrorRadius(1.75),
-  mirrorAngle(45.0),
+  mirrorAngle(-45.0),
   mirrorThick(0.5),
   mirrorMat("SiO2"),
   voidMat("Void"),

@@ -63,8 +63,14 @@ class YagScreen : public attachSystem::ContainedGroup,
   double mirrorThick;           ///< quartz mirror thickness
   int    mirrorMat;             ///< mirror  material
 
+  bool screenCentreActive;      ///< flag to use screen centre
+  /// Norminal point to get screen centre from [over-writes holderLift]
+  Geometry::Vec3D screenCentre;
+
   int    voidMat;               ///< void material
   bool   closed;                ///< screen and mirror are in the beam
+
+  void calcHolderLength();
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -82,6 +88,7 @@ class YagScreen : public attachSystem::ContainedGroup,
   virtual YagScreen* clone() const;
   virtual ~YagScreen();
 
+  void setScreenCentre(const attachSystem::FixedComp&,const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

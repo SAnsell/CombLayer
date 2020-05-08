@@ -69,6 +69,7 @@ YagScreen::YagScreen(const std::string& Key)  :
   attachSystem::ContainedGroup("Mirror", "Holder", "Body"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
+  screenCentreActive(false),
   closed(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -97,6 +98,8 @@ YagScreen::YagScreen(const YagScreen& A) :
   mirrorAngle(A.mirrorAngle),
   mirrorThick(A.mirrorThick),
   mirrorMat(A.mirrorMat),
+  screenCentreActive(A.screenCentreActive),
+  screenCentre(A.screenCentre),
   voidMat(A.voidMat)
   /*!
     Copy constructor
@@ -136,6 +139,8 @@ YagScreen::operator=(const YagScreen& A)
       mirrorAngle=A.mirrorAngle;
       mirrorThick=A.mirrorThick;
       mirrorMat=A.mirrorMat;
+      screenCentreActive=A.screenCentreActive;
+      screenCentre=A.screenCentre;
       voidMat=A.voidMat;
     }
   return *this;
@@ -156,6 +161,26 @@ YagScreen::~YagScreen()
     Destructor
   */
 {}
+
+void
+YagScreen::calcHolderLength()
+  /*!
+    Internal function to calculate screen holder lift based
+    on the screenCentre point [if set]
+  */
+{
+  ELog::RegMethod RegA("YagScreen","calcHolderLength");
+
+  if (screenCentreActive)
+    {
+      const Geometry::Vec3D DVec=screenCentre-Origin;
+      holderLift=std::abs(DVec.dotProd(Y));
+      holderLift -= mirrorRadius*cos(mirrorAngle*M_PI/180.0);
+    }
+
+  return;
+}
+
 
 void
 YagScreen::populate(const FuncDataBase& Control)
@@ -188,6 +213,8 @@ YagScreen::populate(const FuncDataBase& Control)
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  screenCentreActive=Control.EvalDefVar<int>(keyName+"ScreenCentreActive",
+   					     screenCentreActive);
 
   if (holderRad>=ffInnerRadius)
     throw ColErr::RangeError<double>(holderRad,0,ffInnerRadius,
@@ -383,6 +410,23 @@ YagScreen::createLinks()
 }
 
 void
+YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
+			   const long int sIndex)
+  /*!
+    Set the screen centre
+    \param FC :: FixedComp to use
+    \param BIndex :: Link point index
+  */
+{
+  ELog::RegMethod RegA("YagScreen","setScreenCentre");
+
+  screenCentreActive=1;
+  screenCentre=FC.getLinkPt(sIndex);
+
+  return;
+}
+
+void
 YagScreen::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
@@ -397,6 +441,7 @@ YagScreen::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  calcHolderLength();
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -226,6 +226,8 @@ L2SPFsegment15::buildObjects(Simulation& System)
   yagScreen->addInsertCell("Holder",ionPump->getCell("Void"));
   yagScreen->addInsertCell("Mirror",ionPump->getCell("Void"));
 
+  yagScreen->setScreenCentre(*ionPump,0);
+
   // 1 does not work, but side can be changed with signs of
   // XVec in the Port[12] variables
   yagScreen->createAll(System,*ionPump, 2);
