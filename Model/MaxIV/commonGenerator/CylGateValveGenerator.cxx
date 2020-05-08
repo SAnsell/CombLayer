@@ -78,21 +78,43 @@ CylGateValveGenerator::~CylGateValveGenerator()
    Destructor
  */
 {}
-				  
+
+void
+CylGateValveGenerator::generateFlat(FuncDataBase& Control,
+				    const std::string& keyName,
+				    const bool leftSide,
+				    const bool closedFlag) const
+  /*!
+    Build the get in the horrizontal direction
+    \param Control :: DataBase
+    \param leftSide :: flag to imply left [true] or right [false]
+    \param closedFlag :: true if item closed and false forwithdrawn
+   */
+{
+  ELog::RegMethod RegA("CylGateValveGenerator","generateFlat");
+
+  if (leftSide)
+    Control.addVariable(keyName+"YAngle",-90.0);
+  else
+    Control.addVariable(keyName+"YAngle",90.0);
+
+  generateGate(Control,keyName,closedFlag);
+  return;
+}
+  
 void
 CylGateValveGenerator::generateGate(FuncDataBase& Control,
-				   const std::string& keyName,
-				   const bool closedFlag) const
+				    const std::string& keyName,
+				    const bool closedFlag) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param upFlag :: true if item open/withdrawn
+    \param closedFlag :: true if item closed and false forwithdrawn
   */
 {
-  ELog::RegMethod RegA("CylGateValveGenerator","generatorGate");
+  ELog::RegMethod RegA("CylGateValveGenerator","generateGate");
 
-    ELog::EM<<"Depth == "<<depth<<ELog::endDiag;
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);

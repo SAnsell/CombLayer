@@ -93,7 +93,8 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(nullptr)
+  buildZone(nullptr),
+  frontFlag(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -107,7 +108,16 @@ TDCsegment::~TDCsegment()
    */
 {}
 
-
+void
+TDCsegment::setFrontSurf(const HeadRule& HR)
+  /*!
+    Set the front surface rule
+    \param HR :: Head rule to use
+   */
+{
+  frontFlag=1;
+  frontRule=HR;
+}
 
 
 }   // NAMESPACE tdcSystem

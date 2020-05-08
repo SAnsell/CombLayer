@@ -77,6 +77,8 @@ class CylGateValveGenerator
   CylGateValveGenerator& operator=(const CylGateValveGenerator&);
   ~CylGateValveGenerator();
 
+  void generateFlat(FuncDataBase&,const std::string&,
+		    const bool,const bool) const;
   void generateGate(FuncDataBase&,const std::string&,
 		    const bool) const;
 
