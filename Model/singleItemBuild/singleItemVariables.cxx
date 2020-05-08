@@ -74,6 +74,7 @@
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "YagScreenGenerator.h"
 
 namespace setVariable
 {
@@ -228,9 +229,12 @@ SingleItemVariables(FuncDataBase& Control)
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
-  setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF25>();
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
+
+  setVariable::YagScreenGenerator YagGen;
+  YagGen.generate(Control,"YAG");
+  Control.addVariable("YAGClosed",1);
 
   return;
 }

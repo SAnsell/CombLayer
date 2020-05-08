@@ -109,6 +109,7 @@
 #include "MagnetBlock.h"
 
 #include "DipoleDIBMag.h"
+#include "YagScreen.h"
 
 #include "makeSingleItem.h"
 
@@ -141,15 +142,27 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
+  std::shared_ptr<tdcSystem::YagScreen>
+    YAG(new tdcSystem::YagScreen("YAG"));
+  OR.addObject(YAG);
+
+  YAG->addInsertCell("Body",voidCell);
+  YAG->addInsertCell("Thread",voidCell);
+  YAG->addInsertCell("Mirror",voidCell);
+  YAG->addInsertCell("Screen",voidCell);
+
+  YAG->createAll(System,World::masterOrigin(),0);
+
+  return;
+
   std::shared_ptr<constructSystem::VacuumPipe>
     VC(new constructSystem::VacuumPipe("VC"));
-  std::shared_ptr<xraySystem::DipoleDIBMag>
-    DIB(new xraySystem::DipoleDIBMag("DIB"));
+  std::shared_ptr<tdcSystem::DipoleDIBMag>
+    DIB(new tdcSystem::DipoleDIBMag("DIB"));
 
   OR.addObject(VC);
   OR.addObject(DIB);
@@ -163,8 +176,8 @@ makeSingleItem::build(Simulation& System,
 
   return;
 
-  std::shared_ptr<xraySystem::CorrectorMag>
-    CM(new xraySystem::CorrectorMag("CM","CM"));
+  std::shared_ptr<tdcSystem::CorrectorMag>
+    CM(new tdcSystem::CorrectorMag("CM","CM"));
 
   OR.addObject(VC);
   OR.addObject(CM);

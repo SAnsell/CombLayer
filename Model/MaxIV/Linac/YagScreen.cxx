@@ -334,8 +334,7 @@ YagScreen::createSurfaces()
 			      MVec,mirrorRadius);
 
   // screen
-  const Geometry::Vec3D vScreen(or307.X(),Origin.Y(),Origin.Z());
-  ModelSupport::buildPlane(SMap,buildIndex+401,vScreen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+401,or307,Y);
   const double dx(mirrorThick); // just some arbitrary distance from the mirror
   ModelSupport::buildPlane(SMap,buildIndex+403,Origin+X*(dx),X);
   ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(dx+screenHolderThick),X);
@@ -343,8 +342,8 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*(screenHolderRadius),Z);
   ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*(screenHolderRadius),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+407,vScreen,X,screenRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+408,vScreen,X,screenHolderRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+407,or307,X,screenRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+408,or307,X,screenHolderRadius);
 
   return;
 }
@@ -435,24 +434,6 @@ YagScreen::createLinks()
   */
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
-
-  FixedComp::setConnect(0,Origin-Y*(jbLength/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-
-  FixedComp::setConnect(1,Origin+Y*(jbLength/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
-  FixedComp::setConnect(2,Origin-X*(jbWidth/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-  FixedComp::setConnect(3,Origin+X*(jbWidth/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-  FixedComp::setConnect(4,Origin-Z*(jbHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(jbHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }
