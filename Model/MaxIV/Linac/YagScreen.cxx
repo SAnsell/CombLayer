@@ -275,21 +275,21 @@ YagScreen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,holderRad);
 
   // mirror
-  Geometry::Vec3D MVec(Z);
-  Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(mirrorAngle,X);
+  Geometry::Vec3D MVec(X);
+  const Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(mirrorAngle,Z);
   QV.rotate(MVec);
 
-  double c = cos(mirrorAngle*M_PI/180.0);
+  const double c = cos(mirrorAngle*M_PI/180.0);
 
-  const Geometry::Vec3D or305(Origin-Z*(mirrorThick/2.0/c)-Y*(holderZStep));
-  ModelSupport::buildPlane(SMap,buildIndex+305,or305,MVec);
+  const Geometry::Vec3D or303(Origin-X*(mirrorThick/2.0/c)-Y*(holderZStep));
+  ModelSupport::buildPlane(SMap,buildIndex+303,or303,MVec);
 
-  const Geometry::Vec3D or306(Origin+Z*(mirrorThick/2.0/c)-Y*(holderZStep));
-  ModelSupport::buildPlane(SMap,buildIndex+306,or306,MVec);
+  const Geometry::Vec3D or304(Origin+X*(mirrorThick/2.0/c)-Y*(holderZStep));
+  ModelSupport::buildPlane(SMap,buildIndex+304,or304,MVec);
 
   // tmp is intersect of mirror cylinder and holder
-  const Geometry::Vec3D tmp = mirrorAngle > 0.0 ? or305 : or306;
-  const Geometry::Vec3D or307(tmp-MVec*X*mirrorRadius+MVec*mirrorThick/2.0);
+  const Geometry::Vec3D tmp = mirrorAngle < 0.0 ? or303 : or304;
+  const Geometry::Vec3D or307(tmp+MVec*Z*mirrorRadius+MVec*mirrorThick/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+307,
 			      or307,
 			      MVec,mirrorRadius);
@@ -342,7 +342,7 @@ YagScreen::createObjects(Simulation& System)
   addOuterSurf("Holder",Out);
 
   // mirror
-  Out=ModelSupport::getComposite(SMap,buildIndex," 305 -306 -307 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
   makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
   addOuterSurf("Mirror",Out);
 
