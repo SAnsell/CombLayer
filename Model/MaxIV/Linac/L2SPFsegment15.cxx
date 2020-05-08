@@ -91,7 +91,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
   ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YAG")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -231,7 +231,6 @@ L2SPFsegment15::buildObjects(Simulation& System)
   // 1 does not work, but side can be changed with signs of
   // XVec in the Port[12] variables
   yagScreen->createAll(System,*ionPump, 2);
-  return;
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);

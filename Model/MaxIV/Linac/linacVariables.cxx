@@ -273,7 +273,7 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
 
   //YagGen.setCF<CF40_22>();
-  YagGen.generate(Control,lKey+"YagScreen");
+  YagGen.generate(Control,lKey+"YAG");
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
 
