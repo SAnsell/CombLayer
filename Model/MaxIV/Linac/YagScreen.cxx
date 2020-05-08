@@ -385,24 +385,34 @@ YagScreen::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
-  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
-  addOuterSurf("Thread",Out);
+  // we need these cells only if the YAG is closed
+  // otherwise it just slows down geometry tracking
+  if (closed)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
+      makeCell("ThreadClosed",System,cellIndex++,threadMat,0.0,Out);
+      addOuterSurf("Thread",Out);
 
-  // mirror
-  Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
-  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
-  addOuterSurf("Mirror",Out);
+      // mirror
+      Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
+      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+      addOuterSurf("Mirror",Out);
 
-  // screen
-  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
-  makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
+      // screen
+      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
+      makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
-  makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
+      makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -408 ");
-  addOuterSurf("Screen",Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -408 ");
+      addOuterSurf("Screen",Out);
+    } else
+    {
+      addOuterSurf("Thread","");
+      addOuterSurf("Mirror","");
+      addOuterSurf("Screen","");
+    }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
   addOuterUnionSurf("Body",Out);
