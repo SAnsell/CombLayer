@@ -90,7 +90,7 @@
 #include "LQuad.h"
 #include "CorrectorMag.h"
 #include "BPM.h"
-#include "CylGateTube.h"
+#include "CylGateValve.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -110,7 +110,7 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
-  gateTube(new xraySystem::CylGateTube(keyName+"GateTube")),
+  gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   beamArrivalMon(new constructSystem::Bellows(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),

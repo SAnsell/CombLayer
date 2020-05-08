@@ -62,7 +62,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "BPMGenerator.h"
-#include "CylGateTubeGenerator.h"
+#include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 
 namespace setVariable
@@ -97,7 +97,7 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateTubeGenerator CGateGen;
+  setVariable::CylGateValveGenerator CGateGen;
 
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built

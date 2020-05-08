@@ -107,7 +107,7 @@
 #include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
-#include "CylGateTube.h"
+#include "CylGateValve.h"
 #include "DipoleDIBMag.h"
 
 #include "makeSingleItem.h"
@@ -142,7 +142,7 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateTube","CorrectorMag","LQuad",
+      "default","CylGateValve","CorrectorMag","LQuad",
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
@@ -162,10 +162,10 @@ makeSingleItem::build(Simulation& System,
       (item,"Item no a single component");
 
   ELog::EM<<"Conponent == "<<item<<ELog::endDiag;
-  if (item=="default" || item == "CylGateTube" )
+  if (item=="default" || item == "CylGateValve" )
     {
-      std::shared_ptr<xraySystem::CylGateTube>
-	GV(new xraySystem::CylGateTube("GV"));
+      std::shared_ptr<xraySystem::CylGateValve>
+	GV(new xraySystem::CylGateValve("GV"));
       
       OR.addObject(GV);
       

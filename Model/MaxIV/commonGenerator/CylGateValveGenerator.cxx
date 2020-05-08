@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CylGateTubeGenertor.cxx
+ * File:   commonBeam/CylGateValveGenertor.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,12 +52,12 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "CylGateTubeGenerator.h"
+#include "CylGateValveGenerator.h"
 
 namespace setVariable
 {
 
-CylGateTubeGenerator::CylGateTubeGenerator() :
+CylGateValveGenerator::CylGateValveGenerator() :
   radius(CF63::innerRadius),depth(7.8),height(10.0),
   wallThick(CF63::wallThick),portRadius(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),
@@ -73,14 +73,14 @@ CylGateTubeGenerator::CylGateTubeGenerator() :
   */
 {}
 
-CylGateTubeGenerator::~CylGateTubeGenerator() 
+CylGateValveGenerator::~CylGateValveGenerator() 
  /*!
    Destructor
  */
 {}
 				  
 void
-CylGateTubeGenerator::generateGate(FuncDataBase& Control,
+CylGateValveGenerator::generateGate(FuncDataBase& Control,
 				   const std::string& keyName,
 				   const bool closedFlag) const
   /*!
@@ -90,7 +90,7 @@ CylGateTubeGenerator::generateGate(FuncDataBase& Control,
     \param upFlag :: true if item open/withdrawn
   */
 {
-  ELog::RegMethod RegA("CylGateTubeGenerator","generatorGate");
+  ELog::RegMethod RegA("CylGateValveGenerator","generatorGate");
 
     ELog::EM<<"Depth == "<<depth<<ELog::endDiag;
 

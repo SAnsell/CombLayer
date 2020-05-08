@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/CylGateTubeGenerator.h
+ * File:   commonBeamInc/CylGateValve.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,27 +19,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_CylGateTubeGenerator_h
-#define setVariable_CylGateTubeGenerator_h
+#ifndef xraySystem_CylGateValve_h
+#define xraySystem_CylGateValve_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+namespace xraySystem
 {
-
+  
 /*!
-  \class CylGateTubeGenerator
+  \class CylGateValve
   \version 1.0
   \author S. Ansell
-  \date May 2016
-  \brief CylGateTubeGenerator for variables
+  \date January 2018
+  \brief CylGateValve unit  
 */
 
-class CylGateTubeGenerator
+class CylGateValve :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::ExternalCut
 {
  private:
-
-    double radius;                ///< Radius
+  
+  double radius;                ///< Radius
   double depth;                 ///< Void down depth
   double height;                ///< void lift height
 
@@ -61,24 +66,32 @@ class CylGateTubeGenerator
 
   double driveRadius;           ///< drive radius
   
+  bool closed;                  ///< Shutter closed
+
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
   
-  std::string voidMat;                  ///< Void material
-  std::string bladeMat;                 ///< blade material
-  std::string driveMat;                 ///< blade material
-  std::string wallMat;                  ///< Pipe material
-
+  int voidMat;                  ///< Void material
+  int bladeMat;                 ///< blade material
+  int driveMat;                 ///< blade material
+  int wallMat;                  ///< Pipe material
+  
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+  
  public:
 
-  CylGateTubeGenerator();
-  CylGateTubeGenerator(const CylGateTubeGenerator&);
-  CylGateTubeGenerator& operator=(const CylGateTubeGenerator&);
-  ~CylGateTubeGenerator();
+  CylGateValve(const std::string&);
+  CylGateValve(const CylGateValve&);
+  CylGateValve& operator=(const CylGateValve&);
+  virtual ~CylGateValve();
 
-  void generateGate(FuncDataBase&,const std::string&,
-		    const bool) const;
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

@@ -147,12 +147,9 @@ L2SPFsegment14::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
 
-
-
   pipeC->createAll(System,*pipeB,"back");
   pipeMagUnit(System,*buildZone,pipeC,"Origin",dm2);
   pipeTerminate(System,*buildZone,pipeC);
-
   
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeC,"back",*gateA);
