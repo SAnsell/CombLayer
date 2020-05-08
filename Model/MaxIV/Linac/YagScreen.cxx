@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Screen", "Mirror", "Holder", "Body"),
+  attachSystem::ContainedGroup("Screen", "Mirror", "Thread", "Body"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   screenCentreActive(false),
@@ -91,9 +91,9 @@ YagScreen::YagScreen(const YagScreen& A) :
   ffFlangeLen(A.ffFlangeLen),
   ffFlangeRadius(A.ffFlangeRadius),
   ffWallMat(A.ffWallMat),
-  holderLift(A.holderLift),
-  holderRad(A.holderRad),
-  holderMat(A.holderMat),
+  threadLift(A.threadLift),
+  threadRad(A.threadRad),
+  threadMat(A.threadMat),
   mirrorRadius(A.mirrorRadius),
   mirrorAngle(A.mirrorAngle),
   mirrorThick(A.mirrorThick),
@@ -136,9 +136,9 @@ YagScreen::operator=(const YagScreen& A)
       ffFlangeLen=A.ffFlangeLen;
       ffFlangeRadius=A.ffFlangeRadius;
       ffWallMat=A.ffWallMat;
-      holderLift=A.holderLift;
-      holderRad=A.holderRad;
-      holderMat=A.holderMat;
+      threadLift=A.threadLift;
+      threadRad=A.threadRad;
+      threadMat=A.threadMat;
       mirrorRadius=A.mirrorRadius;
       mirrorAngle=A.mirrorAngle;
       mirrorThick=A.mirrorThick;
@@ -171,19 +171,19 @@ YagScreen::~YagScreen()
 {}
 
 void
-YagScreen::calcHolderLength()
+YagScreen::calcThreadLength()
   /*!
-    Internal function to calculate screen holder lift based
+    Internal function to calculate screen thread lift based
     on the screenCentre point [if set]
   */
 {
-  ELog::RegMethod RegA("YagScreen","calcHolderLength");
+  ELog::RegMethod RegA("YagScreen","calcThreadLength");
 
   if (screenCentreActive)
     {
       const Geometry::Vec3D DVec=screenCentre-Origin;
-      holderLift=std::abs(DVec.dotProd(Y));
-      holderLift -= mirrorRadius*cos(mirrorAngle*M_PI/180.0);
+      threadLift=std::abs(DVec.dotProd(Y));
+      threadLift -= mirrorRadius*cos(mirrorAngle*M_PI/180.0);
     }
 
   return;
@@ -214,9 +214,9 @@ YagScreen::populate(const FuncDataBase& Control)
   ffFlangeLen=Control.EvalVar<double>(keyName+"FFFlangeLength");
   ffFlangeRadius=Control.EvalVar<double>(keyName+"FFFlangeRadius");
   ffWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FFWallMat");
-  holderLift=Control.EvalVar<double>(keyName+"HolderLift");
-  holderRad=Control.EvalVar<double>(keyName+"HolderRadius");
-  holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
+  threadLift=Control.EvalVar<double>(keyName+"ThreadLift");
+  threadRad=Control.EvalVar<double>(keyName+"ThreadRadius");
+  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
@@ -228,9 +228,9 @@ YagScreen::populate(const FuncDataBase& Control)
   screenCentreActive=Control.EvalDefVar<int>(keyName+"ScreenCentreActive",
    					     screenCentreActive);
 
-  if (holderRad>=ffInnerRadius)
-    throw ColErr::RangeError<double>(holderRad,0,ffInnerRadius,
-				     "HolderInnerRad >= FFFlangeRadius:");
+  if (threadRad>=ffInnerRadius)
+    throw ColErr::RangeError<double>(threadRad,0,ffInnerRadius,
+				     "ThreadRad >= FFInnerRadius:");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
@@ -264,7 +264,7 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
-  const double holderZStep(closed ? holderLift : 1.0);
+  const double threadZStep(closed ? threadLift : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -307,11 +307,11 @@ YagScreen::createSurfaces()
   				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
  				  jbWallThick);
 
-  // screen+mirror holder
+  // screen+mirror thread
   ModelSupport::buildShiftedPlane(SMap,buildIndex+201,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
-				  -holderZStep);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,holderRad);
+				  -threadZStep);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRad);
 
   // mirror
   Geometry::Vec3D MVec(X);
@@ -320,13 +320,13 @@ YagScreen::createSurfaces()
 
   const double c = cos(mirrorAngle*M_PI/180.0);
 
-  const Geometry::Vec3D or303(Origin-X*(mirrorThick/2.0/c)-Y*(holderZStep));
+  const Geometry::Vec3D or303(Origin-X*(mirrorThick/2.0/c)-Y*(threadZStep));
   ModelSupport::buildPlane(SMap,buildIndex+303,or303,MVec);
 
-  const Geometry::Vec3D or304(Origin+X*(mirrorThick/2.0/c)-Y*(holderZStep));
+  const Geometry::Vec3D or304(Origin+X*(mirrorThick/2.0/c)-Y*(threadZStep));
   ModelSupport::buildPlane(SMap,buildIndex+304,or304,MVec);
 
-  // tmp is intersect of mirror cylinder and holder
+  // tmp is intersect of mirror cylinder and thread
   const Geometry::Vec3D tmp = mirrorAngle < 0.0 ? or303 : or304;
   const Geometry::Vec3D or307(tmp+MVec*Z*mirrorRadius+MVec*mirrorThick/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+307,
@@ -381,13 +381,13 @@ YagScreen::createObjects(Simulation& System)
   				 " 111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106) ");
   makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
 
-  // mirror/screen holder
+  // mirror/screen thread
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
-  makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
-  makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
-  addOuterSurf("Holder",Out);
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
+  addOuterSurf("Thread",Out);
 
   // mirror
   Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
@@ -472,7 +472,7 @@ YagScreen::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  calcHolderLength();
+  calcThreadLength();
   createSurfaces();
   createObjects(System);
   createLinks();

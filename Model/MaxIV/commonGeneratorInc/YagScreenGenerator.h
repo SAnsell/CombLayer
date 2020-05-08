@@ -52,9 +52,9 @@ class YagScreenGenerator
   double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
   double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
   std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
-  double holderLift;            ///< screen holder lift inside vacuum system
-  double holderRad;             ///< screen holder inner radius
-  std::string holderMat;        ///< screen holder material
+  double threadLift;            ///< screen thread lift inside vacuum system
+  double threadRad;             ///< screen thread inner radius
+  std::string threadMat;        ///< screen thread material
   double mirrorRadius;          ///< quartz mirror radius
   double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness

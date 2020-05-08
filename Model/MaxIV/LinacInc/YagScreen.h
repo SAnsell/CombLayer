@@ -55,9 +55,9 @@ class YagScreen : public attachSystem::ContainedGroup,
   double ffFlangeRadius;        ///< linear pneumatics feedthrough flange radius
   int    ffWallMat;             ///< linear pneumatics feedthrough wall material
 
-  double holderLift;            ///< screen holder lift
-  double holderRad;             ///< screen holder inner radius
-  int    holderMat;             ///< screen holder material
+  double threadLift;            ///< screen thread lift
+  double threadRad;             ///< screen thread inner radius
+  int    threadMat;             ///< screen thread material
   double mirrorRadius;          ///< quartz mirror radius
   double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness
@@ -76,7 +76,7 @@ class YagScreen : public attachSystem::ContainedGroup,
   int    voidMat;               ///< void material
   bool   closed;                ///< screen and mirror are in the beam
 
-  void calcHolderLength();
+  void calcThreadLength();
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

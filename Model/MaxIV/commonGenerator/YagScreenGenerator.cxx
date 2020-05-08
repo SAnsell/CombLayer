@@ -61,11 +61,11 @@ YagScreenGenerator::YagScreenGenerator() :
   ffFlangeLen(1.2),
   ffFlangeRadius(3.5),
   ffWallMat("Stainless304L"),
-  holderLift(7.0),
-  holderRad(ffInnerRadius*0.7), // guess
-  holderMat("Aluminium"),
+  threadLift(7.0),
+  threadRad(ffInnerRadius*0.7), // guess
+  threadMat("Aluminium"),
   mirrorRadius(1.75),
-  mirrorAngle(45.0),
+  mirrorAngle(-45.0),
   mirrorThick(0.5),
   mirrorMat("SiO2"),
   screenRadius(0.9), // yag-drawings.pdf, drawing #201375,
@@ -134,9 +134,9 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FFFlangeLength",ffFlangeLen);
   Control.addVariable(keyName+"FFFlangeRadius",ffFlangeRadius);
   Control.addVariable(keyName+"FFWallMat",ffWallMat);
-  Control.addVariable(keyName+"HolderLift",holderLift);
-  Control.addVariable(keyName+"HolderRadius",holderRad);
-  Control.addVariable(keyName+"HolderMat",holderMat);
+  Control.addVariable(keyName+"ThreadLift",threadLift);
+  Control.addVariable(keyName+"ThreadRadius",threadRad);
+  Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"MirrorRadius",mirrorRadius);
   Control.addVariable(keyName+"MirrorAngle",mirrorAngle);
   Control.addVariable(keyName+"MirrorThick",mirrorThick);
