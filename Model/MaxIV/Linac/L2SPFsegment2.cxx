@@ -169,7 +169,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,QuadA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
@@ -179,7 +179,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
 
   pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,QuadB);
+  pipeMagUnit(System,*buildZone,pipeB,"#front",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit

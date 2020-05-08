@@ -42,7 +42,8 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-
+  class CorrectorMag;
+  
 int
 pipeTerminate(Simulation&,
 	      attachSystem::InnerZone& buildZone,
@@ -61,6 +62,7 @@ int
 pipeMagUnit(Simulation&,
 	    attachSystem::InnerZone& buildZone,
 	    const std::shared_ptr<constructSystem::VacuumPipe>&,
+	    const std::string&,
 	    const std::shared_ptr<magTYPE>&);
 
 }

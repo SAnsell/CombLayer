@@ -82,6 +82,7 @@
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
 #include "LQuad.h"
+#include "DipoleDIBMag.h"
 
 namespace tdcSystem
 {
@@ -132,9 +133,10 @@ correctorMagnetPair(Simulation& System,
 template<typename MagTYPE>
 int
 pipeMagUnit(Simulation& System,
-		 attachSystem::InnerZone& buildZone,
-		 const std::shared_ptr<constructSystem::VacuumPipe>& pipe,
-		 const std::shared_ptr<MagTYPE>& magUnit)
+	    attachSystem::InnerZone& buildZone,
+	    const std::shared_ptr<constructSystem::VacuumPipe>& pipe,
+	    const std::string& linkName,
+	    const std::shared_ptr<MagTYPE>& magUnit)
   /*!
     Given a pipe build magnet unit round it and then 
     correctly do the InnerZone splitting.
@@ -150,9 +152,10 @@ pipeMagUnit(Simulation& System,
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
   magUnit->setCutSurf("Inner",*pipe,"outerPipe");
-  magUnit->createAll(System,*pipe,"#front");
+  magUnit->createAll(System,*pipe,linkName);
 
-  int outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,-1);
+  int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,*magUnit,-1);
   pipe->insertInCell(System,outerCell);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
   magUnit->insertInCell(System,outerCell);
@@ -188,7 +191,16 @@ template
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
 		const std::shared_ptr<constructSystem::VacuumPipe>&,
+		const std::string&,
 		const std::shared_ptr<tdcSystem::LQuad>&);
+
+template 
+int pipeMagUnit(Simulation&,
+		attachSystem::InnerZone&,
+		const std::shared_ptr<constructSystem::VacuumPipe>&,
+		const std::string&,
+		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
+  
 ///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem

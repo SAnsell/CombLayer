@@ -66,6 +66,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generalConstruct.h"
+#include "LObjectSupport.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -136,24 +137,23 @@ L2SPFsegment14::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*pipeA);
+  // constructSystem::constructUnit
+  //   (System,*buildZone,masterCell,*bellowA,"back",*pipeA);
 
-  
-  dm1->setCutSurf("Inner", *pipeA, "outerPipe");
-  dm1->createAll(System,*pipeA,0); 
-  dm1->insertInCell(System,outerCell+1);     // STOP this  +1
+  pipeA->createAll(System,*bellowA,"back");
+  pipeMagUnit(System,*buildZone,pipeA,"Origin",dm1);
+  pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
 
-  dm2->setCutSurf("Inner", *pipeC, "outerPipe");
-  dm2->createAll(System,*pipeC,0);
-  dm2->insertInCell(System,outerCell+3);  // STOP this  +3  
 
+  pipeC->createAll(System,*pipeB,"back");
+  pipeMagUnit(System,*buildZone,pipeC,"Origin",dm2);
+  pipeTerminate(System,*buildZone,pipeC);
+
+  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeC,"back",*gateA);
 
