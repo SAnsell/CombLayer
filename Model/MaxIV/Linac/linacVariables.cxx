@@ -246,6 +246,7 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.setLength(4.6); // measured
   PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
   PItemGen.setLength(2.25); // measured
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
   PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
   PItemGen.setLength(2.25); // measured
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
@@ -254,23 +255,22 @@ linac2SPFsegment15(FuncDataBase& Control,
   name=lKey+"IonPump";
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length // measured
   PItemGen.setNoPlate();
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
-  Control.addVariable(name+"NPorts",4);
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8); // measured
+  Control.addVariable(name+"NPorts",3);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
 
-  PItemGen.setLength(2.5);
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
   PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
-  PItemGen.setLength(6.5);
-  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
-  PItemGen.setLength(3.0);
-  PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setPlate(setVariable::CF63::flangeLength, "Stainless304");
-  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
-  PItemGen.setLength(10.0);
-  PItemGen.setPlate(0.0, "Void");
-  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  PItemGen.setLength(9.5); // measured
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+
+  PItemGen.setLength(3.2); // measured
+  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
 
   //YagGen.setCF<CF40_22>();
   YagGen.generate(Control,lKey+"YagScreen");

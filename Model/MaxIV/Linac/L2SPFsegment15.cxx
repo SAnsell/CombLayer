@@ -209,28 +209,30 @@ L2SPFsegment15::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
+  ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
   ionPump->createAll(System,mirrorChamberPort1,2);
-  for (size_t i=2; i<=3; ++i)
-    for (size_t j=0; j<=1; ++j)
-      ionPump->intersectPorts(System,i,j);
 
-  const constructSystem::portItem& ionPumpPort1=ionPump->getPort(1);
+  ionPump->intersectPorts(System,0,1);
+  ionPump->intersectPorts(System,0,2);
+
+  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
   outerCell=buildZone.createOuterVoidUnit(System,
 					  masterCell,
-					  ionPumpPort1,
-					  ionPumpPort1.getSideIndex("OuterPlate"));
+					  ionPumpBackPort,
+					  ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  const constructSystem::portItem& ionPumpPort3=ionPump->getPort(3);
   yagScreen->addInsertCell("Body",outerCell);
-  yagScreen->addInsertCell("Holder",ionPumpPort3.getCell("Void"));
-  yagScreen->addInsertCell("Mirror",ionPumpPort3.getCell("Void"));
+  yagScreen->addInsertCell("Holder",ionPump->getCell("Void"));
+  yagScreen->addInsertCell("Mirror",ionPump->getCell("Void"));
 
-  yagScreen->createAll(System,ionPumpPort3, 2);
+  // 1 does not work, but side can be changed with signs of
+  // XVec in the Port[12] variables
+  yagScreen->createAll(System,*ionPump, 2);
+  return;
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,ionPumpPort1,"OuterPlate",*pipeB);
+    (System,buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
 
   System.removeCell(buildZone.getMaster()->getName());
   System.substituteAllSurface(buildIndex+2,pipeB->getLinkSurf("back"));
