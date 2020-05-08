@@ -264,8 +264,11 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.setLength(6.5);
   PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
   PItemGen.setLength(3.0);
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setPlate(setVariable::CF63::flangeLength, "Stainless304");
   PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
   PItemGen.setLength(10.0);
+  PItemGen.setPlate(0.0, "Void");
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   //YagGen.setCF<CF40_22>();

@@ -58,6 +58,10 @@ class YagScreen : public attachSystem::ContainedGroup,
   double holderLift;            ///< screen holder lift
   double holderRad;             ///< screen holder inner radius
   int    holderMat;             ///< screen holder material
+  double mirrorRadius;          ///< quartz mirror radius
+  double mirrorAngle;           ///< quartz mirror inclination angle [deg]
+  double mirrorThick;           ///< quartz mirror thickness
+  int    mirrorMat;             ///< mirror  material
 
   int    voidMat;               ///< void material
   bool   closed;                ///< screen and mirror are in the beam

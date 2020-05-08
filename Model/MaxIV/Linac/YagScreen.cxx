@@ -58,6 +58,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Exception.h"
+#include "Quaternion.h"
 
 #include "YagScreen.h"
 
@@ -65,7 +66,7 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Holder", "Body"),
+  attachSystem::ContainedGroup("Mirror", "Holder", "Body"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   closed(false)
@@ -92,6 +93,10 @@ YagScreen::YagScreen(const YagScreen& A) :
   holderLift(A.holderLift),
   holderRad(A.holderRad),
   holderMat(A.holderMat),
+  mirrorRadius(A.mirrorRadius),
+  mirrorAngle(A.mirrorAngle),
+  mirrorThick(A.mirrorThick),
+  mirrorMat(A.mirrorMat),
   voidMat(A.voidMat)
   /*!
     Copy constructor
@@ -127,6 +132,10 @@ YagScreen::operator=(const YagScreen& A)
       holderLift=A.holderLift;
       holderRad=A.holderRad;
       holderMat=A.holderMat;
+      mirrorRadius=A.mirrorRadius;
+      mirrorAngle=A.mirrorAngle;
+      mirrorThick=A.mirrorThick;
+      mirrorMat=A.mirrorMat;
       voidMat=A.voidMat;
     }
   return *this;
@@ -175,6 +184,10 @@ YagScreen::populate(const FuncDataBase& Control)
   holderLift=Control.EvalVar<double>(keyName+"HolderLift");
   holderRad=Control.EvalVar<double>(keyName+"HolderRadius");
   holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
+  mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
+  mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
+  mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
+  mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
 
   if (holderRad>=ffInnerRadius)
     throw ColErr::RangeError<double>(holderRad,0,ffInnerRadius,
@@ -261,6 +274,25 @@ YagScreen::createSurfaces()
 				  -holderZStep);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,holderRad);
 
+  // mirror
+  Geometry::Vec3D MVec(Z);
+  Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(mirrorAngle,X);
+  QV.rotate(MVec);
+
+  double c = cos(mirrorAngle*M_PI/180.0);
+
+  const Geometry::Vec3D or305(Origin-Z*(mirrorThick/2.0/c)-Y*(holderZStep));
+  ModelSupport::buildPlane(SMap,buildIndex+305,or305,MVec);
+
+  const Geometry::Vec3D or306(Origin+Z*(mirrorThick/2.0/c)-Y*(holderZStep));
+  ModelSupport::buildPlane(SMap,buildIndex+306,or306,MVec);
+
+  // tmp is intersect of mirror cylinder and holder
+  const Geometry::Vec3D tmp = mirrorAngle > 0.0 ? or305 : or306;
+  const Geometry::Vec3D or307(tmp-MVec*X*mirrorRadius+MVec*mirrorThick/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,
+			      or307,
+			      MVec,mirrorRadius);
 
   return;
 }
@@ -308,6 +340,11 @@ YagScreen::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
   makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
   addOuterSurf("Holder",Out);
+
+  // mirror
+  Out=ModelSupport::getComposite(SMap,buildIndex," 305 -306 -307 ");
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+  addOuterSurf("Mirror",Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
   addOuterUnionSurf("Body",Out);

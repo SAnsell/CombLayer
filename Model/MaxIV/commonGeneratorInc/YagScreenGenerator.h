@@ -55,6 +55,10 @@ class YagScreenGenerator
   double holderLift;            ///< screen holder lift inside vacuum system
   double holderRad;             ///< screen holder inner radius
   std::string holderMat;        ///< screen holder material
+  double mirrorRadius;          ///< quartz mirror radius
+  double mirrorAngle;           ///< quartz mirror inclination angle [deg]
+  double mirrorThick;           ///< quartz mirror thickness
+  std::string mirrorMat;        ///< mirror material
 
   std::string voidMat;          ///< void material
   bool closed;                  ///< screen and mirror are in the beam

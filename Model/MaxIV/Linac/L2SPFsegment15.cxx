@@ -222,10 +222,10 @@ L2SPFsegment15::buildObjects(Simulation& System)
 					  ionPumpPort1.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  // here
   const constructSystem::portItem& ionPumpPort3=ionPump->getPort(3);
   yagScreen->addInsertCell("Body",outerCell);
   yagScreen->addInsertCell("Holder",ionPumpPort3.getCell("Void"));
+  yagScreen->addInsertCell("Mirror",ionPumpPort3.getCell("Void"));
 
   yagScreen->createAll(System,ionPumpPort3, 2);
 
