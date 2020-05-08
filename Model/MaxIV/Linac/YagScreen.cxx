@@ -334,11 +334,15 @@ YagScreen::createSurfaces()
 			      MVec,mirrorRadius);
 
   // screen
+  const Geometry::Vec3D vScreen(or307.X(),Origin.Y(),Origin.Z());
+  ModelSupport::buildPlane(SMap,buildIndex+401,vScreen,Y);
   const double dx(mirrorThick); // just some arbitrary distance from the mirror
   ModelSupport::buildPlane(SMap,buildIndex+403,Origin+X*(dx),X);
   ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(dx+screenHolderThick),X);
 
-  const Geometry::Vec3D vScreen(or307.X(),Origin.Y(),Origin.Z());
+  ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*(screenHolderRadius),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*(screenHolderRadius),Z);
+
   ModelSupport::buildCylinder(SMap,buildIndex+407,vScreen,X,screenRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+408,vScreen,X,screenHolderRadius);
 
@@ -402,10 +406,13 @@ YagScreen::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
       makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
 
+      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 405 -406 408 401 -201 ");
+      makeCell("ScreenHolderSides",System,cellIndex++,screenHolderMat,0.0,Out);
+
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
       makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -408 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
       addOuterSurf("Screen",Out);
     } else
     {
