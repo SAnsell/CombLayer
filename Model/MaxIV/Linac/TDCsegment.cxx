@@ -94,7 +94,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(nullptr),
-  frontFlag(0)
+  lastFlag(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -109,14 +109,15 @@ TDCsegment::~TDCsegment()
 {}
 
 void
-TDCsegment::setFrontSurf(const HeadRule& HR)
+TDCsegment::setLastSurf(const HeadRule& HR)
   /*!
-    Set the front surface rule
+    Set the last surface rule
     \param HR :: Head rule to use
    */
 {
-  frontFlag=1;
-  frontRule=HR;
+  lastFlag=1;
+  lastRule=HR;
+  return;
 }
 
 
