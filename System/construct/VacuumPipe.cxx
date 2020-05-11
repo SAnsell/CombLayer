@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/VacuumPipe.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
@@ -84,7 +84,7 @@
 namespace constructSystem
 {
 
-VacuumPipe::VacuumPipe(const std::string& Key) : 
+VacuumPipe::VacuumPipe(const std::string& Key) :
   attachSystem::FixedOffset(Key,11),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
@@ -99,7 +99,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
   FixedComp::nameSideIndex(6,"midPoint");
 }
 
-VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
+VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -107,13 +107,15 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   FPt(A.FPt),FAxis(A.FAxis),backJoin(A.backJoin),
   BPt(A.BPt),BAxis(A.BAxis),radius(A.radius),height(A.height),
   width(A.width),length(A.length),feThick(A.feThick),
+  claddingThick(A.claddingThick),
   flangeARadius(A.flangeARadius),flangeAHeight(A.flangeAHeight),
   flangeAWidth(A.flangeAWidth),flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),flangeBHeight(A.flangeBHeight),
   flangeBWidth(A.flangeBWidth),flangeBLength(A.flangeBLength),
   activeWindow(A.activeWindow),windowFront(A.windowFront),
   windowBack(A.windowBack),voidMat(A.voidMat),
-  feMat(A.feMat),nDivision(A.nDivision)
+  feMat(A.feMat),claddingMat(A.claddingMat),flangeMat(A.flangeMat),
+  nDivision(A.nDivision)
   /*!
     Copy constructor
     \param A :: VacuumPipe to copy
@@ -162,12 +164,13 @@ VacuumPipe::operator=(const VacuumPipe& A)
       voidMat=A.voidMat;
       feMat=A.feMat;
       claddingMat=A.claddingMat;
+      flangeMat=A.flangeMat;
       nDivision=A.nDivision;
     }
   return *this;
 }
 
-VacuumPipe::~VacuumPipe() 
+VacuumPipe::~VacuumPipe()
   /*!
     Destructor
   */
@@ -181,7 +184,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("VacuumPipe","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -192,7 +195,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   if (radius<0.0 && (width<0.0 || height<0.0))
     throw ColErr::EmptyContainer
       ("Pipe:["+keyName+"] has neither Radius or Height/Width");
-  
+
   length=Control.EvalVar<double>(keyName+"Length");
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
@@ -201,7 +204,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   const double fR=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   const double fH=Control.EvalDefVar<double>(keyName+"FlangeHeight",-1.0);
   const double fW=Control.EvalDefVar<double>(keyName+"FlangeWidth",-1.0);
-  
+
   flangeARadius=Control.EvalDefVar<double>(keyName+"FlangeFrontRadius",fR);
   flangeAHeight=Control.EvalDefVar<double>(keyName+"FlangeFrontHeight",fH);
   flangeAWidth=Control.EvalDefVar<double>(keyName+"FlangeFrontWidth",fW);
@@ -223,7 +226,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
 
   // note 1 ==> front : 2 => back  3 both
   activeWindow=Control.EvalDefVar<int>(keyName+"WindowActive",0);
-  
+
   windowFront.thick=Control.EvalDefPair<double>
     (keyName+"WindowFrontThick",keyName+"WindowThick",0.0);
   windowFront.radius=Control.EvalDefPair<double>
@@ -235,7 +238,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   windowFront.mat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"WindowFrontMat",keyName+"WindowMat",0);
 
-    
+
   windowBack.thick=Control.EvalDefPair<double>
     (keyName+"WindowBackThick",keyName+"WindowThick",0.0);
   windowBack.radius=Control.EvalDefPair<double>
@@ -258,7 +261,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
       if (windowFront.radius<Geometry::zeroTol &&
 	  (windowFront.width<Geometry::zeroTol || windowFront.height<Geometry::zeroTol))
 	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
-				     "windowFront:Radius or Height/Width");	
+				     "windowFront:Radius or Height/Width");
 
       if (windowFront.radius>Geometry::zeroTol &&
 	  windowFront.radius+Geometry::zeroTol>flangeARadius)
@@ -270,18 +273,19 @@ VacuumPipe::populate(const FuncDataBase& Control)
       if (windowBack.radius<Geometry::zeroTol &&
 	  (windowBack.width<Geometry::zeroTol || windowBack.height<Geometry::zeroTol))
 	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
-				     "windowBack:Radius or Height/Width");	
+				     "windowBack:Radius or Height/Width");
 
       if (windowBack.radius>Geometry::zeroTol &&
 	  windowBack.radius+Geometry::zeroTol>flangeBRadius)
 	throw ColErr::SizeError<double>
 	  (windowBack.radius,flangeBRadius,"Pipe:["+keyName+"] windowBack.Radius/flangeBRadius");
     }
-			    
-			    
+
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
+  flangeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeMat",feMat);
 
   nDivision=Control.EvalDefVar<size_t>(keyName+"NDivision",0);
   return;
@@ -340,7 +344,7 @@ VacuumPipe::applyActiveFrontBack()
     }
   return;
 }
-  
+
 
 void
 VacuumPipe::createSurfaces()
@@ -349,7 +353,7 @@ VacuumPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createSurfaces");
-  
+
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -360,7 +364,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  
+
   // Front Inner void
   getShiftedFront(SMap,buildIndex+101,1,Y,flangeALength);
   if (activeWindow & 1)
@@ -393,7 +397,7 @@ VacuumPipe::createSurfaces()
       addSurf("BackWindow",buildIndex+1101);
       addSurf("BackWindow",buildIndex+1102);
     }
-  
+
   // MAIN SURFACES:
   if (radius>Geometry::zeroTol)
     {
@@ -401,7 +405,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
       ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
 				  Y,radius+feThick+claddingThick);
-      addSurf("OuterRadius",SMap.realSurf(buildIndex+27));	    
+      addSurf("OuterRadius",SMap.realSurf(buildIndex+27));
     }
   else
     {
@@ -450,7 +454,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(flangeBHeight/2.0),Z);
     }
 
-  // FRONT WINDOW SURFACES:  
+  // FRONT WINDOW SURFACES:
   if (activeWindow & 1)
     {
       if (windowFront.radius>0.0)
@@ -469,7 +473,7 @@ VacuumPipe::createSurfaces()
 	}
     }
 
-  // FRONT WINDOW SURFACES:  
+  // FRONT WINDOW SURFACES:
   if (activeWindow & 2)
     {
       if (windowBack.radius>Geometry::zeroTol)
@@ -487,7 +491,7 @@ VacuumPipe::createSurfaces()
                                    Origin+Z*(windowBack.height/2.0),Z);
 	}
     }
-  
+
   return;
 }
 
@@ -501,14 +505,14 @@ VacuumPipe::createObjects(Simulation& System)
   ELog::RegMethod RegA("VacuumPipe","createObjects");
 
   std::string Out;
-  
+
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
   std::string windowFrontExclude;
   std::string windowBackExclude;
   if (activeWindow & 1)      // FRONT
-    { 
+    {
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
       makeCell("Window",System,cellIndex++,windowFront.mat,0.0,
@@ -537,7 +541,7 @@ VacuumPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -17 13 -14 15 -16");
   HeadRule WallLayer(Out);
-  
+
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -27 23 -24 25 -26");
   HeadRule CladdingLayer(Out);
 
@@ -597,7 +601,7 @@ VacuumPipe::createDivision(Simulation& System)
     {
       ModelSupport::surfDivide DA;
       DA.setBasicSplit(nDivision,feMat);
-      
+
       DA.init();
       DA.setCellN(getCell("MainSteel"));
       DA.setOutNum(cellIndex,buildIndex+1000);
@@ -609,10 +613,10 @@ VacuumPipe::createDivision(Simulation& System)
       removeCell("MainSteel");
       addCells("MainSteel",DA.getCells());
     }
-   
+
   return;
 }
-  
+
 void
 VacuumPipe::createLinks()
   /*!
@@ -662,7 +666,7 @@ VacuumPipe::createLinks()
       FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+15));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+16));
     }
-  
+
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
     (getLinkPt(1)+getLinkPt(2))/2.0;
@@ -672,7 +676,7 @@ VacuumPipe::createLinks()
     {
       FixedComp::setConnect(9,Origin-Z*flangeARadius,-Z);
       FixedComp::setConnect(10,Origin+Z*flangeARadius,Z);
-      
+
       FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
       FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
     }
@@ -687,37 +691,37 @@ VacuumPipe::createLinks()
 
   return;
 }
-  
+
 void
 VacuumPipe::setJoinFront(const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
     Set front surface
-    \param FC :: FixedComponent 
+    \param FC :: FixedComponent
     \param sideIndex ::  Direction to link
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setJoinFront");
 
-  
+
   FrontBackCut::setFront(FC,sideIndex);
   frontJoin=1;
   FPt=FC.getLinkPt(sideIndex);
   FAxis=FC.getLinkAxis(sideIndex);
   return;
 }
-  
+
 void
 VacuumPipe::setJoinBack(const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
     Set Back surface
-    \param FC :: FixedComponent 
+    \param FC :: FixedComponent
     \param sideIndex ::  Direction to link
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setJoinBack");
-  
+
   FrontBackCut::setBack(FC,sideIndex);
   backJoin=1;
   BPt=FC.getLinkPt(sideIndex);
@@ -725,7 +729,7 @@ VacuumPipe::setJoinBack(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 VacuumPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -741,13 +745,13 @@ VacuumPipe::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
   createLinks();
   createDivision(System);
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE constructSystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CylGateTubeGenertor.cxx
+ * File:   commonBeam/CylGateValveGenertor.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,12 +52,12 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "CylGateTubeGenerator.h"
+#include "CylGateValveGenerator.h"
 
 namespace setVariable
 {
 
-CylGateTubeGenerator::CylGateTubeGenerator() :
+CylGateValveGenerator::CylGateValveGenerator() :
   radius(CF63::innerRadius),depth(7.8),height(10.0),
   wallThick(CF63::wallThick),portRadius(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),
@@ -73,26 +73,48 @@ CylGateTubeGenerator::CylGateTubeGenerator() :
   */
 {}
 
-CylGateTubeGenerator::~CylGateTubeGenerator() 
+CylGateValveGenerator::~CylGateValveGenerator() 
  /*!
    Destructor
  */
 {}
-				  
+
 void
-CylGateTubeGenerator::generateGate(FuncDataBase& Control,
-				   const std::string& keyName,
-				   const bool closedFlag) const
+CylGateValveGenerator::generateFlat(FuncDataBase& Control,
+				    const std::string& keyName,
+				    const bool leftSide,
+				    const bool closedFlag) const
+  /*!
+    Build the get in the horrizontal direction
+    \param Control :: DataBase
+    \param leftSide :: flag to imply left [true] or right [false]
+    \param closedFlag :: true if item closed and false forwithdrawn
+   */
+{
+  ELog::RegMethod RegA("CylGateValveGenerator","generateFlat");
+
+  if (leftSide)
+    Control.addVariable(keyName+"YAngle",-90.0);
+  else
+    Control.addVariable(keyName+"YAngle",90.0);
+
+  generateGate(Control,keyName,closedFlag);
+  return;
+}
+  
+void
+CylGateValveGenerator::generateGate(FuncDataBase& Control,
+				    const std::string& keyName,
+				    const bool closedFlag) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param upFlag :: true if item open/withdrawn
+    \param closedFlag :: true if item closed and false forwithdrawn
   */
 {
-  ELog::RegMethod RegA("CylGateTubeGenerator","generatorGate");
+  ELog::RegMethod RegA("CylGateValveGenerator","generateGate");
 
-    ELog::EM<<"Depth == "<<depth<<ELog::endDiag;
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);

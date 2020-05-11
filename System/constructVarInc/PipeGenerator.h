@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVarInc/PipeGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_PipeGenerator_h
@@ -51,13 +51,14 @@ class PipeGenerator
   double flangeBLen;             ///< flange Length
   double windowRadius;          ///< window radius (radius > WR > flangeR)
   double windowThick;           ///< window thickness
-  
+
   std::string pipeMat;          ///< Primary default mat
   std::string frontWindowMat;   ///< window mat
   std::string backWindowMat;    ///< window mat
   std::string voidMat;          ///< void mat
   std::string claddingMat;      ///< Primary default mat
-    
+  std::string flangeMat;        ///< Flange material
+
  public:
 
   PipeGenerator();
@@ -73,18 +74,18 @@ class PipeGenerator
   void setAFlange(const double,const double);
   void setBFlange(const double,const double);
   void setFlangePair(const double,const double,const double,const double);
-  /// set pipe material
 
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
 
   /// setter for material name
-  void setMat(const std::string& M) { pipeMat=M; }
+  void setMat(const std::string& M, const std::string& FM="")
+  { pipeMat = M; flangeMat = FM=="" ? pipeMat : FM; }
   void setWindowMat(const std::string&);
   void setWindowMat(const std::string&,const std::string&);
   void setCladding(const double,const std::string&);
-  
+
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double,const double) const;
 
@@ -93,4 +94,3 @@ class PipeGenerator
 }
 
 #endif
- 

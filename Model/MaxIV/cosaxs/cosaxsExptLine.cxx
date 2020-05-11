@@ -211,9 +211,10 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
-
+  buildZone.setInsertCells(this->getInsertCells());
+  
   MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+    buildZone.constructMasterCell(System);
 
   pipeInit->createAll(System,*this,0);
 

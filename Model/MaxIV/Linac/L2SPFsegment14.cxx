@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File: Linac/L2SPFsegment2.cxx
+
+ * File: Linac/L2SPFsegment14.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -62,64 +54,46 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
-#include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generalConstruct.h"
+#include "LObjectSupport.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "LQuad.h"
-#include "CorrectorMag.h"
-#include "BPM.h"
-#include "CylGateValve.h"
 
-#include "LObjectSupport.h"
+#include "DipoleDIBMag.h"
+#include "GateValveCube.h"
+
 #include "TDCsegment.h"
-#include "L2SPFsegment2.h"
+#include "L2SPFsegment14.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
-L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
+
+L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   TDCsegment(Key,2),
 
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
-  gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  beamArrivalMon(new constructSystem::Bellows(keyName+"BeamArrivalMon")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
-  bpmB(new constructSystem::VacuumPipe(keyName+"BPMB")),  
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
-  QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
-  QuadE(new tdcSystem::LQuad(keyName+"QuadE"))
+  dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
+  gateA(new constructSystem::GateValveCube(keyName+"GateA")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -129,81 +103,81 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
-  OR.addObject(QuadA);
-  OR.addObject(bpmA);
   OR.addObject(bellowA);
+  OR.addObject(dm1);
   OR.addObject(pipeB);
-  OR.addObject(QuadB);
-  OR.addObject(gateTube);
   OR.addObject(pipeC);
-  OR.addObject(beamArrivalMon);
-  OR.addObject(pipeD);
+  OR.addObject(dm2);
+  OR.addObject(gateA);
   OR.addObject(bellowB);
-  OR.addObject(bpmB);
-  OR.addObject(pipeE);
-  OR.addObject(QuadC);
-  OR.addObject(QuadD);
-  OR.addObject(QuadE);
 }
-  
-L2SPFsegment2::~L2SPFsegment2()
+
+L2SPFsegment14::~L2SPFsegment14()
   /*!
     Destructor
    */
 {}
 
+
+
 void
-L2SPFsegment2::buildObjects(Simulation& System)
+L2SPFsegment14::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
+  ELog::RegMethod RegA("L2SPFsegment14","buildObjects");
 
   int outerCell;
-
   MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
-  pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front",QuadA);
+  bellowA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
+
+  // constructSystem::constructUnit
+  //   (System,*buildZone,masterCell,*bellowA,"back",*pipeA);
+
+  pipeA->createAll(System,*bellowA,"back");
+  pipeMagUnit(System,*buildZone,pipeA,"Origin",dm1);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+
+  pipeC->createAll(System,*pipeB,"back");
+  pipeMagUnit(System,*buildZone,pipeC,"Origin",dm2);
+  pipeTerminate(System,*buildZone,pipeC);
+  
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeC,"back",*gateA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
+    (System,*buildZone,masterCell,*gateA,"back",*bellowB);
 
-  pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
-
+  buildZone->removeLastMaster(System);  
 
   return;
 }
 
 void
-L2SPFsegment2::createLinks()
+L2SPFsegment14::createLinks()
   /*!
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*bellowB,2);
+
   return;
 }
 
-void 
-L2SPFsegment2::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+void
+L2SPFsegment14::createAll(Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -212,17 +186,15 @@ L2SPFsegment2::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment2","build");
+  ELog::RegMethod RControl("L2SPFsegment14","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
+
   buildObjects(System);
   createLinks();
-
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

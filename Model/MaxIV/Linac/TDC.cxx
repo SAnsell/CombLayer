@@ -1,6 +1,6 @@
-/********************************************************************* 
-  CombLayer : MCNP(X) Input builder
- 
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder 
+
  * File: linac/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -84,6 +84,9 @@
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment2.h"
 
+#include "L2SPFsegment14.h"
+#include "L2SPFsegment15.h"
+
 #include "TDC.h"
 
 namespace tdcSystem
@@ -94,7 +97,9 @@ TDC::TDC(const std::string& KN) :
   attachSystem::CellMap(),
   injectionHall(new InjectionHall("InjectionHall")),
   l2spf1(new L2SPFsegment1("L2SPF1")),
-  l2spf2(new L2SPFsegment2("L2SPF2"))
+  l2spf2(new L2SPFsegment2("L2SPF2")),
+  l2spf14(new L2SPFsegment14("L2SPF14")),
+  l2spf15(new L2SPFsegment15("L2SPF15"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -106,6 +111,9 @@ TDC::TDC(const std::string& KN) :
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
+  OR.addObject(l2spf14);
+  OR.addObject(l2spf15);
+
 }
 
 TDC::~TDC()
@@ -113,6 +121,7 @@ TDC::~TDC()
     Destructor
    */
 {}
+
 
 HeadRule
 TDC::buildSurround(const FuncDataBase& Control,
@@ -178,12 +187,13 @@ TDC::buildInnerZone(const FuncDataBase& Control,
 
   typedef std::tuple<std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
-  
+
+  // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","Origin"}}
+      {"l2spf",{"Front","#MidWall","LinearVoid"}},
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid"}}  
     });
-    
 
   RMAP::const_iterator rc=regZones.find(regionName);
   if (rc==regZones.end())
@@ -191,18 +201,22 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   
 
   const RTYPE& walls=rc->second;
+  const std::string& frontSurfName=std::get<0>(walls);
+  const std::string& backSurfName=std::get<1>(walls);
+  const std::string& voidName=std::get<2>(walls);
+  
   std::unique_ptr<attachSystem::InnerZone> buildZone=
     std::make_unique<attachSystem::InnerZone>(*this,cellIndex);
-  
-  buildZone->setFront(injectionHall->getSurfRule(std::get<0>(walls)));
-  buildZone->setBack(injectionHall->getSurfRule(std::get<1>(walls)));
+
+  buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
+  buildZone->setBack(injectionHall->getSurfRule(backSurfName));
   buildZone->setSurround
-    (buildSurround(Control,regionName,std::get<2>(walls)));
-      
+    (buildSurround(Control,regionName,"Origin"));
+  buildZone->setInsertCells(injectionHall->getCells(voidName));
   return buildZone;
 }
 
-void 
+void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
 	       const long int sideIndex)
@@ -216,43 +230,70 @@ TDC::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("TDC","createAll");
 
-  typedef std::tuple<std::string,std::string> ITYPE;
-  static const std::map<std::string,ITYPE> segmentLinkMap
+  //  typedef std::tuple<std::string> ITYPE;
+  static const std::map<std::string,std::string> segmentLinkMap
     ({
-      {"L2SPFsegment1",{"l2spf","Origin"}},
-      {"L2SPFsegment2",{"l2spf","Origin"}}
+      {"L2SPFsegment1","l2spf"},
+      {"L2SPFsegment2","l2spf"},
+      {"L2SPFsegment14","tdc"},
+      {"L2SPFsegment15","tdc"}
     });
   const int voidCell(74123);
-  
+
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  const attachSystem::FixedComp* FCPtr(nullptr);
+  int segmentIndex(0);
   for(const std::string& BL : activeINJ)
     {
-      const std::string& bzName=std::get<0>(segmentLinkMap.at(BL));
-      const std::string& orgName=std::get<1>(segmentLinkMap.at(BL));
+      const std::string& bzName=segmentLinkMap.at(BL);
       std::unique_ptr<attachSystem::InnerZone> buildZone=
 	buildInnerZone(System.getDataBase(),bzName);
       
       if (BL=="L2SPFsegment1")  
 	{
 	  l2spf1->setInnerZone(buildZone.get());
+	  buildZone->constructMasterCell(System);
+	  
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf1->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
-	  FCPtr=l2spf1.get();
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  segmentIndex=1;
 	}
       if (BL=="L2SPFsegment2")  
 	{
-	  if (FCPtr)
-	    buildZone->setFront(FCPtr->getFullRule("back"));
+	  if (segmentIndex==1)
+	    buildZone->setFront(l2spf1->getFullRule("back"));
+	  buildZone->constructMasterCell(System);
 	  
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex(orgName));
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  segmentIndex=2;
+	}
+      else if (BL=="L2SPFsegment14")
+	{
+	  //	  if (segmentIndex==13)
+	  //	    buildZone->setFront(l2spf13->getFullRule("back"));
+	  l2spf14->setInnerZone(buildZone.get());
+	  buildZone->constructMasterCell(System);
+	  
+	  l2spf14->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  segmentIndex=14;
+	}
+      else if (BL=="L2SPFsegment15")
+	{
+	  if (segmentIndex==14)
+	    buildZone->setFront(l2spf14->getFullRule("back"));
+	  l2spf15->setInnerZone(buildZone.get());
+	  buildZone->constructMasterCell(System);
+	  
+	  l2spf15->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  segmentIndex=15;
 	}
     }
 

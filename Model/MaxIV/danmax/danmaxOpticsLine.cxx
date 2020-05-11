@@ -633,9 +633,10 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
   buildZone.setInnerMat(innerMat);
-  
+  buildZone.setInsertCells(this->getInsertCells());
   MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+    buildZone.constructMasterCell(System);
+
 
   // dummy space for first item
   // This is a mess but want to preserve insert items already

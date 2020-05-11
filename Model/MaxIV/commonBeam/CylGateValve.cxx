@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CylGateTube.cxx
+ * File:   commonBeam/CylGateValve.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell 
  *
@@ -78,12 +78,12 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "CylGateTube.h" 
+#include "CylGateValve.h" 
 
 namespace xraySystem
 {
 
-CylGateTube::CylGateTube(const std::string& Key) : 
+CylGateValve::CylGateValve(const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -98,20 +98,20 @@ CylGateTube::CylGateTube(const std::string& Key) :
 
 
 
-CylGateTube::~CylGateTube() 
+CylGateValve::~CylGateValve() 
   /*!
     Destructor
   */
 {}
 
 void
-CylGateTube::populate(const FuncDataBase& Control)
+CylGateValve::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("CylGateTube","populate");
+  ELog::RegMethod RegA("CylGateValve","populate");
   
   FixedRotate::populate(Control);
 
@@ -151,14 +151,14 @@ CylGateTube::populate(const FuncDataBase& Control)
 
 
 void
-CylGateTube::createSurfaces()
+CylGateValve::createSurfaces()
   /*!
     Create the surfaces
     Note that it is created in the vertical direction for the 
     main cylinder and the port view is in the Y directions.
   */
 {
-  ELog::RegMethod RegA("CylGateTube","createSurfaces");
+  ELog::RegMethod RegA("CylGateValve","createSurfaces");
 
   const double bladeZStep((!closed) ? bladeLift : 0.0);
     
@@ -223,13 +223,13 @@ CylGateTube::createSurfaces()
 }
 
 void
-CylGateTube::createObjects(Simulation& System)
+CylGateValve::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CylGateTube","createObjects");
+  ELog::RegMethod RegA("CylGateValve","createObjects");
 
   std::string Out;
 
@@ -314,13 +314,13 @@ CylGateTube::createObjects(Simulation& System)
 }
   
 void
-CylGateTube::createLinks()
+CylGateValve::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("CylGateTube","createLinks");
+  ELog::RegMethod RegA("CylGateValve","createLinks");
 
   //stuff for intersection
 
@@ -333,7 +333,7 @@ CylGateTube::createLinks()
   
   
 void
-CylGateTube::createAll(Simulation& System,
+CylGateValve::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
  /*!
@@ -343,7 +343,7 @@ CylGateTube::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("CylGateTube","createAll(FC)");
+  ELog::RegMethod RegA("CylGateValve","createAll(FC)");
 
   populate(System.getDataBase());
   const double offset(radius+wallThick+portThick);

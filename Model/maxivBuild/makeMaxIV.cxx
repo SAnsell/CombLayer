@@ -429,7 +429,7 @@ makeMaxIV::build(Simulation& System,
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
-
+  
   else if(buildR1Ring(System,IParam))
     ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
 

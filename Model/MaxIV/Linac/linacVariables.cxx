@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   linac/linacVariables.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -62,7 +62,8 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "BPMGenerator.h"
-#include "CylGateTubeGenerator.h"
+#include "CylGateValveGenerator.h"
+#include "DipoleDIBMagGenerator.h"
 
 namespace setVariable
 {
@@ -73,6 +74,12 @@ namespace linacVar
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
 
+  void linac2SPFsegment14(FuncDataBase&,const std::string&);
+  void linac2SPFsegment15(FuncDataBase&,const std::string&);
+
+  const double zeroX(152.0);   // coordiated offset to master
+  const double zeroY(81.0);    // drawing README.pdf
+  
 void
 linac2SPFsegment2(FuncDataBase& Control,
 		   const std::string& lKey)
@@ -83,19 +90,17 @@ linac2SPFsegment2(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment2");
+
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateTubeGenerator CGateGen;
+  setVariable::CylGateValveGenerator CGateGen;
 
-  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",395.2);   // if segment 1 not built
-  Control.addVariable(lKey+"OuterLeft",80.0);     // same as Segment1
-  Control.addVariable(lKey+"OuterRight",140.0);
-  Control.addVariable(lKey+"OuterHeight",100.0);
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -154,7 +159,8 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
     
-  Control.addVariable(lKey+"XStep",128.0);   // exactly 1m from wall.
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",linacVar::zeroY);   // exactly 1m from wall.
   
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -174,7 +180,7 @@ linac2SPFsegment1(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
   CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
-  
+
   LQGen.generateQuad(Control,lKey+"QuadA",94.0);
 
 
@@ -189,7 +195,7 @@ linac2SPFsegment1(FuncDataBase& Control,
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);    
+  PItemGen.setCF<setVariable::CF40>(6.5);
   PItemGen.setNoPlate();
 
   SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
@@ -203,7 +209,134 @@ linac2SPFsegment1(FuncDataBase& Control,
   return;
 }
 
-  
+void
+linac2SPFsegment14(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment14");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+
+  // number form drawing
+  Control.addVariable(lKey+"XStep",-622.286+linacVar::zeroX);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        // 
+  Control.addVariable(lKey+"XYAngle",0.0);   // this should be 3.1183 deg
+    
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
+
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  DIBGen.generate(Control,lKey+"DM1");
+
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
+
+  PGen.setMat("Stainless316L","Stainless316L");
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
+
+  DIBGen.generate(Control,lKey+"DM2");
+
+  GateGen.setLength(6.3);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,lKey+"GateA",0.0,0);
+  Control.addVariable(lKey+"GateAPortALen",2.0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+
+  return;
+}
+
+void
+linac2SPFsegment15(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment15");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+
+    // number form drawing
+  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        // 
+  Control.addVariable(lKey+"XYAngle",0.0);  
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,30.0);
+
+  // Mirror chamber
+  std::string name=lKey+"MirrorChamber";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  Control.addVariable(name+"NPorts",4);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  // Ion pump
+  name=lKey+"IonPump";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  Control.addVariable(name+"NPorts",4);
+
+  PItemGen.setLength(2.5);
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setLength(6.5);
+  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
+  PItemGen.setLength(3.0);
+  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
+  PItemGen.setLength(10.0);
+  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
+
+  return;
+}
+
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
@@ -220,20 +353,20 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0);
   Control.addVariable(wallKey+"RightWallStep",145.0);
   Control.addVariable(wallKey+"SPFAngleLength",4124.0);
-  Control.addVariable(wallKey+"SPFAngle",12.7);   
+  Control.addVariable(wallKey+"SPFAngle",12.7);
 
   Control.addVariable(wallKey+"LinearWidth",981.0);
   Control.addVariable(wallKey+"WallThick",39.0);
 
   Control.addVariable(wallKey+"FloorDepth",134.0);  // GUESS
   Control.addVariable(wallKey+"RoofHeight",140.0);  // GUESS
-    
+
   Control.addVariable(wallKey+"RoofThick",90.0);
   Control.addVariable(wallKey+"FloorThick",50.0);
 
   // Extra for boundary
-  Control.addVariable(wallKey+"BoundaryWidth",200.0);  
-  Control.addVariable(wallKey+"BoundaryHeight",100.0);  
+  Control.addVariable(wallKey+"BoundaryWidth",200.0);
+  Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
   Control.addVariable(wallKey+"MidTThick",150.0);
@@ -246,9 +379,9 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",283.0);  // from mid line
-  
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
-  
+
   Control.addVariable(wallKey+"MidGateOut",206.0);
   Control.addVariable(wallKey+"MidGateWidth",432.0);
   Control.addVariable(wallKey+"MidGateWall",100.0);
@@ -259,17 +392,17 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"KlystronFrontWall",100.0);
   Control.addVariable(wallKey+"KlystronSideWall",150.0);
 
-  
+
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
   Control.addVariable(wallKey+"RoofMat","Concrete");
-  Control.addVariable(wallKey+"FloorMat","Concrete");   
-    
+  Control.addVariable(wallKey+"FloorMat","Concrete");
+
   return;
 }
 
 }  // NAMESPACE linacVAR
-  
+
 void
 LINACvariables(FuncDataBase& Control)
   /*!
@@ -280,16 +413,29 @@ LINACvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("linacVariables[F]","linacVariables");
 
 
-  
+
   linacVar::wallVariables(Control,"InjectionHall");
+
   // Segment 1-14
-  Control.addVariable("TDCl2spfXStep",128.0);   // exactly 1m from wall.
+  Control.addVariable("TDCl2spfXStep",linacVar::zeroX);
+  Control.addVariable("TDCl2spfYStep",linacVar::zeroY); 
   Control.addVariable("TDCl2spfOuterLeft",80.0);
   Control.addVariable("TDCl2spfOuterRight",140.0);
   Control.addVariable("TDCl2spfOuterTop",100.0);
 
+  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);   
+  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);   
+  Control.addVariable("TDCtdcOuterLeft",100.0);
+  Control.addVariable("TDCtdcOuterRight",100.0);
+  Control.addVariable("TDCtdcOuterTop",100.0);
+
+
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
+
+  /// Segment 14-28
+  linacVar::linac2SPFsegment14(Control,"L2SPF14");
+  linacVar::linac2SPFsegment15(Control,"L2SPF15");
 
   return;
 }

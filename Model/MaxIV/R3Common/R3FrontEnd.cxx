@@ -557,9 +557,9 @@ R3FrontEnd::buildObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
-  
+  buildZone.setInsertCells(this->getInsertCells());
   MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+    buildZone.constructMasterCell(System);
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);

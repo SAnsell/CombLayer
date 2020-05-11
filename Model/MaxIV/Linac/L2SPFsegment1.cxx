@@ -157,7 +157,7 @@ L2SPFsegment1::buildObjects(Simulation& System)
   
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*this);
+    masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
@@ -180,11 +180,10 @@ L2SPFsegment1::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
 
-  
   pipeD->createAll(System,*pipeC,"back");  
   correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
  
-  pipeMagUnit(System,*buildZone,pipeD,QuadA);
+  pipeMagUnit(System,*buildZone,pipeD,"#front",QuadA);
   pipeTerminate(System,*buildZone,pipeD);
 
   constructSystem::constructUnit

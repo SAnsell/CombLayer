@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/generalConstruct.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,11 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_generalConstruct_h
-#define constructSystem_xrayConstruct_generalConstruct_h
+#define constructSystem_generalConstruct_h
 
 
 namespace constructSystem
@@ -61,7 +61,7 @@ internalUnit(Simulation&,
 	     attachSystem::FixedComp&,
 	     attachSystem::ExternalCut&,
 	     attachSystem::ContainedComp&);
-  
+
 template<typename T>
 int constructUnit(Simulation& System,
 		  attachSystem::InnerZone& buildZone,
