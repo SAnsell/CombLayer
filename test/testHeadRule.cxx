@@ -479,7 +479,7 @@ testHeadRule::testGetComponent()
 int
 testHeadRule::testInterceptRule()
   /*!
-    Tests the point going into a headrule.
+    Tests the point going into a HeadRule.
     The surface that the track crosses is signed. It needs 
     to have the sign that would make the surface true for 
     points that are at a greater distance from the origin along 
@@ -528,9 +528,11 @@ testHeadRule::testInterceptRule()
 	  (SNum && Result.first.Distance(RPt)>1e-5))
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"HR "<<HM<<ELog::endDiag;
 	  ELog::EM<<"Result "<<Result.first<<" at SN="<<Result.second
 		  <<ELog::endDiag;
 	  ELog::EM<<"Expect "<<RPt<<" at SN="<<SNum<<ELog::endDiag;
+
 	  return -1;
 	}
       cnt++;

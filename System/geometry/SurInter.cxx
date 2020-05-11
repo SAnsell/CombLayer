@@ -719,7 +719,7 @@ interceptRuleConst(const HeadRule& HR,
     \param HR :: HeadRule
     \param Origin :: Origin of line
     \param N :: Direction of the line
-    \return pair of position and surface.
+    \return pair of position and surface sign.
   */
 {
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
@@ -734,8 +734,11 @@ interceptRuleConst(const HeadRule& HR,
   const size_t indexA=SurInter::closestPt(Pts,Origin);
   const std::vector<const Geometry::Surface*>& SVec=
     LI.getSurfIndex();
-  return std::pair<Geometry::Vec3D,int>
-    (Pts[indexA],SVec[indexA]->getName()); 
+
+  return(SVec[indexA]->side(Origin)>=0) ?
+    std::pair<Geometry::Vec3D,int>(Pts[indexA],-SVec[indexA]->getName()) :
+      std::pair<Geometry::Vec3D,int>(Pts[indexA],SVec[indexA]->getName());
+      
 }
 
 std::pair<Geometry::Vec3D,int>

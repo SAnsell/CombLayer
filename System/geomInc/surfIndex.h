@@ -47,8 +47,8 @@ class surfIndex
  private:
  
   int uniqNum;                      ///< uniq number
-  STYPE SMap;                       ///< Index of kept surfaces
-  std::map<int,int> holdMap;        ///< Hold/Write map :: surfaceN : write/no-write flag
+  STYPE SMap;                    ///< Index of kept surfaces
+  std::map<int,int> holdMap;     ///< Hold/Write map :: surfaceN : write/no-write flag
   
   surfIndex();
 
