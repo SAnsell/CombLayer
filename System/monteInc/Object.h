@@ -45,9 +45,9 @@ class Object
 
   std::string FCUnit; ///< FixedComp name
   
-  int ObjName;       ///< Number for the object
-  int listNum;       ///< Creation number
-  double Tmp;        ///< Starting temperature (if given)
+  int ObjName;             ///< Number for the object
+  int listNum;             ///< Creation number
+  double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
   int imp;           ///< importance / 0 

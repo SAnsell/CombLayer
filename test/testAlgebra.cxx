@@ -393,7 +393,7 @@ testAlgebra::testExpandCNFBracket()
   const std::vector<TTYPE> Tests=
     {
       TTYPE("a(b+c+de)","a(b+c+d)(b+c+e)"),
-      TTYPE("g'(a+b+c+d'ef')","g'(b+c+d')(b+c+f')(b+c+e)"),
+      TTYPE("g'(b+c+d'ef')","g'(b+c+f')(b+c+d')(b+c+e)"),
       TTYPE("a+b+cd(e+f)","(a+b+c)(a+b+d)(a+b+e+f)"),
       //      TTYPE("a'b'c(b+c')","!!"),   // ALWAY FALSE
       TTYPE("f+(a'b'c(b+c'))","f"),   
@@ -450,7 +450,6 @@ testAlgebra::testExpandCNFBracket()
       if (Out!=std::get<1>(tc) || !ABflag)
 	{
 	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
-	  const bool Xflag=A.logicalEqual(B);   // expand : original
 	  ELog::EM<<"Original   :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"CNFform == :"<<Out<<ELog::endDiag;

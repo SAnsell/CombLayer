@@ -378,12 +378,20 @@ Object::setObject(std::string Ln)
   if (!HRule.procString(Ln))   // fails on empty
     throw ColErr::InvalidLine("procString failure :: ",Ln);
 
+
+  // note that this invalidates the read density:
+
+    
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
   objSurfValid=0;
+
+  setMaterial(matN);
   Tmp=lineTemp;
   imp=lineIMP;
   trcl=lineTRCL;
+
+  populated=0;
   
   return 1;   // SUCCESS
 }
@@ -441,6 +449,7 @@ Object::setObject(const int N,const int matNum,
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
   objSurfValid=0;
+  populated=0;
   return 1;
 }
 
@@ -487,8 +496,6 @@ Object::addIntersection(const HeadRule& HR)
 {
   ELog::RegMethod RegA("Object","addIntersection");
   
-  const double Temp=Tmp;                   // need to set later
-
   HRule.addIntersection(HR);
   
   populated=0;
@@ -505,8 +512,6 @@ Object::addUnion(const HeadRule& HR)
 {
   ELog::RegMethod RegA("Object","addIntersection");
   
-  const double Temp=Tmp;                   // need to set later
-
   HRule.addUnion(HR);
   
   populated=0;
@@ -1356,16 +1361,10 @@ Object::str() const
 {
   std::ostringstream cx;
   cx<<ObjName<<" ";
-  if (imp)
-    {
-      cx<<matPtr->getID();
-      if (!matPtr->isVoid())
-	cx<<" "<<matPtr->getAtomDensity();
-    }
-  else
-    {
-      cx<<"0";
-    }
+  cx<<matPtr->getID()<<" ";
+
+  if (!matPtr->isVoid())
+    cx<<matPtr->getAtomDensity()<<" ";
   
   cx<<HRule.display();
   return cx.str();

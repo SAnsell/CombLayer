@@ -3,7 +3,7 @@
  
  * File:   process/pipeUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -378,6 +378,7 @@ pipeUnit::createObjects(Simulation& System)
   /*!
     Construct the object and the outside bracket
     for the system
+    \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("pipeUnit","createObjects");
@@ -453,6 +454,7 @@ pipeUnit::insertObjects(Simulation& System)
   const double angleStep(2*M_PI/static_cast<double>(nAngle));
   double angle(0.0);
   Geometry::Vec3D addVec(0,0,0);
+
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       // Calculate central track

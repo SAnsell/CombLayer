@@ -187,7 +187,7 @@ Simulation::resetAll()
   masterRotate& MR = masterRotate::Instance();
   MR.clearGlobal();
   objectGroups::reset();
-  
+
   // put back world:
   objectGroups::cell("World",10000);
   World::buildWorld(*this);
@@ -1155,7 +1155,8 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
 {
   ELog::RegMethod RegA("Simulation","findCell");
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-  
+
+
   // First test users guess:
   if (testCell && testCell->isValid(Pt))
     {
@@ -1164,6 +1165,7 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
     }
   // Ok how about our last find
   MonteCarlo::Object* curObjPtr=ST.curCell(this);
+
   if (curObjPtr && curObjPtr!=testCell 
       && curObjPtr->isValid(Pt))
     return curObjPtr;

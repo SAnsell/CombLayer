@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,7 +167,7 @@ LineTrack::calculate(const Simulation& ASim)
   double aDist(0);                         // Length of track
   const Geometry::Surface* SPtr;           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
-
+  
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
@@ -176,7 +176,6 @@ LineTrack::calculate(const Simulation& ASim)
   if (!OPtr)
     ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
-
   int SN=OPtr->isOnSide(InitPt);
   while(OPtr)
     {

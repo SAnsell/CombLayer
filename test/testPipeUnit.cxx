@@ -3,7 +3,7 @@
  
  * File:   test/testPipeUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,9 +75,7 @@ testPipeUnit::testPipeUnit()
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testPipeUnit::~testPipeUnit() 
   /*!
@@ -95,6 +93,7 @@ testPipeUnit::initSim()
   createSurfaces();
   createObjects();
   ASim.createObjSurfMap();
+    
   return;
 }
 
@@ -110,7 +109,6 @@ testPipeUnit::createSurfaces()
   
   // Outer sphere
   SurI.createSurface(100,"so 50");
-  
   return;
 }
 
@@ -123,11 +121,16 @@ testPipeUnit::createObjects()
   ELog::RegMethod RegA("testPipeUnit","createObjects");
 
   std::string Out;
-  int cellIndex(1);
+  int cellIndex(2);
   const int surIndex(0);
 
-  Out=ModelSupport::getComposite(surIndex,"100");
+  Out=ModelSupport::getComposite(surIndex,"-100");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+
+  MonteCarlo::Object* outerObj=ASim.findObject(74123);
+  if (!outerObj)
+    ELog::EM<<"NO OUTER CELL "<<ELog::endErr;
+  outerObj->addIntersection(HeadRule(" 100 "));
 
   return;
 }
@@ -170,6 +173,7 @@ testPipeUnit::applyTest(const int extra)
     {
       if (extra<0 || extra==i+1)
         {
+	  initSim();
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
@@ -188,14 +192,13 @@ testPipeUnit::testBasic()
 {
   ELog::RegMethod RegA("testPipeUnit","testBasic");
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  SurI.reset();
-
   std::vector<cylValues> CV;
   CV.push_back(cylValues(5.0,3,0));
 
   pipeUnit AP("tst",1);
   AP.setPoints(Geometry::Vec3D(0,0,0),Geometry::Vec3D(10.0,0,0));
+
+  ASim.populateCells();
   AP.buildUnit(ASim,0,CV);
   return 0;
 }
