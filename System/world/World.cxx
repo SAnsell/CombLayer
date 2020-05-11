@@ -124,10 +124,12 @@ buildWorld(objectGroups& OGrp)
     ModelSupport::objectRegister::Instance();
   OR.setObjectGroup(OGrp);
   ELog::EM<<"Post set Object Group"<<ELog::endDiag;
-  ELog::EM<<"OR -> "<<OR.hasGroup("World")<<ELog::endDiag;;
+  
+  ELog::EM<<"OR Before -> "<<OGrp.hasRegion("World")<<ELog::endDiag;
   std::shared_ptr<attachSystem::FixedComp> worldPtr=
     std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
-  ELog::EM<<"World NAme == "<<worldPtr->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"OR After -> "<<OGrp.hasRegion("World")<<ELog::endDiag;
+  ELog::EM<<"World NAme == "<<worldPtr->getKeyName()<<ELog::endDiag;  
   OGrp.addObject(worldPtr);
   return;
 }

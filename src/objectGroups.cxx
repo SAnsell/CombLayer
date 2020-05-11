@@ -127,6 +127,20 @@ objectGroups::reset()
 }
 
 bool
+objectGroups::hasRegion(const std::string& Name) const
+  /*!
+    Determine if a region is present
+    \param Name :: region/object name
+    \return true if region is present
+  */
+{
+  ELog::RegMethod RegA("objectGroups","hasRegion");
+  
+  MTYPE::const_iterator mc=regionMap.find(Name);
+  return (mc==regionMap.end()) ? 0 : 1;
+}
+
+bool
 objectGroups::hasCell(const std::string& Name,
 		      const int cellN) const
   /*!
@@ -402,6 +416,7 @@ objectGroups::cell(const std::string& Name,const size_t size)
   
   // create a new region [empty]
   regionMap.emplace(Name,groupRange());
+  ELog::EM<<"EMplace == "<<Name<<ELog::endDiag;
   for(size_t i=0;i<range;i++)
     {
       rangeMap.emplace((cellNumber/cellZone),Name);
