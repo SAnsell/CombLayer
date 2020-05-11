@@ -3,7 +3,7 @@
  
  * File:   test/testAttachSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,12 +61,14 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "simpleObj.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "World.h"
+#include "objectRegister.h"
 
 #include "Debug.h"
 
@@ -97,12 +99,15 @@ testAttachSupport::initSim()
 {
   ELog::RegMethod RegA("testAttachSupport","initSim");
 
+  // initialize world
+  // this code is also in MainProcess::buildWorld
   ASim.resetAll();
+  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   // Work Sphere :
   SurI.createSurface(100,"so 500");
-  ASim.addCell(MonteCarlo::Object(1,0,0.0,"100"));  // Outside void 
-  ASim.addCell(MonteCarlo::Object(5001,0,0.0,"-100"));  // Inside void 
+  ASim.addCell(MonteCarlo::Object(5001,0,0.0,"-100"));  // Inside void
+
   return;
 }
 
@@ -181,6 +186,7 @@ testAttachSupport::testBoundaryValid()
       &ContainedComp::isOuterValid
     };
 
+  initSim();
   std::shared_ptr<testSystem::simpleObj> 
     CC(new testSystem::simpleObj("A"));
   CC->createAll(ASim,World::masterOrigin(),0);

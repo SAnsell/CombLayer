@@ -421,8 +421,8 @@ createSimulation(inputParam& IParam,
       SimPtr=SMCPtr;
     }
 
-  OR.setObjectGroup(*SimPtr);
-  buildWorld(*SimPtr);
+  // OR.setObjectGroup(*SimPtr);
+  // buildWorld(*SimPtr);
   
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
@@ -432,20 +432,6 @@ createSimulation(inputParam& IParam,
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
   
   return SimPtr;
-}
-
-void
-buildWorld(objectGroups& OGrp)
-  /*!
-    Build and register a world object in a object group
-    \param OGrp :: Simluation to add a world to.
-  */
-{
-  std::shared_ptr<attachSystem::FixedComp> worldPtr=
-    std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
-
-  OGrp.addObject(worldPtr);
-  return;
 }
 
 

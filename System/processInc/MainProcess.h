@@ -42,7 +42,6 @@ namespace mainSystem
 {
   class inputParam;
 
-  void buildWorld(objectGroups&);
   void activateLogging(ELog::RegMethod&);
 
   void getVariables(std::vector<std::string>&,

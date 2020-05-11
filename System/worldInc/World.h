@@ -23,6 +23,7 @@
 #define WorldSystem_h
 
 class Simulation;
+class objectGroups;
 
 namespace attachSystem
 {
@@ -39,8 +40,11 @@ namespace attachSystem
 
 namespace World
 {
-
-void createOuterObjects(Simulation&);
+constexpr double maxWorldRadius=20000.0;
+  
+void buildWorld(objectGroups&);
+ 
+void createOuterObjects(Simulation&,const double = maxWorldRadius);
 
 const attachSystem::FixedComp& masterOrigin();
 const attachSystem::FixedComp& masterTS2Origin();

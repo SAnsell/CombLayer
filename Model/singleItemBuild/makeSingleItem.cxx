@@ -130,7 +130,7 @@ makeSingleItem::~makeSingleItem()
 void 
 makeSingleItem::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
-/*!
+  /*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters

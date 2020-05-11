@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,11 +113,13 @@ objectGroups::reset()
     Delete all the references to the shared_ptr register
   */
 {
+  
   Components.erase(Components.begin(),Components.end());
   regionMap.erase(regionMap.begin(),regionMap.end());
   rangeMap.erase(rangeMap.begin(),rangeMap.end());
 
   activeCells.clear();
+
   return;
 }
 
@@ -385,6 +387,7 @@ objectGroups::cell(const std::string& Name,const size_t size)
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
+
   if (!size)
     throw ColErr::EmptyValue<size_t>("size");
 
@@ -453,7 +456,7 @@ objectGroups::addObject(const CTYPE& Ptr)
 
 void
 objectGroups::addObject(const std::string& Name,
-			 const CTYPE& Ptr)
+			const CTYPE& Ptr)
   /*!
     Register a shared_ptr of an object. 
     Requirement that 
@@ -465,7 +468,7 @@ objectGroups::addObject(const std::string& Name,
   */
 {
   ELog::RegMethod RegA("objectGroups","addObject");
-  
+
   // First check that we have it in Register:
   if (regionMap.find(Name)==regionMap.end())
     throw ColErr::InContainerError<std::string>(Name,"regionMap empty");

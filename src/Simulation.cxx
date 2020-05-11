@@ -98,6 +98,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "groupRange.h"
+#include "World.h"
 
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -110,6 +111,9 @@ Simulation::Simulation()  :
   */
 {
   ModelSupport::SimTrack::Instance().addSim(this);
+
+  World::buildWorld(*this);
+  World::createOuterObjects(*this);
 }
 
 Simulation::Simulation(const Simulation& A) :
@@ -173,6 +177,8 @@ Simulation::resetAll()
     The big reset
   */
 {
+  ELog::RegMethod RegA("Simulation","resetAll");
+  
   ModelSupport::surfIndex::Instance().reset();
   TList.erase(TList.begin(),TList.end());
   OSMPtr->clearAll();
@@ -180,6 +186,13 @@ Simulation::resetAll()
   cellOutOrder.clear();
   masterRotate& MR = masterRotate::Instance();
   MR.clearGlobal();
+  objectGroups::reset();
+  
+  // put back world:
+  objectGroups::cell("World",10000);
+  World::buildWorld(*this);
+  World::createOuterObjects(*this);
+
   return;
 }
 
