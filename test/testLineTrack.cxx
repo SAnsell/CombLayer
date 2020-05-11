@@ -95,7 +95,6 @@ testLineTrack::initSim()
     Set all the objects in the simulation:
   */
 {
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   ASim.resetAll();
   createSurfaces();
   createObjects();
@@ -213,7 +212,6 @@ testLineTrack::applyTest(const int extra)
       return 0;
     }
 	  
-  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   for(int i=0;i<TSize;i++)
     {
       initSim();

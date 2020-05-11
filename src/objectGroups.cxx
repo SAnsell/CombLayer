@@ -416,7 +416,7 @@ objectGroups::cell(const std::string& Name,const size_t size)
   
   // create a new region [empty]
   regionMap.emplace(Name,groupRange());
-  ELog::EM<<"EMplace == "<<Name<<ELog::endDiag;
+
   for(size_t i=0;i<range;i++)
     {
       rangeMap.emplace((cellNumber/cellZone),Name);

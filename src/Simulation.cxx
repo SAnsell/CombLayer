@@ -112,9 +112,7 @@ Simulation::Simulation()  :
 {
   ModelSupport::SimTrack::Instance().addSim(this);
 
-  ELog::EM<<"PRE WORLD"<<ELog::endDiag;
   World::buildWorld(*this);
-  ELog::EM<<"POST WORLD"<<ELog::endDiag;
   World::createOuterObjects(*this);
 }
 
@@ -191,7 +189,6 @@ Simulation::resetAll()
   objectGroups::reset();
 
   // put back world:
-  ELog::EM<<"Adding back world"<<ELog::endDiag;
   objectGroups::cell("World",10000);
   World::buildWorld(*this);
   World::createOuterObjects(*this);

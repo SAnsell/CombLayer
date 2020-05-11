@@ -90,7 +90,8 @@ masterZMinusOrigin()
     \return Fixed Unit
   */
 {
-  static attachSystem::FixedUnit MO("World",0);  
+  static attachSystem::FixedUnit MO("World",0);
+  
   return MO;
 }
 
@@ -123,13 +124,11 @@ buildWorld(objectGroups& OGrp)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   OR.setObjectGroup(OGrp);
-  ELog::EM<<"Post set Object Group"<<ELog::endDiag;
-  
-  ELog::EM<<"OR Before -> "<<OGrp.hasRegion("World")<<ELog::endDiag;
+
   std::shared_ptr<attachSystem::FixedComp> worldPtr=
     std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
-  ELog::EM<<"OR After -> "<<OGrp.hasRegion("World")<<ELog::endDiag;
-  ELog::EM<<"World NAme == "<<worldPtr->getKeyName()<<ELog::endDiag;  
+  if (!OGrp.hasRegion("World"))
+    ModelSupport::objectRegister::Instance().cell("World",10000);
   OGrp.addObject(worldPtr);
   return;
 }
@@ -146,6 +145,7 @@ createOuterObjects(Simulation& System,
   ELog::RegMethod RegA("World","createOuterObjects");
   
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  SurI.reset();
 
   // Create object 1
   SurI.createSurface(1,"so "+std::to_string(worldRadius));
