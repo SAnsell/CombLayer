@@ -3,7 +3,7 @@
  
  * File:   Main/reactor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 	
       delftSystem::makeDelft RObj;
-      World::createOuterObjects(*SimPtr);
       RObj.build(*SimPtr,IParam);
 
       //      RObj.setSource(*SimPtr,IParam);

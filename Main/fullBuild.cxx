@@ -3,7 +3,7 @@
  
  * File:   Main/fullBuild.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,6 @@
 #include "makeTS2.h"
 #include "chipDataStore.h"
 #include "mainJobs.h"
-#include "World.h"
 #include "Volumes.h"
 
 #include "MemStack.h"
@@ -131,7 +130,6 @@ main(int argc,char* argv[])
 	    setVFlag(IParam.getValue<int>("memStack"));
 	}
       
-      World::createOuterObjects(*SimPtr);
       moderatorSystem::makeTS2 TS2Obj;
       TS2Obj.build(SimPtr,IParam);
       

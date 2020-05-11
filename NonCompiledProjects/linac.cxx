@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/t1MarkII.cxx
+ * File:   Main/linac.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <array>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -50,12 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "Quadratic.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -66,25 +59,26 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
+#include "SimInput.h"
+#include "SurInter.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h" 
+#include "Simulation.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "mainJobs.h"
-#include "Volumes.h"
 #include "DefPhysics.h"
+#include "Volumes.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
-#include "DefUnitsTS1Mark.h"
+#include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "World.h"
-#include "SimInput.h"
 
-#include "makeT1Upgrade.h"
+#include "makeLinac.h"
+
 
 MTRand RNG(12345UL);
 
@@ -105,9 +99,8 @@ main(int argc,char* argv[])
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
 
-  std::vector<std::string> Names;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
   std::string Oname;
+  std::vector<std::string> Names;  
 
   Simulation* SimPtr(0);
   try
@@ -115,33 +108,28 @@ main(int argc,char* argv[])
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      createTS1Inputs(IParam);
-
+      createLinacInputs(IParam);
+      
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
       // The big variable setting
-      setVariable::TS1upgrade(SimPtr->getDataBase());
-      // Check for model type
+      setVariable::EssLinacVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
+      mainSystem::setMaterialsDataBase(IParam);
+
+      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+
+      essSystem::makeLinac linacObj;
+      linacObj.build(*SimPtr,IParam);
       
-      // Definitions section 
-      
-      ts1System::makeT1Upgrade T1Obj;
-      World::createOuterObjects(*SimPtr);
-      T1Obj.build(*SimPtr,IParam);
-            
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      
-      // Ensure we done loop
-      ELog::EM<<"T1MARKII : variable hash: "
-              <<SimPtr->getDataBase().variableHash()
-              <<ELog::endBasic;
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      
+      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -162,6 +150,7 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
+  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

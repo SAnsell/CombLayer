@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/sinbad.cxx
+ * File:   Main/t1MarkII.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -42,34 +43,48 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "surfRegister.h"
 #include "objectRegister.h"
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
+#include "Transform.h"
+#include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h"
+#include "Simulation.h" 
 #include "SimPHITS.h"
+#include "ContainedComp.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedOffset.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnitsTS1Mark.h"
 #include "ImportControl.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
+#include "SimInput.h"
 
-#include "makeSinbad.h"
+#include "makeT1Upgrade.h"
 
 MTRand RNG(12345UL);
 
@@ -90,91 +105,42 @@ main(int argc,char* argv[])
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
 
-  std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;           // Variable to iterate 
+  std::string Oname;
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createSinbadInputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::SinbadVariables(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-  mainSystem::setVariables(*SimPtr,IParam,Names);
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createTS1Inputs(IParam);
 
-	  SimPtr->resetAll();
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+      
+      // The big variable setting
+      setVariable::TS1upgrade(SimPtr->getDataBase());
+      // Check for model type
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      InputModifications(SimPtr,IParam,Names);
+      
+      // Definitions section 
+      
+      ts1System::makeT1Upgrade T1Obj;
+      T1Obj.build(*SimPtr,IParam);
+            
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+      
+      // Ensure we done loop
+      ELog::EM<<"T1MARKII : variable hash: "
+              <<SimPtr->getDataBase().variableHash()
+              <<ELog::endBasic;
 
-	  const std::string preName=
-	    IParam.getValue<std::string>("preName");
-
-	  sinbadSystem::makeSinbad SinbadObj(preName);
-	  World::createOuterObjects(*SimPtr);
-
-	  SinbadObj.build(SimPtr,IParam);
-
-	  SDef::sourceSelection(*SimPtr,IParam);
-
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces();         
-
-	  //ALB SimPtr->removeOppositeSurfaces();
-
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
-	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -188,8 +154,13 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

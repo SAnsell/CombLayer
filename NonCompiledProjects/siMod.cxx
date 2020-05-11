@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/d4c.cxx
+ * File:   Main/siMod.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -35,7 +35,6 @@
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 
-
 #include "Exception.h"
 #include "MersenneTwister.h"
 #include "FileReport.h"
@@ -45,64 +44,96 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
+#include "version.h"
 #include "InputControl.h"
+#include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Tally.h"
+#include "TallyCreate.h"
+#include "MeshCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
+#include "masterWrite.h"
 #include "Surface.h"
-#include "Quadratic.h"
-#include "Rules.h"
 #include "surfIndex.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Line.h"
+#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
+#include "ModeCard.h"
+#include "PhysCard.h"
+#include "PhysImp.h"
+#include "LSwitchCard.h"
+#include "Source.h"
+#include "KCode.h"
+#include "PhysicsCards.h"
+#include "DefPhysics.h"
+#include "BasicWWE.h"
 #include "MainProcess.h"
-#include "MainInputs.h"
+#include "insertInfo.h"
+#include "insertBaseInfo.h"
 #include "SimProcess.h"
+#include "SurInter.h"
+#include "ReadFunctions.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h" 
+#include "Simulation.h"
 #include "SimPHITS.h"
-#include "ContainedComp.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "mainJobs.h"
-#include "Volumes.h"
-#include "DefPhysics.h"
 #include "variableSetup.h"
+#include "weightManager.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
-#include "TallySelector.h"
-#include "tallyConstructFactory.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "SecondTrack.h"
+#include "TwinComp.h"
+#include "ContainedComp.h"
+#include "ContainedGroup.h"
+
+#include "siModerator.h"
+#include "candleStick.h"
+#include "LensSource.h"
+#include "FlightLine.h"
+#include "FlightCluster.h"
+#include "ProtonFlight.h"
+#include "layers.h"
+#include "outerConstruct.h"
 #include "World.h"
-#include "SimInput.h"
+#include "LensTally.h"
+#include "makeLens.h"
+
+// #include "Component.h"
+// #include "ObjComponent.h"
+// #include "CompStore.h"
+//#include "ObjStore.h"
+// #include "InstrumentGeom.h"
+#include "surfaceFactory.h"
 #include "neutron.h"
-#include "World.h"
+#include "Detector.h"
+// #include "Beam.h"
+// #include "OutZone.h"
 
-#include "Beam.h"
-#include "AreaBeam.h"
-#include "DetGroup.h"
-#include "SimMonte.h"
-
-#include "makeD4C.h"
-
-class SimMonte;
 namespace ELog 
 {
-  ELog::OutputLog<EReport> EM;      
-  ELog::OutputLog<FileReport> FM("Spectrum.log");               
-  ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
-  ELog::OutputLog<StreamReport> CellM;
+  ELog::OutputLog<EReport> EM;                     
 }
 
 MTRand RNG(12345UL);
@@ -112,9 +143,9 @@ main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
   // For output stream
-  ELog::RegMethod RControl("d4c","main");
+  ELog::RegMethod RControl("siMod","main");
   mainSystem::activateLogging(RControl);
-  
+
   // For output stream
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
@@ -122,71 +153,29 @@ main(int argc,char* argv[])
 
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createD4CInputs(IParam);
-  const int iteractive(0);   
+  createSiliconInputs(IParam);
 
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  SimMonte* MSim=dynamic_cast<SimMonte*>(SimPtr);
   if (!SimPtr) return -1;
 
-  setVariable::D4CModel(SimPtr->getDataBase());
-
-  InputModifications(SimPtr,IParam,Names);
-
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
-	  SimPtr->resetAll();
-
-	  d4cSystem::makeD4C dObj; 
-	  World::createOuterObjects(*SimPtr);
-	  dObj.build(SimPtr,IParam);
+      lensSystem::makeLens lensObj;
+      lensObj.build(SimPtr,IParam);
       
-	  SDef::sourceSelection(*SimPtr,IParam);
+      SimPtr->removeComplements();
+      SimPtr->removeDeadSurfaces(0);         
+      
+      SimPtr->removeOppositeSurfaces();
+      // outer void to zero
+      // RENUMBER:
+      mainSystem::renumberCells(*SimPtr,IParam);
+      
+      SimProcess::writeIndexSim(*SimPtr,Oname,0);
 
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces();         
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork(0); // =beamTallySelection(*SimPtr,IParam);
-
-	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();	  
-	  
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-	  
-	  // ACTUAL SIM:
-      	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
-      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
-      ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      // ACTUAL SIM:
+      
+      
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -200,41 +189,11 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  //  SimPtr->getBeam()->setBias(yBias);
-
-  if (MSim)
-    {
-      Transport::AreaBeam A;
-      A.setWidth(0.4);
-      A.setHeight(1.0);
-      A.setStart(-5.0);
-      A.setCent(Geometry::Vec3D(0,0,0));
-      A.setWavelength(0.7);
-      
-      const size_t NPS(IParam.getValue<size_t>("nps"));
-      const int MS(IParam.getValue<int>("MS"));
-      MSim->setMS(MS);
-      MSim->setBeam(A);
-      MSim->runMonte(NPS);
-      
-      const std::string DFile=
-	IParam.getValue<std::string>("detFile");
-      
-      MSim->writeDetectors(DFile,NPS);
-    }
-  else
-    {
-      ELog::EM<<"No simulation done : use -Monte to enable"
-	      <<ELog::endDiag;
-    }
-  // EXIT
 
   delete SimPtr; 
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   masterRotate::Instance().reset();
-
-
   return exitFlag;
   
   //   System.setDetector(200,200,30,
@@ -243,6 +202,8 @@ main(int argc,char* argv[])
   // 		     Geometry::Vec3D(0,0,detSize),
   // 		     -0.05,-10.0);
   // ELog::EM<<"Using Beam Type:"<<System.getBeam()->className()<<ELog::endCrit;
+  // System.getBeam()->setWavelength(lambda);
+  // System.getBeam()->setBias(yBias);
 
   // // Commented out to select random track:
   // //  System.setAimZone(&PZ);        

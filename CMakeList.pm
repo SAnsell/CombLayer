@@ -100,7 +100,8 @@ sub findSubSrcDir
   foreach my $dname (@DPts)
     {
       if ($dname=~/$topDirName\/(.*)\// &&
-	  $dname!~/\/Main\//)
+	  $dname!~/\/Main\// &&
+	  $dname!~/NonCompile/)
         {
 	  my $flag=0;
 	  foreach my $exclude (@EXCL)

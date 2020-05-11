@@ -50,7 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Transform.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -76,7 +75,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "World.h"
 #include "SimInput.h"
 
 #include "makePhoton2.h"
@@ -120,7 +118,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       photonSystem::makePhoton2 LObj;
-      World::createOuterObjects(*SimPtr);
       LObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
