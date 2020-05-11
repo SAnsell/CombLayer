@@ -95,6 +95,7 @@ testLineTrack::initSim()
     Set all the objects in the simulation:
   */
 {
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   ASim.resetAll();
   createSurfaces();
   createObjects();
@@ -135,10 +136,10 @@ testLineTrack::createSurfaces()
   SurI.createSurface(37,"cz 4");
 
   // Sphere :
-  SurI.createSurface(110,"so 25");
+  SurI.createSurface(100,"so 25");
 
   /// Special Cone surface
-  Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(1017);  
+  Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(1007);  
   CX->setCone(Geometry::Vec3D(0,1,0),Geometry::Vec3D(0,1,0),45.0);
   SurI.insertSurface(CX);
 
@@ -153,23 +154,23 @@ testLineTrack::createObjects()
 {
   std::string Out;
   int cellIndex(2);
-  const int surIndex(10);
+  const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex," 100 ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
   ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
-				 " (-1:2:-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
+				 " (-11:12:-13:14:-15:16) ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"-27 16 -26");
+  Out=ModelSupport::getComposite(surIndex,"-37 26 -36");
   ASim.addCell(MonteCarlo::Object(cellIndex++,4,0.0,Out));      // CH4 container
 
   // Sphereical container
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) "
-                                        "(27 : -16 : 26)");
+  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26) "
+                                        "(37 : -26 : 36)");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   return;
@@ -211,9 +212,11 @@ testLineTrack::applyTest(const int extra)
       std::cout.flags(flagIO);
       return 0;
     }
-
+	  
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   for(int i=0;i<TSize;i++)
     {
+      initSim();
       if (extra<0 || extra==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
@@ -234,8 +237,6 @@ testLineTrack::testLine()
   */
 {
   ELog::RegMethod RegA("testLineTrack","testLine");
-
-  initSim();
 
   // Point A : Point B : Sum of cellIDs 
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;

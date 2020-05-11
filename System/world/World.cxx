@@ -118,12 +118,16 @@ buildWorld(objectGroups& OGrp)
     \param OGrp :: Simluation to add a world to.
   */
 {
+  ELog::RegMethod RegA("World[F]","buildWorld");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   OR.setObjectGroup(OGrp);
-  
+  ELog::EM<<"Post set Object Group"<<ELog::endDiag;
+  ELog::EM<<"OR -> "<<OR.hasGroup("World")<<ELog::endDiag;;
   std::shared_ptr<attachSystem::FixedComp> worldPtr=
     std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
+  ELog::EM<<"World NAme == "<<worldPtr->getKeyName()<<ELog::endDiag;
   OGrp.addObject(worldPtr);
   return;
 }
@@ -138,6 +142,7 @@ createOuterObjects(Simulation& System,
   */
 { 
   ELog::RegMethod RegA("World","createOuterObjects");
+  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   // Create object 1

@@ -70,7 +70,9 @@ class objectRegister
   static objectRegister& Instance();
 
   void setObjectGroup(objectGroups&);
-  
+
+  bool hasGroup(const std::string&) const;
+    
   int cell(const std::string&,const size_t = 10000);
   void removeCell(const std::string&);
 

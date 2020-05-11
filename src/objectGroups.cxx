@@ -70,7 +70,10 @@ objectGroups::objectGroups() :
   /*!
     Constructor
   */
-{}
+{
+  //  regionMap.emplace(std::string("World"),10000);
+
+}
 
 objectGroups::objectGroups(const objectGroups& A) : 
   cellZone(A.cellZone),cellNumber(A.cellNumber),

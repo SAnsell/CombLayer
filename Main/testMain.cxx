@@ -967,7 +967,6 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
   if(type==index || type<0)
     {
       testInputParam A;
@@ -975,15 +974,21 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
+
   if(type==index || type<0)
     {
+      ELog::EM<<"START "<<ELog::endDiag;
+      testBoxLine B;
+      const int Y=B.applyTest(extra);
+      if (Y) return Y;
+      ELog::EM<<"MID "<<ELog::endDiag;
       testLineTrack A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
   index++;
-  
+
+  ELog::EM<<"ASDFSDFS OBJECT "<<ELog::endCrit;  
   if(type==index || type<0)
     {
       testObjectRegister A;

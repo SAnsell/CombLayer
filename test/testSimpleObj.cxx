@@ -3,7 +3,7 @@
  
  * File:   test/testSimpleObj.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,9 +76,7 @@ testSimpleObj::testSimpleObj()
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testSimpleObj::~testSimpleObj() 
   /*!
@@ -137,6 +135,7 @@ testSimpleObj::applyTest(const int extra)
     {
       if (extra<0 || extra==i+1)
         {
+	  initSim();
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
@@ -155,8 +154,6 @@ testSimpleObj::testCreateObj()
 {
   ELog::RegMethod RegA("testSimpleObj","testCreateObj");
 
-  initSim();
-  World::createOuterObjects(ASim);
   
   testSystem::simpleObj A("simple");
   A.addInsertCell(74123);
@@ -187,9 +184,6 @@ testSimpleObj::testRotateAngle()
 {
   ELog::RegMethod RegA("testSimpleObj","testAngleRotate");
 
-  initSim();
-  World::createOuterObjects(ASim);
-  
   testSystem::simpleObj A("simpleBase");
   A.addInsertCell(74123);
   A.setMat(11);

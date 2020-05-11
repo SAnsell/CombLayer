@@ -3,7 +3,7 @@
  
  * File:   include/SimTrack.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@ class SimTrack
 {
  private:
 
-  /// Storage of the findCell Ptr
+  /// Storage of the SimulationPtr : findCell Ptr
   typedef std::map<unsigned long int,MonteCarlo::Object*> fcTYPE;
-  fcTYPE findCell;   ///< Find cell Map
+  fcTYPE findCell;   ///< SimluationPtr :: last find cell
 
   SimTrack();
 

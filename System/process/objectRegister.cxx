@@ -89,6 +89,12 @@ objectRegister::Instance()
   return A;
 }
 
+bool
+objectRegister::hasGroup(const std::string& grpName) const
+{
+  return (GPtr) ? 0 : GPtr->hasObject(grpName);
+}
+  
 void
 objectRegister::setObjectGroup(objectGroups& OGrp)
   /*!
