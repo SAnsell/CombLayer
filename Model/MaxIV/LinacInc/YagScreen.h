@@ -63,7 +63,9 @@ class YagScreen : public attachSystem::ContainedGroup,
   double mirrorThick;           ///< quartz mirror thickness
   int    mirrorMat;             ///< mirror  material
 
+  double screenOffset;          ///< offset of the screen from the mirror
   double screenRadius;          ///< screen radius
+  double screenAngle;           ///< screen inclination angle [deg]
   double screenHolderRadius;    ///< screen holder outer radius
 
   double screenHolderThick;    ///< screen holder thickness

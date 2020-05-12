@@ -59,8 +59,10 @@ class YagScreenGenerator
   double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness
   std::string mirrorMat;        ///< mirror material
+  double screenOffset;          ///< distance between mirror and screen
 
   double screenRadius;          ///< screen radius
+  double screenAngle;           ///< screen inclination angle [deg]
   double screenHolderRadius;    ///< screen holder outer radius
   double screenHolderThick;    ///< screen holder thickness
   std::string screenHolderMat;       ///< screen holder material

@@ -98,7 +98,9 @@ YagScreen::YagScreen(const YagScreen& A) :
   mirrorAngle(A.mirrorAngle),
   mirrorThick(A.mirrorThick),
   mirrorMat(A.mirrorMat),
+  screenOffset(A.screenOffset),
   screenRadius(A.screenRadius),
+  screenAngle(A.screenAngle),
   screenHolderRadius(A.screenHolderRadius),
   screenHolderThick(A.screenHolderThick),
   screenHolderMat(A.screenHolderMat),
@@ -143,7 +145,9 @@ YagScreen::operator=(const YagScreen& A)
       mirrorAngle=A.mirrorAngle;
       mirrorThick=A.mirrorThick;
       mirrorMat=A.mirrorMat;
+      screenOffset=A.screenOffset;
       screenRadius=A.screenRadius;
+      screenAngle=A.screenAngle;
       screenHolderRadius=A.screenHolderRadius;
       screenHolderThick=A.screenHolderThick;
       screenHolderMat=A.screenHolderMat;
@@ -221,7 +225,9 @@ YagScreen::populate(const FuncDataBase& Control)
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  screenOffset=Control.EvalVar<double>(keyName+"ScreenOffset");
   screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
+  screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
   screenHolderRadius=Control.EvalVar<double>(keyName+"ScreenHolderRadius");
   screenHolderThick=Control.EvalVar<double>(keyName+"ScreenHolderThick");
   screenHolderMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenHolderMat");
@@ -334,16 +340,24 @@ YagScreen::createSurfaces()
 			      MVec,mirrorRadius);
 
   // screen
-  ModelSupport::buildPlane(SMap,buildIndex+401,or307,Y);
-  const double dx(mirrorThick); // just some arbitrary distance from the mirror
-  ModelSupport::buildPlane(SMap,buildIndex+403,Origin+X*(dx),X);
-  ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(dx+screenHolderThick),X);
+  Geometry::Vec3D SVec(X);
+  const Geometry::Quaternion SV = Geometry::Quaternion::calcQRotDeg(screenAngle,Z);
+  SV.rotate(SVec);
 
-  ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*(screenHolderRadius),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*(screenHolderRadius),Z);
+  const Geometry::Vec3D or403(Origin+X*(screenOffset)-Y*(threadZStep));
+  ModelSupport::buildPlane(SMap,buildIndex+403,or403,SVec);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+404,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+403),
+				  screenHolderThick);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+407,or307,X,screenRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+408,or307,X,screenHolderRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+405,or403-Z*(screenHolderRadius),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+406,or403+Z*(screenHolderRadius),Z);
+
+  const Geometry::Vec3D or407(or403+SVec*Z*mirrorRadius+SVec*mirrorThick/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+407,or407,SVec,screenRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+408,or407,SVec,screenHolderRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+401,or407,-SVec*Z);
 
   return;
 }

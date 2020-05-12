@@ -68,7 +68,9 @@ YagScreenGenerator::YagScreenGenerator() :
   mirrorAngle(-45.0),
   mirrorThick(0.5),
   mirrorMat("SiO2"),
+  screenOffset(0.5),
   screenRadius(0.9), // yag-drawings.pdf, drawing #201375,
+  screenAngle(5),
   screenHolderRadius(1.3),
   screenHolderThick(0.2), // measured,
   screenHolderMat("Stainless304L"),
@@ -141,7 +143,9 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"MirrorAngle",mirrorAngle);
   Control.addVariable(keyName+"MirrorThick",mirrorThick);
   Control.addVariable(keyName+"MirrorMat",mirrorMat);
+  Control.addVariable(keyName+"ScreenOffset",screenOffset);
   Control.addVariable(keyName+"ScreenRadius",screenRadius);
+  Control.addVariable(keyName+"ScreenAngle",screenAngle);
   Control.addVariable(keyName+"ScreenHolderRadius",screenHolderRadius);
   Control.addVariable(keyName+"ScreenHolderThick",screenHolderThick);
   Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
