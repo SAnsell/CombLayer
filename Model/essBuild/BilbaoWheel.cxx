@@ -457,7 +457,7 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2176,Origin+Z*H,Z);
 
   H += voidThick;
-  ModelSupport::buildPlane(SMap,buildIndex+2186,Origin+Z*H,Z,"z0=shaft2StepHeight+shaft2StepConnectionDist+shaft2StepConnectionHeight+voidThick");
+  ModelSupport::buildPlane(SMap,buildIndex+2186,Origin+Z*H,Z,"z0 = shaft2StepHeight + shaft2StepConnectionDist + shaft2StepConnectionHeight + voidThick");
 
   R = shaft2StepConnectionRadius;
   ModelSupport::buildCylinder(SMap,buildIndex+2127,Origin,Z,R);
