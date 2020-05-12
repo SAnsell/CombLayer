@@ -80,7 +80,7 @@ namespace linacVar
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(81.0);    // drawing README.pdf
-  
+
 void
 linac2SPFsegment2(FuncDataBase& Control,
 		   const std::string& lKey)
@@ -107,10 +107,10 @@ linac2SPFsegment2(FuncDataBase& Control,
   PGen.setNoWindow();
 
   // lengthened to fit quad +2cm
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0); 
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0);
 
-  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);   
-  
+  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);
+
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
@@ -118,17 +118,17 @@ linac2SPFsegment2(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0); 
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0);
 
-  LQGen.generateQuad(Control,lKey+"QuadB",72.0);   
+  LQGen.generateQuad(Control,lKey+"QuadB",72.0);
 
-  CGateGen.generateGate(Control,lKey+"GateTube",0);   
-  
+  CGateGen.generateGate(Control,lKey+"GateTube",0);
+
   // This could be a standard component:
   /*
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);    
+  PItemGen.setCF<setVariable::CF40>(6.5);
   PItemGen.setNoPlate();
 
   SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
@@ -159,10 +159,10 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-    
+
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",linacVar::zeroY);   // exactly 1m from wall.
-  
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
@@ -230,9 +230,9 @@ linac2SPFsegment14(FuncDataBase& Control,
 
   // number form drawing
   Control.addVariable(lKey+"XStep",-622.286+linacVar::zeroX);   // include 1m offset
-  Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        // 
+  Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        //
   Control.addVariable(lKey+"XYAngle",0.0);   // this should be 3.1183 deg
-    
+
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,8.82); // measured yStep, length
@@ -254,7 +254,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DM2");
 
   GateGen.setLength(6.3);
-  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.setCubeCF<setVariable::CF40_22>();
   GateGen.generateValve(Control,lKey+"GateA",0.0,0);
   Control.addVariable(lKey+"GateAPortALen",2.0);
 
@@ -284,8 +284,8 @@ linac2SPFsegment15(FuncDataBase& Control,
 
     // number form drawing
   Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
-  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        // 
-  Control.addVariable(lKey+"XYAngle",0.0);  
+  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        //
+  Control.addVariable(lKey+"XYAngle",0.0);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -427,13 +427,13 @@ LINACvariables(FuncDataBase& Control)
 
   // Segment 1-14
   Control.addVariable("TDCl2spfXStep",linacVar::zeroX);
-  Control.addVariable("TDCl2spfYStep",linacVar::zeroY); 
+  Control.addVariable("TDCl2spfYStep",linacVar::zeroY);
   Control.addVariable("TDCl2spfOuterLeft",80.0);
   Control.addVariable("TDCl2spfOuterRight",140.0);
   Control.addVariable("TDCl2spfOuterTop",100.0);
 
-  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);   
-  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);   
+  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);
   Control.addVariable("TDCtdcOuterLeft",100.0);
   Control.addVariable("TDCtdcOuterRight",100.0);
   Control.addVariable("TDCtdcOuterTop",100.0);
