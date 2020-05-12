@@ -84,35 +84,23 @@ template<typename CF>
 void
 EArrivalMonGenerator::setCF()
   /*!
-    Setter for flange A
-   */
+    Setter for main radius / flange
+  */
 {
-  setAFlangeCF<CF>();
-  setBFlangeCF<CF>();
+  radius=CF63::innerRadius;
+  setFlangeCF<CF>();
   return;
 }
 
 template<typename CF>
 void
-EArrivalMonGenerator::setAFlangeCF()
+EArrivalMonGenerator::setFlangeCF()
   /*!
     Setter for flange A
    */
 {
-  flangeARadius=CF::flangeRadius;
-  flangeALength=CF::flangeLength;
-  return;
-}
-
-template<typename CF>
-void
-EArrivalMonGenerator::setBFlangeCF()
-  /*!
-    Setter for flange A
-   */
-{
-  flangeBRadius=CF::flangeRadius;
-  flangeBLength=CF::flangeLength;
+  flangeRadius=CF::flangeRadius;
+  flangeLength=CF::flangeLength;
   return;
 }
 
@@ -131,8 +119,34 @@ EArrivalMonGenerator::generateEArrivalMon(FuncDataBase& Control,
   ELog::RegMethod RegA("EArrivalMonGenerator","generateQuad");
 
   Control.addVariable(keyName+"YStep",yStep);
-  
-    
+
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Thick",thick);
+  Control.addVariable(keyName+"FaceThick",faceThick);
+
+  Control.addVariable(keyName+"FrontPipeILen",frontPipeILen);
+  Control.addVariable(keyName+"FrontPipeLen",frontPipeLen);
+  Control.addVariable(keyName+"FrontPipeRadius",frontPipeRadius);
+  Control.addVariable(keyName+"FrontPipeThick",frontPipeThick);
+
+  Control.addVariable(keyName+"BackPipeILen",backPipeILen);
+  Control.addVariable(keyName+"BackPipeLen",backPipeLen);
+  Control.addVariable(keyName+"BackPipeRadius",backPipeRadius);
+  Control.addVariable(keyName+"BackPipeThick",backPipeThick);
+
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
+
+  Control.addVariable(keyName+"WindowRotAngle",windowRotAngle);
+  Control.addVariable(keyName+"WindowRadius",windowRadius);
+  Control.addVariable(keyName+"WindowThick",windowThick);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"WindowMat",windowMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
+
   return;
 
 }

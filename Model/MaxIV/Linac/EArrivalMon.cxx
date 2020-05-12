@@ -114,32 +114,30 @@ EArrivalMon::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("EArrivalMon","populate");
 
   FixedOffset::populate(Control);
-  
+
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
-  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
+  thick=Control.EvalVar<double>(keyName+"Thick");
+  faceThick=Control.EvalVar<double>(keyName+"FaceThick");
+
+  frontPipeILen=Control.EvalVar<double>(keyName+"FrontPipeILen");
+  frontPipeLen=Control.EvalVar<double>(keyName+"FrontPipeLen");
+  frontPipeRadius=Control.EvalVar<double>(keyName+"FrontPipeRadius");
+  frontPipeThick=Control.EvalVar<double>(keyName+"FrontPipeThick");
+
+  backPipeILen=Control.EvalVar<double>(keyName+"BackPipeILen");
+  backPipeLen=Control.EvalVar<double>(keyName+"BackPipeLen");
+  backPipeRadius=Control.EvalVar<double>(keyName+"BackPipeRadius");
+  backPipeThick=Control.EvalVar<double>(keyName+"BackPipeThick");
+
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+
+  windowRotAngle=Control.EvalVar<double>(keyName+"WindowRotAngle");
+  windowRadius=Control.EvalVar<double>(keyName+"WindowRadius");
+  windowThick=Control.EvalVar<double>(keyName+"WindowThick");
   
-  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
-  innerAngle=Control.EvalVar<double>(keyName+"InnerAngle");
-  innerAngleOffset=Control.EvalVar<double>(keyName+"InnerAngleOffset");
-
-  flangeARadius=Control.EvalHead<double>
-    (keyName,"FlangeARadius","FlangeRadius");
-  flangeALength=Control.EvalHead<double>
-    (keyName,"FlangeALength","FlangeLength");
-
-  flangeBRadius=Control.EvalHead<double>
-    (keyName,"FlangeBRadius","FlangeRadius");
-  flangeBLength=Control.EvalHead<double>
-    (keyName,"FlangeBLength","FlangeLength");
-
-  electrodeRadius=Control.EvalVar<double>(keyName+"ElectrodeRadius");
-  electrodeThick=Control.EvalVar<double>(keyName+"ElectrodeThick");
-  electrodeEnd=Control.EvalVar<double>(keyName+"ElectrodeEnd");
-  electrodeYStep=Control.EvalVar<double>(keyName+"ElectrodeYStep");
-  
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   electrodeMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
