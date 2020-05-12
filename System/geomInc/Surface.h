@@ -45,6 +45,7 @@ class Surface
   
   int Name;        ///< Surface number (MCNP identifier)
   int TransN;      ///< Transform number (-ve means applied)
+  std::string Comment; /// Comment to be added to the Surface definition
 
 
  protected:
@@ -76,6 +77,7 @@ class Surface
   int getName() const { return Name; }             ///< Get Name
   void setTrans(const int N) { TransN=N; }         ///< Set Transform number
   int getTrans() const { return TransN; }          ///< Get Transform number
+  void setComment(const std::string& C) { Comment=C; }; ///< Set Comment
 
   // Processes Name/TransNumber
   std::string stripID(const std::string&);
@@ -102,6 +104,8 @@ class Surface
   virtual void write(std::ostream&) const =0;
   
   /// \endcond ABSTRACT
+
+  void writeComment(std::ostream&) const;
 
   virtual void rotate(const Geometry::Quaternion&);
 

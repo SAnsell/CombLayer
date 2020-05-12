@@ -46,6 +46,8 @@
 #include "Transform.h"
 #include "Line.h"
 #include "Surface.h"
+#include "support.h"
+#include "writeSupport.h"
 
 namespace Geometry
 {
@@ -64,7 +66,7 @@ operator<<(std::ostream& OX,const Surface& A)
 }
 
 Surface::Surface() : 
-  Name(-1),TransN(0)
+  Name(-1),TransN(0),Comment(std::string())
   /*!
     Constructor
   */
@@ -80,7 +82,7 @@ Surface::Surface(const int N,const int T) :
 {}
 
 Surface::Surface(const Surface& A) : 
-  Name(A.Name),TransN(A.TransN)
+  Name(A.Name),TransN(A.TransN),Comment(A.Comment)
   /*!
     Copy constructor
     \param A :: Surface to copy
@@ -100,6 +102,7 @@ Surface::operator=(const Surface& A)
     {
       Name=A.Name;
       TransN=A.TransN;
+      Comment=A.Comment;
     }
   return *this;
 }
@@ -152,6 +155,20 @@ Surface::writeHeader(std::ostream& OX) const
   OX<<Name<<" ";
   if (TransN>0)
     OX<<TransN<<" ";
+  return;
+}
+
+void
+Surface::writeComment(std::ostream& OX) const
+  /*!
+    Writes out the comment of a MCNP surface description
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  if (!StrFunc::isEmpty(Comment)){
+      StrFunc::writeMCNPXcomment(" *** ",OX);
+      StrFunc::writeMCNPXcomment(Comment,OX);
+  }
   return;
 }
 

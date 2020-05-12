@@ -48,51 +48,61 @@ buildShiftedPlaneReversed(surfRegister&,const int,
 Geometry::Plane*
 buildPlaneRotAxis(surfRegister&,const int,
 		  const Geometry::Vec3D&,const Geometry::Vec3D&,
-		  const Geometry::Vec3D&,const double);
+                  const Geometry::Vec3D&,const double,
+                  const std::string& C=std::string());
 
 Geometry::Plane* 
 buildPlane(surfRegister&,const int,const Geometry::Vec3D&,
 	   const Geometry::Vec3D&,const Geometry::Vec3D&,
-	   const Geometry::Vec3D&);
+           const Geometry::Vec3D&,
+           const std::string& Comment=std::string());
 
 Geometry::Plane* 
 buildPlane(surfRegister&,const int,const Geometry::Vec3D&,
-	   const Geometry::Vec3D&);
+           const Geometry::Vec3D&,
+           const std::string& C=std::string());
 
 Geometry::Plane* 
 buildPlane(surfRegister&,const int,const Geometry::Vec3D&,
-	   const double&);
+           const double&,
+           const std::string& C=std::string());
 
 Geometry::Cylinder* 
 buildCylinder(surfRegister&,const int,const Geometry::Vec3D&,
-	      const Geometry::Vec3D&,const double);
+          const Geometry::Vec3D&,const double,
+          const std::string& C=std::string());
 
 Geometry::Sphere* 
-buildSphere(surfRegister&,const int,const Geometry::Vec3D&,const double);
+buildSphere(surfRegister&,const int,const Geometry::Vec3D&,const double,
+            const std::string& C=std::string());
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,
 	  const Geometry::Vec3D&,const Geometry::Vec3D&,
-	  const Geometry::Vec3D&);
+          const Geometry::Vec3D&,
+          const std::string& C=std::string());
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,
 	  const Geometry::Vec3D&,const double,
-	  const Geometry::Vec3D&,const double);
+          const Geometry::Vec3D&,const double,
+          const std::string& C=std::string());
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,
-	  const Geometry::Vec3D&,const double);
+          const Geometry::Vec3D&,const double,
+          const std::string& C=std::string());
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,
-	  const Geometry::Vec3D&,const double,const int);
+          const Geometry::Vec3D&,const double,const int,
+          const std::string& C=std::string());
 
 Geometry::EllipticCyl* 
 buildEllipticCyl(surfRegister&,const int,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,const double,
-		 const double);
+                 const double, const std::string& C=std::string());
 
 
  

@@ -170,7 +170,8 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
 	   const Geometry::Vec3D& A,const Geometry::Vec3D& B,
-	   const Geometry::Vec3D& C,const Geometry::Vec3D& normDir) 
+       const Geometry::Vec3D& C,const Geometry::Vec3D& normDir,
+       const std::string& Comment)
   /*!
     Simple constructor to build a surface [type plane]
     (based on three points
@@ -179,6 +180,7 @@ buildPlane(surfRegister& SMap,const int N,
     \param A :: First point
     \param B :: Second Point
     \param C :: Third Point
+    \param Comment :: Comment
     \param normDir :: Approximate normal direction [allow to force sign]
     \return New Plane Pointer
    */
@@ -192,6 +194,7 @@ buildPlane(surfRegister& SMap,const int N,
   const double DP=PX->getNormal().dotProd(normDir);
   if (DP<-Geometry::zeroTol)
     PX->mirrorSelf();
+  PX->setComment(Comment);
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -199,13 +202,15 @@ buildPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
-	   const Geometry::Vec3D& O,const Geometry::Vec3D& D) 
+       const Geometry::Vec3D& O,const Geometry::Vec3D& D,
+       const std::string& C)
   /*!
     Simple constructor to build a surface [type plane]
     \param SMap :: Surface Map
     \param N :: Surface number
     \param O :: Origin
     \param D :: Direction
+    \param C :: Comment
     \return New Plane Pointer
    */
 {
@@ -215,6 +220,7 @@ buildPlane(surfRegister& SMap,const int N,
 
   Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
   PX->setPlane(O,D);
+  PX->setComment(C);
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -222,13 +228,15 @@ buildPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
-	   const Geometry::Vec3D& Norm,const double& Dist) 
+       const Geometry::Vec3D& Norm,const double& Dist,
+       const std::string& C)
   /*!
     Simple constructor to build a surface [type plane]
     \param SMap :: Surface Map
     \param N :: Surface number
     \param Norm :: Origin
     \param Dist :: Distance
+    \param C :: Comment
     \return New Plane Pointer
    */
 {
@@ -238,6 +246,8 @@ buildPlane(surfRegister& SMap,const int N,
 
   Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
   PX->setPlane(Norm,Dist);
+  PX->setComment(C);
+
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -246,7 +256,8 @@ buildPlane(surfRegister& SMap,const int N,
 Geometry::Plane*
 buildPlaneRotAxis(surfRegister& SMap,const int N,
 		  const Geometry::Vec3D& O,const Geometry::Vec3D& D,
-		  const Geometry::Vec3D& Axis,const double degAngle) 
+          const Geometry::Vec3D& Axis,const double degAngle,
+          const std::string& C)
   /*!
     Simple constructor to build a surface [type plane]
     The normal of the plane is rotated about the axis
@@ -256,6 +267,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
     \param D :: Direction before rotation
     \param Axis :: Axis to rotate about 
     \param degAngle :: Angle to rotate about [deg]
+    \param C :: Comment
     \return New Plane Pointer
    */
 {
@@ -267,6 +279,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
   Geometry::Vec3D RotNorm(D);
   Geometry::Quaternion::calcQRotDeg(degAngle,Axis).rotate(RotNorm);  
   PX->setPlane(O,RotNorm);
+  PX->setComment(C);
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -275,7 +288,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
 Geometry::Cylinder*
 buildCylinder(surfRegister& SMap,const int N,
 	      const Geometry::Vec3D& O,const Geometry::Vec3D& D,
-	      const double R) 
+          const double R,const std::string& C)
   /*!
     Simple constructor to build a surface [type Cylinder]
     \param SMap :: Surface Map
@@ -283,6 +296,7 @@ buildCylinder(surfRegister& SMap,const int N,
     \param O :: Origin
     \param D :: Direction
     \param R :: Radius
+    \param C :: Comment
     \return New cylinder pointer
    */
 {
@@ -296,6 +310,7 @@ buildCylinder(surfRegister& SMap,const int N,
 				 "Origin = "+StrFunc::makeString(O),
 				 "Dir    = "+StrFunc::makeString(D),
 				 "Radius = "+StrFunc::makeString(R));
+  CX->setComment(C);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cylinder>(NFound);
@@ -307,7 +322,8 @@ buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& circleCent,
 	  const double radius,
 	  const Geometry::Vec3D& Axis,
-	  const double angleDeg) 
+          const double angleDeg,
+          const std::string& C)
   /*!
     Simple constructor to build a surface [type Cone]
     \param SMap :: Surface Map
@@ -330,6 +346,7 @@ buildCone(surfRegister& SMap,const int N,
   ELog::EM<<"Cone == "<<circleCent-Axis.unit()*D<<ELog::endDiag;
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(circleCent-Axis.unit()*D,Axis,angleDeg);
+  CX->setComment(C);
   const int NFound=SMap.registerSurf(N,CX);
 
 
@@ -340,7 +357,8 @@ Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& O,
 	  const Geometry::Vec3D& A,
-	  const double angleDeg) 
+          const double angleDeg,
+          const std::string& C)
   /*!
     Simple constructor to build a surface [type Cone]
     \param SMap :: Surface Map
@@ -348,6 +366,7 @@ buildCone(surfRegister& SMap,const int N,
     \param O :: Origin
     \param A :: Axis
     \param angleDeg :: Angle in degrees
+    \param C :: Comment
     \return New cone
    */
 {
@@ -357,6 +376,7 @@ buildCone(surfRegister& SMap,const int N,
 
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(O,A,angleDeg);
+  CX->setComment(C);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cone>(NFound);
@@ -367,7 +387,8 @@ buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& CentPt,
 	  const Geometry::Vec3D& Axis,
 	  const Geometry::Vec3D& APt,
-	  const Geometry::Vec3D& BPt)
+          const Geometry::Vec3D& BPt,
+          const std::string& C)
   /*!
     Simple constructor to build a surface [type Cone]
     Assumption is that the Points APt and BPt are at
@@ -378,6 +399,7 @@ buildCone(surfRegister& SMap,const int N,
     \param Axis :: Forward Axis of cone
     \param APt :: Point on cone
     \param BPt :: Point on cone
+    \param C :: Comment
     \return New cone
    */
 {
@@ -417,6 +439,7 @@ buildCone(surfRegister& SMap,const int N,
   
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(coneCent,AUnit,180.0*acos(cosAng)/M_PI);
+  CX->setComment(C);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cone>(NFound);
@@ -426,7 +449,8 @@ Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& O,
 	  const Geometry::Vec3D& A,
-	  const double angleDeg,const int cutFlag) 
+          const double angleDeg,const int cutFlag, 
+          const std::string& C)
   /*!
     Simple constructor to build a surface [type Cone]
     \param SMap :: Surface Map
@@ -435,6 +459,7 @@ buildCone(surfRegister& SMap,const int N,
     \param A :: Axis
     \param angleDeg :: Angle in degrees
     \param cutFlag :: addtional cut flag
+    \param C :: Comment
     \return New cone
    */
 {
@@ -445,6 +470,7 @@ buildCone(surfRegister& SMap,const int N,
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(O,A,angleDeg);
   CX->setCutFlag(cutFlag);
+  CX->setComment(C);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cone>(NFound);
@@ -452,13 +478,15 @@ buildCone(surfRegister& SMap,const int N,
 
 Geometry::Sphere*
 buildSphere(surfRegister& SMap,const int N,
-	    const Geometry::Vec3D& O,const double R) 
+            const Geometry::Vec3D& O,const double R,
+            const std::string& C)
   /*!
     Simple constructor to build a surface [type Cylinder]
     \param SMap :: Surface Map
     \param N :: Surface number
     \param O :: Origin
     \param R :: Radius
+    \param C :: Comment
     \return New sphere pointer
    */
 {
@@ -468,6 +496,7 @@ buildSphere(surfRegister& SMap,const int N,
 
   Geometry::Sphere* SX=SurI.createUniqSurf<Geometry::Sphere>(N);  
   SX->setSphere(O,R);
+  SX->setComment(C);
   const int NFound=SMap.registerSurf(N,SX);
   return SMap.realPtr<Geometry::Sphere>(NFound);
 }
@@ -477,7 +506,8 @@ buildEllipticCyl(surfRegister& SMap,const int N,
 		 const Geometry::Vec3D& O,
 		 const Geometry::Vec3D& D,
 		 const Geometry::Vec3D& LA,
-		 const double RA,const double RB) 
+                 const double RA,const double RB,
+                 const std::string& C)
   /*!
     Simple constructor to build a surface [type Cylinder]
     \param SMap :: Surface Map
@@ -487,6 +517,7 @@ buildEllipticCyl(surfRegister& SMap,const int N,
     \param LA :: RA-X direction
     \param RA :: Radius
     \param RB :: Radius
+    \param C :: Comment
     \return New cylinder pointer
    */
 {
@@ -496,6 +527,7 @@ buildEllipticCyl(surfRegister& SMap,const int N,
 
   Geometry::EllipticCyl* EX=SurI.createUniqSurf<Geometry::EllipticCyl>(N);  
   EX->setEllipticCyl(O,D,LA,RA,RB);
+  EX->setComment(C);
 
   const int NFound=SMap.registerSurf(N,EX);
   return SMap.realPtr<Geometry::EllipticCyl>(NFound);

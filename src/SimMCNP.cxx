@@ -113,7 +113,8 @@
 SimMCNP::SimMCNP()  :
   Simulation(),
   mcnpVersion(6),
-  PhysPtr(new physicsSystem::PhysicsCards)
+  PhysPtr(new physicsSystem::PhysicsCards),
+  SurfaceCommentsFlag(false)
   
   /*!
     Start of simulation Object
@@ -490,9 +491,10 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
   
-  for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
+  for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap){
+    if (SimMCNP::hasSurfaceComments()) sm.second->writeComment(OX);
     sm.second->write(OX);
-
+  }
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;
   return;

@@ -141,6 +141,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("report","report",1000,0);
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
+  IParam.regFlag("SC","SurfaceCommentsFlag");
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regMulti("sdefType","sdefType",10,0);
   IParam.regItem("sdefFile","sdefFile");
@@ -272,6 +273,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("r","Renubmer cells");
   IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
+  IParam.setDesc("SC","Print comments in surface definitions");
   IParam.setDesc("sdefFile","File(s) for source");
   IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");

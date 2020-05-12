@@ -37,15 +37,15 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
 
 my @mainLib=qw( visit src simMC  construct physics input process
     transport scatMat endf crystal source monte funcBase log monte
-    flukaMagnetic flukaProcess flukaPhysics
-    flukaTally phitsProcess phitsPhysics
+    flukaProcess flukaPhysics
+    flukaTally phitsProcess 
     phitsTally phitsSupport tally
     geometry mersenne src world work
     xml poly support weights
     insertUnit md5 construct
     global constructVar physics simMC
-    scatMat endf crystal transport
-    attachComp visit poly);
+    transport attachComp visit poly flukaMagnetic phitsPhysics
+    scatMat endf crystal);
 
 my $gM=new CMakeList;
 $gM->setParameters(\@ARGV);
@@ -68,28 +68,26 @@ foreach my $mainProg (@masterProg)
   {
     if ($mainProg eq "ess")
       {
-	my @ess = qw( essBuild );
+	my @ess = qw( essBuild beer input );
+	push(@ess,@mainLib);
 	my @essSupport = qw( essConstruct commonVar common
-			     beer  bifrost  cspec  dream  estia
+			     bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
 			     trex  vor  vespa shortOdin shortNmx
 			     shortDream simpleItem beamline instrument );
-	
-	push(@ess,@mainLib);
 	$gM->addDepUnit("ess", [@ess,@essSupport]);
       }
     elsif ($mainProg eq "essBeamline")
       {
-	my @essBeam = qw( essBuild );
+	my @essBeam = qw( essBuild beer input );
+	push(@essBeam,@mainLib);
 	my @essSupport = qw( essConstruct commonVar common
-			     beer  bifrost  cspec  dream  estia
+			     bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
 			     trex  vor  vespa shortOdin shortNmx
 			     shortDream simpleItem beamline instrument );
-
-	push(@essBeam,@mainLib);
 	$gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
       }
     elsif ($mainProg eq "example")
@@ -101,10 +99,10 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "maxiv")
       { 
-	my @maxiv = qw( maxivBuild );
+	my @maxiv = qw( maxivBuild balder cosaxs danmax );
 	push(@maxiv,@mainLib);
 	$gM->addDepUnit("maxiv", [@maxiv,
-				  qw(R3Common balder cosaxs danmax
+				  qw(R3Common
 				  flexpes formax maxpeem  micromax
 				  softimax
 				  commonGenerator commonBeam Linac
@@ -127,7 +125,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( build chip moderator build ralBuild zoom  );
+	my @fullBuild = qw( moderator build chip build ralBuild zoom  );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }
@@ -181,11 +179,10 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "singleItem")
       { 
-	my @singleItem = qw( singleItemBuild ) ;
+	my @singleItem = qw( singleItemBuild commonVar commonGenerator R1Common R3Common ) ;
 	push(@singleItem,@mainLib);
 	$gM->addDepUnit("singleItem", [@singleItem,
-				       qw(commonGenerator commonVar
-				       commonBeam R1Common R3Common Linac )]);
+				       qw( commonBeam Linac )]);
       }
     
     

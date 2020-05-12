@@ -614,6 +614,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
+  if (IParam.flag("SurfaceCommentsFlag")) SimMCPtr->setSurfaceCommentsFlag();
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);

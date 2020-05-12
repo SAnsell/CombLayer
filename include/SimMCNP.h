@@ -84,6 +84,8 @@ class SimMCNP : public Simulation
 
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
 
+  bool SurfaceCommentsFlag;
+
 
   void deleteTally();
   
@@ -112,6 +114,10 @@ class SimMCNP : public Simulation
 
   /// is the system MCNP6
   bool isMCNP6() const { return mcnpVersion!=10; }
+
+  bool hasSurfaceComments() const { return SurfaceCommentsFlag; }
+
+  void setSurfaceCommentsFlag() { SurfaceCommentsFlag = true; }
 
   // processing for Simulation
   virtual void removeCell(const int);
