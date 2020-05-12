@@ -185,6 +185,9 @@ L2SPFsegment2::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gateTube,"back",*pipeC);
+
 
   return;
 }

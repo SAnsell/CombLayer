@@ -121,23 +121,10 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadB",72.0);   
 
-  CGateGen.generateGate(Control,lKey+"GateTube",0);   
-  
-  // This could be a standard component:
-  /*
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);    
-  PItemGen.setNoPlate();
+  CGateGen.setRotate(1);
+  CGateGen.generateGate(Control,lKey+"GateTube",0);
 
-  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
-  Control.addVariable(lKey+"PumpANPorts",2);
-
-  PItemGen.setLength(6.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
-  PItemGen.setLength(2.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
-  */
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,310.0); 
   return;
 }
 

@@ -58,6 +58,7 @@ namespace setVariable
 {
 
 CylGateValveGenerator::CylGateValveGenerator() :
+  horRotateFlag(0),
   radius(CF63::innerRadius),depth(7.8),height(10.0),
   wallThick(CF63::wallThick),portRadius(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),
@@ -115,7 +116,12 @@ CylGateValveGenerator::generateGate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("CylGateValveGenerator","generateGate");
 
-
+  if (horRotateFlag)
+    {
+      const double ang((horRotateFlag>0) ? 90.0 : -90);
+      Control.addVariable(keyName+"YAngle",ang);
+    }
+  
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"Height",height);
