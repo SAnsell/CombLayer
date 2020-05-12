@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/GateValveGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,7 +70,7 @@ GateValveGenerator::GateValveGenerator() :
 {}
 
 
-GateValveGenerator::~GateValveGenerator() 
+GateValveGenerator::~GateValveGenerator()
  /*!
    Destructor
  */
@@ -91,7 +91,7 @@ GateValveGenerator::setCylCF()
   width=2.1*CF::flangeRadius;
   bladeRadius=1.1*CF::innerRadius;
   bladeLift=2.2*CF::innerRadius;
-  
+
   return;
 }
 
@@ -110,11 +110,11 @@ GateValveGenerator::setCubeCF()
   width=2.1*CF::flangeRadius;
   bladeRadius=1.1*CF::innerRadius;
   bladeLift=2.2*CF::innerRadius;
-  
+
   return;
 }
 
-  
+
 void
 GateValveGenerator::setOuter(const double L,const double W,
 			     const double H,const double D)
@@ -190,7 +190,7 @@ GateValveGenerator::setAPortCF()
   // rad/len/thick
   setAPort(CF::innerRadius,CF::flangeLength,
 	   CF::flangeRadius-CF::innerRadius);
-  
+
   return;
 }
 
@@ -204,25 +204,25 @@ GateValveGenerator::setBPortCF()
   // rad/len/thick
   setBPort(CF::innerRadius,CF::flangeLength,
 	   CF::flangeRadius-CF::innerRadius);
-  
+
   return;
 }
 
-  
+
 void
 GateValveGenerator::generateValve(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double yStep,const int closedFlag) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param closedFlag :: true if valve closed
   */
 {
   ELog::RegMethod RegA("GateValveGenerator","generatorValve");
-  
+
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
@@ -239,14 +239,14 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
       Control.addVariable(keyName+"Height",height);
       Control.addVariable(keyName+"Depth",depth);
     }
-  
+
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  Control.addVariable(keyName+"PortARadius",portARadius);	
+  Control.addVariable(keyName+"PortARadius",portARadius);
   Control.addVariable(keyName+"PortAThick",portAThick);
   Control.addVariable(keyName+"PortALen",portALen);
 
-  Control.addVariable(keyName+"PortBRadius",portBRadius);	
+  Control.addVariable(keyName+"PortBRadius",portBRadius);
   Control.addVariable(keyName+"PortBThick",portBThick);
   Control.addVariable(keyName+"PortBLen",portBLen);
 
@@ -259,7 +259,7 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"BladeMat",bladeMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-       
+
   return;
 
 }
@@ -267,18 +267,22 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void GateValveGenerator::setCylCF<CF40>();
+template void GateValveGenerator::setCylCF<CF40_22>();
 template void GateValveGenerator::setCylCF<CF63>();
 template void GateValveGenerator::setCylCF<CF100>();
 
 template void GateValveGenerator::setCubeCF<CF40>();
+template void GateValveGenerator::setCubeCF<CF40_22>();
 template void GateValveGenerator::setCubeCF<CF63>();
 template void GateValveGenerator::setCubeCF<CF100>();
 
 template void GateValveGenerator::setAPortCF<CF40>();
+template void GateValveGenerator::setAPortCF<CF40_22>();
 template void GateValveGenerator::setAPortCF<CF63>();
 template void GateValveGenerator::setAPortCF<CF100>();
 
 template void GateValveGenerator::setBPortCF<CF40>();
+template void GateValveGenerator::setBPortCF<CF40_22>();
 template void GateValveGenerator::setBPortCF<CF63>();
 template void GateValveGenerator::setBPortCF<CF100>();
 
