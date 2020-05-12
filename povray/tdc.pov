@@ -75,9 +75,9 @@ global_settings {
     #declare cameraAngle = 90;
   #break
   #case(15) // segment 15
-    #declare cameraLocation = <210, 410, 40>;
-    #declare cameraLookAt   = <130, 342, 0>;
-    #declare cameraAngle = 50;
+    #declare cameraLocation = <-433, 4806, 40>;
+    #declare cameraLookAt   = <-485, 4860, 0>;
+    #declare cameraAngle = 70;
   #break
   #case(1000) // beamline view
     #declare cameraLocation = <200, 160, 40>;
