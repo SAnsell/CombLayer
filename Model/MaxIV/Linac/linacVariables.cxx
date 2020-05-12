@@ -65,6 +65,7 @@
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "YagScreenGenerator.h"
 
 namespace setVariable
 {
@@ -100,6 +101,7 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
+  setVariable::YagScreenGenerator YagGen;
   
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
@@ -144,6 +146,9 @@ linac2SPFsegment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadC",23.54);
   LQGen.generateQuad(Control,lKey+"QuadD",73.0);
   LQGen.generateQuad(Control,lKey+"QuadE",113.2);   
+
+  YagGen.setCF<CF40_22>();
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
   return;
 }
@@ -241,21 +246,21 @@ linac2SPFsegment14(FuncDataBase& Control,
     
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // yStep, length
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,8.82); // measured yStep, length
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.7); // measured
 
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,94.4); // measured
 
   PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,100.0);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.7); // measured
 
   DIBGen.generate(Control,lKey+"DM2");
 
@@ -264,7 +269,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   GateGen.generateValve(Control,lKey+"GateA",0.0,0);
   Control.addVariable(lKey+"GateAPortALen",2.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.44); // measured
 
   return;
 }
@@ -286,6 +291,7 @@ linac2SPFsegment15(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::YagScreenGenerator YagGen;
 
     // number form drawing
   Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
@@ -295,49 +301,56 @@ linac2SPFsegment15(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,30.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,22.0); // measured
 
   // Mirror chamber
   std::string name=lKey+"MirrorChamber";
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setCF<setVariable::CF40_22>(10.0); // 10 is ummy since we set up all port lenght later
   PItemGen.setNoPlate();
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
+  SimpleTubeGen.setFlangeCap(setVariable::CF63::flangeLength,setVariable::CF63::flangeLength);
+  SimpleTubeGen.generateTube(Control,name,0.0,22.6); // measured but wrong - it's top/bottom asymmetric and the lower part does not have flange
   Control.addVariable(name+"NPorts",4);
 
   const Geometry::Vec3D OPos(0,0.0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
   const Geometry::Vec3D XVec(1,0,0);
 
-  PItemGen.setLength(3.0);
+  PItemGen.setLength(2.2); // measured
   PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
-  PItemGen.setLength(10.0);
+  PItemGen.setLength(4.6); // measured
   PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
-  PItemGen.setLength(3.0);
+  PItemGen.setLength(2.25); // measured
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
   PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
-  PItemGen.setLength(10.0);
+  PItemGen.setLength(2.25); // measured
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   // Ion pump
   name=lKey+"IonPump";
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(6.5);
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length // measured
   PItemGen.setNoPlate();
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,12.4);
-  Control.addVariable(name+"NPorts",4);
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8); // measured
+  Control.addVariable(name+"NPorts",3);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
 
-  PItemGen.setLength(2.5);
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
   PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
-  PItemGen.setLength(6.5);
-  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
-  PItemGen.setLength(3.0);
-  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
-  PItemGen.setLength(10.0);
-  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  PItemGen.setLength(9.5); // measured
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+
+  PItemGen.setLength(3.2); // measured
+  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
+
+  //YagGen.setCF<CF40_22>();
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
 

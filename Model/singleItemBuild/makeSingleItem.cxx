@@ -110,6 +110,7 @@
 #include "CylGateValve.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
+#include "YagScreen.h"
 
 #include "makeSingleItem.h"
 
@@ -147,10 +148,10 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag","EArrivalMon",
+      "DipoleDIBMag","EArrivalMon","YagScreen",
       "Help","help"
     });
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
@@ -167,11 +168,23 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::CylGateValve>
 	GV(new xraySystem::CylGateValve("GV"));
-      
+
       OR.addObject(GV);
-      
+
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "YagScreen")
+    {
+      std::shared_ptr<tdcSystem::YagScreen>
+	YAG(new tdcSystem::YagScreen("YAG"));
+      OR.addObject(YAG);
+
+      YAG->addAllInsertCell(voidCell);
+      YAG->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -182,17 +195,17 @@ makeSingleItem::build(Simulation& System,
 	VC(new constructSystem::VacuumPipe("VC"));
       std::shared_ptr<tdcSystem::CorrectorMag>
 	CM(new tdcSystem::CorrectorMag("CM","CM"));
-      
+
       OR.addObject(VC);
       OR.addObject(CM);
-      
+
       VC->addInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       CM->setCutSurf("Inner",*VC,"outerPipe");
       CM->addInsertCell(voidCell);
       CM->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -213,25 +226,25 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::LQuad>
 	LQ(new tdcSystem::LQuad("LQ","LQ"));
-      
+
       OR.addObject(LQ);
-      
+
       LQ->addInsertCell(voidCell);
       LQ->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
   if (item=="MagnetBlock")
     {
-  
+
       std::shared_ptr<xraySystem::MagnetBlock>
 	MB(new xraySystem::MagnetBlock("M1"));
-      
+
       OR.addObject(MB);
       MB->addInsertCell(voidCell);
       MB->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -239,12 +252,12 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::Sexupole>
 	SXX(new xraySystem::Sexupole("SXX","SXX"));
-      
+
       OR.addObject(SXX);
-      
+
       SXX->addInsertCell(voidCell);
       SXX->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -252,24 +265,24 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::MagnetM1>
 	MagBlock(new xraySystem::MagnetM1("M1Block"));
-      
+
       OR.addObject(MagBlock);
-      
+
       MagBlock->addAllInsertCell(voidCell);
       MagBlock->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
   if (item=="Octupole")
     {
-      
+
       std::shared_ptr<xraySystem::Octupole>
 	OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
       OR.addObject(OXX);
       OXX->addInsertCell(voidCell);
       OXX->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -278,10 +291,10 @@ makeSingleItem::build(Simulation& System,
       std::shared_ptr<xraySystem::EPSeparator>
 	EPsep(new xraySystem::EPSeparator("EPSeparator"));
       OR.addObject(EPsep);
-      
+
       EPsep->addInsertCell(voidCell);
       EPsep->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
@@ -313,14 +326,14 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(PDipole);
       PDipole->addInsertCell(voidCell);
       PDipole->createAll(System,World::masterOrigin(),0);
-      
-      
+
+
       std::shared_ptr<xraySystem::DipoleChamber>
 	DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
       OR.addObject(DCSep);
       DCSep->addAllInsertCell(voidCell);
       DCSep->createAll(System,*PDipole,2);
-      
+
       std::shared_ptr<xraySystem::EPSeparator>
 	EPSep(new xraySystem::EPSeparator("EPSep"));
       OR.addObject(EPSep);
@@ -341,7 +354,7 @@ makeSingleItem::build(Simulation& System,
     }
   if (item=="TargetShield")
     {
-      std::shared_ptr<insertSystem::insertSphere> 
+      std::shared_ptr<insertSystem::insertSphere>
 	Target(new insertSystem::insertSphere("Target"));
       std::shared_ptr<insertSystem::insertShell>
 	Surround(new insertSystem::insertShell("Shield"));
@@ -349,12 +362,12 @@ makeSingleItem::build(Simulation& System,
 	TubeA(new insertSystem::insertCylinder("TubeA"));
       std::shared_ptr<insertSystem::insertCylinder>
 	TubeB(new insertSystem::insertCylinder("TubeB"));
-      
+
       OR.addObject(Target);
       OR.addObject(TubeA);
       OR.addObject(TubeB);
       OR.addObject(Surround);
-      
+
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
       TubeB->addInsertCell(voidCell);
@@ -369,32 +382,32 @@ makeSingleItem::build(Simulation& System,
 	VC(new constructSystem::VacuumPipe("VC"));
       std::shared_ptr<tdcSystem::DipoleDIBMag>
 	DIB(new tdcSystem::DipoleDIBMag("DIB"));
-      
+
       OR.addObject(VC);
       OR.addObject(DIB);
-      
+
       VC->addInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
-      
+
       DIB->setCutSurf("Inner",*VC,"outerPipe");
       DIB->addInsertCell(voidCell);
       DIB->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
-  
+
   if (item=="Help" || item=="help")
     {
 
       ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
-      
+
       for(const std::string& Name : validItems)
 	ELog::EM<<"Item : "<<Name<<"\n";
-  
+
       ELog::EM<<"-----------"<<ELog::endDiag;
     }
+
   return;
 }
-
 
 }   // NAMESPACE singleItemSystem

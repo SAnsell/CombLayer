@@ -22,21 +22,10 @@
 #ifndef xraySystem_cosaxsExptLine_h
 #define xraySystem_cosaxsExptLine_h
 
-namespace insertSystem
-{
-  class insertPlate;
-}
-
 namespace constructSystem
 {
-  class Bellows;
-  class GateValveCube;
   class JawValveCylinder;
-  class VacuumPipe;
-  class DiffPumpXIADP03;
 }
-
-
 
 /*!
   \namespace xraySystem
@@ -56,7 +45,6 @@ namespace xraySystem
     \brief Constructor for the CoSAXS experimental beam line
   */
 
-  class MonoBox;
   class FilterHolder;
   class cosaxsSampleArea;
   class cosaxsTube;
@@ -71,7 +59,7 @@ class cosaxsExptLine :
  private:
 
   /// point to stop [normal none]
-  std::string stopPoint;          
+  std::string stopPoint;
 
   /// construction space for main object
   attachSystem::InnerZone buildZone;

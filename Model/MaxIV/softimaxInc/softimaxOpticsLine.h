@@ -22,30 +22,21 @@
 #ifndef xraySystem_softimaxOpticsLine_h
 #define xraySystem_softimaxOpticsLine_h
 
-namespace insertSystem
-{
-  class insertPlate;
-}
-
 namespace constructSystem
 {
-  class PortTube;
   class BiPortTube;
   class JawValveTube;
-  class OffsetFlangePipe;
 }
 
 namespace xraySystem
 {
   class BlockStand;
-  class BremColl;
   class Mirror;
   class BeamPair;
   class TankMonoVessel;
   class GratingUnit;
   class FlangeMount;
   class TwinPipe;
-  class SqrCollimator;
   class BremOpticsColl;
   class PipeShield;
 

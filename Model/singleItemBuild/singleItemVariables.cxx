@@ -76,6 +76,7 @@
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "YagScreenGenerator.h"
 
 namespace setVariable
 {
@@ -144,7 +145,6 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EArrivalMonGenerator EMonGen;
   EMonGen.generateMon(Control,"BeamMon",0.0);
-
 
   setVariable::CryoGenerator CryGen;
   CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
@@ -231,7 +231,7 @@ SingleItemVariables(FuncDataBase& Control)
 
 
   // CylGateValve
-  setVariable::CylGateValveGenerator GVGen;  
+  setVariable::CylGateValveGenerator GVGen;
   GVGen.generateGate(Control,"GV",1);
 
   //  dipole magnet DIB
@@ -240,6 +240,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   PGen.setCF<setVariable::CF25>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
+
+  setVariable::YagScreenGenerator YagGen;
+  YagGen.generateScreen(Control,"YAG",1);  // in beam
 
   return;
 }

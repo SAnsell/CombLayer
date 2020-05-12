@@ -72,7 +72,7 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-
+#include "YagScreen.h"
 
 #include "TDCsegment.h"
 #include "L2SPFsegment15.h"
@@ -87,6 +87,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
   ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YAG")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -99,6 +100,7 @@ L2SPFsegment15::L2SPFsegment15(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(mirrorChamber);
   OR.addObject(ionPump);
+  OR.addObject(yagScreen);
   OR.addObject(pipeB);
 }
 
@@ -144,24 +146,35 @@ L2SPFsegment15::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
+  ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
   ionPump->createAll(System,mirrorChamberPort1,2);
-  for (size_t i=2; i<=3; ++i)
-    for (size_t j=0; j<=1; ++j)
-      ionPump->intersectPorts(System,i,j);
 
-  const constructSystem::portItem& ionPumpPort1=ionPump->getPort(1);
+  ionPump->intersectPorts(System,0,1);
+  ionPump->intersectPorts(System,0,2);
+
+  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
   outerCell=
     buildZone->createOuterVoidUnit(System,
 				   masterCell,
-				   ionPumpPort1,
-				   ionPumpPort1.getSideIndex("OuterPlate"));
+				   ionPumpBackPort,
+				   ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpPort1,"OuterPlate",*pipeB);
+  yagScreen->addInsertCell("Body",outerCell);
+  yagScreen->addInsertCell("Thread",ionPump->getCell("Void"));
+  yagScreen->addInsertCell("Mirror",ionPump->getCell("Void"));
+  yagScreen->addInsertCell("Screen",ionPump->getCell("Void"));
 
-  buildZone->removeLastMaster(System);  
+  yagScreen->setScreenCentre(*ionPump,0);
+
+  // 1 does not work, but side can be changed with signs of
+  // XVec in the Port[12] variables
+  yagScreen->createAll(System,*ionPump, 2);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
+
+  buildZone->removeLastMaster(System);
 
   return;
 }
@@ -173,7 +186,7 @@ L2SPFsegment15::createLinks()
    */
 {
   ELog::RegMethod RegA("L2SPFsegment15","createLinks");
-  
+
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
   return;

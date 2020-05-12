@@ -61,7 +61,6 @@
 #include "GratingMonoGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "TankMonoVesselGenerator.h"
-#include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"

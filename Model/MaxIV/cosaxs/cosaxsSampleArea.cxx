@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsSampleArea.cxx
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,38 +33,20 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "inputParam.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -210,7 +192,7 @@ cosaxsSampleArea::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
@@ -245,7 +227,7 @@ cosaxsSampleArea::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
       makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
     }
-  
+
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(Out+frontStr+backStr);
