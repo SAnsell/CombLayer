@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,14 +77,14 @@ operator<<(std::ostream& OX,const HeadRule& A)
 }
 
 HeadRule::HeadRule() :
-  HeadNode(0)
+  HeadNode(nullptr)
   /*!
     Creates a new rule
   */
 {}
 
 HeadRule::HeadRule(const std::string& RuleStr) :
-  HeadNode(0)
+  HeadNode(nullptr)
   /*!
     Creates a new rule
     \param RuleStr :: rule in MCNP format
@@ -96,7 +96,7 @@ HeadRule::HeadRule(const std::string& RuleStr) :
 }
 
 HeadRule::HeadRule(const int surfNum) :
-  HeadNode(0)
+  HeadNode(nullptr)
   /*!
     Creates a new rule
     \param surfNum :: rule as surface number
@@ -109,7 +109,7 @@ HeadRule::HeadRule(const int surfNum) :
 }
 
 HeadRule::HeadRule(const Rule* RPtr) :
-  HeadNode((RPtr) ? RPtr->clone() : 0)
+  HeadNode((RPtr) ? RPtr->clone() : nullptr)
   /*!
     Creates a new rule
     \param RPtr :: Rule to clone as a top rule
@@ -117,12 +117,22 @@ HeadRule::HeadRule(const Rule* RPtr) :
 {}
 
 HeadRule::HeadRule(const HeadRule& A) :
-  HeadNode((A.HeadNode) ? A.HeadNode->clone() : 0)
+  HeadNode((A.HeadNode) ? A.HeadNode->clone() : nullptr)
   /*!
     Copy constructor
     \param A :: Head rule to copy
   */
 {}
+
+HeadRule::HeadRule(HeadRule&& A) :
+  HeadNode(A.HeadNode)
+  /*!
+    Move constructor [needed because of explicit new ptr]
+    \param A :: Head rule to move
+  */
+{
+  A.HeadNode=nullptr;   // This is deleted so must re
+}
 
 HeadRule&
 HeadRule::operator=(const HeadRule& A)  
@@ -240,6 +250,115 @@ HeadRule::operator==(const HeadRule& A) const
   // EVERYTHING MATCHED !!!
   return 1;
 }
+
+HeadRule&
+HeadRule::operator+=(const HeadRule& AHead) 
+  /*!
+    Add a rule in union (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator+=[union]");
+  addUnion(AHead);  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator-=(const HeadRule& AHead) 
+  /*!
+    Add a rule in union (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator-=[union]");
+  addUnion(AHead.complement());  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator*=(const HeadRule& AHead) 
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator*=[inter]");
+  addIntersection(AHead);  
+  return *this;
+}
+
+HeadRule&
+HeadRule::operator/=(const HeadRule& AHead) 
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator/=[inter]");
+  addIntersection(AHead.complement());  
+  return *this;
+}
+
+HeadRule
+HeadRule::operator+(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator+[union]");
+  HeadRule HR(*this);
+  HR.addUnion(AHead);  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator-(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator-[ #union]");
+  HeadRule HR(*this);
+  HR.addUnion(AHead.complement());  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator*(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (+ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator*[inter]");
+  HeadRule HR(*this);
+  HR.addIntersection(AHead);  
+  return HR;
+}
+
+HeadRule
+HeadRule::operator/(const HeadRule& AHead) const
+  /*!
+    Add a rule in intersection (/ operator)
+    \param AHead :: Other head rule
+    \return Joined HeadRule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator/[ #inter]");
+  HeadRule HR(*this);
+  HR.addIntersection(AHead.complement());  
+  return HR;
+}
+
 
 bool
 HeadRule::partMatched(const HeadRule& A) const		      

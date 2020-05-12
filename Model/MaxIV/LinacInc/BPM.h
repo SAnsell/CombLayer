@@ -49,7 +49,6 @@ class BPM :
   double length;                ///< void length [total]
 
   double outerThick;            ///< pipe thickness
-  double claddingThick;         ///< cladding thickness
 
   double innerRadius;           ///< inner radius
   double innerThick;            ///< Inner electorn thickness
@@ -65,10 +64,11 @@ class BPM :
   double electrodeRadius;       ///< Electrode distance [support]
   double electrodeThick;        ///< Electrode thickness [support]
   double electrodeYStep;        ///< Electrode YStep
-  double electrodeEnd;          ///< Electrode end piece
+  double electrodeEnd;          ///< Electrode end piece length
   
   int voidMat;                  ///< void material
-  int electrodeMat;             ///< electrode material  
+  int electrodeMat;             ///< electrode material
+  int flangeMat;                ///< flange material  
   int outerMat;                 ///< pipe material
 
   void populate(const FuncDataBase&);  

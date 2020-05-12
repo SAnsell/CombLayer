@@ -75,6 +75,7 @@ class DipoleDIBMag :
   virtual DipoleDIBMag* clone() const;
   virtual ~DipoleDIBMag();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

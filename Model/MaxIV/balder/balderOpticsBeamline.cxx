@@ -282,9 +282,9 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   
   int outerCell;
   buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));  
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+  buildZone.setBack(getRule("back"));
+  buildZone.setInsertCells(this->getInsertCells());
+  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System);
 
   // dummy space for first item
   // This is a mess but want to preserve insert items already

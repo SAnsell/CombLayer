@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/photonMod.cxx
+ * File:   Main/d4c.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -32,7 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <array>
+#include <boost/format.hpp>
+#include <boost/multi_array.hpp>
+
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -52,6 +54,8 @@
 #include "inputParam.h"
 #include "Transform.h"
 #include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Rules.h"
@@ -82,49 +86,53 @@
 #include "tallyConstructFactory.h"
 #include "World.h"
 #include "SimInput.h"
+#include "neutron.h"
+#include "World.h"
 
-#include "makePhoton.h"
+#include "Beam.h"
+#include "AreaBeam.h"
+#include "DetGroup.h"
+#include "SimMonte.h"
 
-MTRand RNG(12345UL);
+#include "makeD4C.h"
 
-///\cond STATIC
+class SimMonte;
 namespace ELog 
 {
-  ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
+  ELog::OutputLog<EReport> EM;      
+  ELog::OutputLog<FileReport> FM("Spectrum.log");               
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
-///\endcond STATIC
+
+MTRand RNG(12345UL);
 
 int 
 main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
-  ELog::RegMethod RControl("","main");
+  // For output stream
+  ELog::RegMethod RControl("d4c","main");
   mainSystem::activateLogging(RControl);
-
-  std::string Oname;
+  
+  // For output stream
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
+  std::string Oname;
 
-  // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createPhotonInputs(IParam);
+  createD4CInputs(IParam);
+  const int iteractive(0);   
 
-  const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+  SimMonte* MSim=dynamic_cast<SimMonte*>(SimPtr);
   if (!SimPtr) return -1;
 
-  // The big variable setting
-  setVariable::PhotonVariables(SimPtr->getDataBase());
-  // Check for model type
+  setVariable::D4CModel(SimPtr->getDataBase());
+
   InputModifications(SimPtr,IParam,Names);
 
-  // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
   try
@@ -137,18 +145,18 @@ main(int argc,char* argv[])
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
 	    }
-
 	  SimPtr->resetAll();
 
-	  photonSystem::makePhoton LObj;
-	  World::createOuterObjects(*SimPtr);
-	  LObj.build(SimPtr,IParam);
+	  d4cSystem::makeD4C dObj; 
+	  dObj.build(SimPtr,IParam);
+      
+	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
+	  SimPtr->removeDeadSurfaces();         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+	  const int renumCellWork(0); // =beamTallySelection(*SimPtr,IParam);
 
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -157,18 +165,17 @@ main(int argc,char* argv[])
 	      return 0;
 	    }
 	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
+	    SimPtr->setENDF7();	  
+	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
-
-	  // Ensure we done loop
-	  ELog::EM<<"PHOTONMOD : variable hash: "
-		  <<SimPtr->getDataBase().variableHash()
-		  <<ELog::endBasic;
+	  
+	  // ACTUAL SIM:
+      	  // Ensure we done loop
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
@@ -178,7 +185,7 @@ main(int argc,char* argv[])
 	}
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -188,12 +195,66 @@ main(int argc,char* argv[])
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"EXCEPTION FAILURE :: "
+      ELog::EM<<"\nEXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  delete SimPtr;
+  //  SimPtr->getBeam()->setBias(yBias);
+
+  if (MSim)
+    {
+      Transport::AreaBeam A;
+      A.setWidth(0.4);
+      A.setHeight(1.0);
+      A.setStart(-5.0);
+      A.setCent(Geometry::Vec3D(0,0,0));
+      A.setWavelength(0.7);
+      
+      const size_t NPS(IParam.getValue<size_t>("nps"));
+      const int MS(IParam.getValue<int>("MS"));
+      MSim->setMS(MS);
+      MSim->setBeam(A);
+      MSim->runMonte(NPS);
+      
+      const std::string DFile=
+	IParam.getValue<std::string>("detFile");
+      
+      MSim->writeDetectors(DFile,NPS);
+    }
+  else
+    {
+      ELog::EM<<"No simulation done : use -Monte to enable"
+	      <<ELog::endDiag;
+    }
+  // EXIT
+
+  delete SimPtr; 
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
+  masterRotate::Instance().reset();
+
+
   return exitFlag;
+  
+  //   System.setDetector(200,200,30,
+  // 		     Geometry::Vec3D(0,875.0,0),
+  // 		     Geometry::Vec3D(detSize,0,0),
+  // 		     Geometry::Vec3D(0,0,detSize),
+  // 		     -0.05,-10.0);
+  // ELog::EM<<"Using Beam Type:"<<System.getBeam()->className()<<ELog::endCrit;
+
+  // // Commented out to select random track:
+  // //  System.setAimZone(&PZ);        
+  // System.runMonte(nps);
+  // //  System.getDet().write(outFile);
+  // // TEST:
+  // System.write(primaryFile,lambda);
+  // System.writeMCNPX(primaryFile+".i");
+  
+  // System.writeXML("test.xml");
+  return 0;
 }
+
+
+
+

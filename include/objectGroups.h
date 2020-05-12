@@ -3,7 +3,7 @@
  
  * File:   include/objectGroups.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,8 @@ class objectGroups
   objectGroups& operator=(const objectGroups&);
   ~objectGroups();
 
+  void reset();
+  
   int getNextCell(const int) const;
   
   int cell(const std::string&,const size_t = 10000);
@@ -121,7 +123,8 @@ class objectGroups
   std::vector<int> getObjectRange(const std::string&) const;
   const groupRange& getGroup(const std::string&) const;
   
-  void reset();
+
+
   void rotateMaster();
 
   void removeObject(const std::string&);

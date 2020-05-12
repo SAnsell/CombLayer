@@ -73,6 +73,7 @@
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
+#include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "YagScreenGenerator.h"
 
@@ -226,10 +227,16 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
+
+  // CylGateValve
+  setVariable::CylGateValveGenerator GVGen;
+  GVGen.generateGate(Control,"GV",1);
+
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
-  PGen.setCF<setVariable::CF40_22>();
+
+  PGen.setCF<setVariable::CF25>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
   setVariable::YagScreenGenerator YagGen;

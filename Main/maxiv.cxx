@@ -123,7 +123,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       xraySystem::makeMaxIV BObj;
-      World::createOuterObjects(*SimPtr);
       BObj.build(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,6 @@
 #include "testObjTrackItem.h"
 #include "testPairFactory.h"
 #include "testPairItem.h"
-// #include "testPhysics.h"
 #include "testPipeLine.h"
 #include "testPipeUnit.h"
 #include "testPlane.h"
@@ -968,7 +967,6 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
   if(type==index || type<0)
     {
       testInputParam A;
@@ -976,15 +974,21 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
+
   if(type==index || type<0)
     {
+      ELog::EM<<"START "<<ELog::endDiag;
+      testBoxLine B;
+      const int Y=B.applyTest(extra);
+      if (Y) return Y;
+      ELog::EM<<"MID "<<ELog::endDiag;
       testLineTrack A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
   index++;
-  
+
+  ELog::EM<<"ASDFSDFS OBJECT "<<ELog::endCrit;  
   if(type==index || type<0)
     {
       testObjectRegister A;

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/photonMod3.cxx
+ * File:   Main/t1Upgrade.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,12 +48,23 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Tally.h"
+#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Line.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -62,24 +73,24 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "MainProcess.h"
-#include "MainInputs.h"
 #include "SimProcess.h"
+#include "SurInter.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h" 
+#include "Simulation.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
 #include "variableSetup.h"
-#include "ImportControl.h"
 #include "World.h"
-#include "SimInput.h"
 
-#include "makePhoton3.h"
+
+#include "makeT1Real.h"
 
 MTRand RNG(12345UL);
 
@@ -109,29 +120,25 @@ main(int argc,char* argv[])
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      createPhotonInputs(IParam);
-
+      
+      createTS1Inputs(IParam);
+      
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 
       // The big variable setting
-      setVariable::PhotonVariables(SimPtr->getDataBase());
+      setVariable::TS1upgrade(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
+      mainSystem::setVariables(*SimPtr,IParam,Names);
 
-      photonSystem::makePhoton3 LObj;
-      World::createOuterObjects(*SimPtr);
-      LObj.build(*SimPtr,IParam);
+      ts1System::makeT1Upgrade T1Obj;
+      T1Obj.build(SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      // Ensure we done loop
-      ELog::EM<<"PHOTONMOD : variable hash: "
-              <<SimPtr->getDataBase().variableHash()
-              <<ELog::endBasic;
-    
+
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->write("ObjectRegister.txt");
+      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -151,7 +158,9 @@ main(int argc,char* argv[])
       exitFlag= -3;
     }
 
+
   delete SimPtr;
+  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

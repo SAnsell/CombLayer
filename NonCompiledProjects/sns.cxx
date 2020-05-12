@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/saxs.cxx
+ * File:   Main/sns.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -64,51 +64,42 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
+#include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h" 
+#include "Simulation.h"
 #include "SimPHITS.h"
-#include "ContainedComp.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
+#include "SimInput.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "World.h"
-#include "SimInput.h"
-#include "particle.h"
-#include "photon.h"
-#include "neutron.h"
-#include "World.h"
-#include "DefUnitsSAXS.h"
+#include "makeSNS.h"
 
-#include "makeSAXS.h"
+MTRand RNG(12345UL);
 
-class SimMonte;
+///\cond STATIC
 namespace ELog 
 {
-  ELog::OutputLog<EReport> EM;      
-  ELog::OutputLog<FileReport> FM("Spectrum.log");               
+  ELog::OutputLog<EReport> EM;
+  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
-
-MTRand RNG(12345UL);
+///\endcond STATIC
 
 int 
 main(int argc,char* argv[])
 {
+
   int exitFlag(0);                // Value on exit
-  // For output stream
-  ELog::RegMethod RControl("saxs","main");
+  ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-  
-  // For output stream
-  std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
+
   std::string Oname;
+  std::vector<std::string> Names;  
 
   Simulation* SimPtr(0);
   try
@@ -116,25 +107,22 @@ main(int argc,char* argv[])
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      createInputs(IParam);
-
+      createSNSInputs(IParam);
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 
       // The big variable setting
-      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-      setVariable::SAXSModel(SimPtr->getDataBase()); 
-
+      setVariable::SNSVariables(SimPtr->getDataBase());
+      // Default units not set yet:
+      //mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
-
-      saxsSystem::makeSAXS dObj; 
-      World::createOuterObjects(*SimPtr);
-      dObj.build(*SimPtr,IParam);
+        
+      snsSystem::makeSNS SNSObj;
+      SNSObj.build(SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
-
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }
@@ -146,20 +134,16 @@ main(int argc,char* argv[])
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"\nEXCEPTION FAILURE :: "
+      ELog::EM<<"EXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-
-  // EXIT
-  
-  delete SimPtr; 
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -1;
+    }
+  delete SimPtr;
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
-  
-  return 0;
 }
-
-
-
-

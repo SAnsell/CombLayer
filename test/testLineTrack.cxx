@@ -3,7 +3,7 @@
  
  * File:   test/testLineTrack.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ testLineTrack::initSim()
     Set all the objects in the simulation:
   */
 {
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   ASim.resetAll();
   createSurfaces();
   createObjects();
@@ -114,25 +115,25 @@ testLineTrack::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // First box :
-  SurI.createSurface(1,"px -1");
-  SurI.createSurface(2,"px 1");
-  SurI.createSurface(3,"py -1");
-  SurI.createSurface(4,"py 1");
-  SurI.createSurface(5,"pz -1");
-  SurI.createSurface(6,"pz 1");
+  SurI.createSurface(11,"px -1");
+  SurI.createSurface(12,"px 1");
+  SurI.createSurface(13,"py -1");
+  SurI.createSurface(14,"py 1");
+  SurI.createSurface(15,"pz -1");
+  SurI.createSurface(16,"pz 1");
 
   // Second box :
-  SurI.createSurface(11,"px -3");
-  SurI.createSurface(12,"px 3");
-  SurI.createSurface(13,"py -3");
-  SurI.createSurface(14,"py 3");
-  SurI.createSurface(15,"pz -3");
-  SurI.createSurface(16,"pz 3");
+  SurI.createSurface(21,"px -3");
+  SurI.createSurface(22,"px 3");
+  SurI.createSurface(23,"py -3");
+  SurI.createSurface(24,"py 3");
+  SurI.createSurface(25,"pz -3");
+  SurI.createSurface(26,"pz 3");
 
   // Top box
-  SurI.createSurface(26,"pz 8");
+  SurI.createSurface(36,"pz 8");
 
-  SurI.createSurface(27,"cz 4");
+  SurI.createSurface(37,"cz 4");
 
   // Sphere :
   SurI.createSurface(100,"so 25");
@@ -152,24 +153,24 @@ testLineTrack::createObjects()
   */
 {
   std::string Out;
-  int cellIndex(1);
+  int cellIndex(2);
   const int surIndex(0);
-  Out=ModelSupport::getComposite(surIndex,"100 ");
+  Out=ModelSupport::getComposite(surIndex," 100 ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
   ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
-				 " (-1:2:-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
+				 " (-11:12:-13:14:-15:16) ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"-27 16 -26");
+  Out=ModelSupport::getComposite(surIndex,"-37 26 -36");
   ASim.addCell(MonteCarlo::Object(cellIndex++,4,0.0,Out));      // CH4 container
 
   // Sphereical container
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) "
-                                        "(27 : -16 : 26)");
+  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26) "
+                                        "(37 : -26 : 36)");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   return;
@@ -211,9 +212,11 @@ testLineTrack::applyTest(const int extra)
       std::cout.flags(flagIO);
       return 0;
     }
-
+	  
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   for(int i=0;i<TSize;i++)
     {
+      initSim();
       if (extra<0 || extra==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
@@ -234,8 +237,6 @@ testLineTrack::testLine()
   */
 {
   ELog::RegMethod RegA("testLineTrack","testLine");
-
-  initSim();
 
   // Point A : Point B : Sum of cellIDs 
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
@@ -295,8 +296,8 @@ testLineTrack::checkResult(const LineTrack& LT,
     {
       if (!oVec[i] || oVec[i]->getName()!=cells[i])
 	return 0;
-      cValue+=cells[i];
-      tValue+=tLen[i]*static_cast<double>(cells[i]);
+      cValue+=cells[i]-1;
+      tValue+=tLen[i]*static_cast<double>(cells[i]-1);
     }  
   return (cValue!=CSum || std::abs(TSum-tValue)>1e-3) ? 0 : 1;
 }

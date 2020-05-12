@@ -3,7 +3,7 @@
  
  * File:   test/testObjectRegister.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,12 +90,10 @@ testObjectRegister::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testObjectRegister::testExcludeItem,
-      &testObjectRegister::testGetObject
     };
   const std::string TestName[]=
     {
-      "ExcludeItem",
-      "GetObject"
+      "ExcludeItem"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -139,27 +137,6 @@ testObjectRegister::testExcludeItem()
 }
 
 
-int
-testObjectRegister::testGetObject()
-  /*!
-    Test the getting of different types of objects
-    \retval 0 :: success
-  */
-{
-  ELog::RegMethod RegA("testObjectRegister","testGetObject");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  //  OR.reset();
-
-  std::shared_ptr<attachSystem::FixedUnit> 
-    A(new attachSystem::FixedUnit("A",3));
-  OR.cell("A");
-  OR.addObject(A);
-
-
-  return 0;
-}
 
 
 

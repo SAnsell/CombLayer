@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/LinacQuadGenerator.h
+ * File:   commonGeneratorInc/LinacQuadGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace setVariable
   \class LinacQuadGenerator
   \version 1.0
   \author S. Ansell
-  \date May 2018
+  \date April 2020
   \brief LinacQuadGenerator for variables
 */
 

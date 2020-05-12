@@ -302,8 +302,9 @@ cosaxsTube::createObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getRule("front"));//HeadRule(SMap.realSurf(buildIndex+1)));
   buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
+  buildZone.setInsertCells(this->getInsertCells());
+  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System);
 
-  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
   noseCone->createAll(System, *this, 0);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
@@ -361,8 +362,10 @@ cosaxsTube::createObjects(Simulation& System)
   buildZoneTube.setSurround(last->getFullRule("InnerSide"));
   buildZoneTube.setFront(seg[0]->getFullRule("InnerFront"));
   buildZoneTube.setBack(last->getFullRule("InnerBack"));
+//   masterCell=buildZoneTube.constructMasterCell(System,*this);
+  buildZone.setInsertCells(this->getInsertCells());
 
-  masterCell=buildZoneTube.constructMasterCell(System,*this);
+  masterCell=buildZoneTube.constructMasterCell(System);
 
   beamDump->setFront(*seg[0],-1);
   beamDump->createAll(System,*seg[0],-1);

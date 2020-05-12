@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/combLayer.cxx
+ * File:   Main/photonMod3.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,12 +64,10 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "SimImportance.h"
-#include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h"
-#include "SimMCNP.h" 
+#include "Simulation.h" 
+#include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -79,9 +77,9 @@
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "World.h"
+#include "SimInput.h"
 
-#include "DefUnitsCombLayer.h"
-#include "makeCombLayer.h"
+#include "makePhoton3.h"
 
 MTRand RNG(12345UL);
 
@@ -89,6 +87,7 @@ MTRand RNG(12345UL);
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
+  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
@@ -103,41 +102,36 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  
+
   Simulation* SimPtr(0);
   try
     {
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      const std::string ModelName=
-	IParam.getValueError<std::string>("Model",0,0,"Model not given");
-      
-      createXrayInputs(IParam);
-      
+      createPhotonInputs(IParam);
+
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 
       // The big variable setting
-      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-      const std::set<std::string> beamlines=
-        IParam.getComponents<std::string>("beamlines",0);
-      setVariable::CombLayerVariables(SimPtr->getDataBase(),beamlines);
-
+      setVariable::PhotonVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      xraySystem::makeCombLayer BObj;
-      World::createOuterObjects(*SimPtr);
-      BObj.build(*SimPtr,IParam);
-
+      photonSystem::makePhoton3 LObj;
+      LObj.build(*SimPtr,IParam);
+      
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+      // Ensure we done loop
+      ELog::EM<<"PHOTONMOD : variable hash: "
+              <<SimPtr->getDataBase().variableHash()
+              <<ELog::endBasic;
+    
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
-
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      SimPtr->write("ObjectRegister.txt");
     }
-  
   catch (ColErr::ExitAbort& EA)
     {
       if (!EA.pathFlag())

@@ -3,7 +3,7 @@
  
  * File:   process/surfDivide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -327,10 +327,7 @@ surfDivide::preDivide(Simulation& System)
 
   BaseObj=System.findObject(cellNumber);  
   if (!BaseObj)
-    {
-      ELog::EM<<"Unable to find "<<cellNumber<<ELog::endErr;
-      throw ColErr::ExitAbort(RegA.getFull());
-    }
+    throw ColErr::InContainerError<int>(cellNumber,"Cell number");
   
   BaseObj->populate();
   BaseObj->createSurfaceList();  
@@ -458,7 +455,7 @@ surfDivide::activeDivide(Simulation& System)
 {
   ELog::RegMethod RegA("surfDivide","activeDivide");
   // GET CELL:
-  
+
   preDivide(System);
   populateSurfaces();
   std::vector<Token> innerCell=BaseObj->cellVec();;  // Inner Cell 
@@ -490,6 +487,7 @@ surfDivide::activeDivide(Simulation& System)
     }
   // Remove Original Cell
   System.removeCell(cellNumber);
+
   return;  
 }
 

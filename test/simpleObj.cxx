@@ -3,7 +3,7 @@
  
  * File:   test/simpleObj.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,8 @@ namespace testSystem
 {
 
 simpleObj::simpleObj(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,6),
   refFlag(0),xyAngle(0.0),zAngle(0.0),
   xSize(15.0),ySize(3.0),zSize(15.0),defMat(3)
   /*!
@@ -87,7 +88,8 @@ simpleObj::simpleObj(const std::string& Key)  :
 {}
 
 simpleObj::simpleObj(const simpleObj& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
   refFlag(A.refFlag),
   offset(A.offset),xyAngle(A.xyAngle),zAngle(A.zAngle),xSize(A.xSize),
   ySize(A.ySize),zSize(A.zSize),defMat(A.defMat)

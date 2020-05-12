@@ -3,7 +3,7 @@
  
  * File:   test/testMD5.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,14 +112,17 @@ testMD5::testNext()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
+     TTYPE("","d41d8cd98f00b204e9800998ecf8427e"),
+
       TTYPE("The quick brown fox jumps over the lazy dog.",
 	    "e4d909c290d0fb1ca068ffaddf22cbd0"),
       
       TTYPE("The quick brown fox jumps over the lazy dog",
-	    "9e107d9d372bb6826bd81d3542a419d6"),
-      TTYPE("","d41d8cd98f00b204e9800998ecf8427e")
+	    "9e107d9d372bb6826bd81d3542a419d6")
+
+
     };
-  
+
   MD5hash sum;
   for(const TTYPE& tc : Tests)
     {

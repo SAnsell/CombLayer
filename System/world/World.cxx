@@ -3,7 +3,7 @@
  
  * File:   world/World.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
+#include "objectRegister.h"
 #include "World.h"
 
 namespace World
@@ -108,19 +109,44 @@ masterTS2Origin()
 				    Geometry::Vec3D(-1,0,0));
   return MO;
 }
+
+
+void
+buildWorld(objectGroups& OGrp)
+  /*!
+    Build and register a world object in a object group
+    \param OGrp :: Simluation to add a world to.
+  */
+{
+  ELog::RegMethod RegA("World[F]","buildWorld");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.setObjectGroup(OGrp);
+  ELog::EM<<"Post set Object Group"<<ELog::endDiag;
+  ELog::EM<<"OR -> "<<OR.hasGroup("World")<<ELog::endDiag;;
+  std::shared_ptr<attachSystem::FixedComp> worldPtr=
+    std::make_shared<attachSystem::FixedUnit>(World::masterOrigin());
+  ELog::EM<<"World NAme == "<<worldPtr->getKeyName()<<ELog::endDiag;
+  OGrp.addObject(worldPtr);
+  return;
+}
   
 void 
-createOuterObjects(Simulation& System)
+createOuterObjects(Simulation& System,
+		   const double worldRadius)
   /*!
     Create all the world outer objects
     \param System :: Simulation to modify
+    \param worldRadius :: Size of world
   */
 { 
   ELog::RegMethod RegA("World","createOuterObjects");
+  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   // Create object 1
-  SurI.createSurface(1,"so 20000");
+  SurI.createSurface(1,"so "+std::to_string(worldRadius));
   MonteCarlo::Object tmpCell(1,0,0.0," 1 ");
   tmpCell.setImp(0);
   System.addCell(tmpCell);
@@ -142,7 +168,6 @@ createOuterObjects(Simulation& System)
 
   //   Create object 74123
   System.addCell(MonteCarlo::Object(74123,0,0.0," -1 "));
-
   return;
 }
     

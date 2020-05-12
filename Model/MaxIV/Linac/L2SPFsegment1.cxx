@@ -91,6 +91,7 @@
 #include "CorrectorMag.h"
 
 #include "LObjectSupport.h"
+#include "TDCsegment.h"
 #include "L2SPFsegment1.h"
 
 namespace tdcSystem
@@ -99,12 +100,7 @@ namespace tdcSystem
 // Note currently uncopied:
   
 L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
-  attachSystem::ContainedComp(),
-  attachSystem::ExternalCut(),
-  attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
-
+  TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -148,63 +144,6 @@ L2SPFsegment1::~L2SPFsegment1()
 {}
 
 void
-L2SPFsegment1::populate(const FuncDataBase& Control)
-  /*!
-    Populate the intial values [movement]
-    \param Control :: Database of variables
-  */
-{
-  ELog::RegMethod RegA("L2SPFsegment1","populate");
-  FixedOffset::populate(Control);
-
-  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
-  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",0.0);
-  outerHeight=Control.EvalDefVar<double>(keyName+"OuterHeight",0.0);
-
-  const int voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  buildZone.setInnerMat(voidMat);
-
-  return;
-}
-
-
-void
-L2SPFsegment1::createSurfaces()
-  /*!
-    Create surfaces for the buildZone [if used]
-  */
-{
-  ELog::RegMethod RegA("L2SPFsegment1","createSurfaces");
-
-  const double totalLength(400.0);
-  
-  if (outerLeft>Geometry::zeroTol && isActive("floor"))
-    {
-      std::string Out;
-      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
-      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
-      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
-      buildZone.setSurround(HR);
-    }
-
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
-      setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*totalLength,Y);
-      setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
-
-  return;
-}
-
-void
 L2SPFsegment1::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -215,44 +154,44 @@ L2SPFsegment1::buildObjects(Simulation& System)
   ELog::RegMethod RegA("L2SPFsegment1","buildObjects");
 
   int outerCell;
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
   
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System,*this);
+  MonteCarlo::Object* masterCell=buildZone->getMaster();
+  if (!masterCell)
+    masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
   
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*bellowA);
+    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
 
   //
   // build pipe + corrector magnets together:
   // THIS becomes a function:
   //
   pipeB->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,buildZone,pipeB,cMagHorrA,cMagVertA);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
   
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeB,"back",*pipeC);
- 
-  pipeD->createAll(System,*pipeC,"back");  
-  correctorMagnetPair(System,buildZone,pipeD,cMagHorrB,cMagVertB);
- 
-  pipeMagUnit(System,buildZone,pipeD,QuadA);
-  pipeTerminate(System,buildZone,pipeD);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeD,"back",*pipeE);
+    (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
+
+  pipeD->createAll(System,*pipeC,"back");  
+  correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
+ 
+  pipeMagUnit(System,*buildZone,pipeD,"#front",QuadA);
+  pipeTerminate(System,*buildZone,pipeD);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeD,"back",*pipeE);
 
   pipeF->createAll(System,*pipeE,"back");  
-  correctorMagnetPair(System,buildZone,pipeF,cMagHorrC,cMagVertC);
-  pipeTerminate(System,buildZone,pipeF);
+  correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
+  pipeTerminate(System,*buildZone,pipeF);
 
     // FAKE INSERT REQUIRED
   pumpA->addAllInsertCell(masterCell->getName());
@@ -260,11 +199,11 @@ L2SPFsegment1::buildObjects(Simulation& System)
   pumpA->createAll(System,*pipeF,"back");
 
   const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
+  outerCell=buildZone->createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
 
-
+  buildZone->removeLastMaster(System);  
   return;
 }
 
@@ -274,15 +213,18 @@ L2SPFsegment1::createLinks()
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*pipeA,1);
+
+  
+  const constructSystem::portItem& VPB=pumpA->getPort(1);
+  setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
   return;
 }
 
 void 
 L2SPFsegment1::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -293,10 +235,9 @@ L2SPFsegment1::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("L2SPFsegment1","build");
 
-  populate(System.getDataBase());
+  FixedRotate::populate(System.getDataBase());	  
   createUnitVector(FC,sideIndex);
-  createSurfaces();
-  
+
   buildObjects(System);
   createLinks();
   return;

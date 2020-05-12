@@ -98,6 +98,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "groupRange.h"
+#include "World.h"
 
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -110,6 +111,11 @@ Simulation::Simulation()  :
   */
 {
   ModelSupport::SimTrack::Instance().addSim(this);
+
+  ELog::EM<<"PRE WORLD"<<ELog::endDiag;
+  World::buildWorld(*this);
+  ELog::EM<<"POST WORLD"<<ELog::endDiag;
+  World::createOuterObjects(*this);
 }
 
 Simulation::Simulation(const Simulation& A) :
@@ -173,6 +179,8 @@ Simulation::resetAll()
     The big reset
   */
 {
+  ELog::RegMethod RegA("Simulation","resetAll");
+  
   ModelSupport::surfIndex::Instance().reset();
   TList.erase(TList.begin(),TList.end());
   OSMPtr->clearAll();
@@ -180,6 +188,14 @@ Simulation::resetAll()
   cellOutOrder.clear();
   masterRotate& MR = masterRotate::Instance();
   MR.clearGlobal();
+  objectGroups::reset();
+
+  // put back world:
+  ELog::EM<<"Adding back world"<<ELog::endDiag;
+  objectGroups::cell("World",10000);
+  World::buildWorld(*this);
+  World::createOuterObjects(*this);
+
   return;
 }
 
@@ -1142,7 +1158,8 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
 {
   ELog::RegMethod RegA("Simulation","findCell");
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-  
+
+
   // First test users guess:
   if (testCell && testCell->isValid(Pt))
     {
@@ -1151,6 +1168,7 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
     }
   // Ok how about our last find
   MonteCarlo::Object* curObjPtr=ST.curCell(this);
+
   if (curObjPtr && curObjPtr!=testCell 
       && curObjPtr->isValid(Pt))
     return curObjPtr;
@@ -1607,29 +1625,29 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
+  // DEBUG
+
+  
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   CPtr->populate();
   CPtr->createSurfaceList();
-
-
-
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
+  
   //  CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
-
 
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CPtr->cellCompStr());
-      
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
 
   AX.addImplicates(IP);
   activeFlag |= AX.constructShannonExpansion();
+
   if (activeFlag)
     {
       if (AX.isEmpty())
@@ -1643,6 +1661,7 @@ Simulation::minimizeObject(const int CN)
       CPtr->populate();
       CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
+
       return 1;
     }
 

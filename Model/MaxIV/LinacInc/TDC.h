@@ -28,8 +28,11 @@ namespace tdcSystem
 
   class InjectionHall;
   class L2SPFsegment1;
+  class L2SPFsegment2;
+
   class L2SPFsegment14;
   class L2SPFsegment15;
+
   /*!
     \class TDC
     \version 1.0
@@ -42,16 +45,27 @@ namespace tdcSystem
   */
 
 class TDC :
-  public attachSystem::FixedOffset
+    public attachSystem::FixedOffset,
+    public attachSystem::CellMap
 {
  private:
 
   std::set<std::string> activeINJ;   ///< active components
 
-  std::shared_ptr<InjectionHall> injectionHall; ///< in ring front end
-  std::shared_ptr<L2SPFsegment1> l2spf1;        ///< segment 1
+  /// All the build units
+  std::map<std::string,attachSystem::InnerZone> buildUnits;   
+  
+  std::shared_ptr<InjectionHall> injectionHall;       ///< in ring front end
+  std::shared_ptr<L2SPFsegment1> l2spf1;              ///< segment 1
+  std::shared_ptr<L2SPFsegment2> l2spf2;              ///< segment 2
   std::shared_ptr<L2SPFsegment14> l2spf14;      ///< segment 14
-  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 14
+  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 15
+
+  HeadRule buildSurround(const FuncDataBase&,const std::string&,
+			 const std::string&);
+  
+  std::unique_ptr<attachSystem::InnerZone>
+  buildInnerZone(const FuncDataBase&,const std::string&);
 
  public:
 

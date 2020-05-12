@@ -104,7 +104,8 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 
 InnerZone::InnerZone(const InnerZone& A) : 
   FCName(A.FCName),cellIndex(A.cellIndex),FCPtr(A.FCPtr),
-  CellPtr(A.CellPtr),extraHR(A.extraHR),
+  CellPtr(A.CellPtr),insertCells(A.insertCells),
+  extraHR(A.extraHR),
   surroundHR(A.surroundHR),frontHR(A.frontHR),
   backHR(A.backHR),middleHR(A.middleHR),frontDivider(A.frontDivider),
   voidMat(A.voidMat)
@@ -113,6 +114,26 @@ InnerZone::InnerZone(const InnerZone& A) :
     \param A :: InnerZone to copy
   */
 {}
+
+
+InnerZone::InnerZone(InnerZone&& A) : 
+  FCName(std::move(A.FCName)),
+  cellIndex(A.cellIndex),     
+  FCPtr(A.FCPtr),CellPtr(A.CellPtr),
+  insertCells(std::move(A.insertCells)),
+  extraHR(std::move(A.extraHR)),
+  surroundHR(std::move(A.surroundHR)),frontHR(std::move(A.frontHR)),
+  backHR(std::move(A.backHR)),middleHR(std::move(A.middleHR)),
+  frontDivider(std::move(A.frontDivider)),
+  voidMat(A.voidMat),masterCell(A.masterCell)
+  /*!
+    Move constructor
+    Note : cellIndex is a reference              (good to copy)
+           FCPtr / CellPtr / masterCell are external pointers (good to copy)
+    \param A :: InnerZone to copy
+  */
+{
+}
 
 
 InnerZone&
@@ -126,6 +147,8 @@ InnerZone::operator=(const InnerZone& A)
   if (this!=&A)
     {
       FCName=A.FCName;
+      
+      insertCells=A.insertCells;
       extraHR=A.extraHR;
       surroundHR=A.surroundHR;
       frontHR=A.frontHR;
@@ -222,6 +245,17 @@ InnerZone::setMiddle(const HeadRule& HR)
   */
 {
   middleHR=HR;
+  return;
+}
+
+void
+InnerZone::setInsertCells(const std::vector<int>& CN)
+  /*!
+    Set the insert cells
+    \param CN :: List of cells to set for insert
+   */
+{
+  insertCN=CN;
   return;
 }
 
@@ -667,45 +701,101 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
   return;
 }
 
+MonteCarlo::Object*
+InnerZone::constructMasterCell(Simulation& System,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
+ /*!
+    Construct outer void object 
+    \param System :: Simulation
+    \param FC :: FixedComp for front surf
+    \param sideIndex :: link point for front
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC,FC,int)");
 
- 
+  frontHR= FC.getFullRule(sideIndex);
+  return constructMasterCell(System);
+}
+
+MonteCarlo::Object*
+InnerZone::constructMasterCell(Simulation& System,
+			       const attachSystem::FixedComp& FC,
+			       const std::string& sideName)
+ /*!
+    Construct outer void object 
+    \param System :: Simulation
+    \param FC :: FixedComp for front surf
+    \param sideName :: link point for front
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC,FC,string)");
+
+  frontHR= FC.getFullRule(sideName);
+  return constructMasterCell(System);
+}
+
+
 MonteCarlo::Object*
 InnerZone::constructMasterCell(Simulation& System)
  /*!
-    Construct outer void object 
+    Construct outer void object main pipe
     \param System :: Simulation
     \return cell object
   */
 {
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
-  std::string Out;
-  Out+=extraHR.display()+surroundHR.display()
-    + backHR.display()+ frontHR.display();
+  HeadRule MCell(extraHR*surroundHR*backHR*frontHR);
   
-  CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
+  CellPtr->makeCell("MasterVoid",System,
+		    cellIndex++,voidMat,0.0,MCell.display());  
   masterCell= System.findObject(cellIndex-1);
+  MCell.makeComplement();
+  
+  // get and RECORD external cells:
+  insertCells.clear();
+  for(const int CN : insertCN)
+    {
+      MonteCarlo::Object* cellObj=System.findObject(CN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      cellObj->getHeadRule();
+      insertCells.emplace(CN,cellObj->getHeadRule());
+      cellObj->addIntersection(MCell);
+    }
 
   return masterCell;
 }
 
-MonteCarlo::Object*
-InnerZone::constructMasterCell(Simulation& System,
-			       const attachSystem::ContainedComp& CC)
- /*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \param CC :: Contained Comp
-    \return cell object
-  */
+void
+InnerZone::removeLastMaster(Simulation& System)
+ /*! 
+   This effectively removes the tail of the insert
+   from all of the cells. 
+ */
 {
-  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC)");
- 
-  masterCell=constructMasterCell(System);
-  CC.insertExternalObject(System,*masterCell);
+  ELog::RegMethod RegA("InnerZone","removeLastMaster");
 
-  return masterCell;
+
+  HeadRule masterHR(extraHR*surroundHR*frontHR/frontDivider);
+  masterHR.makeComplement();
+
+  for(auto& [CN, HR] : insertCells)
+    {
+      MonteCarlo::Object* cellObj=System.findObject(CN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+
+      HR.addIntersection(masterHR);
+      cellObj->procHeadRule(HR);
+    }
+  System.removeCell(masterCell->getName());
+  masterCell=0;
+  
+  return;
 }
-
 
 }  // NAMESPACE attachSystem

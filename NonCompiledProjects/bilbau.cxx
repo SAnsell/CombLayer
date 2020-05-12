@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/lens.cxx
+ * File:   Main/bilbau.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,42 +50,28 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
+#include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "mainJobs.h"
-#include "Volumes.h"
 #include "DefPhysics.h"
-#include "TallySelector.h"
-
-#include "LensSource.h"
-#include "FlightLine.h"
-#include "FlightCluster.h"
-#include "World.h"
-#include "LensTally.h"
-#include "makeLens.h"
-
-
+#include "Volumes.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnitsESS.h"
+#include "ImportControl.h"
+#include "World.h"
+#include "makeBib.h"
 
 MTRand RNG(12345UL);
 
@@ -102,51 +88,40 @@ namespace ELog
 int 
 main(int argc,char* argv[])
 {
-  ELog::RegMethod RControl("lens[F]","main");
   int exitFlag(0);                // Value on exit
+  ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
 
   std::string Oname;
   std::vector<std::string> Names;  
+  // PROCESS INPUT:
 
-
-
+  
   Simulation* SimPtr(0);
   try
     {
-      
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      createLensInputs(IParam);
+      createBilbauInputs(IParam);
 
-            
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
       // The big variable setting
-      setVariable::LensModel(SimPtr->getDataBase());
-      InputModifications(SimPtr,IParam,Names);
+      setVariable::BilbauVariables(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,
+			 Names);
       mainSystem::setVariables(*SimPtr,IParam,Names);
-      mainSystem::setMaterialsDataBase(IParam);
-
-      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-      if (!SimPtr) return -1;
-
-	  
-      lensSystem::makeLens lensObj;
-      World::createOuterObjects(*SimPtr);
-      lensObj.build(SimPtr);
-
-      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      lensObj.createTally(*SimPtr,IParam);
-
-
       
+      
+      bibSystem::makeBib BibObj;
+      BibObj.build(*SimPtr,IParam);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+            
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
-      
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -163,12 +138,9 @@ main(int argc,char* argv[])
   catch (...)
     {
       ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
-      exitFlag=-3;
+      exitFlag= -3;
     }
-  
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }
-

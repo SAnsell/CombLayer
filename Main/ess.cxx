@@ -77,7 +77,6 @@
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "World.h"
 #include "makeESS.h"
 
 
@@ -123,7 +122,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       essSystem::makeESS ESSObj;
-      World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

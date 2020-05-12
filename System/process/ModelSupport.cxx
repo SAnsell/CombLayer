@@ -754,7 +754,6 @@ getRangeComposite(const surfRegister& SMap,
     The index select the equivilent starting point.
     The post designator R is the index form.
     
-
     If a cell does not exist ignore [no error]
     If a number is preceeded by T then it is a true number.
     Use T-4000 etc.

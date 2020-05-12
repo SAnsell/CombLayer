@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@ class Object
 
   std::string FCUnit; ///< FixedComp name
   
-  int ObjName;       ///< Number for the object
-  int listNum;       ///< Creation number
-  double Tmp;        ///< Starting temperature (if given)
+  int ObjName;             ///< Number for the object
+  int listNum;             ///< Creation number
+  double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
   int imp;           ///< importance / 0 
@@ -147,7 +147,9 @@ class Object
   void createLogicOpp();
   int isObjSurfValid() const { return objSurfValid; }  ///< Check validity needed
   void setObjSurfValid()  { objSurfValid=1; }          ///< set as valid
-  int addSurfString(const std::string&);   
+  int addSurfString(const std::string&);
+  void addUnion(const HeadRule&);
+  void addIntersection(const HeadRule&);
   int removeSurface(const int);        
   int substituteSurf(const int,const int,Geometry::Surface*);  
   void makeComplement();

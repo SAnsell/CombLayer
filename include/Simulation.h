@@ -217,8 +217,6 @@ class Simulation : public objectGroups
   virtual void substituteAllSurface(const int,const int);
   virtual std::map<int,int> renumberCells(const std::vector<int>&,
 					  const std::vector<int>&);
-
-
   
   /// no-op call
   virtual void writeCinder() const {}

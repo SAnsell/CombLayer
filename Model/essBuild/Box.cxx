@@ -300,7 +300,7 @@ Box::createLinks()
 
   FixedComp::setConnect(2,Origin-X*w,-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
-  FixedComp::setConnect(3,Origin+X*w,X);
+  FixedComp::setConnect(3,Origin+X*w,X); 
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
 
   FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);

@@ -735,9 +735,10 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   ELog::RegMethod RegA("speciesOpticsBeamline","buildObjects");
 
   buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));  
+  buildZone.setBack(getRule("back"));
+  buildZone.setInsertCells(this->getInsertCells());
   MonteCarlo::Object* masterCellA=
-    buildZone.constructMasterCell(System,*this);
+    buildZone.constructMasterCell(System);
 
   buildFrontTable(System,masterCellA,*this,0);
   buildM1Mirror(System,masterCellA,*bellowB,2);

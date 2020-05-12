@@ -3,7 +3,7 @@
  
  * File:   test/testVolumes.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,9 +81,7 @@ testVolumes::testVolumes()
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testVolumes::~testVolumes() 
   /*!
@@ -115,24 +113,24 @@ testVolumes::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // First box :
-  SurI.createSurface(1,"px -2");
-  SurI.createSurface(2,"px 2");
-  SurI.createSurface(3,"py -1");
-  SurI.createSurface(4,"py 1");
-  SurI.createSurface(5,"pz -1");
-  SurI.createSurface(6,"pz 1");
+  SurI.createSurface(11,"px -2");
+  SurI.createSurface(12,"px 2");
+  SurI.createSurface(13,"py -1");
+  SurI.createSurface(14,"py 1");
+  SurI.createSurface(15,"pz -1");
+  SurI.createSurface(16,"pz 1");
 
   // Second box :
-  SurI.createSurface(11,"px -3");
-  SurI.createSurface(12,"px 3");
-  SurI.createSurface(13,"py -3");
-  SurI.createSurface(14,"py 3");
-  SurI.createSurface(15,"pz -3");
-  SurI.createSurface(16,"pz 3");
+  SurI.createSurface(21,"px -3");
+  SurI.createSurface(22,"px 3");
+  SurI.createSurface(23,"py -3");
+  SurI.createSurface(24,"py 3");
+  SurI.createSurface(25,"pz -3");
+  SurI.createSurface(26,"pz 3");
 
   // Far box :
-  SurI.createSurface(21,"px 10");
-  SurI.createSurface(22,"px 15");
+  SurI.createSurface(31,"px 10");
+  SurI.createSurface(32,"px 15");
 
   // Sphere :
   SurI.createSurface(100,"so 25");
@@ -150,7 +148,7 @@ testVolumes::createObjects()
    */
 {
   std::string Out;
-  int cellIndex(1);
+  int cellIndex(2);
   const int surIndex(0);
 
   Out=ModelSupport::getComposite(surIndex,"100");
@@ -163,14 +161,14 @@ testVolumes::createObjects()
   Out=ModelSupport::getComposite(surIndex,"-100 101");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
-				 " (-1:2:-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
+				 " (-11:12:-13:14:-15:16) ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
+  Out=ModelSupport::getComposite(surIndex,"31 -32 13 -14 15 -16");
   ASim.addCell(MonteCarlo::Object(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) #4");
+  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26) #4");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
@@ -219,6 +217,7 @@ testVolumes::applyTest(const int extra)
     {
       if (extra<0 || extra==i+1)
         {
+	  initSim();
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
@@ -240,7 +239,7 @@ testVolumes::testVolume()
 
   VolSum VTallyX(Geometry::Vec3D(0,0,-4),Geometry::Vec3D(8.0,8.0,8.0));
 
-  VTallyX.addTallyCell(4,2);
+  VTallyX.addTallyCell(4,3);
   VTallyX.trackRun(ASim,80000);
   
   V=VTallyX.calcVolume(4);
@@ -248,7 +247,7 @@ testVolumes::testVolume()
   ELog::EM<<" ========= "<<V<<ELog::endTrace;
   
   VolSum VTally(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8.0,8.0));
-  VTally.addTallyCell(4,2);
+  VTally.addTallyCell(4,3);
 
   VTally.trackRun(ASim,80000);
   V=VTally.calcVolume(4);
@@ -271,8 +270,8 @@ testVolumes::testPointVolume()
 
   VolSum VTallyX(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8,8));
   //  VTally.populate(ASim);
-  VTallyX.addTallyCell(4,2);
-  VTallyX.addTallyCell(5,3);
+  VTallyX.addTallyCell(4,3);
+  VTallyX.addTallyCell(5,4);
   //  VTally.addTallyCell(14,3);
   VTallyX.pointRun(ASim,800000);
 

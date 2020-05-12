@@ -167,7 +167,10 @@ setMaxIVLinac(defaultConfig& A,
     {
      { "LINAC", "World 0"},
      { "L2SPF", "World 0"},
-     { "L2SPFsegment1", "World 0"}
+     { "L2SPFsegment1", "World 0"},
+     { "L2SPFsegment2", "World 0"},
+     { "L2SPFsegment14", "World 0"},
+     { "L2SPFsegment15", "World 0"}
     };
 
   size_t unitIndex(0);
@@ -175,14 +178,10 @@ setMaxIVLinac(defaultConfig& A,
     {
       MapTYPE::const_iterator mc=unitDef.find(compItem);
       
-      if (mc!=unitDef.end())
-	{
-	  A.setMultiOption("beamlines",unitIndex,
-			   compItem+" "+mc->second);
-	  unitIndex++;
-	}
-      else
+      if (mc==unitDef.end())
 	throw ColErr::InContainerError<std::string>(compItem,"CompItem");
+      A.setMultiOption("beamlines",unitIndex,compItem+" "+mc->second);
+      unitIndex++;
     }
     
   return;

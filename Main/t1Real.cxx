@@ -122,7 +122,6 @@ main(int argc,char* argv[])
 
       
       ts1System::makeT1Real T1Obj;
-      World::createOuterObjects(*SimPtr);
       T1Obj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

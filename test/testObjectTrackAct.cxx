@@ -3,7 +3,7 @@
  
  * File:   test/testObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,24 +110,24 @@ testObjectTrackAct::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // First box :
-  SurI.createSurface(1,"px -1");
-  SurI.createSurface(2,"px 1");
-  SurI.createSurface(3,"py -1");
-  SurI.createSurface(4,"py 1");
-  SurI.createSurface(5,"pz -1");
-  SurI.createSurface(6,"pz 1");
+  SurI.createSurface(11,"px -1");
+  SurI.createSurface(12,"px 1");
+  SurI.createSurface(13,"py -1");
+  SurI.createSurface(14,"py 1");
+  SurI.createSurface(15,"pz -1");
+  SurI.createSurface(16,"pz 1");
 
   // Second box :
-  SurI.createSurface(11,"px -3");
-  SurI.createSurface(12,"px 3");
-  SurI.createSurface(13,"py -3");
-  SurI.createSurface(14,"py 3");
-  SurI.createSurface(15,"pz -3");
-  SurI.createSurface(16,"pz 3");
+  SurI.createSurface(21,"px -3");
+  SurI.createSurface(22,"px 3");
+  SurI.createSurface(23,"py -3");
+  SurI.createSurface(24,"py 3");
+  SurI.createSurface(25,"pz -3");
+  SurI.createSurface(26,"pz 3");
 
   // Far box :
-  SurI.createSurface(21,"px 10");
-  SurI.createSurface(22,"px 15");
+  SurI.createSurface(31,"px 10");
+  SurI.createSurface(32,"px 15");
 
   // Sphere :
   SurI.createSurface(100,"so 25");
@@ -142,22 +142,22 @@ testObjectTrackAct::createObjects()
   */
 {
   std::string Out;
-  int cellIndex(1);
+  int cellIndex(2);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
   ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
-				 " (-1:2:-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
+				 " (-11:12:-13:14:-15:16) ");
   ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
+  Out=ModelSupport::getComposite(surIndex,"31 -32 13 -14 15 -16");
   ASim.addCell(MonteCarlo::Object(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
+  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26)"
 				 " #4");
   ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Void
   

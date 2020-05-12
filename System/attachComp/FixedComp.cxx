@@ -62,6 +62,25 @@
 
 namespace attachSystem
 {
+  
+FixedComp::FixedComp(const size_t NL,const std::string& KN) :
+  keyName(KN),buildIndex(0),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
+  X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
+ /*!
+    Non-registered Constructor 
+    \param NL :: Number of links
+  */
+{}
+
+FixedComp::FixedComp(const size_t NL) :
+  FixedComp(NL,"Null")
+ /*!
+    Non-registered Constructor 
+    \param NL :: Number of links
+  */
+{}
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const size_t resSize) :

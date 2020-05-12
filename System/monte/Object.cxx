@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,8 @@ Object::Object(const std::string& FCName,const int N,const int M,
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
   trcl(0),imp(1),populated(0),activeMag(0),
-  magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
+  magMinStep(1e-3),magMaxStep(1e-1),
+  objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -137,9 +138,10 @@ Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
-  activeMag(A.activeMag),magVec(A.magVec),
+  activeMag(A.activeMag),
   magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
-  HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
+  magVec(A.magVec),HRule(A.HRule),objSurfValid(0),
+  SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
     \param A :: Object to copy
@@ -376,12 +378,20 @@ Object::setObject(std::string Ln)
   if (!HRule.procString(Ln))   // fails on empty
     throw ColErr::InvalidLine("procString failure :: ",Ln);
 
+
+  // note that this invalidates the read density:
+
+    
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
   objSurfValid=0;
+
+  setMaterial(matN);
   Tmp=lineTemp;
   imp=lineIMP;
   trcl=lineTRCL;
+
+  populated=0;
   
   return 1;   // SUCCESS
 }
@@ -439,6 +449,7 @@ Object::setObject(const int N,const int matNum,
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
   objSurfValid=0;
+  populated=0;
   return 1;
 }
 
@@ -473,6 +484,38 @@ Object::rePopulate()
   ELog::RegMethod RegA("Object","rePopulate");
   HRule.populateSurf();
   populated=1;
+  return;
+}
+
+void
+Object::addIntersection(const HeadRule& HR)
+  /*!
+    Adds a HR as an intersection
+    \param HR :: headrule to add
+  */
+{
+  ELog::RegMethod RegA("Object","addIntersection");
+  
+  HRule.addIntersection(HR);
+  
+  populated=0;
+  objSurfValid=0;
+  return;
+}
+
+void
+Object::addUnion(const HeadRule& HR)
+  /*!
+    Adds a HR as an union
+    \param HR :: headrule to add
+  */
+{
+  ELog::RegMethod RegA("Object","addIntersection");
+  
+  HRule.addUnion(HR);
+  
+  populated=0;
+  objSurfValid=0;
   return;
 }
 
@@ -745,10 +788,14 @@ Object::getImplicatePairs() const
 	const Geometry::Surface* APtr=SurList[i];
 	const Geometry::Surface* BPtr=SurList[j];
 
+	// This is JUST surface SIGNS:
 	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
-
 	if (dirFlag.first)
-	  Out.push_back(dirFlag);
+	  {
+	    Out.push_back(std::pair<int,int>
+			(dirFlag.first * APtr->getName(),
+			 dirFlag.second * BPtr->getName()));
+	  }
       }
   return Out;
 }
@@ -1314,16 +1361,10 @@ Object::str() const
 {
   std::ostringstream cx;
   cx<<ObjName<<" ";
-  if (imp)
-    {
-      cx<<matPtr->getID();
-      if (!matPtr->isVoid())
-	cx<<" "<<matPtr->getAtomDensity();
-    }
-  else
-    {
-      cx<<"0";
-    }
+  cx<<matPtr->getID()<<" ";
+
+  if (!matPtr->isVoid())
+    cx<<matPtr->getAtomDensity()<<" ";
   
   cx<<HRule.display();
   return cx.str();
