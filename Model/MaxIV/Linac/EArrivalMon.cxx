@@ -333,7 +333,7 @@ EArrivalMon::createAll(Simulation& System,
   ELog::RegMethod RegA("EArrivalMon","createAll");
   
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,length+2*frontPipeLen);
   createSurfaces();
   createObjects(System);
   createLinks();

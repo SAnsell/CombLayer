@@ -126,9 +126,25 @@ linac2SPFsegment2(FuncDataBase& Control,
   CGateGen.setRotate(1);
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,310.0);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,31.0);
 
-  EArrGen.generateMon(Control,lKey+"BeamMonA",0.0);
+  EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,75.0);
+
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+
+  BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
+  
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,132.4);
+
+
+  LQGen.generateQuad(Control,lKey+"QuadC",23.54);
+  LQGen.generateQuad(Control,lKey+"QuadD",73.0);
+  LQGen.generateQuad(Control,lKey+"QuadE",113.2);   
+
   return;
 }
 
