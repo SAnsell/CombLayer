@@ -64,6 +64,7 @@
 #include "BPMGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "EArrivalMonGenerator.h"
 
 namespace setVariable
 {
@@ -98,7 +99,8 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::CylGateValveGenerator CGateGen;
-
+  setVariable::EArrivalMonGenerator EArrGen;
+  
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
 
@@ -124,7 +126,9 @@ linac2SPFsegment2(FuncDataBase& Control,
   CGateGen.setRotate(1);
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,310.0); 
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,310.0);
+
+  EArrGen.generateMon(Control,lKey+"BeamMonA",0.0);
   return;
 }
 

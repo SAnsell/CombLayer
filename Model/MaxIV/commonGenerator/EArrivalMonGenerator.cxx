@@ -63,12 +63,11 @@ EArrivalMonGenerator::EArrivalMonGenerator() :
   frontPipeILen(1.0),frontPipeLen(2.75),
   frontPipeRadius(CF40_22::innerRadius),
   frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.5),
-  backPipeRadius(CF40_22::innerRadius),
-  backPipeThick(0.8)
+  backPipeRadius(CF40_22::innerRadius),backPipeThick(0.8),
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
-  windowThick(0.8),voidMat("Void"),electrodeMat("Copper"),
-  flangeMat("Stainless304"),outerMat("Stainless304")
+  windowThick(0.7),voidMat("Void"),mainMat("Copper"),
+  windowMat("SiO2"),flangeMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -106,9 +105,9 @@ EArrivalMonGenerator::setFlangeCF()
 
     
 void
-EArrivalMonGenerator::generateEArrivalMon(FuncDataBase& Control,
-			  const std::string& keyName,
-			  const double yStep)  const
+EArrivalMonGenerator::generateMon(FuncDataBase& Control,
+				  const std::string& keyName,
+				  const double yStep)  const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 

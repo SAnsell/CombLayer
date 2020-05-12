@@ -76,10 +76,9 @@ class EArrivalMonGenerator
   virtual ~EArrivalMonGenerator();
 
   template<typename T> void setCF();
-  template<typename T> void setAFlangeCF();
-  template<typename T> void setBFlangeCF();
+  template<typename T> void setFlangeCF();
   
-  virtual void generateEArrivalMon(FuncDataBase&,const std::string&,
+  virtual void generateMon(FuncDataBase&,const std::string&,
 			   const double) const;
 
 };

@@ -75,6 +75,7 @@
 #include "QuadUnitGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "EArrivalMonGenerator.h"
 
 namespace setVariable
 {
@@ -141,6 +142,8 @@ SingleItemVariables(FuncDataBase& Control)
 
   Control.addVariable("CryoBMat","Aluminium");
 
+  setVariable::EArrivalMonGenerator EMonGen;
+  EMonGen.generateMon(Control,"BeamMon",0.0);
 
 
   setVariable::CryoGenerator CryGen;

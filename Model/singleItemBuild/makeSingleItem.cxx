@@ -109,6 +109,7 @@
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "DipoleDIBMag.h"
+#include "EArrivalMon.h"
 
 #include "makeSingleItem.h"
 
@@ -146,7 +147,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag"
+      "DipoleDIBMag","EArrivalMon",
       "Help","help"
     });
   
@@ -191,6 +192,19 @@ makeSingleItem::build(Simulation& System,
       CM->setCutSurf("Inner",*VC,"outerPipe");
       CM->addInsertCell(voidCell);
       CM->createAll(System,World::masterOrigin(),0);
+      
+      return;
+    }
+
+  if (item == "EArrivalMon" )
+    {
+      std::shared_ptr<tdcSystem::EArrivalMon>
+	EA(new tdcSystem::EArrivalMon("BeamMon"));
+      
+      OR.addObject(EA);
+
+      EA->addInsertCell(voidCell);
+      EA->createAll(System,World::masterOrigin(),0);
       
       return;
     }
@@ -272,6 +286,16 @@ makeSingleItem::build(Simulation& System,
     }
 
   if (item=="R3ChokeChamber")
+    {
+      std::shared_ptr<xraySystem::R3ChokeChamber>
+	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
+      OR.addObject(CChamber);
+      CChamber->addAllInsertCell(voidCell);
+      CChamber->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="")
     {
       std::shared_ptr<xraySystem::R3ChokeChamber>
 	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));

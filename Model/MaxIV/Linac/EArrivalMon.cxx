@@ -139,9 +139,11 @@ EArrivalMon::populate(const FuncDataBase& Control)
   
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
-  electrodeMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
-  outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+
+
 
   return;
 }
@@ -157,68 +159,70 @@ EArrivalMon::createSurfaces()
 
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1,Origin-Y*(frontPipeLen+length/2.0),Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+2,Origin+Y*(backPipeLen+length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  // main pipe and thicness
+  // main pipe and surround
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+thick);
+
+  //front /back face
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
+
+  // front back wall
+  ModelSupport::buildPlane
+    (SMap,buildIndex+21,Origin-Y*(faceThick+length/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+22,Origin+Y*(faceThick+length/2.0),Y);
+
+  // Flange ends
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,Origin-Y*(frontPipeLen+length/2.0-flangeLength),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+102,Origin+Y*(backPipeLen+length/2.0-flangeLength),Y);
+  // inner flange stops
+  ModelSupport::buildPlane
+    (SMap,buildIndex+151,Origin-Y*(-frontPipeILen+length/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+152,Origin+Y*(-backPipeILen+length/2.0),Y);
   
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
-
-  ModelSupport::buildPlane(SMap,buildIndex+101,
-			   Origin-Y*(length/2.0-flangeALength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(length/2.0-flangeBLength),Y);
-
-  // Field shaping [300]
-  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,innerRadius);
+  // flange
+  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,flangeRadius);
+  
+  // front exit
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontPipeRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+317,Origin,Y,innerRadius+innerThick);
+    (SMap,buildIndex+117,Origin,Y,frontPipeRadius+frontPipeThick);
 
-  const double ang(M_PI*innerAngle/(2.0*180.0));
-  double midAngle(innerAngleOffset*M_PI/180.0);
-  int BI(buildIndex+350);
-  for(size_t i=0;i<4;i++)
-    {
-      const Geometry::Vec3D lowAxis(X*cos(midAngle-ang)+Z*sin(midAngle-ang));
-      const Geometry::Vec3D highAxis(X*cos(midAngle+ang)+Z*sin(midAngle+ang));
-      ModelSupport::buildPlane(SMap,BI+1,Origin,lowAxis);
-      ModelSupport::buildPlane(SMap,BI+2,Origin,highAxis);
-      midAngle+=M_PI/2.0;
-      BI+=2;
-    }
-      
-  // end point on electrons (solid)
-  ModelSupport::buildPlane(SMap,buildIndex+302,
-			   Origin+Y*(length/2.0-electrodeEnd),Y);
+  // back flange
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,backPipeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,Origin,Y,backPipeRadius+backPipeThick);
+
+  const Geometry::Vec3D winAxis(X*cos(M_PI*windowRotAngle/180.0)+
+				Z*sin(M_PI*windowRotAngle/180.0));
 
   
-  // Electrode holder
-  const double angleStep(M_PI/4.0);
-
-  BI=buildIndex+411;
-  for(size_t i=0;i<8;i++)
-    {
-      const double angle(angleStep*static_cast<double>(i));
-      const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
-      ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,axis);
-      BI++;
-    }
-
-  const Geometry::Vec3D eCent(Origin+Y*(electrodeYStep-length/2.0));
+  const Geometry::Vec3D midWindow(Origin+winAxis*(radius+thick/2.0));
+  // mid divider
+  ModelSupport::buildPlane(SMap,buildIndex+500,Origin,winAxis);
   ModelSupport::buildPlane
-    (SMap,buildIndex+401,eCent-Y*(electrodeThick/2.0),Y);
+    (SMap,buildIndex+501,midWindow-winAxis*(windowThick/2.0),winAxis);
   ModelSupport::buildPlane
-    (SMap,buildIndex+402,eCent+Y*(electrodeThick/2.0),Y);
+    (SMap,buildIndex+502,midWindow+winAxis*(windowThick/2.0),winAxis);
   
+  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,winAxis,windowRadius);
+  // cut plates
+
   return;
 }
 
@@ -235,73 +239,68 @@ EArrivalMon::createObjects(Simulation& System)
   
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
-
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
-
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 11 -12 -7 (117:151) (217:-152) ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
   
-  // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 7 -17 (507:-500)");
+  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out);
 
-  // main walll
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -202 7 -17 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  // front plate
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 21 117 -17 ");
+  makeCell("FPlate",System,cellIndex++,mainMat,0.0,Out);
 
-  // front flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 7 -107 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
-
-  // back flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 7 -207 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("ElectronPlate",System,cellIndex++,electrodeMat,0.0,Out);
-
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  // back plate
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 217 -17 ");
+  makeCell("BPlate",System,cellIndex++,mainMat,0.0,Out);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  // front Main pipe
+  Out=ModelSupport::getComposite(SMap,buildIndex," -151  -107 ");
+  makeCell("FPipeVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -151 107 -117");
+  makeCell("FPipe",System,cellIndex++,mainMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 117 -307 ");
+  makeCell("FFlange",System,cellIndex++,mainMat,0.0,Out+frontStr);
+
+
+  // back Main pipe
+  Out=ModelSupport::getComposite(SMap,buildIndex," 152 -207 ");
+  makeCell("BPipeVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 152 207 -217");
+  makeCell("BPipe",System,cellIndex++,mainMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 217 -307 ");
+  makeCell("BFlange",System,cellIndex++,mainMat,0.0,Out+backStr);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -21 101 -307 117 ");
+  makeCell("AFlangeOut",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -102 -307 117 ");
+  makeCell("BFlangeOut",System,cellIndex++,0,0.0,Out);
 
-  int BI(0);
-  const std::string IOut=
-    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 "); 
-  for(size_t i=0;i<4;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex+BI," 351 -352");
-      makeCell("Electrode",System,cellIndex++,electrodeMat,0.0,IOut+Out);
-      Out=ModelSupport::getRangeComposite
-	(SMap,351,358,BI,buildIndex," 352R -353R");
-      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,IOut+Out);
-      BI+=2;
-    }
-  // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 401 -302 317 -7");
-  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -21 -17 307  ");
+  makeCell("AOut",System,cellIndex++,0,0.0,Out+frontStr);
 
-  // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
-  makeCell("ElectrodeEnd",System,cellIndex++,electrodeMat,0.0,Out+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -17 307  ");
+  makeCell("BOut",System,cellIndex++,0,0.0,Out+backStr);
+
+  // window
+  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -502 -507 ");
+  makeCell("Window",System,cellIndex++,windowMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 500 -501 7 -507 ");
+  makeCell("WindowVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 502 -17 -507 ");
+  makeCell("WindowOut",System,cellIndex++,0,0.0,Out);
 
 
-  Out=ModelSupport::getComposite
-      (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17  ");
+  addOuterSurf(Out+frontStr+backStr);
   
   return;
 }
@@ -322,9 +321,9 @@ EArrivalMon::createLinks()
 
 void
 EArrivalMon::createAll(Simulation& System,
-	       const attachSystem::FixedComp& FC,
-	       const long int sideIndex)
-  /*!
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed point track 
