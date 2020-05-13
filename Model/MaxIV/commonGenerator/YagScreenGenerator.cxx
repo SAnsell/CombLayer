@@ -55,14 +55,14 @@ YagScreenGenerator::YagScreenGenerator() :
   jbWallThick(0.3),
   jbWallMat("Aluminium"),
   jbMat("StbTCABL%Void%50"), // guess
-  ffLength(19.5),
-  ffInnerRadius(0.95),
-  ffWallThick(0.95),
-  ffFlangeLen(1.2),
-  ffFlangeRadius(3.5),
-  ffWallMat("Stainless304L"),
+  ftLength(19.5),
+  ftInnerRadius(0.95),
+  ftWallThick(0.95),
+  ftFlangeLen(1.2),
+  ftFlangeRadius(3.5),
+  ftWallMat("Stainless304L"),
   threadLift(7.0),
-  threadRad(ffInnerRadius*0.7), // guess
+  threadRad(ftInnerRadius*0.7), // guess
   threadMat("Aluminium"),
   mirrorRadius(1.75),
   mirrorAngle(-45.0),
@@ -94,8 +94,8 @@ YagScreenGenerator::setCF()
     Set pipe and flange to CF-X format
   */
 {
-  ffInnerRadius=CF::innerRadius;
-  ffWallThick=CF::wallThick;
+  ftInnerRadius=CF::innerRadius;
+  ftWallThick=CF::wallThick;
   setFlangeCF<CF>();
 
   return;
@@ -108,8 +108,8 @@ YagScreenGenerator::setFlangeCF()
     Setter for flange
    */
 {
-  ffFlangeRadius=CF::flangeRadius;
-  ffFlangeLen=CF::flangeLength;
+  ftFlangeRadius=CF::flangeRadius;
+  ftFlangeLen=CF::flangeLength;
 
   return;
 }
@@ -135,12 +135,12 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   Control.addVariable(keyName+"JBWidth",jbWidth);
   Control.addVariable(keyName+"JBHeight",jbHeight);
   Control.addVariable(keyName+"JBWallThick",jbWallThick);
-  Control.addVariable(keyName+"FFLength",ffLength);
-  Control.addVariable(keyName+"FFInnerRadius",ffInnerRadius);
-  Control.addVariable(keyName+"FFWallThick",ffWallThick);
-  Control.addVariable(keyName+"FFFlangeLength",ffFlangeLen);
-  Control.addVariable(keyName+"FFFlangeRadius",ffFlangeRadius);
-  Control.addVariable(keyName+"FFWallMat",ffWallMat);
+  Control.addVariable(keyName+"FTLength",ftLength);
+  Control.addVariable(keyName+"FTInnerRadius",ftInnerRadius);
+  Control.addVariable(keyName+"FTWallThick",ftWallThick);
+  Control.addVariable(keyName+"FTFlangeLength",ftFlangeLen);
+  Control.addVariable(keyName+"FTFlangeRadius",ftFlangeRadius);
+  Control.addVariable(keyName+"FTWallMat",ftWallMat);
   Control.addVariable(keyName+"ThreadLift",threadLift);
   Control.addVariable(keyName+"ThreadRadius",threadRad);
   Control.addVariable(keyName+"ThreadMat",threadMat);

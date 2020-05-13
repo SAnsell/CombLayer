@@ -47,12 +47,12 @@ class YagScreenGenerator
   std::string jbWallMat;        ///< electronics junction box material
   std::string jbMat;            ///< electronics junction box cable/inside material
 
-  double ffLength;              ///< linear pneumatics feedthrough length
-  double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
-  double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
-  double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
-  double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
-  std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
+  double ftLength;              ///< linear pneumatics feedthrough length
+  double ftInnerRadius;         ///< linear pneumatics feedthrough inner radius
+  double ftWallThick;           ///< linear pneumatics feedthrough wall thickness
+  double ftFlangeLen;           ///< linear pneumatic feedthrough flange length
+  double ftFlangeRadius;        ///< linear pneumatic feedthrough flange radius
+  std::string ftWallMat;        ///< linear pneumatics feedthrough wall material
 
   double threadLift;            ///< screen thread lift inside vacuum system
   double threadRad;             ///< screen thread inner radius

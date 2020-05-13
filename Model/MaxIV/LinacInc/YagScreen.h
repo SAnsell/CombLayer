@@ -48,12 +48,12 @@ class YagScreen : public attachSystem::ContainedGroup,
   int    jbWallMat;             ///< electronics junction box wall material
   int    jbMat;                 ///< electronics junction box cable/inside material
 
-  double ffLength;              ///< linear pneumatics feedthrough length
-  double ffInnerRadius;         ///< linear pneumatics feedthrough inner radius
-  double ffWallThick;           ///< linear pneumatics feedthrough wall thickness
-  double ffFlangeLen;           ///< linear pneumatics feedthrough flange length
-  double ffFlangeRadius;        ///< linear pneumatics feedthrough flange radius
-  int    ffWallMat;             ///< linear pneumatics feedthrough wall material
+  double ftLength;              ///< linear pneumatics feedthrough length
+  double ftInnerRadius;         ///< linear pneumatics feedthrough inner radius
+  double ftWallThick;           ///< linear pneumatics feedthrough wall thickness
+  double ftFlangeLen;           ///< linear pneumatics feedthrough flange length
+  double ftFlangeRadius;        ///< linear pneumatics feedthrough flange radius
+  int    ftWallMat;             ///< linear pneumatics feedthrough wall material
 
   double threadLift;            ///< screen thread lift
   double threadRad;             ///< screen thread inner radius
