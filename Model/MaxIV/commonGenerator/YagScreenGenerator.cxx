@@ -116,16 +116,21 @@ YagScreenGenerator::setFlangeCF()
 
 
 void
-YagScreenGenerator::generate(FuncDataBase& Control,
-			       const std::string& keyName) const
+YagScreenGenerator::generateScreen(FuncDataBase& Control,
+				   const std::string& keyName,
+				   const bool inBeam) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param inBeam :: is item in beam
   */
 {
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
+  
+  Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
+  
   Control.addVariable(keyName+"JBLength",jbLength);
   Control.addVariable(keyName+"JBWidth",jbWidth);
   Control.addVariable(keyName+"JBHeight",jbHeight);
@@ -152,15 +157,16 @@ YagScreenGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"JBWallMat",jbWallMat);
   Control.addVariable(keyName+"JBMat",jbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"Closed",static_cast<int>(closed));
 
   return;
 
 }
 
 ///\cond TEMPLATE
+
   template void YagScreenGenerator::setCF<CF40_22>();
   template void YagScreenGenerator::setFlangeCF<CF40_22>();
-///\endcond TEMPLATE
+
+  ///\endcond TEMPLATE
 
 }  // namespace setVariable

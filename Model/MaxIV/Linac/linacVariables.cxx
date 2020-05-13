@@ -64,6 +64,7 @@
 #include "BPMGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
+#include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
 
 namespace setVariable
@@ -99,6 +100,8 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::CylGateValveGenerator CGateGen;
+  setVariable::EArrivalMonGenerator EArrGen;
+  setVariable::YagScreenGenerator YagGen;
 
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
@@ -124,21 +127,30 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
-  // This could be a standard component:
-  /*
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);
-  PItemGen.setNoPlate();
+  CGateGen.setRotate(1);
+  CGateGen.generateGate(Control,lKey+"GateTube",0);
 
-  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
-  Control.addVariable(lKey+"PumpANPorts",2);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,31.0);
 
-  PItemGen.setLength(6.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
-  PItemGen.setLength(2.5);
-  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
-  */
+  EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,75.0);
+
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+
+  BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,132.4);
+
+  LQGen.generateQuad(Control,lKey+"QuadC",23.54);
+  LQGen.generateQuad(Control,lKey+"QuadD",73.0);
+  LQGen.generateQuad(Control,lKey+"QuadE",113.2);
+
+  YagGen.setCF<CF40_22>();
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
+
   return;
 }
 
@@ -339,7 +351,7 @@ linac2SPFsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
 
   //YagGen.setCF<CF40_22>();
-  YagGen.generate(Control,lKey+"YAG");
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
 

@@ -109,6 +109,7 @@
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "DipoleDIBMag.h"
+#include "EArrivalMon.h"
 #include "YagScreen.h"
 
 #include "makeSingleItem.h"
@@ -147,7 +148,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag", "YagScreen"
+      "DipoleDIBMag","EArrivalMon","YagScreen",
       "Help","help"
     });
 
@@ -182,11 +183,7 @@ makeSingleItem::build(Simulation& System,
 	YAG(new tdcSystem::YagScreen("YAG"));
       OR.addObject(YAG);
 
-      YAG->addInsertCell("Body",voidCell);
-      YAG->addInsertCell("Thread",voidCell);
-      YAG->addInsertCell("Mirror",voidCell);
-      YAG->addInsertCell("Screen",voidCell);
-
+      YAG->addAllInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;
@@ -209,6 +206,19 @@ makeSingleItem::build(Simulation& System,
       CM->addInsertCell(voidCell);
       CM->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+
+  if (item == "EArrivalMon" )
+    {
+      std::shared_ptr<tdcSystem::EArrivalMon>
+	EA(new tdcSystem::EArrivalMon("BeamMon"));
+      
+      OR.addObject(EA);
+
+      EA->addInsertCell(voidCell);
+      EA->createAll(System,World::masterOrigin(),0);
+      
       return;
     }
 
@@ -289,6 +299,16 @@ makeSingleItem::build(Simulation& System,
     }
 
   if (item=="R3ChokeChamber")
+    {
+      std::shared_ptr<xraySystem::R3ChokeChamber>
+	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
+      OR.addObject(CChamber);
+      CChamber->addAllInsertCell(voidCell);
+      CChamber->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="")
     {
       std::shared_ptr<xraySystem::R3ChokeChamber>
 	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));

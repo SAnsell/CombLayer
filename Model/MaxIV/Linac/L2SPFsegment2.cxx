@@ -91,6 +91,7 @@
 #include "CorrectorMag.h"
 #include "BPM.h"
 #include "CylGateValve.h"
+#include "EArrivalMon.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -112,10 +113,10 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
   gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  beamArrivalMon(new constructSystem::Bellows(keyName+"BeamArrivalMon")),
+  beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
-  bpmB(new constructSystem::VacuumPipe(keyName+"BPMB")),  
+  bpmB(new tdcSystem::BPM(keyName+"BPMB")),  
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
@@ -185,6 +186,26 @@ L2SPFsegment2::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gateTube,"back",*pipeC);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeC,"back",*beamArrivalMon);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*beamArrivalMon,"back",*pipeD);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeD,"back",*bellowB);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowB,"back",*bpmB);
+
+  pipeE->createAll(System,*bpmB,"back");
+  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadC);
+  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadD);
+  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadE);
+  pipeTerminate(System,*buildZone,pipeE);
 
   return;
 }

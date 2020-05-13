@@ -76,14 +76,12 @@ class YagScreen : public attachSystem::ContainedGroup,
   Geometry::Vec3D screenCentre;
 
   int    voidMat;               ///< void material
-  bool   closed;                ///< screen and mirror are in the beam
+
+  bool   inBeam;                ///< screen and mirror are in the beam
 
   void calcThreadLength();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -97,7 +95,10 @@ class YagScreen : public attachSystem::ContainedGroup,
   virtual ~YagScreen();
 
   void setScreenCentre(const attachSystem::FixedComp&,const long int);
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

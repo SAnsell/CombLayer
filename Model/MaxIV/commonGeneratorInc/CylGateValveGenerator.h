@@ -39,7 +39,9 @@ class CylGateValveGenerator
 {
  private:
 
-    double radius;                ///< Radius
+  int horRotateFlag;            ///< horizontal rotate flag [+/-]
+  
+  double radius;                ///< Radius
   double depth;                 ///< Void down depth
   double height;                ///< void lift height
 
@@ -77,6 +79,8 @@ class CylGateValveGenerator
   CylGateValveGenerator& operator=(const CylGateValveGenerator&);
   ~CylGateValveGenerator();
 
+  /// set rotate flag
+  void setRotate(const int F) { horRotateFlag=F; }
   void generateFlat(FuncDataBase&,const std::string&,
 		    const bool,const bool) const;
   void generateGate(FuncDataBase&,const std::string&,

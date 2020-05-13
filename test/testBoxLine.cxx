@@ -93,10 +93,7 @@ testBoxLine::initSim()
 {
   ELog::RegMethod RegA("testBoxLine","initSim");
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  SurI.reset();
   ASim.resetAll();
-
   createSurfaces();
   createObjects();
   ASim.createObjSurfMap();

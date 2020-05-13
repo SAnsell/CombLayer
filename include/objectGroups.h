@@ -102,6 +102,8 @@ class objectGroups
     getObjectThrow(const std::string&,const std::string&);
 
   CTYPE getSharedPtr(const std::string&) const;
+
+  bool hasRegion(const std::string&) const;
   bool hasObject(const std::string&) const;
 
   bool isActive(const int) const;

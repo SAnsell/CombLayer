@@ -437,7 +437,8 @@ Object::setObject(const int N,const int matNum,
   ELog::RegMethod RegA("Object","setObject");
   
   ObjName=N;
-  matPtr=ModelSupport::DBMaterial::Instance().getMaterialPtr(matNum);
+  matPtr=ModelSupport::DBMaterial::Instance().
+    getMaterialPtr(matNum);
 
   std::ostringstream cx;
   for(const Token& tItem : TVec)

@@ -130,7 +130,9 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     \param yV :: Y direction
     \param zV :: Z direction
   */
-{}
+{
+  ELog::EM<<"Copy constructory"<<ELog::endDiag;
+}
 
 FixedComp::FixedComp(const FixedComp& A) : 
   keyName(A.keyName),SMap(A.SMap),

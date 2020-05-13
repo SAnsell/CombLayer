@@ -544,7 +544,7 @@ Plane::side(const Geometry::Vec3D& A) const
 {
   double Dp=NormV.dotProd(A);
   Dp-=Dist;
-  if (Geometry::zeroTol<fabs(Dp))
+  if (Geometry::zeroTol<std::abs(Dp))
     return (Dp>0) ? 1 : -1;
   return 0;
 }

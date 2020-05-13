@@ -244,7 +244,6 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  int segmentIndex(0);
   for(const std::string& BL : activeINJ)
     {
       const std::string& bzName=segmentLinkMap.at(BL);
@@ -259,41 +258,37 @@ TDC::createAll(Simulation& System,
 	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf1->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  segmentIndex=1;
 	}
       if (BL=="L2SPFsegment2")  
 	{
-	  if (segmentIndex==1)
-	    buildZone->setFront(l2spf1->getFullRule("back"));
+	  if (l2spf1->hasLastSurf())
+	    buildZone->setFront(l2spf1->getLastSurf());
 	  buildZone->constructMasterCell(System);
 	  
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  segmentIndex=2;
 	}
       else if (BL=="L2SPFsegment14")
 	{
-	  //	  if (segmentIndex==13)
-	  //	    buildZone->setFront(l2spf13->getFullRule("back"));
+	  //	  if (l2spf13->hasLastSurf())
+	  //	    buildZone->setFront(l2spf13->getLastSurf());
 	  l2spf14->setInnerZone(buildZone.get());
 	  buildZone->constructMasterCell(System);
 	  
 	  l2spf14->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  segmentIndex=14;
 	}
       else if (BL=="L2SPFsegment15")
 	{
-	  if (segmentIndex==14)
-	    buildZone->setFront(l2spf14->getFullRule("back"));
+	  if (l2spf14->hasLastSurf())
+	    buildZone->setFront(l2spf14->getLastSurf());
 	  l2spf15->setInnerZone(buildZone.get());
 	  buildZone->constructMasterCell(System);
 	  
 	  l2spf15->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  segmentIndex=15;
 	}
     }
 

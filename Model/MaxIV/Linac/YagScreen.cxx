@@ -70,7 +70,7 @@ YagScreen::YagScreen(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   screenCentreActive(false),
-  closed(false)
+  inBeam(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -106,7 +106,7 @@ YagScreen::YagScreen(const YagScreen& A) :
   screenHolderMat(A.screenHolderMat),
   screenCentreActive(A.screenCentreActive),
   screenCentre(A.screenCentre),
-  voidMat(A.voidMat)
+  voidMat(A.voidMat),inBeam(A.inBeam)
   /*!
     Copy constructor
     \param A :: YagScreen to copy
@@ -154,6 +154,7 @@ YagScreen::operator=(const YagScreen& A)
       screenCentreActive=A.screenCentreActive;
       screenCentre=A.screenCentre;
       voidMat=A.voidMat;
+      inBeam=A.inBeam;
     }
   return *this;
 }
@@ -240,25 +241,7 @@ YagScreen::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
-  closed=Control.EvalVar<int>(keyName+"Closed");
-
-  return;
-}
-
-void
-YagScreen::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("YagScreen","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
+  inBeam=Control.EvalVar<int>(keyName+"InBeam");
   return;
 }
 
@@ -270,21 +253,26 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
-  const double threadZStep(closed ? threadLift : 1.0);
+  const double threadZStep(inBeam ? threadLift : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ffLength,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,ffInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,ffInnerRadius+ffWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+17,Origin,Y,ffInnerRadius+ffWallThick);
+
   // flange
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*ffFlangeLen,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ffFlangeRadius);
 
   // electronics junction box
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(ffLength+jbWallThick),Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+102,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+101),jbLength);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Y*(ffLength+jbWallThick),Y);
+  // ModelSupport::buildPlane
+  //   (SMap,buildIndex+102,Origin+Y*(ffLength+jbWallThick+jbLength),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   Y*(ffLength+jbWallThick+jbLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(jbWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(jbWidth/2.0),X);
@@ -295,34 +283,31 @@ YagScreen::createSurfaces()
 
   SMap.addMatch(buildIndex+111, SMap.realSurf(buildIndex+2));
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+112,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+2),
-				  jbLength+jbWallThick*2);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+112,Origin+Y*(ffLength+jbLength+2.0*jbWallThick),Y);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+113,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+103),
-				  -jbWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+104),
-				  jbWallThick);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+113,Origin-X*(jbWallThick+jbWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+114,Origin+X*(jbWallThick+jbWidth/2.0),X);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
-  				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
-  				  -jbWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+116,
-  				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
- 				  jbWallThick);
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,Origin-Z*(jbWallThick+jbHeight/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,Origin+Z*(jbWallThick+jbHeight/2.0),Z);
 
   // screen+mirror thread
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+201,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
-				  -threadZStep);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+201,Origin-Y*threadZStep,Y);
+
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRad);
 
   // mirror
-  Geometry::Vec3D MVec(X);
-  const Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(mirrorAngle,Z);
-  QV.rotate(MVec);
+
+  const Geometry::Quaternion QV =
+    Geometry::Quaternion::calcQRotDeg(mirrorAngle,Z);
+  const Geometry::Vec3D MVec=QV.makeRotate(X);
 
   const double c = cos(mirrorAngle*M_PI/180.0);
 
@@ -333,7 +318,7 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+304,or304,MVec);
 
   // tmp is intersect of mirror cylinder and thread
-  const Geometry::Vec3D tmp = mirrorAngle < 0.0 ? or303 : or304;
+  const Geometry::Vec3D tmp = (mirrorAngle < 0.0) ? or303 : or304;
   const Geometry::Vec3D or307(tmp+MVec*Z*mirrorRadius+MVec*mirrorThick/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+307,
 			      or307,
@@ -391,11 +376,12 @@ YagScreen::createObjects(Simulation& System)
   addOuterSurf("Body",Out);
 
   // electronics junction box
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("JBVoid",System,cellIndex++,jbMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-  				 " 111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106) ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106)");
   makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
 
   // mirror/screen thread
@@ -404,7 +390,8 @@ YagScreen::createObjects(Simulation& System)
 
   // we need these cells only if the YAG is closed
   // otherwise it just slows down geometry tracking
-  if (closed)
+  // Can think about making then all in an innerVoid cell
+  if (inBeam)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
       makeCell("ThreadClosed",System,cellIndex++,threadMat,0.0,Out);
@@ -419,22 +406,26 @@ YagScreen::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
       makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 405 -406 408 401 -201 ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 403 -404 405 -406 408 401 -201 ");
       makeCell("ScreenHolderSides",System,cellIndex++,screenHolderMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
       makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
       addOuterSurf("Screen",Out);
-    } else
+    }
+  else
     {
       addOuterSurf("Thread","");
       addOuterSurf("Mirror","");
       addOuterSurf("Screen","");
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 111 -112 113 -114 115 -116 ");
   addOuterUnionSurf("Body",Out);
 
   return;
@@ -444,11 +435,14 @@ YagScreen::createObjects(Simulation& System)
 void
 YagScreen::createLinks()
   /*!
-    Create all the linkes
+    Create all the linkes [need front/back to join/use InnerZone]
   */
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
 
+  
+
+  
   return;
 }
 
@@ -458,7 +452,7 @@ YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
   /*!
     Set the screen centre
     \param FC :: FixedComp to use
-    \param BIndex :: Link point index
+    \param sIndex :: Link point index
   */
 {
   ELog::RegMethod RegA("YagScreen","setScreenCentre");
@@ -471,8 +465,8 @@ YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
 
 void
 YagScreen::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

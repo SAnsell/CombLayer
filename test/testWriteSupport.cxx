@@ -3,7 +3,7 @@
  
  * File:   test/testWriteSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ testWriteSupport::testDouble()
     \retval 0 on success
   */
 {
-  ELog::RegMethod RegA("testWriteSupport","testConvert");
+  ELog::RegMethod RegA("testWriteSupport","testDouble");
 
   // type : Init string : final : results : (outputs)
   typedef std::tuple<double,std::string> TTYPE;
@@ -127,7 +127,7 @@ testWriteSupport::testDouble()
       //         1234567890
       TTYPE(2.0,         "   2.00000"),
       TTYPE(2.1,         "   2.10000"),
-      TTYPE(2.0000000001,"   2.00000"),
+      TTYPE(2.0000000001,"         2"),
       TTYPE(-2.1,        "  -2.10000"),
       TTYPE(-2.1e12,     "  -2.1e+12")
     };

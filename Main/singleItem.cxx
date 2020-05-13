@@ -3,7 +3,7 @@
  
  * File:   Main/singleItem.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "mainJobs.h"
 #include "DefPhysics.h"
@@ -75,7 +74,6 @@
 #include "variableSetup.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "World.h"
 #include "makeSingleItem.h"
 
 MTRand RNG(12345UL);
@@ -118,7 +116,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
       
       singleItemSystem::makeSingleItem singleItemObj;
-      World::createOuterObjects(*SimPtr);
       singleItemObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

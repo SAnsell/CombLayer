@@ -50,6 +50,7 @@ namespace tdcSystem
   class LQuad;
   class CorrectorMag;
   class BPM;
+  class EArrivalMon;
   /*!
     \class L2SPFsegment2
     \version 1.0
@@ -84,16 +85,18 @@ class L2SPFsegment2 :
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; 
   
-  /// Beam arraival monitor \todo BUILD
-  std::shared_ptr<constructSystem::Bellows> beamArrivalMon;
+  /// Beam arraival monitor 
+  std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon;
 
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeD; 
 
   /// Bellows
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// BPM \todo BUILD A BPM
-  std::shared_ptr<constructSystem::VacuumPipe> bpmB; 
+
+  /// Beam pos mon 2
+  std::shared_ptr<tdcSystem::BPM> bpmB;   
+
 
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; 

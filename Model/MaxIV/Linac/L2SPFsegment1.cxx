@@ -218,6 +218,8 @@ L2SPFsegment1::createLinks()
   
   const constructSystem::portItem& VPB=pumpA->getPort(1);
   setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+
+  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 

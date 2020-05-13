@@ -43,6 +43,7 @@ class YagScreenGenerator
   double jbWidth;               ///< electronics junction box width
   double jbHeight;              ///< electronics junction box height
   double jbWallThick;           ///< electronics junction box wall thickness
+
   std::string jbWallMat;        ///< electronics junction box material
   std::string jbMat;            ///< electronics junction box cable/inside material
 
@@ -52,9 +53,11 @@ class YagScreenGenerator
   double ffFlangeLen;           ///< linear pneumatic feedthrough flange length
   double ffFlangeRadius;        ///< linear pneumatic feedthrough flange radius
   std::string ffWallMat;        ///< linear pneumatics feedthrough wall material
+
   double threadLift;            ///< screen thread lift inside vacuum system
   double threadRad;             ///< screen thread inner radius
   std::string threadMat;        ///< screen thread material
+
   double mirrorRadius;          ///< quartz mirror radius
   double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness
@@ -68,6 +71,7 @@ class YagScreenGenerator
   std::string screenHolderMat;       ///< screen holder material
 
   std::string voidMat;          ///< void material
+
   bool closed;                  ///< screen and mirror are in the beam
 
  public:
@@ -75,12 +79,13 @@ class YagScreenGenerator
   YagScreenGenerator();
   YagScreenGenerator(const YagScreenGenerator&);
   YagScreenGenerator& operator=(const YagScreenGenerator&);
-  virtual ~YagScreenGenerator();
+  ~YagScreenGenerator();
 
   template<typename CF> void setCF();
   template<typename CF> void setFlangeCF();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  void generateScreen(FuncDataBase&,const std::string&,
+		      const bool) const;
 
 };
 
