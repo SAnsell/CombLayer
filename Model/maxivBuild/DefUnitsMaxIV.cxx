@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxviBuildInc/DefUnitsMaxIV.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -53,7 +53,7 @@
 namespace mainSystem
 {
 
-void 
+void
 setDefUnits(FuncDataBase& Control,inputParam& IParam)
   /*!
     Based on the defaultConf set up the model
@@ -67,7 +67,7 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
   if (IParam.flag("defaultConfig"))
     {
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      
+
       std::vector<std::string> LItems=
 	IParam.getObjectItems("defaultConfig",0);
       const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
@@ -85,16 +85,16 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Linac : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline "<<ELog::endDiag;
-	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
+	  throw ColErr::ExitAbort("Iparam.defaultConfig");
 	}
-      else 
+      else
 	{
 	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");
 	}
       // ???
-      
+
       A.process(Control,IParam);
     }
   return;
@@ -103,7 +103,7 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 void
 setMaxIVSingle(defaultConfig& A,
 	       const std::vector<std::string>& LItems)
- 
+
   /*!
     Default configuration for MaxIV for testing single beamlines
     \param A :: Paramter for default config
@@ -127,9 +127,9 @@ setMaxIVSingle(defaultConfig& A,
       { "RING1", "World 0"},
       { "RING3", "World 0"},
       { "R1RING", "World 0"},
-      { "R3RING", "World 0"}      
+      { "R3RING", "World 0"}
     };
-  
+
   size_t beamLineIndex(0);
 
   for(const std::string& beamItem : LItems)
@@ -161,7 +161,7 @@ setMaxIVLinac(defaultConfig& A,
    */
 {
   ELog::RegMethod RegA("DefUnitsMaxIV[F]","setMaxIVLinac");
-  
+
   typedef std::map<std::string,std::string> MapTYPE;
   static const MapTYPE unitDef=
     {
@@ -170,20 +170,21 @@ setMaxIVLinac(defaultConfig& A,
      { "L2SPFsegment1", "World 0"},
      { "L2SPFsegment2", "World 0"},
      { "L2SPFsegment14", "World 0"},
-     { "L2SPFsegment15", "World 0"}
+     { "L2SPFsegment15", "World 0"},
+     { "L2SPFsegment16", "World 0"}
     };
 
   size_t unitIndex(0);
   for(const std::string& compItem : LItems)
     {
       MapTYPE::const_iterator mc=unitDef.find(compItem);
-      
+
       if (mc==unitDef.end())
 	throw ColErr::InContainerError<std::string>(compItem,"CompItem");
       A.setMultiOption("beamlines",unitIndex,compItem+" "+mc->second);
       unitIndex++;
     }
-    
+
   return;
 }
 

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxivBuild/makeMaxIV.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -137,13 +137,13 @@ makeMaxIV::getActiveStop(const std::map<std::string,std::string>& beamStop,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","getActiveStop");
-  
+
   std::map<std::string,std::string>::const_iterator mc;
   mc=beamStop.find(BL);
   return (mc!=beamStop.end()) ? mc->second : "";
 }
 
-  
+
 void
 makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 			     const std::set<std::string>& beamNAMES,
@@ -156,10 +156,10 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","populateStopPoint");
-  
+
   typedef std::map<std::string,std::vector<std::string>> mTYPE;
   mTYPE stopUnits=IParam.getMapItems("stopPoint");
-  
+
   // create a map of beamname : stopPoint [or All : stoppoint]
   std::string stopPoint;
 
@@ -176,13 +176,13 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
     }
   return;
 }
-  
+
 bool
 makeMaxIV::buildInjection(Simulation& System,
 			  const mainSystem::inputParam& IParam)
   /*!
     Build the SPF/linac hall
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
   */
 {
@@ -192,11 +192,12 @@ makeMaxIV::buildInjection(Simulation& System,
   typedef const std::map<std::string,std::set<std::string> > ITYPE;
   static ITYPE injectNAMES
     ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2"} },      // all components
-       {"TDC",{"L2SPFsegment14","L2SPFsegment15"} },      // all components
+       {"TDC",{"L2SPFsegment14","L2SPFsegment15","L2SPFsegment16"} },      // all components
        {"L2SPFsegment1",{} },                              // first only
        {"L2SPFsegment2",{} },                              // second only
        {"L2SPFsegment14",{} },                              // 14th only
-       {"L2SPFsegment15",{} }                              // 15th only
+       {"L2SPFsegment15",{} },                              // 15th only
+       {"L2SPFsegment16",{} }                              // 16th only
     });
 
   const int voidCell(74123);
@@ -240,15 +241,15 @@ makeMaxIV::buildInjection(Simulation& System,
   tdc->setActive(activeINJ);
   tdc->createAll(System,World::masterOrigin(),0);
 
-  return 1;  
-}  
+  return 1;
+}
 
 bool
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
     Build the R1-ring based on segment needed
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
   */
 {
@@ -258,11 +259,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
     ({ {"FLEXPES","OpticCentre5"},
 	{"MAXPEEM","OpticCentre7"},
 	{"SPECIES","OpticCentre8"}
-	  
+
     });
 
 
-  // Determine if R1Ring/beamlines need to be built 
+  // Determine if R1Ring/beamlines need to be built
   std::set<std::string> activeBL;
   bool activeR1(0);
   const size_t NSet=IParam.setCnt("beamlines");
@@ -275,7 +276,7 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-	    
+
 	  if (BL=="R1RING" || BL=="RING1")
 	    activeR1=1;
 	  else if (beamNAMES.find(BL) != beamNAMES.end())
@@ -286,16 +287,16 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  index++;
 	}
     }
-  
+
   if (!activeR1) return 0;
-  
+
   const int voidCell(74123);
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
-  
+
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
-  
+
 
   for(const std::string& BL : activeBL)
     {
@@ -305,11 +306,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
       std::unique_ptr<R1Beamline> BLPtr;
       if (BL=="FLEXPES")  // sector
 	BLPtr.reset(new FLEXPES("FlexPes"));
-      else if (BL=="MAXPEEM")	
+      else if (BL=="MAXPEEM")
 	BLPtr.reset(new MAXPEEM("MaxPeem"));
-      else if (BL=="SPECIES")	
+      else if (BL=="SPECIES")
 	BLPtr.reset(new SPECIES("Species"));
-        
+
       if (!activeStop.empty())
 	{
 	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
@@ -320,18 +321,18 @@ makeMaxIV::buildR1Ring(Simulation& System,
       BLPtr->build(System,*r1Ring,
 		   r1Ring->getSideIndex(beamNAMES.at(BL)));
     }
-      
+
   return 1;    // R1 Built
-}  
-  
+}
+
 bool
 makeMaxIV::buildR3Ring(Simulation& System,
 		      const mainSystem::inputParam& IParam)
 /*!
     Build a beamline based on LineType
-     -- to construct a beamline the name of the guide Item 
+     -- to construct a beamline the name of the guide Item
      and the beamline typename is required
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
     \retrun true if object(s) built
   */
@@ -347,7 +348,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
        {"MICROMAX","OpticCentre1"}
     });
 
-  // Determine if R1Ring/beamlines need to be built 
+  // Determine if R1Ring/beamlines need to be built
   std::set<std::string> activeBL;
   bool activeR3(0);
   const size_t NSet=IParam.setCnt("beamlines");
@@ -380,7 +381,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
-  
+
 
   for(const std::string& BL : activeBL)
     {
@@ -390,15 +391,15 @@ makeMaxIV::buildR3Ring(Simulation& System,
       std::unique_ptr<R3Beamline> BLPtr;
       if (BL=="BALDER")  // sector
 	BLPtr.reset(new BALDER("Balder"));
-      else if (BL=="COSAXS")	
+      else if (BL=="COSAXS")
 	BLPtr.reset(new COSAXS("Cosaxs"));
       else if (BL=="SOFTIMAX")
 	BLPtr.reset(new SOFTIMAX("SoftiMAX"));
-      else if (BL=="DANMAX")	
+      else if (BL=="DANMAX")
 	BLPtr.reset(new DANMAX("Danmax"));
-      else if (BL=="FORMAX")	
+      else if (BL=="FORMAX")
 	BLPtr.reset(new FORMAX("Formax"));
-      else if (BL=="MICROMAX")	
+      else if (BL=="MICROMAX")
 	BLPtr.reset(new MICROMAX("MicroMax"));
 
       if (!activeStop.empty())
@@ -411,9 +412,9 @@ makeMaxIV::buildR3Ring(Simulation& System,
 		   r3Ring->getSideIndex(beamNAMES.at(BL)));
     }
   return 1;    // R3 Built
-}  
+}
 
-void 
+void
 makeMaxIV::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -429,7 +430,7 @@ makeMaxIV::build(Simulation& System,
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
-  
+
   else if(buildR1Ring(System,IParam))
     ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
 
@@ -444,4 +445,3 @@ makeMaxIV::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

@@ -78,6 +78,7 @@ namespace linacVar
 
   void linac2SPFsegment14(FuncDataBase&,const std::string&);
   void linac2SPFsegment15(FuncDataBase&,const std::string&);
+  void linac2SPFsegment16(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(81.0);    // drawing README.pdf
@@ -243,7 +244,7 @@ linac2SPFsegment14(FuncDataBase& Control,
   // number form drawing
   Control.addVariable(lKey+"XStep",-622.286+linacVar::zeroX);   // include 1m offset
   Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        //
-  Control.addVariable(lKey+"XYAngle",0.0);   // this should be 3.1183 deg
+  Control.addVariable(lKey+"ZAngle",3.1183);   // this should be 3.1183 deg
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
@@ -285,6 +286,92 @@ linac2SPFsegment15(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment15");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::YagScreenGenerator YagGen;
+
+    // number form drawing
+  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
+  ELog::EM << "YStep increased by 10 cm to avoid cutting segment 14" << ELog::endCrit;
+  Control.addVariable(lKey+"YStep",10+4507.259+linacVar::zeroY);
+
+  Control.addVariable(lKey+"XYAngle",0.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,22.0); // measured
+
+  // Mirror chamber
+  std::string name=lKey+"MirrorChamber";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(10.0); // 10 is ummy since we set up all port lenght later
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.setFlangeCap(setVariable::CF63::flangeLength,setVariable::CF63::flangeLength);
+  SimpleTubeGen.generateTube(Control,name,0.0,22.6); // measured but wrong - it's top/bottom asymmetric and the lower part does not have flange
+  Control.addVariable(name+"NPorts",4);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  PItemGen.setLength(2.2); // measured
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setLength(4.6); // measured
+  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
+  PItemGen.setLength(2.25); // measured
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
+  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
+  PItemGen.setLength(2.25); // measured
+  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+
+  // Ion pump
+  name=lKey+"IonPump";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length // measured
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8); // measured
+  Control.addVariable(name+"NPorts",3);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
+
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+
+  PItemGen.setLength(9.5); // measured
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+
+  PItemGen.setLength(3.2); // measured
+  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
+
+  //YagGen.setCF<CF40_22>();
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
+
+  return;
+}
+
+void
+linac2SPFsegment16(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment16");
+
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -431,7 +518,7 @@ LINACvariables(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linacVariables");
+  ELog::RegMethod RegA("linacVariables[F]","LINACVariables");
 
 
 
@@ -457,6 +544,7 @@ LINACvariables(FuncDataBase& Control)
   /// Segment 14-28
   linacVar::linac2SPFsegment14(Control,"L2SPF14");
   linacVar::linac2SPFsegment15(Control,"L2SPF15");
+  linacVar::linac2SPFsegment16(Control,"L2SPF16");
 
   return;
 }

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/L2SPFsegment15.h
+ * File:   LinacInc/L2SPFsegment16.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,21 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment15_h
-#define tdcSystem_L2SPFsegment15_h
+#ifndef tdcSystem_L2SPFsegment16_h
+#define tdcSystem_L2SPFsegment16_h
 
 namespace tdcSystem
 {
   class YagScreen;
   /*!
-    \class L2SPFsegment15
+    \class L2SPFsegment16
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 15
+    \brief TDC segment 16
   */
 
-class L2SPFsegment15 :
+class L2SPFsegment16 :
   public TDCsegment
 {
  private:
@@ -49,10 +49,10 @@ class L2SPFsegment15 :
 
  public:
 
-  L2SPFsegment15(const std::string&);
-  L2SPFsegment15(const L2SPFsegment15&);
-  L2SPFsegment15& operator=(const L2SPFsegment15&);
-  ~L2SPFsegment15();
+  L2SPFsegment16(const std::string&);
+  L2SPFsegment16(const L2SPFsegment16&);
+  L2SPFsegment16& operator=(const L2SPFsegment16&);
+  ~L2SPFsegment16();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

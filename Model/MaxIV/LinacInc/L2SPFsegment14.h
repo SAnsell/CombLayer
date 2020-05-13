@@ -33,9 +33,9 @@ namespace tdcSystem
   /*!
     \class L2SPFsegment14
     \version 1.0
-    \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \author K. Batkov
+    \date May 2020
+    \brief TDC segment 14
   */
 
 class L2SPFsegment14 :
