@@ -26,7 +26,6 @@
 namespace tdcSystem
 {
 
-  class InjectionHall;
   class L2SPFsegment1;
   class L2SPFsegment2;
 

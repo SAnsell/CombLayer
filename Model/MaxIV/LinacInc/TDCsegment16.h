@@ -24,7 +24,6 @@
 
 namespace tdcSystem
 {
-  class YagScreen;
   /*!
     \class TDCsegment16
     \version 1.0
@@ -38,11 +37,16 @@ class TDCsegment16 :
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
-  std::shared_ptr<constructSystem::PipeTube> ionPump;       ///< #4 Ion pump 75l cf63
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
+  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
+  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
+  std::shared_ptr<tdcSystem::LQuad> quad;                  ///< #4
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
+  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
+  std::shared_ptr<constructSystem::PipeTube> ionPump;      ///< #7
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9
 
   void buildObjects(Simulation&);
   void createLinks();

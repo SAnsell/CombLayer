@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,7 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -62,9 +59,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 #include "LObjectSupport.h"
 
@@ -150,14 +144,14 @@ TDCsegment14::buildObjects(Simulation& System)
   pipeC->createAll(System,*pipeB,"back");
   pipeMagUnit(System,*buildZone,pipeC,"Origin",dm2);
   pipeTerminate(System,*buildZone,pipeC);
-  
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeC,"back",*gateA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateA,"back",*bellowB);
 
-  buildZone->removeLastMaster(System);  
+  buildZone->removeLastMaster(System);
 
   return;
 }
@@ -169,10 +163,11 @@ TDCsegment14::createLinks()
    */
 {
   ELog::RegMethod RegA("TDCsegment14","createLinks");
-  
+
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+
   return;
 }
 
