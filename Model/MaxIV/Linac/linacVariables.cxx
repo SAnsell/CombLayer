@@ -76,9 +76,9 @@ namespace linacVar
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
 
-  void linac2SPFsegment14(FuncDataBase&,const std::string&);
-  void linac2SPFsegment15(FuncDataBase&,const std::string&);
-  void linac2SPFsegment16(FuncDataBase&,const std::string&);
+  void TDCsegment14(FuncDataBase&,const std::string&);
+  void TDCsegment15(FuncDataBase&,const std::string&);
+  void TDCsegment16(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(81.0);    // drawing README.pdf
@@ -224,7 +224,7 @@ linac2SPFsegment1(FuncDataBase& Control,
 }
 
 void
-linac2SPFsegment14(FuncDataBase& Control,
+TDCsegment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -232,7 +232,7 @@ linac2SPFsegment14(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment14");
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment14");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -277,7 +277,7 @@ linac2SPFsegment14(FuncDataBase& Control,
 }
 
 void
-linac2SPFsegment15(FuncDataBase& Control,
+TDCsegment15(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -285,7 +285,7 @@ linac2SPFsegment15(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment15");
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment15");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -362,7 +362,7 @@ linac2SPFsegment15(FuncDataBase& Control,
 }
 
 void
-linac2SPFsegment16(FuncDataBase& Control,
+TDCsegment16(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -370,7 +370,7 @@ linac2SPFsegment16(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment16");
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment16");
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
@@ -542,9 +542,9 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
 
   /// Segment 14-28
-  linacVar::linac2SPFsegment14(Control,"L2SPF14");
-  linacVar::linac2SPFsegment15(Control,"TDC15");
-  linacVar::linac2SPFsegment16(Control,"TDC16");
+  linacVar::TDCsegment14(Control,"TDC14");
+  linacVar::TDCsegment15(Control,"TDC15");
+  linacVar::TDCsegment16(Control,"TDC16");
 
   return;
 }

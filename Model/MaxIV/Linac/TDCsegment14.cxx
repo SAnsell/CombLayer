@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment14.cxx
+ * File: Linac/TDCsegment14.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -76,14 +76,14 @@
 #include "GateValveCube.h"
 
 #include "TDCsegment.h"
-#include "L2SPFsegment14.h"
+#include "TDCsegment14.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
+TDCsegment14::TDCsegment14(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -112,7 +112,7 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   OR.addObject(bellowB);
 }
 
-L2SPFsegment14::~L2SPFsegment14()
+TDCsegment14::~TDCsegment14()
   /*!
     Destructor
    */
@@ -121,14 +121,14 @@ L2SPFsegment14::~L2SPFsegment14()
 
 
 void
-L2SPFsegment14::buildObjects(Simulation& System)
+TDCsegment14::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","buildObjects");
+  ELog::RegMethod RegA("TDCsegment14","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -163,12 +163,12 @@ L2SPFsegment14::buildObjects(Simulation& System)
 }
 
 void
-L2SPFsegment14::createLinks()
+TDCsegment14::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","createLinks");
+  ELog::RegMethod RegA("TDCsegment14","createLinks");
   
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
@@ -177,7 +177,7 @@ L2SPFsegment14::createLinks()
 }
 
 void
-L2SPFsegment14::createAll(Simulation& System,
+TDCsegment14::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -188,7 +188,7 @@ L2SPFsegment14::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment14","build");
+  ELog::RegMethod RControl("TDCsegment14","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
