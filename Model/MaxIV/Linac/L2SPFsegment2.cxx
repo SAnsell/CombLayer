@@ -92,6 +92,7 @@
 #include "BPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
+#include "YagUnit.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -120,7 +121,9 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
-  QuadE(new tdcSystem::LQuad(keyName+"QuadE"))
+  QuadE(new tdcSystem::LQuad(keyName+"QuadE")),
+  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -145,6 +148,8 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   OR.addObject(QuadC);
   OR.addObject(QuadD);
   OR.addObject(QuadE);
+  OR.addObject(yagUnit);
+  OR.addObject(bellowC);
 }
   
 L2SPFsegment2::~L2SPFsegment2()
@@ -207,6 +212,13 @@ L2SPFsegment2::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeE,"#front",QuadE);
   pipeTerminate(System,*buildZone,pipeE);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeE,"back",*yagUnit);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*yagUnit,"back",*bellowC);
+
+  buildZone->removeLastMaster(System);  
   return;
 }
 
@@ -216,8 +228,10 @@ L2SPFsegment2::createLinks()
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*bellowC,2);
+
+  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 

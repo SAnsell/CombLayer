@@ -62,6 +62,7 @@ YagUnitGenerator::YagUnitGenerator() :
   depth(6.8),wallThick(CF63::wallThick),
   flangeRadius(CF63::flangeRadius),
   flangeLength(CF63::flangeLength),
+  plateThick(CF63::flangeLength),
   viewZStep(3.2),viewRadius(CF63::innerRadius),
   viewLength(9.27),viewThick(CF63::wallThick),
   viewFlangeRadius(CF63::flangeRadius),

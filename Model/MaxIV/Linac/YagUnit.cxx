@@ -126,7 +126,6 @@ YagUnit::populate(const FuncDataBase& Control)
   viewZStep=Control.EvalVar<double>(keyName+"ViewZStep");
   viewRadius=Control.EvalVar<double>(keyName+"ViewRadius");
   viewThick=Control.EvalVar<double>(keyName+"ViewThick");
-  ELog::EM<<"View Thic == "<<viewThick<<ELog::endDiag;
   viewLength=Control.EvalVar<double>(keyName+"ViewLength");
   viewFlangeRadius=Control.EvalVar<double>(keyName+"ViewFlangeRadius");
   viewFlangeLength=Control.EvalVar<double>(keyName+"ViewFlangeLength");
@@ -194,7 +193,6 @@ YagUnit::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+156,
 			   Origin+Z*(height+plateThick),Z);
 
-
   // view
   const Geometry::Vec3D viewOrg(Origin+Z*viewZStep);
   ModelSupport::buildCylinder(SMap,buildIndex+207,viewOrg,X,viewRadius);
@@ -214,11 +212,6 @@ YagUnit::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+253,viewOrg-X*(viewLength+viewPlateThick),X);
 
-  // plate
-  ModelSupport::buildPlane(SMap,buildIndex+151,
-			   Origin-Z*(depth+plateThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+152,
-			   Origin+Z*(height+plateThick),Z);
     
   // Both Front/Back port [300] -- front/back at [400/500]
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,portRadius);
@@ -227,16 +220,13 @@ YagUnit::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,Y,portFlangeRadius);
 
   // front 
-  ModelSupport::buildPlane(SMap,buildIndex+401,Origin-Y*frontLength,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+411,Origin-Y*(frontLength-portFlangeLength),Y);
   // back
-  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+Y*backLength,Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+412,Origin+Y*(backLength-portFlangeLength),Y);
+    (SMap,buildIndex+512,Origin+Y*(backLength-portFlangeLength),Y);
 
-  
-  return;
+   return;
 }
 
 void
@@ -301,10 +291,11 @@ YagUnit::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) -100 17 307 -317 ");
   makeCell("frontWall",System,cellIndex++,mainMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -401 -327 317 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -411 -327 317 ");
   makeCell("frontFlange",System,cellIndex++,mainMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (217:200) 401 -100 17 -327 317 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (217:200) 411 -100 17 -327 317 ");
   makeCell("frontOut",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 100 7 -307 ");
@@ -313,10 +304,11 @@ YagUnit::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) 100 17 307 -317 ");
   makeCell("backWall",System,cellIndex++,mainMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 502 -327 317 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 512 -327 317 ");
   makeCell("backFlange",System,cellIndex++,mainMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," (217:200) -502 100 17 -327 317 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (217:200) -512 100 17 -327 317 ");
   makeCell("backOut",System,cellIndex++,0,0.0,Out);
 
   // outer void box:

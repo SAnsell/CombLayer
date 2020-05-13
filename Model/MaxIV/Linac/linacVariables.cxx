@@ -66,6 +66,7 @@
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
+#include "YagUnitGenerator.h"
 
 namespace setVariable
 {
@@ -102,6 +103,7 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
   setVariable::YagScreenGenerator YagGen;
+  setVariable::YagUnitGenerator YagUnitGen;
   
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
   Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
@@ -150,13 +152,17 @@ linac2SPFsegment2(FuncDataBase& Control,
   YagGen.setCF<CF40_22>();
   YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");  
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.58);
+  
   return;
 }
 
 
 void
 linac2SPFsegment1(FuncDataBase& Control,
-		   const std::string& lKey)
+		  const std::string& lKey)
   /*!
     Set the variables for the main walls
     \param Control :: DataBase to use
@@ -217,6 +223,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
   PItemGen.setLength(2.5);
   PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
+
 
   return;
 }
