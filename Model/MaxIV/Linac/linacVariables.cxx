@@ -543,7 +543,7 @@ LINACvariables(FuncDataBase& Control)
 
   /// Segment 14-28
   linacVar::linac2SPFsegment14(Control,"L2SPF14");
-  linacVar::linac2SPFsegment15(Control,"L2SPF15");
+  linacVar::linac2SPFsegment15(Control,"TDC15");
   linacVar::linac2SPFsegment16(Control,"TDC16");
 
   return;
