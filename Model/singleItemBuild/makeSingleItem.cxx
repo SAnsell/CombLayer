@@ -111,6 +111,7 @@
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "YagScreen.h"
+#include "YagUnit.h"
 
 #include "makeSingleItem.h"
 
@@ -149,6 +150,7 @@ makeSingleItem::build(Simulation& System,
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen",
+      "YagUnit",
       "Help","help"
     });
 
@@ -184,6 +186,18 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(YAG);
 
       YAG->addAllInsertCell(voidCell);
+      YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "YagUnit")
+    {
+      std::shared_ptr<tdcSystem::YagUnit>
+	YAG(new tdcSystem::YagUnit("YU"));
+      OR.addObject(YAG);
+
+      YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;

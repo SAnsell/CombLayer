@@ -49,6 +49,7 @@ class YagUnitGenerator
   double plateThick;           ///< flange plate thick
 
   // centre port [left]
+  double viewZStep;            ///< Viewing Z-lift
   double viewRadius;           ///< Viewing Radius
   double viewThick;            ///< Wall thickness
   double viewLength;           ///< viewing Length [centre to flange end]

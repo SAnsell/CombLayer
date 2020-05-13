@@ -62,7 +62,8 @@ YagUnitGenerator::YagUnitGenerator() :
   depth(6.8),wallThick(CF63::wallThick),
   flangeRadius(CF63::flangeRadius),
   flangeLength(CF63::flangeLength),
-  viewRadius(CF63::innerRadius),viewLength(9.27),
+  viewZStep(3.2),viewRadius(CF63::innerRadius),
+  viewLength(9.27),viewThick(CF63::wallThick),
   viewFlangeRadius(CF63::flangeRadius),
   viewFlangeLength(CF63::flangeLength),
   viewPlateThick(CF63::flangeLength),
@@ -125,6 +126,7 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"PlateThick",plateThick);
 
+  Control.addVariable(keyName+"ViewZStep",viewZStep);
   Control.addVariable(keyName+"ViewRadius",viewRadius);
   Control.addVariable(keyName+"ViewThick",viewThick);
   Control.addVariable(keyName+"ViewLength",viewLength);

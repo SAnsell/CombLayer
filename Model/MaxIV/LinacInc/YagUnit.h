@@ -55,6 +55,7 @@ class YagUnit :
   double plateThick;           ///< flange plate thick
 
   // centre port [left]
+  double viewZStep;            ///< Step from origin
   double viewRadius;           ///< Viewing Radius
   double viewThick;            ///< Wall thickness
   double viewLength;           ///< viewing Length [centre to flange end]

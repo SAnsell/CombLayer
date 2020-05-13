@@ -77,6 +77,7 @@
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
+#include "YagUnitGenerator.h"
 
 namespace setVariable
 {
@@ -243,6 +244,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
+
+  setVariable::YagUnitGenerator YagUnitGen;
+  YagUnitGen.generateYagUnit(Control,"YU");  
 
   return;
 }
