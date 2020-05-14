@@ -378,10 +378,13 @@ TDCsegment16(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  Control.addVariable(lKey+"BPMFlangeMat","Stainless304L");
+  Control.addVariable(lKey+"BPMOuterMat","Stainless304L");
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0);
