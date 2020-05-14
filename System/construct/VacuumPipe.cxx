@@ -522,7 +522,7 @@ VacuumPipe::createObjects(Simulation& System)
       windowFrontExclude=WHR.display();
     }
   if (activeWindow & 2)
-    { 
+    {
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
       makeCell("Window",System,cellIndex++,windowBack.mat,0.0,
@@ -557,19 +557,19 @@ VacuumPipe::createObjects(Simulation& System)
       makeCell("Cladding",System,cellIndex++,claddingMat,0.0,Out);
     }
 
-  // FLANGE: 107 OR 103-106 valid 
+  // FLANGE: 107 OR 103-106 valid
   Out=ModelSupport::getSetComposite
   (SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display();
-  makeCell("Steel",System,cellIndex++,feMat,0.0,
+  makeCell("Steel",System,cellIndex++,flangeMat,0.0,
 	   Out+frontStr+windowFrontExclude);
 
-  // FLANGE: 207 OR 203-206 valid 
+  // FLANGE: 207 OR 203-206 valid
   Out=ModelSupport::getSetComposite
     (SMap,buildIndex,"102 -207 203 -204 205 -106 ");
 
   Out+=InnerVoid.display()+backStr+windowBackExclude;
-  makeCell("Steel",System,cellIndex++,feMat,0.0,Out);
+  makeCell("Steel",System,cellIndex++,flangeMat,0.0,Out);
 
   // outer boundary [flange front]
   Out=ModelSupport::getSetComposite
