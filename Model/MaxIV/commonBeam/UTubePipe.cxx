@@ -3,7 +3,7 @@
  
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,7 +240,7 @@ UTubePipe::createSurfaces()
   
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
   return;
 }

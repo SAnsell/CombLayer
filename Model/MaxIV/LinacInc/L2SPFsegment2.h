@@ -108,9 +108,6 @@ class L2SPFsegment2 :
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
 
-  /// Bellows
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-
   void buildObjects(Simulation&);
   void createLinks();
   

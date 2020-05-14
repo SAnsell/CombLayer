@@ -43,11 +43,11 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CorrectorMag;
-  
+
 int
 pipeTerminate(Simulation&,
 	      attachSystem::InnerZone& buildZone,
-	      const std::shared_ptr<constructSystem::VacuumPipe>&);
+	      const std::shared_ptr<attachSystem::FixedComp>&);
 
 
 int

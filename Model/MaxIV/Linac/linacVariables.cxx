@@ -56,6 +56,7 @@
 #include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "FlatPipeGenerator.h"
 
 namespace setVariable
 {
@@ -63,9 +64,11 @@ namespace setVariable
 namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
+
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
-
+  void linac2SPFsegment3(FuncDataBase&,const std::string&);
+  
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
   void TDCsegment16(FuncDataBase&,const std::string&);
@@ -73,85 +76,7 @@ namespace linacVar
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(81.0);    // drawing README.pdf
 
-void
-linac2SPFsegment2(FuncDataBase& Control,
-		   const std::string& lKey)
-  /*!
-    Set the variables for the main walls
-    \param Control :: DataBase to use
-    \param lKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment2");
-
-  setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::LinacQuadGenerator LQGen;
-  setVariable::BPMGenerator BPMGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateValveGenerator CGateGen;
-  setVariable::EArrivalMonGenerator EArrGen;
-  setVariable::YagScreenGenerator YagGen;
-  setVariable::YagUnitGenerator YagUnitGen;
-
-  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
-
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setNoWindow();
-
-  // lengthened to fit quad +2cm
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0);
-
-  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);
-
-  BPMGen.setCF<setVariable::CF40>();
-  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
-
-  // note larger unit
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
-
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0);
-
-  LQGen.generateQuad(Control,lKey+"QuadB",72.0);
-
-  CGateGen.generateGate(Control,lKey+"GateTube",0);
-
-  CGateGen.setRotate(1);
-  CGateGen.generateGate(Control,lKey+"GateTube",0);
-
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,31.0);
-
-  EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
-
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,75.0);
-
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
-
-  BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
-
-  PGen.generatePipe(Control,lKey+"PipeE",0.0,132.4);
-
-  LQGen.generateQuad(Control,lKey+"QuadC",23.54);
-  LQGen.generateQuad(Control,lKey+"QuadD",73.0);
-  LQGen.generateQuad(Control,lKey+"QuadE",113.2);
-
-  YagGen.setCF<CF40_22>();
-  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
-
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");  
-
-  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.58);
-  
-  return;
-}
-
-
-void
+  void
 linac2SPFsegment1(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
@@ -218,6 +143,113 @@ linac2SPFsegment1(FuncDataBase& Control,
 
   return;
 }
+
+void
+linac2SPFsegment2(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment2");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::CylGateValveGenerator CGateGen;
+  setVariable::EArrivalMonGenerator EArrGen;
+  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  // lengthened to fit quad +2cm
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,35.0);
+
+  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);
+
+  BPMGen.setCF<setVariable::CF40>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
+
+  // note larger unit
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0);
+
+  LQGen.generateQuad(Control,lKey+"QuadB",72.0);
+
+  CGateGen.generateGate(Control,lKey+"GateTube",0);
+
+  CGateGen.setRotate(1);
+  CGateGen.generateGate(Control,lKey+"GateTube",0);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,31.0);
+
+  EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,75.0);
+
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+
+  BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,132.4);
+
+  LQGen.generateQuad(Control,lKey+"QuadC",23.54);
+  LQGen.generateQuad(Control,lKey+"QuadD",73.0);
+  LQGen.generateQuad(Control,lKey+"QuadE",113.2);
+
+  YagGen.setCF<CF40_22>();
+  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");  
+
+
+  
+  return;
+}
+
+void
+linac2SPFsegment3(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment3
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment3");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlatPipeGenerator FPGen;
+
+  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
+  Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);  
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+
+  FPGen.generateFlat(Control,lKey+"FlatA",83.8);
+
+  return;
+}
+
+
 
 void
 TDCsegment14(FuncDataBase& Control,
@@ -528,6 +560,7 @@ LINACvariables(FuncDataBase& Control)
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
+  linacVar::linac2SPFsegment3(Control,"L2SPF3");
 
   /// Segment 14-28
   linacVar::TDCsegment14(Control,"TDC14");

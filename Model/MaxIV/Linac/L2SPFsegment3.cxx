@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment2.cxx
+ * File: Linac/L2SPFsegment3.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -63,7 +63,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,7 +71,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -84,45 +82,27 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
+#include "FlatPipe.h"
 #include "LQuad.h"
 #include "CorrectorMag.h"
 #include "BPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
-#include "YagUnit.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment2.h"
+#include "L2SPFsegment3.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
   
-L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
+L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
   TDCsegment(Key,2),
 
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
-  gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
-  bpmB(new tdcSystem::BPM(keyName+"BPMB")),  
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
-  QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
-  QuadE(new tdcSystem::LQuad(keyName+"QuadE")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit"))
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -131,105 +111,60 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
-  OR.addObject(QuadA);
-  OR.addObject(bpmA);
   OR.addObject(bellowA);
-  OR.addObject(pipeB);
-  OR.addObject(QuadB);
-  OR.addObject(gateTube);
-  OR.addObject(pipeC);
-  OR.addObject(beamArrivalMon);
-  OR.addObject(pipeD);
-  OR.addObject(bellowB);
-  OR.addObject(bpmB);
-  OR.addObject(pipeE);
-  OR.addObject(QuadC);
-  OR.addObject(QuadD);
-  OR.addObject(QuadE);
-  OR.addObject(yagUnit);
+  OR.addObject(flatA);
 }
   
-L2SPFsegment2::~L2SPFsegment2()
+L2SPFsegment3::~L2SPFsegment3()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment2::buildObjects(Simulation& System)
+L2SPFsegment3::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
+  ELog::RegMethod RegA("L2SPFsegment3","buildObjects");
+
+  int outerCell;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
-  pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  bellowA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  ELog::EM<<"Outer cell == "<<outerCell<<ELog::endDiag;
+  bellowA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
-
-  pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateTube,"back",*pipeC);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*beamArrivalMon);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamArrivalMon,"back",*pipeD);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*bellowB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*bpmB);
-
-  pipeE->createAll(System,*bpmB,"back");
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadC);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadD);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadE);
-  pipeTerminate(System,*buildZone,pipeE);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeE,"back",*yagUnit);
+  flatA->createAll(System,*bellowA,"back");
+  //  pipeMagUnit(System,*buildZone,flatA,"#front",QuadA);
+  pipeTerminate(System,*buildZone,flatA);
 
   buildZone->removeLastMaster(System);  
   return;
 }
 
 void
-L2SPFsegment2::createLinks()
+L2SPFsegment3::createLinks()
   /*!
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*yagUnit,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*flatA,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
 void 
-L2SPFsegment2::createAll(Simulation& System,
+L2SPFsegment3::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -240,7 +175,7 @@ L2SPFsegment2::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment2","build");
+  ELog::RegMethod RControl("L2SPFsegment3","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -81,6 +81,7 @@
 
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
+#include "FlatPipe.h"
 #include "LQuad.h"
 #include "DipoleDIBMag.h"
 
@@ -165,8 +166,8 @@ pipeMagUnit(Simulation& System,
 
 int
 pipeTerminate(Simulation& System,
-	     attachSystem::InnerZone& buildZone,
-	     const std::shared_ptr<constructSystem::VacuumPipe>& pipe)
+	      attachSystem::InnerZone& buildZone,
+	      const std::shared_ptr<attachSystem::FixedComp>& pipe)
   /*!
     Teminate a pipe in the inde of a Inner zone
     \param System :: Simulation to use
@@ -175,13 +176,25 @@ pipeTerminate(Simulation& System,
     \return outerCell number
   */
 {
-  ELog::RegMethod RegA("LObjectSupport[F]","pipeMagUnit");
+  ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate");
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,*pipe,2);
-  pipe->insertInCell(System,outerCell);
+  attachSystem::ContainedComp* CPtr=
+    dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
+  if (CPtr)
+    CPtr->insertInCell(System,outerCell);
+  else
+    {
+      attachSystem::ContainedGroup* CGPtr=
+	dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+      if (!CGPtr)
+	throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
+      
+      CGPtr->insertAllInCell(System,outerCell);
+    }
 
   return outerCell;
 }
@@ -200,7 +213,7 @@ int pipeMagUnit(Simulation&,
 		const std::shared_ptr<constructSystem::VacuumPipe>&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
-  
+
 ///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem

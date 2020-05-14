@@ -68,6 +68,7 @@
 #include "TDCsegment.h"
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment2.h"
+#include "L2SPFsegment3.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -84,6 +85,7 @@ TDC::TDC(const std::string& KN) :
   injectionHall(new InjectionHall("InjectionHall")),
   l2spf1(new L2SPFsegment1("L2SPF1")),
   l2spf2(new L2SPFsegment2("L2SPF2")),
+  l2spf3(new L2SPFsegment3("L2SPF3")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16"))
@@ -98,6 +100,7 @@ TDC::TDC(const std::string& KN) :
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
+  OR.addObject(l2spf3);
   OR.addObject(tdc14);
   OR.addObject(tdc15);
   OR.addObject(tdc16);
@@ -223,6 +226,7 @@ TDC::createAll(Simulation& System,
     ({
       {"L2SPFsegment1","l2spf"},
       {"L2SPFsegment2","l2spf"},
+      {"L2SPFsegment3","l2spf"},
       {"TDCsegment14","tdc"},
       {"TDCsegment15","tdc"},
       {"TDCsegment16","tdc"}
@@ -257,6 +261,18 @@ TDC::createAll(Simulation& System,
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment3")
+	{
+	  ELog::EM<<"BUILD SEGMENT 3"<<ELog::endDiag;
+	  if (l2spf2->hasLastSurf())
+	    buildZone->setFront(l2spf2->getLastSurf());
+	  buildZone->constructMasterCell(System);
+
+	  l2spf3->setInnerZone(buildZone.get());
+	  l2spf3->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf3->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
       else if (BL=="TDCsegment14")
