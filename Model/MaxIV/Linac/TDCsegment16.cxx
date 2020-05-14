@@ -148,7 +148,7 @@ TDCsegment16::buildObjects(Simulation& System)
   //   (System,*buildZone,masterCell,*bpm,"back",*pipeA);
   pipeA->createAll(System,*bpm, "back");
 
-  pipeMagUnit(System,*buildZone,pipeA,"#front",quad);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeA);
 
   // constructSystem::constructUnit

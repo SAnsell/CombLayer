@@ -74,9 +74,9 @@ namespace linacVar
   void TDCsegment16(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
-  const double zeroY(81.0);    // drawing README.pdf
+  const double zeroY(481.0);    // drawing README.pdf
 
-  void
+void
 linac2SPFsegment1(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
@@ -233,10 +233,15 @@ linac2SPFsegment3(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::CorrectorMagGenerator CMGen;
 
   Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);  
+  Control.addVariable(lKey+"YStep",881.06+linacVar::zeroY);
 
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
 
@@ -245,7 +250,20 @@ linac2SPFsegment3(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
 
   FPGen.generateFlat(Control,lKey+"FlatA",83.8);
+  DIBGen.generate(Control,lKey+"DipoleA");
+  
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,93.40); // measured
+  Control.addVariable(lKey+"PipeAXYAngle",1.5976);
+  CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
+    
+  FPGen.generateFlat(Control,lKey+"FlatB",83.8);
+  DIBGen.generate(Control,lKey+"DipoleB");
 
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+  Control.addVariable(lKey+"BellowBXYAngle",1.5976);
   return;
 }
 

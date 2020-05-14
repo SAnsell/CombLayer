@@ -265,7 +265,6 @@ TDC::createAll(Simulation& System,
 	}
       if (BL=="L2SPFsegment3")
 	{
-	  ELog::EM<<"BUILD SEGMENT 3"<<ELog::endDiag;
 	  if (l2spf2->hasLastSurf())
 	    buildZone->setFront(l2spf2->getLastSurf());
 	  buildZone->constructMasterCell(System);

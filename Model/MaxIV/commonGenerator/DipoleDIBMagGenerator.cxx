@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/DipoleDIBMagGenerator.cxx
+ * File:   commonGenerator/DipoleDIBMagGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *

@@ -48,6 +48,7 @@ namespace xraySystem
 namespace tdcSystem
 {
   class CorrectorMag;
+  class DipoleDIBMag;
   class FlatPipe;
   
   /*!
@@ -69,6 +70,22 @@ class L2SPFsegment3 :
   // first pipe in dipole
   std::shared_ptr<tdcSystem::FlatPipe> flatA;   
 
+  // first  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
+
+  // first pipe in dipole
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;    ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+
+  // first pipe in dipole
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;   
+  // second  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
+
+  /// Final bellow [including bend]
+  std::shared_ptr<constructSystem::Bellows> bellowB;
 
   void buildObjects(Simulation&);
   void createLinks();

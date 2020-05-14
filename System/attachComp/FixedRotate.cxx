@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedRotate.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ FixedRotate::populate(const FuncDataBase& Control)
 
   // defaults used to fixedoffset can be used in a setting class.
   // note extra so can use a fixedoffset angle system if over-step
-  preXAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preXAngle);
+  preZAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preZAngle);
   preXAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preXAngle);
   preYAngle=Control.EvalDefVar<double>(keyName+"PreYAngle",preYAngle);
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
@@ -140,7 +140,7 @@ FixedRotate::populate(const FuncDataBase& Control)
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zStep);
 
   // note extra so can use a fixedoffset angle system if over-step
-  xAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xAngle);
+  zAngle=Control.EvalDefVar<double>(keyName+"XYAngle",zAngle);
   xAngle=Control.EvalDefVar<double>(keyName+"XAngle",xAngle);
   yAngle=Control.EvalDefVar<double>(keyName+"YAngle",yAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
@@ -159,7 +159,7 @@ FixedRotate::populate(const std::map<std::string,
 {
   ELog::RegMethod RegA("FixedRotate","populate(map)");
 
-  mainSystem::findInput(inputMap,"preXYAngle",0,preXAngle);
+  mainSystem::findInput(inputMap,"preXYAngle",0,preZAngle);
   mainSystem::findInput(inputMap,"preXAngle",0,preXAngle);
   mainSystem::findInput(inputMap,"preYAngle",0,preYAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
@@ -199,7 +199,8 @@ FixedRotate::populate(const std::string& baseName,
   xStep=Control.EvalDefTail<double>(keyName,baseName,"XStep",xStep);
   yStep=Control.EvalDefTail<double>(keyName,baseName,"YStep",yStep);
   zStep=Control.EvalDefTail<double>(keyName,baseName,"ZStep",zStep);
-  
+
+  zAngle=Control.EvalDefTail<double>(keyName,baseName,"XYAngle",zAngle);
   xAngle=Control.EvalDefTail<double>(keyName,baseName,"XAngle",xAngle);
   yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
   zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
@@ -264,7 +265,7 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedRotate","createUnitVector");
 
-  FixedComp::createUnitVector(FC,sideIndex);
+  FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
     
   return;
@@ -298,7 +299,7 @@ FixedRotate::applyOffset()
   */
 {
   ELog::RegMethod RegA("FixedRotate","applyOffset");
-  
+    
   FixedComp::applyAngleRotate(preXAngle,preYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);

@@ -183,7 +183,7 @@ L2SPFsegment1::buildObjects(Simulation& System)
   pipeD->createAll(System,*pipeC,"back");  
   correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
  
-  pipeMagUnit(System,*buildZone,pipeD,"#front",QuadA);
+  pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeD);
 
   constructSystem::constructUnit

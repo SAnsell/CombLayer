@@ -83,11 +83,9 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
-#include "LQuad.h"
 #include "CorrectorMag.h"
-#include "BPM.h"
-#include "CylGateValve.h"
-#include "EArrivalMon.h"
+#include "DipoleDIBMag.h"
+#include "CorrectorMag.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -102,7 +100,14 @@ L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  flatA(new tdcSystem::FlatPipe(keyName+"FlatA"))
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
+  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -113,6 +118,12 @@ L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
 
   OR.addObject(bellowA);
   OR.addObject(flatA);
+  OR.addObject(dipoleA);
+  OR.addObject(pipeA);
+  OR.addObject(cMagHorA);
+  OR.addObject(cMagVertA);  
+  OR.addObject(flatB);
+  OR.addObject(dipoleB);
 }
   
 L2SPFsegment3::~L2SPFsegment3()
@@ -139,13 +150,28 @@ L2SPFsegment3::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  ELog::EM<<"Outer cell == "<<outerCell<<ELog::endDiag;
   bellowA->insertInCell(System,outerCell);
 
   flatA->createAll(System,*bellowA,"back");
-  //  pipeMagUnit(System,*buildZone,flatA,"#front",QuadA);
-  pipeTerminate(System,*buildZone,flatA);
+  pipeMagGroup(System,*buildZone,flatA,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
+  pipeA->setFront(*flatA,"back");
+  pipeA->createAll(System,*flatA,"back");  
+  correctorMagnetPair(System,*buildZone,pipeA,cMagHorA,cMagVertA);
+  pipeTerminate(System,*buildZone,pipeA);
+
+  flatB->createAll(System,*pipeA,"back");
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatB,"back",*bellowB);
+
+
+  
   buildZone->removeLastMaster(System);  
   return;
 }

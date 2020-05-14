@@ -135,8 +135,9 @@ template<typename MagTYPE>
 int
 pipeMagUnit(Simulation& System,
 	    attachSystem::InnerZone& buildZone,
-	    const std::shared_ptr<constructSystem::VacuumPipe>& pipe,
+	    const std::shared_ptr<attachSystem::FixedComp>& pipe,
 	    const std::string& linkName,
+	    const std::string& outerName,
 	    const std::shared_ptr<MagTYPE>& magUnit)
   /*!
     Given a pipe build magnet unit round it and then 
@@ -144,6 +145,10 @@ pipeMagUnit(Simulation& System,
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split - 
             currently at start of pipe
+    \param pipe :: Inner object
+    \param linkName :: Construction link point
+    \param surfName :: Link point in pipe for outer surf 
+        [typically : outerPipe]
     \param magUnit :: Magnetic unit
     \return outerCell number
   */
@@ -152,12 +157,63 @@ pipeMagUnit(Simulation& System,
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
-  magUnit->setCutSurf("Inner",*pipe,"outerPipe");
+  magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
+  attachSystem::ContainedComp* CPtr=
+    dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
+  if (!CPtr)
+    throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
 
   int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*magUnit,-1);
-  pipe->insertInCell(System,outerCell);
+  CPtr->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
+  magUnit->insertInCell(System,outerCell);
+
+  return outerCell;
+}
+
+template<typename MagTYPE>
+int
+pipeMagGroup(Simulation& System,
+	     attachSystem::InnerZone& buildZone,
+	     const std::shared_ptr<attachSystem::FixedComp>& pipe,
+	     const std::set<std::string>& containerSet,
+	     const std::string& linkName,
+	     const std::string& outerName,
+	     const std::shared_ptr<MagTYPE>& magUnit)
+  /*!
+    Given a pipe build magnet unit round it and then 
+    correctly do the InnerZone splitting.
+    \param System :: Simulation to use
+    \param buildZone :: Inner zoner to be split - 
+            currently at start of pipe
+    \param pipe :: Inner object [containedGroup]
+    \param containerSet :: Insert set for containerGroup
+    \param linkName :: Construction link point
+    \param surfName :: Link point in pipe for outer surf 
+        [typically : outerPipe]
+    \param magUnit :: Magnetic unit
+    \return outerCell number
+  */
+{
+  ELog::RegMethod RegA("LObjectSupport[F]","pipeMagGroup");
+
+  MonteCarlo::Object* masterCell=buildZone.getMaster();
+
+  magUnit->setCutSurf("Inner",*pipe,outerName);
+  magUnit->createAll(System,*pipe,linkName);
+  attachSystem::ContainedGroup* CPtr=
+    dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+  if (!CPtr)
+    throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
+
+  int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,*magUnit,-1);
+  for(const std::string& containerName: containerSet) 
+    CPtr->insertInCell(containerName,System,outerCell);
+  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
   magUnit->insertInCell(System,outerCell);
 
@@ -199,20 +255,73 @@ pipeTerminate(Simulation& System,
   return outerCell;
 }
 
+int
+pipeTerminateGroup(Simulation& System,
+		   attachSystem::InnerZone& buildZone,
+		   const std::shared_ptr<attachSystem::FixedComp>& pipe,
+		   const std::set<std::string>& containerSet)
+  /*!
+    Teminate a pipe in the inde of a Inner zone
+    \param System :: Simulation to use
+    \param buildZone :: Inner zoner to be split - 
+            currently at start of pipe
+    \return outerCell number
+  */
+{
+  ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate");
+
+  MonteCarlo::Object* masterCell=buildZone.getMaster();
+
+  const int outerCell=
+    buildZone.createOuterVoidUnit(System,masterCell,*pipe,2);
+  attachSystem::ContainedGroup* CGPtr=
+    dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+  if (!CGPtr)
+    throw ColErr::DynamicConv("FixedComp","ContainedGroup","pipe");
+
+  for(const std::string& containerName : containerSet)
+    CGPtr->insertInCell(containerName,System,outerCell);
+
+  return outerCell;
+}
+
 ///\cond TEMPLATE
+
+
 template 
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
-		const std::shared_ptr<constructSystem::VacuumPipe>&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::LQuad>&);
 
 template 
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
-		const std::shared_ptr<constructSystem::VacuumPipe>&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
+template 
+int pipeMagGroup(Simulation&,
+		 attachSystem::InnerZone&,
+		 const std::shared_ptr<attachSystem::FixedComp>&,
+		 const std::set<std::string>&,
+		 const std::string&,
+		 const std::string&,
+		 const std::shared_ptr<tdcSystem::LQuad>&);
+
+template 
+int pipeMagGroup(Simulation&,
+		 attachSystem::InnerZone&,
+		 const std::shared_ptr<attachSystem::FixedComp>&,
+		 const std::set<std::string>&,
+		 const std::string&,
+		 const std::string&,
+		 const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
+
+
 
 ///\endcond TEMPLATE
 

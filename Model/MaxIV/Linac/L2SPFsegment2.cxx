@@ -171,7 +171,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front",QuadA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
@@ -181,7 +181,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
 
   pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front",QuadB);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
@@ -203,9 +203,9 @@ L2SPFsegment2::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*bellowB,"back",*bpmB);
 
   pipeE->createAll(System,*bpmB,"back");
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadC);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadD);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadE);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadC);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadD);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadE);
   pipeTerminate(System,*buildZone,pipeE);
 
   constructSystem::constructUnit

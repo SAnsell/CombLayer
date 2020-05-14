@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_LObjectSupport_h
-#define constructSystem_LObjectSupport_h
+#ifndef tdcSystem_LObjectSupport_h
+#define tdcSystem_LObjectSupport_h
 
 
 namespace constructSystem
@@ -43,16 +43,21 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CorrectorMag;
-
+  
 int
 pipeTerminate(Simulation&,
-	      attachSystem::InnerZone& buildZone,
+	      attachSystem::InnerZone&,
 	      const std::shared_ptr<attachSystem::FixedComp>&);
+int
+pipeTerminateGroup(Simulation&,
+		   attachSystem::InnerZone&,
+		   const std::shared_ptr<attachSystem::FixedComp>&,
+		   const std::set<std::string>&);
 
 
 int
 correctorMagnetPair(Simulation&,
-		    attachSystem::InnerZone& buildZone,
+		    attachSystem::InnerZone&,
 		    const std::shared_ptr<constructSystem::VacuumPipe>&,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
@@ -60,10 +65,21 @@ correctorMagnetPair(Simulation&,
 template<typename magTYPE>
 int
 pipeMagUnit(Simulation&,
-	    attachSystem::InnerZone& buildZone,
-	    const std::shared_ptr<constructSystem::VacuumPipe>&,
+	    attachSystem::InnerZone&,
+	    const std::shared_ptr<attachSystem::FixedComp>&,
+	    const std::string&,
 	    const std::string&,
 	    const std::shared_ptr<magTYPE>&);
+
+template<typename magTYPE>
+int
+pipeMagGroup(Simulation&,
+	     attachSystem::InnerZone&,
+	     const std::shared_ptr<attachSystem::FixedComp>&,
+	     const std::set<std::string>&,
+	     const std::string&,
+	     const std::string&,
+	     const std::shared_ptr<magTYPE>&);
 
 }
 
