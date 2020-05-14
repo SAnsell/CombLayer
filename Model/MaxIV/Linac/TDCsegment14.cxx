@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment14.cxx
+ * File: Linac/TDCsegment14.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,7 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -62,9 +59,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 #include "LObjectSupport.h"
 
@@ -76,14 +70,14 @@
 #include "GateValveCube.h"
 
 #include "TDCsegment.h"
-#include "L2SPFsegment14.h"
+#include "TDCsegment14.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
+TDCsegment14::TDCsegment14(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -112,7 +106,7 @@ L2SPFsegment14::L2SPFsegment14(const std::string& Key) :
   OR.addObject(bellowB);
 }
 
-L2SPFsegment14::~L2SPFsegment14()
+TDCsegment14::~TDCsegment14()
   /*!
     Destructor
    */
@@ -121,14 +115,14 @@ L2SPFsegment14::~L2SPFsegment14()
 
 
 void
-L2SPFsegment14::buildObjects(Simulation& System)
+TDCsegment14::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","buildObjects");
+  ELog::RegMethod RegA("TDCsegment14","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -150,34 +144,35 @@ L2SPFsegment14::buildObjects(Simulation& System)
   pipeC->createAll(System,*pipeB,"back");
   pipeMagUnit(System,*buildZone,pipeC,"Origin",dm2);
   pipeTerminate(System,*buildZone,pipeC);
-  
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeC,"back",*gateA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateA,"back",*bellowB);
 
-  buildZone->removeLastMaster(System);  
+  buildZone->removeLastMaster(System);
 
   return;
 }
 
 void
-L2SPFsegment14::createLinks()
+TDCsegment14::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("L2SPFsegment14","createLinks");
-  
+  ELog::RegMethod RegA("TDCsegment14","createLinks");
+
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+
   return;
 }
 
 void
-L2SPFsegment14::createAll(Simulation& System,
+TDCsegment14::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -188,7 +183,7 @@ L2SPFsegment14::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment14","build");
+  ELog::RegMethod RControl("TDCsegment14","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

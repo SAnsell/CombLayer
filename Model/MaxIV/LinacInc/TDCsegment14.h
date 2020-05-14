@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/L2SPFsegment14.h
+ * File:   LinacInc/TDCsegment14.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment14_h
-#define tdcSystem_L2SPFsegment14_h
+#ifndef tdcSystem_TDCsegment14_h
+#define tdcSystem_TDCsegment14_h
 
 namespace constructSystem
 {
@@ -31,14 +31,14 @@ namespace tdcSystem
 {
   class DipoleDIBMag;
   /*!
-    \class L2SPFsegment14
+    \class TDCsegment14
     \version 1.0
-    \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \author K. Batkov
+    \date May 2020
+    \brief TDC segment 14
   */
 
-class L2SPFsegment14 :
+class TDCsegment14 :
   public TDCsegment
 {
  private:
@@ -57,10 +57,10 @@ class L2SPFsegment14 :
 
  public:
 
-  L2SPFsegment14(const std::string&);
-  L2SPFsegment14(const L2SPFsegment14&);
-  L2SPFsegment14& operator=(const L2SPFsegment14&);
-  ~L2SPFsegment14();
+  TDCsegment14(const std::string&);
+  TDCsegment14(const TDCsegment14&);
+  TDCsegment14& operator=(const TDCsegment14&);
+  ~TDCsegment14();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

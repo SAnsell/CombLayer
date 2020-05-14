@@ -26,12 +26,12 @@
 namespace tdcSystem
 {
 
-  class InjectionHall;
   class L2SPFsegment1;
   class L2SPFsegment2;
 
-  class L2SPFsegment14;
-  class L2SPFsegment15;
+  class TDCsegment14;
+  class TDCsegment15;
+  class TDCsegment16;
 
   /*!
     \class TDC
@@ -53,17 +53,18 @@ class TDC :
   std::set<std::string> activeINJ;   ///< active components
 
   /// All the build units
-  std::map<std::string,attachSystem::InnerZone> buildUnits;   
-  
-  std::shared_ptr<InjectionHall> injectionHall;       ///< in ring front end
-  std::shared_ptr<L2SPFsegment1> l2spf1;              ///< segment 1
-  std::shared_ptr<L2SPFsegment2> l2spf2;              ///< segment 2
-  std::shared_ptr<L2SPFsegment14> l2spf14;      ///< segment 14
-  std::shared_ptr<L2SPFsegment15> l2spf15;      ///< segment 15
+  std::map<std::string,attachSystem::InnerZone> buildUnits;
+
+  std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
+  std::shared_ptr<L2SPFsegment1> l2spf1;           ///< segment 1
+  std::shared_ptr<L2SPFsegment2> l2spf2;           ///< segment 2
+  std::shared_ptr<TDCsegment14> tdc14;         ///< TDC segment 14
+  std::shared_ptr<TDCsegment15> tdc15;         ///< TDC segment 15
+  std::shared_ptr<TDCsegment16> tdc16;         ///< TDC segment 16
 
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
-  
+
   std::unique_ptr<attachSystem::InnerZone>
   buildInnerZone(const FuncDataBase&,const std::string&);
 
