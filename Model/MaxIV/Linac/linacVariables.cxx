@@ -68,6 +68,7 @@ namespace linacVar
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
+  void linac2SPFsegment4(FuncDataBase&,const std::string&);  
   
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -279,8 +280,13 @@ linac2SPFsegment4(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment4");
 
   setVariable::PipeGenerator PGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::LinacSexuGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
-
+  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  
   Control.addVariable(lKey+"XStep",-153.22+linacVar::zeroX); 
   Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",6.4); 
@@ -288,7 +294,27 @@ linac2SPFsegment4(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,65.76); // measured
 
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,79.2); // measured
+  
+  LQGen.generateQuad(Control,lKey+"QuadA",19.2);
+  LSGen.generateQuad(Control,lKey+"SexuA",41.1);
+  LQGen.generateQuad(Control,lKey+"QuadB",62.15);
+
+  YagUnitGen.setCF<CF40_22>();
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,69.2); // measured
+
+  CMGen.generateMag(Control,lKey+"CMagHorC",13.1,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",33.21,1);
 
   return;
 }
