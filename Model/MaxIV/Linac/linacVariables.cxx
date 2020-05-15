@@ -253,7 +253,7 @@ linac2SPFsegment3(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleA");
   
   PGen.generatePipe(Control,lKey+"PipeA",0.0,93.40); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",1.5976);
+  Control.addVariable(lKey+"PipeAXYAngle",3.2);
   CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
     
@@ -263,7 +263,33 @@ linac2SPFsegment3(FuncDataBase& Control,
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
-  Control.addVariable(lKey+"BellowBXYAngle",1.5976);
+  Control.addVariable(lKey+"BellowBXYAngle",3.2);
+  return;
+}
+
+void
+linac2SPFsegment4(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment 4
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment4");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::CorrectorMagGenerator CMGen;
+
+  Control.addVariable(lKey+"XStep",-153.22+linacVar::zeroX); 
+  Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);
+  Control.addVariable(lKey+"XYAngle",6.4); 
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+
+
   return;
 }
 

@@ -37,14 +37,6 @@ namespace xraySystem
 }
 
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
   class LQuad;
@@ -52,6 +44,7 @@ namespace tdcSystem
   class BPM;
   class EArrivalMon;
   class YagUnit;
+  class LQuad;
   
   /*!
     \class L2SPFsegment2
@@ -71,7 +64,7 @@ class L2SPFsegment2 :
   std::shared_ptr<tdcSystem::LQuad> QuadA;
 
   /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;   ///< Beam pos mo
+  std::shared_ptr<tdcSystem::BPM> bpmA;   
 
   /// Bellows from BPM
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -87,7 +80,7 @@ class L2SPFsegment2 :
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; 
   
-  /// Beam arraival monitor 
+  /// Beam arrival monitor 
   std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon;
 
   /// gateValve - Beam Arriva lMonitor

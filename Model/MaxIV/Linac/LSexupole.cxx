@@ -80,12 +80,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "LQuad.h"
+#include "LSexupole.h"
 
 namespace tdcSystem
 {
 
-LQuad::LQuad(const std::string& Key) :
+LSexupole::LSexupole(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -98,7 +98,7 @@ LQuad::LQuad(const std::string& Key) :
   */
 {}
 
-LQuad::LQuad(const std::string& Base,
+LSexupole::LSexupole(const std::string& Base,
 		   const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
@@ -114,23 +114,23 @@ LQuad::LQuad(const std::string& Base,
 {}
 
 
-LQuad::~LQuad() 
+LSexupole::~LSexupole() 
   /*!
     Destructor
   */
 {}
 
 void
-LQuad::populate(const FuncDataBase& Control)
+LSexupole::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("LQuad","populate");
+  ELog::RegMethod RegA("LSexupole","populate");
 
   FixedRotate::populate(Control);
-  
+
   length=Control.EvalTail<double>(keyName,baseName,"Length");
 
   frameRadius=Control.EvalTail<double>(keyName,baseName,"FrameRadius");
@@ -143,14 +143,9 @@ LQuad::populate(const FuncDataBase& Control)
 
   coilRadius=Control.EvalTail<double>(keyName,baseName,"CoilRadius");
   coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
-  coilInner=Control.EvalTail<double>(keyName,baseName,"CoilInner");
-  coilBase=Control.EvalTail<double>(keyName,baseName,"CoilBase");
-  coilBaseDepth=Control.EvalTail<double>(keyName,baseName,"CoilBaseDepth");
-  coilAngle=Control.EvalTail<double>(keyName,baseName,"CoilAngle");
   coilEndRadius=Control.EvalTail<double>(keyName,baseName,"CoilEndRadius");
   coilEndExtra=Control.EvalTail<double>(keyName,baseName,"CoilEndExtra");
       
-  
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat",
@@ -163,14 +158,14 @@ LQuad::populate(const FuncDataBase& Control)
 
 
 void
-LQuad::createSurfaces()
+LSexupole::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("LQuad","createSurface");
+  ELog::RegMethod RegA("LSexupole","createSurface");
 
-  const size_t NPole(4);
+  const size_t NPole(6);
   // mid line
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Z);
@@ -191,7 +186,6 @@ LQuad::createSurfaces()
   for(size_t i=0;i < 2*NPole; i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
-      // const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
 
       // Frame Items:
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
@@ -211,30 +205,19 @@ LQuad::createSurfaces()
     }  
 
   // MAIN POLE PIECES:
-  const Geometry::Quaternion coilQCut=
-    Geometry::Quaternion::calcQRotDeg(coilAngle,Y);
   angle=M_PI*poleYAngle/180.0;
   CN=buildIndex+2000;
   for(size_t i=0;i<NPole;i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
       const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
-      const Geometry::Vec3D coilPlusY=
-	coilQCut.makeRotate(QR);
-      const Geometry::Vec3D coilMinusY=
-	coilQCut.makeInvRotate(QR);
 
       // Coil Items:
       ModelSupport::buildPlane(SMap,CN+3,Origin-QX*(coilWidth/2.0),QX);
       ModelSupport::buildPlane(SMap,CN+4,Origin+QX*(coilWidth/2.0),QX);
+      
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*coilRadius,QR);
-      Geometry::Vec3D cutOrg(Origin+QR*coilRadius);
-      ModelSupport::buildPlane(SMap,CN+13,cutOrg-QX*(coilInner/2.0),coilMinusY);
-      ModelSupport::buildPlane(SMap,CN+14,cutOrg+QX*(coilInner/2.0),coilPlusY);
-      cutOrg=Origin+QR*coilBaseDepth;
-      ModelSupport::buildPlane(SMap,CN+17,cutOrg-QX*(coilBase/2.0),-coilPlusY);
-      ModelSupport::buildPlane(SMap,CN+18,cutOrg+QX*(coilBase/2.0),-coilMinusY);
-
+      
       const Geometry::Vec3D ePt=Y*(length/2.0-coilEndRadius+coilEndExtra);
       ModelSupport::buildCylinder(SMap,CN+9,Origin-ePt,QR,coilEndRadius);
       ModelSupport::buildCylinder(SMap,CN+19,Origin+ePt,QR,coilEndRadius);
@@ -254,19 +237,19 @@ LQuad::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*frameOuter,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*frameOuter,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*frameOuter,Z);
-	
+
   return;
 }
 
 void
-LQuad::createObjects(Simulation& System)
+LSexupole::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("LQuad","createObjects");
-  const size_t NPole(4);
+  ELog::RegMethod RegA("LSexupole","createObjects");
+  const size_t NPole(6);
   
   std::string Out,unitStr;
   
@@ -277,7 +260,6 @@ LQuad::createObjects(Simulation& System)
   unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
   Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
-
 
   const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
   /// plane front / back
@@ -295,29 +277,33 @@ LQuad::createObjects(Simulation& System)
   int PN(buildIndex);
   for(size_t i=0; i<NPole;i++)
     {
-      const std::string outerCut=
-	ModelSupport::getComposite(SMap,BN," -1001 ");
-
-      Out=ModelSupport::getComposite(SMap,PN,"2203 -2204 (-2207 : 2201) ");
-      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+outerCut+FB);
+      // const std::string outerCut=
+      // 	ModelSupport::getComposite(SMap,BN," -1001 ");
+      const std::string outerCut=ModelSupport::getComposite
+	(SMap,buildIndex,"-1001 -1002 -1003 -1004 -1005 -1006 -1007 "
+      "-1008 -1009 -1010 -1011 -1012 ");
+      
+      
+      Out=ModelSupport::getComposite
+	(SMap,PN,BN,"2203 -2204 (-2207 : 2201) -1001M ");
+      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+FB);
       PoleExclude.push_back(HeadRule(Out));
 
       Out=ModelSupport::getComposite
-	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018 (-2203:2204) ");
-      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
-      Out=ModelSupport::getComposite
-	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018");
+	(SMap,PN,BN," 2003 -2004 2001  (-2203:2204) -1001M");
+      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+FB);
+      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
       PoleExclude.back().addUnion(Out);
       
       // Front extra pieces
       Out=ModelSupport::getComposite
-	(SMap,PN,buildIndex," 2003 -2004 2001 2013 2014 2017 2018 -2009 ");
+	(SMap,PN,BN," 2003 -2004 2001  -2009 -1001M");
       makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out+frontSurf);
       frontExclude.push_back(HeadRule(Out));
 
       // back extra pieces
       Out=ModelSupport::getComposite
-	(SMap,PN,buildIndex," 2003 -2004 2001 2013 2014 2017 2018 -2019 ");
+	(SMap,PN,BN," 2003 -2004 2001 -2019 -1001M");
       makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out+backSurf);
       backExclude.push_back(HeadRule(Out));
 
@@ -328,13 +314,15 @@ LQuad::createObjects(Simulation& System)
   int aOffset(-1);
   int bOffset(0);
   std::string OutA,OutB;
-  const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5"});
+  const std::vector<std::string>
+    sides({"-4", "-4 -6", "-6 3", "3","3 5", "5 -4"});
+  ELog::EM<<"FB == "<<FB<<ELog::endDiag;
   for(size_t i=0;i<NPole;i++)
     {
       OutA=ModelSupport::getRangeComposite
-	(SMap,501,504,bOffset,buildIndex,"501R -502R ");
+	(SMap,501,506,bOffset,buildIndex,"501R -502R ");
       OutB=ModelSupport::getRangeComposite
-	(SMap,1001,1008,aOffset,buildIndex,"-1001R -1002R -1003R ");
+      	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R ");
       makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
 	   PoleExclude[i].complement().display()+ICell);
 
@@ -347,7 +335,6 @@ LQuad::createObjects(Simulation& System)
       makeCell("BackVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
 	       backExclude[i].complement().display()+ICell);
       
-      
       aOffset+=2;
       bOffset+=1;
     }
@@ -355,12 +342,12 @@ LQuad::createObjects(Simulation& System)
 }
 
 void 
-LQuad::createLinks()
+LSexupole::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("LQuad","createLinks");
+  ELog::RegMethod RegA("LSexupole","createLinks");
 
   const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
   FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
@@ -373,7 +360,7 @@ LQuad::createLinks()
 }
 
 void
-LQuad::createAll(Simulation& System,
+LSexupole::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -383,8 +370,9 @@ LQuad::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("LQuad","createAll");
-  
+  ELog::RegMethod RegA("LSexupole","createAll");
+
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

@@ -98,6 +98,7 @@
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuad.h"
+#include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
@@ -145,9 +146,9 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuad",
-      "MagnetBlock","MagnetM1","Octupole","EPSeparator",
-      "R3ChokeChamber","QuadUnit","DipoleChamber",
+      "default","CylGateValve","CorrectorMag","LQuad","LSexupole",
+      "MagnetBlock","Sexupole","MagnetM1","Octupole",
+      "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen",
       "YagUnit",
@@ -249,6 +250,19 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item=="LSexupole")
+    {
+      std::shared_ptr<tdcSystem::LSexupole>
+	LS(new tdcSystem::LSexupole("LS","LS"));
+
+      OR.addObject(LS);
+
+      LS->addInsertCell(voidCell);
+      LS->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item=="MagnetBlock")
     {
 
@@ -262,7 +276,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="Seupole")
+  if (item=="Sexupole")
     {
       std::shared_ptr<xraySystem::Sexupole>
 	SXX(new xraySystem::Sexupole("SXX","SXX"));

@@ -62,6 +62,7 @@
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "LinacQuadGenerator.h"
+#include "LinacSexuGenerator.h"
 #include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
@@ -212,6 +213,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
+
+  setVariable::LinacSexuGenerator LSGen;
+  LSGen.generateSexu(Control,"LS",20.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
