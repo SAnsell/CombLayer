@@ -83,6 +83,7 @@
 #include "CorrectorMag.h"
 #include "FlatPipe.h"
 #include "LQuad.h"
+#include "LSexupole.h"
 #include "DipoleDIBMag.h"
 
 namespace tdcSystem
@@ -91,7 +92,7 @@ namespace tdcSystem
 int
 correctorMagnetPair(Simulation& System,
 		    attachSystem::InnerZone& buildZone,
-		    const std::shared_ptr<constructSystem::VacuumPipe>& pipe,
+		    const std::shared_ptr<attachSystem::FixedComp>& pipe,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMA,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMB)
   /*!
@@ -108,6 +109,11 @@ correctorMagnetPair(Simulation& System,
 {
   ELog::RegMethod RegA("LObjectSupport[F]","correctorMagnetPair");
 
+  attachSystem::ContainedComp* CPtr=
+    dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
+  if (!CPtr)
+    throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
+
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 		      
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
@@ -117,12 +123,12 @@ correctorMagnetPair(Simulation& System,
   CMB->createAll(System,*pipe,"#front");
 
   int outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMA,-1);
-  pipe->insertInCell(System,outerCell);
+  CPtr->insertInCell(System,outerCell);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMA,2);
   CMA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,-1);
-  pipe->insertInCell(System,outerCell);
+  CPtr->insertInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,2);
   CMB->insertInCell(System,outerCell);
@@ -295,6 +301,14 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::LQuad>&);
+
+template 
+int pipeMagUnit(Simulation&,
+		attachSystem::InnerZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<tdcSystem::LSexupole>&);
 
 template 
 int pipeMagUnit(Simulation&,

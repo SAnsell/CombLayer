@@ -48,6 +48,7 @@
 #include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
+#include "LinacSexuGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "BPMGenerator.h"
@@ -243,28 +244,31 @@ linac2SPFsegment3(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setNoWindow();
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
 
   FPGen.generateFlat(Control,lKey+"FlatA",83.8);
+  Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
-  
+
   PGen.generatePipe(Control,lKey+"PipeA",0.0,93.40); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",3.2);
+  Control.addVariable(lKey+"PipeAXYAngle",1.6);
+  // Control.addVariable(lKey+"PipeAXStep",-1.2);
+  // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
+  
   CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
     
   FPGen.generateFlat(Control,lKey+"FlatB",83.8);
+  Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
-  Control.addVariable(lKey+"BellowBXYAngle",3.2);
+  Control.addVariable(lKey+"BellowBXYAngle",1.6);
   return;
 }
 
@@ -280,14 +284,15 @@ linac2SPFsegment4(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment4");
 
   setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
-  setVariable::LinacSexuGenerator LQGen;
+  setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
   
-  Control.addVariable(lKey+"XStep",-153.22+linacVar::zeroX); 
+  Control.addVariable(lKey+"XStep",-15.322+linacVar::zeroX); 
   Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",6.4); 
 
@@ -302,7 +307,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",0.0,79.2); // measured
   
   LQGen.generateQuad(Control,lKey+"QuadA",19.2);
-  LSGen.generateQuad(Control,lKey+"SexuA",41.1);
+  LSGen.generateSexu(Control,lKey+"SexuA",41.1);
   LQGen.generateQuad(Control,lKey+"QuadB",62.15);
 
   YagUnitGen.setCF<CF40_22>();
@@ -631,6 +636,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
   linacVar::linac2SPFsegment3(Control,"L2SPF3");
+  linacVar::linac2SPFsegment4(Control,"L2SPF4");
 
   /// Segment 14-28
   linacVar::TDCsegment14(Control,"TDC14");

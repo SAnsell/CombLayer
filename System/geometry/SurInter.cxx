@@ -89,9 +89,8 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
-  
-  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
 
+  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
   std::vector<Geometry::Vec3D> out;
   
   if (sndHR.hasRule())

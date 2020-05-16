@@ -85,6 +85,7 @@
 #include "CorrectorMag.h"
 #include "BPM.h"
 #include "LQuad.h"
+#include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 
@@ -104,7 +105,7 @@ L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
   bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  SexuA(new tcdSystem::LSexupole(keyName+"SexuA")),
+  SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
   QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -124,8 +125,11 @@ L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
   OR.addObject(bpmA);
   OR.addObject(pipeB);
   OR.addObject(QuadA);
+  OR.addObject(SexuA);
   OR.addObject(QuadB);
   OR.addObject(yagUnit);
+  OR.addObject(bellowA);
+  OR.addObject(pipeC);
   OR.addObject(cMagHorC);
   OR.addObject(cMagVertC);  
 
@@ -153,10 +157,23 @@ L2SPFsegment4::buildObjects(Simulation& System)
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
+  if (isActive("front"))
+    pipeA->copyCutSurf("front",*this,"front");
+  ELog::EM<<"ASDFSA F"<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
+  ELog::EM<<"ASDFSA F"<<ELog::endDiag;
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
+  
+  return;
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
 
+  pipeB->createAll(System,*bpmA,"back");
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
+  pipeTerminate(System,*buildZone,pipeB);
   
   buildZone->removeLastMaster(System);  
   return;
@@ -191,7 +208,6 @@ L2SPFsegment4::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
   buildObjects(System);
   createLinks();
 

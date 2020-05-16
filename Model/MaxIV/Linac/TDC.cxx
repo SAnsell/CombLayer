@@ -69,6 +69,7 @@
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment2.h"
 #include "L2SPFsegment3.h"
+#include "L2SPFsegment4.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -86,6 +87,7 @@ TDC::TDC(const std::string& KN) :
   l2spf1(new L2SPFsegment1("L2SPF1")),
   l2spf2(new L2SPFsegment2("L2SPF2")),
   l2spf3(new L2SPFsegment3("L2SPF3")),
+  l2spf4(new L2SPFsegment4("L2SPF4")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16"))
@@ -227,6 +229,7 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment1","l2spf"},
       {"L2SPFsegment2","l2spf"},
       {"L2SPFsegment3","l2spf"},
+      {"L2SPFsegment4","l2spf"},
       {"TDCsegment14","tdc"},
       {"TDCsegment15","tdc"},
       {"TDCsegment16","tdc"}
@@ -272,6 +275,20 @@ TDC::createAll(Simulation& System,
 	  l2spf3->setInnerZone(buildZone.get());
 	  l2spf3->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf3->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment4")
+	{
+	  if (l2spf3->hasLastSurf())
+	    {
+	      buildZone->setFront(l2spf3->getLastSurf());
+	      l2spf4->setCutSurf("front",l2spf3->getLastSurf());
+	    }
+	  buildZone->constructMasterCell(System);
+
+	  l2spf4->setInnerZone(buildZone.get());
+	  l2spf4->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf4->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
       else if (BL=="TDCsegment14")

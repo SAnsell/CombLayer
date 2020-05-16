@@ -80,6 +80,7 @@
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
+#include "OffsetFlangePipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
@@ -102,7 +103,7 @@ L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  pipeA(new constructSystem::OffsetFlangePipe(keyName+"PipeA")),
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
   cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
@@ -183,7 +184,7 @@ L2SPFsegment3::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*flatA,2);
+  setLinkSignedCopy(1,*bellowB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

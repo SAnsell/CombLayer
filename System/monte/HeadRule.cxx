@@ -2262,7 +2262,6 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
-
   
   // IPTS contains non-exit points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());

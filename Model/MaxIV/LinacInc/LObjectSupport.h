@@ -58,7 +58,7 @@ pipeTerminateGroup(Simulation&,
 int
 correctorMagnetPair(Simulation&,
 		    attachSystem::InnerZone&,
-		    const std::shared_ptr<constructSystem::VacuumPipe>&,
+		    const std::shared_ptr<attachSystem::FixedComp>&,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
 

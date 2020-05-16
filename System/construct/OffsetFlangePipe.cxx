@@ -378,6 +378,10 @@ OffsetFlangePipe::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
 
+  FixedComp::nameSideIndex(7,"outerPipe");
+  FixedComp::nameSideIndex(7,"pipeOuterBase");
+  FixedComp::nameSideIndex(8,"pipeOuterTop");
+
   // flange mid point
   FixedComp::setLinkSignedCopy(9,*this,1);
   FixedComp::setLinkSignedCopy(10,*this,2);
@@ -390,9 +394,8 @@ OffsetFlangePipe::createLinks()
 }
   
 void
-OffsetFlangePipe::setFront(const attachSystem::FixedComp& FC,
-			   const long int sideIndex,
-			   const bool joinFlag)
+OffsetFlangePipe::setJoinFront(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Set front surface
     \param FC :: FixedComponent 
@@ -404,36 +407,31 @@ OffsetFlangePipe::setFront(const attachSystem::FixedComp& FC,
 
   
   FrontBackCut::setFront(FC,sideIndex);
-  if (joinFlag)
-    {
-      frontJoin=1;
-      FPt=FC.getLinkPt(sideIndex);
-      FAxis=FC.getLinkAxis(sideIndex);
-    }
+
+  frontJoin=1;
+  FPt=FC.getLinkPt(sideIndex);
+  FAxis=FC.getLinkAxis(sideIndex);
     
   return;
 }
   
 void
-OffsetFlangePipe::setBack(const attachSystem::FixedComp& FC,
-			  const long int sideIndex,
-			  const bool joinFlag)
+OffsetFlangePipe::setJoinBack(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Set Back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
    */
 {
   ELog::RegMethod RegA("OffsetFlangePipe","setBack");
   
   FrontBackCut::setBack(FC,sideIndex);
-  if (joinFlag)
-    {
-      backJoin=1;
-      BPt=FC.getLinkPt(sideIndex);
-      BAxis=FC.getLinkAxis(sideIndex);
-    }
+  
+  backJoin=1;
+  BPt=FC.getLinkPt(sideIndex);
+  BAxis=FC.getLinkAxis(sideIndex);
+
   return;
 }
   

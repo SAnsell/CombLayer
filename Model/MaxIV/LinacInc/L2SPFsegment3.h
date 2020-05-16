@@ -24,6 +24,7 @@
 
 namespace constructSystem
 {
+  class OffsetFlangePipe;
   class VacuumPipe;
   class Bellows;
   class portItem;
@@ -74,7 +75,7 @@ class L2SPFsegment3 :
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
 
   // first pipe in dipole
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
 
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;    ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag

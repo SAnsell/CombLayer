@@ -192,11 +192,13 @@ makeMaxIV::buildInjection(Simulation& System,
   typedef const std::map<std::string,std::set<std::string> > ITYPE;
   static ITYPE injectNAMES
 
-    ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3"} },      
+    ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
+	"L2SPFsegment4" } },      
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16"} },      
        {"L2SPFsegment1",{} },                              // first only
        {"L2SPFsegment2",{} },                              // second only
-       {"L2SPFsegment3",{} },                              // second only
+       {"L2SPFsegment3",{} },                              // third only
+       {"L2SPFsegment4",{} },                              // forth only
        {"TDCsegment14",{} },                              // 14th only
        {"TDCsegment15",{} },                              // 15th only
        {"TDCsegment16",{} }                               // 16th only
