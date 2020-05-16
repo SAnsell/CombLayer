@@ -159,13 +159,11 @@ L2SPFsegment4::buildObjects(Simulation& System)
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
-  ELog::EM<<"ASDFSA F"<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
-  ELog::EM<<"ASDFSA F"<<ELog::endDiag;
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
   
-  return;
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
 
@@ -174,6 +172,16 @@ L2SPFsegment4::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*yagUnit,"back",*bellowA);
+
+  pipeC->createAll(System,*bellowA,"back");
+  correctorMagnetPair(System,*buildZone,pipeC,cMagHorC,cMagVertC);
+  pipeTerminate(System,*buildZone,pipeC);  
   
   buildZone->removeLastMaster(System);  
   return;

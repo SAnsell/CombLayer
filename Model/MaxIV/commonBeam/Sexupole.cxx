@@ -181,8 +181,6 @@ Sexupole::createSurfaces()
 
       // Frame Items:
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
-      ELog::EM<<"NP == "<<CN+51<<ELog::endDiag;
-
       ModelSupport::buildPlane
 	(SMap,CN+51,Origin+QR*(frameRadius+frameThick),QR);
       angle+=M_PI/static_cast<double>(NPole);

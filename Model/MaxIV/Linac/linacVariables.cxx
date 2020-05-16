@@ -302,12 +302,12 @@ linac2SPFsegment4(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",0.0,65.76); // measured
 
   BPMGen.setCF<setVariable::CF40_22>();
-  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,79.2); // measured
   
-  LQGen.generateQuad(Control,lKey+"QuadA",19.2);
-  LSGen.generateSexu(Control,lKey+"SexuA",41.1);
+  LQGen.generateQuad(Control,lKey+"QuadA",17.2);
+  LSGen.generateSexu(Control,lKey+"SexuA",39.1);
   LQGen.generateQuad(Control,lKey+"QuadB",62.15);
 
   YagUnitGen.setCF<CF40_22>();

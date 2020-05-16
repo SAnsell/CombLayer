@@ -64,8 +64,8 @@ LinacQuadGenerator::LinacQuadGenerator() :
   coilInner(3.86),coilBase(3.86),
   coilBaseDepth(8.0),coilAngle(45.0),
   coilEndExtra(3.2),coilEndRadius(6.0),
-  poleMat("Iron"),
-  coilMat("Copper"),frameMat("Aluminium")
+  poleMat("Iron"),coilMat("Copper"),
+  frameMat("Aluminium")
   /*!
     Constructor and defaults
   */

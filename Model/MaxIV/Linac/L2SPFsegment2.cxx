@@ -88,7 +88,6 @@
 #include "VirtualTube.h"
 #include "BlankTube.h"
 #include "LQuad.h"
-#include "CorrectorMag.h"
 #include "BPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"

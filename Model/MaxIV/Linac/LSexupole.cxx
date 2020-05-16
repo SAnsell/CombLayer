@@ -170,7 +170,6 @@ LSexupole::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Z);
 
-
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
@@ -316,7 +315,7 @@ LSexupole::createObjects(Simulation& System)
   std::string OutA,OutB;
   const std::vector<std::string>
     sides({"-4", "-4 -6", "-6 3", "3","3 5", "5 -4"});
-  ELog::EM<<"FB == "<<FB<<ELog::endDiag;
+
   for(size_t i=0;i<NPole;i++)
     {
       OutA=ModelSupport::getRangeComposite

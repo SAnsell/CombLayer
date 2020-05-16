@@ -57,13 +57,12 @@ namespace setVariable
 {
 
 LinacSexuGenerator::LinacSexuGenerator() :
-  length(25.0),frameRadius(7.5),
-  frameOuter(9.5),
+  length(9.50),frameRadius(7.5),frameOuter(9.5),
   poleYAngle(0.0),
   poleGap(1.25), poleRadius(1.05),
   poleWidth(1.92),     // pole radius 7mm above flat line
-  coilRadius(4.6),coilWidth(3.8), coilEndExtra(3.2),
-  coilEndRadius(6.0 ),
+  coilRadius(4.6),coilWidth(3.8), coilEndExtra(1.0),
+  coilEndRadius(6.0),
   poleMat("Iron"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
