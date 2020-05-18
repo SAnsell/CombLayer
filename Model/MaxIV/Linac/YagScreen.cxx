@@ -270,12 +270,12 @@ YagScreen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ftFlangeRadius);
 
   // electronics junction box
-  ModelSupport::buildPlane(SMap,buildIndex+101,Y*(ftLength+jbWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(ftLength+jbWallThick),Y);
   // ModelSupport::buildPlane
   //   (SMap,buildIndex+102,Origin+Y*(ftLength+jbWallThick+jbLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Y*(ftLength+jbWallThick+jbLength),Y);
+			   Origin+Y*(ftLength+jbWallThick+jbLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(jbWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(jbWidth/2.0),X);
