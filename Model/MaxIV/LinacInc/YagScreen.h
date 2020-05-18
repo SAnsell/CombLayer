@@ -29,15 +29,15 @@ namespace tdcSystem
 
 /*!
   \class YagScreen
-  \version 1.0
+  \version 2.0
   \author Konstantin Batkov
   \date May 2020
   \brief Yag screen
 */
 
-class YagScreen : public attachSystem::ContainedGroup,
-		  public attachSystem::FixedRotate,
-		  public attachSystem::CellMap
+class YagScreen : public attachSystem::ContainedComp,
+    public attachSystem::FixedRotate,
+    public attachSystem::CellMap
 {
  private:
 
@@ -74,6 +74,8 @@ class YagScreen : public attachSystem::ContainedGroup,
   bool screenCentreActive;      ///< flag to use screen centre
   /// Norminal point to get screen centre from [over-writes holderLift]
   Geometry::Vec3D screenCentre;
+  std::string pipeSide;         ///< side surface of the pipe where the screen and mirror are inserted
+  std::string pipeFront;        ///< front surface of this pipe
 
   int    voidMat;               ///< void material
 
@@ -95,6 +97,8 @@ class YagScreen : public attachSystem::ContainedGroup,
   virtual ~YagScreen();
 
   void setScreenCentre(const attachSystem::FixedComp&,const long int);
+  void setPipeSide(const attachSystem::FixedComp&, const long int);
+  void setPipeFront(const attachSystem::FixedComp&, const long int);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

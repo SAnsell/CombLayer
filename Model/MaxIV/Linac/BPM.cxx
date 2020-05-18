@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/BPM.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,15 +70,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "BPM.h"
 
@@ -98,7 +98,7 @@ BPM::BPM(const std::string& Key) :
 {}
 
 
-BPM::~BPM() 
+BPM::~BPM()
   /*!
     Destructor
   */
@@ -114,11 +114,11 @@ BPM::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BPM","populate");
 
   FixedOffset::populate(Control);
-  
+
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
-  
+
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
@@ -135,14 +135,14 @@ BPM::populate(const FuncDataBase& Control)
   flangeBLength=Control.EvalHead<double>
     (keyName,"FlangeBLength","FlangeLength");
 
-  electrodeRadius=Control.EvalVar<double>(keyName+"ElectrodeRadius");
-  electrodeThick=Control.EvalVar<double>(keyName+"ElectrodeThick");
-  electrodeEnd=Control.EvalVar<double>(keyName+"ElectrodeEnd");
-  electrodeYStep=Control.EvalVar<double>(keyName+"ElectrodeYStep");
-  
+  striplineRadius=Control.EvalVar<double>(keyName+"StriplineRadius");
+  striplineThick=Control.EvalVar<double>(keyName+"StriplineThick");
+  striplineEnd=Control.EvalVar<double>(keyName+"StriplineEnd");
+  striplineYStep=Control.EvalVar<double>(keyName+"StriplineYStep");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
-  electrodeMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
+  striplineMat=ModelSupport::EvalMat<int>(Control,keyName+"StriplineMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
 
   return;
@@ -171,7 +171,7 @@ BPM::createSurfaces()
   // main pipe and thicness
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
-  
+
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
@@ -197,13 +197,13 @@ BPM::createSurfaces()
       midAngle+=M_PI/2.0;
       BI+=2;
     }
-      
+
   // end point on electrons (solid)
   ModelSupport::buildPlane(SMap,buildIndex+302,
-			   Origin+Y*(length/2.0-electrodeEnd),Y);
+			   Origin+Y*(length/2.0-striplineEnd),Y);
 
-  
-  // Electrode holder
+
+  // Stripline holder
   const double angleStep(M_PI/4.0);
 
   BI=buildIndex+411;
@@ -211,16 +211,16 @@ BPM::createSurfaces()
     {
       const double angle(angleStep*static_cast<double>(i));
       const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
-      ModelSupport::buildPlane(SMap,BI,Origin+axis*electrodeRadius,axis);
+      ModelSupport::buildPlane(SMap,BI,Origin+axis*striplineRadius,axis);
       BI++;
     }
 
-  const Geometry::Vec3D eCent(Origin+Y*(electrodeYStep-length/2.0));
+  const Geometry::Vec3D eCent(Origin+Y*(striplineYStep-length/2.0));
   ModelSupport::buildPlane
-    (SMap,buildIndex+401,eCent-Y*(electrodeThick/2.0),Y);
+    (SMap,buildIndex+401,eCent-Y*(striplineThick/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+402,eCent+Y*(electrodeThick/2.0),Y);
-  
+    (SMap,buildIndex+402,eCent+Y*(striplineThick/2.0),Y);
+
   return;
 }
 
@@ -234,7 +234,7 @@ BPM::createObjects(Simulation& System)
   ELog::RegMethod RegA("BPM","createObjects");
 
   std::string Out;
-  
+
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
@@ -242,7 +242,7 @@ BPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
-  
+
   // front void
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
@@ -261,17 +261,17 @@ BPM::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("ElectronPlate",System,cellIndex++,electrodeMat,0.0,Out);
+  makeCell("ElectronPlate",System,cellIndex++,striplineMat,0.0,Out);
 
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
@@ -282,14 +282,14 @@ BPM::createObjects(Simulation& System)
 
   int BI(0);
   const std::string IOut=
-    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 "); 
+    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 ");
   for(size_t i=0;i<4;i++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex+BI," 351 -352");
-      makeCell("Electrode",System,cellIndex++,electrodeMat,0.0,IOut+Out);
+      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IOut+Out);
       Out=ModelSupport::getRangeComposite
 	(SMap,351,358,BI,buildIndex," 352R -353R");
-      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,IOut+Out);
+      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IOut+Out);
       BI+=2;
     }
   // edge electrod void
@@ -298,17 +298,16 @@ BPM::createObjects(Simulation& System)
 
   // edge electrod void
   Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
-  makeCell("ElectrodeEnd",System,cellIndex++,electrodeMat,0.0,Out+backStr);
-
+  makeCell("StriplineEnd",System,cellIndex++,striplineMat,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
   addOuterSurf(Out+frontStr+backStr);
-  
+
   return;
 }
 
-void 
+void
 BPM::createLinks()
   /*!
     Create the linked units
@@ -318,7 +317,7 @@ BPM::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-      
+
   return;
 }
 
@@ -329,20 +328,20 @@ BPM::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("BPM","createAll");
-  
+
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

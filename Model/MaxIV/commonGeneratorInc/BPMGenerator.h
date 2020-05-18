@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/BPMGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_BPMGenerator_h
@@ -35,37 +35,37 @@ namespace setVariable
   \brief BPMGenerator for variables
 */
 
-class BPMGenerator 
+class BPMGenerator
 {
  private:
 
-  double radius;                ///< void radius   
+  double radius;                ///< void radius
   double length;                ///< void length [total]
 
   double outerThick;            ///< pipe thickness
 
   double innerRadius;           ///< inner radius
   double innerThick;            ///< Inner electorn thickness
-  double innerAngle;            ///< Angle of electrode
+  double innerAngle;            ///< Angle of stripline
   double innerAngleOffset;      ///< Offset angle of inner electron
 
-  double flangeARadius;         ///< Joining Flange radius 
+  double flangeARadius;         ///< Joining Flange radius
   double flangeALength;         ///< Joining Flange length
 
-  double flangeBRadius;         ///< Joining Flange radius 
+  double flangeBRadius;         ///< Joining Flange radius
   double flangeBLength;         ///< Joining Flange length
 
-  double electrodeRadius;       ///< Electrode distance [support]
-  double electrodeThick;        ///< Electrode thickness [support]
-  double electrodeYStep;        ///< Electrode YStep
-  double electrodeEnd;          ///< Electrode end piece length
-  
+  double striplineRadius;       ///< Stripline distance [support]
+  double striplineThick;        ///< Stripline thickness [support]
+  double striplineYStep;        ///< Stripline YStep
+  double striplineEnd;          ///< Stripline end piece length
+
   std::string voidMat;                  ///< void material
-  std::string electrodeMat;             ///< electrode material
-  std::string flangeMat;                ///< flange material  
+  std::string striplineMat;             ///< stripline material
+  std::string flangeMat;                ///< flange material
   std::string outerMat;                 ///< pipe material
 
-  
+
  public:
 
   BPMGenerator();
@@ -76,7 +76,7 @@ class BPMGenerator
   template<typename T> void setCF();
   template<typename T> void setAFlangeCF();
   template<typename T> void setBFlangeCF();
-  
+
   virtual void generateBPM(FuncDataBase&,const std::string&,
 			   const double) const;
 
@@ -85,4 +85,3 @@ class BPMGenerator
 }
 
 #endif
- 

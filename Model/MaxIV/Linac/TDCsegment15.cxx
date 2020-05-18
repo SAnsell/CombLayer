@@ -157,12 +157,12 @@ TDCsegment15::buildObjects(Simulation& System)
 				   ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  yagScreen->addInsertCell("Body",outerCell);
-  yagScreen->addInsertCell("Thread",ionPump->getCell("Void"));
-  yagScreen->addInsertCell("Mirror",ionPump->getCell("Void"));
-  yagScreen->addInsertCell("Screen",ionPump->getCell("Void"));
-
+  yagScreen->addInsertCell(outerCell);
   yagScreen->setScreenCentre(*ionPump,0);
+
+  ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
+  yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
+  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerFront"));
 
   // 1 does not work, but side can be changed with signs of
   // XVec in the Port[12] variables

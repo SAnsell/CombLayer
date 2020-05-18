@@ -54,7 +54,6 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Exception.h"
@@ -66,10 +65,11 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Screen", "Mirror", "Thread", "Body"),
+  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   screenCentreActive(false),
+  pipeSide(""),pipeFront(""),
   inBeam(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -78,7 +78,7 @@ YagScreen::YagScreen(const std::string& Key)  :
 {}
 
 YagScreen::YagScreen(const YagScreen& A) :
-  attachSystem::ContainedGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   jbLength(A.jbLength),jbWidth(A.jbWidth),jbHeight(A.jbHeight),
@@ -106,6 +106,7 @@ YagScreen::YagScreen(const YagScreen& A) :
   screenHolderMat(A.screenHolderMat),
   screenCentreActive(A.screenCentreActive),
   screenCentre(A.screenCentre),
+  pipeSide(A.pipeSide),pipeFront(A.pipeFront),
   voidMat(A.voidMat),inBeam(A.inBeam)
   /*!
     Copy constructor
@@ -123,7 +124,7 @@ YagScreen::operator=(const YagScreen& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       jbLength=A.jbLength;
@@ -153,6 +154,8 @@ YagScreen::operator=(const YagScreen& A)
       screenHolderMat=A.screenHolderMat;
       screenCentreActive=A.screenCentreActive;
       screenCentre=A.screenCentre;
+      pipeSide=A.pipeSide;
+      pipeFront=A.pipeFront;
       voidMat=A.voidMat;
       inBeam=A.inBeam;
     }
@@ -267,12 +270,12 @@ YagScreen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ftFlangeRadius);
 
   // electronics junction box
-  ModelSupport::buildPlane(SMap,buildIndex+101,Y*(ftLength+jbWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(ftLength+jbWallThick),Y);
   // ModelSupport::buildPlane
   //   (SMap,buildIndex+102,Origin+Y*(ftLength+jbWallThick+jbLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Y*(ftLength+jbWallThick+jbLength),Y);
+			   Origin+Y*(ftLength+jbWallThick+jbLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(jbWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(jbWidth/2.0),X);
@@ -291,7 +294,7 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+114,Origin+X*(jbWallThick+jbWidth/2.0),X);
 
-  
+
   ModelSupport::buildPlane
     (SMap,buildIndex+115,Origin-Z*(jbWallThick+jbHeight/2.0),Z);
   ModelSupport::buildPlane
@@ -323,6 +326,11 @@ YagScreen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+307,
 			      or307,
 			      MVec,mirrorRadius);
+
+  // container cell for mirror and screen
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+301,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+201),
+				  -mirrorRadius*2.0);
 
   // screen
   Geometry::Vec3D SVec(X);
@@ -372,9 +380,6 @@ YagScreen::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 17 -27 ");
   makeCell("FTFlangeAir",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
-  addOuterSurf("Body",Out);
-
   // electronics junction box
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
@@ -384,23 +389,50 @@ YagScreen::createObjects(Simulation& System)
     (SMap,buildIndex,"111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106)");
   makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
 
+  // Outer surfaces:
+  // if junction box is larger than the feedthrough flange then
+  // we can simplify outer surface by adding a rectangular cell around the flange
+  if (std::min(jbWidth/2.0+jbWallThick, jbHeight/2.0+jbWallThick)>ftFlangeRadius)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -2 113 -114 115 -116 27");
+      makeCell("JBVoidFT",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -112 113 -114 115 -116 ");
+      addOuterSurf(Out);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
+      addOuterSurf(Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
+      addOuterUnionSurf(Out);
+    }
+
+
   // mirror/screen thread
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
 
-  // we need these cells only if the YAG is closed
-  // otherwise it just slows down geometry tracking
-  // Can think about making then all in an innerVoid cell
   if (inBeam)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
-      makeCell("ThreadClosed",System,cellIndex++,threadMat,0.0,Out);
-      addOuterSurf("Thread",Out);
+      makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,Out);
+
+      if (!pipeSide.empty())
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 207 ")  + pipeSide;
+	  makeCell("VoidThreadInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+	}
+      else
+	addOuterUnionSurf(Out);
 
       // mirror
-      Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
-      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
-      addOuterSurf("Mirror",Out);
+      const std::string mirror=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
+      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,mirror);
 
       // screen
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
@@ -411,22 +443,38 @@ YagScreen::createObjects(Simulation& System)
       makeCell("ScreenHolderSides",System,cellIndex++,screenHolderMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
-      makeCell("ScreenHolder",System,cellIndex++,screenHolderMat,0.0,Out);
+      makeCell("ScreenHolderBase",System,cellIndex++,screenHolderMat,0.0,Out);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
-      addOuterSurf("Screen",Out);
+      const std::string screen=ModelSupport::getComposite
+	    (SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
+      // screen outer surface
+      if (!pipeSide.empty())
+	{
+	  HeadRule screenOuter;
+	  screenOuter.procString(screen);
+	  screenOuter.makeComplement();
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex,
+					 " 301 -201 (-303:304:307) ") + screenOuter.display();
+	  makeCell("ScreenAndMirrorContainer",System,cellIndex++,0,0.0,Out+pipeSide);
+
+	  if (!pipeFront.empty())
+	    {
+	      Out=ModelSupport::getComposite(SMap,buildIndex," -301 ")  + pipeFront + pipeSide;
+	      makeCell("VoidFrontInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+	    }
+	}
+      else
+	{
+	  addOuterUnionSurf(screen);
+	  addOuterUnionSurf(mirror);
+	}
     }
-  else
+  else if ((!pipeSide.empty()) && (!pipeFront.empty()))
     {
-      addOuterSurf("Thread","");
-      addOuterSurf("Mirror","");
-      addOuterSurf("Screen","");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -1 ")  + pipeFront + pipeSide;
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
     }
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 111 -112 113 -114 115 -116 ");
-  addOuterUnionSurf("Body",Out);
 
   return;
 }
@@ -440,9 +488,6 @@ YagScreen::createLinks()
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
 
-  
-
-  
   return;
 }
 
@@ -464,6 +509,34 @@ YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
 }
 
 void
+YagScreen::setPipeSide(const attachSystem::FixedComp& FC,
+			 const long int sIndex)
+/*
+  Set the side surface of the pipe containing mirror and screen holder
+  \param FC :: FixedComp to use
+  \param sIndex :: Link point index
+ */
+{
+  ELog::RegMethod RegA("YagScreen","setPipeSide");
+
+  pipeSide = FC.getLinkString(sIndex);
+}
+
+void
+YagScreen::setPipeFront(const attachSystem::FixedComp& FC,
+			 const long int sIndex)
+/*
+  Set the front surface of the pipe containing mirror and screen holder
+  \param FC :: FixedComp to use
+  \param sIndex :: Link point index
+ */
+{
+  ELog::RegMethod RegA("YagScreen","setPipeFront");
+
+  pipeFront = FC.getLinkString(sIndex);
+}
+
+void
 YagScreen::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
@@ -475,6 +548,11 @@ YagScreen::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("YagScreen","createAll");
+
+  if (pipeSide.empty())
+    ELog::EM<<"Set pipeSide surface to simplify outer rule of YagScreen"<<ELog::endWarn;
+  if (pipeFront.empty())
+    ELog::EM<<"Set pipeFront surface to simplify outer rule of YagScreen"<<ELog::endWarn;
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
