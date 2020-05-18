@@ -109,6 +109,8 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
+#include "BPM.h"
+#include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "YagScreen.h"
@@ -151,7 +153,7 @@ makeSingleItem::build(Simulation& System,
       "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen",
-      "YagUnit",
+      "YagUnit","BPM","BeamDivider",
       "Help","help"
     });
 
@@ -200,6 +202,28 @@ makeSingleItem::build(Simulation& System,
 
       YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "BPM")
+    {
+      std::shared_ptr<tdcSystem::BPM>
+	bpm(new tdcSystem::BPM("BPM"));
+      OR.addObject(bpm);
+
+      bpm->addInsertCell(voidCell);
+      bpm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "BeamDivider")
+    {
+      std::shared_ptr<tdcSystem::BeamDivider>
+	bd(new tdcSystem::BeamDivider("BeamDiv"));
+      OR.addObject(bd);
+      
+      bd->addAllInsertCell(voidCell);
+      bd->createAll(System,World::masterOrigin(),0);
 
       return;
     }

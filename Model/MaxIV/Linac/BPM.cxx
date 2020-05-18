@@ -303,7 +303,7 @@ BPM::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
-  addOuterSurf(Out);
+  addOuterSurf(Out+frontStr+backStr);
   
   return;
 }

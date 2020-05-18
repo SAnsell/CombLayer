@@ -77,6 +77,8 @@
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "BPMGenerator.h"
+#include "BeamDividerGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 
@@ -249,6 +251,12 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
 
+  setVariable::BPMGenerator BPMGen;
+  BPMGen.generateBPM(Control,"BPM",0.0);  
+
+  setVariable::BeamDividerGenerator BDGen;
+  BDGen.generateDivider(Control,"BeamDiv");  
+  
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");  
 

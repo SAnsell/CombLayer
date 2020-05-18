@@ -37,15 +37,16 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
 
 my @mainLib=qw( visit src simMC  construct physics input process
     transport scatMat endf crystal source monte funcBase log monte
-    flukaMagnetic flukaProcess flukaPhysics
-    flukaTally phitsProcess phitsPhysics
+    flukaProcess flukaPhysics
+    flukaTally phitsProcess 
     phitsTally phitsSupport tally
     geometry mersenne src world work
     xml poly support weights
     insertUnit md5 construct
     global constructVar physics simMC
-    scatMat endf crystal transport
-    attachComp visit poly);
+    transport attachComp visit poly 
+    flukaMagnetic phitsPhysics
+    scatMat endf crystal );
 
 my $gM=new CMakeList;
 $gM->setParameters(\@ARGV);
@@ -104,7 +105,7 @@ foreach my $mainProg (@masterProg)
 	my @maxiv = qw( maxivBuild );
 	push(@maxiv,@mainLib);
 	$gM->addDepUnit("maxiv", [@maxiv,
-				  qw(R3Common balder cosaxs danmax
+				  qw(balder cosaxs danmax R3Common 
 				  flexpes formax maxpeem  micromax
 				  softimax
 				  commonGenerator commonBeam Linac
@@ -127,7 +128,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( build chip moderator build ralBuild zoom  );
+	my @fullBuild = qw( moderator build chip  build ralBuild zoom  );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }
@@ -183,9 +184,10 @@ foreach my $mainProg (@masterProg)
       { 
 	my @singleItem = qw( singleItemBuild ) ;
 	push(@singleItem,@mainLib);
-	$gM->addDepUnit("singleItem", [@singleItem,
-				       qw(commonGenerator commonVar
-				       commonBeam R1Common R3Common Linac )]);
+	$gM->addDepUnit("singleItem",
+			[@singleItem,
+			 qw( commonVar commonGenerator R1Common R3Common 
+			     commonBeam  Linac )]);
       }
     
     
