@@ -380,9 +380,6 @@ YagScreen::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 17 -27 ");
   makeCell("FTFlangeAir",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
-  addOuterSurf(Out);
-
   // electronics junction box
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
@@ -392,9 +389,29 @@ YagScreen::createObjects(Simulation& System)
     (SMap,buildIndex,"111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106)");
   makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 111 -112 113 -114 115 -116 ");
-  addOuterUnionSurf(Out);
+  // Outer surfaces:
+  // if junction box is larger than the feedthrough flange then
+  // we can simplify outer surface by adding a rectangular cell around the flange
+  if (std::min(jbWidth/2.0+jbWallThick, jbHeight/2.0+jbWallThick)>ftFlangeRadius)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -2 113 -114 115 -116 27");
+      makeCell("JBVoidFT",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -112 113 -114 115 -116 ");
+      addOuterSurf(Out);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
+      addOuterSurf(Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
+      addOuterUnionSurf(Out);
+    }
+
 
   // mirror/screen thread
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
