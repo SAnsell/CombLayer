@@ -117,7 +117,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","MagnetM1","Octupole","EPSeparator",
       "R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag","EArrivalMon","YagScreen",
+      "DipoleDIBMag","EArrivalMon","YAG",
       "Help","help"
     });
 
@@ -146,7 +146,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item == "YagScreen")
+  if (item == "YAG")
     {
       std::shared_ptr<tdcSystem::YagScreen>
 	YAG(new tdcSystem::YagScreen("YAG"));
