@@ -74,8 +74,7 @@ YagScreenGenerator::YagScreenGenerator() :
   screenHolderRadius(1.3),
   screenHolderThick(0.2), // measured,
   screenHolderMat("Stainless304L"),
-  voidMat("Void"),
-  closed(false)
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -128,9 +127,7 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
-  
   Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
-  
   Control.addVariable(keyName+"JBLength",jbLength);
   Control.addVariable(keyName+"JBWidth",jbWidth);
   Control.addVariable(keyName+"JBHeight",jbHeight);
