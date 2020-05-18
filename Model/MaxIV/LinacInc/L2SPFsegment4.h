@@ -101,9 +101,11 @@ class L2SPFsegment4 :
   L2SPFsegment4& operator=(const L2SPFsegment4&);
   ~L2SPFsegment4();
 
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

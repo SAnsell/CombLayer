@@ -107,5 +107,42 @@ internalUnit(Simulation& System,
   return  outerCell;
 }
 
+int
+internalGroup(Simulation& System,
+	     attachSystem::InnerZone& buildZone,
+	     MonteCarlo::Object* masterCell,
+	     const attachSystem::FixedComp& linkUnit,
+	     const std::string& sideName,
+	     attachSystem::FixedComp& FC,
+	     attachSystem::ExternalCut& ECut,
+	     attachSystem::ContainedGroup& CG,
+	     const std::set<std::string>& CGunits)
+
+  /*!
+    Construct a unit in a simgle component
+    \param System :: Simulation to use
+    \param masterCell :: main master cell
+    \param linkUnit :: Previous link unit to use
+    \param sideName :: Link point to use
+    \param buildUnit :: New unit to construct
+  */
+{
+  ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
+
+  ECut.setCutSurf("front",linkUnit,sideName);
+  FC.createAll(System,linkUnit,"back");
+  const int outerCell=
+    buildZone.createOuterVoidUnit(System,masterCell,FC,2);
+
+  if (CGunits.empty())
+    CG.insertAllInCell(System,outerCell);
+  else
+    {
+      for(const std::string& Item : CGunits)
+	CG.insertInCell(Item,System,outerCell);
+    }
+  return  outerCell;
+}
+
 }   // NAMESPACE constructSystem
 

@@ -41,11 +41,10 @@ namespace constructSystem
 
 namespace tdcSystem
 {
+  class FlatPipe;
   class CorrectorMag;
-  class LQuad;
-  class LSexupole;
-  class BPM;
-
+  class DipoleDIBMag;
+  class BeamDivider;
   
   /*!
     \class L2SPFsegment5
@@ -61,35 +60,23 @@ class L2SPFsegment5 :
  private:
 
   /// first pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;   
 
-  /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;
+  /// first  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
 
-  // first pipe in dipole
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  /// first pipe 
+  std::shared_ptr<tdcSystem::BeamDivider> beamA;   
   
-  /// Quad begining QSQ 
-  std::shared_ptr<tdcSystem::LQuad> QuadA;
 
-  /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA;
-
-  /// Quad endng QSQ 
-  std::shared_ptr<tdcSystem::LQuad> QuadB;
+ /// first pipe 
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;
   
-  /// yag station
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
-
-  /// exit pipe for corrector mags
+  /// second  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
+  
+  /// exit bellows
   std::shared_ptr<constructSystem::Bellows> bellowA;   
-
-  /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorC;    ///< corrector mag
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
 
   void buildObjects(Simulation&);
   void createLinks();
@@ -101,8 +88,9 @@ class L2SPFsegment5 :
   L2SPFsegment5& operator=(const L2SPFsegment5&);
   ~L2SPFsegment5();
 
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };
