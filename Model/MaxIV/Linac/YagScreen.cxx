@@ -419,27 +419,20 @@ YagScreen::createObjects(Simulation& System)
 
   if (inBeam)
     {
-      // cells inside pipe:
-      if (pipeSide.empty())
-	{
-	  throw ColErr::ExitAbort("pipeSide surface not set. "
-				  "Use the YagScreen::setPipeSide method.");
-	}
-      if (pipeFront.empty())
-	{
-	  throw ColErr::ExitAbort("pipeFront surface not set. "
-				  "Use the YagScreen::setPipeFront method.");
-	}
-
       Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
       makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 207 ")  + pipeSide;
-      makeCell("VoidThreadInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+      if (!pipeSide.empty())
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 207 ")  + pipeSide;
+	  makeCell("VoidThreadInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+	}
+      else
+	addOuterUnionSurf(Out);
 
       // mirror
-      Out=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
-      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+      const std::string mirror=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
+      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,mirror);
 
       // screen
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
@@ -452,22 +445,32 @@ YagScreen::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
       makeCell("ScreenHolderBase",System,cellIndex++,screenHolderMat,0.0,Out);
 
+      const std::string screen=ModelSupport::getComposite
+	    (SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
       // screen outer surface
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
-      HeadRule screenOuter;
-      screenOuter.procString(Out);
-      screenOuter.makeComplement();
+      if (!pipeSide.empty())
+	{
+	  HeadRule screenOuter;
+	  screenOuter.procString(screen);
+	  screenOuter.makeComplement();
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 301 -201 (-303:304:307) ") + screenOuter.display();
+	  Out=ModelSupport::getComposite(SMap,buildIndex,
+					 " 301 -201 (-303:304:307) ") + screenOuter.display();
+	  makeCell("ScreenAndMirrorContainer",System,cellIndex++,0,0.0,Out+pipeSide);
 
-      makeCell("ScreenAndMirrorContainer",System,cellIndex++,0,0.0,Out+pipeSide);
-
-      Out=ModelSupport::getComposite(SMap,buildIndex," -301 ")  + pipeFront + pipeSide;
-      makeCell("VoidFrontInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+	  if (!pipeFront.empty())
+	    {
+	      Out=ModelSupport::getComposite(SMap,buildIndex," -301 ")  + pipeFront + pipeSide;
+	      makeCell("VoidFrontInsidePipe",System,cellIndex++,voidMat,0.0,Out);
+	    }
+	}
+      else
+	{
+	  addOuterUnionSurf(screen);
+	  addOuterUnionSurf(mirror);
+	}
     }
-  else
+  else if ((!pipeSide.empty()) && (!pipeFront.empty()))
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -1 ")  + pipeFront + pipeSide;
       makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
@@ -484,9 +487,6 @@ YagScreen::createLinks()
   */
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
-
-
-
 
   return;
 }
@@ -548,6 +548,11 @@ YagScreen::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("YagScreen","createAll");
+
+  if (pipeSide.empty())
+    ELog::EM<<"Set pipeSide surface to simplify outer rule of YagScreen"<<ELog::endWarn;
+  if (pipeFront.empty())
+    ELog::EM<<"Set pipeFront surface to simplify outer rule of YagScreen"<<ELog::endWarn;
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
