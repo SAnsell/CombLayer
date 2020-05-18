@@ -157,10 +157,10 @@ TDCsegment15::buildObjects(Simulation& System)
 				   ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
   yagScreen->addInsertCell(outerCell);
-
   yagScreen->setScreenCentre(*ionPump,0);
+
+  ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
   yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
   yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerFront"));
 

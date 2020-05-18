@@ -29,7 +29,7 @@ namespace tdcSystem
 
 /*!
   \class YagScreen
-  \version 1.0
+  \version 2.0
   \author Konstantin Batkov
   \date May 2020
   \brief Yag screen

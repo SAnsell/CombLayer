@@ -183,7 +183,7 @@ makeSingleItem::build(Simulation& System,
 	YAG(new tdcSystem::YagScreen("YAG"));
       OR.addObject(YAG);
 
-      YAG->addAllInsertCell(voidCell);
+      YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;
@@ -213,12 +213,12 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::EArrivalMon>
 	EA(new tdcSystem::EArrivalMon("BeamMon"));
-      
+
       OR.addObject(EA);
 
       EA->addInsertCell(voidCell);
       EA->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
