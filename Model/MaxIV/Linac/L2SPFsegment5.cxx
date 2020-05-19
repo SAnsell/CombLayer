@@ -100,8 +100,8 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
-  flatB(new tdcSystem::FlatPipe(keyName+"FlatA")),
-  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA"))
   
   /*!
@@ -145,12 +145,27 @@ L2SPFsegment5::buildObjects(Simulation& System)
   if (isActive("front"))
     flatA->copyCutSurf("front",*this,"front");
   flatA->createAll(System,*this,0);
+
+  // insert-units : Origin : excludeSurf 
   pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
-  beamA->setFront(*flatA,"back");
-  beamA->createAll(System,*flatA,"back");  
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatA,"back",*beamA);
+
+  flatB->setFront(*beamA,"back");
+  flatB->createAll(System,*beamA,"back");
+  // insert-units : Origin : excludeSurf 
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeB","Pipe"},"Origin","outerPipe",dipoleB);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatB,"back",*bellowA);
+
+  // beamA->setFront(*flatA,"back");
+  // beamA->createAll(System,*flatA,"back");  
   //  pipeTerminate(System,*buildZone,A);
 
   //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*flatA,2);

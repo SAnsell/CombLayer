@@ -3,7 +3,7 @@
  
  * File: commonBeam/generalContruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,16 +127,16 @@ internalGroup(Simulation& System,
     \param buildUnit :: New unit to construct
   */
 {
-  ELog::RegMethod RegA("generalConstruct[F]","internalUnit");
+  ELog::RegMethod RegA("generalConstruct[F]","internalGroup");
 
   ECut.setCutSurf("front",linkUnit,sideName);
   FC.createAll(System,linkUnit,"back");
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
 
-  if (CGunits.empty())
+  if (CGunits.empty() || CGunits.find("All")!=CGunits.end())
     CG.insertAllInCell(System,outerCell);
-  else
+  else 
     {
       for(const std::string& Item : CGunits)
 	CG.insertInCell(Item,System,outerCell);

@@ -58,6 +58,7 @@
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
+#include "BeamDividerGenerator.h"
 
 namespace setVariable
 {
@@ -69,7 +70,8 @@ namespace linacVar
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
-  void linac2SPFsegment4(FuncDataBase&,const std::string&);  
+  void linac2SPFsegment4(FuncDataBase&,const std::string&);
+  void linac2SPFsegment5(FuncDataBase&,const std::string&);    
   
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -324,7 +326,45 @@ linac2SPFsegment4(FuncDataBase& Control,
   return;
 }
 
+void
+linac2SPFsegment5(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment3
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment5");
 
+  setVariable::BeamDividerGenerator BDGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+
+  Control.addVariable(lKey+"XStep",-45.073+linacVar::zeroX); 
+  Control.addVariable(lKey+"YStep",1420.344+linacVar::zeroY);
+  Control.addVariable(lKey+"XYAngle",6.4);
+
+  ELog::EM<<"HERE "<<lKey<<ELog::endDiag;
+  FPGen.generateFlat(Control,lKey+"FlatA",82.0);
+  Control.addVariable(lKey+"FlatAXYAngle",1.6);
+  DIBGen.generate(Control,lKey+"DipoleA");
+  
+  BDGen.generateDivider(Control,lKey+"BeamA");
+  Control.addVariable(lKey+"BeamAXYAngle",1.6);
+  
+  FPGen.generateFlat(Control,lKey+"FlatB",82.0);
+  Control.addVariable(lKey+"FlatBXYAngle",1.6);
+  DIBGen.generate(Control,lKey+"DipoleB");
+  
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  Control.addVariable(lKey+"BellowAXYAngle",1.6);
+
+  return;
+}
 
 void
 TDCsegment14(FuncDataBase& Control,
@@ -641,6 +681,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("TDCl2spfOuterRight",140.0);
   Control.addVariable("TDCl2spfOuterTop",100.0);
 
+  Control.addVariable("TDCl2spfTurnXStep",linacVar::zeroX-80.0);
+  Control.addVariable("TDCl2spfTurnYStep",linacVar::zeroY);
+  Control.addVariable("TDCl2spfTurnOuterLeft",80.0);
+  Control.addVariable("TDCl2spfTurnOuterRight",140.0);
+  Control.addVariable("TDCl2spfTurnOuterTop",100.0);
+
   Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);
   Control.addVariable("TDCtdcOuterLeft",100.0);
@@ -652,6 +698,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment2(Control,"L2SPF2");
   linacVar::linac2SPFsegment3(Control,"L2SPF3");
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
+  linacVar::linac2SPFsegment5(Control,"L2SPF5");
 
   /// Segment 14-28
   linacVar::TDCsegment14(Control,"TDC14");
