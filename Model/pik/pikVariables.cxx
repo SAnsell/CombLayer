@@ -55,6 +55,26 @@ PIKVariables(FuncDataBase& Control)
 
   ELog::EM << "call from PIKVariables" << ELog::endDiag;
 
+ // pool
+  Control.addVariable("PoolXStep",-4.0);
+  Control.addVariable("PoolYStep",0.0);
+  Control.addVariable("PoolZStep",0.0);
+  Control.addVariable("PoolFrontWidth",100.0);
+  Control.addVariable("PoolBackWidth",240.0);
+  Control.addVariable("PoolBeamSide",240.0);
+  Control.addVariable("PoolExtendBeamSide",300.0);
+  Control.addVariable("PoolBeamSideBackLength",150.0);
+  Control.addVariable("PoolBeamSideFrontLength",70.0);
+  Control.addVariable("PoolBeamSideExtendLength",208.0);
+  Control.addVariable("PoolFrontLength",180.0);
+  Control.addVariable("PoolDoorWidth",100.0);
+  Control.addVariable("PoolDoorLength",90.0);
+
+  Control.addVariable("PoolBase",200.0);
+  Control.addVariable("PoolSurface",600.0);
+  Control.addVariable("PoolWaterMat","H2O");
+
+
   return;
 }
 

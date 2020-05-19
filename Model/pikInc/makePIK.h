@@ -22,6 +22,11 @@
 #ifndef pikSystem_makePIK_h
 #define pikSystem_makePIK_h
 
+namespace delftSystem
+{
+  class SwimingPool;
+}
+
 namespace pikSystem
 {
   /*!
@@ -35,6 +40,7 @@ namespace pikSystem
 class makePIK
 {
  private:
+  std::shared_ptr<delftSystem::SwimingPool> pool;         ///< Pool
 
   // /// Main R1 Ring
   // std::shared_ptr<R1Ring> r1Ring;
