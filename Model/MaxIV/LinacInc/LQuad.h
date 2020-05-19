@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/LQuad.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_LQuad_h
@@ -46,16 +46,16 @@ class LQuad :
  private:
 
   const std::string baseName;   ///< Base key
-  
-  double length;                ///< frame length
 
-  double frameRadius;           ///< Gap to start of frame
-  double frameOuter;            ///< Thikckness of frame [full]
+  double length;                ///< yoke length
+
+  double yokeRadius;           ///< Gap to start of yoke
+  double yokeOuter;            ///< Thikckness of yoke [full]
 
   double poleYAngle;            ///< Rotation of +X Pole about Y
   double poleGap;               ///< Gap from centre point
   double poleRadius;            ///< Radius of pole piece cut
-  double poleWidth;             ///< width [in rotated frame]
+  double poleWidth;             ///< width [in rotated yoke]
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
@@ -65,13 +65,13 @@ class LQuad :
   double coilAngle;             ///< Angle of coil cut
   double coilEndExtra;          ///< Coil extra length [round]
   double coilEndRadius;         ///< Coil extra radius [round]
-  
-  int poleMat;                     ///<` pole piece of magnet
-  int coreMat;                     ///< core of magnet 
-  int coilMat;                     ///< coil material
-  int frameMat;                    ///< Iron material
 
-  void populate(const FuncDataBase&);  
+  int poleMat;                     ///<` pole piece of magnet
+  int coreMat;                     ///< core of magnet
+  int coilMat;                     ///< coil material
+  int yokeMat;                     ///< Iron material
+
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,4 +93,3 @@ class LQuad :
 }
 
 #endif
- 

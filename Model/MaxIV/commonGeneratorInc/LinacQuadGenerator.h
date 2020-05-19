@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/LinacQuadGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_LinacQuadGenerator_h
@@ -35,19 +35,19 @@ namespace setVariable
   \brief LinacQuadGenerator for variables
 */
 
-class LinacQuadGenerator 
+class LinacQuadGenerator
 {
  private:
 
-  double length;                ///< frame length
+  double length;                ///< yoke length
 
-  double frameRadius;           ///< Gap to start of frame
-  double frameOuter;            ///< Thikckness of frame
+  double yokeRadius;           ///< Gap to start of yoke
+  double yokeOuter;            ///< Thikckness of yoke
 
   double poleYAngle;            ///< Rotation of +X Pole about Y
   double poleGap;               ///< Gap from centre point
   double poleRadius;            ///< Radius of pole piece cut
-  double poleWidth;             ///< width [in rotated frame]
+  double poleWidth;             ///< width [in rotated yoke]
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
@@ -58,13 +58,13 @@ class LinacQuadGenerator
   double coilEndExtra;          ///< Length of coil pieces
   double coilEndRadius;         ///< Coil extra radius [round]
 
-  
-  std::string poleMat;          ///< pole piece of magnet
-  std::string coreMat;          ///< core of magnet 
-  std::string coilMat;          ///< coil material
-  std::string frameMat;         ///< Iron material
 
-  
+  std::string poleMat;          ///< pole piece of magnet
+  std::string coreMat;          ///< core of magnet
+  std::string coilMat;          ///< coil material
+  std::string yokeMat;         ///< Iron material
+
+
  public:
 
   LinacQuadGenerator();
@@ -83,4 +83,3 @@ class LinacQuadGenerator
 }
 
 #endif
- 

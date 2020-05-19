@@ -393,7 +393,7 @@ TDCsegment16(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
   Control.addVariable(lKey+"QuadLength",18.7); // measured - inner box lengh
   // measured - inner box half width/height
-  Control.addVariable(lKey+"QuadFrameOuter",9.5);
+  Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
   // TODO: magnet materials?
 
