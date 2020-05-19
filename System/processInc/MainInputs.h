@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   processInc/MainInput.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef mainSystem_MainInput_h
@@ -62,10 +62,10 @@ namespace mainSystem
   void createTS1Inputs(inputParam&);
   void createTS3ExptInputs(inputParam&);
   void createXrayInputs(inputParam&);
+  void createPIKInputs(inputParam&);
 
   void createInputs(inputParam&);
 }
 
 
 #endif
- 
