@@ -271,7 +271,7 @@ foreach my $mainProg (@masterProg)
       {
 	my @pik = qw( pik );
 	push(@pik,@mainLib);
-	$gM->addDepUnit("pik", [@pik]);
+	$gM->addDepUnit("pik", [@pik, qw(delft)]);
       }
 
     else
