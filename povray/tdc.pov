@@ -6,14 +6,14 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 1604;
+#declare view = 16;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
 // 2=omnimax
 // 3=cylindrical
-#declare projection = 0;
-#declare cameraAngle = 90;
+#declare projection = 1;
+#declare cameraAngle = 150;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
@@ -80,9 +80,9 @@ global_settings {
     #declare cameraAngle = 70;
   #break
   #case(16) // TDC segment 16
-    #declare cameraLocation = <-430, 4770, 40>;
-    #declare cameraLookAt   = <-485, 4857, 0>;
-    #declare cameraAngle = 70;
+    #declare cameraLocation = <-400, 5320, 40>;
+    #declare cameraLookAt   = <-485, 5320, 0>;
+    #declare projection = 1;
   #break
   #case(1604) // TDC segment 16 - QuadA
     #declare cameraLocation = <-430, 4890, 40>;
