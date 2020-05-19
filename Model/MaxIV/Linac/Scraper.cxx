@@ -115,6 +115,37 @@ Scraper::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalVar<double>(keyName+"Length");
+  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
+
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+
+  tubeAYStep=Control.EvalVar<double>(keyName+"TubeAYStep");
+  tubeBYStep=Control.EvalVar<double>(keyName+"TubeBYStep");
+  tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
+  tubeLength=Control.EvalVar<double>(keyName+"TubeLength");
+  tubeThick=Control.EvalVar<double>(keyName+"TubeThick");
+  tubeFlangeRadius=Control.EvalVar<double>(keyName+"TubeFlangeRadius");
+  tubeFlangeLength=Control.EvalVar<double>(keyName+"TubeFlangeLength");
+
+  scraperRadius=Control.EvalVar<double>(keyName+"ScraperRadius");
+  scraperHeight=Control.EvalVar<double>(keyName+"ScraperHeight");
+  scraperZLift=Control.EvalVar<double>(keyName+"ScraperZLift");
+
+  driveRadius=Control.EvalVar<double>(keyName+"DriveRadius");
+
+  topBoxWidth=Control.EvalVar<double>(keyName+"TopBoxWidth");
+  topBoxHeight=Control.EvalVar<double>(keyName+"TopBoxHeight");
+
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+  scraperMat=ModelSupport::EvalMat<int>(Control,keyName+"ScraperMat");
+  driveMat=ModelSupport::EvalMat<int>(Control,keyName+"DriveMat");
+  topMat=ModelSupport::EvalMat<int>(Control,keyName+"TopMat");
+
   return;
 }
 
@@ -138,58 +169,26 @@ Scraper::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  // main pipe and thicness
+  // main pipe and thickness
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
-
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
   ModelSupport::buildPlane(SMap,buildIndex+101,
-			   Origin-Y*(length/2.0-flangeALength),Y);
+			   Origin-Y*(length/2.0-flangeLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(length/2.0-flangeBLength),Y);
+			   Origin+Y*(length/2.0-flangeLength),Y);
 
-  // Field shaping [300]
-  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,innerRadius);
+  // Main Top/Down Tubes
+  const Geometry::Vec3D aOrg(Origin+Y*tubeAYStep);
+  const Geometry::Vec3D bOrg(Origin+Y*tubeAYStep);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,aOrg,Z,tubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,aOrg,Z,tubeRadius+tubeThick);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+305,aOrg-Z*tubeLength,Z);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+317,Origin,Y,innerRadius+innerThick);
+    (SMap,buildIndex+315,aOrg-Z*(tubeLength-tubeFlangeLength),Z);
 
-  const double ang(M_PI*innerAngle/(2.0*180.0));
-  double midAngle(innerAngleOffset*M_PI/180.0);
-  int BI(buildIndex+350);
-  for(size_t i=0;i<4;i++)
-    {
-      const Geometry::Vec3D lowAxis(X*cos(midAngle-ang)+Z*sin(midAngle-ang));
-      const Geometry::Vec3D highAxis(X*cos(midAngle+ang)+Z*sin(midAngle+ang));
-      ModelSupport::buildPlane(SMap,BI+1,Origin,lowAxis);
-      ModelSupport::buildPlane(SMap,BI+2,Origin,highAxis);
-      midAngle+=M_PI/2.0;
-      BI+=2;
-    }
-
-  // end point on electrons (solid)
-  ModelSupport::buildPlane(SMap,buildIndex+302,
-			   Origin+Y*(length/2.0-striplineEnd),Y);
-
-
-  // Stripline holder
-  const double angleStep(M_PI/4.0);
-
-  BI=buildIndex+411;
-  for(size_t i=0;i<8;i++)
-    {
-      const double angle(angleStep*static_cast<double>(i));
-      const Geometry::Vec3D axis(X*cos(angle)+Z*sin(angle));
-      ModelSupport::buildPlane(SMap,BI,Origin+axis*striplineRadius,axis);
-      BI++;
-    }
-
-  const Geometry::Vec3D eCent(Origin+Y*(striplineYStep-length/2.0));
-  ModelSupport::buildPlane
-    (SMap,buildIndex+401,eCent-Y*(striplineThick/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+402,eCent+Y*(striplineThick/2.0),Y);
 
   return;
 }
@@ -208,67 +207,6 @@ Scraper::createObjects(Simulation& System)
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
-  // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
-
-
-  // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
-
-  // main walll
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -202 7 -17 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
-
-  // front flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 7 -107 ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
-
-  // back flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 7 -207 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 17 401 -402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("ElectronPlate",System,cellIndex++,striplineMat,0.0,Out);
-
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 17 -401 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-
-  int BI(0);
-  const std::string IOut=
-    ModelSupport::getComposite(SMap,buildIndex," 401 -302  307 -317 ");
-  for(size_t i=0;i<4;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex+BI," 351 -352");
-      makeCell("Stripline",System,cellIndex++,striplineMat,0.0,IOut+Out);
-      Out=ModelSupport::getRangeComposite
-	(SMap,351,358,BI,buildIndex," 352R -353R");
-      makeCell("StriplineGap",System,cellIndex++,voidMat,0.0,IOut+Out);
-      BI+=2;
-    }
-  // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 401 -302 317 -7");
-  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  // edge electrod void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
-  makeCell("StriplineEnd",System,cellIndex++,striplineMat,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
