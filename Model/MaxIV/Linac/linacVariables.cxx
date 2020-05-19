@@ -389,14 +389,25 @@ TDCsegment16(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0); // measured
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - measured
+  Control.addVariable(lKey+"PipeAFeThick",0.08); // wall thick - measured
 
+  // QG (QH) type quadrupole magnet
+  LQGen.setRadius(0.56, 2.31); // 0.56 - measured
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+
+  // actually the pole width is 2.6, but then they cut with poleRadius of 0.56 cm
+  // I think it's more important to have correct poleRadius since it defines aperture
+  // of particles with high Lorentz factor
+  Control.addVariable(lKey+"QuadPoleWidth",1.4);
+
   Control.addVariable(lKey+"QuadLength",18.7); // measured - inner box lengh
   // measured - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
   // TODO: magnet materials?
 
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0); // measured
 
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
