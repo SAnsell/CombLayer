@@ -37,26 +37,21 @@ namespace xraySystem
 }
 
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
   class LQuad;
   class CorrectorMag;
   class BPM;
   class EArrivalMon;
+  class YagUnit;
+  class LQuad;
+  
   /*!
     \class L2SPFsegment2
     \version 1.0
     \author S. Ansell
     \date April 2020
-    \brief Second segment in the TCD from the linac
+    \brief Second segment in the TDC from the linac
   */
 
 class L2SPFsegment2 :
@@ -69,7 +64,7 @@ class L2SPFsegment2 :
   std::shared_ptr<tdcSystem::LQuad> QuadA;
 
   /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;   ///< Beam pos mo
+  std::shared_ptr<tdcSystem::BPM> bpmA;   
 
   /// Bellows from BPM
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -85,7 +80,7 @@ class L2SPFsegment2 :
   /// gateValve - Beam Arriva lMonitor
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; 
   
-  /// Beam arraival monitor 
+  /// Beam arrival monitor 
   std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon;
 
   /// gateValve - Beam Arriva lMonitor
@@ -95,15 +90,17 @@ class L2SPFsegment2 :
   std::shared_ptr<constructSystem::Bellows> bellowB;
 
   /// Beam pos mon 2
-  std::shared_ptr<tdcSystem::BPM> bpmB;   
+  std::shared_ptr<tdcSystem::BPM> bpmB;
 
-
-  /// gateValve - Beam Arriva lMonitor
+  // quad pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; 
   std::shared_ptr<tdcSystem::LQuad> QuadC;    /// quad C
   std::shared_ptr<tdcSystem::LQuad> QuadD;    /// quad D
   std::shared_ptr<tdcSystem::LQuad> QuadE;    /// quad E 
-  
+
+  /// yag station
+  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
+
   void buildObjects(Simulation&);
   void createLinks();
   

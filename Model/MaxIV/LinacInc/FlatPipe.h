@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/UTubePipe.h
+ * File:   commonBeamInc/FlatPipe.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,24 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_UTubePipe_h
-#define xraySystem_UTubePipe_h
+#ifndef xraySystem_FlatPipe_h
+#define xraySystem_FlatPipe_h
 
 class Simulation;
 
-namespace xraySystem
+namespace tdcSystem
 {
   
 /*!
-  \class UTubePipe
+  \class FlatPipe
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief UTubePipe unit  
+  \brief FlatPipe unit  
 */
 
-class UTubePipe :
-  public attachSystem::FixedOffset,
+class FlatPipe :
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -44,19 +44,11 @@ class UTubePipe :
 {
  private:
   
-  bool frontJoin;               ///< Flag for front join to calc midpoint
-  Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front axis
-
-  bool backJoin;                ///< Flag for back join to calc midpoint
-  Geometry::Vec3D BPt;          ///< Back point for join
-  Geometry::Vec3D BAxis;        ///< Back axis for join
-
-  double width;                 ///< void width [inner]
-  double height;                ///< void height [inner]
-  double length;                ///< void length [total]
+  double width;                  ///< void width [inner]
+  double height;                 ///< void height [inner]
+  double length;                 ///< void length [total]
   
-  double feThick;               ///< pipe thickness
+  double wallThick;              ///< pipe thickness
 
   double flangeARadius;          ///< Joining Flange radius 
   double flangeALength;          ///< Joining Flange length
@@ -64,31 +56,24 @@ class UTubePipe :
   double flangeBRadius;          ///< Joining Flange radius 
   double flangeBLength;          ///< Joining Flange length
     
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
+  int voidMat;                   ///< Void material
+  int wallMat;                     ///< Pipe material
 
-  Geometry::Vec3D flangeAYAxis;        ///< front axis for flange
-  Geometry::Vec3D flangeBYAxis;        ///< Back axis for flange
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
-  void applyActiveFrontBack();
-
   
  public:
 
-  UTubePipe(const std::string&);
-  UTubePipe(const UTubePipe&);
-  UTubePipe& operator=(const UTubePipe&);
-  virtual ~UTubePipe();
+  FlatPipe(const std::string&);
+  FlatPipe(const FlatPipe&);
+  FlatPipe& operator=(const FlatPipe&);
+  virtual ~FlatPipe();
 
-  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
-  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
-  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

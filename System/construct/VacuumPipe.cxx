@@ -748,6 +748,7 @@ VacuumPipe::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+    
   createDivision(System);
   insertObjects(System);
 

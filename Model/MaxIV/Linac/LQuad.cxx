@@ -308,7 +308,7 @@ LQuad::createObjects(Simulation& System)
   int aOffset(-1);
   int bOffset(0);
   std::string OutA,OutB;
-  const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5",});
+  const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5"});
   for(size_t i=0;i<NPole;i++)
     {
       OutA=ModelSupport::getRangeComposite

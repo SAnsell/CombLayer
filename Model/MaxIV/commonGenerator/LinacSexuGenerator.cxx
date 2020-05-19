@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commomGenerator/DipoleGenerator.cxx
+ * File:   commonBeam/LinacSexuGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -51,60 +51,81 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "DipoleGenerator.h"
+#include "LinacSexuGenerator.h"
 
 namespace setVariable
 {
 
-DipoleGenerator::DipoleGenerator() :
-  height(20.0),poleAngle(1.5),poleRadius(1910.0),
-  poleGap(2.6),poleWidth(3.0),
-  coilGap(4.0),coilLength(60.0),coilWidth(6.0),
-  poleMat("Iron"),coilMat("Copper")
+LinacSexuGenerator::LinacSexuGenerator() :
+  length(9.50),frameRadius(7.5),frameOuter(9.5),
+  poleYAngle(0.0),
+  poleGap(1.25), poleRadius(1.05),
+  poleWidth(1.92),     // pole radius 7mm above flat line
+  coilRadius(4.6),coilWidth(3.8), coilEndExtra(1.0),
+  coilEndRadius(6.0),
+  poleMat("Iron"),
+  coilMat("Copper"),frameMat("Aluminium")
   /*!
     Constructor and defaults
   */
 {}
   
-DipoleGenerator::~DipoleGenerator() 
+LinacSexuGenerator::~LinacSexuGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-DipoleGenerator::generateDipole(FuncDataBase& Control,
-				const std::string& keyName,
-				const double yStep,
-				const double length) const
- /*!
+LinacSexuGenerator::setRadius(const double R,const double C)
+  /*!
+    Set the coil and pole radius
+    \param R :: Pole radius [closest point]
+    \param C :: Coil radius
+   */
+{
+  poleGap=R;
+  coilRadius=C;
+  return;
+}
+  
+  
+void
+LinacSexuGenerator::generateSexu(FuncDataBase& Control,
+				 const std::string& keyName,
+				 const double yStep)  const
+/*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param length :: length
   */
 {
-  ELog::RegMethod RegA("DipoleGenerator","generateColl");
+  ELog::RegMethod RegA("LinacSexuGenerator","generateSexu");
 
   Control.addVariable(keyName+"YStep",yStep);
-  
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Height",height);
-  
-  Control.addVariable(keyName+"PoleAngle",poleAngle);
-  Control.addVariable(keyName+"PoleRadius",poleRadius);
+
+  Control.addVariable(keyName+"Length",length);   
+  Control.addVariable(keyName+"FrameRadius",frameRadius);
+  Control.addVariable(keyName+"FrameOuter",frameOuter);
+  Control.addVariable(keyName+"PoleYAngle",poleYAngle);
   Control.addVariable(keyName+"PoleGap",poleGap);
+  Control.addVariable(keyName+"PoleRadius",poleRadius);
   Control.addVariable(keyName+"PoleWidth",poleWidth);
-
-  Control.addVariable(keyName+"CoilGap",coilGap);
-  Control.addVariable(keyName+"CoilLength",coilLength);
+  
+  Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
-
+  Control.addVariable(keyName+"CoilInner",coilInner);
+  Control.addVariable(keyName+"CoilBase",coilBase);
+  Control.addVariable(keyName+"CoilBaseDepth",coilBaseDepth);
+  Control.addVariable(keyName+"CoilAngle",coilAngle);
+  Control.addVariable(keyName+"CoilEndExtra",coilEndExtra);
+  Control.addVariable(keyName+"CoilEndRadius",coilEndRadius);
 
   Control.addVariable(keyName+"PoleMat",poleMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
-
+  Control.addVariable(keyName+"FrameMat",frameMat);
+    
   return;
 
 }

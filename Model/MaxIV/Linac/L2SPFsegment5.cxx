@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment1.cxx
+ * File: Linac/L2SPFsegment5.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -63,7 +63,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,9 +71,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -84,38 +81,29 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "LQuad.h"
-#include "CorrectorMag.h"
+#include "FlatPipe.h"
+#include "DipoleDIBMag.h"
+#include "BeamDivider.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment1.h"
+#include "L2SPFsegment5.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
   
-L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
+L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   TDCsegment(Key,2),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHorrA(new tdcSystem::CorrectorMag(keyName+"CMagHorrA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
-  cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
-  cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
-  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA"))
+
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
+  beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA"))
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -124,107 +112,84 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
-  OR.addObject(pipeB);
-  OR.addObject(cMagHorrA);
-  OR.addObject(cMagVertA);
-  OR.addObject(pipeC);
-  OR.addObject(pipeD);
-  OR.addObject(cMagHorrB);
-  OR.addObject(cMagVertB);
-  OR.addObject(QuadA);
-  OR.addObject(pipeE);
-  OR.addObject(pumpA);
+  OR.addObject(flatA);
+  OR.addObject(dipoleA);
+  OR.addObject(flatB);
+  OR.addObject(beamA);
+  OR.addObject(dipoleB);
+  OR.addObject(bellowA);
 }
   
-L2SPFsegment1::~L2SPFsegment1()
+L2SPFsegment5::~L2SPFsegment5()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment1::buildObjects(Simulation& System)
+L2SPFsegment5::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment1","buildObjects");
+  ELog::RegMethod RegA("L2SPFsegment5","buildObjects");
 
   int outerCell;
-  
+
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
-  pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  if (isActive("front"))
+    flatA->copyCutSurf("front",*this,"front");
+  flatA->createAll(System,*this,0);
+
+  // insert-units : Origin : excludeSurf 
+  pipeMagGroup(System,*buildZone,flatA,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatA,"back",*beamA);
+
+  flatB->setFront(*beamA,"back");
+  flatB->createAll(System,*beamA,"back");
+  // insert-units : Origin : excludeSurf 
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeB","Pipe"},"Origin","outerPipe",dipoleB);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatB,"back",*bellowA);
+
+  // beamA->setFront(*flatA,"back");
+  // beamA->createAll(System,*flatA,"back");  
+  //  pipeTerminate(System,*buildZone,A);
+
+  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*flatA,2);
+  //  flatA->insertInCell(System,outerCell);
   
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
-
-  //
-  // build pipe + corrector magnets together:
-  // THIS becomes a function:
-  //
-  pipeB->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
-  
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
-
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
-
-  pipeD->createAll(System,*pipeC,"back");  
-  correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
- 
-  pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeD);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*pipeE);
-
-  pipeF->createAll(System,*pipeE,"back");  
-  correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
-  pipeTerminate(System,*buildZone,pipeF);
-
-    // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*pipeF,"back");
-
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
-
   buildZone->removeLastMaster(System);  
   return;
 }
 
 void
-L2SPFsegment1::createLinks()
+L2SPFsegment5::createLinks()
   /*!
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-
-  
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+  setLinkSignedCopy(0,*flatA,1);
+  setLinkSignedCopy(1,*bellowA,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
 void 
-L2SPFsegment1::createAll(Simulation& System,
+L2SPFsegment5::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -235,13 +200,13 @@ L2SPFsegment1::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment1","build");
+  ELog::RegMethod RControl("L2SPFsegment5","build");
 
-  FixedRotate::populate(System.getDataBase());	  
+  FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
   buildObjects(System);
   createLinks();
+
   return;
 }
 

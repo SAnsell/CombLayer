@@ -62,6 +62,7 @@
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "LinacQuadGenerator.h"
+#include "LinacSexuGenerator.h"
 #include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
@@ -76,7 +77,10 @@
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
+#include "BPMGenerator.h"
+#include "BeamDividerGenerator.h"
 #include "YagScreenGenerator.h"
+#include "YagUnitGenerator.h"
 
 namespace setVariable
 {
@@ -212,6 +216,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
+  setVariable::LinacSexuGenerator LSGen;
+  LSGen.generateSexu(Control,"LS",20.0);
+
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
   MBGen.generateBlock(Control,"M1",0.0);
@@ -243,6 +250,15 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
+
+  setVariable::BPMGenerator BPMGen;
+  BPMGen.generateBPM(Control,"BPM",0.0);  
+
+  setVariable::BeamDividerGenerator BDGen;
+  BDGen.generateDivider(Control,"BeamDiv");  
+  
+  setVariable::YagUnitGenerator YagUnitGen;
+  YagUnitGen.generateYagUnit(Control,"YU");  
 
   return;
 }

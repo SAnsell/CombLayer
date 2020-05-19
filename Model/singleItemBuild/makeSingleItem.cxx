@@ -68,6 +68,7 @@
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuad.h"
+#include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
 #include "QuadUnit.h"
@@ -77,9 +78,12 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
+#include "BPM.h"
+#include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "YagScreen.h"
+#include "YagUnit.h"
 
 #include "makeSingleItem.h"
 
@@ -113,11 +117,12 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuad",
-      "MagnetBlock","MagnetM1","Octupole","EPSeparator",
-      "R3ChokeChamber","QuadUnit","DipoleChamber",
+      "default","CylGateValve","CorrectorMag","LQuad","LSexupole",
+      "MagnetBlock","Sexupole","MagnetM1","Octupole",
+      "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag","EArrivalMon","YAG",
+      "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "YagUnit","BPM","BeamDivider",
       "Help","help"
     });
 
@@ -146,7 +151,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item == "YAG")
+  if (item == "YAG" || item=="YagSceen")
     {
       std::shared_ptr<tdcSystem::YagScreen>
 	YAG(new tdcSystem::YagScreen("YAG"));
@@ -154,6 +159,40 @@ makeSingleItem::build(Simulation& System,
 
       YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "YagUnit")
+    {
+      std::shared_ptr<tdcSystem::YagUnit>
+	YAG(new tdcSystem::YagUnit("YU"));
+      OR.addObject(YAG);
+
+      YAG->addInsertCell(voidCell);
+      YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "BPM")
+    {
+      std::shared_ptr<tdcSystem::BPM>
+	bpm(new tdcSystem::BPM("BPM"));
+      OR.addObject(bpm);
+
+      bpm->addInsertCell(voidCell);
+      bpm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "BeamDivider")
+    {
+      std::shared_ptr<tdcSystem::BeamDivider>
+	bd(new tdcSystem::BeamDivider("BeamDiv"));
+      OR.addObject(bd);
+      
+      bd->addAllInsertCell(voidCell);
+      bd->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -204,6 +243,19 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item=="LSexupole")
+    {
+      std::shared_ptr<tdcSystem::LSexupole>
+	LS(new tdcSystem::LSexupole("LS","LS"));
+
+      OR.addObject(LS);
+
+      LS->addInsertCell(voidCell);
+      LS->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item=="MagnetBlock")
     {
 
@@ -217,7 +269,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="Seupole")
+  if (item=="Sexupole")
     {
       std::shared_ptr<xraySystem::Sexupole>
 	SXX(new xraySystem::Sexupole("SXX","SXX"));

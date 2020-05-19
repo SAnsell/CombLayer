@@ -126,7 +126,7 @@ BPMGenerator::generateBPM(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("BPMGenerator","generateQuad");
+  ELog::RegMethod RegA("BPMGenerator","generateBPM");
 
   Control.addVariable(keyName+"YStep",yStep);
 
@@ -170,6 +170,6 @@ template void BPMGenerator::setAFlangeCF<CF40>();
 template void BPMGenerator::setBFlangeCF<CF40_22>();
 template void BPMGenerator::setBFlangeCF<CF40>();
 
-///\endcond TEPLATE
+///\endcond TEMPLATE
 
 }  // NAMESPACE setVariable

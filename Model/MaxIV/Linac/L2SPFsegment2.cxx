@@ -88,10 +88,10 @@
 #include "VirtualTube.h"
 #include "BlankTube.h"
 #include "LQuad.h"
-#include "CorrectorMag.h"
 #include "BPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
+#include "YagUnit.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -120,7 +120,8 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
-  QuadE(new tdcSystem::LQuad(keyName+"QuadE"))
+  QuadE(new tdcSystem::LQuad(keyName+"QuadE")),
+  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -145,6 +146,7 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   OR.addObject(QuadC);
   OR.addObject(QuadD);
   OR.addObject(QuadE);
+  OR.addObject(yagUnit);
 }
   
 L2SPFsegment2::~L2SPFsegment2()
@@ -163,14 +165,12 @@ L2SPFsegment2::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
 
-  int outerCell;
-
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front",QuadA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
@@ -180,7 +180,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
 
   pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front",QuadB);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
@@ -202,11 +202,15 @@ L2SPFsegment2::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*bellowB,"back",*bpmB);
 
   pipeE->createAll(System,*bpmB,"back");
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadC);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadD);
-  pipeMagUnit(System,*buildZone,pipeE,"#front",QuadE);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadC);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadD);
+  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadE);
   pipeTerminate(System,*buildZone,pipeE);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeE,"back",*yagUnit);
+
+  buildZone->removeLastMaster(System);  
   return;
 }
 
@@ -216,8 +220,10 @@ L2SPFsegment2::createLinks()
     Create a front/back link
    */
 {
-  //  setLinkSignedCopy(0,*bellowA,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*yagUnit,2);
+
+  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 

@@ -68,6 +68,9 @@
 #include "TDCsegment.h"
 #include "L2SPFsegment1.h"
 #include "L2SPFsegment2.h"
+#include "L2SPFsegment3.h"
+#include "L2SPFsegment4.h"
+#include "L2SPFsegment5.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -84,6 +87,9 @@ TDC::TDC(const std::string& KN) :
   injectionHall(new InjectionHall("InjectionHall")),
   l2spf1(new L2SPFsegment1("L2SPF1")),
   l2spf2(new L2SPFsegment2("L2SPF2")),
+  l2spf3(new L2SPFsegment3("L2SPF3")),
+  l2spf4(new L2SPFsegment4("L2SPF4")),
+  l2spf5(new L2SPFsegment5("L2SPF5")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16"))
@@ -98,6 +104,7 @@ TDC::TDC(const std::string& KN) :
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
+  OR.addObject(l2spf3);
   OR.addObject(tdc14);
   OR.addObject(tdc15);
   OR.addObject(tdc16);
@@ -180,6 +187,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   const static RMAP regZones
     ({
       {"l2spf",{"Front","#MidWall","LinearVoid"}},
+      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid"}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid"}}
     });
 
@@ -223,6 +231,9 @@ TDC::createAll(Simulation& System,
     ({
       {"L2SPFsegment1","l2spf"},
       {"L2SPFsegment2","l2spf"},
+      {"L2SPFsegment3","l2spf"},
+      {"L2SPFsegment4","l2spf"},
+      {"L2SPFsegment5","l2spfTurn"},
       {"TDCsegment14","tdc"},
       {"TDCsegment15","tdc"},
       {"TDCsegment16","tdc"}
@@ -257,6 +268,45 @@ TDC::createAll(Simulation& System,
 	  l2spf2->setInnerZone(buildZone.get());
 	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf2->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment3")
+	{
+	  if (l2spf2->hasLastSurf())
+	    buildZone->setFront(l2spf2->getLastSurf());
+	  buildZone->constructMasterCell(System);
+
+	  l2spf3->setInnerZone(buildZone.get());
+	  l2spf3->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf3->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment4")
+	{
+	  if (l2spf3->hasLastSurf())
+	    {
+	      buildZone->setFront(l2spf3->getLastSurf());
+	      l2spf4->setCutSurf("front",l2spf3->getLastSurf());
+	    }
+	  buildZone->constructMasterCell(System);
+
+	  l2spf4->setInnerZone(buildZone.get());
+	  l2spf4->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf4->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment5")
+	{
+	  if (l2spf4->hasLastSurf())
+	    {
+	      buildZone->setFront(l2spf4->getLastSurf());
+	      l2spf5->setCutSurf("front",l2spf4->getLastSurf());
+	    }
+	  buildZone->constructMasterCell(System);
+
+	  l2spf5->setInnerZone(buildZone.get());
+	  l2spf5->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf5->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
       else if (BL=="TDCsegment14")

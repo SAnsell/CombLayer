@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,6 +123,7 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
   CMap.insert(CTYPE::value_type(D,ContainedComp()));
 }
 
+  
 ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
 			       const std::string& C,const std::string& D,
 			       const std::string& E)
@@ -140,6 +141,27 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
   CMap.insert(CTYPE::value_type(C,ContainedComp()));
   CMap.insert(CTYPE::value_type(D,ContainedComp()));
   CMap.insert(CTYPE::value_type(E,ContainedComp()));
+}
+
+ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
+			       const std::string& C,const std::string& D,
+			       const std::string& E,const std::string& F)
+  /*!
+    Constructor 
+    \param A :: Key one
+    \param B :: Key two
+    \param C :: Key three
+    \param C :: Key four
+    \param E :: Key five
+    \param F :: Key size
+  */
+{
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+  CMap.insert(CTYPE::value_type(B,ContainedComp()));
+  CMap.insert(CTYPE::value_type(C,ContainedComp()));
+  CMap.insert(CTYPE::value_type(D,ContainedComp()));
+  CMap.insert(CTYPE::value_type(E,ContainedComp()));
+  CMap.insert(CTYPE::value_type(F,ContainedComp()));
 }
 
 ContainedGroup::ContainedGroup(const ContainedGroup& A) : 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commomGenerator/DipoleGenerator.cxx
+ * File:   commonBeam/FlatPipeGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -50,61 +50,84 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 
-#include "DipoleGenerator.h"
+#include "FlatPipeGenerator.h"
 
 namespace setVariable
 {
 
-DipoleGenerator::DipoleGenerator() :
-  height(20.0),poleAngle(1.5),poleRadius(1910.0),
-  poleGap(2.6),poleWidth(3.0),
-  coilGap(4.0),coilLength(60.0),coilWidth(6.0),
-  poleMat("Iron"),coilMat("Copper")
+FlatPipeGenerator::FlatPipeGenerator() :
+  width(2.7),height(1.0),wallThick(0.75),
+  flangeARadius(CF40::flangeRadius),
+  flangeALength(CF40::flangeLength),
+  flangeBRadius(CF40::flangeRadius),
+  flangeBLength(CF40::flangeLength),
+  voidMat("Void"),wallMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
   
-DipoleGenerator::~DipoleGenerator() 
+FlatPipeGenerator::~FlatPipeGenerator() 
  /*!
    Destructor
  */
 {}
 
+template<typename CF>
 void
-DipoleGenerator::generateDipole(FuncDataBase& Control,
+FlatPipeGenerator::setAFlangeCF()
+  /*!
+    Set the front flange
+  */
+{
+  flangeARadius=CF::flangeRadius;
+  flangeALength=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+FlatPipeGenerator::setBFlangeCF()
+  /*!
+    Set the back flange
+   */
+{
+  flangeBRadius=CF::flangeRadius;
+  flangeBLength=CF::flangeLength;
+  return;
+}
+
+
+  
+void
+FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,
-				const double length) const
- /*!
+				const double length)  const
+/*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param length :: length
   */
 {
-  ELog::RegMethod RegA("DipoleGenerator","generateColl");
+  ELog::RegMethod RegA("FlatPipeGenerator","generateFlat");
 
-  Control.addVariable(keyName+"YStep",yStep);
-  
-  Control.addVariable(keyName+"Length",length);
+
+  Control.addVariable(keyName+"Length",length);   
+  Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
+
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
   
-  Control.addVariable(keyName+"PoleAngle",poleAngle);
-  Control.addVariable(keyName+"PoleRadius",poleRadius);
-  Control.addVariable(keyName+"PoleGap",poleGap);
-  Control.addVariable(keyName+"PoleWidth",poleWidth);
-
-  Control.addVariable(keyName+"CoilGap",coilGap);
-  Control.addVariable(keyName+"CoilLength",coilLength);
-  Control.addVariable(keyName+"CoilWidth",coilWidth);
-
-
-  Control.addVariable(keyName+"PoleMat",poleMat);
-  Control.addVariable(keyName+"CoilMat",coilMat);
-
   return;
 
 }

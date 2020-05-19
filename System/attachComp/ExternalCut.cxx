@@ -164,6 +164,9 @@ ExternalCut::copyCutSurf(const std::string& extName,
       (otherName,"Other exteralCut not found");
 
   A = *BPtr;
+  A.main.populateSurf();
+  A.divider.populateSurf();
+	
   return;
 }
 
@@ -199,6 +202,7 @@ ExternalCut::setCutSurf(const std::string& extName,
   cutUnit& A=getUnit(extName);
   A.main=ESurfHR;
   A.divider.reset();
+  A.main.populateSurf();
   return;
 }
 
@@ -220,6 +224,7 @@ ExternalCut::setCutSurf(const std::string& extName,
     throw ColErr::InvalidLine(ERule,"ERule failed");
   A.main.populateSurf();
   A.divider.reset();
+  
   return;
 }
 
@@ -297,6 +302,7 @@ ExternalCut::setCutDivider(const std::string& extName,
   
   cutUnit& A=getUnit(extName);
   A.divider=HR;
+  A.divider.populateSurf();
   return;
 }
 
