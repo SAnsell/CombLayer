@@ -179,7 +179,8 @@ TDCsegment18::buildObjects(Simulation& System)
   const double realLen = (pipeB->getLinkPt("back") -
 			  bellowA->getLinkPt("front")).abs();
 
-  ELog::EM << totalLen << " " << realLen << ELog::endDiag;
+  if (std::abs(totalLen-realLen)>Geometry::zeroTol)
+    ELog::EM << keyName << " total length is wrong: " << totalLen << " != " << realLen << ELog::endWarn;
 
   return;
 }

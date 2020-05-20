@@ -592,8 +592,6 @@ TDCsegment16(FuncDataBase& Control,
   // measured - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
-  // TODO: magnet materials?
-
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0); // measured
 
@@ -629,8 +627,8 @@ TDCsegment18(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
 
   // coordinates form drawing
-  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
-  Control.addVariable(lKey+"YStep",5780.261+linacVar::zeroY);        //
+  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);
+  Control.addVariable(lKey+"YStep",5780.261+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
@@ -639,18 +637,21 @@ TDCsegment18(FuncDataBase& Control,
 
   setIonPump(Control, lKey+"IonPump");
 
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
+
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  const double pipeALength(34.0);
+  /// Quad and PipeA
+  const double pipeALength(34.0); // measured
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0); // measured
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - measured
-  Control.addVariable(lKey+"PipeAFeThick",0.08); // wall thick - measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0); //
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius -
+  Control.addVariable(lKey+"PipeAFeThick",0.08); // wall thick -
 
   // QG (QH) type quadrupole magnet
-  LQGen.setRadius(0.56, 2.31); // 0.56 - measured
+  LQGen.setRadius(0.56, 2.31); // 0.56 -> measured (QH)
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
 
   // actually the pole width is 2.6, but then they cut with poleRadius of 0.56 cm
@@ -658,19 +659,16 @@ TDCsegment18(FuncDataBase& Control,
   // of particles with high Lorentz factor
   Control.addVariable(lKey+"QuadPoleWidth",1.4);
 
-  Control.addVariable(lKey+"QuadLength",18.7); // measured - inner box lengh
-  // measured - inner box half width/height
+  Control.addVariable(lKey+"QuadLength",18.7); //  - inner box lengh
+  //  - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
-  // TODO: magnet materials?
-
   PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,127.3); //
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1); // measured
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); //
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1); //
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
 
   return;
