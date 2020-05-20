@@ -83,10 +83,54 @@ namespace linacVar
   const double zeroY(481.0);    // drawing README.pdf
 
 void
-setIonPump(FuncDataBase& Control,
-	const std::string& name)
+setIonPump2(FuncDataBase& Control,
+	    const std::string& name)
 /*!
-  Set the ion pump variables
+  Set the 2 port ion pump variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+  \param nPorts :: number of ports
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+
+  const Geometry::Vec3D OPos(0.0,0.0,0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<setVariable::CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+  Control.addVariable(name+"NPorts",2);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
+
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  // total ion pump length
+  const double totalLength(16.0); // measured
+  // length of ports 1 and 2
+  double L = totalLength -
+    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
+  L /= 2.0;
+
+  PItemGen.setLength(L);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  return;
+}
+
+void
+setIonPump3(FuncDataBase& Control,
+	    const std::string& name)
+/*!
+  Set the 3 port ion pump variables
   \param Control :: DataBase to use
   \param name :: name prefix
  */
@@ -96,7 +140,7 @@ setIonPump(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
 
-  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D OPos(0.0,0.0,0.0);
   const Geometry::Vec3D ZVec(0,0,-1);
   const Geometry::Vec3D XVec(1,0,0);
 
@@ -116,7 +160,8 @@ setIonPump(FuncDataBase& Control,
   // total ion pump length
   const double totalLength(16.0); // measured
   // length of ports 1 and 2
-  double L = totalLength - (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
+  double L = totalLength -
+    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
   L /= 2.0;
 
   PItemGen.setLength(L);
@@ -525,7 +570,7 @@ TDCsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   const std::string pumpName=lKey+"IonPump";
-  setIonPump(Control,pumpName);
+  setIonPump3(Control,pumpName);
   Control.addVariable(pumpName+"Port1Length",9.5);
   Control.addVariable(pumpName+"Port2Length",3.2);
   Control.addVariable(pumpName+"FlangeBCapThick",0.0);
@@ -600,7 +645,7 @@ TDCsegment16(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
-  setIonPump(Control,lKey+"IonPump");
+  setIonPump3(Control,lKey+"IonPump");
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0); // measured
 
@@ -635,7 +680,9 @@ TDCsegment18(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
-  setIonPump(Control, lKey+"IonPump");
+  setIonPump2(Control, lKey+"IonPump");
+  Control.addVariable(lKey+"IonPumpYAngle",90.0);
+
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 

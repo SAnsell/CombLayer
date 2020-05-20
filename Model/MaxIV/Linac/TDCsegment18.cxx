@@ -145,11 +145,8 @@ TDCsegment18::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
+  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump->createAll(System,*bellowA,"back");
-
-  ionPump->intersectPorts(System,0,1);
-  ionPump->intersectPorts(System,0,2);
 
   const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
   outerCell=
