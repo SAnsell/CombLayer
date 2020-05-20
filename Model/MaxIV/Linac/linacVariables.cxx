@@ -71,11 +71,13 @@ namespace linacVar
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
   void linac2SPFsegment4(FuncDataBase&,const std::string&);
-  void linac2SPFsegment5(FuncDataBase&,const std::string&);    
-  
+  void linac2SPFsegment5(FuncDataBase&,const std::string&);
+
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
   void TDCsegment16(FuncDataBase&,const std::string&);
+  //  void TDCsegment17(FuncDataBase&,const std::string&);
+  void TDCsegment18(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -216,10 +218,10 @@ linac2SPFsegment2(FuncDataBase& Control,
   YagGen.setCF<CF40_22>();
   YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");  
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
 
-  
+
   return;
 }
 
@@ -259,10 +261,10 @@ linac2SPFsegment3(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeAXYAngle",1.6);
   // Control.addVariable(lKey+"PipeAXStep",-1.2);
   // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
-  
+
   CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
-    
+
   FPGen.generateFlat(Control,lKey+"FlatB",83.8);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
@@ -293,10 +295,10 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  
-  Control.addVariable(lKey+"XStep",-15.322+linacVar::zeroX); 
+
+  Control.addVariable(lKey+"XStep",-15.322+linacVar::zeroX);
   Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);
-  Control.addVariable(lKey+"XYAngle",6.4); 
+  Control.addVariable(lKey+"XYAngle",6.4);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
@@ -307,7 +309,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,79.2); // measured
-  
+
   LQGen.generateQuad(Control,lKey+"QuadA",17.2);
   LSGen.generateSexu(Control,lKey+"SexuA",39.1);
   LQGen.generateQuad(Control,lKey+"QuadB",62.15);
@@ -342,7 +344,7 @@ linac2SPFsegment5(FuncDataBase& Control,
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
-  Control.addVariable(lKey+"XStep",-45.073+linacVar::zeroX); 
+  Control.addVariable(lKey+"XStep",-45.073+linacVar::zeroX);
   Control.addVariable(lKey+"YStep",1420.344+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",6.4);
 
@@ -350,14 +352,14 @@ linac2SPFsegment5(FuncDataBase& Control,
   FPGen.generateFlat(Control,lKey+"FlatA",82.0);
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
-  
+
   BDGen.generateDivider(Control,lKey+"BeamA");
   Control.addVariable(lKey+"BeamAXYAngle",1.6);
-  
+
   FPGen.generateFlat(Control,lKey+"FlatB",82.0);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
-  
+
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
@@ -607,6 +609,110 @@ TDCsegment16(FuncDataBase& Control,
 }
 
 void
+TDCsegment18(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment18");
+
+  ELog::EM << "here2" << ELog::endDiag;
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
+
+  setVariable::PipeGenerator PGen;
+  PGen.setNoWindow();
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::YagScreenGenerator YagGen;
+
+  // coordinates form drawing
+  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
+  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        //
+  Control.addVariable(lKey+"XYAngle",0.0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  const double pipeALength(34.0);
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0); // measured
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - measured
+  Control.addVariable(lKey+"PipeAFeThick",0.08); // wall thick - measured
+
+  // QG (QH) type quadrupole magnet
+  LQGen.setRadius(0.56, 2.31); // 0.56 - measured
+  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+
+  // actually the pole width is 2.6, but then they cut with poleRadius of 0.56 cm
+  // I think it's more important to have correct poleRadius since it defines aperture
+  // of particles with high Lorentz factor
+  Control.addVariable(lKey+"QuadPoleWidth",1.4);
+
+  Control.addVariable(lKey+"QuadLength",18.7); // measured - inner box lengh
+  // measured - inner box half width/height
+  Control.addVariable(lKey+"QuadYokeOuter",9.5);
+
+  // TODO: magnet materials?
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0); // measured
+
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1); // measured
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
+
+    // Ion pump
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  const std::string name=lKey+"IonPump";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<setVariable::CF63>();
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
+  PItemGen.setNoPlate();
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+  Control.addVariable(name+"NPorts",3);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
+
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
+  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+
+  // total ion pump length
+  const double totalLength(16.0); // measured
+  // length of ports 1 and 2
+  double L = totalLength - (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
+  L /= 2.0;
+
+  PItemGen.setLength(L);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+
+  PItemGen.setLength(L);
+  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0); // measured
+
+  return;
+}
+
+void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
   /*!
@@ -681,8 +787,6 @@ LINACvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacVariables[F]","LINACVariables");
 
-
-
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
@@ -711,10 +815,12 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
   linacVar::linac2SPFsegment5(Control,"L2SPF5");
 
-  /// Segment 14-28
+  /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");
   linacVar::TDCsegment15(Control,"TDC15");
   linacVar::TDCsegment16(Control,"TDC16");
+  //  linacVar::TDCsegment17(Control,"TDC17");
+  linacVar::TDCsegment18(Control,"TDC18");
 
   return;
 }

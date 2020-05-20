@@ -35,6 +35,8 @@ namespace tdcSystem
   class TDCsegment14;
   class TDCsegment15;
   class TDCsegment16;
+  //  class TDCsegment17;
+  class TDCsegment18;
 
   /*!
     \class TDC
@@ -64,9 +66,11 @@ class TDC :
   std::shared_ptr<L2SPFsegment3> l2spf3;           ///< segment 3
   std::shared_ptr<L2SPFsegment4> l2spf4;           ///< segment 4
   std::shared_ptr<L2SPFsegment5> l2spf5;           ///< segment 5
-  std::shared_ptr<TDCsegment14> tdc14;         ///< TDC segment 14
-  std::shared_ptr<TDCsegment15> tdc15;         ///< TDC segment 15
-  std::shared_ptr<TDCsegment16> tdc16;         ///< TDC segment 16
+  std::shared_ptr<TDCsegment14>  tdc14;            ///< TDC segment 14
+  std::shared_ptr<TDCsegment15>  tdc15;            ///< TDC segment 15
+  std::shared_ptr<TDCsegment16>  tdc16;            ///< TDC segment 16
+  //  std::shared_ptr<TDCsegment17>  tdc17;            ///< TDC segment 17
+  std::shared_ptr<TDCsegment18>  tdc18;            ///< TDC segment 18
 
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
