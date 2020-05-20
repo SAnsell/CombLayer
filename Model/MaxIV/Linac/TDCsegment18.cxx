@@ -87,15 +87,14 @@ namespace tdcSystem
 TDCsegment18::TDCsegment18(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuad(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC"))
+  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -105,15 +104,14 @@ TDCsegment18::TDCsegment18(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bellowA);
+  OR.addObject(ionPump);
+  OR.addObject(bellowB);
   OR.addObject(bpm);
   OR.addObject(pipeA);
   OR.addObject(quad);
   OR.addObject(pipeB);
   OR.addObject(cMagH);
   OR.addObject(cMagV);
-  OR.addObject(bellowB);
-  OR.addObject(ionPump);
-  OR.addObject(pipeC);
 }
 
 TDCsegment18::~TDCsegment18()
@@ -132,6 +130,10 @@ TDCsegment18::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TDCsegment18","buildObjects");
 
+  const Geometry::Vec3D start(5780.261, 637.608, 0.0);
+  const Geometry::Vec3D   end(5994.561, 637.608, 0.0);
+  const double totalLen = (end-start).abs(); // segment total length
+
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
@@ -141,30 +143,10 @@ TDCsegment18::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
-
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*bpm,"back",*pipeA);
-  pipeA->createAll(System,*bpm, "back");
-
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeA);
-
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
-  pipeB->createAll(System,*pipeA, "back");
-
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
-  pipeTerminate(System,*buildZone,pipeB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
-
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
   ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
-  ionPump->createAll(System,*bellowB,"back");
+  ionPump->createAll(System,*bellowA,"back");
 
   ionPump->intersectPorts(System,0,1);
   ionPump->intersectPorts(System,0,2);
@@ -178,9 +160,26 @@ TDCsegment18::buildObjects(Simulation& System)
   ionPump->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);
+    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*bellowB);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
+
+  pipeA->createAll(System,*bpm, "back");
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
+  pipeTerminate(System,*buildZone,pipeA);
+
+  pipeB->createAll(System,*pipeA, "back");
+  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  pipeTerminate(System,*buildZone,pipeB);
 
   buildZone->removeLastMaster(System);
+
+
+  const double realLen = (pipeB->getLinkPt("back") -
+			  bellowA->getLinkPt("front")).abs();
+
+  ELog::EM << totalLen << " " << realLen << ELog::endDiag;
 
   return;
 }
@@ -194,7 +193,7 @@ TDCsegment18::createLinks()
   ELog::RegMethod RegA("TDCsegment18","createLinks");
 
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkSignedCopy(1,*pipeB,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
   return;
