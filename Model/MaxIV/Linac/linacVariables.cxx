@@ -110,6 +110,10 @@ setIonPump2(FuncDataBase& Control,
   Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
   Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
 
+  Control.addVariable(name+"FlangeBLength",0.1);
+  Control.addVariable(name+"FlangeBRadius",
+		      setVariable::CF63::innerRadius+setVariable::CF63::wallThick+0.1);
+
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
   // total ion pump length
@@ -682,7 +686,6 @@ TDCsegment18(FuncDataBase& Control,
 
   setIonPump2(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
-
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
