@@ -79,6 +79,7 @@
 #include "EArrivalMonGenerator.h"
 #include "BPMGenerator.h"
 #include "BeamDividerGenerator.h"
+#include "ScrapperGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 
@@ -256,6 +257,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BeamDividerGenerator BDGen;
   BDGen.generateDivider(Control,"BeamDiv");  
+
+  setVariable::ScrapperGenerator SCGen;
+  SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
   
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");  

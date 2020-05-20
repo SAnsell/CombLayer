@@ -82,6 +82,7 @@
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
+#include "Scrapper.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 
@@ -122,7 +123,7 @@ makeSingleItem::build(Simulation& System,
       "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","BPM","BeamDivider",
+      "YagUnit","BPM","BeamDivider","Scrapper",
       "Help","help"
     });
 
@@ -373,6 +374,18 @@ makeSingleItem::build(Simulation& System,
       Quad->createAll(System,World::masterOrigin(),0);
       return;
     }
+  if (item == "Scrapper")
+    {
+      std::shared_ptr<tdcSystem::Scrapper>
+	sc(new tdcSystem::Scrapper("Scrapper"));
+      OR.addObject(sc);
+
+      sc->addInsertCell(voidCell);
+      sc->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item=="TargetShield")
     {
       std::shared_ptr<insertSystem::insertSphere>

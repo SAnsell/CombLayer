@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Scraper.h
+ * File:   commonGeneratorInc/ScrapperGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,35 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Scraper_h
-#define tdcSystem_Scraper_h
+#ifndef setVariable_ScrapperGenerator_h
+#define setVariable_ScrapperGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace tdcSystem
+namespace setVariable
 {
+
 /*!
-  \class Scraper
+  \class ScrapperGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
-
-  \brief Scraper for Max-IV
+  \date April 2020
+  \brief ScrapperGenerator for variables
 */
 
-class Scraper :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class ScrapperGenerator
 {
  private:
 
   double radius;                ///< void radius
   double length;                ///< void length [total]
-  double outerThick;            ///< pipe thickness
+  double wallThick;             ///< pipe thickness
 
   double flangeRadius;          ///< Joining Flange radius
   double flangeLength;          ///< Joining Flange length
@@ -61,38 +55,35 @@ class Scraper :
   double tubeFlangeRadius;      ///< Top flange of tube
   double tubeFlangeLength;      ///< length of tube
   
-  double scraperRadius;         ///< Radius of tube
-  double scraperHeight;         ///< Radius of tube
-  double scraperZLift;          ///< Radius of tube
+  double scrapperRadius;         ///< Radius of tube
+  double scrapperHeight;         ///< Radius of tube
 
-  double driveRadius;           ///< Radius of drive 
+  double driveRadius;           ///< Radius of drive
+  double supportRadius;         ///< Radius of drive support
+  double supportThick;          ///< Thickness of support wall
+  double supportHeight;         ///< Height of support
 
   double topBoxWidth;           ///< top box width
   double topBoxHeight;          ///< top box height
   
-  int voidMat;                  ///< void material
-  int tubeMat;                  ///< main tube material
-  int flangeMat;                ///< flange material
-  int scraperMat;               ///< scraper material
-  int driveMat;                 ///< drive pipe material
-  int topMat;                   ///< top control material
-
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  std::string voidMat;                  ///< void material
+  std::string tubeMat;                  ///< main tube material
+  std::string flangeMat;                ///< flange material
+  std::string scrapperMat;               ///< scrapper material
+  std::string driveMat;                 ///< drive pipe material
+  std::string topMat;                   ///< top control material
 
  public:
 
-  Scraper(const std::string&);
-  Scraper(const std::string&,const std::string&);
-  Scraper(const Scraper&);
-  Scraper& operator=(const Scraper&);
-  virtual ~Scraper();
+  ScrapperGenerator();
+  ScrapperGenerator(const ScrapperGenerator&);
+  ScrapperGenerator& operator=(const ScrapperGenerator&);
+  virtual ~ScrapperGenerator();
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  template<typename T> void setCF();
+
+  void generateScrapper(FuncDataBase&,const std::string&,
+			const double) const;
 
 };
 
