@@ -29,6 +29,7 @@ namespace delftSystem
 
 namespace pikSystem
 {
+  class PIKPool;
   /*!
     \class makePIK
     \version 1.0
@@ -40,7 +41,7 @@ namespace pikSystem
 class makePIK
 {
  private:
-  std::shared_ptr<delftSystem::SwimingPool> pool;         ///< Pool
+  std::shared_ptr<pikSystem::PIKPool> pool;         ///< Pool
 
   // /// Main R1 Ring
   // std::shared_ptr<R1Ring> r1Ring;

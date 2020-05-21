@@ -37,31 +37,35 @@
 #include <memory>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
 #include "inputParam.h"
 #include "objectRegister.h"
+#include "World.h"
+
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "World.h"
-#include "SwimingPool.h"
 
+
+#include "FixedRotate.h"
+#include "PIKPool.h"
 #include "makePIK.h"
 
 namespace pikSystem
 {
 
   makePIK::makePIK() :
-    pool(new delftSystem::SwimingPool("Pool"))
+    pool(new pikSystem::PIKPool("Pool"))
     /*!
       Constructor
     */
@@ -73,7 +77,7 @@ namespace pikSystem
   }
 
   makePIK::makePIK(const makePIK&A) :
-    pool(new delftSystem::SwimingPool(*A.pool))
+    pool(new pikSystem::PIKPool(*A.pool))
     /*!
       Copy constructor
       \param A :: makePIK object to copy
