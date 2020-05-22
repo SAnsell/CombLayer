@@ -3,7 +3,7 @@
 
  * File:   commonBeam/FlangeMount.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -317,12 +316,13 @@ FlangeMount::createObjects(Simulation& System)
 	    (SMap,buildIndex," 101 -102 203 -204 205 -206 ");
 	  makeCell("Hole",System,cellIndex++,0,0.0,hole);
 
-	  Out += ModelSupport::getComposite(SMap,buildIndex," (-203:204:-205:206) ");
+	  Out += ModelSupport::getComposite
+	    (SMap,buildIndex," (-203:204:-205:206) ");
 	}
       makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
       Out=ModelSupport::getComposite
-	(SMap,buildIndex," 101 -102 103 -104 -106 ");
+	(SMap,buildIndex," 101 -102 -17 -105 ");
       addOuterSurf("Body",Out+frontComp);
     }
   else
