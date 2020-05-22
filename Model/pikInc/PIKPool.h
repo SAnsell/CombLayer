@@ -54,6 +54,12 @@ namespace pikSystem
     int outerShieldMat;           ///< container material
 
     // iron-water protection tank (железоводная защита)
+    double tankDepth;             ///< ipw tank depth
+    double tankHeight;            ///< ipw tank height
+    size_t tankNLayers;           ///< number of ipw tank layers
+    std::vector<double> tankRadius;  ///< ipw tank inner radii
+    std::vector<double> tankThick;   ///< ipw tank layer thickness
+    int tankMat;                  ///< ipw tank material
 
     void populate(const FuncDataBase&);
     void createUnitVector(const attachSystem::FixedComp&,

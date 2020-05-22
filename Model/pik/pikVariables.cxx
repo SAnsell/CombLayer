@@ -53,9 +53,7 @@ PIKVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("pikVariables[F]","PIKVariables");
 
-  ELog::EM << "call from PIKVariables" << ELog::endDiag;
-
- // pool
+ // REACTOR POOL
   Control.addVariable("PoolDepth",200.0);
   Control.addVariable("PoolHeight",600.0);
   Control.addVariable("PoolInnerShieldRadius",200.0);
@@ -66,6 +64,20 @@ PIKVariables(FuncDataBase& Control)
   Control.addVariable("PoolInnerShieldWallMat","Stainless316L"); // guess
   Control.addVariable("PoolOuterShieldMat","Concrete");
 
+  // iron-water protection tank
+  Control.addVariable("PoolTankDepth",140.0);
+  Control.addVariable("PoolTankHeight",165.0);
+  Control.addVariable("PoolTankMat","Stainless316L"); // guess
+
+  Control.addVariable("PoolTankNLayers",4);
+  Control.addVariable("PoolTankRadius0",140.0);
+  Control.addVariable("PoolTankRadius1",147.0);
+  Control.addVariable("PoolTankRadius2",154.0);
+  Control.addVariable("PoolTankRadius3",168.0);
+  Control.addVariable("PoolTankThick0",5.0);
+  Control.addVariable("PoolTankThick1",5.0);
+  Control.addVariable("PoolTankThick2",5.0);
+  Control.addVariable("PoolTankThick3",3.0);
 
   return;
 }

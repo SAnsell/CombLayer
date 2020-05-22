@@ -80,12 +80,18 @@ namespace pikSystem
     depth(A.depth),
     height(A.height),
     innerShieldRadius(A.innerShieldRadius),
-  innerShieldWallThick(A.innerShieldWallThick),
+    innerShieldWallThick(A.innerShieldWallThick),
     outerShieldRadius(A.outerShieldRadius),
     outerShieldWidth(A.outerShieldWidth),
     innerShieldMat(A.innerShieldMat),
-  innerShieldWallMat(A.innerShieldWallMat),
-    outerShieldMat(A.outerShieldMat)
+    innerShieldWallMat(A.innerShieldWallMat),
+    outerShieldMat(A.outerShieldMat),
+    tankDepth(A.tankDepth),
+    tankHeight(A.tankHeight),
+    tankNLayers(A.tankNLayers),
+    tankRadius(A.tankRadius),
+    tankThick(A.tankThick),
+    tankMat(A.tankMat)
     /*!
       Copy constructor
       \param A :: PIKPool to copy
@@ -108,12 +114,18 @@ namespace pikSystem
 	depth=A.depth;
 	height=A.height;
 	innerShieldRadius=A.innerShieldRadius;
-      innerShieldWallThick=A.innerShieldWallThick;
+        innerShieldWallThick=A.innerShieldWallThick;
 	outerShieldRadius=A.outerShieldRadius;
 	outerShieldWidth=A.outerShieldWidth;
 	innerShieldMat=A.innerShieldMat;
-      innerShieldWallMat=A.innerShieldWallMat;
+        innerShieldWallMat=A.innerShieldWallMat;
 	outerShieldMat=A.outerShieldMat;
+	tankDepth=A.tankDepth;
+        tankHeight=A.tankHeight;
+        tankNLayers=A.tankNLayers;
+        tankRadius=A.tankRadius;
+        tankThick=A.tankThick;
+        tankMat=A.tankMat;
       }
     return *this;
   }
@@ -148,13 +160,22 @@ namespace pikSystem
     depth=Control.EvalVar<double>(keyName+"Depth");
     height=Control.EvalVar<double>(keyName+"Height");
     innerShieldRadius=Control.EvalVar<double>(keyName+"InnerShieldRadius");
-  innerShieldWallThick=Control.EvalVar<double>(keyName+"InnerShieldWallThick");
+    innerShieldWallThick=Control.EvalVar<double>(keyName+"InnerShieldWallThick");
     outerShieldRadius=Control.EvalVar<double>(keyName+"OuterShieldRadius");
     outerShieldWidth=Control.EvalVar<double>(keyName+"OuterShieldWidth");
 
     innerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldMat");
-  innerShieldWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldWallMat");
+    innerShieldWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldWallMat");
     outerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterShieldMat");
+    tankDepth=Control.EvalVar<double>(keyName+"TankDepth");
+    tankHeight=Control.EvalVar<double>(keyName+"TankHeight");
+    tankNLayers=Control.EvalVar<size_t>(keyName+"TankNLayers");
+    for (size_t i=0; i<tankNLayers; ++i)
+      {
+	tankRadius.push_back(Control.EvalVar<double>(keyName+"TankRadius" + std::to_string(i)));
+	tankThick.push_back(Control.EvalVar<double>(keyName+"TankThick" + std::to_string(i)));
+      }
+    tankMat=ModelSupport::EvalMat<int>(Control,keyName+"TankMat");
 
     return;
   }
@@ -194,6 +215,18 @@ namespace pikSystem
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
+    // iron-water protection tank
+    ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(tankDepth),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(tankHeight),Z);
+
+    int SI(buildIndex+100);
+    for (size_t i=0; i<tankNLayers; ++i)
+      {
+	ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,tankRadius[i]);
+	ModelSupport::buildCylinder(SMap,SI+17,Origin,Z,tankRadius[i]+tankThick[i]);
+	SI += 20;
+      }
+
     return;
   }
 
@@ -208,8 +241,11 @@ namespace pikSystem
 
     std::string Out;
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 ");
+    makeCell("InnerShieldBottom",System,cellIndex++,innerShieldMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 106 -6 ");
+    makeCell("InnerShieldTop",System,cellIndex++,innerShieldMat,0.0,Out);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
     makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
@@ -222,6 +258,30 @@ namespace pikSystem
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 4 ");
     makeCell("OuterShieldVoidRight",System,cellIndex++,0,0.0,Out);
+
+    // iron-water protection tank
+    // Out=ModelSupport::getComposite(SMap,buildIndex," -7 105 -106 ");
+    // makeCell("InnerShieldTank",System,cellIndex++,innerShieldMat,0.0,Out);
+    const std::string tb=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ");
+
+    int SI(buildIndex+100);
+    Out=ModelSupport::getComposite(SMap,SI," -7 ");
+    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+
+    for (size_t i=0; i<tankNLayers; ++i)
+      {
+    	Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
+    	makeCell("InnerShieldTank",System,cellIndex++,tankMat,0.0,Out+tb);
+
+	if (i!=tankNLayers-1) {
+	  Out=ModelSupport::getComposite(SMap,SI," 17 -27 ");
+	  makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+	  SI += 20;
+	}
+      }
+
+    Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 17M ");
+    makeCell("InnerShieldTank",System,cellIndex++,innerShieldMat,0.0,Out+tb);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
     addOuterSurf(Out);
