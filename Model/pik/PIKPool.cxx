@@ -1,24 +1,24 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/pik/PIKPool.cxx
- *
- * Copyright (c) 2004-2020 by Konstantin Batkov
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- ****************************************************************************/
+  * File:   Model/pik/PIKPool.cxx
+  *
+  * Copyright (c) 2004-2020 by Konstantin Batkov
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *
+  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -63,213 +63,223 @@
 namespace pikSystem
 {
 
-PIKPool::PIKPool(const std::string& Key)  :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
-  attachSystem::CellMap()
- /*!
-    Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
-  */
-{}
+  PIKPool::PIKPool(const std::string& Key)  :
+    attachSystem::ContainedComp(),
+    attachSystem::FixedRotate(Key,6),
+    attachSystem::CellMap()
+    /*!
+      Constructor BUT ALL variable are left unpopulated.
+      \param Key :: Name for item in search
+    */
+  {}
 
-PIKPool::PIKPool(const PIKPool& A) :
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedRotate(A),
-  attachSystem::CellMap(A),
-  innerShieldRadius(A.innerShieldRadius),
-  height(A.height),
-  depth(A.depth),
-  outerShieldRadius(A.outerShieldRadius),
-  outerShieldWidth(A.outerShieldWidth),
-  innerShieldMat(A.innerShieldMat),
-  outerShieldMat(A.outerShieldMat)
-  /*!
-    Copy constructor
-    \param A :: PIKPool to copy
-  */
-{}
+  PIKPool::PIKPool(const PIKPool& A) :
+    attachSystem::ContainedComp(A),
+    attachSystem::FixedRotate(A),
+    attachSystem::CellMap(A),
+    depth(A.depth),
+    height(A.height),
+    innerShieldRadius(A.innerShieldRadius),
+  innerShieldWallThick(A.innerShieldWallThick),
+    outerShieldRadius(A.outerShieldRadius),
+    outerShieldWidth(A.outerShieldWidth),
+    innerShieldMat(A.innerShieldMat),
+  innerShieldWallMat(A.innerShieldWallMat),
+    outerShieldMat(A.outerShieldMat)
+    /*!
+      Copy constructor
+      \param A :: PIKPool to copy
+    */
+  {}
 
-PIKPool&
-PIKPool::operator=(const PIKPool& A)
+  PIKPool&
+  PIKPool::operator=(const PIKPool& A)
   /*!
     Assignment operator
     \param A :: PIKPool to copy
     \return *this
   */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      innerShieldRadius=A.innerShieldRadius;
-      height=A.height;
-      depth=A.depth;
-      outerShieldRadius=A.outerShieldRadius;
-      outerShieldWidth=A.outerShieldWidth;
-      innerShieldMat=A.innerShieldMat;
-      outerShieldMat=A.outerShieldMat;
-    }
-  return *this;
-}
+  {
+    if (this!=&A)
+      {
+	attachSystem::ContainedComp::operator=(A);
+	attachSystem::FixedRotate::operator=(A);
+	attachSystem::CellMap::operator=(A);
+	depth=A.depth;
+	height=A.height;
+	innerShieldRadius=A.innerShieldRadius;
+      innerShieldWallThick=A.innerShieldWallThick;
+	outerShieldRadius=A.outerShieldRadius;
+	outerShieldWidth=A.outerShieldWidth;
+	innerShieldMat=A.innerShieldMat;
+      innerShieldWallMat=A.innerShieldWallMat;
+	outerShieldMat=A.outerShieldMat;
+      }
+    return *this;
+  }
 
-PIKPool*
-PIKPool::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
+  PIKPool*
+  PIKPool::clone() const
+  /*!
+    Clone self
+    \return new (this)
+  */
+  {
     return new PIKPool(*this);
-}
+  }
 
-PIKPool::~PIKPool()
+  PIKPool::~PIKPool()
   /*!
     Destructor
   */
-{}
+  {}
 
-void
-PIKPool::populate(const FuncDataBase& Control)
+  void
+  PIKPool::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
-{
-  ELog::RegMethod RegA("PIKPool","populate");
+  {
+    ELog::RegMethod RegA("PIKPool","populate");
 
-  FixedRotate::populate(Control);
+    FixedRotate::populate(Control);
 
-  innerShieldRadius=Control.EvalVar<double>(keyName+"InnerShieldRadius");
-  height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
-  outerShieldRadius=Control.EvalVar<double>(keyName+"OuterShieldRadius");
-  outerShieldWidth=Control.EvalVar<double>(keyName+"OuterShieldWidth");
+    depth=Control.EvalVar<double>(keyName+"Depth");
+    height=Control.EvalVar<double>(keyName+"Height");
+    innerShieldRadius=Control.EvalVar<double>(keyName+"InnerShieldRadius");
+  innerShieldWallThick=Control.EvalVar<double>(keyName+"InnerShieldWallThick");
+    outerShieldRadius=Control.EvalVar<double>(keyName+"OuterShieldRadius");
+    outerShieldWidth=Control.EvalVar<double>(keyName+"OuterShieldWidth");
 
-  innerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldMat");
-  outerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterShieldMat");
+    innerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldMat");
+  innerShieldWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldWallMat");
+    outerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterShieldMat");
 
-  return;
-}
+    return;
+  }
 
-void
-PIKPool::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+  void
+  PIKPool::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
     \param sideIndex :: link point for origin
   */
-{
-  ELog::RegMethod RegA("PIKPool","createUnitVector");
+  {
+    ELog::RegMethod RegA("PIKPool","createUnitVector");
 
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
+    FixedComp::createUnitVector(FC,sideIndex);
+    applyOffset();
 
-  return;
-}
+    return;
+  }
 
-void
-PIKPool::createSurfaces()
+  void
+  PIKPool::createSurfaces()
   /*!
     Create All the surfaces
   */
-{
-  ELog::RegMethod RegA("PIKPool","createSurfaces");
+  {
+    ELog::RegMethod RegA("PIKPool","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,outerShieldRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerShieldRadius+innerShieldWallThick);
+    ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,outerShieldRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerShieldWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerShieldWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerShieldWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerShieldWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
-  return;
-}
+    return;
+  }
 
-void
-PIKPool::createObjects(Simulation& System)
+  void
+  PIKPool::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
-{
-  ELog::RegMethod RegA("PIKPool","createObjects");
+  {
+    ELog::RegMethod RegA("PIKPool","createObjects");
 
-  std::string Out;
+    std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
+    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 3 -4 ");
-  makeCell("Container",System,cellIndex++,outerShieldMat,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
+    makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 -3 ");
-  makeCell("VoidLeft",System,cellIndex++,0,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 17 5 -6 3 -4 ");
+    makeCell("OuterShield",System,cellIndex++,outerShieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 4 ");
-  makeCell("VoidRight",System,cellIndex++,0,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 -3 ");
+    makeCell("OuterShieldVoidLeft",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 ");
-  addOuterSurf(Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 4 ");
+    makeCell("OuterShieldVoidRight",System,cellIndex++,0,0.0,Out);
 
-  return;
-}
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
+    addOuterSurf(Out);
+
+    return;
+  }
 
 
-void
-PIKPool::createLinks()
+  void
+  PIKPool::createLinks()
   /*!
     Create all the linkes
   */
-{
-  ELog::RegMethod RegA("PIKPool","createLinks");
+  {
+    ELog::RegMethod RegA("PIKPool","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(innerShieldRadius/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+    // FixedComp::setConnect(0,Origin-Y*(innerShieldRadius/2.0),-Y);
+    // FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(innerShieldRadius/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+    // FixedComp::setConnect(1,Origin+Y*(innerShieldRadius/2.0),Y);
+    // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(outerShieldRadius/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+    // FixedComp::setConnect(2,Origin-X*(outerShieldRadius/2.0),-X);
+    // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(outerShieldRadius/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+    // FixedComp::setConnect(3,Origin+X*(outerShieldRadius/2.0),X);
+    // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+    // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+    // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+    // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+    // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
-  return;
-}
+    return;
+  }
 
-void
-PIKPool::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+  void
+  PIKPool::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
   */
-{
-  ELog::RegMethod RegA("PIKPool","createAll");
+  {
+    ELog::RegMethod RegA("PIKPool","createAll");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  insertObjects(System);
+    populate(System.getDataBase());
+    createUnitVector(FC,sideIndex);
+    createSurfaces();
+    createObjects(System);
+    createLinks();
+    insertObjects(System);
 
-  return;
-}
+    return;
+  }
 
 }  // pikSystem
