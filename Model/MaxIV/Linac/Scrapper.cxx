@@ -135,6 +135,8 @@ Scrapper::populate(const FuncDataBase& Control)
   scrapperZLift=Control.EvalVar<double>(keyName+"ScrapperZLift");
 
   driveRadius=Control.EvalVar<double>(keyName+"DriveRadius");
+  driveFlangeRadius=Control.EvalVar<double>(keyName+"DriveFlangeRadius");
+  driveFlangeLength=Control.EvalVar<double>(keyName+"DriveFlangeLength");
   
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportThick=Control.EvalVar<double>(keyName+"SupportThick");
@@ -202,20 +204,26 @@ Scrapper::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+325,
 			   aOrg-Z*(tubeLength+tubeFlangeLength),Z);
 
+  // scrapper (A)
   ModelSupport::buildCylinder(SMap,buildIndex+407,aOrg,Z,scrapperRadius);
   ModelSupport::buildPlane(SMap,buildIndex+405,
 			   aOrg-Z*(scrapperZLift),Z);
   ModelSupport::buildPlane(SMap,buildIndex+415,
 			   aOrg-Z*(scrapperZLift+scrapperHeight),Z);
 
+  // drive / support column
   ModelSupport::buildCylinder(SMap,buildIndex+507,aOrg,Z,driveRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+517,aOrg,Z,supportRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+527,
 			      aOrg,Z,supportRadius+supportThick);
-
-  aOrg -= Z*(tubeLength+2.0*tubeFlangeLength);
+  ModelSupport::buildCylinder(SMap,buildIndex+537,aOrg,Z,driveFlangeRadius);
+  
+  // Top box
+  aOrg -= Z*(tubeLength+tubeFlangeLength);
   ModelSupport::buildPlane
-    (SMap,buildIndex+505,aOrg-Z*supportHeight,Z);
+    (SMap,buildIndex+505,aOrg-Z*driveFlangeLength,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+515,aOrg-Z*supportHeight,Z);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+601,aOrg-Y*(topBoxWidth/2.0),Y);
@@ -249,10 +257,13 @@ Scrapper::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+1517,bOrg,Z,supportRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+1527,
 			      bOrg,Z,supportRadius+supportThick);
-
-  bOrg += Z*(tubeLength+2.0*tubeFlangeLength);
+  ModelSupport::buildCylinder(SMap,buildIndex+1537,bOrg,Z,driveFlangeRadius);
+  
+  bOrg += Z*(tubeLength+tubeFlangeLength);
   ModelSupport::buildPlane
-    (SMap,buildIndex+1505,bOrg+Z*supportHeight,Z);
+    (SMap,buildIndex+1505,bOrg+Z*driveFlangeLength,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1515,bOrg+Z*supportHeight,Z);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+1601,bOrg-Y*(topBoxWidth/2.0),Y);
@@ -285,7 +296,7 @@ Scrapper::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   /// does scrapper exist in main void
-  if (scrapperZLift>radius) 
+  if (scrapperZLift<radius-Geometry::zeroTol)
     Out+=ModelSupport::getComposite(SMap,buildIndex," (407:405) (1407:-1405) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
@@ -303,48 +314,97 @@ Scrapper::createObjects(Simulation& System)
     (SMap,buildIndex,"101 -102 -107 17 (10:327) (-10:1327) ");
   makeCell("Outer",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -10 7 -307 305 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -10 7 -307 305 (-415:407) 507 ");
   makeCell("TubeA",System,cellIndex++,voidMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -10 7 307 -317 305 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -10 17 307 -317 305 ");
   makeCell("TubeAWall",System,cellIndex++,tubeMat,0.0,Out);
  
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -305 315 -327 ");
   makeCell("TubeFlangeA",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-327 -305 325  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-327 -305 325 507 ");
   makeCell("TubeTopA",System,cellIndex++,flangeMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -10 17 -327 317 305 ");
   makeCell("TubeAOuter",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 10 7 -1307 -1305 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 10 7 -1307 -1305 (1415:1407) 1507 ) ");
   makeCell("TubeB",System,cellIndex++,voidMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 10 7 1307 -1317 -1305 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 10 17 1307 -1317 -1305 ");
   makeCell("TubeBWall",System,cellIndex++,tubeMat,0.0,Out);
  
   Out=ModelSupport::getComposite(SMap,buildIndex," 1317 -1305 1315 -1327 ");
   makeCell("TubeFlangeB",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1327 1305 -1325  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1327 1305 -1325 1507 ");
   makeCell("TubeTopB",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 10 7 -1327 1317 -1315 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 10 17 -1327 1317 -1315 ");
   makeCell("TubeBOuter",System,cellIndex++,0,0.0,Out);
 
   // scrappers thenmselves
-  Out=ModelSupport::getComposite(SMap,buildIndex," 407 -405 415 ");
-  makeCell("ScrapperA",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -407 -405 415 ");
+  makeCell("ScrapperA",System,cellIndex++,scrapperMat,0.0,Out);
 
   // scrappers thenmselves
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1407 1405 -1415 ");
-  makeCell("ScrapperB",System,cellIndex++,0,0.0,Out);
-  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1407 1405 -1415 ");
+  makeCell("ScrapperB",System,cellIndex++,scrapperMat,0.0,Out);
 
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -415 -507 515 ");
+  makeCell("DriveA",System,cellIndex++,driveMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -325 505 -537 507 ");
+  makeCell("DriveFlangeA",System,cellIndex++,flangeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -505 -517 515 507");
+  makeCell("SupportA",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -505 517 -527 515");
+  makeCell("SupportATube",System,cellIndex++,tubeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (-505:537) -325 -327 527 515");
+  makeCell("SupportAOut",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 601 -602 603 -604 605 -515 ");
+  makeCell("PlateA",System,cellIndex++,topMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -327 (-601 : 602 : -603 : 604) 605 -515 ");
+  makeCell("PlateAOut",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1415 -1507 -1515 ");
+  makeCell("DriveB",System,cellIndex++,driveMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1325 -1505 -1537 1507 ");
+  makeCell("DriveFlangeB",System,cellIndex++,flangeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1505 -1517 -1515 1507");
+  makeCell("SupportB",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1505 1517 -1527 -1515");
+  makeCell("SupportBTube",System,cellIndex++,tubeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (1505:1537) 1325 -1327 1527 -1515");
+  makeCell("SupportBOut",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1601 -1602 1603 -1604 -1605 1515 ");
+  makeCell("PlateB",System,cellIndex++,topMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1327 (-1601 : 1602 : -1603 : 1604) -1605 1515 ");
+  makeCell("PlateBOut",System,cellIndex++,0,0.0,Out);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-107 : (-10 -327 325) : (10 -1327 -1325)) ");
+    (SMap,buildIndex," (-107 : (-10 -327 605) : (10 -1327 -1605)) ");
   addOuterSurf(Out+frontStr+backStr);
 
   return;

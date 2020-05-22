@@ -69,8 +69,10 @@ ScrapperGenerator::ScrapperGenerator() :
   tubeFlangeLength(CF63::flangeLength),
   scrapperRadius(CF63::innerRadius-0.2),
   scrapperHeight(6.0),driveRadius(0.4),
+  driveFlangeRadius(CF40::flangeRadius),
+  driveFlangeLength(CF40::flangeLength),
   supportRadius(1.8),supportThick(0.1),
-  topBoxWidth(5.5),topBoxHeight(1.5),
+  supportHeight(17.0), topBoxWidth(5.5),topBoxHeight(1.5),
   voidMat("Void"),tubeMat("Stainless304L"),
   flangeMat("Stainless304L"),scrapperMat("Tungsten"),
   driveMat("Nickel"),topMat("Stainless304L")
@@ -130,6 +132,8 @@ ScrapperGenerator::generateScrapper (FuncDataBase& Control,
   Control.addVariable(keyName+"ScrapperZLift",ZLift);
 
   Control.addVariable(keyName+"DriveRadius",driveRadius);
+  Control.addVariable(keyName+"DriveFlangeRadius",driveFlangeRadius);
+  Control.addVariable(keyName+"DriveFlangeLength",driveFlangeLength);  
 
   Control.addVariable(keyName+"SupportRadius",supportRadius);
   Control.addVariable(keyName+"SupportThick",supportThick);

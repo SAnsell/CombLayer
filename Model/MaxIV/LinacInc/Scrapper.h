@@ -66,6 +66,8 @@ class Scrapper :
   double scrapperZLift;          ///< Radius of tube
 
   double driveRadius;           ///< Radius of drive
+  double driveFlangeRadius;     ///< Radius of drive flange
+  double driveFlangeLength;     ///< Length of drive flange
   double supportRadius;         ///< Radius of drive support
   double supportThick;          ///< Thickness of support wall
   double supportHeight;         ///< Height of support
