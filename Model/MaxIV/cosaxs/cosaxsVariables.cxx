@@ -1075,7 +1075,7 @@ COSAXSvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,150.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,130.0);
   
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
@@ -1086,7 +1086,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   ShieldGen.setPlate(60.0,60.0,10.0);
   ShieldGen.generateShield(Control,"CosaxsScreenA",
-			   Geometry::Vec3D(0,4.4,0),0.0);
+			   Geometry::Vec3D(0,4.0,0),0.0);
 
   return;
 }
