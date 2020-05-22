@@ -42,14 +42,14 @@ class PIKPool :
 {
  private:
 
-  double waterRadius;           ///< water radius
-  double height;                ///< water and container height
-  double depth;                 ///< water and shield depth
-  double shieldRadius;          ///< water container radius
-  double shieldWidth;           ///< container width
+  double innerShieldRadius;     ///< radius of inner shielding
+  double height;                ///< inner/outer shielding height
+  double depth;                 ///< inner/outer shielding depth
+  double outerShieldRadius;     ///< radius of outer shielding
+  double outerShieldWidth;      ///< container width
 
-  int waterMat;                 ///< water material
-  int shieldMat;                ///< container material
+  int innerShieldMat;           ///< innerShield material
+  int outerShieldMat;           ///< container material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -77,13 +77,13 @@ PIKPool::PIKPool(const PIKPool& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
-  waterRadius(A.waterRadius),
+  innerShieldRadius(A.innerShieldRadius),
   height(A.height),
   depth(A.depth),
-  shieldRadius(A.shieldRadius),
-  shieldWidth(A.shieldWidth),
-  waterMat(A.waterMat),
-  shieldMat(A.shieldMat)
+  outerShieldRadius(A.outerShieldRadius),
+  outerShieldWidth(A.outerShieldWidth),
+  innerShieldMat(A.innerShieldMat),
+  outerShieldMat(A.outerShieldMat)
   /*!
     Copy constructor
     \param A :: PIKPool to copy
@@ -103,13 +103,13 @@ PIKPool::operator=(const PIKPool& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      waterRadius=A.waterRadius;
+      innerShieldRadius=A.innerShieldRadius;
       height=A.height;
       depth=A.depth;
-      shieldRadius=A.shieldRadius;
-      shieldWidth=A.shieldWidth;
-      waterMat=A.waterMat;
-      shieldMat=A.shieldMat;
+      outerShieldRadius=A.outerShieldRadius;
+      outerShieldWidth=A.outerShieldWidth;
+      innerShieldMat=A.innerShieldMat;
+      outerShieldMat=A.outerShieldMat;
     }
   return *this;
 }
@@ -141,14 +141,14 @@ PIKPool::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
+  innerShieldRadius=Control.EvalVar<double>(keyName+"InnerShieldRadius");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
-  shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
-  shieldWidth=Control.EvalVar<double>(keyName+"ShieldWidth");
+  outerShieldRadius=Control.EvalVar<double>(keyName+"OuterShieldRadius");
+  outerShieldWidth=Control.EvalVar<double>(keyName+"OuterShieldWidth");
 
-  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
-  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
+  innerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerShieldMat");
+  outerShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterShieldMat");
 
   return;
 }
@@ -178,11 +178,11 @@ PIKPool::createSurfaces()
 {
   ELog::RegMethod RegA("PIKPool","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,waterRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,shieldRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,outerShieldRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(shieldWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(shieldWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerShieldWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerShieldWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
@@ -202,10 +202,10 @@ PIKPool::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  makeCell("Water",System,cellIndex++,waterMat,0.0,Out);
+  makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 3 -4 ");
-  makeCell("Container",System,cellIndex++,shieldMat,0.0,Out);
+  makeCell("Container",System,cellIndex++,outerShieldMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 -3 ");
   makeCell("VoidLeft",System,cellIndex++,0,0.0,Out);
@@ -228,16 +228,16 @@ PIKPool::createLinks()
 {
   ELog::RegMethod RegA("PIKPool","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(waterRadius/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(innerShieldRadius/2.0),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(waterRadius/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(innerShieldRadius/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(shieldRadius/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(outerShieldRadius/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(shieldRadius/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(outerShieldRadius/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
