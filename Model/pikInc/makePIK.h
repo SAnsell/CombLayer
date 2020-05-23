@@ -22,14 +22,10 @@
 #ifndef pikSystem_makePIK_h
 #define pikSystem_makePIK_h
 
-namespace delftSystem
-{
-  class SwimingPool;
-}
-
 namespace pikSystem
 {
   class PIKPool;
+  class PIKReflector;
   /*!
     \class makePIK
     \version 1.0
@@ -42,26 +38,7 @@ class makePIK
 {
  private:
   std::shared_ptr<pikSystem::PIKPool> pool;         ///< Pool
-
-  // /// Main R1 Ring
-  // std::shared_ptr<R1Ring> r1Ring;
-  // /// Main R1 Ring
-  // std::shared_ptr<R3Ring> r3Ring;
-  // /// Linac/SPF Hall
-  // std::shared_ptr<tdcSystem::TDC> tdc;
-
-
-  // void populateStopPoint(const mainSystem::inputParam&,
-  // 			 const std::set<std::string>&,
-  // 			 std::map<std::string,std::string>&) const;
-  // std::string getActiveStop(const std::map<std::string,std::string>&,
-  // 			    const std::string&) const;
-
-  // bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
-
-  // bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
-
-  // bool buildInjection(Simulation&,const mainSystem::inputParam&);
+  std::shared_ptr<pikSystem::PIKReflector> refl;    ///< Reflector
 
   bool buildFuelElements(Simulation&, const mainSystem::inputParam&);
 

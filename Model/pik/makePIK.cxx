@@ -42,8 +42,6 @@
 #include "inputParam.h"
 #include "objectRegister.h"
 #include "World.h"
-
-#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -55,17 +53,18 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-
-
 #include "FixedRotate.h"
+
 #include "PIKPool.h"
+#include "PIKReflector.h"
 #include "makePIK.h"
 
 namespace pikSystem
 {
 
   makePIK::makePIK() :
-    pool(new pikSystem::PIKPool("Pool"))
+    pool(new pikSystem::PIKPool("Pool")),
+    refl(new pikSystem::PIKReflector("Reflector"))
     /*!
       Constructor
     */
@@ -74,10 +73,12 @@ namespace pikSystem
       ModelSupport::objectRegister::Instance();
 
     OR.addObject(pool);
+    OR.addObject(refl);
   }
 
   makePIK::makePIK(const makePIK&A) :
-    pool(new pikSystem::PIKPool(*A.pool))
+    pool(new pikSystem::PIKPool(*A.pool)),
+    refl(new pikSystem::PIKReflector(*A.refl))
     /*!
       Copy constructor
       \param A :: makePIK object to copy
@@ -96,6 +97,7 @@ namespace pikSystem
     if (this!=&A)
       {
 	*pool = *A.pool;
+	*refl = *A.refl;
       }
     return *this;
   }
@@ -136,6 +138,12 @@ namespace pikSystem
 
     pool->addInsertCell(voidCell);
     pool->createAll(System,World,0);
+
+    refl->setSide(*pool,1);
+    refl->setBottom(*pool,2);
+    refl->setTop(*pool,3);
+    refl->addInsertCell(pool->getCell("InnerShieldCentral"));
+    refl->createAll(System,*pool,0);
 
 
     //  const FuncDataBase& Control=System.getDataBase();

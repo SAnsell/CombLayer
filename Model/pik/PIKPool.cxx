@@ -266,22 +266,24 @@ namespace pikSystem
 
     int SI(buildIndex+100);
     Out=ModelSupport::getComposite(SMap,SI," -7 ");
-    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+    makeCell("InnerShieldCentral",System,cellIndex++,innerShieldMat,0.0,Out+tb);
 
     for (size_t i=0; i<tankNLayers; ++i)
       {
     	Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
-    	makeCell("InnerShieldTank",System,cellIndex++,tankMat,0.0,Out+tb);
+    	makeCell("InnerShieldTank"+std::to_string(i),
+		 System,cellIndex++,tankMat,0.0,Out+tb);
 
 	if (i!=tankNLayers-1) {
 	  Out=ModelSupport::getComposite(SMap,SI," 17 -27 ");
-	  makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+	  makeCell("InnerShield"+std::to_string(i),
+		   System,cellIndex++,innerShieldMat,0.0,Out+tb);
 	  SI += 20;
 	}
       }
 
     Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 17M ");
-    makeCell("InnerShieldTank",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+    makeCell("InnerShieldOuter",System,cellIndex++,innerShieldMat,0.0,Out+tb);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
     addOuterSurf(Out);
@@ -298,24 +300,16 @@ namespace pikSystem
   {
     ELog::RegMethod RegA("PIKPool","createLinks");
 
-    // FixedComp::setConnect(0,Origin-Y*(innerShieldRadius/2.0),-Y);
-    // FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+    // inner links
+    int SI(buildIndex+100);
+    FixedComp::setConnect(0,Origin-Y*(tankRadius[0]),Y);
+    FixedComp::setLinkSurf(0,-SMap.realSurf(SI+7));
 
-    // FixedComp::setConnect(1,Origin+Y*(innerShieldRadius/2.0),Y);
-    // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+    FixedComp::setConnect(1,Origin-Z*(tankDepth),Z);
+    FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+105));
 
-    // FixedComp::setConnect(2,Origin-X*(outerShieldRadius/2.0),-X);
-    // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-    // FixedComp::setConnect(3,Origin+X*(outerShieldRadius/2.0),X);
-    // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-    // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-    // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-    // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-    // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-
+    FixedComp::setConnect(2,Origin+Z*(tankHeight),-Z);
+    FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+106));
     return;
   }
 

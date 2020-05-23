@@ -79,6 +79,13 @@ PIKVariables(FuncDataBase& Control)
   Control.addVariable("PoolTankThick2",5.0);
   Control.addVariable("PoolTankThick3",3.0);
 
+  // reflector
+  Control.addVariable("ReflectorOuterRadius",123.0);
+  Control.addVariable("ReflectorRoofPitch",10.0); // wrong
+  Control.addVariable("ReflectorFloorPitch",10.0); // wrong
+  Control.addVariable("ReflectorHeight",205.0); // measured
+  Control.addVariable("ReflectorMat","D2O");
+
   return;
 }
 
