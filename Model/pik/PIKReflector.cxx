@@ -84,7 +84,8 @@ PIKReflector::PIKReflector(const PIKReflector& A) :
   attachSystem::CellMap(A),
   roofPitch(A.roofPitch),floorPitch(A.floorPitch),height(A.height),
   radius(A.radius),
-  mat(A.mat),bottom(A.bottom),top(A.top),side(A.side)
+  mat(A.mat),bottom(A.bottom),top(A.top),side(A.side),
+  shieldMat(A.shieldMat)
   /*!
     Copy constructor
     \param A :: PIKReflector to copy
@@ -109,6 +110,7 @@ PIKReflector::operator=(const PIKReflector& A)
       height=A.height;
       radius=A.radius;
       mat=A.mat;
+      shieldMat=A.shieldMat;
       bottom=A.bottom;
       top=A.top;
       side=A.side;
@@ -149,6 +151,7 @@ PIKReflector::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"OuterRadius");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
 
   return;
 }
@@ -178,21 +181,13 @@ PIKReflector::createSurfaces()
 {
   ELog::RegMethod RegA("PIKReflector","createSurfaces");
 
-  // ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(roofPitch/2.0),Y);
-  // ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(roofPitch/2.0),Y);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(floorPitch/2.0),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(floorPitch/2.0),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
 
   double h = radius*tan(floorPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+7,Origin-Z*(height/2.0+h),Z,90-floorPitch,1);
+  ModelSupport::buildCone(SMap,buildIndex+8,Origin-Z*(height/2.0+h),Z,90-floorPitch,1);
+
   h = radius*tan(roofPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+8,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin,Z,radius);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildCone(SMap,buildIndex+9,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
 
   return;
 }
@@ -211,16 +206,16 @@ PIKReflector::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -9 ") + side+bottom;
-  makeCell("Bottom",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 8 -7 ") + side+bottom;
+  makeCell("Bottom",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 8 -9 ") + side+top;
-  makeCell("Top",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 9 -7 ") + side+top;
+  makeCell("Top",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -8 -9 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -8 -9 -7 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -9 ") + top + bottom;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ") + top + bottom;
   addOuterSurf(Out);
 
   return;

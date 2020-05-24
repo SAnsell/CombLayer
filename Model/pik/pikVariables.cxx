@@ -81,10 +81,11 @@ PIKVariables(FuncDataBase& Control)
 
   // reflector
   Control.addVariable("ReflectorOuterRadius",123.0);
-  Control.addVariable("ReflectorRoofPitch",10.0); // wrong
-  Control.addVariable("ReflectorFloorPitch",10.0); // wrong
-  Control.addVariable("ReflectorHeight",205.0); // measured
+  Control.addVariable("ReflectorRoofPitch",15.0);
+  Control.addVariable("ReflectorFloorPitch",15.0);
+  Control.addVariable("ReflectorHeight",190.6038987);
   Control.addVariable("ReflectorMat","D2O");
+  Control.addVariable("ReflectorShieldMat","H2O");
 
   return;
 }

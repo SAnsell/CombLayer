@@ -47,6 +47,7 @@ class PIKReflector : public attachSystem::ContainedComp,
   double radius;                ///< reflector outer radius (obtained from setSide)
 
   int mat;                      ///< reflector material
+  int shieldMat;                ///< shielding material
   std::string bottom;           ///< bottom surface
   std::string top;              ///< top surface
   std::string side;             ///< side surface
