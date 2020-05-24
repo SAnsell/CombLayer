@@ -82,6 +82,7 @@
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
+#include "EBeamStop.h"
 #include "Scrapper.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
@@ -120,8 +121,8 @@ makeSingleItem::build(Simulation& System,
     ({
       "default","CylGateValve","CorrectorMag","LQuad","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole",
-      "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
-      "EPSeparator","Quadrupole","TargetShield",
+      "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
+      "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper",
       "Help","help"
@@ -183,6 +184,17 @@ makeSingleItem::build(Simulation& System,
 
       bpm->addInsertCell(voidCell);
       bpm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "EBeamStop")
+    {
+      std::shared_ptr<tdcSystem::EBeamStop>
+	eBeam(new tdcSystem::EBeamStop("EBeam"));
+      OR.addObject(eBeam);
+
+      eBeam->addInsertCell(voidCell);
+      eBeam->createAll(System,World::masterOrigin(),0);
 
       return;
     }
