@@ -223,10 +223,10 @@ PIKReflector::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 19 -17 ") + side+top;
   makeCell("Top",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -8 -9 -7 ") + bottom;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -8 -9 -7 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -18 -19 -17 (8:9:7) ") + bottom;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -18 -19 -17 (8:9:7) ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 ") + top + bottom;

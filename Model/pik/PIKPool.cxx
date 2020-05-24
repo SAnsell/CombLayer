@@ -91,7 +91,8 @@ namespace pikSystem
     tankNLayers(A.tankNLayers),
     tankRadius(A.tankRadius),
     tankThick(A.tankThick),
-    tankMat(A.tankMat)
+    tankMat(A.tankMat),
+    baseHeight(A.baseHeight)
     /*!
       Copy constructor
       \param A :: PIKPool to copy
@@ -126,6 +127,7 @@ namespace pikSystem
         tankRadius=A.tankRadius;
         tankThick=A.tankThick;
         tankMat=A.tankMat;
+	baseHeight=A.baseHeight;
       }
     return *this;
   }
@@ -176,6 +178,7 @@ namespace pikSystem
 	tankThick.push_back(Control.EvalVar<double>(keyName+"TankThick" + std::to_string(i)));
       }
     tankMat=ModelSupport::EvalMat<int>(Control,keyName+"TankMat");
+    baseHeight=Control.EvalDefVar<double>(keyName+"BaseHeight", 5.0);
 
     return;
   }
@@ -219,6 +222,8 @@ namespace pikSystem
     ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(tankDepth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(tankHeight),Z);
 
+    ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*(tankDepth+baseHeight),Z);
+
     int SI(buildIndex+100);
     for (size_t i=0; i<tankNLayers; ++i)
       {
@@ -241,8 +246,11 @@ namespace pikSystem
 
     std::string Out;
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -115 ");
     makeCell("InnerShieldBottom",System,cellIndex++,innerShieldMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," 107 -7 115 -105 ");
+    makeCell("Base",System,cellIndex++,innerShieldMat,0.0,Out);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -7 106 -6 ");
     makeCell("InnerShieldTop",System,cellIndex++,innerShieldMat,0.0,Out);
@@ -265,8 +273,8 @@ namespace pikSystem
     const std::string tb=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ");
 
     int SI(buildIndex+100);
-    Out=ModelSupport::getComposite(SMap,SI," -7 ");
-    makeCell("InnerShieldCentral",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+    Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7M 115 -106 ");
+    makeCell("InnerShieldCentral",System,cellIndex++,innerShieldMat,0.0,Out);
 
     for (size_t i=0; i<tankNLayers; ++i)
       {
@@ -305,8 +313,8 @@ namespace pikSystem
     FixedComp::setConnect(0,Origin-Y*(tankRadius[0]),Y);
     FixedComp::setLinkSurf(0,-SMap.realSurf(SI+7));
 
-    FixedComp::setConnect(1,Origin-Z*(tankDepth),Z);
-    FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+105));
+    FixedComp::setConnect(1,Origin-Z*(tankDepth+baseHeight),Z);
+    FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+115));
 
     FixedComp::setConnect(2,Origin+Z*(tankHeight),-Z);
     FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+106));

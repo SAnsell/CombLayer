@@ -60,6 +60,7 @@ namespace pikSystem
     std::vector<double> tankRadius;  ///< ipw tank inner radii
     std::vector<double> tankThick;   ///< ipw tank layer thickness
     int tankMat;                  ///< ipw tank material
+    double baseHeight;            ///< height of the bottom cell (needed to avoid clipping the reflector)
 
     void populate(const FuncDataBase&);
     void createUnitVector(const attachSystem::FixedComp&,
