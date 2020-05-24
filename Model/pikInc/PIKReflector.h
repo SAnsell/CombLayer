@@ -45,9 +45,11 @@ class PIKReflector : public attachSystem::ContainedComp,
   double floorPitch;            ///< floor deviation from horizontal level [deg]
   double height;                ///< height between roof and floor
   double radius;                ///< reflector outer radius (obtained from setSide)
+  double wallThick;             ///< wall thickness
 
   int mat;                      ///< reflector material
   int shieldMat;                ///< shielding material
+  int wallMat;                  ///< wall material
   std::string bottom;           ///< bottom surface
   std::string top;              ///< top surface
   std::string side;             ///< side surface

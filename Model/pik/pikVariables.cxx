@@ -80,12 +80,15 @@ PIKVariables(FuncDataBase& Control)
   Control.addVariable("PoolTankThick3",3.0);
 
   // reflector
+  Control.addVariable("ReflectorZStep",-7.75);
   Control.addVariable("ReflectorOuterRadius",123.0);
   Control.addVariable("ReflectorRoofPitch",15.0);
   Control.addVariable("ReflectorFloorPitch",15.0);
-  Control.addVariable("ReflectorHeight",190.6038987);
+  Control.addVariable("ReflectorHeight",206.104);
+  Control.addVariable("ReflectorWallThick",3.0);
   Control.addVariable("ReflectorMat","D2O");
   Control.addVariable("ReflectorShieldMat","H2O");
+  Control.addVariable("ReflectorWallMat","Stainless316L");
 
   return;
 }
