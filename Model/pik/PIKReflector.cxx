@@ -189,6 +189,8 @@ PIKReflector::createSurfaces()
   h = radius*tan(roofPitch*M_PI/180.0);
   ModelSupport::buildCone(SMap,buildIndex+8,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
 
+  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin,Z,radius);
+
   // ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   // ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
@@ -208,9 +210,17 @@ PIKReflector::createObjects(Simulation& System)
     throw ColErr::ExitAbort("Reflector side surface not set");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," -8 -7 ") + side;
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -9 ") + side+bottom;
+  makeCell("Bottom",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 8 -9 ") + side+top;
+  makeCell("Top",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -8 -9 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -9 ") + top + bottom;
   addOuterSurf(Out);
 
   return;
