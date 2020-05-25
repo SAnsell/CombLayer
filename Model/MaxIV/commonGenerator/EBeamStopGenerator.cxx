@@ -69,12 +69,12 @@ EBeamStopGenerator::EBeamStopGenerator() :
   stopLen({32.0}),
   supportConeLen(5.6),supportConeRadius(2.7),
   supportHoleRadius(1.0),supportRadius(2.0),
-  stopPortYStep(26.4),stopPortRadius(CF63::innerRadius),
+  stopPortYStep(5.7),stopPortRadius(CF63::innerRadius),
   stopPortLength(31.7),stopPortWallThick(CF63::wallThick),
   stopPortFlangeRadius(CF63::flangeRadius),
   stopPortFlangeLength(CF63::flangeLength),
   stopPortPlateThick(CF63::flangeLength),
-  ionPortYStep(7.3),ionPortRadius(CF63::innerRadius),
+  ionPortYStep(-13.4),ionPortRadius(CF63::innerRadius),
   ionPortLength(30.0),ionPortWallThick(CF63::wallThick),
   ionPortFlangeRadius(CF63::flangeRadius),
   ionPortFlangeLength(CF63::flangeLength),
@@ -145,7 +145,7 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
 
  Control.addVariable(keyName+"IonPortYStep",ionPortYStep);
  Control.addVariable(keyName+"IonPortRadius",ionPortRadius);
- Control.addVariable(keyName+"IonPortLength",stopPortLength);
+ Control.addVariable(keyName+"IonPortLength",ionPortLength);
  Control.addVariable(keyName+"IonPortWallThick",ionPortWallThick);
  Control.addVariable(keyName+"IonPortFlangeRadius",ionPortFlangeRadius);
  Control.addVariable(keyName+"IonPortFlangeLength",ionPortFlangeLength);

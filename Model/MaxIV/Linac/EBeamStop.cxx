@@ -270,13 +270,12 @@ EBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+405,stopOrg-Z*stopPortLength,Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+415,stopOrg-Z*(stopPortLength-stopPortFlangeLength),Z);
-
+  
   // Main stop cylinder
   const Geometry::Vec3D tOrg=(closedFlag) ? Origin : Origin+Z*stopZLift;
 
   ModelSupport::buildCylinder(SMap,buildIndex+507,tOrg,Y,stopRadius);
   ModelSupport::buildPlane(SMap,buildIndex+501,tOrg-Y*(stopLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+502,tOrg+Y*(stopLength/2.0),Y);
 
   const size_t NS(stopLen.size());
   int BI(buildIndex+500);
@@ -285,6 +284,7 @@ EBeamStop::createSurfaces()
       ModelSupport::buildPlane(SMap,BI+11,tOrg+Y*stopLen[i],Y);
       BI+=10;
     }
+  ModelSupport::buildPlane(SMap,buildIndex+502,tOrg+Y*(stopLength/2.0),Y);
 
   // Support Tube:
 
@@ -307,9 +307,9 @@ EBeamStop::createObjects(Simulation& System)
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
-  // inner void
+  // inner void : excluding main BS
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+    (SMap,buildIndex," 101 -102 103 -104 105 -106 (-501 : 502)");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -317,7 +317,7 @@ EBeamStop::createObjects(Simulation& System)
   makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 111 -101 113 -114 115 -116 207 ");
+    (SMap,buildIndex," 111 -101 113 -114 105 -116 207 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -207 ");
@@ -330,7 +330,7 @@ EBeamStop::createObjects(Simulation& System)
   makeCell("PortAOuter",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -112 102 113 -114 115 -116 207 ");
+    (SMap,buildIndex," -112 102 113 -114 105 -116 207 ");
   makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
@@ -380,11 +380,27 @@ EBeamStop::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 112 -122 123 -124 125 -116 227 ");
   makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
+
+
+  // Main BEAM STOP:
+  const size_t NS(stopLen.size());
+  ELog::EM<<"EM == "<<NS<<ELog::endDiag;
+  int BI(buildIndex+500);
+  for(size_t i=0;i<NS;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-507 1M -11M ");
+      makeCell("BS"+std::to_string(i),System,cellIndex++,stopMat[i],0.0,Out);
+      BI+=10;
+    }
+  Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-507 1M -502 ");
+  makeCell("BS"+std::to_string(NS),System,cellIndex++,stopMat[NS],0.0,Out);
+  
+  
   
   if (stopPortLength>=ionPortLength)
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex," -115 405 121 -122 123 124 427 (327:305) ");
+	(SMap,buildIndex," -115 405 121 -122 123 -124 427 (327:-305) ");
       makeCell("BaseOuter",System,cellIndex++,0,0.0,Out);
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 121 -122 123 -124 405 -116 ");
@@ -392,7 +408,7 @@ EBeamStop::createObjects(Simulation& System)
   else
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex," -115 305 121 -122 123 124 327 (427:405) ");
+	(SMap,buildIndex," -115 305 121 -122 123 -124 327 (427:405) ");
       makeCell("BaseOuter",System,cellIndex++,0,0.0,Out);
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
