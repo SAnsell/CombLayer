@@ -40,60 +40,30 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "InnerZone.h"
-
 #include "World.h"
-#include "AttachSupport.h"
 #include "insertObject.h"
-#include "insertPlate.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
 #include "insertShell.h"
-
-#include "Cryostat.h"
-#include "TwinBase.h"
-#include "TwinChopper.h"
-#include "TwinChopperFlat.h"
-#include "SingleChopper.h"
-#include "DiskChopper.h"
 #include "VacuumPipe.h"
-
-#include "CryoMagnetBase.h"
-#include "Dipole.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
@@ -104,7 +74,6 @@
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
-#include "EPCombine.h"
 #include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
@@ -152,7 +121,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole",
       "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag","EArrivalMon","YagScreen",
+      "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider",
       "Help","help"
     });
@@ -182,13 +151,13 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item == "YagScreen")
+  if (item == "YAG" || item=="YagSceen")
     {
       std::shared_ptr<tdcSystem::YagScreen>
 	YAG(new tdcSystem::YagScreen("YAG"));
       OR.addObject(YAG);
 
-      YAG->addAllInsertCell(voidCell);
+      YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;

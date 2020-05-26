@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/BPMGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -63,16 +63,16 @@ BPMGenerator::BPMGenerator() :
   innerAngle(30.0),innerAngleOffset(45.0),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
-  electrodeRadius(3.7),electrodeThick(2.4),
-  electrodeYStep(3.1),electrodeEnd(4.0),
-  voidMat("Void"),electrodeMat("Copper"),
-  flangeMat("Stainless304"),outerMat("Stainless304")
+  striplineRadius(3.7),striplineThick(2.4),
+  striplineYStep(3.1),striplineEnd(4.0),
+  voidMat("Void"),striplineMat("Stainless304L"),
+  flangeMat("Stainless304L"),outerMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
-BPMGenerator::~BPMGenerator() 
+
+BPMGenerator::~BPMGenerator()
  /*!
    Destructor
  */
@@ -114,14 +114,14 @@ BPMGenerator::setBFlangeCF()
   return;
 }
 
-    
+
 void
 BPMGenerator::generateBPM(FuncDataBase& Control,
 			  const std::string& keyName,
 			  const double yStep)  const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
   */
@@ -144,17 +144,17 @@ BPMGenerator::generateBPM(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
 
-  Control.addVariable(keyName+"ElectrodeRadius",electrodeRadius);
-  Control.addVariable(keyName+"ElectrodeThick",electrodeThick);
-  Control.addVariable(keyName+"ElectrodeYStep",electrodeYStep);
-  Control.addVariable(keyName+"ElectrodeEnd",electrodeEnd);
+  Control.addVariable(keyName+"StriplineRadius",striplineRadius);
+  Control.addVariable(keyName+"StriplineThick",striplineThick);
+  Control.addVariable(keyName+"StriplineYStep",striplineYStep);
+  Control.addVariable(keyName+"StriplineEnd",striplineEnd);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"ElectrodeMat",electrodeMat);
+  Control.addVariable(keyName+"StriplineMat",striplineMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   Control.addVariable(keyName+"OuterMat",outerMat);
-  
-    
+
+
   return;
 
 }
@@ -171,5 +171,5 @@ template void BPMGenerator::setBFlangeCF<CF40_22>();
 template void BPMGenerator::setBFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

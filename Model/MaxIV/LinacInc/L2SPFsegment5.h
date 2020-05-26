@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/L2SPFsegment5.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_L2SPFsegment5_h
 #define tdcSystem_L2SPFsegment5_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
 
 /*!
   \namespace xraySystem
@@ -41,12 +32,8 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class CorrectorMag;
-  class LQuadF;
-  class LSexupole;
-  class BPM;
+  class BeamDivider;
 
-  
   /*!
     \class L2SPFsegment5
     \version 1.0
@@ -60,49 +47,37 @@ class L2SPFsegment5 :
 {
  private:
 
-  /// first pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  /// first pipe
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;
 
-  /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;
+  /// first  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
 
-  // first pipe in dipole
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-  
-  /// Quad begining QSQ 
-  std::shared_ptr<tdcSystem::LQuadF> QuadA;
+  /// first pipe
+  std::shared_ptr<tdcSystem::BeamDivider> beamA;
 
-  /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA;
+ /// first pipe
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;
 
-  /// Quad endng QSQ 
-  std::shared_ptr<tdcSystem::LQuadF> QuadB;
-  
-  /// yag station
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
+  /// second  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
 
-  /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
-
-  /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorC;    ///< corrector mag
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
+  /// exit bellows
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   L2SPFsegment5(const std::string&);
   L2SPFsegment5(const L2SPFsegment5&);
   L2SPFsegment5& operator=(const L2SPFsegment5&);
   ~L2SPFsegment5();
 
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

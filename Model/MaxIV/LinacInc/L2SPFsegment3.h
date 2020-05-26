@@ -68,21 +68,21 @@ class L2SPFsegment3 :
   /// Bellows
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
-  // first pipe in dipole
+  /// first pipe in dipole
   std::shared_ptr<tdcSystem::FlatPipe> flatA;   
 
-  // first  dipole
+  /// first  dipole
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
 
-  // first pipe in dipole
+  /// first pipe in dipole
   std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
 
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;    ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
 
-  // first pipe in dipole
+  /// second pipe in dipole
   std::shared_ptr<tdcSystem::FlatPipe> flatB;   
-  // second  dipole
+  /// second  dipole
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
 
   /// Final bellow [including bend]
@@ -98,9 +98,10 @@ class L2SPFsegment3 :
   L2SPFsegment3& operator=(const L2SPFsegment3&);
   ~L2SPFsegment3();
 
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

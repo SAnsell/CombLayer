@@ -131,7 +131,7 @@ HeadRule::HeadRule(HeadRule&& A) :
     \param A :: Head rule to move
   */
 {
-  A.HeadNode=nullptr;   // This is deleted so must re
+  A.HeadNode=nullptr;   // This is deleted so must reset
 }
 
 HeadRule&

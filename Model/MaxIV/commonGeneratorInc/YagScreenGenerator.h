@@ -72,8 +72,6 @@ class YagScreenGenerator
 
   std::string voidMat;          ///< void material
 
-  bool closed;                  ///< screen and mirror are in the beam
-
  public:
 
   YagScreenGenerator();
