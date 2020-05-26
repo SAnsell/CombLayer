@@ -31,6 +31,7 @@ namespace tdcSystem
   class L2SPFsegment3;
   class L2SPFsegment4;
   class L2SPFsegment5;
+  class L2SPFsegment6;
 
   class TDCsegment14;
   class TDCsegment15;
@@ -64,6 +65,7 @@ class TDC :
   std::shared_ptr<L2SPFsegment3> l2spf3;           ///< segment 3
   std::shared_ptr<L2SPFsegment4> l2spf4;           ///< segment 4
   std::shared_ptr<L2SPFsegment5> l2spf5;           ///< segment 5
+  std::shared_ptr<L2SPFsegment5> l2spf6;           ///< segment 6
   std::shared_ptr<TDCsegment14> tdc14;         ///< TDC segment 14
   std::shared_ptr<TDCsegment15> tdc15;         ///< TDC segment 15
   std::shared_ptr<TDCsegment16> tdc16;         ///< TDC segment 16

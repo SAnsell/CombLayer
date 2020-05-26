@@ -71,6 +71,7 @@
 #include "L2SPFsegment3.h"
 #include "L2SPFsegment4.h"
 #include "L2SPFsegment5.h"
+#include "L2SPFsegment6.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -90,6 +91,7 @@ TDC::TDC(const std::string& KN) :
   l2spf3(new L2SPFsegment3("L2SPF3")),
   l2spf4(new L2SPFsegment4("L2SPF4")),
   l2spf5(new L2SPFsegment5("L2SPF5")),
+  l2spf5(new L2SPFsegment6("L2SPF6")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16"))
