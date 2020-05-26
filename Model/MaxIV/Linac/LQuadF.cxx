@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Linac/LQuad.cxx
+ * File:   Linac/LQuadF.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -60,12 +60,12 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 
-#include "LQuad.h"
+#include "LQuadF.h"
 
 namespace tdcSystem
 {
 
-LQuad::LQuad(const std::string& Key) :
+LQuadF::LQuadF(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -78,7 +78,7 @@ LQuad::LQuad(const std::string& Key) :
   */
 {}
 
-LQuad::LQuad(const std::string& Base,
+LQuadF::LQuadF(const std::string& Base,
 		   const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
@@ -94,20 +94,20 @@ LQuad::LQuad(const std::string& Base,
 {}
 
 
-LQuad::~LQuad()
+LQuadF::~LQuadF()
   /*!
     Destructor
   */
 {}
 
 void
-LQuad::populate(const FuncDataBase& Control)
+LQuadF::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("LQuad","populate");
+  ELog::RegMethod RegA("LQuadF","populate");
 
   FixedRotate::populate(Control);
 
@@ -143,12 +143,12 @@ LQuad::populate(const FuncDataBase& Control)
 
 
 void
-LQuad::createSurfaces()
+LQuadF::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("LQuad","createSurface");
+  ELog::RegMethod RegA("LQuadF","createSurface");
 
   const size_t NPole(4);
   // mid line
@@ -239,13 +239,13 @@ LQuad::createSurfaces()
 }
 
 void
-LQuad::createObjects(Simulation& System)
+LQuadF::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("LQuad","createObjects");
+  ELog::RegMethod RegA("LQuadF","createObjects");
   const size_t NPole(4);
 
   std::string Out,unitStr;
@@ -335,12 +335,12 @@ LQuad::createObjects(Simulation& System)
 }
 
 void
-LQuad::createLinks()
+LQuadF::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("LQuad","createLinks");
+  ELog::RegMethod RegA("LQuadF","createLinks");
 
   const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
   FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
@@ -353,7 +353,7 @@ LQuad::createLinks()
 }
 
 void
-LQuad::createAll(Simulation& System,
+LQuadF::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -363,7 +363,7 @@ LQuad::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("LQuad","createAll");
+  ELog::RegMethod RegA("LQuadF","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

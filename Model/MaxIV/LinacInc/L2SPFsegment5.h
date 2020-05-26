@@ -42,7 +42,7 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CorrectorMag;
-  class LQuad;
+  class LQuadF;
   class LSexupole;
   class BPM;
 
@@ -70,13 +70,13 @@ class L2SPFsegment5 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
   
   /// Quad begining QSQ 
-  std::shared_ptr<tdcSystem::LQuad> QuadA;
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// sexupole
   std::shared_ptr<tdcSystem::LSexupole> SexuA;
 
   /// Quad endng QSQ 
-  std::shared_ptr<tdcSystem::LQuad> QuadB;
+  std::shared_ptr<tdcSystem::LQuadF> QuadB;
   
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;

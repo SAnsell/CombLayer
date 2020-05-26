@@ -33,7 +33,7 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuad;
+  class LQuadF;
   class CorrectorMag;
   /*!
     \class L2SPFsegment1
@@ -60,7 +60,7 @@ class L2SPFsegment1 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrB;   ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertB;   ///< corrector mag
-  std::shared_ptr<tdcSystem::LQuad> QuadA;
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// THIS is the double pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;

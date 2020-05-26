@@ -97,7 +97,7 @@
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
@@ -148,7 +148,7 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuad","LSexupole",
+      "default","CylGateValve","CorrectorMag","LQuadF","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole",
       "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
       "EPSeparator","Quadrupole","TargetShield",
@@ -221,7 +221,7 @@ makeSingleItem::build(Simulation& System,
       std::shared_ptr<tdcSystem::BeamDivider>
 	bd(new tdcSystem::BeamDivider("BeamDiv"));
       OR.addObject(bd);
-      
+
       bd->addAllInsertCell(voidCell);
       bd->createAll(System,World::masterOrigin(),0);
 
@@ -252,24 +252,24 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::EArrivalMon>
 	EA(new tdcSystem::EArrivalMon("BeamMon"));
-      
+
       OR.addObject(EA);
 
       EA->addInsertCell(voidCell);
       EA->createAll(System,World::masterOrigin(),0);
-      
+
       return;
     }
 
-  if (item=="LQuad")
+  if (item=="LQuadF")
     {
-      std::shared_ptr<tdcSystem::LQuad>
-	LQ(new tdcSystem::LQuad("LQ","LQ"));
+      std::shared_ptr<tdcSystem::LQuadF>
+	QF(new tdcSystem::LQuadF("QF","QF"));
 
-      OR.addObject(LQ);
+      OR.addObject(QF);
 
-      LQ->addInsertCell(voidCell);
-      LQ->createAll(System,World::masterOrigin(),0);
+      QF->addInsertCell(voidCell);
+      QF->createAll(System,World::masterOrigin(),0);
 
       return;
     }

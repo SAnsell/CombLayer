@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/LObjectSupport.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -82,7 +82,7 @@
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
 #include "FlatPipe.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
 
@@ -96,13 +96,13 @@ correctorMagnetPair(Simulation& System,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMA,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMB)
   /*!
-    Given a pipe build the two correct magnets round it and then 
+    Given a pipe build the two correct magnets round it and then
     correctly do the InnerZone splitting.
     \param System :: Simulation to use
-    \param buildZone :: Inner zoner to be split - 
+    \param buildZone :: Inner zoner to be split -
             currently at start of pipe
-    \param CMA :: First Corrector Magnet 
-    \param CMB :: Second Corrector Magnet 
+    \param CMA :: First Corrector Magnet
+    \param CMB :: Second Corrector Magnet
     \return outerCell number
     \todo see about generalization when needed.
   */
@@ -115,7 +115,7 @@ correctorMagnetPair(Simulation& System,
     throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
-		      
+
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
   CMA->createAll(System,*pipe,"#front");
 
@@ -129,10 +129,10 @@ correctorMagnetPair(Simulation& System,
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,-1);
   CPtr->insertInCell(System,outerCell);
-  
+
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,2);
   CMB->insertInCell(System,outerCell);
-  
+
 
   return outerCell;
 }
@@ -146,14 +146,14 @@ pipeMagUnit(Simulation& System,
 	    const std::string& outerName,
 	    const std::shared_ptr<MagTYPE>& magUnit)
   /*!
-    Given a pipe build magnet unit round it and then 
+    Given a pipe build magnet unit round it and then
     correctly do the InnerZone splitting.
     \param System :: Simulation to use
-    \param buildZone :: Inner zoner to be split - 
+    \param buildZone :: Inner zoner to be split -
             currently at start of pipe
     \param pipe :: Inner object
     \param linkName :: Construction link point
-    \param surfName :: Link point in pipe for outer surf 
+    \param surfName :: Link point in pipe for outer surf
         [typically : outerPipe]
     \param magUnit :: Magnetic unit
     \return outerCell number
@@ -190,15 +190,15 @@ pipeMagGroup(Simulation& System,
 	     const std::string& outerName,
 	     const std::shared_ptr<MagTYPE>& magUnit)
   /*!
-    Given a pipe build magnet unit round it and then 
+    Given a pipe build magnet unit round it and then
     correctly do the InnerZone splitting.
     \param System :: Simulation to use
-    \param buildZone :: Inner zoner to be split - 
+    \param buildZone :: Inner zoner to be split -
             currently at start of pipe
     \param pipe :: Inner object [containedGroup]
     \param containerSet :: Insert set for containerGroup
     \param linkName :: Construction link point
-    \param surfName :: Link point in pipe for outer surf 
+    \param surfName :: Link point in pipe for outer surf
         [typically : outerPipe]
     \param magUnit :: Magnetic unit
     \return outerCell number
@@ -217,9 +217,9 @@ pipeMagGroup(Simulation& System,
 
   int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*magUnit,-1);
-  for(const std::string& containerName: containerSet) 
+  for(const std::string& containerName: containerSet)
     CPtr->insertInCell(containerName,System,outerCell);
-  
+
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
   magUnit->insertInCell(System,outerCell);
 
@@ -233,7 +233,7 @@ pipeTerminate(Simulation& System,
   /*!
     Teminate a pipe in the inde of a Inner zone
     \param System :: Simulation to use
-    \param buildZone :: Inner zoner to be split - 
+    \param buildZone :: Inner zoner to be split -
             currently at start of pipe
     \return outerCell number
   */
@@ -254,7 +254,7 @@ pipeTerminate(Simulation& System,
 	dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
       if (!CGPtr)
 	throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
-      
+
       CGPtr->insertAllInCell(System,outerCell);
     }
 
@@ -269,7 +269,7 @@ pipeTerminateGroup(Simulation& System,
   /*!
     Teminate a pipe in the inde of a Inner zone
     \param System :: Simulation to use
-    \param buildZone :: Inner zoner to be split - 
+    \param buildZone :: Inner zoner to be split -
             currently at start of pipe
     \return outerCell number
   */
@@ -294,15 +294,15 @@ pipeTerminateGroup(Simulation& System,
 ///\cond TEMPLATE
 
 
-template 
+template
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
-		const std::shared_ptr<tdcSystem::LQuad>&);
+		const std::shared_ptr<tdcSystem::LQuadF>&);
 
-template 
+template
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
@@ -310,23 +310,23 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::LSexupole>&);
 
-template 
+template
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
-template 
+template
 int pipeMagGroup(Simulation&,
 		 attachSystem::InnerZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
 		 const std::set<std::string>&,
 		 const std::string&,
 		 const std::string&,
-		 const std::shared_ptr<tdcSystem::LQuad>&);
+		 const std::shared_ptr<tdcSystem::LQuadF>&);
 
-template 
+template
 int pipeMagGroup(Simulation&,
 		 attachSystem::InnerZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
@@ -340,4 +340,3 @@ int pipeMagGroup(Simulation&,
 ///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem
-

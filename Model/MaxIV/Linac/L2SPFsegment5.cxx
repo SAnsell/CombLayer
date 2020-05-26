@@ -84,7 +84,7 @@
 #include "Bellows.h"
 #include "CorrectorMag.h"
 #include "BPM.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
@@ -104,9 +104,9 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
+  QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
-  QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
+  QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
