@@ -34,21 +34,12 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
-#include "singleItemVariables.h"
 
 #include "CFFlanges.h"
 #include "CryoGenerator.h"
@@ -61,7 +52,7 @@
 #include "ChopperGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
-#include "LinacQuadGenerator.h"
+#include "LinacQuadFGenerator.h"
 #include "LinacSexuGenerator.h"
 #include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
@@ -215,7 +206,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
 
-  setVariable::LinacQuadGenerator LQGen;
+  setVariable::LinacQuadFGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
   setVariable::LinacSexuGenerator LSGen;
@@ -254,7 +245,7 @@ SingleItemVariables(FuncDataBase& Control)
   YagGen.generateScreen(Control,"YAG",1);  // in beam
 
   setVariable::BPMGenerator BPMGen;
-  BPMGen.generateBPM(Control,"BPM",0.0);  
+  BPMGen.generateBPM(Control,"BPM",0.0);
 
   setVariable::BeamDividerGenerator BDGen;
   BDGen.generateDivider(Control,"BeamDiv");  
@@ -266,7 +257,7 @@ SingleItemVariables(FuncDataBase& Control)
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
   
   setVariable::YagUnitGenerator YagUnitGen;
-  YagUnitGen.generateYagUnit(Control,"YU");  
+  YagUnitGen.generateYagUnit(Control,"YU");
 
   return;
 }

@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   Linac/LQuad.cxx
+
+ * File:   Linac/LQuadF.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -33,59 +33,39 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
-#include "LQuad.h"
+#include "LQuadF.h"
 
 namespace tdcSystem
 {
 
-LQuad::LQuad(const std::string& Key) :
+LQuadF::LQuadF(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -98,8 +78,8 @@ LQuad::LQuad(const std::string& Key) :
   */
 {}
 
-LQuad::LQuad(const std::string& Base,
-		   const std::string& Key) : 
+LQuadF::LQuadF(const std::string& Base,
+		   const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -114,23 +94,23 @@ LQuad::LQuad(const std::string& Base,
 {}
 
 
-LQuad::~LQuad() 
+LQuadF::~LQuadF()
   /*!
     Destructor
   */
 {}
 
 void
-LQuad::populate(const FuncDataBase& Control)
+LQuadF::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("LQuad","populate");
+  ELog::RegMethod RegA("LQuadF","populate");
 
   FixedRotate::populate(Control);
-  
+
   length=Control.EvalTail<double>(keyName,baseName,"Length");
 
   frameRadius=Control.EvalTail<double>(keyName,baseName,"FrameRadius");
@@ -149,8 +129,8 @@ LQuad::populate(const FuncDataBase& Control)
   coilAngle=Control.EvalTail<double>(keyName,baseName,"CoilAngle");
   coilEndRadius=Control.EvalTail<double>(keyName,baseName,"CoilEndRadius");
   coilEndExtra=Control.EvalTail<double>(keyName,baseName,"CoilEndExtra");
-      
-  
+
+
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat",
@@ -163,12 +143,12 @@ LQuad::populate(const FuncDataBase& Control)
 
 
 void
-LQuad::createSurfaces()
+LQuadF::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("LQuad","createSurface");
+  ELog::RegMethod RegA("LQuadF","createSurface");
 
   const size_t NPole(4);
   // mid line
@@ -180,14 +160,14 @@ LQuad::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   // pole extention
-  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
+  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-(ePt*1.001),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+(ePt*1.001),Y);
 
   int CN(buildIndex+1000);
   // Note there are 16 surfaces on the inner part of the pole peice
   double angle(M_PI*poleYAngle/180.0);
-  
+
   for(size_t i=0;i < 2*NPole; i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
@@ -208,7 +188,7 @@ LQuad::createSurfaces()
       ModelSupport::buildPlane(SMap,CN+1,Origin,QX);
       angle+=2.0*M_PI/static_cast<double>(NPole);
       CN++;
-    }  
+    }
 
   // MAIN POLE PIECES:
   const Geometry::Quaternion coilQCut=
@@ -238,7 +218,7 @@ LQuad::createSurfaces()
       const Geometry::Vec3D ePt=Y*(length/2.0-coilEndRadius+coilEndExtra);
       ModelSupport::buildCylinder(SMap,CN+9,Origin-ePt,QR,coilEndRadius);
       ModelSupport::buildCylinder(SMap,CN+19,Origin+ePt,QR,coilEndRadius);
-      
+
       // Pole Items:
       ModelSupport::buildPlane(SMap,CN+203,Origin-QX*(poleWidth/2.0),QX);
       ModelSupport::buildPlane(SMap,CN+204,Origin+QX*(poleWidth/2.0),QX);
@@ -254,22 +234,22 @@ LQuad::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*frameOuter,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*frameOuter,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*frameOuter,Z);
-	
+
   return;
 }
 
 void
-LQuad::createObjects(Simulation& System)
+LQuadF::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("LQuad","createObjects");
+  ELog::RegMethod RegA("LQuadF","createObjects");
   const size_t NPole(4);
-  
+
   std::string Out,unitStr;
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -4 5 -6" );
   addOuterSurf(Out);
 
@@ -308,7 +288,7 @@ LQuad::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018");
       PoleExclude.back().addUnion(Out);
-      
+
       // Front extra pieces
       Out=ModelSupport::getComposite
 	(SMap,PN,buildIndex," 2003 -2004 2001 2013 2014 2017 2018 -2009 ");
@@ -346,23 +326,23 @@ LQuad::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 ");
       makeCell("BackVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
 	       backExclude[i].complement().display()+ICell);
-      
-      
+
+
       aOffset+=2;
       bOffset+=1;
     }
   return;
 }
 
-void 
-LQuad::createLinks()
+void
+LQuadF::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("LQuad","createLinks");
+  ELog::RegMethod RegA("LQuadF","createLinks");
 
-  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
+  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
   FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
   FixedComp::setConnect(1,Origin+(ePt*1.001),Y);
 
@@ -373,26 +353,26 @@ LQuad::createLinks()
 }
 
 void
-LQuad::createAll(Simulation& System,
+LQuadF::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("LQuad","createAll");
-  
+  ELog::RegMethod RegA("LQuadF","createAll");
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

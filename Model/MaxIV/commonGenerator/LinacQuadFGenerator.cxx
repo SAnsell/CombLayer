@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/LinacQuadGenerator.cxx
+ * File:   commonBeam/LinacQuadFGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -35,28 +35,21 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "LinacQuadGenerator.h"
+#include "LinacQuadFGenerator.h"
 
 namespace setVariable
 {
 
-LinacQuadGenerator::LinacQuadGenerator() :
+LinacQuadFGenerator::LinacQuadFGenerator() :
   length(25.0),frameRadius(7.5),frameOuter(18.8),
   poleYAngle(45.0),poleGap(1.25),
   poleRadius(1.55),poleWidth(2.6),     // pole radius 7mm above flat line
@@ -71,14 +64,14 @@ LinacQuadGenerator::LinacQuadGenerator() :
   */
 {}
   
-LinacQuadGenerator::~LinacQuadGenerator() 
+LinacQuadFGenerator::~LinacQuadFGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-LinacQuadGenerator::setRadius(const double R,const double C)
+LinacQuadFGenerator::setRadius(const double R,const double C)
   /*!
     Set the coil and pole radius
     \param R :: Pole radius [closest point]
@@ -92,7 +85,7 @@ LinacQuadGenerator::setRadius(const double R,const double C)
   
   
 void
-LinacQuadGenerator::generateQuad(FuncDataBase& Control,
+LinacQuadFGenerator::generateQuad(FuncDataBase& Control,
 				 const std::string& keyName,
 				 const double yStep)  const
 /*!
@@ -102,7 +95,7 @@ LinacQuadGenerator::generateQuad(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("LinacQuadGenerator","generateQuad");
+  ELog::RegMethod RegA("LinacQuadFGenerator","generateQuad");
 
   Control.addVariable(keyName+"YStep",yStep);
 

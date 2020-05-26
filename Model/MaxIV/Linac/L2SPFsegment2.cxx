@@ -87,7 +87,7 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "BlankTube.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "BPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
@@ -106,11 +106,11 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
+  QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpmA(new tdcSystem::BPM(keyName+"BPMA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  QuadB(new tdcSystem::LQuad(keyName+"QuadB")),
+  QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
@@ -118,9 +118,9 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
   bpmB(new tdcSystem::BPM(keyName+"BPMB")),  
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  QuadC(new tdcSystem::LQuad(keyName+"QuadC")),
-  QuadD(new tdcSystem::LQuad(keyName+"QuadD")),
-  QuadE(new tdcSystem::LQuad(keyName+"QuadE")),
+  QuadC(new tdcSystem::LQuadF(keyName+"QuadC")),
+  QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),
+  QuadE(new tdcSystem::LQuadF(keyName+"QuadE")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit"))
   /*!
     Constructor
