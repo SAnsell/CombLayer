@@ -58,17 +58,17 @@ namespace setVariable
 {
 
 EBeamStopGenerator::EBeamStopGenerator() :
-  width(11.4),length(41.4),height(11.2),depth(10.0),
+  width(11.4),length(41.4),height(12.6),depth(10.0),
   wallThick(0.8),baseThick(2.6),baseFlangeExtra(3.0),
   baseFlangeThick(2.6),portLength(4.4),
   portRadius(CF40_22::innerRadius),
   portWallThick(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),
   portFlangeLength(CF40_22::flangeLength),
-  stopRadius(6.0),stopLength(35.7),stopZLift(6.1),    
+  stopRadius(5.4),stopLength(35.7),stopZLift(6.1),    
   stopLen({32.0}),
   supportConeLen(5.6),supportConeRadius(2.7),
-  supportHoleRadius(1.0),supportRadius(2.0),
+  supportHoleRadius(0.5),supportRadius(2.0),
   stopPortYStep(5.7),stopPortRadius(CF63::innerRadius),
   stopPortLength(31.7),stopPortWallThick(CF63::wallThick),
   stopPortFlangeRadius(CF63::flangeRadius),
@@ -83,6 +83,7 @@ EBeamStopGenerator::EBeamStopGenerator() :
   stopMat({"Stainless304L","Lead"}),
   voidMat("Void"),wallMat("Stainless304L"),
   flangeMat("Stainless304L"),
+  supportMat("Stainless304L"),
   plateMat("Stainless304L"),
   outerMat("Void")
   /*!
@@ -153,6 +154,7 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
 
  Control.addVariable(keyName+"VoidMat",voidMat);
  Control.addVariable(keyName+"WallMat",wallMat);
+ Control.addVariable(keyName+"SupportMat",supportMat);
  Control.addVariable(keyName+"FlangeMat",flangeMat);
  Control.addVariable(keyName+"PlateMat",plateMat);
  Control.addVariable(keyName+"OuterMat",outerMat);

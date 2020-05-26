@@ -38,8 +38,8 @@ namespace tdcSystem
 
 class EBeamStop :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
+  public attachSystem::ContainedGroup,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -97,6 +97,7 @@ class EBeamStop :
   int voidMat;                  ///< void material
   int wallMat;                ///< flange material
   int flangeMat;                ///< flange material
+  int supportMat;                ///< support material
   int plateMat;                 ///< end plate material
   int outerMat;                 ///< pipe material
 

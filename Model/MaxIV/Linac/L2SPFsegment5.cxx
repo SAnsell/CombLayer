@@ -158,18 +158,11 @@ L2SPFsegment5::buildObjects(Simulation& System)
   flatB->createAll(System,*beamA,"back");
   // insert-units : Origin : excludeSurf 
   pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeB","Pipe"},"Origin","outerPipe",dipoleB);
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*flatB,"back",*bellowA);
-
-  // beamA->setFront(*flatA,"back");
-  // beamA->createAll(System,*flatA,"back");  
-  //  pipeTerminate(System,*buildZone,A);
-
-  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*flatA,2);
-  //  flatA->insertInCell(System,outerCell);
   
   buildZone->removeLastMaster(System);  
   return;

@@ -65,7 +65,7 @@ class EBeamStopGenerator
   double supportConeLen;        ///< Support close cone
   double supportConeRadius;     ///< Support radius at base
   double supportHoleRadius;     ///< Hole in support radius
-  double supportRadius;         ///< Radius of 
+  double supportRadius;         ///< Radius of support tube 
 
   double stopPortYStep;          ///< Support centre YStep  
   double stopPortRadius;         ///< stop port radius
@@ -89,6 +89,7 @@ class EBeamStopGenerator
   std::string voidMat;                  ///< void material
   std::string wallMat;                  ///< wallmaterial
   std::string flangeMat;                ///< flange material
+  std::string supportMat;               ///< support material
   std::string plateMat;                 ///< end plate material
   std::string outerMat;                 ///< pipe material
 

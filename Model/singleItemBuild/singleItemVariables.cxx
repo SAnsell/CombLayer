@@ -260,7 +260,7 @@ SingleItemVariables(FuncDataBase& Control)
   BDGen.generateDivider(Control,"BeamDiv");  
 
   setVariable::EBeamStopGenerator EBGen;
-  EBGen.generateEBeamStop(Control,"EBeam",1);  
+  EBGen.generateEBeamStop(Control,"EBeam",0);  
 
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift

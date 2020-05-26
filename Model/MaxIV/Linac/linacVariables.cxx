@@ -346,7 +346,6 @@ linac2SPFsegment5(FuncDataBase& Control,
   Control.addVariable(lKey+"YStep",1420.344+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",6.4);
 
-  ELog::EM<<"HERE "<<lKey<<ELog::endDiag;
   FPGen.generateFlat(Control,lKey+"FlatA",82.0);
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");

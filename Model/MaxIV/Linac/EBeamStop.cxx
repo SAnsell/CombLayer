@@ -74,8 +74,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -86,9 +86,9 @@ namespace tdcSystem
 {
 
 EBeamStop::EBeamStop(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
-  attachSystem::FrontBackCut(),
+  attachSystem::FixedOffset(Key,4),
+  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -172,6 +172,7 @@ EBeamStop::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
 
@@ -272,10 +273,11 @@ EBeamStop::createSurfaces()
     (SMap,buildIndex+415,stopOrg-Z*(stopPortLength-stopPortFlangeLength),Z);
   
   // Main stop cylinder
-  const Geometry::Vec3D tOrg=(closedFlag) ? Origin : Origin+Z*stopZLift;
+  const Geometry::Vec3D tOrg=(closedFlag) ?
+    Origin-Y*(stopLength/2.0) : Origin-Y*(stopLength/2.0)+Z*stopZLift;
 
   ModelSupport::buildCylinder(SMap,buildIndex+507,tOrg,Y,stopRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+501,tOrg-Y*(stopLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+501,tOrg,Y);
 
   const size_t NS(stopLen.size());
   int BI(buildIndex+500);
@@ -284,10 +286,36 @@ EBeamStop::createSurfaces()
       ModelSupport::buildPlane(SMap,BI+11,tOrg+Y*stopLen[i],Y);
       BI+=10;
     }
-  ModelSupport::buildPlane(SMap,buildIndex+502,tOrg+Y*(stopLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+502,tOrg+Y*stopLength,Y);
 
   // Support Tube:
 
+  // length from cone to apex  to centre of beamstop
+  const double coneLen=stopRadius*(stopRadius+supportConeLen)/
+    (stopRadius-supportConeRadius);
+  const double coneAngle=atan(stopRadius/coneLen)*180.0/M_PI;
+  ELog::EM<<"L == "<<coneLen<<" "<<coneAngle<<ELog::endDiag;
+
+  Geometry::Vec3D midCentre=Origin+Y*stopPortYStep;
+  Geometry::Vec3D coneCentre=Origin+Y*stopPortYStep-Z*coneLen;
+  if (!closedFlag)
+    {
+      coneCentre+=Z*stopZLift;
+      midCentre+=Z*stopZLift;
+    }
+
+  ModelSupport::buildPlane(SMap,buildIndex+600,
+			   midCentre-Z*(stopRadius/10.0),Z);  
+  ModelSupport::buildCone(SMap,buildIndex+607,coneCentre,Z,coneAngle);
+  ModelSupport::buildCylinder(SMap,buildIndex+617,coneCentre,Z,supportRadius);
+  // hole [not down shift by exactly stopZLift to align hole if open position]
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+657,midCentre-Z*stopZLift,Y,supportHoleRadius);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+605,midCentre-Z*(stopRadius+supportConeLen),Z);
+  
+  // const Geometry::Vec3D tOrg=(closedFlag) ?
+  //   Origin-Y*(stopLength/2.0) : Origin-Y*(stopLength/2.0)+Z*stopZLift;
 
 
   return;
@@ -309,7 +337,11 @@ EBeamStop::createObjects(Simulation& System)
 
   // inner void : excluding main BS
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 105 -106 (-501 : 502)");
+    (SMap,buildIndex," 101 -102 103 -104 105 -106 "
+     "(600: -605: 607 ) (-501 : 502 : 507) ");
+  if (!closedFlag)
+    Out+=ModelSupport::getComposite(SMap,buildIndex," (617:605) ");
+				    
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -361,7 +393,8 @@ EBeamStop::createObjects(Simulation& System)
   makeCell("IonOuter",System,cellIndex++,outerMat,0.0,Out);
 
   // stopper
-  Out=ModelSupport::getComposite(SMap,buildIndex," -105 -407  405");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " -105 -407  405 617 (607 : -605)");
   makeCell("StopVoid",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -115 407 -417  405");
   makeCell("StopWall",System,cellIndex++,wallMat,0.0,Out);
@@ -384,7 +417,6 @@ EBeamStop::createObjects(Simulation& System)
 
   // Main BEAM STOP:
   const size_t NS(stopLen.size());
-  ELog::EM<<"EM == "<<NS<<ELog::endDiag;
   int BI(buildIndex+500);
   for(size_t i=0;i<NS;i++)
     {
@@ -394,8 +426,16 @@ EBeamStop::createObjects(Simulation& System)
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-507 1M -502 ");
   makeCell("BS"+std::to_string(NS),System,cellIndex++,stopMat[NS],0.0,Out);
-  
-  
+
+  // Support:
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 507 -600 605 -607 657 ");
+  makeCell("SupportCone",System,cellIndex++,supportMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -607 -657 ");
+  makeCell("SupportHole",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -605 405 -407 -617 ");
+  makeCell("SupportDrive",System,cellIndex++,supportMat,0.0,Out);
+
   
   if (stopPortLength>=ionPortLength)
     {
@@ -413,8 +453,14 @@ EBeamStop::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
     }
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -121 -227 ");
+  addOuterSurf("FlangeA",Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 122 -227 ");
+  addOuterSurf("FlangeB",Out+backStr);
+  
   return;
 }
 
@@ -429,6 +475,15 @@ EBeamStop::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+121));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+122));
+
+  FixedComp::setConnect(2,Origin-Y*(baseFlangeExtra+wallThick+length/2.0),-Y);
+  FixedComp::setConnect(3,Origin+Y*(baseFlangeExtra+wallThick+length/2.0),Y);
+
+  nameSideIndex(2,"BoxFront");
+  nameSideIndex(3,"BoxBack");
+  
   return;
 }
 
@@ -446,7 +501,7 @@ EBeamStop::createAll(Simulation& System,
   ELog::RegMethod RegA("EBeamStop","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,2.0*portLength+length);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -193,7 +193,7 @@ makeSingleItem::build(Simulation& System,
 	eBeam(new tdcSystem::EBeamStop("EBeam"));
       OR.addObject(eBeam);
 
-      eBeam->addInsertCell(voidCell);
+      eBeam->addAllInsertCell(voidCell);
       eBeam->createAll(System,World::masterOrigin(),0);
 
       return;
