@@ -66,7 +66,9 @@ namespace setVariable
 namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
-
+  void setIonPump2Port(FuncDataBase&,const std::string&);
+  void setIonPump3Port(FuncDataBase&,const std::string&);
+  
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
@@ -83,8 +85,8 @@ namespace linacVar
   const double zeroY(481.0);    // drawing README.pdf
 
 void
-setIonPump2(FuncDataBase& Control,
-	    const std::string& name)
+setIonPump2Port(FuncDataBase& Control,
+		const std::string& name)
 /*!
   Set the 2 port ion pump variables
   \param Control :: DataBase to use
@@ -92,7 +94,7 @@ setIonPump2(FuncDataBase& Control,
   \param nPorts :: number of ports
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump2");
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -111,8 +113,10 @@ setIonPump2(FuncDataBase& Control,
   Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
 
   Control.addVariable(name+"FlangeBLength",0.1);
+
   Control.addVariable(name+"FlangeBRadius",
-		      setVariable::CF63::innerRadius+setVariable::CF63::wallThick+0.1);
+		      setVariable::CF63::innerRadius+
+		      setVariable::CF63::wallThick+0.1);
 
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
@@ -131,15 +135,14 @@ setIonPump2(FuncDataBase& Control,
 }
 
 void
-setIonPump3(FuncDataBase& Control,
-	    const std::string& name)
+setIonPump3Port(FuncDataBase& Control,const std::string& name)
 /*!
   Set the 3 port ion pump variables
   \param Control :: DataBase to use
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump");
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump3Port");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -573,7 +576,7 @@ TDCsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   const std::string pumpName=lKey+"IonPump";
-  setIonPump3(Control,pumpName);
+  setIonPump3Port(Control,pumpName);
   Control.addVariable(pumpName+"Port1Length",9.5);
   Control.addVariable(pumpName+"Port2Length",3.2);
   Control.addVariable(pumpName+"FlangeBCapThick",0.0);
@@ -648,7 +651,7 @@ TDCsegment16(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
-  setIonPump3(Control,lKey+"IonPump");
+  setIonPump3Port(Control,lKey+"IonPump");
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0); // measured
 
@@ -657,7 +660,7 @@ TDCsegment16(FuncDataBase& Control,
 
 void
 TDCsegment18(FuncDataBase& Control,
-		   const std::string& lKey)
+	     const std::string& lKey)
   /*!
     Set the variables for the main walls
     \param Control :: DataBase to use
@@ -677,13 +680,16 @@ TDCsegment18(FuncDataBase& Control,
   // coordinates form drawing
   Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);
   Control.addVariable(lKey+"YStep",5780.261+linacVar::zeroY);
+  Control.addVariable(lKey+"EndX",-637.608+linacVar::zeroX);
+  Control.addVariable(lKey+"EndY",5780.261+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",0.0);
+  Control.addVariable(lKey+"XYEndAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
-  setIonPump2(Control, lKey+"IonPump");
+  setIonPump2Port(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
