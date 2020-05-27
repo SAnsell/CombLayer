@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/LinacQuadGenerator.h
+ * File:   LinacInc/LQuadF.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,30 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_LinacQuadGenerator_h
-#define setVariable_LinacQuadGenerator_h
+#ifndef tdcSystem_LQuadF_h
+#define tdcSystem_LQuadF_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+
+namespace tdcSystem
 {
-
 /*!
-  \class LinacQuadGenerator
+  \class LQuadF
   \version 1.0
   \author S. Ansell
-  \date April 2020
-  \brief LinacQuadGenerator for variables
+  \date January 2019
+
+  \brief QF quadrupole magnet for Max-IV
 */
 
-class LinacQuadGenerator
+class LQuadF :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
+
+  const std::string baseName;   ///< Base key
 
   double length;                ///< yoke length
 
   double yokeRadius;           ///< Gap to start of yoke
-  double yokeOuter;            ///< Thikckness of yoke
+  double yokeOuter;            ///< Thikckness of yoke [full]
 
   double poleYAngle;            ///< Rotation of +X Pole about Y
   double poleGap;               ///< Gap from centre point
@@ -51,32 +59,34 @@ class LinacQuadGenerator
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
-  double coilInner;             ///< Inner plate width
+  double coilInner;             ///< Cross width of at top
   double coilBase;              ///< Coil base angle cut width
-  double coilBaseDepth;         ///< Coil Base start height
-  double coilAngle;             ///< Top Cut angle
-  double coilEndExtra;          ///< Length of coil pieces
+  double coilBaseDepth;         ///< Coil base angle cut depth [from centre]
+  double coilAngle;             ///< Angle of coil cut
+  double coilEndExtra;          ///< Coil extra length [round]
   double coilEndRadius;         ///< Coil extra radius [round]
 
+  int poleMat;                     ///<` pole piece of magnet
+  int coreMat;                     ///< core of magnet
+  int coilMat;                     ///< coil material
+  int yokeMat;                     ///< Iron material
 
-  std::string poleMat;          ///< pole piece of magnet
-  std::string coreMat;          ///< core of magnet
-  std::string coilMat;          ///< coil material
-  std::string yokeMat;         ///< Iron material
-
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
-  LinacQuadGenerator();
-  LinacQuadGenerator(const LinacQuadGenerator&);
-  LinacQuadGenerator& operator=(const LinacQuadGenerator&);
-  virtual ~LinacQuadGenerator();
+  LQuadF(const std::string&);
+  LQuadF(const std::string&,const std::string&);
+  LQuadF(const LQuadF&);
+  LQuadF& operator=(const LQuadF&);
+  virtual ~LQuadF();
 
-  /// Angle in deg for main axis rotation
-  void setPoleAngle(const double A) { poleYAngle=A; }
-  void setRadius(const double,const double);
-  virtual void generateQuad(FuncDataBase&,const std::string&,
-			   const double) const;
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

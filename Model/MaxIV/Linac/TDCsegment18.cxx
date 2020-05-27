@@ -69,7 +69,7 @@
 #include "Bellows.h"
 #include "BPM.h"
 #include "VacuumPipe.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "LObjectSupport.h"
 #include "CorrectorMag.h"
 #include "portItem.h"
@@ -91,7 +91,7 @@ TDCsegment18::TDCsegment18(const std::string& Key) :
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  quad(new tdcSystem::LQuad(keyName+"Quad")),
+  quad(new tdcSystem::LQuadF(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))

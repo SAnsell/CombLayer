@@ -39,12 +39,12 @@ namespace xraySystem
 
 namespace tdcSystem
 {
-  class LQuad;
+  class LQuadF;
   class CorrectorMag;
   class BPM;
   class EArrivalMon;
   class YagUnit;
-  class LQuad;
+  class LQuadF;
   
   /*!
     \class L2SPFsegment2
@@ -61,7 +61,7 @@ class L2SPFsegment2 :
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< start pipe
   /// quad
-  std::shared_ptr<tdcSystem::LQuad> QuadA;
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// Beam position monitor
   std::shared_ptr<tdcSystem::BPM> bpmA;   
@@ -72,7 +72,7 @@ class L2SPFsegment2 :
   /// Long connecter pipe to gate valve
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; 
   
-  std::shared_ptr<tdcSystem::LQuad> QuadB;    /// quad B 
+  std::shared_ptr<tdcSystem::LQuadF> QuadB;    /// quad B 
 
   /// Gate valve holder
   std::shared_ptr<xraySystem::CylGateValve> gateTube;   
@@ -94,9 +94,9 @@ class L2SPFsegment2 :
 
   // quad pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; 
-  std::shared_ptr<tdcSystem::LQuad> QuadC;    /// quad C
-  std::shared_ptr<tdcSystem::LQuad> QuadD;    /// quad D
-  std::shared_ptr<tdcSystem::LQuad> QuadE;    /// quad E 
+  std::shared_ptr<tdcSystem::LQuadF> QuadC;    /// quad C
+  std::shared_ptr<tdcSystem::LQuadF> QuadD;    /// quad D
+  std::shared_ptr<tdcSystem::LQuadF> QuadE;    /// quad E 
 
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;

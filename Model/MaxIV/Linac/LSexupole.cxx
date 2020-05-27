@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   Linac/LQuad.cxx
+
+ * File:   Linac/LSextupole.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,15 +70,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "LSexupole.h"
 
@@ -99,7 +99,7 @@ LSexupole::LSexupole(const std::string& Key) :
 {}
 
 LSexupole::LSexupole(const std::string& Base,
-		   const std::string& Key) : 
+		   const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -114,7 +114,7 @@ LSexupole::LSexupole(const std::string& Base,
 {}
 
 
-LSexupole::~LSexupole() 
+LSexupole::~LSexupole()
   /*!
     Destructor
   */
@@ -145,7 +145,7 @@ LSexupole::populate(const FuncDataBase& Control)
   coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
   coilEndRadius=Control.EvalTail<double>(keyName,baseName,"CoilEndRadius");
   coilEndExtra=Control.EvalTail<double>(keyName,baseName,"CoilEndExtra");
-      
+
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat",
@@ -174,14 +174,14 @@ LSexupole::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   // pole extention
-  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
+  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-(ePt*1.001),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+(ePt*1.001),Y);
 
   int CN(buildIndex+1000);
   // Note there are 16 surfaces on the inner part of the pole peice
   double angle(M_PI*poleYAngle/180.0);
-  
+
   for(size_t i=0;i < 2*NPole; i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
@@ -201,7 +201,7 @@ LSexupole::createSurfaces()
       ModelSupport::buildPlane(SMap,CN+1,Origin,QX);
       angle+=2.0*M_PI/static_cast<double>(NPole);
       CN++;
-    }  
+    }
 
   // MAIN POLE PIECES:
   angle=M_PI*poleYAngle/180.0;
@@ -214,13 +214,13 @@ LSexupole::createSurfaces()
       // Coil Items:
       ModelSupport::buildPlane(SMap,CN+3,Origin-QX*(coilWidth/2.0),QX);
       ModelSupport::buildPlane(SMap,CN+4,Origin+QX*(coilWidth/2.0),QX);
-      
+
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*coilRadius,QR);
-      
+
       const Geometry::Vec3D ePt=Y*(length/2.0-coilEndRadius+coilEndExtra);
       ModelSupport::buildCylinder(SMap,CN+9,Origin-ePt,QR,coilEndRadius);
       ModelSupport::buildCylinder(SMap,CN+19,Origin+ePt,QR,coilEndRadius);
-      
+
       // Pole Items:
       ModelSupport::buildPlane(SMap,CN+203,Origin-QX*(poleWidth/2.0),QX);
       ModelSupport::buildPlane(SMap,CN+204,Origin+QX*(poleWidth/2.0),QX);
@@ -249,9 +249,9 @@ LSexupole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LSexupole","createObjects");
   const size_t NPole(6);
-  
+
   std::string Out,unitStr;
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 3 -4 5 -6" );
   addOuterSurf(Out);
 
@@ -281,8 +281,8 @@ LSexupole::createObjects(Simulation& System)
       const std::string outerCut=ModelSupport::getComposite
 	(SMap,buildIndex,"-1001 -1002 -1003 -1004 -1005 -1006 -1007 "
       "-1008 -1009 -1010 -1011 -1012 ");
-      
-      
+
+
       Out=ModelSupport::getComposite
 	(SMap,PN,BN,"2203 -2204 (-2207 : 2201) -1001M ");
       makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+FB);
@@ -293,7 +293,7 @@ LSexupole::createObjects(Simulation& System)
       makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+FB);
       Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
       PoleExclude.back().addUnion(Out);
-      
+
       // Front extra pieces
       Out=ModelSupport::getComposite
 	(SMap,PN,BN," 2003 -2004 2001  -2009 -1001M");
@@ -333,14 +333,14 @@ LSexupole::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 ");
       makeCell("BackVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
 	       backExclude[i].complement().display()+ICell);
-      
+
       aOffset+=2;
       bOffset+=1;
     }
   return;
 }
 
-void 
+void
 LSexupole::createLinks()
   /*!
     Create the linked units
@@ -348,7 +348,7 @@ LSexupole::createLinks()
 {
   ELog::RegMethod RegA("LSexupole","createLinks");
 
-  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);  
+  const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
   FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
   FixedComp::setConnect(1,Origin+(ePt*1.001),Y);
 
@@ -365,7 +365,7 @@ LSexupole::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
@@ -377,9 +377,9 @@ LSexupole::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

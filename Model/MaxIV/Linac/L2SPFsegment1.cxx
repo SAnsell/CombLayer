@@ -87,7 +87,7 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "BlankTube.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "CorrectorMag.h"
 
 #include "LObjectSupport.h"
@@ -110,7 +110,7 @@ L2SPFsegment1::L2SPFsegment1(const std::string& Key) :
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
   cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
-  QuadA(new tdcSystem::LQuad(keyName+"QuadA")),
+  QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),

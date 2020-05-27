@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/L2SPFsegment5.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,35 +34,23 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,13 +60,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 
-#include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
@@ -93,7 +76,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -103,7 +86,7 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA"))
-  
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -119,7 +102,7 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   OR.addObject(dipoleB);
   OR.addObject(bellowA);
 }
-  
+
 L2SPFsegment5::~L2SPFsegment5()
   /*!
     Destructor
@@ -146,7 +129,7 @@ L2SPFsegment5::buildObjects(Simulation& System)
     flatA->copyCutSurf("front",*this,"front");
   flatA->createAll(System,*this,0);
 
-  // insert-units : Origin : excludeSurf 
+  // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
@@ -156,22 +139,16 @@ L2SPFsegment5::buildObjects(Simulation& System)
 
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
-  // insert-units : Origin : excludeSurf 
+  // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeB","Pipe"},"Origin","outerPipe",dipoleB);
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*flatB,"back",*bellowA);
 
-  // beamA->setFront(*flatA,"back");
-  // beamA->createAll(System,*flatA,"back");  
-  //  pipeTerminate(System,*buildZone,A);
-
-  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*flatA,2);
-  //  flatA->insertInCell(System,outerCell);
-  
   buildZone->removeLastMaster(System);  
+
   return;
 }
 
@@ -188,7 +165,7 @@ L2SPFsegment5::createLinks()
   return;
 }
 
-void 
+void
 L2SPFsegment5::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -212,4 +189,3 @@ L2SPFsegment5::createAll(Simulation& System,
 
 
 }   // NAMESPACE tdcSystem
-

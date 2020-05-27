@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/L2SPFsegment5.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_L2SPFsegment5_h
 #define tdcSystem_L2SPFsegment5_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
 
 /*!
   \namespace xraySystem
@@ -41,11 +32,8 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class FlatPipe;
-  class CorrectorMag;
-  class DipoleDIBMag;
   class BeamDivider;
-  
+
   /*!
     \class L2SPFsegment5
     \version 1.0
@@ -59,30 +47,29 @@ class L2SPFsegment5 :
 {
  private:
 
-  /// first pipe 
-  std::shared_ptr<tdcSystem::FlatPipe> flatA;   
+  /// first pipe
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;
 
   /// first  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
 
-  /// first pipe 
-  std::shared_ptr<tdcSystem::BeamDivider> beamA;   
-  
+  /// first pipe
+  std::shared_ptr<tdcSystem::BeamDivider> beamA;
 
- /// first pipe 
+ /// first pipe
   std::shared_ptr<tdcSystem::FlatPipe> flatB;
-  
+
   /// second  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
-  
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
+
   /// exit bellows
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   L2SPFsegment5(const std::string&);
   L2SPFsegment5(const L2SPFsegment5&);
   L2SPFsegment5& operator=(const L2SPFsegment5&);

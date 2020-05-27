@@ -67,7 +67,7 @@
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
-#include "LQuad.h"
+#include "LQuadF.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
@@ -82,6 +82,8 @@
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
+#include "EBeamStop.h"
+#include "Scrapper.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 
@@ -117,12 +119,12 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuad","LSexupole",
+      "default","CylGateValve","CorrectorMag","LQuadF","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole",
-      "EPSeparator","R3ChokeChamber","QuadUnit","DipoleChamber",
-      "EPSeparator","Quadrupole","TargetShield",
+      "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
+      "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","BPM","BeamDivider",
+      "YagUnit","BPM","BeamDivider","Scrapper",
       "Help","help"
     });
 
@@ -185,12 +187,23 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "EBeamStop")
+    {
+      std::shared_ptr<tdcSystem::EBeamStop>
+	eBeam(new tdcSystem::EBeamStop("EBeam"));
+      OR.addObject(eBeam);
+
+      eBeam->addAllInsertCell(voidCell);
+      eBeam->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
   if (item == "BeamDivider")
     {
       std::shared_ptr<tdcSystem::BeamDivider>
 	bd(new tdcSystem::BeamDivider("BeamDiv"));
       OR.addObject(bd);
-      
+
       bd->addAllInsertCell(voidCell);
       bd->createAll(System,World::masterOrigin(),0);
 
@@ -230,15 +243,15 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="LQuad")
+  if (item=="LQuadF")
     {
-      std::shared_ptr<tdcSystem::LQuad>
-	LQ(new tdcSystem::LQuad("LQ","LQ"));
+      std::shared_ptr<tdcSystem::LQuadF>
+	QF(new tdcSystem::LQuadF("QF","QF"));
 
-      OR.addObject(LQ);
+      OR.addObject(QF);
 
-      LQ->addInsertCell(voidCell);
-      LQ->createAll(System,World::masterOrigin(),0);
+      QF->addInsertCell(voidCell);
+      QF->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -373,6 +386,18 @@ makeSingleItem::build(Simulation& System,
       Quad->createAll(System,World::masterOrigin(),0);
       return;
     }
+  if (item == "Scrapper")
+    {
+      std::shared_ptr<tdcSystem::Scrapper>
+	sc(new tdcSystem::Scrapper("Scrapper"));
+      OR.addObject(sc);
+
+      sc->addInsertCell(voidCell);
+      sc->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item=="TargetShield")
     {
       std::shared_ptr<insertSystem::insertSphere>
