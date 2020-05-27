@@ -100,8 +100,8 @@ L2SPFsegment6::L2SPFsegment6(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  pipeD(new constructSystem::VacuumPipe(keyName+"PipeC")),
   scrapper(new tdcSystem::Scrapper(keyName+"Scrapper")),
+  pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   beamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
@@ -116,8 +116,8 @@ L2SPFsegment6::L2SPFsegment6(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(pipeB);
   OR.addObject(pipeC);
-  OR.addObject(pipeD);
   OR.addObject(scrapper);
+  OR.addObject(pipeD);
   OR.addObject(bellowA);
   OR.addObject(beamStop);
   OR.addObject(bellowB);
@@ -159,7 +159,7 @@ L2SPFsegment6::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*pipeC,"back",*scrapper);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*scapper,"back",*pipeD);
+    (System,*buildZone,masterCell,*scrapper,"back",*pipeD);
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeD,"back",*bellowA);
   constructSystem::constructUnit
@@ -178,8 +178,8 @@ L2SPFsegment6::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*flatA,1);
-  setLinkSignedCopy(1,*bellowA,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*bellowB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

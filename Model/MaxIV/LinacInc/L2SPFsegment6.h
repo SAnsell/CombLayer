@@ -65,7 +65,7 @@ class L2SPFsegment6 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
 
   /// beam scrapper
-  std::shared_ptr<tcdSystem::Scrapper> scrapper;   
+  std::shared_ptr<tdcSystem::Scrapper> scrapper;   
 
   /// fourth pipe (flange change)
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;   

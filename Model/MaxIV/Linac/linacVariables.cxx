@@ -394,13 +394,13 @@ linac2SPFsegment6(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
 
-  PGen.setCFFlangeB<std:Variable::CF63>();
+  PGen.setBFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
 
   SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
     
   PGen.setCF<setVariable::CF40_22>();
-  PGen.setCFFlangeA<std:Variable::CF63>();
+  PGen.setAFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
   
   // again longer

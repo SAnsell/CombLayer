@@ -91,7 +91,7 @@ TDC::TDC(const std::string& KN) :
   l2spf3(new L2SPFsegment3("L2SPF3")),
   l2spf4(new L2SPFsegment4("L2SPF4")),
   l2spf5(new L2SPFsegment5("L2SPF5")),
-  l2spf5(new L2SPFsegment6("L2SPF6")),
+  l2spf6(new L2SPFsegment6("L2SPF6")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16"))
