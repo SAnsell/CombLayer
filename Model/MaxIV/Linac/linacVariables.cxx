@@ -403,7 +403,7 @@ linac2SPFsegment6(FuncDataBase& Control,
   PGen.setAFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
   
-  // again longer
+  // again longer.
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
 
@@ -748,6 +748,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment3(Control,"L2SPF3");
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
   linacVar::linac2SPFsegment5(Control,"L2SPF5");
+  linacVar::linac2SPFsegment6(Control,"L2SPF6");
 
   /// Segment 14-28
   linacVar::TDCsegment14(Control,"TDC14");

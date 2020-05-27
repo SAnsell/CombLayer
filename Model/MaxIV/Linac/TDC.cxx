@@ -103,14 +103,18 @@ TDC::TDC(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+
+	  
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
   OR.addObject(l2spf3);
+  OR.addObject(l2spf4);
+  OR.addObject(l2spf5);
+  OR.addObject(l2spf6);
   OR.addObject(tdc14);
   OR.addObject(tdc15);
   OR.addObject(tdc16);
-
 }
 
 TDC::~TDC()
@@ -236,6 +240,7 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment3","l2spf"},
       {"L2SPFsegment4","l2spf"},
       {"L2SPFsegment5","l2spfTurn"},
+      {"L2SPFsegment6","l2spfTurn"},
       {"TDCsegment14","tdc"},
       {"TDCsegment15","tdc"},
       {"TDCsegment16","tdc"}
@@ -309,6 +314,20 @@ TDC::createAll(Simulation& System,
 	  l2spf5->setInnerZone(buildZone.get());
 	  l2spf5->addInsertCell(injectionHall->getCell("LinearVoid"));
 	  l2spf5->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
+      if (BL=="L2SPFsegment6")
+	{
+	  if (l2spf5->hasLastSurf())
+	    {
+	      buildZone->setFront(l2spf5->getLastSurf());
+	      l2spf6->setCutSurf("front",l2spf5->getLastSurf());
+	    }
+	  buildZone->constructMasterCell(System);
+
+	  l2spf6->setInnerZone(buildZone.get());
+	  l2spf6->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf6->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
       else if (BL=="TDCsegment14")
