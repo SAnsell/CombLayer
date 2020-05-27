@@ -193,13 +193,14 @@ makeMaxIV::buildInjection(Simulation& System,
   static ITYPE injectNAMES
 
     ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-		 "L2SPFsegment4", "L2SPFsegment5" } },      
+	    "L2SPFsegment4", "L2SPFsegment5", "L2SPFsegment6" } },      
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16"} },      
        {"L2SPFsegment1",{} },                              // first only
        {"L2SPFsegment2",{} },                              // second only
        {"L2SPFsegment3",{} },                              // third only       
        {"L2SPFsegment4",{} },                              // forth only
        {"L2SPFsegment5",{} },                              // fifth only
+       {"L2SPFsegment6",{} },                              // fifth only
        {"TDCsegment14",{} },                              // 14th only
        {"TDCsegment15",{} },                              // 15th only
        {"TDCsegment16",{} }                               // 16th only
