@@ -318,6 +318,13 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
 template
+int pipeMagUnit(Simulation&,
+		attachSystem::InnerZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<tdcSystem::CorrectorMag>&);
+template
 int pipeMagGroup(Simulation&,
 		 attachSystem::InnerZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,

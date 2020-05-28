@@ -558,9 +558,9 @@ linac2SPFsegment7(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,61.75);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,101.31);
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,140.24);
 
   PGen.setBFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
