@@ -71,6 +71,7 @@
 #include "L2SPFsegment3.h"
 #include "L2SPFsegment4.h"
 #include "L2SPFsegment5.h"
+#include "L2SPFsegment6.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -92,6 +93,7 @@ TDC::TDC(const std::string& KN) :
   l2spf3(new L2SPFsegment3("L2SPF3")),
   l2spf4(new L2SPFsegment4("L2SPF4")),
   l2spf5(new L2SPFsegment5("L2SPF5")),
+  l2spf6(new L2SPFsegment6("L2SPF6")),
   tdc14(new TDCsegment14("TDC14")),
   tdc15(new TDCsegment15("TDC15")),
   tdc16(new TDCsegment16("TDC16")),
@@ -104,11 +106,14 @@ TDC::TDC(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+	  
   OR.addObject(injectionHall);
   OR.addObject(l2spf1);
   OR.addObject(l2spf2);
   OR.addObject(l2spf3);
+  OR.addObject(l2spf4);
+  OR.addObject(l2spf5);
+  OR.addObject(l2spf6);
   OR.addObject(tdc14);
   OR.addObject(tdc15);
   OR.addObject(tdc16);
@@ -240,6 +245,7 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment3","l2spf"},
       {"L2SPFsegment4","l2spf"},
       {"L2SPFsegment5","l2spfTurn"},
+      {"L2SPFsegment6","l2spfTurn"},
       {"TDCsegment14","tdc"},
       {"TDCsegment15","tdc"},
       {"TDCsegment16","tdc"},
@@ -248,6 +254,8 @@ TDC::createAll(Simulation& System,
     });
   const int voidCell(74123);
 
+
+  
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
@@ -317,6 +325,20 @@ TDC::createAll(Simulation& System,
 	  l2spf5->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
+      if (BL=="L2SPFsegment6")
+	{
+	  if (l2spf5->hasLastSurf())
+	    {
+	      buildZone->setFront(l2spf5->getLastSurf());
+	      l2spf6->setCutSurf("front",l2spf5->getLastSurf());
+	    }
+	  buildZone->constructMasterCell(System);
+
+	  l2spf6->setInnerZone(buildZone.get());
+	  //	  l2spf6->addInsertCell(injectionHall->getCell("LinearVoid"));
+	  l2spf6->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	}
       else if (BL=="TDCsegment14")
 	{
 	  //	  if (l2spf13->hasLastSurf())
@@ -343,7 +365,6 @@ TDC::createAll(Simulation& System,
 	    buildZone->setFront(tdc15->getLastSurf());
 	  tdc16->setInnerZone(buildZone.get());
 	  buildZone->constructMasterCell(System);
-
 	  tdc16->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}

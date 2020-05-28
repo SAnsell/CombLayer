@@ -158,7 +158,7 @@ FixedOffset::populate(const FuncDataBase& Control)
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
-    (keyName+"CentOffset",Geometry::Vec3D(xStep,yStep,zStep));
+    (keyName+"Offset",Geometry::Vec3D(xStep,yStep,zStep));
   
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
@@ -187,7 +187,7 @@ FixedOffset::populate(const std::map<std::string,
 
   Geometry::Vec3D CentOffset(xStep,yStep,zStep);
 				
-  mainSystem::findInput(inputMap,"offset",0,CentOffset);
+  mainSystem::findInput(inputMap,"Offset",0,CentOffset);
   
   mainSystem::findInput(inputMap,"preXYAngle",0,preXYAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
@@ -222,7 +222,7 @@ FixedOffset::populate(const std::string& baseName,
   preZAngle=Control.EvalDefTail<double>(keyName,baseName,"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefTail<Geometry::Vec3D>
-    (keyName,baseName,"CentOffset",Geometry::Vec3D(0,0,0));
+    (keyName,baseName,"Offset",Geometry::Vec3D(0,0,0));
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();

@@ -59,6 +59,8 @@
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
+#include "ScrapperGenerator.h"
+#include "EBeamStopGenerator.h"
 
 namespace setVariable
 {
@@ -74,7 +76,8 @@ namespace linacVar
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
   void linac2SPFsegment4(FuncDataBase&,const std::string&);
   void linac2SPFsegment5(FuncDataBase&,const std::string&);
-
+  void linac2SPFsegment6(FuncDataBase&,const std::string&);    
+  
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
   void TDCsegment16(FuncDataBase&,const std::string&);
@@ -204,7 +207,6 @@ linac2SPFsegment1(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
-
   // note larger unit
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
@@ -467,6 +469,54 @@ linac2SPFsegment5(FuncDataBase& Control,
 }
 
 void
+linac2SPFsegment6(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment6
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment5");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::EBeamStopGenerator EBGen;
+  setVariable::ScrapperGenerator SCGen;
+
+  Control.addVariable(lKey+"XStep",-45.073+linacVar::zeroX);  // WRONG
+  Control.addVariable(lKey+"YStep",1420.344+linacVar::zeroY);
+  Control.addVariable(lKey+"XYAngle",6.4);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,61.75);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
+
+  PGen.setBFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
+
+  SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
+    
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setAFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
+  
+  // again longer.
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
+
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",0);  
+  
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,14.0);
+
+
+  return;
+}
+
+void
 TDCsegment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -678,10 +728,11 @@ TDCsegment18(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
 
   // coordinates form drawing
+  
   Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);
   Control.addVariable(lKey+"YStep",5780.261+linacVar::zeroY);
   Control.addVariable(lKey+"EndX",-637.608+linacVar::zeroX);
-  Control.addVariable(lKey+"EndY",5780.261+linacVar::zeroY);
+  Control.addVariable(lKey+"EndY",5994.561+linacVar::zeroY);
   Control.addVariable(lKey+"XYAngle",0.0);
   Control.addVariable(lKey+"XYEndAngle",0.0);
 
@@ -831,6 +882,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment3(Control,"L2SPF3");
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
   linacVar::linac2SPFsegment5(Control,"L2SPF5");
+  linacVar::linac2SPFsegment6(Control,"L2SPF6");
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");

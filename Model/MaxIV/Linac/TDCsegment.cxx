@@ -35,9 +35,14 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -75,6 +80,52 @@ TDCsegment::~TDCsegment()
    */
 {}
 
+bool
+TDCsegment::totalPathCheck(const FuncDataBase& Control,
+			   const double errDist) const
+  /*!
+    Returns true if the last unit is in error
+    \param Control :: DataBase for start/end variables
+    \param errDist :: Error distance [default 0.1 (1mm)] 
+    \return 1 if error by more than errDist
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","totalPathCheck");
+
+  const Geometry::Vec3D startPoint=
+    Control.EvalVar<Geometry::Vec3D>(keyName+"Offset");
+
+  const Geometry::Vec3D endPoint=
+    Control.EvalVar<Geometry::Vec3D>(keyName+"EndOffset");
+
+  //
+  // Note that this is likely different from true start point:
+  // as we can apply initial offset to the generation object
+  //
+  const Geometry::Vec3D realStart=FixedComp::getLinkPt(1);
+  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(1);
+
+  const Geometry::Vec3D vEnd(realEnd-(realStart-startPoint));
+
+  const double D=vEnd.Distance(endPoint);
+
+  if (std::abs(D)>0.1)
+    {
+      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
+      ELog::EM<<"Start Point "<<startPoint<<"\n";
+      ELog::EM<<"End Point   "<<endPoint<<"\n\n";
+
+      ELog::EM<<"readStart   "<<realStart<<"\n";
+      ELog::EM<<"realEnd     "<<realEnd<<"\n";
+      ELog::EM<<"shiftedEnd   "<<vEnd<<"\n\n";
+
+      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
+      return 1;
+    }
+
+  return 0;
+}
+    
 void
 TDCsegment::setLastSurf(const HeadRule& HR)
   /*!
