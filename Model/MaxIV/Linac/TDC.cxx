@@ -96,9 +96,9 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment4",std::make_shared<L2SPFsegment4>("L2SPF4") },
     { "L2SPFsegment5",std::make_shared<L2SPFsegment5>("L2SPF5") },
     { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
-    { "TDCsegement14",std::make_shared<TDCsegment14>("TDC14") },
-    { "TDCsegement15",std::make_shared<TDCsegment15>("TDC15") },
-    { "TDCsegement16",std::make_shared<TDCsegment16>("TDC16") }, 
+    { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
+    { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
+    { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") }, 
     // { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") }
   } )
