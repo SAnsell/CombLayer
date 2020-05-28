@@ -72,6 +72,7 @@
 #include "L2SPFsegment4.h"
 #include "L2SPFsegment5.h"
 #include "L2SPFsegment6.h"
+#include "L2SPFsegment7.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"

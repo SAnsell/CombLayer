@@ -76,7 +76,8 @@ namespace linacVar
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
   void linac2SPFsegment4(FuncDataBase&,const std::string&);
   void linac2SPFsegment5(FuncDataBase&,const std::string&);
-  void linac2SPFsegment6(FuncDataBase&,const std::string&);    
+  void linac2SPFsegment6(FuncDataBase&,const std::string&);
+  void linac2SPFsegment7(FuncDataBase&,const std::string&);    
   
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -533,6 +534,56 @@ linac2SPFsegment6(FuncDataBase& Control,
 }
 
 void
+linac2SPFsegment7(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment6
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment5");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::EBeamStopGenerator EBGen;
+  setVariable::ScrapperGenerator SCGen;
+
+  const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
+  const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,61.75);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
+
+  PGen.setBFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
+
+  SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
+    
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setAFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
+  
+  // again longer.
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
+
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",0);  
+  
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,14.0);
+
+
+  return;
+}
+
+void
 TDCsegment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -901,6 +952,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
   linacVar::linac2SPFsegment5(Control,"L2SPF5");
   linacVar::linac2SPFsegment6(Control,"L2SPF6");
+  linacVar::linac2SPFsegment7(Control,"L2SPF7");
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");
