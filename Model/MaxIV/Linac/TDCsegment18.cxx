@@ -74,7 +74,7 @@
 #include "CorrectorMag.h"
 #include "portItem.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
+#include "BlankTube.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment18.h"
@@ -87,7 +87,7 @@ namespace tdcSystem
 TDCsegment18::TDCsegment18(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),

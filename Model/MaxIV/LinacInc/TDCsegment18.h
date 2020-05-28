@@ -38,7 +38,7 @@ class TDCsegment18 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::PipeTube> ionPump;      ///< #2, 3
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5

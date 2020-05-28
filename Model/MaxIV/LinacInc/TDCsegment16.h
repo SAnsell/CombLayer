@@ -45,7 +45,7 @@ class TDCsegment16 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::PipeTube> ionPump;      ///< #7
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #7
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9
 
   void buildObjects(Simulation&);

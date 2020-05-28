@@ -107,21 +107,15 @@ setIonPump2(FuncDataBase& Control,
 
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
   Control.addVariable(name+"NPorts",2);
-  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
-  Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
-
-  Control.addVariable(name+"FlangeBLength",0.1);
-  Control.addVariable(name+"FlangeBRadius",
-		      setVariable::CF63::innerRadius+setVariable::CF63::wallThick+0.1);
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
 
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
   // total ion pump length
   const double totalLength(16.0); // measured
   // length of ports 1 and 2
-  double L = totalLength -
-    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
-  L /= 2.0;
+  const double L = totalLength/2.0 -
+    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick);
 
   PItemGen.setLength(L);
   PItemGen.setNoPlate();
@@ -648,7 +642,8 @@ TDCsegment16(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
-  setIonPump3(Control,lKey+"IonPump");
+  setIonPump2(Control,lKey+"IonPump");
+  Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0); // measured
 

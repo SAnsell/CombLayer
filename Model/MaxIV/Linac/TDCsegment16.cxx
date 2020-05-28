@@ -74,7 +74,7 @@
 #include "CorrectorMag.h"
 #include "portItem.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
+#include "BlankTube.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment16.h"
@@ -94,7 +94,7 @@ TDCsegment16::TDCsegment16(const std::string& Key) :
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC"))
   /*!
     Constructor
@@ -163,11 +163,8 @@ TDCsegment16::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
+  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump->createAll(System,*bellowB,"back");
-
-  ionPump->intersectPorts(System,0,1);
-  ionPump->intersectPorts(System,0,2);
 
   const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
   outerCell=
