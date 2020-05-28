@@ -103,7 +103,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   // as we can apply initial offset to the generation object
   //
   const Geometry::Vec3D realStart=FixedComp::getLinkPt(1);
-  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(1);
+  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(2);
 
   const Geometry::Vec3D vEnd(realEnd-(realStart-startPoint));
 
@@ -112,11 +112,11 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   if (std::abs(D)>0.1)
     {
       ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
-      ELog::EM<<"Start Point "<<startPoint<<"\n";
-      ELog::EM<<"End Point   "<<endPoint<<"\n\n";
+      ELog::EM<<"Start Point  "<<startPoint<<"\n";
+      ELog::EM<<"End Point    "<<endPoint<<"\n\n";
 
-      ELog::EM<<"readStart   "<<realStart<<"\n";
-      ELog::EM<<"realEnd     "<<realEnd<<"\n";
+      ELog::EM<<"readStart    "<<realStart<<"\n";
+      ELog::EM<<"realEnd      "<<realEnd<<"\n";
       ELog::EM<<"shiftedEnd   "<<vEnd<<"\n\n";
 
       ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;

@@ -88,17 +88,20 @@ TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   attachSystem::CellMap(),
   injectionHall(new InjectionHall("InjectionHall")),
-  l2spf1(new L2SPFsegment1("L2SPF1")),
-  l2spf2(new L2SPFsegment2("L2SPF2")),
-  l2spf3(new L2SPFsegment3("L2SPF3")),
-  l2spf4(new L2SPFsegment4("L2SPF4")),
-  l2spf5(new L2SPFsegment5("L2SPF5")),
-  l2spf6(new L2SPFsegment6("L2SPF6")),
-  tdc14(new TDCsegment14("TDC14")),
-  tdc15(new TDCsegment15("TDC15")),
-  tdc16(new TDCsegment16("TDC16")),
-  // tdc17(new TDCsegment17("TDC17")),
-  tdc18(new TDCsegment18("TDC18"))
+  SegMap
+  ({
+    { "L2SPFsegment1",std::make_shared<L2SPFsegment1>("L2SPF1") },
+    { "L2SPFsegment2",std::make_shared<L2SPFsegment2>("L2SPF2") },
+    { "L2SPFsegment3",std::make_shared<L2SPFsegment3>("L2SPF3") },
+    { "L2SPFsegment4",std::make_shared<L2SPFsegment4>("L2SPF4") },
+    { "L2SPFsegment5",std::make_shared<L2SPFsegment5>("L2SPF5") },
+    { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
+    { "TDCsegement14",std::make_shared<TDCsegment14>("TDC14") },
+    { "TDCsegement15",std::make_shared<TDCsegment15>("TDC15") },
+    { "TDCsegement16",std::make_shared<TDCsegment16>("TDC16") }, 
+    // { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
+    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") }
+  } )
   /*!
     Constructor
     \param KN :: Keyname
@@ -108,18 +111,8 @@ TDC::TDC(const std::string& KN) :
     ModelSupport::objectRegister::Instance();
 	  
   OR.addObject(injectionHall);
-  OR.addObject(l2spf1);
-  OR.addObject(l2spf2);
-  OR.addObject(l2spf3);
-  OR.addObject(l2spf4);
-  OR.addObject(l2spf5);
-  OR.addObject(l2spf6);
-  OR.addObject(tdc14);
-  OR.addObject(tdc15);
-  OR.addObject(tdc16);
-  //  OR.addObject(tdc17);
-  OR.addObject(tdc18);
-
+  for(const auto& [ key, tdcItem ] : SegMap)
+    OR.addObject(tdcItem);
 }
 
 TDC::~TDC()
@@ -237,23 +230,22 @@ TDC::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("TDC","createAll");
 
-  //  typedef std::tuple<std::string> ITYPE;
-  static const std::map<std::string,std::string> segmentLinkMap
+  typedef std::tuple<std::string,std::string> LinkTYPE;
+  static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
-      {"L2SPFsegment1","l2spf"},
-      {"L2SPFsegment2","l2spf"},
-      {"L2SPFsegment3","l2spf"},
-      {"L2SPFsegment4","l2spf"},
-      {"L2SPFsegment5","l2spfTurn"},
-      {"L2SPFsegment6","l2spfTurn"},
-      {"TDCsegment14","tdc"},
-      {"TDCsegment15","tdc"},
-      {"TDCsegment16","tdc"},
-      {"TDCsegment17","tdc"},
-      {"TDCsegment18","tdc"}
+      {"L2SPFsegment1",{"l2spf",""}},
+      {"L2SPFsegment2",{"l2spf","L2SPFsegment1"}},
+      {"L2SPFsegment3",{"l2spf","L2SPFsegment2"}},
+      {"L2SPFsegment4",{"l2spf","L2SPFsegment3"}},
+      {"L2SPFsegment5",{"l2spfTurn","L2SPFsegment4"}},
+      {"L2SPFsegment6",{"l2spfTurn","L2SPFsegment5"}},
+      {"TDCsegment14",{"tdc",""}},
+      {"TDCsegment15",{"tdc","TDCsegment15"}},
+      {"TDCsegment16",{"tdc","TDCsegment16"}},
+      {"TDCsegment17",{"tdc","TDCsegment16"}},
+      {"TDCsegment18",{"tdc","TDCsegment17"}}
     });
   const int voidCell(74123);
-
 
   
   // build injection hall first:
@@ -262,122 +254,36 @@ TDC::createAll(Simulation& System,
 
   for(const std::string& BL : activeINJ)
     {
-      const std::string& bzName=segmentLinkMap.at(BL);
+      SegTYPE::const_iterator mc=SegMap.find(BL);
+      if (mc==SegMap.end())
+	throw ColErr::InContainerError<std::string>(BL,"Beamline");
+
+      const LinkTYPE seglink=segmentLinkMap.at(BL);
+      const std::string& bzName=std::get<0>(seglink);
+      const std::string& prevName=std::get<1>(seglink);
+      SegTYPE::const_iterator prevC=SegMap.find(prevName);
+      
+      const std::shared_ptr<TDCsegment>& segPtr=mc->second;
+      
       std::unique_ptr<attachSystem::InnerZone> buildZone=
 	buildInnerZone(System.getDataBase(),bzName);
 
-      if (BL=="L2SPFsegment1")
+      if (prevC!=SegMap.end())
 	{
-	  l2spf1->setInnerZone(buildZone.get());
-	  buildZone->constructMasterCell(System);
-
-	  l2spf1->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf1->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      if (BL=="L2SPFsegment2")
-	{
-	  if (l2spf1->hasLastSurf())
-	    buildZone->setFront(l2spf1->getLastSurf());
-	  buildZone->constructMasterCell(System);
-
-	  l2spf2->setInnerZone(buildZone.get());
-	  l2spf2->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf2->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      if (BL=="L2SPFsegment3")
-	{
-	  if (l2spf2->hasLastSurf())
-	    buildZone->setFront(l2spf2->getLastSurf());
-	  buildZone->constructMasterCell(System);
-
-	  l2spf3->setInnerZone(buildZone.get());
-	  l2spf3->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf3->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      if (BL=="L2SPFsegment4")
-	{
-	  if (l2spf3->hasLastSurf())
+	  const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
+	  if (prevPtr->hasLastSurf())
 	    {
-	      buildZone->setFront(l2spf3->getLastSurf());
-	      l2spf4->setCutSurf("front",l2spf3->getLastSurf());
+	      buildZone->setFront(prevPtr->getLastSurf());
+	      segPtr->setCutSurf("front",prevPtr->getLastSurf());
 	    }
-	  buildZone->constructMasterCell(System);
-
-	  l2spf4->setInnerZone(buildZone.get());
-	  l2spf4->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf4->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	}
-      if (BL=="L2SPFsegment5")
-	{
-	  if (l2spf4->hasLastSurf())
-	    {
-	      buildZone->setFront(l2spf4->getLastSurf());
-	      l2spf5->setCutSurf("front",l2spf4->getLastSurf());
-	    }
-	  buildZone->constructMasterCell(System);
-
-	  l2spf5->setInnerZone(buildZone.get());
-	  l2spf5->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf5->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      if (BL=="L2SPFsegment6")
-	{
-	  if (l2spf5->hasLastSurf())
-	    {
-	      buildZone->setFront(l2spf5->getLastSurf());
-	      l2spf6->setCutSurf("front",l2spf5->getLastSurf());
-	    }
-	  buildZone->constructMasterCell(System);
-
-	  l2spf6->setInnerZone(buildZone.get());
-	  //	  l2spf6->addInsertCell(injectionHall->getCell("LinearVoid"));
-	  l2spf6->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      else if (BL=="TDCsegment14")
-	{
-	  //	  if (l2spf13->hasLastSurf())
-	  //	    buildZone->setFront(l2spf13->getLastSurf());
-	  tdc14->setInnerZone(buildZone.get());
-	  buildZone->constructMasterCell(System);
-
-	  tdc14->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      else if (BL=="TDCsegment15")
-	{
-	  if (tdc14->hasLastSurf())
-	    buildZone->setFront(tdc14->getLastSurf());
-	  tdc15->setInnerZone(buildZone.get());
-	  buildZone->constructMasterCell(System);
-
-	  tdc15->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      else if (BL=="TDCsegment16")
-	{
-	  if (tdc15->hasLastSurf())
-	    buildZone->setFront(tdc15->getLastSurf());
-	  tdc16->setInnerZone(buildZone.get());
-	  buildZone->constructMasterCell(System);
-	  tdc16->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
-      else if (BL=="TDCsegment18")
-	{
-	  // if (tdc17->hasLastSurf())
-	  //   buildZone->setFront(tdc17->getLastSurf());
-	  tdc18->setInnerZone(buildZone.get());
-	  buildZone->constructMasterCell(System);
-
-	  tdc18->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	}
+      buildZone->constructMasterCell(System);
+      
+      segPtr->setInnerZone(buildZone.get());
+      segPtr->addInsertCell(injectionHall->getCell("LinearVoid"));
+      segPtr->createAll
+	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
+      segPtr->totalPathCheck(System.getDataBase(),0.1);
     }
 
   return;

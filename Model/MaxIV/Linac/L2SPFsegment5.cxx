@@ -160,7 +160,8 @@ L2SPFsegment5::createLinks()
 {
   setLinkSignedCopy(0,*flatA,1);
   setLinkSignedCopy(1,*bellowA,2);
-
+  ELog::EM<<"Flag A = "<<getLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"Flag B = "<<getLinkPt(2)<<ELog::endDiag;
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
