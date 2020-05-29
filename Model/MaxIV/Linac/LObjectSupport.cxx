@@ -83,6 +83,7 @@
 #include "CorrectorMag.h"
 #include "FlatPipe.h"
 #include "LQuadF.h"
+#include "LQuadH.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
 
@@ -308,6 +309,14 @@ int pipeMagUnit(Simulation&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
+		const std::shared_ptr<tdcSystem::LQuadH>&);
+
+template
+int pipeMagUnit(Simulation&,
+		attachSystem::InnerZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
 		const std::shared_ptr<tdcSystem::LSexupole>&);
 
 template
@@ -325,6 +334,15 @@ int pipeMagGroup(Simulation&,
 		 const std::string&,
 		 const std::string&,
 		 const std::shared_ptr<tdcSystem::LQuadF>&);
+
+template
+int pipeMagGroup(Simulation&,
+		 attachSystem::InnerZone&,
+		 const std::shared_ptr<attachSystem::FixedComp>&,
+		 const std::set<std::string>&,
+		 const std::string&,
+		 const std::string&,
+		 const std::shared_ptr<tdcSystem::LQuadH>&);
 
 template
 int pipeMagGroup(Simulation&,
