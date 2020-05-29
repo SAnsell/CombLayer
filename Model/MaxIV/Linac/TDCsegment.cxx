@@ -117,6 +117,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 
       ELog::EM<<"readStart    "<<realStart<<"\n";
       ELog::EM<<"realEnd      "<<realEnd<<"\n";
+
       ELog::EM<<"shiftedEnd   "<<vEnd<<"\n\n";
 
       ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;

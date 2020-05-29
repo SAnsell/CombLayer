@@ -146,18 +146,18 @@ L2SPFsegment7::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
+
   
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpm);
 
-  pipeB->copyCutSurf("front",*bpm,"back");
-  pipeB->createAll(System,*this,0);
+  //  pipeB->copyCutSurf("front",*bpm,"back");
+  pipeB->createAll(System,*bpm,"back");
+
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVertA);
   pipeTerminate(System,*buildZone,pipeB);
   

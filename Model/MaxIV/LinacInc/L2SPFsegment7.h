@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment6.h
+ * File:   LinacInc/L2SPFsegment7.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment6_h
-#define tdcSystem_L2SPFsegment6_h
+#ifndef tdcSystem_L2SPFsegment7_h
+#define tdcSystem_L2SPFsegment7_h
 
 namespace constructSystem
 {

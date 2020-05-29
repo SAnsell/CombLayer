@@ -85,9 +85,9 @@ namespace linacVar
   //  void TDCsegment17(FuncDataBase&,const std::string&);
   void TDCsegment18(FuncDataBase&,const std::string&);
 
-  Geometry::Vec3D zeroOffset(152,481,0.0);
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
+  const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
 
 void
 setIonPump2Port(FuncDataBase& Control,
@@ -545,39 +545,26 @@ linac2SPFsegment7(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment5");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::EBeamStopGenerator EBGen;
-  setVariable::ScrapperGenerator SCGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
 
-  const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
-  const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
+  const Geometry::Vec3D startPt(-147.547,1936.770,0.0);
+  const Geometry::Vec3D endPt(-206.146,2194.697,0.0);
+
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",12.8);
+  Control.addVariable(lKey+"XYAngle",12.8);  
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,101.31);
-
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,140.24);
-
-  PGen.setBFlangeCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
-
-  SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
-    
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setAFlangeCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
-  
-  // again longer.
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
-
-  EBGen.generateEBeamStop(Control,lKey+"EBeam",0);  
-  
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,14.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,102.31);
+  CMGen.generateMag(Control,lKey+"CMagHorA",37.25,0);
+  LQGen.generateQuad(Control,lKey+"QuadA",81.0);
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,140.26);
+  CMGen.generateMag(Control,lKey+"CMagVertA",11.87,1);
 
 
   return;
@@ -927,23 +914,30 @@ LINACvariables(FuncDataBase& Control)
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
-  Control.addVariable("TDCl2spfXStep",linacVar::zeroX);
-  Control.addVariable("TDCl2spfYStep",linacVar::zeroY);
-  Control.addVariable("TDCl2spfOuterLeft",80.0);
-  Control.addVariable("TDCl2spfOuterRight",140.0);
-  Control.addVariable("TDCl2spfOuterTop",100.0);
+  Control.addVariable("l2spfXStep",linacVar::zeroX);
+  Control.addVariable("l2spfYStep",linacVar::zeroY);
+  Control.addVariable("l2spfOuterLeft",80.0);
+  Control.addVariable("l2spfOuterRight",140.0);
+  Control.addVariable("l2spfOuterTop",100.0);
 
-  Control.addVariable("TDCl2spfTurnXStep",linacVar::zeroX-80.0);
-  Control.addVariable("TDCl2spfTurnYStep",linacVar::zeroY);
-  Control.addVariable("TDCl2spfTurnOuterLeft",80.0);
-  Control.addVariable("TDCl2spfTurnOuterRight",140.0);
-  Control.addVariable("TDCl2spfTurnOuterTop",100.0);
+  Control.addVariable("l2spfTurnXStep",linacVar::zeroX-80.0);
+  Control.addVariable("l2spfTurnYStep",linacVar::zeroY);
+  Control.addVariable("l2spfTurnOuterLeft",80.0);
+  Control.addVariable("l2spfTurnOuterRight",140.0);
+  Control.addVariable("l2spfTurnOuterTop",100.0);
 
-  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);
-  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("TDCtdcOuterLeft",100.0);
-  Control.addVariable("TDCtdcOuterRight",100.0);
-  Control.addVariable("TDCtdcOuterTop",100.0);
+  Control.addVariable("l2spfAngleXStep",linacVar::zeroX-155.0);
+  Control.addVariable("l2spfAngleYStep",linacVar::zeroY+2000.0);
+  Control.addVariable("l2spfAngleOuterLeft",100.0);
+  Control.addVariable("l2spfAngleOuterRight",100.0);
+  Control.addVariable("l2spfAngleOuterTop",100.0);
+  Control.addVariable("l2spfAngleXYAngle",12.0);
+
+  Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("tdcOuterLeft",100.0);
+  Control.addVariable("tdcOuterRight",100.0);
+  Control.addVariable("tdcOuterTop",100.0);
 
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");

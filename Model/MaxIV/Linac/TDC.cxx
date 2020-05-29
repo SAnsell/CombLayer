@@ -41,6 +41,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -82,6 +83,10 @@
 
 #include "TDC.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+
 namespace tdcSystem
 {
 
@@ -97,6 +102,7 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment4",std::make_shared<L2SPFsegment4>("L2SPF4") },
     { "L2SPFsegment5",std::make_shared<L2SPFsegment5>("L2SPF5") },
     { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
+    { "L2SPFsegment7",std::make_shared<L2SPFsegment7>("L2SPF7") },
     { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
     { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
     { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") }, 
@@ -137,29 +143,24 @@ TDC::buildSurround(const FuncDataBase& Control,
 
   static int BI(buildIndex);   // keep regions in order and unique
 
-  const double outerLeft=
-    Control.EvalTail<double>(keyName+regionName,keyName,"OuterLeft");
-  const double outerRight=
-    Control.EvalTail<double>(keyName+regionName,keyName,"OuterRight");
-  const double outerTop=
-    Control.EvalTail<double>(keyName+regionName,keyName,"OuterTop");
+  const double outerLeft=Control.EvalVar<double>(regionName+"OuterLeft");
+  const double outerRight=Control.EvalVar<double>(regionName+"OuterRight");
+  const double outerTop=Control.EvalVar<double>(regionName+"OuterTop");
   const double outerFloor=
-    Control.EvalDefTail<double>(keyName+regionName,
-				keyName,"OuterFloor",-5e10); // large-neg
+    Control.EvalDefVar<double>(regionName+"OuterFloor",-5e10); // large-neg
 
   const attachSystem::FixedOffsetUnit injFC
-    (Control,keyName+regionName,*injectionHall,injectionPt);
-
+    (Control,regionName,*injectionHall,injectionPt);
   // rotation if needed in a bit
   const Geometry::Vec3D& Org=injFC.getCentre();
   const Geometry::Vec3D& InjectX=injFC.getX();
   const Geometry::Vec3D& InjectZ=injFC.getZ();
+  
   std::string Out;
 
   ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
   ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
   ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
-
   if (outerFloor < -4e10)
     {
       Out=ModelSupport::getComposite(SMap,BI," 3 -4 -6");
@@ -193,6 +194,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
     ({
       {"l2spf",{"Front","#MidWall","LinearVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid"}},
+      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid"}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid"}}
     });
 
@@ -240,6 +242,7 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment4",{"l2spf","L2SPFsegment3"}},
       {"L2SPFsegment5",{"l2spfTurn","L2SPFsegment4"}},
       {"L2SPFsegment6",{"l2spfTurn","L2SPFsegment5"}},
+      {"L2SPFsegment7",{"l2spfAngle","L2SPFsegment6"}},
       {"TDCsegment14",{"tdc",""}},
       {"TDCsegment15",{"tdc","TDCsegment15"}},
       {"TDCsegment16",{"tdc","TDCsegment16"}},
