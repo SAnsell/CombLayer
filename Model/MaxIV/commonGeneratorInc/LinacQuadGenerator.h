@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/LinacQuadFGenerator.h
+ * File:   commonGeneratorInc/LinacQuadGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_LinacQuadFGenerator_h
-#define setVariable_LinacQuadFGenerator_h
+#ifndef setVariable_LinacQuadGenerator_h
+#define setVariable_LinacQuadGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class LinacQuadFGenerator
+  \class LinacQuadGenerator
   \version 1.0
   \author S. Ansell
   \date April 2020
-  \brief LinacQuadFGenerator for variables
+  \brief LinacQuadGenerator for variables
 */
 
-class LinacQuadFGenerator
+class LinacQuadGenerator
 {
  private:
 
@@ -67,10 +67,10 @@ class LinacQuadFGenerator
 
  public:
 
-  LinacQuadFGenerator();
-  LinacQuadFGenerator(const LinacQuadFGenerator&);
-  LinacQuadFGenerator& operator=(const LinacQuadFGenerator&);
-  virtual ~LinacQuadFGenerator();
+  LinacQuadGenerator();
+  LinacQuadGenerator(const LinacQuadGenerator&);
+  LinacQuadGenerator& operator=(const LinacQuadGenerator&);
+  virtual ~LinacQuadGenerator();
 
   /// Angle in deg for main axis rotation
   void setPoleAngle(const double A) { poleYAngle=A; }

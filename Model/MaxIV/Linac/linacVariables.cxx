@@ -47,7 +47,7 @@
 #include "BellowGenerator.h"
 #include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
-#include "LinacQuadFGenerator.h"
+#include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
@@ -184,7 +184,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment1");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -253,7 +253,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
@@ -380,7 +380,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagScreenGenerator YagGen;
@@ -469,7 +469,7 @@ TDCsegment14(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment14");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -522,7 +522,7 @@ TDCsegment15(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment15");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -594,7 +594,7 @@ TDCsegment16(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   PGen.setNoWindow();
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -663,7 +663,7 @@ TDCsegment18(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
 
   // coordinates form drawing
