@@ -695,14 +695,11 @@ TDCsegment18(FuncDataBase& Control,
   LQGen.setRadius(0.56, 2.31); // 0.56 -> measured (QH)
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
 
-  // actually the pole width is 2.6, but then they cut with poleRadius of 0.56 cm
-  // I think it's more important to have correct poleRadius since it defines aperture
-  // of particles with high Lorentz factor
-  Control.addVariable(lKey+"QuadPoleWidth",1.4);
-
   Control.addVariable(lKey+"QuadLength",18.7); //  - inner box lengh
   //  - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
+  // adjusted so that nose is 1 cm thick as in the STEP file
+  Control.addVariable(lKey+"QuadPolePitch",26.0);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,127.3); //

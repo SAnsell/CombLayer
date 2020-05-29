@@ -42,7 +42,7 @@ class TDCsegment18 :
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
-  std::shared_ptr<tdcSystem::LQuadF> quad;                 ///< #6
+  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
