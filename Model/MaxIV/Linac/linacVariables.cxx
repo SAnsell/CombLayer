@@ -117,15 +117,19 @@ setIonPump2Port(FuncDataBase& Control,
   Control.addVariable(name+"NPorts",2);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
 
+  // Outer radius of the vertical pipe
+  const double outerR = setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+  // length of ports 0 and 1
+  // measured at TDCsegment18 from front/back to the centre
+  // but it looks like these lengths are the same for all 2 port ion pumps
+  const double L0 = 8.5 - outerR;
+  const double L1 = 7.5 - outerR;
+
+  PItemGen.setLength(L0);
+  PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
-  // total ion pump length
-  const double totalLength(16.0); // measured
-  // length of ports 1 and 2
-  const double L = totalLength/2.0 -
-    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick);
-
-  PItemGen.setLength(L);
+  PItemGen.setLength(L1);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
 
@@ -539,7 +543,7 @@ linac2SPFsegment7(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BPMGenerator BPMGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
 
   const Geometry::Vec3D startPt(-147.547,1936.770,0.0);
@@ -784,7 +788,7 @@ TDCsegment16(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
-  setIonPump2(Control,lKey+"IonPump");
+  setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0); // measured
@@ -816,11 +820,10 @@ TDCsegment18(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-637.608,5994.561,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // measured
 
   setIonPump2Port(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
