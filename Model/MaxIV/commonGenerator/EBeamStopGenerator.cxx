@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 EBeamStopGenerator::EBeamStopGenerator() :
-  width(11.4),length(41.4),height(12.6),depth(10.0),
+  width(11.4),length(39.2),height(12.6),depth(10.0),
   wallThick(0.8),baseThick(2.6),baseFlangeExtra(3.0),
   baseFlangeThick(2.6),portLength(4.4),
   portRadius(CF40_22::innerRadius),

@@ -766,7 +766,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSourceRadial",12.0);        // Width
 
 
-  Control.addVariable("CGSlice0CentOffset",Geometry::Vec3D(95.0,212.5,0.0));
+  Control.addVariable("CGSlice0Offset",Geometry::Vec3D(95.0,212.5,0.0));
   Control.addVariable("CGSlice0Length",30.0);
   Control.addVariable("CGSlice0Height",-1.0);
   Control.addVariable("CGSlice0InsertKey","SteelRightVertical");
@@ -776,25 +776,25 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideCutsActive",1);    // Number of cuts
   Control.addVariable("chipGuideNCuts",16);    // Number of cuts
     
-  Control.addVariable("CGCut0CentOffset",Geometry::Vec3D(55.0,10.0,50.0));
-  Control.addVariable("CGCut1CentOffset",Geometry::Vec3D(60.0,126.0,50.0));
-  Control.addVariable("CGCut2CentOffset",Geometry::Vec3D(60.0,253.0,50.0));
-  Control.addVariable("CGCut3CentOffset",Geometry::Vec3D(60.0,378.0,50.0));
-  Control.addVariable("CGCut4CentOffset",Geometry::Vec3D(75.0,558.0,50.0));
+  Control.addVariable("CGCut0Offset",Geometry::Vec3D(55.0,10.0,50.0));
+  Control.addVariable("CGCut1Offset",Geometry::Vec3D(60.0,126.0,50.0));
+  Control.addVariable("CGCut2Offset",Geometry::Vec3D(60.0,253.0,50.0));
+  Control.addVariable("CGCut3Offset",Geometry::Vec3D(60.0,378.0,50.0));
+  Control.addVariable("CGCut4Offset",Geometry::Vec3D(75.0,558.0,50.0));
 
-  Control.addVariable("CGCut5CentOffset",Geometry::Vec3D(85.0,276.0,50.0));
-  Control.addVariable("CGCut6CentOffset",Geometry::Vec3D(85.0,427.0,50.0));
+  Control.addVariable("CGCut5Offset",Geometry::Vec3D(85.0,276.0,50.0));
+  Control.addVariable("CGCut6Offset",Geometry::Vec3D(85.0,427.0,50.0));
 
   // left side
-  Control.addVariable("CGCut7CentOffset",Geometry::Vec3D(-28.0,12.0,50.0));
-  Control.addVariable("CGCut8CentOffset",Geometry::Vec3D(-40.0,90.0,50.0));
-  Control.addVariable("CGCut9CentOffset",Geometry::Vec3D(-28.0,129.0,50.0));
-  Control.addVariable("CGCut10CentOffset",Geometry::Vec3D(-28.0,253.0,50.0));
-  Control.addVariable("CGCut11CentOffset",Geometry::Vec3D(-60.0,273.0,50.0));
-  Control.addVariable("CGCut12CentOffset",Geometry::Vec3D(-28.0,378.0,50.0));
-  Control.addVariable("CGCut13CentOffset",Geometry::Vec3D(-60.0,427.0,50.0));
-  Control.addVariable("CGCut14CentOffset",Geometry::Vec3D(-70.0,520.0,50.0));
-  Control.addVariable("CGCut15CentOffset",Geometry::Vec3D(-60.0,535.5,50.0));
+  Control.addVariable("CGCut7Offset",Geometry::Vec3D(-28.0,12.0,50.0));
+  Control.addVariable("CGCut8Offset",Geometry::Vec3D(-40.0,90.0,50.0));
+  Control.addVariable("CGCut9Offset",Geometry::Vec3D(-28.0,129.0,50.0));
+  Control.addVariable("CGCut10Offset",Geometry::Vec3D(-28.0,253.0,50.0));
+  Control.addVariable("CGCut11Offset",Geometry::Vec3D(-60.0,273.0,50.0));
+  Control.addVariable("CGCut12Offset",Geometry::Vec3D(-28.0,378.0,50.0));
+  Control.addVariable("CGCut13Offset",Geometry::Vec3D(-60.0,427.0,50.0));
+  Control.addVariable("CGCut14Offset",Geometry::Vec3D(-70.0,520.0,50.0));
+  Control.addVariable("CGCut15Offset",Geometry::Vec3D(-60.0,535.5,50.0));
   
   Control.addVariable("CGCut0Length",30.0);
   Control.addVariable("CGCut1Length",40.0);

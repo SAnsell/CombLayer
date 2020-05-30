@@ -61,7 +61,7 @@ BeamDividerGenerator::BeamDividerGenerator() :
   boxLength(60.0),wallThick(0.2),
   mainWidth(1.0),exitWidth(1.0),
   height(3.0),mainXStep(-0.675),exitXStep(0.0),
-  exitAngle(2.86),mainLength(93.0),
+  exitAngle(2.86),mainLength(95.0),
   mainRadius(CF40_22::innerRadius),mainThick(CF40_22::wallThick),
   exitLength(14.5), exitRadius(CF16::innerRadius),
   exitThick(CF16::wallThick),

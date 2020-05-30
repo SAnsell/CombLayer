@@ -53,6 +53,9 @@ class TDCsegment :
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
 
+
+  bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
+  
   /// set the current inner zone [allows joining of segments]
   void setInnerZone(attachSystem::InnerZone* IZPtr) { buildZone=IZPtr; }
 

@@ -59,6 +59,8 @@
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
+#include "ScrapperGenerator.h"
+#include "EBeamStopGenerator.h"
 
 namespace setVariable
 {
@@ -66,12 +68,17 @@ namespace setVariable
 namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
+  void setIonPump2Port(FuncDataBase&,const std::string&);
+  void setIonPump3Port(FuncDataBase&,const std::string&);
 
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
   void linac2SPFsegment3(FuncDataBase&,const std::string&);
   void linac2SPFsegment4(FuncDataBase&,const std::string&);
   void linac2SPFsegment5(FuncDataBase&,const std::string&);
+  void linac2SPFsegment6(FuncDataBase&,const std::string&);
+  void linac2SPFsegment7(FuncDataBase&,const std::string&);
+  void linac2SPFsegment8(FuncDataBase&,const std::string&);
 
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -81,10 +88,11 @@ namespace linacVar
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
+  const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
 
 void
-setIonPump2(FuncDataBase& Control,
-	    const std::string& name)
+setIonPump2Port(FuncDataBase& Control,
+		const std::string& name)
 /*!
   Set the 2 port ion pump variables
   \param Control :: DataBase to use
@@ -92,7 +100,7 @@ setIonPump2(FuncDataBase& Control,
   \param nPorts :: number of ports
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump2");
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -125,15 +133,14 @@ setIonPump2(FuncDataBase& Control,
 }
 
 void
-setIonPump3(FuncDataBase& Control,
-	    const std::string& name)
+setIonPump3Port(FuncDataBase& Control,const std::string& name)
 /*!
   Set the 3 port ion pump variables
   \param Control :: DataBase to use
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump");
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump3Port");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -176,7 +183,7 @@ void
 linac2SPFsegment1(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for segment 1
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -189,13 +196,15 @@ linac2SPFsegment1(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
-  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",linacVar::zeroY);   // exactly 1m from wall.
+  // exactly 1m from wall.
+  const Geometry::Vec3D startPt(0,0,0);
+  const Geometry::Vec3D endPt(0,395.2,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,16.15);
-
   // note larger unit
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
@@ -206,7 +215,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,33.85);
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,112.7);
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,114.3);
 
   CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
   CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
@@ -215,7 +224,7 @@ linac2SPFsegment1(FuncDataBase& Control,
 
 
   PGen.generatePipe(Control,lKey+"PipeE",0.0,21.30);
-  PGen.generatePipe(Control,lKey+"PipeF",0.0,128.0);
+  PGen.generatePipe(Control,lKey+"PipeF",0.0,130.0);
 
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
@@ -244,7 +253,7 @@ void
 linac2SPFsegment2(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for segment 2
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -260,8 +269,10 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
-  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",395.2+linacVar::zeroY);   // if segment 1 not built
+  const Geometry::Vec3D startPt(0,395.2,0);
+  const Geometry::Vec3D endPt(0,881.06,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
@@ -319,7 +330,7 @@ void
 linac2SPFsegment3(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
-    Set the variables for segment3
+    Set the variables for segment 3
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -332,8 +343,11 @@ linac2SPFsegment3(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::CorrectorMagGenerator CMGen;
 
-  Control.addVariable(lKey+"XStep",linacVar::zeroX);   // exactly 1m from wall.
-  Control.addVariable(lKey+"YStep",881.06+linacVar::zeroY);
+  const Geometry::Vec3D startPt(0,881.06,0);
+  const Geometry::Vec3D endPt(-15.322,1155.107,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
@@ -341,13 +355,13 @@ linac2SPFsegment3(FuncDataBase& Control,
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.6);
 
-  FPGen.generateFlat(Control,lKey+"FlatA",83.8);
+  FPGen.generateFlat(Control,lKey+"FlatA",83.0);
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,93.40); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,92.40); // measured
   Control.addVariable(lKey+"PipeAXYAngle",1.6);
   // Control.addVariable(lKey+"PipeAXStep",-1.2);
   // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
@@ -361,7 +375,7 @@ linac2SPFsegment3(FuncDataBase& Control,
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.6);
   Control.addVariable(lKey+"BellowBXYAngle",1.6);
   return;
 }
@@ -386,19 +400,22 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
-  Control.addVariable(lKey+"XStep",-15.322+linacVar::zeroX);
-  Control.addVariable(lKey+"YStep",1155.107+linacVar::zeroY);
+
+  const Geometry::Vec3D startPt(-15.322,1155.107,0);
+  const Geometry::Vec3D endPt(-45.073,1420.334,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,65.76); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,67.0); // measured
 
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,79.2); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,80.0); // measured
 
   LQGen.generateQuad(Control,lKey+"QuadA",17.2);
   LSGen.generateSexu(Control,lKey+"SexuA",39.1);
@@ -410,7 +427,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,69.2); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,70.0); // measured
 
   CMGen.generateMag(Control,lKey+"CMagHorC",13.1,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",33.21,1);
@@ -422,7 +439,7 @@ void
 linac2SPFsegment5(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
-    Set the variables for segment3
+    Set the variables for segment 5
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -434,8 +451,10 @@ linac2SPFsegment5(FuncDataBase& Control,
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
-  Control.addVariable(lKey+"XStep",-45.073+linacVar::zeroX);
-  Control.addVariable(lKey+"YStep",1420.344+linacVar::zeroY);
+  const Geometry::Vec3D startPt(-45.073,1420.334,0);
+  const Geometry::Vec3D endPt(-90.011,1683.523,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.0);
@@ -458,6 +477,128 @@ linac2SPFsegment5(FuncDataBase& Control,
 }
 
 void
+linac2SPFsegment6(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment 6
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment6");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::EBeamStopGenerator EBGen;
+  setVariable::ScrapperGenerator SCGen;
+
+  const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
+  const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,61.75);
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
+
+  PGen.setBFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
+
+  SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setAFlangeCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
+
+  // again longer.
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
+
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,14.0);
+
+
+  return;
+}
+
+void
+linac2SPFsegment7(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment 7
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment7");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+
+  const Geometry::Vec3D startPt(-147.547,1936.770,0.0);
+  const Geometry::Vec3D endPt(-206.146,2194.697,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,102.31);
+  CMGen.generateMag(Control,lKey+"CMagHorA",37.25,0);
+  LQGen.generateQuad(Control,lKey+"QuadA",81.0);
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,140.26);
+  CMGen.generateMag(Control,lKey+"CMagVertA",11.87,1);
+
+
+  return;
+}
+
+void
+linac2SPFsegment8(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment 8
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment8");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::EBeamStopGenerator EBGen;
+  setVariable::PipeGenerator PGen;
+
+  const Geometry::Vec3D startPt(-206.146,2194.697,0.0);
+  const Geometry::Vec3D endPt(-288.452,2556.964,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,308.0);
+
+
+  return;
+}
+
+void
 TDCsegment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -475,10 +616,11 @@ TDCsegment14(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
 
-  // number form drawing
-  Control.addVariable(lKey+"XStep",-622.286+linacVar::zeroX);   // include 1m offset
-  Control.addVariable(lKey+"YStep",4226.013+linacVar::zeroY);        //
-  Control.addVariable(lKey+"ZAngle",3.1183);   // this should be 3.1183 deg
+  const Geometry::Vec3D startPt(-622.286,4226.013,0.0);
+  const Geometry::Vec3D endPt(-637.608,4507.2590,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",3.1183);
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
@@ -529,11 +671,13 @@ TDCsegment15(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::YagScreenGenerator YagGen;
 
-    // number form drawing
-  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
-  ELog::EM << "YStep increased by 10 cm to avoid cutting segment 14" << ELog::endCrit;
-  Control.addVariable(lKey+"YStep",10+4507.259+linacVar::zeroY);
 
+  const Geometry::Vec3D startPt(-637.608,10.0+4507.259,0.0);
+  const Geometry::Vec3D endPt(-637.608,4730.259,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  ELog::EM << "YStep increased by 10 cm to avoid cutting segment 14"
+  << ELog::endCrit;
   Control.addVariable(lKey+"XYAngle",0.0);
 
   PGen.setCF<setVariable::CF40_22>();
@@ -567,7 +711,7 @@ TDCsegment15(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
   const std::string pumpName=lKey+"IonPump";
-  setIonPump3(Control,pumpName);
+  setIonPump3Port(Control,pumpName);
   Control.addVariable(pumpName+"Port1Length",9.5);
   Control.addVariable(pumpName+"Port2Length",3.2);
   Control.addVariable(pumpName+"FlangeBCapThick",0.0);
@@ -602,9 +746,10 @@ TDCsegment16(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::YagScreenGenerator YagGen;
 
-  // coordinates form drawing
-  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);   // include 1m offset
-  Control.addVariable(lKey+"YStep",4730.259+linacVar::zeroY);        //
+  const Geometry::Vec3D startPt(-637.608,4730.259,0.0);
+  const Geometry::Vec3D endPt(-637.608,4983.291,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
@@ -649,7 +794,7 @@ TDCsegment16(FuncDataBase& Control,
 
 void
 TDCsegment18(FuncDataBase& Control,
-		   const std::string& lKey)
+	     const std::string& lKey)
   /*!
     Set the variables for the main walls
     \param Control :: DataBase to use
@@ -667,15 +812,17 @@ TDCsegment18(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
 
   // coordinates form drawing
-  Control.addVariable(lKey+"XStep",-637.608+linacVar::zeroX);
-  Control.addVariable(lKey+"YStep",5780.261+linacVar::zeroY);
+  const Geometry::Vec3D startPt(-637.608,5780.261,0.0);
+  const Geometry::Vec3D endPt(-637.608,5994.561,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
-  setIonPump2(Control, lKey+"IonPump");
+  setIonPump2Port(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
@@ -790,23 +937,30 @@ LINACvariables(FuncDataBase& Control)
   linacVar::wallVariables(Control,"InjectionHall");
 
   // Segment 1-14
-  Control.addVariable("TDCl2spfXStep",linacVar::zeroX);
-  Control.addVariable("TDCl2spfYStep",linacVar::zeroY);
-  Control.addVariable("TDCl2spfOuterLeft",80.0);
-  Control.addVariable("TDCl2spfOuterRight",140.0);
-  Control.addVariable("TDCl2spfOuterTop",100.0);
+  Control.addVariable("l2spfXStep",linacVar::zeroX);
+  Control.addVariable("l2spfYStep",linacVar::zeroY);
+  Control.addVariable("l2spfOuterLeft",80.0);
+  Control.addVariable("l2spfOuterRight",140.0);
+  Control.addVariable("l2spfOuterTop",100.0);
 
-  Control.addVariable("TDCl2spfTurnXStep",linacVar::zeroX-80.0);
-  Control.addVariable("TDCl2spfTurnYStep",linacVar::zeroY);
-  Control.addVariable("TDCl2spfTurnOuterLeft",80.0);
-  Control.addVariable("TDCl2spfTurnOuterRight",140.0);
-  Control.addVariable("TDCl2spfTurnOuterTop",100.0);
+  Control.addVariable("l2spfTurnXStep",linacVar::zeroX-80.0);
+  Control.addVariable("l2spfTurnYStep",linacVar::zeroY);
+  Control.addVariable("l2spfTurnOuterLeft",80.0);
+  Control.addVariable("l2spfTurnOuterRight",140.0);
+  Control.addVariable("l2spfTurnOuterTop",100.0);
 
-  Control.addVariable("TDCtdcXStep",-622.286+linacVar::zeroX);
-  Control.addVariable("TDCtdcYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("TDCtdcOuterLeft",100.0);
-  Control.addVariable("TDCtdcOuterRight",100.0);
-  Control.addVariable("TDCtdcOuterTop",100.0);
+  Control.addVariable("l2spfAngleXStep",linacVar::zeroX-155.0);
+  Control.addVariable("l2spfAngleYStep",linacVar::zeroY+2000.0);
+  Control.addVariable("l2spfAngleOuterLeft",100.0);
+  Control.addVariable("l2spfAngleOuterRight",100.0);
+  Control.addVariable("l2spfAngleOuterTop",100.0);
+  Control.addVariable("l2spfAngleXYAngle",12.0);
+
+  Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("tdcOuterLeft",100.0);
+  Control.addVariable("tdcOuterRight",100.0);
+  Control.addVariable("tdcOuterTop",100.0);
 
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
@@ -814,6 +968,9 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment3(Control,"L2SPF3");
   linacVar::linac2SPFsegment4(Control,"L2SPF4");
   linacVar::linac2SPFsegment5(Control,"L2SPF5");
+  linacVar::linac2SPFsegment6(Control,"L2SPF6");
+  linacVar::linac2SPFsegment7(Control,"L2SPF7");
+  linacVar::linac2SPFsegment8(Control,"L2SPF8");
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");
