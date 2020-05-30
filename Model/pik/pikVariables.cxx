@@ -90,6 +90,12 @@ PIKVariables(FuncDataBase& Control)
   Control.addVariable("ReflectorShieldMat","H2O");
   Control.addVariable("ReflectorWallMat","Stainless316L");
 
+  // core
+  Control.addVariable("CoreLength",10.0);
+  Control.addVariable("CoreWidth",10.0);
+  Control.addVariable("CoreHeight",100.0);
+  Control.addVariable("CoreMainMat","Uranium");
+
   return;
 }
 

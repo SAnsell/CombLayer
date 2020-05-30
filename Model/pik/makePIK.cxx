@@ -57,6 +57,7 @@
 
 #include "PIKPool.h"
 #include "PIKReflector.h"
+#include "PIKCore.h"
 #include "makePIK.h"
 
 namespace pikSystem
@@ -64,7 +65,8 @@ namespace pikSystem
 
   makePIK::makePIK() :
     pool(new pikSystem::PIKPool("Pool")),
-    refl(new pikSystem::PIKReflector("Reflector"))
+    refl(new pikSystem::PIKReflector("Reflector")),
+    core(new pikSystem::PIKCore("Core"))
     /*!
       Constructor
     */
@@ -74,11 +76,13 @@ namespace pikSystem
 
     OR.addObject(pool);
     OR.addObject(refl);
+    OR.addObject(core);
   }
 
   makePIK::makePIK(const makePIK&A) :
     pool(new pikSystem::PIKPool(*A.pool)),
-    refl(new pikSystem::PIKReflector(*A.refl))
+    refl(new pikSystem::PIKReflector(*A.refl)),
+    core(new pikSystem::PIKCore(*A.core))
     /*!
       Copy constructor
       \param A :: makePIK object to copy
@@ -98,6 +102,7 @@ namespace pikSystem
       {
 	*pool = *A.pool;
 	*refl = *A.refl;
+	*core = *A.core;
       }
     return *this;
   }
@@ -144,6 +149,10 @@ namespace pikSystem
     refl->setTop(*pool,3);
     refl->addInsertCell(pool->getCell("InnerShieldCentral"));
     refl->createAll(System,*pool,0);
+
+    core->addInsertCell(pool->getCell("InnerShieldCentral"));
+    core->addInsertCell(refl->getCell("MainCell"));
+    core->createAll(System,*pool,0);
 
 
     //  const FuncDataBase& Control=System.getDataBase();

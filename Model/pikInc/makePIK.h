@@ -26,6 +26,7 @@ namespace pikSystem
 {
   class PIKPool;
   class PIKReflector;
+  class PIKCore;
   /*!
     \class makePIK
     \version 1.0
@@ -39,6 +40,7 @@ class makePIK
  private:
   std::shared_ptr<pikSystem::PIKPool> pool;         ///< Pool
   std::shared_ptr<pikSystem::PIKReflector> refl;    ///< Reflector
+  std::shared_ptr<pikSystem::PIKCore> core;         ///< Reactor core
 
   bool buildFuelElements(Simulation&, const mainSystem::inputParam&);
 
