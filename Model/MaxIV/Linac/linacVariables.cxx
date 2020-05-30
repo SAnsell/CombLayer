@@ -676,7 +676,7 @@ TDCsegment15(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagGen;
 
 
-  const Geometry::Vec3D startPt(-637.608,10.0+4507.259,0.0);
+  const Geometry::Vec3D startPt(-637.608,4507.259,0.0);
   const Geometry::Vec3D endPt(-637.608,4730.259,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -722,7 +722,7 @@ TDCsegment15(FuncDataBase& Control,
 
   YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,130.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,167.0);
 
   return;
 }
