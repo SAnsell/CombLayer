@@ -46,7 +46,6 @@
 #include "InputControl.h"
 #include "inputParam.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsMaxIV.h"
 
@@ -175,6 +174,7 @@ setMaxIVLinac(defaultConfig& A,
      { "L2SPFsegment6", "World 0"},
      { "L2SPFsegment7", "World 0"},
      { "L2SPFsegment8", "World 0"},
+     { "L2SPFsegment9", "World 0"},
      { "TDCsegment14", "World 0"},
      { "TDCsegment15", "World 0"},
      { "TDCsegment16", "World 0"},

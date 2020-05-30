@@ -78,7 +78,8 @@ namespace linacVar
   void linac2SPFsegment5(FuncDataBase&,const std::string&);
   void linac2SPFsegment6(FuncDataBase&,const std::string&);
   void linac2SPFsegment7(FuncDataBase&,const std::string&);
-  void linac2SPFsegment8(FuncDataBase&,const std::string&);    
+  void linac2SPFsegment8(FuncDataBase&,const std::string&);
+  void linac2SPFsegment9(FuncDataBase&,const std::string&);    
   
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -607,6 +608,54 @@ linac2SPFsegment8(FuncDataBase& Control,
 }
 
 void
+linac2SPFsegment9(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for segment 8
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment9");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::LinacQuadFGenerator LQGen;
+  
+  const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
+  const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);  
+
+  PGen.setCF<setVariable::CF40_22>(); 
+  PGen.setNoWindow();
+  BellowGen.setCF<setVariable::CF40>();
+  
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
+  setIonPump2Port(Control, lKey+"PumpA");
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,70.0);   // guess
+
+  CMGen.generateMag(Control,lKey+"CMagVertA",30.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHorA",60.0,0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0);   // guess
+  LQGen.generateQuad(Control,lKey+"QuadA",20.0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);  
+
+  return;
+}
+
+void
 TDCsegment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -883,9 +932,11 @@ wallVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","wallVariables");
 
+  const double extraYLen(82.7);
+  
   Control.addVariable(wallKey+"MainLength",9880.0);
-  Control.addVariable(wallKey+"LinearRCutLength",3812.0);
-  Control.addVariable(wallKey+"LinearLTurnLength",3672.0);
+  Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
+  Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
   Control.addVariable(wallKey+"SPFAngleLength",4124.0);
   Control.addVariable(wallKey+"SPFAngle",12.7);
@@ -906,7 +957,7 @@ wallVariables(FuncDataBase& Control,
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
   Control.addVariable(wallKey+"MidTThick",150.0);
   Control.addVariable(wallKey+"MidTXStep",43.0);
-  Control.addVariable(wallKey+"MidTYStep",3357.0);  // to flat of T
+  Control.addVariable(wallKey+"MidTYStep",3357.0+extraYLen);  // to flat of T
   Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
   Control.addVariable(wallKey+"MidTThick",200.0);  // Thick of T
 
@@ -984,6 +1035,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment6(Control,"L2SPF6");
   linacVar::linac2SPFsegment7(Control,"L2SPF7");
   linacVar::linac2SPFsegment8(Control,"L2SPF8");
+  linacVar::linac2SPFsegment9(Control,"L2SPF9");
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");
