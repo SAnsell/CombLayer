@@ -639,16 +639,16 @@ linac2SPFsegment9(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
   setIonPump2Port(Control, lKey+"PumpA");
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,70.0);   // guess
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,60.0);   // guess
 
-  CMGen.generateMag(Control,lKey+"CMagVertA",30.0,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",60.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
+  CMGen.generateMag(Control,lKey+"CMagHorA",50.50,0);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0);   // guess
-  LQGen.generateQuad(Control,lKey+"QuadA",20.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,35.0);   // guess
+  LQGen.generateQuad(Control,lKey+"QuadA",17.50);
 
   BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);  
 
