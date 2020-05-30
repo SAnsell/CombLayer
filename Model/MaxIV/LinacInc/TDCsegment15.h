@@ -40,7 +40,7 @@ class TDCsegment15 :
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
   std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
-  std::shared_ptr<constructSystem::PipeTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 

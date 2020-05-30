@@ -160,11 +160,11 @@ setIonPump3Port(FuncDataBase& Control,const std::string& name)
 
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
   Control.addVariable(name+"NPorts",3);
-  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
-  Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"YAngle",180.0);
 
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
-  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
+  PItemGen.setCF<setVariable::CF50>(10.0);
+  PItemGen.setPlate(setVariable::CF50::flangeLength, "Stainless304");
+  PItemGen.generatePort(Control,name+"Port0",OPos,ZVec);
 
   // total ion pump length
   const double totalLength(16.0); // measured
@@ -173,12 +173,15 @@ setIonPump3Port(FuncDataBase& Control,const std::string& name)
     (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
   L /= 2.0;
 
-  PItemGen.setLength(L);
+  PItemGen.setCF<setVariable::CF40_22>(L);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+  Control.addVariable(name+"Port1Radius",1.7); // measured
 
-  PItemGen.setLength(L);
+  PItemGen.setCF<setVariable::CF40_22>(L);
+  PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
+  Control.addVariable(name+"Port2Radius",1.7); // measured
 
   return;
 }
@@ -718,7 +721,6 @@ TDCsegment15(FuncDataBase& Control,
   setIonPump3Port(Control,pumpName);
   Control.addVariable(pumpName+"Port1Length",9.5);
   Control.addVariable(pumpName+"Port2Length",3.2);
-  Control.addVariable(pumpName+"FlangeBCapThick",0.0);
 
   YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
