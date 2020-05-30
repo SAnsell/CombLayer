@@ -83,7 +83,7 @@ namespace linacVar
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
   void TDCsegment16(FuncDataBase&,const std::string&);
-  //  void TDCsegment17(FuncDataBase&,const std::string&);
+  void TDCsegment17(FuncDataBase&,const std::string&);
   void TDCsegment18(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -799,6 +799,46 @@ TDCsegment16(FuncDataBase& Control,
 }
 
 void
+TDCsegment17(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment17");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+
+  const Geometry::Vec3D startPt(-637.608,4983.291,0.0);
+  const Geometry::Vec3D endPt(-637.608,5780.261,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  ELog::EM << "### TDCsegmen17 cad file is missing => dimensions are dummy"
+	   << ELog::endWarn;
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,100.0); // guess
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // guess
+
+  const std::string pumpName=lKey+"IonPump";
+  setIonPump2Port(Control,pumpName);
+  Control.addVariable(lKey+"IonPumpYAngle",90.0);
+  // Control.addVariable(pumpName+"Port1Length",9.5); // guess
+  //  Control.addVariable(pumpName+"Port2Length",3.2); // guess
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,100.0); // guess
+
+  return;
+}
+
+void
 TDCsegment18(FuncDataBase& Control,
 	     const std::string& lKey)
   /*!
@@ -858,8 +898,6 @@ TDCsegment18(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); //
   CMGen.generateMag(Control,lKey+"CMagV",28.0,1); //
-
-
 
   return;
 }
@@ -981,7 +1019,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment14(Control,"TDC14");
   linacVar::TDCsegment15(Control,"TDC15");
   linacVar::TDCsegment16(Control,"TDC16");
-  //  linacVar::TDCsegment17(Control,"TDC17");
+  linacVar::TDCsegment17(Control,"TDC17");
   linacVar::TDCsegment18(Control,"TDC18");
 
   return;
