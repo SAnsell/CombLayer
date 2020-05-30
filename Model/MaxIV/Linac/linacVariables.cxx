@@ -79,7 +79,8 @@ namespace linacVar
   void linac2SPFsegment6(FuncDataBase&,const std::string&);
   void linac2SPFsegment7(FuncDataBase&,const std::string&);
   void linac2SPFsegment8(FuncDataBase&,const std::string&);
-  void linac2SPFsegment9(FuncDataBase&,const std::string&);    
+  void linac2SPFsegment9(FuncDataBase&,const std::string&);
+  void linac2SPFsegment10(FuncDataBase&,const std::string&);    
   
   void TDCsegment14(FuncDataBase&,const std::string&);
   void TDCsegment15(FuncDataBase&,const std::string&);
@@ -654,6 +655,55 @@ linac2SPFsegment9(FuncDataBase& Control,
 
   return;
 }
+
+void
+linac2SPFsegment10(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for segment 10
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment10");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::LinacQuadFGenerator LQGen;
+  
+  const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
+  const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);  
+
+  PGen.setCF<setVariable::CF40_22>(); 
+  PGen.setNoWindow();
+  BellowGen.setCF<setVariable::CF40>();
+  
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
+  setIonPump2Port(Control, lKey+"PumpA");
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,60.0);   // guess
+
+  CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
+  CMGen.generateMag(Control,lKey+"CMagHorA",50.50,0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,35.0);   // guess
+  LQGen.generateQuad(Control,lKey+"QuadA",17.50);
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);  
+
+  return;
+}
+
 
 void
 TDCsegment14(FuncDataBase& Control,
