@@ -300,6 +300,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadB",72.0);
 
+  ELog::EM << "remove next line??? (you call the same later)" << ELog::endDiag;
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
   CGateGen.setRotate(1);
@@ -670,7 +671,6 @@ TDCsegment15(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment15");
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -903,6 +903,72 @@ TDCsegment18(FuncDataBase& Control,
 }
 
 void
+TDCsegment19(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment19");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator RGateGen;
+  setVariable::CylGateValveGenerator CGateGen;
+  setVariable::YagScreenGenerator YagGen;
+
+
+  const Geometry::Vec3D startPt(-637.608,5994.561,0.0);
+  const Geometry::Vec3D endPt(-637.608,6045.428,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  // Vacuum gauge
+  std::string name=lKey+"Gauge";
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF40_22>();
+
+  SimpleTubeGen.generateTube(Control,name,0.0,22.6);
+  Control.addVariable(name+"NPorts",1);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  PItemGen.setCF<setVariable::CF40_22>(10.0);
+  PItemGen.setNoPlate();
+  PItemGen.setLength(2.2); // measured
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  RGateGen.setLength(6.3);
+  RGateGen.setCubeCF<setVariable::CF40_22>();
+  RGateGen.generateValve(Control,lKey+"GateA",0.0,0);
+  //Control.addVariable(lKey+"GateAPortALen",2.0);
+
+
+  const std::string pumpName=lKey+"IonPump";
+  setIonPump2Port(Control,pumpName);
+  // Control.addVariable(pumpName+"Port1Length",9.5);
+  // Control.addVariable(pumpName+"Port2Length",3.2);
+
+  //CGateGen.setLength(6.3);
+  //  CGateGen.setCF<setVariable::CF40_22>();
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+
+  return;
+}
+
+
+void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
   /*!
@@ -1021,6 +1087,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment16(Control,"TDC16");
   linacVar::TDCsegment17(Control,"TDC17");
   linacVar::TDCsegment18(Control,"TDC18");
+  linacVar::TDCsegment19(Control,"TDC19");
 
   return;
 }

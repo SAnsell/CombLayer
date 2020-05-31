@@ -81,6 +81,7 @@
 #include "TDCsegment16.h"
 #include "TDCsegment17.h"
 #include "TDCsegment18.h"
+#include "TDCsegment19.h"
 
 #include "TDC.h"
 
@@ -109,13 +110,16 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
     { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") },
     { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
-    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") }
+    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
+    { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") }
   } )
   /*!
     Constructor
     \param KN :: Keyname
   */
 {
+  ELog::RegMethod RegA("TDC","TDC");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -250,7 +254,8 @@ TDC::createAll(Simulation& System,
       {"TDCsegment15",{"tdc","TDCsegment14"}},
       {"TDCsegment16",{"tdc","TDCsegment15"}},
       {"TDCsegment17",{"tdc","TDCsegment16"}},
-      {"TDCsegment18",{"tdc","TDCsegment17"}}
+      {"TDCsegment18",{"tdc","TDCsegment17"}},
+      {"TDCsegment19",{"tdc","TDCsegment19"}}
     });
   const int voidCell(74123);
 
