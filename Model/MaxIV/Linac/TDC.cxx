@@ -76,6 +76,7 @@
 #include "L2SPFsegment7.h"
 #include "L2SPFsegment8.h"
 #include "L2SPFsegment9.h"
+#include "L2SPFsegment10.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -107,6 +108,7 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment7",std::make_shared<L2SPFsegment7>("L2SPF7") },
     { "L2SPFsegment8",std::make_shared<L2SPFsegment8>("L2SPF8") },
     { "L2SPFsegment9",std::make_shared<L2SPFsegment9>("L2SPF9") },
+    { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
     { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
     { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
     { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") }, 
@@ -249,6 +251,7 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment7",{"l2spfAngle","L2SPFsegment6"}},
       {"L2SPFsegment8",{"l2spfAngle","L2SPFsegment7"}},
       {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
+      {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
       {"TDCsegment14",{"tdc",""}},
       {"TDCsegment15",{"tdc","TDCsegment15"}},
       {"TDCsegment16",{"tdc","TDCsegment16"}},
@@ -261,9 +264,10 @@ TDC::createAll(Simulation& System,
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
-
+  
   for(const std::string& BL : activeINJ)
     {
+      
       SegTYPE::const_iterator mc=SegMap.find(BL);
       if (mc==SegMap.end())
 	throw ColErr::InContainerError<std::string>(BL,"Beamline");
@@ -288,11 +292,14 @@ TDC::createAll(Simulation& System,
 	    }
 	}
       buildZone->constructMasterCell(System);
-      
       segPtr->setInnerZone(buildZone.get());
-      segPtr->addInsertCell(injectionHall->getCell("LinearVoid"));
       segPtr->createAll
 	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
+
+      // special case for join of wall
+      //      if (BL=="L2SPFsegment10")
+      //	processWallJoin();
+
       segPtr->totalPathCheck(System.getDataBase(),0.1);
     }
 

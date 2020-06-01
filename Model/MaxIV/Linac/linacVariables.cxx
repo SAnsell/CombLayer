@@ -669,13 +669,12 @@ linac2SPFsegment10(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadFGenerator LQGen;
+  setVariable::CylGateValveGenerator CGateGen;
   
-  const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
-  const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
-
+  const Geometry::Vec3D startPt(-323.368,2710.648,0.0);
+  const Geometry::Vec3D endPt(492.992,3457.251,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -684,23 +683,20 @@ linac2SPFsegment10(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>(); 
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF40>();
+
+
   
+
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,453.0);   
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
-  setIonPump2Port(Control, lKey+"PumpA");
+  CGateGen.generateGate(Control,lKey+"GateValve",0);
+  setIonPump2Port(Control, lKey+"PumpA");  
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,60.0);   // guess
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.10);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,125.97);
 
-  CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",50.50,0);
-
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
-  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,35.0);   // guess
-  LQGen.generateQuad(Control,lKey+"QuadA",17.50);
-
-  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);  
-
+  LQGen.generateQuad(Control,lKey+"QuadA",33.5);
+  CMGen.generateMag(Control,lKey+"CMagVertA",115.0,1);
   return;
 }
 
@@ -1086,6 +1082,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment7(Control,"L2SPF7");
   linacVar::linac2SPFsegment8(Control,"L2SPF8");
   linacVar::linac2SPFsegment9(Control,"L2SPF9");
+  linacVar::linac2SPFsegment10(Control,"L2SPF10");
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");

@@ -206,6 +206,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"L2SPFsegment7",{} },                             // fifth only
        {"L2SPFsegment8",{} },                             // fifth only
        {"L2SPFsegment9",{} },                             // fifth only
+       {"L2SPFsegment10",{} },                             // wall unit
        {"TDCsegment14",{} },                              // 14th only
        {"TDCsegment15",{} },                              // 15th only
        {"TDCsegment16",{} },                              // 16th only
