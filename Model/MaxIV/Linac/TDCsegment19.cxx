@@ -53,7 +53,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -69,12 +68,8 @@
 #include "Bellows.h"
 #include "GateValveCube.h"
 #include "CylGateValve.h"
-#include "VacuumPipe.h"
-#include "portItem.h"
 #include "VirtualTube.h"
-#include "BlankTube.h"
 #include "PipeTube.h"
-#include "YagScreen.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment19.h"
@@ -89,7 +84,7 @@ TDCsegment19::TDCsegment19(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gauge(new constructSystem::PipeTube(keyName+"Gauge")),
   gateA(new constructSystem::GateValveCube(keyName+"GateA")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
@@ -134,7 +129,6 @@ TDCsegment19::buildObjects(Simulation& System)
   bellowA->insertInCell(System,outerCell);
 
   // Gauge
-
   gauge->addAllInsertCell(masterCell->getName());
   gauge->setFront(*bellowA,2);
   gauge->createAll(System,*bellowA,2);
@@ -147,19 +141,13 @@ TDCsegment19::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump->createAll(System,*gateA,"back");
-
-  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
-  outerCell=
-    buildZone->createOuterVoidUnit(System,
-  				   masterCell,
-  				   ionPumpBackPort,
-  				   ionPumpBackPort.getSideIndex("OuterPlate"));
+  ionPump->setFront(*gateA,2);
+  ionPump->createAll(System,*gateA,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ionPump,2);
   ionPump->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*gateB);
+    (System,*buildZone,masterCell,*ionPump,"back",*gateB);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateB,"back",*bellowB);

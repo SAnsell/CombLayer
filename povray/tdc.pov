@@ -102,7 +102,7 @@ global_settings {
     #declare projection = 1;
   #break
   #case(19) // TDC segment 19
-    #declare cameraLocation = <-480, 6500, 40>;
+    #declare cameraLocation = <-460, 6495, 20>;
     #declare cameraLookAt   = <-485, 6500, 0>;
     #declare projection = 1;
   #break

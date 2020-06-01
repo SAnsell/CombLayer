@@ -22,14 +22,8 @@
 #ifndef tdcSystem_TDCsegment19_h
 #define tdcSystem_TDCsegment19_h
 
-namespace xraySystem
-{
-  class CylGateValve;
-}
-
 namespace tdcSystem
 {
-  class YagScreen;
   /*!
     \class TDCsegment19
     \version 1.0
@@ -46,7 +40,7 @@ class TDCsegment19 :
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellow
   std::shared_ptr<constructSystem::PipeTube> gauge;        ///< #3 Vacuum gauge PTR18751
   std::shared_ptr<constructSystem::GateValveCube> gateA;   ///< #4 Fast closing valve
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #4 Ion pump 45l cf40
+  std::shared_ptr<constructSystem::PipeTube> ionPump;     ///< #4 Ion pump 45l cf40
   std::shared_ptr<xraySystem::CylGateValve> gateB;   ///< #6 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellow
 
