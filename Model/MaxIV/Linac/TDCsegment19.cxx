@@ -134,8 +134,13 @@ TDCsegment19::buildObjects(Simulation& System)
   bellowA->insertInCell(System,outerCell);
 
   // Gauge
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*gauge);
+
+  gauge->addAllInsertCell(masterCell->getName());
+  gauge->setFront(*bellowA,2);
+  gauge->createAll(System,*bellowA,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
+  gauge->insertAllInCell(System,outerCell);
+
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gauge,"back",*gateA);

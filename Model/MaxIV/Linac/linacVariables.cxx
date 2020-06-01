@@ -928,34 +928,36 @@ TDCsegment19(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
-
-  // Vacuum gauge
-  std::string name=lKey+"Gauge";
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF40_22>();
-
-  SimpleTubeGen.generateTube(Control,name,0.0,22.6);
-  Control.addVariable(name+"NPorts",1);
-
   const Geometry::Vec3D OPos(0,0.0,0);
   const Geometry::Vec3D XVec(1,0,0);
 
-  PItemGen.setCF<setVariable::CF40_22>(10.0);
-  PItemGen.setNoPlate();
-  PItemGen.setLength(2.2); // measured
+  // Bellow
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // measured
+
+  // Vacuum gauge
+  std::string name=lKey+"Gauge";
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.setCF<CF40_22>();
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF40_22>(6.6); // ???
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
-  RGateGen.setLength(6.3);
+  // Fast closing valve
+  RGateGen.setLength(3.5-2.0*setVariable::CF40_22::flangeLength);
   RGateGen.setCubeCF<setVariable::CF40_22>();
   RGateGen.generateValve(Control,lKey+"GateA",0.0,0);
   //Control.addVariable(lKey+"GateAPortALen",2.0);
+  Control.addVariable(lKey+"GateABladeThick",0.5); // guess
 
 
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
-  // Control.addVariable(pumpName+"Port1Length",9.5);
+  //  Control.addVariable(pumpName+"Length",12.6);
   // Control.addVariable(pumpName+"Port2Length",3.2);
 
   //CGateGen.setLength(6.3);
