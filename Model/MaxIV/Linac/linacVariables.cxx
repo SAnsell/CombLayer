@@ -678,7 +678,9 @@ linac2SPFsegment10(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",12.8);  
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  Control.addVariable(lKey+"WallRadius",4.0);  
 
   PGen.setCF<setVariable::CF40_22>(); 
   PGen.setNoWindow();
@@ -1065,6 +1067,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("l2spfAngleOuterRight",100.0);
   Control.addVariable("l2spfAngleOuterTop",100.0);
   Control.addVariable("l2spfAngleXYAngle",12.0);
+
+  Control.addVariable("tdcFrontXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("tdcFrontYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("tdcFrontOuterLeft",100.0);
+  Control.addVariable("tdcFrontOuterRight",100.0);
+  Control.addVariable("tdcFrontOuterTop",100.0);
 
   Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);

@@ -258,6 +258,10 @@ InjectionHall::createSurfaces()
 			   BMidPtA+Z,
 			   X);
 
+  SurfMap::addSurf("TMidFront",SMap.realSurf(buildIndex+1111));
+  SurfMap::addSurf("TMidBack",SMap.realSurf(buildIndex+1112));
+	  
+
   ModelSupport::buildPlane(SMap,buildIndex+1201,FMidPtA,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1202,BMidPtA,Y);
   
@@ -331,7 +335,7 @@ InjectionHall::createObjects(Simulation& System)
   // INNER VOIDS:
   // up to bend anngle
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -201 3 -4 5 -6 "
+    (SMap,buildIndex," 1 -1001 -1111 3 -4 5 -6 "
      " (3002:3004)        "           // kystron wall
      " (-1003:1004:-1001) "           // main mid divider
      " (-1111:1112:1003) "           // left mid block 
@@ -339,14 +343,20 @@ InjectionHall::createObjects(Simulation& System)
      " (-1511:1522:1503) "          // gate block
      );
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
-  
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -201 1112 3 -1003 5 -6 (1522 : 1503) ");
+  makeCell("TVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 1004 -4 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2111 1004 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 1001 -2111 1004 (1011:1104) -4 5 -6");
   makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -1003 5 -6");
@@ -420,7 +430,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);

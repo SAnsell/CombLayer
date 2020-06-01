@@ -192,16 +192,18 @@ TDC::buildInnerZone(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDC","getBuildZone");
 
-  typedef std::tuple<std::string,std::string,std::string> RTYPE;
+  // FrontSurf : BackSurf : Cell : Cell(if not empty)
+  typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
 
   // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","LinearVoid"}},
-      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid"}},
-      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid"}}
+      {"l2spf",{"Front","#MidWall","LinearVoid",""}},
+      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
+      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
+      {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -213,6 +215,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   const std::string& frontSurfName=std::get<0>(walls);
   const std::string& backSurfName=std::get<1>(walls);
   const std::string& voidName=std::get<2>(walls);
+  const std::string& voidNameB=std::get<3>(walls);
 
   std::unique_ptr<attachSystem::InnerZone> buildZone=
     std::make_unique<attachSystem::InnerZone>(*this,cellIndex);
@@ -222,6 +225,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setInsertCells(injectionHall->getCells(voidName));
+  if (!voidNameB.empty())
+    buildZone->setInsertCells(injectionHall->getCells(voidNameB));
   return buildZone;
 }
 
@@ -264,6 +269,8 @@ TDC::createAll(Simulation& System,
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
+
+  // special case of L2SPFsegment10 :
   
   for(const std::string& BL : activeINJ)
     {
@@ -279,9 +286,12 @@ TDC::createAll(Simulation& System,
       
       const std::shared_ptr<TDCsegment>& segPtr=mc->second;
       
+
       std::unique_ptr<attachSystem::InnerZone> buildZone=
 	buildInnerZone(System.getDataBase(),bzName);
+      std::unique_ptr<attachSystem::InnerZone> secondZone;
 
+      
       if (prevC!=SegMap.end())
 	{
 	  const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
@@ -293,6 +303,13 @@ TDC::createAll(Simulation& System,
 	}
       buildZone->constructMasterCell(System);
       segPtr->setInnerZone(buildZone.get());
+      // special case of L2SPFsegment10 :
+      if (BL=="L2SPFsegment10")
+	{
+	  secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
+	  segPtr->setInnerZone(secondZone.get());
+	}
+	  
       segPtr->createAll
 	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
 

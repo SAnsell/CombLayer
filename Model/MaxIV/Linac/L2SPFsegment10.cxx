@@ -91,6 +91,7 @@
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
+#include "InjectionHall.h"
 #include "L2SPFsegment10.h"
 
 namespace tdcSystem
@@ -101,7 +102,7 @@ namespace tdcSystem
   
 L2SPFsegment10::L2SPFsegment10(const std::string& Key) :
   TDCsegment(Key,2),
-
+  IHall(nullptr),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gateValve(new xraySystem::CylGateValve(keyName+"GateValve")),
@@ -137,6 +138,60 @@ L2SPFsegment10::~L2SPFsegment10()
 {}
 
 void
+L2SPFsegment10::populate(const FuncDataBase& Control)
+  /*!
+    Get required variable
+    \param Control :: DatatBase
+   */
+{
+  ELog::RegMethod RegA("L2SPFsegment10","populate");
+  
+  FixedRotate::populate(Control);
+
+  wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
+  return;
+}
+
+void
+L2SPFsegment10::createSurfaces()
+  /*!
+    Build surface(s) for wall hole.
+  */
+{
+  ELog::RegMethod RegA("L2SFPsegment10","createSurfaces");
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wallRadius);
+  return;
+}
+
+void
+L2SPFsegment10::constructHole(Simulation& System)
+  /*!
+    Construct the hole in the wall
+  */
+{
+  if (IHall)
+    {
+      std::string Out;
+      const HeadRule fbHR=IHall->combine("TMidFront #TMidBack");
+
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+      pipeA->addInsertCell(this->getCell("WallVoid"));
+      pipeA->addInsertCell(IHall->getCell("TVoid"));
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
+      IHall->insertComponent(System,"MidTAngle",Out);
+
+      // This might not be the best place for this:::
+	
+    }
+  return;
+}
+
+  
+void
 L2SPFsegment10::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -151,14 +206,18 @@ L2SPFsegment10::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
+  outerCell=masterCell->getName();
+  
+  constructHole(System);
+  masterCell=buildZone->getMaster();
 
+    
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  outerCell=masterCell->getName();
-  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  pipeA->insertInCell(System,outerCell);
 
+
+  
   //  buildZone->removeLastMaster(System);  
   return;
   constructSystem::constructUnit
@@ -221,8 +280,12 @@ L2SPFsegment10::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("L2SPFsegment10","build");
 
-  FixedRotate::populate(System.getDataBase());
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
+
+  
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  createSurfaces();
   buildObjects(System);
   createLinks();
   

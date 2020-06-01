@@ -278,7 +278,7 @@ SurfMap::combine(const std::string& surfStr) const
       if (std::isdigit(static_cast<int>(C)) || 
 	  std::isalpha(static_cast<int>(C)))
 	part+=C;
-      else if (C=='-')
+      else if (C=='-' || C=='#')
 	complement=1;
       else if (!part.empty())
 	{

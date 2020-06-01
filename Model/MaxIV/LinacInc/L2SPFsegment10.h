@@ -43,6 +43,7 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
+  class InjectionHall;
 
   /*!
     \class L2SPFsegment10
@@ -57,6 +58,8 @@ class L2SPFsegment10 :
 {
  private:
 
+  const InjectionHall* IHall;      ///< Storage for injection hall if used.
+  
   /// connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 
@@ -82,7 +85,14 @@ class L2SPFsegment10 :
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+
+
+  double wallRadius;       ///< Hole radius in wall
+
+  void constructHole(Simulation&);
   
+  void populate(const FuncDataBase&);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   
@@ -93,10 +103,9 @@ class L2SPFsegment10 :
   L2SPFsegment10& operator=(const L2SPFsegment10&);
   ~L2SPFsegment10();
 
-
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+			 const long int);
 
 };
 
