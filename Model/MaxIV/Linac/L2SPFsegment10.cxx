@@ -87,7 +87,7 @@
 #include "LQuadF.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
-#include "CylGateValve.h"
+#include "GateValveCube.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -105,7 +105,7 @@ L2SPFsegment10::L2SPFsegment10(const std::string& Key) :
   IHall(nullptr),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  gateValve(new xraySystem::CylGateValve(keyName+"GateValve")),
+  gateValve(new constructSystem::GateValveCube(keyName+"GateValve")),
   pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
@@ -207,48 +207,53 @@ L2SPFsegment10::buildObjects(Simulation& System)
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
   outerCell=masterCell->getName();
-  
-  constructHole(System);
-  masterCell=buildZone->getMaster();
 
+  constructHole(System);
     
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
+  pipeA->insertInCell(System,outerCell);
 
+  if (!nextZone)
+    ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
+  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
+  // allows the first surface of pipe to be the start of the masterCell
+  outerCell=nextZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
 
-  
-  //  buildZone->removeLastMaster(System);  
-  return;
+  pipeA->insertInCell(System,outerCell);
+  pipeTerminate(System,*nextZone,pipeA);  
+
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
+    (System,*nextZone,masterCell,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*gateValve);
-
+    (System,*nextZone,masterCell,*bellowA,"back",*gateValve);
 
   // FAKE INSERT REQUIRED
   pumpA->addAllInsertCell(masterCell->getName());
   pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*bellowA,"back");
+  pumpA->createAll(System,*gateValve,"back");
 
   const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
+  outerCell=nextZone->createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
   
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeB);
+    (System,*nextZone,masterCell,VPB,"OuterPlate",*pipeB);
+
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
+    (System,*nextZone,masterCell,*pipeB,"back",*bellowB);
+
 
   pipeC->createAll(System,*bellowB,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVertA);
-  pipeTerminate(System,*buildZone,pipeC);
+  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",QuadA);
+  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVertA);
+  pipeTerminate(System,*nextZone,pipeC);
   
-  buildZone->removeLastMaster(System);  
+  nextZone->removeLastMaster(System);  
   return;
 }
 
@@ -259,8 +264,7 @@ L2SPFsegment10::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeA,2);
-  //  setLinkSignedCopy(1,*pipeC,2);
+  setLinkSignedCopy(1,*pipeC,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
@@ -282,7 +286,6 @@ L2SPFsegment10::createAll(Simulation& System,
 
   IHall=dynamic_cast<const InjectionHall*>(&FC);
 
-  
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

@@ -29,15 +29,9 @@ namespace constructSystem
   class portItem;
   class BlankTube;
   class PipeTube;
+  class GateValveCube;
 }
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
 
 namespace tdcSystem
 {
@@ -67,7 +61,7 @@ class L2SPFsegment10 :
   std::shared_ptr<constructSystem::Bellows> bellowA;   
 
   /// Gate valve holder
-  std::shared_ptr<xraySystem::CylGateValve> gateValve;   
+  std::shared_ptr<constructSystem::GateValveCube> gateValve;   
   
   /// ion pump [rotated]
   std::shared_ptr<constructSystem::BlankTube> pumpA;   

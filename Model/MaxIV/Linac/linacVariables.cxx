@@ -53,6 +53,7 @@
 #include "PortItemGenerator.h"
 #include "BPMGenerator.h"
 #include "CylGateValveGenerator.h"
+#include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
@@ -126,17 +127,17 @@ setIonPump2Port(FuncDataBase& Control,
 		      setVariable::CF63::innerRadius+
 		      setVariable::CF63::wallThick+0.1);
 
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
 
   // total ion pump length
   const double totalLength(16.0); // measured
   // length of ports 1 and 2
-  double L = totalLength -
-    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
-  L /= 2.0;
+  const double L = totalLength/2.0 -
+    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick);
 
   PItemGen.setLength(L);
   PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
   PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
 
   return;
@@ -671,10 +672,10 @@ linac2SPFsegment10(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadFGenerator LQGen;
-  setVariable::CylGateValveGenerator CGateGen;
+  setVariable::GateValveGenerator GateGen;
   
   const Geometry::Vec3D startPt(-323.368,2710.648,0.0);
-  const Geometry::Vec3D endPt(492.992,3457.251,0.0);
+  const Geometry::Vec3D endPt(-492.992,3457.251,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -685,17 +686,19 @@ linac2SPFsegment10(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>(); 
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF40>();
-
-
-  
-
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,453.0);   
+  GateGen.setLength(3.0);
+  GateGen.setCubeCF<setVariable::CF40>();
+    
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,452.0);   
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
-  CGateGen.generateGate(Control,lKey+"GateValve",0);
+
+  GateGen.generateValve(Control,lKey+"GateValve",0.0,0);
   setIonPump2Port(Control, lKey+"PumpA");  
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.10);
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,125.97);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.00);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);  
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,125.0);
 
   LQGen.generateQuad(Control,lKey+"QuadA",33.5);
   CMGen.generateMag(Control,lKey+"CMagVertA",115.0,1);
@@ -1068,16 +1071,17 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("l2spfAngleOuterTop",100.0);
   Control.addVariable("l2spfAngleXYAngle",12.0);
 
-  Control.addVariable("tdcFrontXStep",-622.286+linacVar::zeroX);
-  Control.addVariable("tdcFrontYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("tdcFrontXStep",-419.0+linacVar::zeroX);
+  Control.addVariable("tdcFrontYStep",3152.0+linacVar::zeroY);
   Control.addVariable("tdcFrontOuterLeft",100.0);
   Control.addVariable("tdcFrontOuterRight",100.0);
   Control.addVariable("tdcFrontOuterTop",100.0);
+  Control.addVariable("tdcFrontXYAngle",12.0);
 
   Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("tdcOuterLeft",100.0);
-  Control.addVariable("tdcOuterRight",100.0);
+  Control.addVariable("tdcOuterLeft",50.0);
+  Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
 
 

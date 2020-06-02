@@ -176,6 +176,7 @@ class InnerZone
 		     const HeadRule&) const;
 
   void setInsertCells(const std::vector<int>&);
+  void addInsertCells(const std::vector<int>&);
   
   MonteCarlo::Object* constructMasterCell(Simulation&);
   MonteCarlo::Object* constructMasterCell(Simulation&,

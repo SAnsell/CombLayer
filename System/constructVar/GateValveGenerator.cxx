@@ -212,7 +212,8 @@ GateValveGenerator::setBPortCF()
 void
 GateValveGenerator::generateValve(FuncDataBase& Control,
 				  const std::string& keyName,
-				  const double yStep,const int closedFlag) const
+				  const double yStep,
+				  const int closedFlag) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables

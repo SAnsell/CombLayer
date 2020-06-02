@@ -226,7 +226,10 @@ TDC::buildInnerZone(const FuncDataBase& Control,
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setInsertCells(injectionHall->getCells(voidName));
   if (!voidNameB.empty())
-    buildZone->setInsertCells(injectionHall->getCells(voidNameB));
+    {
+      ELog::EM<<"Cell "<<injectionHall->getCell(voidNameB)<<ELog::endDiag;
+      buildZone->addInsertCells(injectionHall->getCells(voidNameB));
+    }
   return buildZone;
 }
 
@@ -304,10 +307,11 @@ TDC::createAll(Simulation& System,
       buildZone->constructMasterCell(System);
       segPtr->setInnerZone(buildZone.get());
       // special case of L2SPFsegment10 :
+      
       if (BL=="L2SPFsegment10")
 	{
 	  secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
-	  segPtr->setInnerZone(secondZone.get());
+	  segPtr->setNextZone(secondZone.get());
 	}
 	  
       segPtr->createAll

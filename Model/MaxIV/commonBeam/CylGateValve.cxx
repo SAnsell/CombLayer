@@ -279,7 +279,6 @@ CylGateValve::createObjects(Simulation& System)
     (SMap,buildIndex,"(-401:402:407) 405 -206 -507 ");
   makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,Out);
 
-  ELog::EM<<"front == "<<frontStr<<ELog::endDiag;
   // top flange [artifical cut on port flanges for FLUKA convinence]
   Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -207 217");
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);

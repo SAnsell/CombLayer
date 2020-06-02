@@ -260,6 +260,20 @@ InnerZone::setInsertCells(const std::vector<int>& CN)
 }
 
 void
+InnerZone::addInsertCells(const std::vector<int>& CN)
+  /*!
+    ADD the insert cells
+    \param CN :: List of cells to set for insert
+   */
+{
+  insertCN.insert(insertCN.end(),CN.begin(),CN.end());
+  std::sort(insertCN.begin(),insertCN.end());
+  insertCN.resize(std::distance(insertCN.begin(),
+				std::unique(insertCN.begin(),insertCN.end())));
+  return;
+}
+
+void
 InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
 				  const int surfID,
 				  const attachSystem::FixedComp& FC,
@@ -788,6 +802,7 @@ InnerZone::removeLastMaster(Simulation& System)
       MonteCarlo::Object* cellObj=System.findObject(CN);
       if (!cellObj)
 	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      ELog::EM<<"CN == "<<CN<<ELog::endDiag;
 
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);

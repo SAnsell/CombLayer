@@ -63,7 +63,8 @@ class TDCsegment :
   void setInnerZone(attachSystem::InnerZone* IZPtr) { buildZone=IZPtr; }
 
   /// set the NEXT inner zone [allows joining of segments]
-  void setNextZone(attachSystem::InnerZone* IZPtr) { nextZone=IZPtr; }
+  void setNextZone(attachSystem::InnerZone* IZPtr)
+    {  nextZone=IZPtr; }
 
   void setLastSurf(const HeadRule&);
   /// clear front flag
