@@ -80,6 +80,7 @@
 #include "CylGateValve.h"
 #include "BPM.h"
 #include "BeamDivider.h"
+#include "CeramicSep.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
@@ -120,7 +121,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default","CylGateValve","CorrectorMag","LQuadF","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","Octupole",
+      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
@@ -195,6 +196,17 @@ makeSingleItem::build(Simulation& System,
 
       eBeam->addAllInsertCell(voidCell);
       eBeam->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "CeramicSep")
+    {
+      std::shared_ptr<tdcSystem::CeramicSep>
+	cSep(new tdcSystem::CeramicSep("CerSep"));
+      OR.addObject(cSep);
+
+      cSep->addInsertCell(voidCell);
+      cSep->createAll(System,World::masterOrigin(),0);
 
       return;
     }
