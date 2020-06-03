@@ -181,18 +181,7 @@ TDCCavity::createSurfaces()
     }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(radius/2.0),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(radius/2.0),X);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(radius/2.0+wallThick),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(radius/2.0+wallThick),X);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   return;
 }
@@ -211,8 +200,12 @@ TDCCavity::createObjects(Simulation& System)
   const std::string backStr=getRuleStr("back");
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+frontStr+backStr;
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("InnerVoid",System,cellIndex++,mainMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 ")+frontStr+backStr;
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 ")+frontStr+backStr;
   addOuterSurf(Out);
 
   return;

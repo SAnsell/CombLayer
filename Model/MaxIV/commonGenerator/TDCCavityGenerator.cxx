@@ -50,9 +50,9 @@ namespace setVariable
 {
 
 TDCCavityGenerator::TDCCavityGenerator() :
-  length(312.363),radius(5.0),height(15.0),
-  wallThick(1.0),
-  mainMat(0),wallMat(0)
+  length(312.363),radius(6.0),height(15.0),
+  wallThick(1.5),
+  mainMat("Void"),wallMat("Copper")
   /*!
     Constructor and defaults
   */

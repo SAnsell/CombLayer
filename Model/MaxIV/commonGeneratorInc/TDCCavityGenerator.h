@@ -44,8 +44,8 @@ class TDCCavityGenerator
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  std::string mainMat;          ///< Main material
+  std::string wallMat;          ///< Wall material
 
  public:
 
