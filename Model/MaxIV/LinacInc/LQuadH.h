@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment15.h
+ * File:   LinacInc/LQuadH.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,40 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment15_h
-#define tdcSystem_TDCsegment15_h
+#ifndef tdcSystem_LQuadH_h
+#define tdcSystem_LQuadH_h
+
+class Simulation;
+
 
 namespace tdcSystem
 {
-  class YagScreen;
-  /*!
-    \class TDCsegment15
-    \version 1.0
-    \author K. Batkov
-    \date May 2020
-    \brief TDC segment 15
-  */
+/*!
+  \class LQuadH
+  \version 1.0
+  \author K. Batkov
+  \date May 2020
 
-class TDCsegment15 :
-  public TDCsegment
+  \brief QH (old name: QG) quadrupole magnet for MAX IV
+*/
+
+class LQuadH :
+    public tdcSystem::LQuadF
 {
  private:
+  double polePitch;             // pole pitch angle
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
-  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
-
-  void buildObjects(Simulation&);
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment15(const std::string&);
-  TDCsegment15(const TDCsegment15&);
-  TDCsegment15& operator=(const TDCsegment15&);
-  ~TDCsegment15();
+  LQuadH(const std::string&);
+  LQuadH(const std::string&,const std::string&);
+  LQuadH(const LQuadH&);
+  LQuadH& operator=(const LQuadH&);
+  virtual ~LQuadH();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

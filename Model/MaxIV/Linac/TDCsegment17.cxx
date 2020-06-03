@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/TDCsegment18.cxx
+ * File: Linac/TDCsegment17.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -67,35 +67,25 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
 #include "VacuumPipe.h"
-#include "LQuadF.h"
-#include "LQuadH.h"
-#include "LObjectSupport.h"
-#include "CorrectorMag.h"
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "BlankTube.h"
 
 #include "TDCsegment.h"
-#include "TDCsegment18.h"
+#include "TDCsegment17.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-TDCsegment18::TDCsegment18(const std::string& Key) :
+TDCsegment17::TDCsegment17(const std::string& Key) :
   TDCsegment(Key,2),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  quad(new tdcSystem::LQuadH(keyName+"Quad")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -104,41 +94,39 @@ TDCsegment18::TDCsegment18(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(pipeA);
   OR.addObject(bellowA);
   OR.addObject(ionPump);
-  OR.addObject(bellowB);
-  OR.addObject(bpm);
-  OR.addObject(pipeA);
-  OR.addObject(quad);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
 }
 
-TDCsegment18::~TDCsegment18()
+TDCsegment17::~TDCsegment17()
   /*!
     Destructor
    */
 {}
 
 void
-TDCsegment18::buildObjects(Simulation& System)
+TDCsegment17::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("TDCsegment18","buildObjects");
+  ELog::RegMethod RegA("TDCsegment17","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  bellowA->createAll(System,*this,0);
+  pipeA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
@@ -154,37 +142,22 @@ TDCsegment18::buildObjects(Simulation& System)
   ionPump->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*bellowB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
-
-  pipeA->createAll(System,*bpm, "back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeA);
-
-  pipeB->createAll(System,*pipeA, "back");
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
-  pipeTerminate(System,*buildZone,pipeB);
+    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
 
   buildZone->removeLastMaster(System);
-
-
-  const double realLen = (pipeB->getLinkPt("back") -
-			  bellowA->getLinkPt("front")).abs();
 
   return;
 }
 
 void
-TDCsegment18::createLinks()
+TDCsegment17::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("TDCsegment18","createLinks");
+  ELog::RegMethod RegA("TDCsegment17","createLinks");
 
-  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
@@ -192,7 +165,7 @@ TDCsegment18::createLinks()
 }
 
 void
-TDCsegment18::createAll(Simulation& System,
+TDCsegment17::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -203,7 +176,7 @@ TDCsegment18::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("TDCsegment18","build");
+  ELog::RegMethod RControl("TDCsegment17","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

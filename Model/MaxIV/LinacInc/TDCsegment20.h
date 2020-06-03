@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment18.h
+ * File:   LinacInc/TDCsegment20.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,43 +19,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment18_h
-#define tdcSystem_TDCsegment18_h
+#ifndef tdcSystem_TDCsegment20_h
+#define tdcSystem_TDCsegment20_h
 
 namespace tdcSystem
 {
+  class TDCCavity;
   /*!
-    \class TDCsegment18
+    \class TDCsegment20
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 18
+    \brief TDC segment 15
   */
 
-class TDCsegment18 :
+class TDCsegment20 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
-  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
-  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
+  std::shared_ptr<tdcSystem::TDCCavity> cavity;      ///< TDC cavity section
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment18(const std::string&);
-  TDCsegment18(const TDCsegment18&);
-  TDCsegment18& operator=(const TDCsegment18&);
-  ~TDCsegment18();
+  TDCsegment20(const std::string&);
+  TDCsegment20(const TDCsegment20&);
+  TDCsegment20& operator=(const TDCsegment20&);
+  ~TDCsegment20();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

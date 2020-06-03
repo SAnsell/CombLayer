@@ -6,13 +6,13 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 18;
+#declare view = 19;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
 // 2=omnimax
 // 3=cylindrical
-#declare projection = 1;
+#declare projection = 0;
 #declare cameraAngle = 150;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
@@ -75,9 +75,10 @@ global_settings {
     #declare cameraAngle = 90;
   #break
   #case(15) // TDC segment 15
-    #declare cameraLocation = <-433, 4806, 40>;
-    #declare cameraLookAt   = <-485, 4860, 0>;
+    #declare cameraLocation = <-433, 4980, 40>;
+    #declare cameraLookAt   = <-485, 5030, 10>;
     #declare cameraAngle = 70;
+    #declare projection = 0;
   #break
   #case(16) // TDC segment 16
     #declare cameraLocation = <-400, 5320, 40>;
@@ -89,9 +90,20 @@ global_settings {
     #declare cameraLookAt   = <-485, 4867, 0>;
     #declare cameraAngle = 50;
   #break
+  #case(17) // TDC segment 17
+    #declare cameraLocation = <-430, 5450, 40>;
+    #declare cameraLookAt   = <-485, 5520, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
   #case(18) // TDC segment 18
     #declare cameraLocation = <-400, 6300, 40>;
     #declare cameraLookAt   = <-485, 6350, 0>;
+    #declare projection = 1;
+  #break
+  #case(19) // TDC segment 19
+    #declare cameraLocation = <-460, 6495, 20>;
+    #declare cameraLookAt   = <-485, 6500, 0>;
     #declare projection = 1;
   #break
   #case(1000) // beamline view

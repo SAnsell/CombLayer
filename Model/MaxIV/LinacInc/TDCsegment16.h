@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class LQuadH;
   /*!
     \class TDCsegment16
     \version 1.0
@@ -40,12 +41,12 @@ class TDCsegment16 :
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
   std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
-  std::shared_ptr<tdcSystem::LQuadF> quad;                  ///< #4
+  std::shared_ptr<tdcSystem::LQuadH> quad;                  ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::PipeTube> ionPump;      ///< #7
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #7
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9
 
   void buildObjects(Simulation&);

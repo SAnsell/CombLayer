@@ -36,47 +36,25 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
 #include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "ExternalCut.h"
-#include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "InnerZone.h"
 #include "World.h"
-#include "AttachSupport.h"
-#include "LinkSupport.h"
 
 
 #include "InjectionHall.h"
@@ -196,7 +174,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	    "L2SPFsegment4", "L2SPFsegment5", "L2SPFsegment6",
        	    "L2SPFsegment7", "L2SPFsegment8", "L2SPFsegment9" } },
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16",
-	       "TDCsegment17","TDCsegment18"} },
+	       "TDCsegment17","TDCsegment18", "TDCsegment19",
+	       "TDCsegment20"} },
        {"L2SPFsegment1",{} },                             // first only
        {"L2SPFsegment2",{} },                             // second only
        {"L2SPFsegment3",{} },                             // third only
@@ -211,7 +190,9 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDCsegment15",{} },                              // 15th only
        {"TDCsegment16",{} },                              // 16th only
        {"TDCsegment17",{} },                              // 17th only
-       {"TDCsegment18",{} }                               // 18th only
+       {"TDCsegment18",{} },                              // 18th only
+       {"TDCsegment19",{} },                              // 19th only
+       {"TDCsegment20",{} }                               // 20th only
     });
 
   const int voidCell(74123);

@@ -52,7 +52,7 @@
 #include "ChopperGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
-#include "LinacQuadFGenerator.h"
+#include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
 #include "SexupoleGenerator.h"
 #include "OctupoleGenerator.h"
@@ -207,7 +207,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
 
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
   setVariable::LinacSexuGenerator LSGen;

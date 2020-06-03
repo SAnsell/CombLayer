@@ -68,6 +68,7 @@
 #include "VacuumPipe.h"
 #include "portItem.h"
 #include "VirtualTube.h"
+#include "BlankTube.h"
 #include "PipeTube.h"
 #include "YagScreen.h"
 
@@ -83,7 +84,7 @@ TDCsegment15::TDCsegment15(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YAG")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
@@ -162,11 +163,11 @@ TDCsegment15::buildObjects(Simulation& System)
 
   ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
   yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
-  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerFront"));
+  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerBack"));
 
-  // 1 does not work, but side can be changed with signs of
-  // XVec in the Port[12] variables
-  yagScreen->createAll(System,*ionPump, 2);
+  // Side can be changed with signs of XVec in the Port[12] variables
+  // 2 can be set but YAGScreen::setPipeFront above must be changed to "InnerFront"
+  yagScreen->createAll(System,*ionPump, 1);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);

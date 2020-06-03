@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment18.h
+ * File:   LinacInc/TDCsegment17.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,43 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment18_h
-#define tdcSystem_TDCsegment18_h
+#ifndef tdcSystem_TDCsegment17_h
+#define tdcSystem_TDCsegment17_h
 
 namespace tdcSystem
 {
+  class YagScreen;
   /*!
-    \class TDCsegment18
+    \class TDCsegment17
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 18
+    \brief TDC segment 17
   */
 
-class TDCsegment18 :
+class TDCsegment17 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
-  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
-  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
+  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #2
+  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment18(const std::string&);
-  TDCsegment18(const TDCsegment18&);
-  TDCsegment18& operator=(const TDCsegment18&);
-  ~TDCsegment18();
+  TDCsegment17(const std::string&);
+  TDCsegment17(const TDCsegment17&);
+  TDCsegment17& operator=(const TDCsegment17&);
+  ~TDCsegment17();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

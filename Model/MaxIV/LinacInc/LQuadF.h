@@ -43,7 +43,7 @@ class LQuadF :
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
- private:
+ protected:
 
   const std::string baseName;   ///< Base key
 

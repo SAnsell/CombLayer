@@ -41,7 +41,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -81,14 +80,12 @@
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
 #include "TDCsegment16.h"
-//#include "TDCsegment17.h"
+#include "TDCsegment17.h"
 #include "TDCsegment18.h"
+#include "TDCsegment19.h"
+#include "TDCsegment20.h"
 
 #include "TDC.h"
-
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Surface.h"
 
 namespace tdcSystem
 {
@@ -111,18 +108,22 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
     { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
     { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
-    { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") }, 
-    // { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
-    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") }
+    { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") },
+    { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
+    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
+    { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
+    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") }
   } )
   /*!
     Constructor
     \param KN :: Keyname
   */
 {
+  ELog::RegMethod RegA("TDC","TDC");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-	  
+
   OR.addObject(injectionHall);
   for(const auto& [ key, tdcItem ] : SegMap)
     OR.addObject(tdcItem);
@@ -161,7 +162,7 @@ TDC::buildSurround(const FuncDataBase& Control,
   const Geometry::Vec3D& Org=injFC.getCentre();
   const Geometry::Vec3D& InjectX=injFC.getX();
   const Geometry::Vec3D& InjectZ=injFC.getZ();
-  
+
   std::string Out;
 
   ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
@@ -261,14 +262,16 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
       {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
       {"TDCsegment14",{"tdc",""}},
-      {"TDCsegment15",{"tdc","TDCsegment15"}},
-      {"TDCsegment16",{"tdc","TDCsegment16"}},
+      {"TDCsegment15",{"tdc","TDCsegment14"}},
+      {"TDCsegment16",{"tdc","TDCsegment15"}},
       {"TDCsegment17",{"tdc","TDCsegment16"}},
-      {"TDCsegment18",{"tdc","TDCsegment17"}}
+      {"TDCsegment18",{"tdc","TDCsegment17"}},
+      {"TDCsegment19",{"tdc","TDCsegment18"}},
+      {"TDCsegment20",{"tdc","TDCsegment19"}}
     });
   const int voidCell(74123);
 
-  
+
   // build injection hall first:
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
@@ -286,9 +289,8 @@ TDC::createAll(Simulation& System,
       const std::string& bzName=std::get<0>(seglink);
       const std::string& prevName=std::get<1>(seglink);
       SegTYPE::const_iterator prevC=SegMap.find(prevName);
-      
+
       const std::shared_ptr<TDCsegment>& segPtr=mc->second;
-      
 
       std::unique_ptr<attachSystem::InnerZone> buildZone=
 	buildInnerZone(System.getDataBase(),bzName);
@@ -304,6 +306,7 @@ TDC::createAll(Simulation& System,
 	      segPtr->setCutSurf("front",prevPtr->getLastSurf());
 	    }
 	}
+
       buildZone->constructMasterCell(System);
       segPtr->setInnerZone(buildZone.get());
       // special case of L2SPFsegment10 :

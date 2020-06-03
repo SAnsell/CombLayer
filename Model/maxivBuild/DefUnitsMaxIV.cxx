@@ -33,19 +33,11 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "InputControl.h"
 #include "inputParam.h"
-#include "support.h"
 #include "defaultConfig.h"
 #include "DefUnitsMaxIV.h"
 
@@ -180,7 +172,9 @@ setMaxIVLinac(defaultConfig& A,
      { "TDCsegment15", "World 0"},
      { "TDCsegment16", "World 0"},
      { "TDCsegment17", "World 0"},
-     { "TDCsegment18", "World 0"}
+     { "TDCsegment18", "World 0"},
+     { "TDCsegment19", "World 0"},
+     { "TDCsegment20", "World 0"}
     };
 
   size_t unitIndex(0);
