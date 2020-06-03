@@ -108,13 +108,13 @@ setIonPump1Port(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
 
   SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.setMat("Stainless304L"); // mat checked
   SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
 
   Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(6.6); // ???
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
+  PItemGen.setCF<setVariable::CF40_22>(5.1); // measured
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L"); // mat checked
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
 }
@@ -963,7 +963,7 @@ TDCsegment19(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
 
   Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(6.6); // ???
+  PItemGen.setCF<setVariable::CF40_22>(5.1); // measured
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
@@ -973,7 +973,7 @@ TDCsegment19(FuncDataBase& Control,
   RGateGen.generateValve(Control,lKey+"GateA",0.0,0);
   //Control.addVariable(lKey+"GateAPortALen",2.0);
   Control.addVariable(lKey+"GateABladeThick",0.5); // guess
-
+  Control.addVariable(lKey+"GateAWallMat","Stainless304L"); // email from Karl Åhnberg, 2 Jun 2020
 
   // Vacuum gauge
   name=lKey+"IonPump";
@@ -985,6 +985,8 @@ TDCsegment19(FuncDataBase& Control,
   Control.addVariable(lKey+"GateBWallThick",0.3);
   Control.addVariable(lKey+"GateBPortThick",0.1);
   Control.addVariable(lKey+"GateBYAngle",180.0);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
 
