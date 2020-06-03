@@ -340,9 +340,6 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadB",72.0);
 
-  ELog::EM << "remove next line??? (you call the same later)" << ELog::endDiag;
-  CGateGen.generateGate(Control,lKey+"GateTube",0);
-
   CGateGen.setRotate(1);
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
@@ -661,7 +658,7 @@ linac2SPFsegment9(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::CeramicSepGenerator CSGen;
  
   
@@ -710,7 +707,7 @@ linac2SPFsegment10(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::LinacQuadFGenerator LQGen;
+  setVariable::LinacQuadGenerator LQGen;
   setVariable::GateValveGenerator GateGen;
   
   const Geometry::Vec3D startPt(-323.368,2710.648,0.0);
