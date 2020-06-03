@@ -83,7 +83,7 @@ TDCCavity::TDCCavity(const TDCCavity& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),radius(A.radius),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -108,7 +108,7 @@ TDCCavity::operator=(const TDCCavity& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
+      radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -145,29 +145,12 @@ TDCCavity::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-  return;
-}
-
-void
-TDCCavity::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("TDCCavity","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -180,25 +163,16 @@ TDCCavity::createSurfaces()
 {
   ELog::RegMethod RegA("TDCCavity","createSurfaces");
 
-  if (!frontActive())
+  if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
 
-  if (!backActive())
+  if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
@@ -206,17 +180,19 @@ TDCCavity::createSurfaces()
 				      -wallThick);
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(radius/2.0),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(radius/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(radius/2.0+wallThick),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(radius/2.0+wallThick),X);
+
+  // ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   return;
 }
@@ -231,18 +207,13 @@ TDCCavity::createObjects(Simulation& System)
   ELog::RegMethod RegA("TDCCavity","createObjects");
 
   std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  const std::string frontStr=getRuleStr("front");
+  const std::string backStr=getRuleStr("back");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+frontStr+backStr;
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(Out+frontStr+backStr);
+  addOuterSurf(Out);
 
   return;
 }
@@ -256,19 +227,8 @@ TDCCavity::createLinks()
 {
   ELog::RegMethod RegA("TDCCavity","createLinks");
 
-  FrontBackCut::createLinks(*this,Origin,Y);
-
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
 
   return;
 }
@@ -287,7 +247,7 @@ TDCCavity::createAll(Simulation& System,
   ELog::RegMethod RegA("TDCCavity","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,length);
   createSurfaces();
   createObjects(System);
   createLinks();

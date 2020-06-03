@@ -40,7 +40,7 @@ class TDCCavityGenerator
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
+  double radius;                ///< Inner radius
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
 

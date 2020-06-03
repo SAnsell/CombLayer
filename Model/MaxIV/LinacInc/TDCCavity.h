@@ -45,7 +45,7 @@ class TDCCavity :
  private:
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
+  double radius;                ///< Inner radius
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
 
@@ -53,9 +53,6 @@ class TDCCavity :
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -68,6 +65,7 @@ class TDCCavity :
   virtual TDCCavity* clone() const;
   virtual ~TDCCavity();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

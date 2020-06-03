@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 TDCCavityGenerator::TDCCavityGenerator() :
-  length(312.363),width(5.0),height(15.0),
+  length(312.363),radius(5.0),height(15.0),
   wallThick(1.0),
   mainMat(0),wallMat(0)
   /*!
@@ -76,7 +76,7 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("TDCCavityGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"MainMat",mainMat);

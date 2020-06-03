@@ -101,10 +101,12 @@ TDCsegment20::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
-
-  cavity->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*cavity,-1);
+    masterCell=buildZone->constructMasterCell(System);
+
+  if (isActive("front"))
+    cavity->copyCutSurf("front",*this,"front");
+  cavity->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*cavity,2);
   cavity->insertInCell(System,outerCell);
 
