@@ -312,7 +312,6 @@ CeramicSep::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("CeramicSep","createAll");
 
-  ELog::EM<<"RERE "<<ELog::endDiag;
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);
   createSurfaces();

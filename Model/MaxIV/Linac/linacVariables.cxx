@@ -61,6 +61,7 @@
 #include "FlatPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
+#include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
 
 namespace setVariable
@@ -625,6 +626,8 @@ linac2SPFsegment9(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadFGenerator LQGen;
+  setVariable::CeramicSepGenerator CSGen;
+ 
   
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
   const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
@@ -638,10 +641,10 @@ linac2SPFsegment9(FuncDataBase& Control,
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF40>();
   
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);  
+  CSGen.generateCeramicSep(Control,lKey+"CeramicBellowA");  
   setIonPump2Port(Control, lKey+"PumpA");
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,60.0);   // guess
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,56.6);   
 
   CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
   CMGen.generateMag(Control,lKey+"CMagHorA",50.50,0);
@@ -649,7 +652,7 @@ linac2SPFsegment9(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,35.0);   // guess
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,34.0);   
   LQGen.generateQuad(Control,lKey+"QuadA",17.50);
 
   BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);  

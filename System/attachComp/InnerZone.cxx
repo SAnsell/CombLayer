@@ -802,7 +802,6 @@ InnerZone::removeLastMaster(Simulation& System)
       MonteCarlo::Object* cellObj=System.findObject(CN);
       if (!cellObj)
 	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
-      ELog::EM<<"CN == "<<CN<<ELog::endDiag;
 
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);

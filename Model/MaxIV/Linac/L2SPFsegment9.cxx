@@ -88,6 +88,7 @@
 #include "LQuadF.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
+#include "CeramicSep.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -102,7 +103,7 @@ namespace tdcSystem
 L2SPFsegment9::L2SPFsegment9(const std::string& Key) :
   TDCsegment(Key,2),
 
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  ceramicBellowA(new tdcSystem::CeramicSep(keyName+"CeramicBellowA")),
   pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
@@ -123,7 +124,7 @@ L2SPFsegment9::L2SPFsegment9(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
+  OR.addObject(ceramicBellowA);
   OR.addObject(pumpA);
   OR.addObject(pipeA);
   OR.addObject(cMagVertA);
@@ -158,16 +159,16 @@ L2SPFsegment9::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    bellowA->copyCutSurf("front",*this,"front");
-  bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+    ceramicBellowA->copyCutSurf("front",*this,"front");
+  ceramicBellowA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramicBellowA,2);
+  ceramicBellowA->insertInCell(System,outerCell);
 
 
   // FAKE INSERT REQUIRED
   pumpA->addAllInsertCell(masterCell->getName());
   pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*bellowA,"back");
+  pumpA->createAll(System,*ceramicBellowA,"back");
 
   const constructSystem::portItem& VPB=pumpA->getPort(1);
   outerCell=buildZone->createOuterVoidUnit
@@ -203,7 +204,7 @@ L2SPFsegment9::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(0,*ceramicBellowA,1);
   setLinkSignedCopy(1,*bellowC,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
