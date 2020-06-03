@@ -41,7 +41,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -82,12 +81,9 @@
 #include "TDCsegment17.h"
 #include "TDCsegment18.h"
 #include "TDCsegment19.h"
+#include "TDCsegment20.h"
 
 #include "TDC.h"
-
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Surface.h"
 
 namespace tdcSystem
 {
@@ -111,7 +107,8 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") },
     { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
-    { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") }
+    { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
+    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") }
   } )
   /*!
     Constructor
@@ -255,7 +252,8 @@ TDC::createAll(Simulation& System,
       {"TDCsegment16",{"tdc","TDCsegment15"}},
       {"TDCsegment17",{"tdc","TDCsegment16"}},
       {"TDCsegment18",{"tdc","TDCsegment17"}},
-      {"TDCsegment19",{"tdc","TDCsegment19"}}
+      {"TDCsegment19",{"tdc","TDCsegment18"}},
+      {"TDCsegment20",{"tdc","TDCsegment19"}}
     });
   const int voidCell(74123);
 

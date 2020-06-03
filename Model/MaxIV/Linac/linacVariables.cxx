@@ -61,6 +61,7 @@
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
 #include "EBeamStopGenerator.h"
+#include "TDCCavityGenerator.h"
 
 namespace setVariable
 {
@@ -81,11 +82,13 @@ namespace linacVar
   void linac2SPFsegment7(FuncDataBase&,const std::string&);
   void linac2SPFsegment8(FuncDataBase&,const std::string&);
 
-  void TDCsegment14(FuncDataBase&,const std::string&);
-  void TDCsegment15(FuncDataBase&,const std::string&);
-  void TDCsegment16(FuncDataBase&,const std::string&);
-  void TDCsegment17(FuncDataBase&,const std::string&);
-  void TDCsegment18(FuncDataBase&,const std::string&);
+  // void TDCsegment14(FuncDataBase&,const std::string&);
+  // void TDCsegment15(FuncDataBase&,const std::string&);
+  // void TDCsegment16(FuncDataBase&,const std::string&);
+  // void TDCsegment17(FuncDataBase&,const std::string&);
+  // void TDCsegment18(FuncDataBase&,const std::string&);
+  // void TDCsegment19(FuncDataBase&,const std::string&);
+  // void TDCsegment20(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -993,6 +996,29 @@ TDCsegment19(FuncDataBase& Control,
   return;
 }
 
+void
+TDCsegment20(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment20");
+
+  setVariable::TDCCavityGenerator TDCGen;
+
+  const Geometry::Vec3D startPt(-637.608,6045.428,0.0);
+  const Geometry::Vec3D endPt(-637.608,6358.791,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  TDCGen.generate(Control,lKey+"Cavity");
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -1114,6 +1140,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment17(Control,"TDC17");
   linacVar::TDCsegment18(Control,"TDC18");
   linacVar::TDCsegment19(Control,"TDC19");
+  linacVar::TDCsegment20(Control,"TDC20");
 
   return;
 }
