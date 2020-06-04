@@ -786,7 +786,7 @@ linac2SPFsegment10(FuncDataBase& Control,
   GateGen.generateValve(Control,lKey+"GateValve",0.0,0);
   setIonPump2Port(Control, lKey+"PumpA");  
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.00);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,153.00);
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);  
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,125.0);
@@ -828,12 +828,12 @@ linac2SPFsegment11(FuncDataBase& Control,
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,41.50);   
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,43.50);   
   LQGen.generateQuad(Control,lKey+"QuadA",20.5);
   
   setIonPump3OffsetPort(Control,lKey+"PumpA");  
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.00);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
   CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
   return;
 }

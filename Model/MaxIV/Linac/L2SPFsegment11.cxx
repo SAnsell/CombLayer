@@ -175,7 +175,6 @@ L2SPFsegment11::buildObjects(Simulation& System)
   pumpA->intersectPorts(System,2,0);
 
   pipeB->createAll(System,VPB,"OuterPlate");
-  ELog::EM<<"Point == "<<VPB.getLinkPt("OuterPlate")<<ELog::endDiag;
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);
   
@@ -190,7 +189,7 @@ L2SPFsegment11::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeA,2);
+  setLinkSignedCopy(1,*pipeB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
