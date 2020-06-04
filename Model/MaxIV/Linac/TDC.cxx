@@ -193,7 +193,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
     \param regionName :: Zone name
   */
 {
-  ELog::RegMethod RegA("TDC","getBuildZone");
+  ELog::RegMethod RegA("TDC","buidInnerZone");
 
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
   typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
@@ -229,10 +229,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setInsertCells(injectionHall->getCells(voidName));
   if (!voidNameB.empty())
-    {
-      ELog::EM<<"Cell "<<injectionHall->getCell(voidNameB)<<ELog::endDiag;
-      buildZone->addInsertCells(injectionHall->getCells(voidNameB));
-    }
+    buildZone->addInsertCells(injectionHall->getCells(voidNameB));
+
   return buildZone;
 }
 

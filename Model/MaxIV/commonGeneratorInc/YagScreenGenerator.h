@@ -39,38 +39,54 @@ class YagScreenGenerator
 {
  private:
 
-  double jbLength;              ///< electronics junction box length
-  double jbWidth;               ///< electronics junction box width
-  double jbHeight;              ///< electronics junction box height
-  double jbWallThick;           ///< electronics junction box wall thickness
+  double juncBoxLength;         ///< electronics junction box length
+  double juncBoxWidth;          ///< electronics junction box width
+  double juncBoxHeight;         ///< electronics junction box height
+  double juncBoxWallThick;      ///< electronics junction box wall thickness
 
-  std::string jbWallMat;        ///< electronics junction box material
-  std::string jbMat;            ///< electronics junction box cable/inside material
 
-  double ftLength;              ///< linear pneumatics feedthrough length
-  double ftInnerRadius;         ///< linear pneumatics feedthrough inner radius
-  double ftWallThick;           ///< linear pneumatics feedthrough wall thickness
-  double ftFlangeLen;           ///< linear pneumatic feedthrough flange length
-  double ftFlangeRadius;        ///< linear pneumatic feedthrough flange radius
-  std::string ftWallMat;        ///< linear pneumatics feedthrough wall material
+  double feedLength;            ///< linear pneumatics feedthrough length
+  double feedInnerRadius;       ///< linear pneumatics feedthrough inner radius
+  double feedWallThick;         ///< linear pneumatics feedthrough wall thickness
+  double feedFlangeLen;         ///< linear pneumatics feedthrough flange length
+  double feedFlangeRadius;      ///< linear pneumatics feedthrough flange radius
 
-  double threadLift;            ///< screen thread lift inside vacuum system
-  double threadRad;             ///< screen thread inner radius
-  std::string threadMat;        ///< screen thread material
+  double threadLift;            ///< screen thread lift
+  double threadRadius;          ///< screen thread inner radius
 
+  // volume containing Yag screen + mirror
+
+  double holderWidth;           ///< Flat across holder
+  double holderDepth;           ///< In beamaxis
+  double holderShortLen;        ///< short length of trapizium
+  double holderLongLen;         ///< long length
+
+  double mirrorAngle;           ///< Flat (mirror) angle
   double mirrorRadius;          ///< quartz mirror radius
-  double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness
-  std::string mirrorMat;        ///< mirror material
-  double screenOffset;          ///< distance between mirror and screen
 
-  double screenRadius;          ///< screen radius
   double screenAngle;           ///< screen inclination angle [deg]
-  double screenHolderRadius;    ///< screen holder outer radius
-  double screenHolderThick;    ///< screen holder thickness
-  std::string screenHolderMat;       ///< screen holder material
+  double screenVOffset;         ///< Start of screen join above mirror cut
+  double screenRadius;          ///< Radius of screen
+  double screenThick;           ///< Thickness of screen
 
-  std::string voidMat;          ///< void material
+  double screenHolderRadius;     ///< screen holder thickness
+  double screenHolderThick;     ///< screen holder thickness
+
+
+  std::string voidMat;               ///< void material
+
+  /// electronics junction box cable/inside material
+  std::string juncBoxMat;                
+  std::string juncBoxWallMat;        ///< electronics junction box wall material
+  std::string threadMat;             ///< screen thread material
+  std::string mirrorMat;             ///< mirror  material
+  std::string screenMat;             ///< screen  material
+  
+  std::string holderMat;       ///< screen holder material
+
+  std::string feedWallMat;           ///< Feedthrough wall material  
+
 
  public:
 

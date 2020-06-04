@@ -51,30 +51,34 @@ namespace setVariable
 {
 
 YagScreenGenerator::YagScreenGenerator() :
-  jbLength(11.5),jbWidth(8.0),jbHeight(8.0),
-  jbWallThick(0.3),
-  jbWallMat("Aluminium"),
-  jbMat("StbTCABL%Void%50"), // guess
-  ftLength(19.5),
-  ftInnerRadius(0.95),
-  ftWallThick(0.95),
-  ftFlangeLen(1.2),
-  ftFlangeRadius(3.5),
-  ftWallMat("Stainless304L"),
-  threadLift(7.0),
-  threadRad(ftInnerRadius*0.7), // guess
-  threadMat("Aluminium"),
-  mirrorRadius(1.75),
-  mirrorAngle(-45.0),
+  juncBoxLength(11.5),juncBoxWidth(8.0),
+  juncBoxHeight(8.0),juncBoxWallThick(0.3),
+  
+  feedLength(19.5),feedInnerRadius(0.95),
+  feedWallThick(0.95),feedFlangeLen(1.2),
+  feedFlangeRadius(3.5),
+
+  threadLift(7.0),threadRadius(feedInnerRadius*0.7), // guess
+
+  holderWidth(2.75),holderDepth(3.25),
+  holderShortLen(1.32),holderLongLen(4.1),
+
+  mirrorAngle(-45.0),mirrorRadius(1.75),
   mirrorThick(0.5),
+
+  screenAngle(5.0), screenVOffset(0.3),
+  screenRadius(1.0),screenThick(0.1),
+ 
+  screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
+  
+  voidMat("Void"),
+  juncBoxMat("StbTCABL%Void%50"), // guess
+  juncBoxWallMat("Aluminium"),
+  threadMat("Aluminium"),
   mirrorMat("SiO2"),
-  screenOffset(0.5),
-  screenRadius(0.9), // yag-drawings.pdf, drawing #201375,
-  screenAngle(5),
-  screenHolderRadius(1.3),
-  screenHolderThick(0.2), // measured,
-  screenHolderMat("Stainless304L"),
-  voidMat("Void")
+  screenMat("SiO2"),
+  holderMat("Stainless304L"),
+  feedWallMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -93,8 +97,8 @@ YagScreenGenerator::setCF()
     Set pipe and flange to CF-X format
   */
 {
-  ftInnerRadius=CF::innerRadius;
-  ftWallThick=CF::wallThick;
+  feedInnerRadius=CF::innerRadius;
+  feedWallThick=CF::wallThick;
   setFlangeCF<CF>();
 
   return;
@@ -107,8 +111,8 @@ YagScreenGenerator::setFlangeCF()
     Setter for flange
    */
 {
-  ftFlangeRadius=CF::flangeRadius;
-  ftFlangeLen=CF::flangeLength;
+  feedFlangeRadius=CF::flangeRadius;
+  feedFlangeLen=CF::flangeLength;
 
   return;
 }
@@ -128,34 +132,46 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
   Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
-  Control.addVariable(keyName+"JBLength",jbLength);
-  Control.addVariable(keyName+"JBWidth",jbWidth);
-  Control.addVariable(keyName+"JBHeight",jbHeight);
-  Control.addVariable(keyName+"JBWallThick",jbWallThick);
-  Control.addVariable(keyName+"FTLength",ftLength);
-  Control.addVariable(keyName+"FTInnerRadius",ftInnerRadius);
-  Control.addVariable(keyName+"FTWallThick",ftWallThick);
-  Control.addVariable(keyName+"FTFlangeLength",ftFlangeLen);
-  Control.addVariable(keyName+"FTFlangeRadius",ftFlangeRadius);
-  Control.addVariable(keyName+"FTWallMat",ftWallMat);
+
+  Control.addVariable(keyName+"JuncBoxLength",juncBoxLength);
+  Control.addVariable(keyName+"JuncBoxWidth",juncBoxWidth);
+  Control.addVariable(keyName+"JuncBoxHeight",juncBoxHeight);
+  Control.addVariable(keyName+"JuncBoxWallThick",juncBoxWallThick);
+
+  Control.addVariable(keyName+"FeedLength",feedLength);
+  Control.addVariable(keyName+"FeedInnerRadius",feedInnerRadius);
+  Control.addVariable(keyName+"FeedWallThick",feedWallThick);
+  Control.addVariable(keyName+"FeedFlangeLen",feedFlangeLen);
+  Control.addVariable(keyName+"FeedFlangeRadius",feedFlangeRadius);
+
   Control.addVariable(keyName+"ThreadLift",threadLift);
-  Control.addVariable(keyName+"ThreadRadius",threadRad);
-  Control.addVariable(keyName+"ThreadMat",threadMat);
-  Control.addVariable(keyName+"MirrorRadius",mirrorRadius);
+  Control.addVariable(keyName+"ThreadRadius",threadRadius);
+  
+  Control.addVariable(keyName+"HolderWidth",holderWidth);
+  Control.addVariable(keyName+"HolderDepth",holderDepth);
+  Control.addVariable(keyName+"HolderShortLen",holderShortLen);
+  Control.addVariable(keyName+"HolderLongLen",holderLongLen);
+  
   Control.addVariable(keyName+"MirrorAngle",mirrorAngle);
+  Control.addVariable(keyName+"MirrorRadius",mirrorRadius);
   Control.addVariable(keyName+"MirrorThick",mirrorThick);
-  Control.addVariable(keyName+"MirrorMat",mirrorMat);
-  Control.addVariable(keyName+"ScreenOffset",screenOffset);
-  Control.addVariable(keyName+"ScreenRadius",screenRadius);
+  
   Control.addVariable(keyName+"ScreenAngle",screenAngle);
+  Control.addVariable(keyName+"ScreenVOffset",screenVOffset);
+  Control.addVariable(keyName+"ScreenRadius",screenRadius);
+  Control.addVariable(keyName+"ScreenThick",screenThick);
   Control.addVariable(keyName+"ScreenHolderRadius",screenHolderRadius);
   Control.addVariable(keyName+"ScreenHolderThick",screenHolderThick);
-  Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
-  Control.addVariable(keyName+"JBWallMat",jbWallMat);
-  Control.addVariable(keyName+"JBMat",jbMat);
+  
   Control.addVariable(keyName+"VoidMat",voidMat);
-
-  return;
+  Control.addVariable(keyName+"JuncBoxMat",juncBoxMat);
+  Control.addVariable(keyName+"JuncBoxWallMat",juncBoxWallMat);
+  Control.addVariable(keyName+"ThreadMat",threadMat);
+  Control.addVariable(keyName+"HolderMat",holderMat);
+  Control.addVariable(keyName+"MirrorMat",mirrorMat);
+  Control.addVariable(keyName+"FeedWallMat",feedWallMat);
+ 
+ return;
 
 }
 

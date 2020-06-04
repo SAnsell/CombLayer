@@ -45,7 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
+#include "Line.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -87,7 +87,7 @@
 #include "LQuadF.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
-#include "CeramicSep.h"
+#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -174,6 +174,9 @@ L2SPFsegment11::buildObjects(Simulation& System)
   pumpA->intersectPorts(System,2,1);
   pumpA->intersectPorts(System,2,0);
 
+  ELog::EM<<"Surf == "<<pumpA->getSideIndex("InnerSide")<<ELog::endDiag;
+  ELog::EM<<"Surf == "<<pumpA->getSideIndex("InnerBack")<<ELog::endDiag;
+  
   pipeB->createAll(System,VPB,"OuterPlate");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);

@@ -38,7 +38,9 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Line.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -54,6 +56,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Exception.h"
@@ -65,11 +69,10 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedRotate(Key,6),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  screenCentreActive(false),
-  pipeSide(""),pipeFront(""),
   inBeam(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -77,100 +80,6 @@ YagScreen::YagScreen(const std::string& Key)  :
   */
 {}
 
-YagScreen::YagScreen(const YagScreen& A) :
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedRotate(A),
-  attachSystem::CellMap(A),
-  jbLength(A.jbLength),jbWidth(A.jbWidth),jbHeight(A.jbHeight),
-  jbWallThick(A.jbWallThick),
-  jbWallMat(A.jbWallMat),
-  jbMat(A.jbMat),
-  ftLength(A.ftLength),
-  ftInnerRadius(A.ftInnerRadius),
-  ftWallThick(A.ftWallThick),
-  ftFlangeLen(A.ftFlangeLen),
-  ftFlangeRadius(A.ftFlangeRadius),
-  ftWallMat(A.ftWallMat),
-  threadLift(A.threadLift),
-  threadRad(A.threadRad),
-  threadMat(A.threadMat),
-  mirrorRadius(A.mirrorRadius),
-  mirrorAngle(A.mirrorAngle),
-  mirrorThick(A.mirrorThick),
-  mirrorMat(A.mirrorMat),
-  screenOffset(A.screenOffset),
-  screenRadius(A.screenRadius),
-  screenAngle(A.screenAngle),
-  screenHolderRadius(A.screenHolderRadius),
-  screenHolderThick(A.screenHolderThick),
-  screenHolderMat(A.screenHolderMat),
-  screenCentreActive(A.screenCentreActive),
-  screenCentre(A.screenCentre),
-  pipeSide(A.pipeSide),pipeFront(A.pipeFront),
-  voidMat(A.voidMat),inBeam(A.inBeam)
-  /*!
-    Copy constructor
-    \param A :: YagScreen to copy
-  */
-{}
-
-YagScreen&
-YagScreen::operator=(const YagScreen& A)
-  /*!
-    Assignment operator
-    \param A :: YagScreen to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      jbLength=A.jbLength;
-      jbWidth=A.jbWidth;
-      jbHeight=A.jbHeight;
-      jbWallThick=A.jbWallThick;
-      jbWallMat=A.jbWallMat;
-      jbMat=A.jbMat;
-      ftLength=A.ftLength;
-      ftInnerRadius=A.ftInnerRadius;
-      ftWallThick=A.ftWallThick;
-      ftFlangeLen=A.ftFlangeLen;
-      ftFlangeRadius=A.ftFlangeRadius;
-      ftWallMat=A.ftWallMat;
-      threadLift=A.threadLift;
-      threadRad=A.threadRad;
-      threadMat=A.threadMat;
-      mirrorRadius=A.mirrorRadius;
-      mirrorAngle=A.mirrorAngle;
-      mirrorThick=A.mirrorThick;
-      mirrorMat=A.mirrorMat;
-      screenOffset=A.screenOffset;
-      screenRadius=A.screenRadius;
-      screenAngle=A.screenAngle;
-      screenHolderRadius=A.screenHolderRadius;
-      screenHolderThick=A.screenHolderThick;
-      screenHolderMat=A.screenHolderMat;
-      screenCentreActive=A.screenCentreActive;
-      screenCentre=A.screenCentre;
-      pipeSide=A.pipeSide;
-      pipeFront=A.pipeFront;
-      voidMat=A.voidMat;
-      inBeam=A.inBeam;
-    }
-  return *this;
-}
-
-YagScreen*
-YagScreen::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new YagScreen(*this);
-}
 
 YagScreen::~YagScreen()
   /*!
@@ -179,20 +88,40 @@ YagScreen::~YagScreen()
 {}
 
 void
-YagScreen::calcThreadLength()
+YagScreen::calcIncidentVector()
   /*!
-    Internal function to calculate screen thread lift based
-    on the screenCentre point [if set]
+    Calculate the impact points of the main beam 
+    on the mirror surfaces:
+    We have the beamAxis this must intersect the screen and mirror closest to 
+    their centre points. It DOES NOT need to hit the centre points as the mirror
+    system is confined to moving down the Y axis of the object. [-ve Y from flange 
+    to beam centre]
   */
 {
   ELog::RegMethod RegA("YagScreen","calcThreadLength");
 
-  if (screenCentreActive)
-    {
-      const Geometry::Vec3D DVec=screenCentre-Origin;
-      threadLift=std::abs(DVec.dotProd(Y));
-      threadLift -= mirrorRadius*cos(mirrorAngle*M_PI/180.0);
-    }
+  // defined points:
+
+  // This point is the beam centre point between the main axis:
+  
+  std::tie(std::ignore,mirrorCentre)=beamAxis.closestPoints(Geometry::Line(Origin,Y));
+
+  // Beam Centre point projected along -X hits the mirror at half way
+  // between the short and long length [holderShortLen/holderLongLen]
+  // mirror start above mirrorCentre (+Y)
+  
+  const double LHalf=(holderLongLen-holderShortLen)/2.0; 
+  mirrorStart=mirrorCentre+Y*LHalf-X*(holderDepth/2.0);
+
+  // projection from mirrorStart along axis 
+  mirrorImpact=mirrorStart+X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;  
+
+  // screen from screen start [SDist = full distance to centre]
+  const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0; 
+  const Geometry::Vec3D screenStart=mirrorStart+Y*screenVOffset;
+
+  // angle points outwards:
+  screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;  
 
   return;
 }
@@ -209,40 +138,44 @@ YagScreen::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  jbLength=Control.EvalVar<double>(keyName+"JBLength");
-  jbWidth=Control.EvalVar<double>(keyName+"JBWidth");
-  jbHeight=Control.EvalVar<double>(keyName+"JBHeight");
-  jbWallThick=Control.EvalVar<double>(keyName+"JBWallThick");
-  jbWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JBWallMat");
-  jbMat=ModelSupport::EvalMat<int>(Control,keyName+"JBMat");
-
-  ftLength=Control.EvalVar<double>(keyName+"FTLength");
-  ftInnerRadius=Control.EvalVar<double>(keyName+"FTInnerRadius");
-  ftWallThick=Control.EvalVar<double>(keyName+"FTWallThick");
-  ftFlangeLen=Control.EvalVar<double>(keyName+"FTFlangeLength");
-  ftFlangeRadius=Control.EvalVar<double>(keyName+"FTFlangeRadius");
-  ftWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FTWallMat");
+  juncBoxLength=Control.EvalVar<double>(keyName+"JuncBoxLength");
+  juncBoxWidth=Control.EvalVar<double>(keyName+"JuncBoxWidth");
+  juncBoxHeight=Control.EvalVar<double>(keyName+"JuncBoxHeight");
+  juncBoxWallThick=Control.EvalVar<double>(keyName+"JuncBoxWallThick");
+  feedLength=Control.EvalVar<double>(keyName+"FeedLength");
+  
+  feedInnerRadius=Control.EvalVar<double>(keyName+"FeedInnerRadius");
+  feedWallThick=Control.EvalVar<double>(keyName+"FeedWallThick");
+  feedFlangeLen=Control.EvalVar<double>(keyName+"FeedFlangeLen");
+  feedFlangeRadius=Control.EvalVar<double>(keyName+"FeedFlangeRadius");
+  
   threadLift=Control.EvalVar<double>(keyName+"ThreadLift");
-  threadRad=Control.EvalVar<double>(keyName+"ThreadRadius");
-  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
-  mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
+  threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
+  holderWidth=Control.EvalVar<double>(keyName+"HolderWidth");
+  holderDepth=Control.EvalVar<double>(keyName+"HolderDepth");
+  holderShortLen=Control.EvalVar<double>(keyName+"HolderShortLen");
+  holderLongLen=Control.EvalVar<double>(keyName+"HolderLongLen");
+  
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
+  mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
-  mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
-  screenOffset=Control.EvalVar<double>(keyName+"ScreenOffset");
-  screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
+  
   screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
+  screenVOffset=Control.EvalVar<double>(keyName+"ScreenVOffset");
+  screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
+  screenThick=Control.EvalVar<double>(keyName+"ScreenThick");
+  
   screenHolderRadius=Control.EvalVar<double>(keyName+"ScreenHolderRadius");
   screenHolderThick=Control.EvalVar<double>(keyName+"ScreenHolderThick");
-  screenHolderMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenHolderMat");
-  screenCentreActive=Control.EvalDefVar<int>(keyName+"ScreenCentreActive",
-   					     screenCentreActive);
 
-  if (threadRad>=ftInnerRadius)
-    throw ColErr::RangeError<double>(threadRad,0,ftInnerRadius,
-				     "ThreadRad >= FTInnerRadius:");
-
+  
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  juncBoxMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxMat");
+  juncBoxWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxWallMat");
+  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
+  holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
+  mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  feedWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FeedWallMat");
 
   inBeam=Control.EvalVar<int>(keyName+"InBeam");
   return;
@@ -256,102 +189,81 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
-  const double threadZStep(inBeam ? threadLift : 1.0);
+  createImpactVector();
+  //  const double threadZStep(inBeam ? threadLift : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ftLength,Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,ftInnerRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*feedLength,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,feedInnerRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,Origin,Y,ftInnerRadius+ftWallThick);
+    (SMap,buildIndex+17,Origin,Y,feedInnerRadius+feedWallThick);
 
   // flange
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*ftFlangeLen,Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,ftFlangeRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*feedFlangeLen,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,feedFlangeRadius);
 
   // electronics junction box
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(ftLength+jbWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(feedLength+juncBoxWallThick),Y);
   // ModelSupport::buildPlane
-  //   (SMap,buildIndex+102,Origin+Y*(ftLength+jbWallThick+jbLength),Y);
+  //   (SMap,buildIndex+102,Origin+Y*(feedLength+juncBoxWallThick+juncBoxLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(ftLength+jbWallThick+jbLength),Y);
+			   Origin+Y*(feedLength+juncBoxWallThick+juncBoxLength),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(jbWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(jbWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(juncBoxWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(juncBoxWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(jbHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(jbHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(juncBoxHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(juncBoxHeight/2.0),Z);
 
 
   SMap.addMatch(buildIndex+111, SMap.realSurf(buildIndex+2));
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+112,Origin+Y*(ftLength+jbLength+2.0*jbWallThick),Y);
+    (SMap,buildIndex+112,Origin+Y*(feedLength+juncBoxLength+2.0*juncBoxWallThick),Y);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+113,Origin-X*(jbWallThick+jbWidth/2.0),X);
+    (SMap,buildIndex+113,Origin-X*(juncBoxWallThick+juncBoxWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+114,Origin+X*(jbWallThick+jbWidth/2.0),X);
+    (SMap,buildIndex+114,Origin+X*(juncBoxWallThick+juncBoxWidth/2.0),X);
 
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+115,Origin-Z*(jbWallThick+jbHeight/2.0),Z);
+    (SMap,buildIndex+115,Origin-Z*(juncBoxWallThick+juncBoxHeight/2.0),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+116,Origin+Z*(jbWallThick+jbHeight/2.0),Z);
+    (SMap,buildIndex+116,Origin+Z*(juncBoxWallThick+juncBoxHeight/2.0),Z);
 
   // screen+mirror thread
   ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin-Y*threadZStep,Y);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRad);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRadius);
 
-  // mirror
+  // Screen holder:
+  const Geometry::Vec3D threadEndPt(Origin-Y*threadZStep);
+  // Geometry::Vec3D mirrorCentre;
+  // std::tie(std::ignore,mirrorCentre)=beamAxis.closestPoints(Geometry::Line(Origin,Y));
 
   const Geometry::Quaternion QV =
-    Geometry::Quaternion::calcQRotDeg(mirrorAngle,Z);
-  const Geometry::Vec3D MVec=QV.makeRotate(X);
+    Geometry::Quaternion::calcQRotDeg(-mirrorAngle,Z);
 
-  const double c = cos(mirrorAngle*M_PI/180.0);
+  // holder cut plane normal
+  const Geometry::Vec3D MX=QV.makeRotate(X);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+1003,threadEndPt-X*(holderDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,threadEndPt+X*(holderDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1005,threadEndPt-Z*(holderWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,threadEndPt+Z*(holderWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,threadEndPt-Y*holderLongLen,Y);
 
-  const Geometry::Vec3D or303(Origin-X*(mirrorThick/2.0/c)-Y*(threadZStep));
-  ModelSupport::buildPlane(SMap,buildIndex+303,or303,MVec);
+  // cut plane at mirrorAngle and on short distance
+  const Geometry::Vec3D MStart(threadEndPt-Y*holderShortLen-X*(holderWidth/2.0));
+  const Geometry::Vec3D MCentre(threadEndPt-Y*holderShortLen-X*(holderWidth/2.0));
 
-  const Geometry::Vec3D or304(Origin+X*(mirrorThick/2.0/c)-Y*(threadZStep));
-  ModelSupport::buildPlane(SMap,buildIndex+304,or304,MVec);
-
-  // tmp is intersect of mirror cylinder and thread
-  const Geometry::Vec3D tmp = (mirrorAngle < 0.0) ? or303 : or304;
-  const Geometry::Vec3D or307(tmp+MVec*Z*mirrorRadius+MVec*mirrorThick/2.0);
-  ModelSupport::buildCylinder(SMap,buildIndex+307,
-			      or307,
-			      MVec,mirrorRadius);
-
-  // container cell for mirror and screen
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+301,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+201),
-				  -mirrorRadius*2.0);
-
-  // screen
-  Geometry::Vec3D SVec(X);
-  const Geometry::Quaternion SV = Geometry::Quaternion::calcQRotDeg(screenAngle,Z);
-  SV.rotate(SVec);
-
-  const Geometry::Vec3D or403(Origin+X*(screenOffset)-Y*(threadZStep));
-  ModelSupport::buildPlane(SMap,buildIndex+403,or403,SVec);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+404,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+403),
-				  screenHolderThick);
-
-  ModelSupport::buildPlane(SMap,buildIndex+405,or403-Z*(screenHolderRadius),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+406,or403+Z*(screenHolderRadius),Z);
-
-  const Geometry::Vec3D or407(or403+SVec*Z*mirrorRadius+SVec*mirrorThick/2.0);
-  ModelSupport::buildCylinder(SMap,buildIndex+407,or407,SVec,screenRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+408,or407,SVec,screenHolderRadius);
-
-  ModelSupport::buildPlane(SMap,buildIndex+401,or407,-SVec*Z);
-
+  ModelSupport::buildPlane(SMap,buildIndex+1009,MStart,MX);
+  ModelSupport::buildPlane(SMap,buildIndex+1007,MStart,MX);
+ 
   return;
 }
 
@@ -371,11 +283,11 @@ YagScreen::createObjects(Simulation& System)
   makeCell("FTInner",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
-  makeCell("FTWall",System,cellIndex++,ftWallMat,0.0,Out);
+  makeCell("FTWall",System,cellIndex++,feedWallMat,0.0,Out);
 
   // flange
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 17 -27 ");
-  makeCell("FTFlange",System,cellIndex++,ftWallMat,0.0,Out);
+  makeCell("FTFlange",System,cellIndex++,feedWallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 17 -27 ");
   makeCell("FTFlangeAir",System,cellIndex++,0,0.0,Out);
@@ -383,16 +295,17 @@ YagScreen::createObjects(Simulation& System)
   // electronics junction box
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("JBVoid",System,cellIndex++,jbMat,0.0,Out);
+  makeCell("JBVoid",System,cellIndex++,juncBoxMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"111 -112 113 -114 115 -116 (-101:102:-103:104:-105:106)");
-  makeCell("JBWall",System,cellIndex++,jbWallMat,0.0,Out);
+  makeCell("JBWall",System,cellIndex++,juncBoxWallMat,0.0,Out);
 
   // Outer surfaces:
   // if junction box is larger than the feedthrough flange then
   // we can simplify outer surface by adding a rectangular cell around the flange
-  if (std::min(jbWidth/2.0+jbWallThick, jbHeight/2.0+jbWallThick)>ftFlangeRadius)
+  if (std::min(juncBoxWidth/2.0+juncBoxWallThick,
+	       juncBoxHeight/2.0+juncBoxWallThick) > feedFlangeRadius)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"1 -2 113 -114 115 -116 27");
@@ -400,82 +313,39 @@ YagScreen::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"1 -112 113 -114 115 -116 ");
-      addOuterSurf(Out);
+      addOuterSurf("Outer",Out);
     }
   else
     {
+      // THIS NEEDS TO BE CHANGED to HAVE the void cylinder from the flange
+      // encompass the junction box
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 ");
-      addOuterSurf(Out);
+      addOuterSurf("Outer",Out);
 
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 111 -112 113 -114 115 -116 ");
-      addOuterUnionSurf(Out);
+      addOuterUnionSurf("Outer",Out);
     }
 
 
   // mirror/screen thread
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
-
+  addOuterSurf("Inner",Out);
   if (inBeam)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
       makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,Out);
+      addOuterUnionSurf("Inner",Out);
 
-      if (!pipeSide.empty())
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 207 ")  + pipeSide;
-	  makeCell("VoidThreadInsidePipe",System,cellIndex++,voidMat,0.0,Out);
-	}
-      else
-	addOuterUnionSurf(Out);
+      // build Mirror holder:
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -201 1003 -1004 1005 -1006 1007 ");
+      makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
+      addOuterUnionSurf("Inner",Out);      
 
-      // mirror
-      const std::string mirror=ModelSupport::getComposite(SMap,buildIndex," 303 -304 -307 ");
-      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,mirror);
-
-      // screen
-      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 -407 ");
-      makeCell("ScreenHolder",System,cellIndex++,0,0.0,Out);
-
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 403 -404 405 -406 408 401 -201 ");
-      makeCell("ScreenHolderSides",System,cellIndex++,screenHolderMat,0.0,Out);
-
-      Out=ModelSupport::getComposite(SMap,buildIndex," 403 -404 407 -408 ");
-      makeCell("ScreenHolderBase",System,cellIndex++,screenHolderMat,0.0,Out);
-
-      const std::string screen=ModelSupport::getComposite
-	    (SMap,buildIndex," 403 -404 (-408 : 405 -406 408 401 -201 ) ");
-      // screen outer surface
-      if (!pipeSide.empty())
-	{
-	  HeadRule screenOuter;
-	  screenOuter.procString(screen);
-	  screenOuter.makeComplement();
-
-	  Out=ModelSupport::getComposite(SMap,buildIndex,
-					 " 301 -201 (-303:304:307) ") + screenOuter.display();
-	  makeCell("ScreenAndMirrorContainer",System,cellIndex++,0,0.0,Out+pipeSide);
-
-	  if (!pipeFront.empty())
-	    {
-	      Out=ModelSupport::getComposite(SMap,buildIndex," -301 ")  + pipeFront + pipeSide;
-	      makeCell("VoidFrontInsidePipe",System,cellIndex++,voidMat,0.0,Out);
-	    }
-	}
-      else
-	{
-	  addOuterUnionSurf(screen);
-	  addOuterUnionSurf(mirror);
-	}
+      
     }
-  else if ((!pipeSide.empty()) && (!pipeFront.empty()))
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -1 ")  + pipeFront + pipeSide;
-      makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-    }
-
+      
   return;
 }
 
@@ -502,38 +372,11 @@ YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("YagScreen","setScreenCentre");
 
-  screenCentreActive=1;
-  screenCentre=FC.getLinkPt(sIndex);
+  beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
+			  FC.getLinkAxis(sIndex));
+
 
   return;
-}
-
-void
-YagScreen::setPipeSide(const attachSystem::FixedComp& FC,
-			 const long int sIndex)
-/*
-  Set the side surface of the pipe containing mirror and screen holder
-  \param FC :: FixedComp to use
-  \param sIndex :: Link point index
- */
-{
-  ELog::RegMethod RegA("YagScreen","setPipeSide");
-
-  pipeSide = FC.getLinkString(sIndex);
-}
-
-void
-YagScreen::setPipeFront(const attachSystem::FixedComp& FC,
-			 const long int sIndex)
-/*
-  Set the front surface of the pipe containing mirror and screen holder
-  \param FC :: FixedComp to use
-  \param sIndex :: Link point index
- */
-{
-  ELog::RegMethod RegA("YagScreen","setPipeFront");
-
-  pipeFront = FC.getLinkString(sIndex);
 }
 
 void
@@ -549,10 +392,12 @@ YagScreen::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("YagScreen","createAll");
 
-  if (pipeSide.empty())
-    ELog::EM<<"Set pipeSide surface to simplify outer rule of YagScreen"<<ELog::endWarn;
-  if (pipeFront.empty())
-    ELog::EM<<"Set pipeFront surface to simplify outer rule of YagScreen"<<ELog::endWarn;
+  if (!isActive("side"))
+    ELog::EM<<"Set pipeSide surface to simplify outer rule of YagScreen"
+	    <<ELog::endWarn;
+  if (!isActive("front"))
+    ELog::EM<<"Set pipeFront surface to simplify outer rule of YagScreen"
+	    <<ELog::endWarn;
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
