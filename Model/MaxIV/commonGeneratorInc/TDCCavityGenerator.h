@@ -40,11 +40,11 @@ class TDCCavityGenerator
  private:
 
   double length;                ///< Total length including void
-  double radius;                ///< Inner radius
-  double height;                ///< Height
+  double radius;                ///< Wall inner radius
+  double innerRadius;           ///< Pipe inner radius
   double wallThick;             ///< Wall thickness
 
-  std::string mainMat;          ///< Main material
+  int nCells;                   ///< Number of regular cells
   std::string wallMat;          ///< Wall material
   double couplerThick;          ///< coupler cell thickness
   double couplerWidth;          ///< coupler cell width

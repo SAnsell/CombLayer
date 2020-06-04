@@ -45,11 +45,11 @@ class TDCCavity :
  private:
 
   double length;                ///< Total length including void
-  double radius;                ///< Inner radius
-  double height;                ///< Height
+  double radius;                ///< Wall inner radius
+  double innerRadius;           ///< Pipe inner radius
   double wallThick;             ///< Wall thickness
 
-  int mainMat;                  ///< Main material
+  int nCells;                   ///< Number of regular cells
   int wallMat;                  ///< Wall material
 
   double couplerThick;          ///< coupler cell thickness

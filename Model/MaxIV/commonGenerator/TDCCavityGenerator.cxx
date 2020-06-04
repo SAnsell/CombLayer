@@ -50,9 +50,9 @@ namespace setVariable
 {
 
 TDCCavityGenerator::TDCCavityGenerator() :
-  length(312.363),radius(6.0),height(15.0),
+  length(312.363),radius(6.0),innerRadius(1.15),
   wallThick(1.5),
-  mainMat("Void"),wallMat("Copper"),
+  nCells(89),wallMat("Copper"),
   couplerThick(6.0),
   couplerWidth(21.2)
   /*!
@@ -79,9 +79,9 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"NCells",nCells);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"CouplerThick",couplerThick);
   Control.addVariable(keyName+"CouplerWidth",couplerWidth);
