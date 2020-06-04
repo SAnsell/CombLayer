@@ -52,6 +52,9 @@ class TDCCavity :
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
 
+  double couplerThick;          ///< coupler cell thickness
+  double couplerWidth;          ///< coupler cell width
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);

@@ -85,7 +85,9 @@ TDCCavity::TDCCavity(const TDCCavity& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),radius(A.radius),height(A.height),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  couplerThick(A.couplerThick),
+  couplerWidth(A.couplerWidth)
   /*!
     Copy constructor
     \param A :: TDCCavity to copy
@@ -113,6 +115,8 @@ TDCCavity::operator=(const TDCCavity& A)
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      couplerThick=A.couplerThick;
+      couplerWidth=A.couplerWidth;
     }
   return *this;
 }
@@ -151,6 +155,8 @@ TDCCavity::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  couplerThick=Control.EvalVar<double>(keyName+"CouplerThick");
+  couplerWidth=Control.EvalVar<double>(keyName+"CouplerWidth");
 
   return;
 }
@@ -165,23 +171,31 @@ TDCCavity::createSurfaces()
 
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
 
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
     }
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-wallThick),Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
+
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(couplerThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length-couplerThick),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(couplerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(couplerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(couplerWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(couplerWidth/2.0),Z);
+  const double couplerR(couplerWidth/sqrt(2.0));
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,couplerR);
 
   return;
 }
@@ -199,13 +213,45 @@ TDCCavity::createObjects(Simulation& System)
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+frontStr+backStr;
-  makeCell("InnerVoid",System,cellIndex++,mainMat,0.0,Out);
+  // front coupler cell
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -101 103 -104 105 -106 ")+frontStr;
+  makeCell("FrontCouplerCell",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 ")+frontStr+backStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -11 ")+frontStr;
+  makeCell("FrontCouplerFrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 11 -101 ");
+  makeCell("FrontCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 (-103:104:-105:106) ")+frontStr;
+  makeCell("FrontCouplerOuterVoid",System,cellIndex++,0,0.0,Out);
+
+  // back coupler cell
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 102 103 -104 105 -106 ")+backStr;
+  makeCell("BackCouplerCell",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 12 ")+backStr;
+  makeCell("BackCouplerFrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -12 ");
+  makeCell("BackCouplerInnerVoid",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 102 (-103:104:-105:106) ")+backStr;
+  makeCell("BackCouplerOuterVoid",System,cellIndex++,0,0.0,Out);
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -7 ");
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 7 -17 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 ")+frontStr+backStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 17 -107 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 ")+frontStr+backStr;
   addOuterSurf(Out);
 
   return;
@@ -240,7 +286,7 @@ TDCCavity::createAll(Simulation& System,
   ELog::RegMethod RegA("TDCCavity","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

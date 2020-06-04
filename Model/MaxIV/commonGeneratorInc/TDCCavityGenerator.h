@@ -46,6 +46,8 @@ class TDCCavityGenerator
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material
+  double couplerThick;          ///< coupler cell thickness
+  double couplerWidth;          ///< coupler cell width
 
  public:
 
