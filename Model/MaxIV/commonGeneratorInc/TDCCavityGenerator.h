@@ -40,6 +40,7 @@ class TDCCavityGenerator
  private:
 
   double cellLength;            ///< Normal cell length
+  double irisLength;            ///< Iris length
   double radius;                ///< Wall inner radius
   double innerRadius;           ///< Pipe inner radius
   double wallThick;             ///< Wall thickness

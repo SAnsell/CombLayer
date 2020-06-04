@@ -51,6 +51,7 @@ namespace setVariable
 
 TDCCavityGenerator::TDCCavityGenerator() :
   cellLength(10.0),radius(6.0),innerRadius(1.15),
+  irisLength(0.5),
   wallThick(1.5),
   nCells(89),wallMat("Copper"),
   couplerThick(6.0),
@@ -78,6 +79,7 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("TDCCavityGenerator","generate");
 
   Control.addVariable(keyName+"CellLength",cellLength);
+  Control.addVariable(keyName+"IrisLength",irisLength);
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"WallThick",wallThick);

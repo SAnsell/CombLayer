@@ -44,7 +44,8 @@ class TDCCavity :
 {
  private:
 
-  double cellLength;            ///< Normal cell length
+  double cellLength;            ///< Normal cell total length (void+iris)
+  double irisLength;            ///< Iris length
   double radius;                ///< Wall inner radius
   double innerRadius;           ///< Pipe inner radius
   double wallThick;             ///< Wall thickness
