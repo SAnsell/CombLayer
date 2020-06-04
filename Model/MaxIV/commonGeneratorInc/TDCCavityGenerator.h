@@ -39,7 +39,7 @@ class TDCCavityGenerator
 {
  private:
 
-  double length;                ///< Total length including void
+  double cellLength;            ///< Normal cell length
   double radius;                ///< Wall inner radius
   double innerRadius;           ///< Pipe inner radius
   double wallThick;             ///< Wall thickness
