@@ -101,6 +101,8 @@ class portItem :
   virtual void populate(const FuncDataBase&);
   
   double getExternalLength() const { return externalLength; }
+  double getCapLength() const
+    { return std::max(capThick,0.0); }
   
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void setCentLine(const attachSystem::FixedComp&,

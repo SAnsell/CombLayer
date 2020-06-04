@@ -172,7 +172,8 @@ makeMaxIV::buildInjection(Simulation& System,
 
     ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
 	    "L2SPFsegment4", "L2SPFsegment5", "L2SPFsegment6",
-       	    "L2SPFsegment7", "L2SPFsegment8", "L2SPFsegment9" } },
+	    "L2SPFsegment7", "L2SPFsegment8", "L2SPFsegment9",
+	    "L2SPFsegment10", "L2SPFsegment11"  } },
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16",
 	       "TDCsegment17","TDCsegment18", "TDCsegment19",
 	       "TDCsegment20"} },
@@ -185,6 +186,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"L2SPFsegment7",{} },                             // fifth only
        {"L2SPFsegment8",{} },                             // fifth only
        {"L2SPFsegment9",{} },                             // fifth only
+       {"L2SPFsegment10",{} },                             // wall unit
+       {"L2SPFsegment11",{} },                             // TDC
        {"TDCsegment14",{} },                              // 14th only
        {"TDCsegment15",{} },                              // 15th only
        {"TDCsegment16",{} },                              // 16th only

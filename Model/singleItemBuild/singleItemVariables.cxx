@@ -69,6 +69,7 @@
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "BPMGenerator.h"
+#include "CeramicSepGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
@@ -246,6 +247,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
+
+  setVariable::CeramicSepGenerator CSGen;
+  CSGen.generateCeramicSep(Control,"CerSep");
 
   setVariable::BeamDividerGenerator BDGen;
   BDGen.generateDivider(Control,"BeamDiv");  

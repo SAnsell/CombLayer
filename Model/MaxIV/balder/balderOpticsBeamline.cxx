@@ -361,10 +361,6 @@ balderOpticsBeamline::buildObjects(Simulation& System)
       filters[i]->addInsertCell("Flange",filterBox->getCell("SplitOuter",i));
       filters[i]->addInsertCell("Body",PI.getCell("Void"));
       filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
-      ELog::EM<<"C == "<<i<<ELog::endDiag;
-      ELog::EM<<"Split Void == "<<filterBox->getCell("SplitVoid",i)
-	      <<ELog::endDiag;
-      ELog::EM<<"PI Void == "<<PI.getCell("Void")<<ELog::endDiag;
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }

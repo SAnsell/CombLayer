@@ -254,8 +254,6 @@ PipeTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
 
-
-
   if (flangeACapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
@@ -321,7 +319,8 @@ PipeTube::createLinks()
     {
       innerFrontSurf = getFrontRule().getPrimarySurface();
       innerFrontVec = Origin-Y*(length/2.0);
-    } else
+    }
+  else
     {
       innerFrontSurf = buildIndex+201;
       innerFrontVec = Origin-Y*(length/2.0-flangeACapThick);

@@ -43,6 +43,9 @@ class TDCsegment :
   /// System for building a divided inner
   attachSystem::InnerZone* buildZone;
 
+  /// System for next building a divided inner
+  attachSystem::InnerZone* nextZone;
+
   bool lastFlag;      ///< Front valid
   HeadRule lastRule;  ///< Surface for headrule
   
@@ -58,6 +61,10 @@ class TDCsegment :
   
   /// set the current inner zone [allows joining of segments]
   void setInnerZone(attachSystem::InnerZone* IZPtr) { buildZone=IZPtr; }
+
+  /// set the NEXT inner zone [allows joining of segments]
+  void setNextZone(attachSystem::InnerZone* IZPtr)
+    {  nextZone=IZPtr; }
 
   void setLastSurf(const HeadRule&);
   /// clear front flag

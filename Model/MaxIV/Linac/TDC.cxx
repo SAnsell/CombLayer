@@ -74,6 +74,9 @@
 #include "L2SPFsegment6.h"
 #include "L2SPFsegment7.h"
 #include "L2SPFsegment8.h"
+#include "L2SPFsegment9.h"
+#include "L2SPFsegment10.h"
+#include "L2SPFsegment11.h"
 
 #include "TDCsegment14.h"
 #include "TDCsegment15.h"
@@ -102,6 +105,9 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
     { "L2SPFsegment7",std::make_shared<L2SPFsegment7>("L2SPF7") },
     { "L2SPFsegment8",std::make_shared<L2SPFsegment8>("L2SPF8") },
+    { "L2SPFsegment9",std::make_shared<L2SPFsegment9>("L2SPF9") },
+    { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
+    { "L2SPFsegment11",std::make_shared<L2SPFsegment11>("L2SPF11") },
     { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
     { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
     { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") },
@@ -189,16 +195,18 @@ TDC::buildInnerZone(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDC","getBuildZone");
 
-  typedef std::tuple<std::string,std::string,std::string> RTYPE;
+  // FrontSurf : BackSurf : Cell : Cell(if not empty)
+  typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
 
   // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","LinearVoid"}},
-      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid"}},
-      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid"}}
+      {"l2spf",{"Front","#MidWall","LinearVoid",""}},
+      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
+      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
+      {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -210,6 +218,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   const std::string& frontSurfName=std::get<0>(walls);
   const std::string& backSurfName=std::get<1>(walls);
   const std::string& voidName=std::get<2>(walls);
+  const std::string& voidNameB=std::get<3>(walls);
 
   std::unique_ptr<attachSystem::InnerZone> buildZone=
     std::make_unique<attachSystem::InnerZone>(*this,cellIndex);
@@ -219,6 +228,11 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setInsertCells(injectionHall->getCells(voidName));
+  if (!voidNameB.empty())
+    {
+      ELog::EM<<"Cell "<<injectionHall->getCell(voidNameB)<<ELog::endDiag;
+      buildZone->addInsertCells(injectionHall->getCells(voidNameB));
+    }
   return buildZone;
 }
 
@@ -247,6 +261,9 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment6",{"l2spfTurn","L2SPFsegment5"}},
       {"L2SPFsegment7",{"l2spfAngle","L2SPFsegment6"}},
       {"L2SPFsegment8",{"l2spfAngle","L2SPFsegment7"}},
+      {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
+      {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
+      {"L2SPFsegment11",{"tdcFront","L2SPFsegment10"}},
       {"TDCsegment14",{"tdc",""}},
       {"TDCsegment15",{"tdc","TDCsegment14"}},
       {"TDCsegment16",{"tdc","TDCsegment15"}},
@@ -262,8 +279,11 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
+  // special case of L2SPFsegment10 :
+  
   for(const std::string& BL : activeINJ)
     {
+      
       SegTYPE::const_iterator mc=SegMap.find(BL);
       if (mc==SegMap.end())
 	throw ColErr::InContainerError<std::string>(BL,"Beamline");
@@ -277,7 +297,9 @@ TDC::createAll(Simulation& System,
 
       std::unique_ptr<attachSystem::InnerZone> buildZone=
 	buildInnerZone(System.getDataBase(),bzName);
+      std::unique_ptr<attachSystem::InnerZone> secondZone;
 
+      
       if (prevC!=SegMap.end())
 	{
 	  const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
@@ -287,12 +309,24 @@ TDC::createAll(Simulation& System,
 	      segPtr->setCutSurf("front",prevPtr->getLastSurf());
 	    }
 	}
-      buildZone->constructMasterCell(System);
 
+      buildZone->constructMasterCell(System);
       segPtr->setInnerZone(buildZone.get());
-      segPtr->addInsertCell(injectionHall->getCell("LinearVoid"));
+      // special case of L2SPFsegment10 :
+      
+      if (BL=="L2SPFsegment10")
+	{
+	  secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
+	  segPtr->setNextZone(secondZone.get());
+	}
+	  
       segPtr->createAll
 	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
+
+      // special case for join of wall
+      //      if (BL=="L2SPFsegment10")
+      //	processWallJoin();
+
       segPtr->totalPathCheck(System.getDataBase(),0.1);
     }
 

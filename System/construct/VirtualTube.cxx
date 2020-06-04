@@ -355,7 +355,7 @@ VirtualTube::applyPortRotation()
   Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {
-      Origin+=Y*(length/2.0);
+      Origin+=Y*(length/2.0);      
       if (portConnectIndex==2)
 	{
 	  Y*=1;
@@ -421,6 +421,8 @@ VirtualTube::calcCylinderDistance(const size_t pIndex) const
 
   const double R=radius+wallThick;
   const double ELen=Ports[pIndex]->getExternalLength();
+  const double CapLen=Ports[pIndex]->getCapLength();
+
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
   
   const Geometry::Vec3D RPoint=
