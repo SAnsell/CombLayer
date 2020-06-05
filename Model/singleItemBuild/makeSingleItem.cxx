@@ -164,6 +164,8 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(YAG);
 
       YAG->addAllInsertCell(voidCell);
+      YAG->setBeamAxis(Geometry::Vec3D(0,-10,0),
+		       Geometry::Vec3D(1,0,0));
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;

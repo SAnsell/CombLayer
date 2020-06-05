@@ -107,6 +107,7 @@ L2SPFsegment11::L2SPFsegment11(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   pumpA(new constructSystem::PipeTube(keyName+"PumpA")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA"))
   /*!
@@ -164,7 +165,7 @@ L2SPFsegment11::buildObjects(Simulation& System)
   
   // FAKE INSERT REQUIRED
   pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0),90);
   pumpA->createAll(System,*pipeA,"back");
 
   const constructSystem::portItem& VPB=pumpA->getPort(1);
@@ -174,9 +175,12 @@ L2SPFsegment11::buildObjects(Simulation& System)
   pumpA->intersectPorts(System,2,1);
   pumpA->intersectPorts(System,2,0);
 
-  ELog::EM<<"Surf == "<<pumpA->getSideIndex("InnerSide")<<ELog::endDiag;
-  ELog::EM<<"Surf == "<<pumpA->getSideIndex("InnerBack")<<ELog::endDiag;
-  
+  const constructSystem::portItem& yagPort=pumpA->getPort(2);
+  ELog::EM<<"Port == "<<yagPort.getLinkPt(yagPort.getSideIndex("OuterPlate"))
+	  <<ELog::endDiag;
+  //  yagScreen->createAll(System,VPB
+
+    
   pipeB->createAll(System,VPB,"OuterPlate");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);

@@ -160,7 +160,7 @@ TDCsegment15::buildObjects(Simulation& System)
   ionPump->insertAllInCell(System,outerCell);
 
   yagScreen->addAllInsertCell(outerCell);
-  yagScreen->setScreenCentre(*ionPump,0);
+  yagScreen->setBeamAxis(*ionPump,0);
 
   ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
   //  yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));

@@ -88,7 +88,7 @@ YagScreen::~YagScreen()
 {}
 
 void
-YagScreen::calcIncidentVector()
+YagScreen::calcImpactVector()
   /*!
     Calculate the impact points of the main beam 
     on the mirror surfaces:
@@ -103,8 +103,9 @@ YagScreen::calcIncidentVector()
   // defined points:
 
   // This point is the beam centre point between the main axis:
-  
-  std::tie(std::ignore,mirrorCentre)=beamAxis.closestPoints(Geometry::Line(Origin,Y));
+
+  std::tie(std::ignore,mirrorCentre)=
+    beamAxis.closestPoints(Geometry::Line(Origin,Y));
 
   // Beam Centre point projected along -X hits the mirror at half way
   // between the short and long length [holderShortLen/holderLongLen]
@@ -114,7 +115,7 @@ YagScreen::calcIncidentVector()
   mirrorStart=mirrorCentre+Y*LHalf-X*(holderDepth/2.0);
 
   // projection from mirrorStart along axis 
-  mirrorImpact=mirrorStart+X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;  
+  mirrorImpact=mirrorStart-X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;  
 
   // screen from screen start [SDist = full distance to centre]
   const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0; 
@@ -122,6 +123,9 @@ YagScreen::calcIncidentVector()
 
   // angle points outwards:
   screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;  
+
+  // Thread point
+  threadEnd=mirrorCentre+Y*(holderLongLen-LHalf);
 
   return;
 }
@@ -175,6 +179,8 @@ YagScreen::populate(const FuncDataBase& Control)
   threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
   mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  screenMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenMat");
+  screenHolderMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenHolderMat");
   feedWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FeedWallMat");
 
   inBeam=Control.EvalVar<int>(keyName+"InBeam");
@@ -189,8 +195,8 @@ YagScreen::createSurfaces()
 {
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
-  createImpactVector();
-  //  const double threadZStep(inBeam ? threadLift : 1.0);
+  calcImpactVector();
+  const double threadStep(inBeam ? 0.0 : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -236,34 +242,57 @@ YagScreen::createSurfaces()
 
   // screen+mirror thread
   ModelSupport::buildPlane
-    (SMap,buildIndex+201,Origin-Y*threadZStep,Y);
+    (SMap,buildIndex+201,threadEnd,Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,threadRadius);
 
   // Screen holder:
-  const Geometry::Vec3D threadEndPt(Origin-Y*threadZStep);
-  // Geometry::Vec3D mirrorCentre;
-  // std::tie(std::ignore,mirrorCentre)=beamAxis.closestPoints(Geometry::Line(Origin,Y));
-
   const Geometry::Quaternion QV =
     Geometry::Quaternion::calcQRotDeg(-mirrorAngle,Z);
 
   // holder cut plane normal
   const Geometry::Vec3D MX=QV.makeRotate(X);
   
-  ModelSupport::buildPlane(SMap,buildIndex+1003,threadEndPt-X*(holderDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,threadEndPt+X*(holderDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1005,threadEndPt-Z*(holderWidth/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,threadEndPt+Z*(holderWidth/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1002,threadEndPt-Y*holderLongLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,threadEnd-X*(holderDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,threadEnd+X*(holderDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1005,threadEnd-Z*(holderWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,threadEnd+Z*(holderWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,threadEnd-Y*holderLongLen,Y);
 
   // cut plane at mirrorAngle and on short distance
-  const Geometry::Vec3D MStart(threadEndPt-Y*holderShortLen-X*(holderWidth/2.0));
-  const Geometry::Vec3D MCentre(threadEndPt-Y*holderShortLen-X*(holderWidth/2.0));
+  const Geometry::Vec3D MStart(threadEnd-Y*holderShortLen-X*(holderWidth/2.0));
+  const Geometry::Vec3D MCentre(threadEnd-Y*holderShortLen-X*(holderWidth/2.0));
 
-  ModelSupport::buildPlane(SMap,buildIndex+1009,MStart,MX);
-  ModelSupport::buildPlane(SMap,buildIndex+1007,MStart,MX);
- 
+  ModelSupport::buildPlane(SMap,buildIndex+1009,mirrorStart,MX);
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,mirrorImpact,MX,
+			      mirrorRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1019,mirrorStart+MX*mirrorThick,MX);
+
+  // yag screen
+
+  const Geometry::Quaternion QW =
+      Geometry::Quaternion::calcQRotDeg(-screenAngle,Z);
+
+  // holder cut plane normal
+  const Geometry::Vec3D SX=QW.makeRotate(X);
+  const Geometry::Vec3D SY=SX*Z;
+
+  // dividep plane
+  ModelSupport::buildPlane(SMap,buildIndex+2000,screenImpact,SY);
+  ModelSupport::buildPlane(SMap,buildIndex+2001,screenImpact-SX*(screenThick/2.0),SX);
+  ModelSupport::buildPlane(SMap,buildIndex+2002,screenImpact+SX*(screenThick/2.0),SX);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+2007,screenImpact,SX,screenRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+2017,screenImpact,SX,screenHolderRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2013,screenImpact-Z*screenHolderRadius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2014,screenImpact+Z*screenHolderRadius,Z);
+
+  ELog::EM<<"Mirror centre == "<<mirrorCentre<<ELog::endDiag;
+  ELog::EM<<"Mirror start ==  "<<mirrorStart<<ELog::endDiag;
+  ELog::EM<<"Mirror impact == "<<mirrorImpact<<ELog::endDiag;
+  ELog::EM<<"Thread End ==    "<<threadEnd<<ELog::endDiag;
   return;
 }
 
@@ -339,10 +368,40 @@ YagScreen::createObjects(Simulation& System)
       addOuterUnionSurf("Inner",Out);
 
       // build Mirror holder:
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -201 1003 -1004 1005 -1006 1007 ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1002 -201 1003 -1004 1005 -1006 1009 1007 ");
       makeCell("Holder",System,cellIndex++,holderMat,0.0,Out);
-      addOuterUnionSurf("Inner",Out);      
 
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1009 -1007 -1019");
+      makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1019 -1007 -1004 -201");
+      makeCell("MirrorVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
+      // yag screen
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,"2001 -2002 -2007");
+      makeCell("YagScreen",System,cellIndex++,screenMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1005 -1006 2001 -2002 2007 (-2000:-2017) (-1003:-1009)");
+      makeCell("YagHolder",System,cellIndex++,screenHolderMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1005 -1006 -1009 2002 (1003:2002) -1004 1002 ");
+      makeCell("YagVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1005 -1006 1002 2001 -2002 2017 2000 ");
+       makeCell("YagVoid",System,cellIndex++,voidMat,0.0,Out);
+
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201 ");
+      addOuterUnionSurf("Inner",Out);      
       
     }
       
@@ -362,20 +421,35 @@ YagScreen::createLinks()
 }
 
 void
-YagScreen::setScreenCentre(const attachSystem::FixedComp& FC,
-			   const long int sIndex)
+YagScreen::setBeamAxis(const attachSystem::FixedComp& FC,
+		       const long int sIndex)
   /*!
     Set the screen centre
     \param FC :: FixedComp to use
     \param sIndex :: Link point index
   */
 {
-  ELog::RegMethod RegA("YagScreen","setScreenCentre");
+  ELog::RegMethod RegA("YagScreen","setBeamAxis(FC)");
 
   beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
 			  FC.getLinkAxis(sIndex));
 
 
+  return;
+}
+
+void
+YagScreen::setBeamAxis(const Geometry::Vec3D& Org,
+		       const Geometry::Vec3D& Axis)
+  /*!
+    Set the screen centre
+    \param Org :: Origin point for line
+    \param Axis :: Axis of line
+  */
+{
+  ELog::RegMethod RegA("YagScreen","setBeamAxis(Vec3D)");
+
+  beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 
@@ -401,7 +475,6 @@ YagScreen::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  calcThreadLength();
   createSurfaces();
   createObjects(System);
   createLinks();

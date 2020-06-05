@@ -95,7 +95,7 @@ VirtualTube::VirtualTube(const std::string& Key) :
   attachSystem::FrontBackCut(),
   
   outerVoid(0),delayPortBuild(0),portConnectIndex(1),
-  rotAxis(0,1,0)
+  rotAxis(0,1,0),postYRotation(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -189,7 +189,7 @@ VirtualTube::populate(const FuncDataBase& Control)
 
 void
 VirtualTube::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -314,7 +314,8 @@ VirtualTube::intersectVoidPorts(Simulation& System,
 
 void
 VirtualTube::setPortRotation(const size_t index,
-			  const Geometry::Vec3D& RAxis)
+			     const Geometry::Vec3D& RAxis,
+			     const double postAngle)
   /*!
     Set Port rotation 
     \param index 
@@ -329,7 +330,8 @@ VirtualTube::setPortRotation(const size_t index,
   portConnectIndex=index;
   if (portConnectIndex>1)
     rotAxis=RAxis.unit();
-  
+
+  postYRotation=postAngle;
   return;
 }
 
@@ -367,6 +369,14 @@ VirtualTube::applyPortRotation()
     }
   else
     {
+      if (std::abs(postYRotation)>Geometry::zeroTol)
+	{
+	  const Geometry::Quaternion QVpost=
+	    Geometry::Quaternion::calcQRotDeg(postYRotation,Y);
+	  QVpost.rotate(X);
+	  QVpost.rotate(Z);
+	}
+
       const size_t pIndex=portConnectIndex-3;
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
@@ -385,6 +395,7 @@ VirtualTube::applyPortRotation()
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
       Origin+=offset;
       FixedComp::setConnect(7,Origin,YOriginal);
+
     }
 
   return;

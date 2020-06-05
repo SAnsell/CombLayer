@@ -60,8 +60,8 @@ YagScreenGenerator::YagScreenGenerator() :
 
   threadLift(7.0),threadRadius(feedInnerRadius*0.7), // guess
 
-  holderWidth(2.75),holderDepth(3.25),
-  holderShortLen(1.32),holderLongLen(4.1),
+  holderWidth(4.50),holderDepth(3.25),
+  holderShortLen(1.32),holderLongLen(4.4),
 
   mirrorAngle(-45.0),mirrorRadius(1.75),
   mirrorThick(0.5),
@@ -75,9 +75,10 @@ YagScreenGenerator::YagScreenGenerator() :
   juncBoxMat("StbTCABL%Void%50"), // guess
   juncBoxWallMat("Aluminium"),
   threadMat("Aluminium"),
+  holderMat("Stainless304L"),
   mirrorMat("SiO2"),
   screenMat("SiO2"),
-  holderMat("Stainless304L"),
+  screenHolderMat("Aluminium"),
   feedWallMat("Stainless304L")
   /*!
     Constructor and defaults
@@ -169,6 +170,9 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"HolderMat",holderMat);
   Control.addVariable(keyName+"MirrorMat",mirrorMat);
+  Control.addVariable(keyName+"ScreenMat",screenMat);
+  Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
+    
   Control.addVariable(keyName+"FeedWallMat",feedWallMat);
  
  return;

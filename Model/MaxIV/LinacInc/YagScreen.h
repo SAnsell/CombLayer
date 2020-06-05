@@ -74,33 +74,37 @@ class YagScreen :
   double screenRadius;          ///< Radius of screen
   double screenThick;           ///< Thickness of screen
 
-  double screenHolderRadius;       ///< screen holder thickness
-  double screenHolderThick;        ///< screen holder thickness
+  double screenHolderRadius;    ///< screen holder thickness
+  double screenHolderThick;     ///< screen holder thickness
 
-  int voidMat;               ///< void material
+  int voidMat;                  ///< void material
 
   /// electronics junction box cable/inside material
   int juncBoxMat;                
   int juncBoxWallMat;        ///< electronics junction box wall material
   int threadMat;             ///< screen thread material
                             
-  int  holderMat;            ///< screen holder material
-  int  mirrorMat;             ///< mirror  material
-  int  feedWallMat;           ///< Feedthrough wall material  
+  int holderMat;            ///< screen holder material
+  int mirrorMat;            ///< mirror  material
+  int screenMat;            ///< screen  material
+  int screenHolderMat;      ///< screen holder  material
+  int feedWallMat;          ///< Feedthrough wall material  
 
   // Geometry points for object / surface building :
   
   Geometry::Vec3D mirrorCentre;        ///< central axis with beam point
   Geometry::Vec3D mirrorStart;         ///< Cut start point 
   Geometry::Vec3D mirrorImpact;        ///< Mirror-beam impact point  
-  Geometry::Vec3D screenImpact;        ///< Screen-beam impact point  
+  Geometry::Vec3D screenImpact;        ///< Screen-beam impact point
+  Geometry::Vec3D threadEnd;           ///< Thread end point
+
 
   bool inBeam;                ///< screen and mirror are in the beam
 
   /// Norminal line to get screen centre 
   Geometry::Line beamAxis;
 
-  void calcIncidentVector();
+  void calcImpactVector();
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -114,7 +118,8 @@ class YagScreen :
   YagScreen& operator=(const YagScreen&);
   virtual ~YagScreen();
 
-  void setScreenCentre(const attachSystem::FixedComp&,const long int);
+  void setBeamAxis(const attachSystem::FixedComp&,const long int);
+  void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

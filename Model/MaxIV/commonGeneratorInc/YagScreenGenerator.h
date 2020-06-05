@@ -80,10 +80,12 @@ class YagScreenGenerator
   std::string juncBoxMat;                
   std::string juncBoxWallMat;        ///< electronics junction box wall material
   std::string threadMat;             ///< screen thread material
+
+  std::string holderMat;             ///< mirror holder material
   std::string mirrorMat;             ///< mirror  material
-  std::string screenMat;             ///< screen  material
-  
-  std::string holderMat;       ///< screen holder material
+
+  std::string screenMat;             ///< screen  material  
+  std::string screenHolderMat;       ///< screen holder material
 
   std::string feedWallMat;           ///< Feedthrough wall material  
 

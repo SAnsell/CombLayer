@@ -44,6 +44,7 @@ namespace tdcSystem
   class LQuadF;
   class CorrectorMag;
   class CeramicSep;
+  class YagScreen;
 
   /*!
     \class L2SPFsegment11
@@ -71,6 +72,8 @@ class L2SPFsegment11 :
 
   /// ion pump [rotated]
   std::shared_ptr<constructSystem::PipeTube> pumpA;   
+  /// Yag screen for pump tube
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
   
   /// exit pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
