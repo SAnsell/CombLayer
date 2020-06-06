@@ -50,14 +50,15 @@ namespace setVariable
 {
 
 TDCCavityGenerator::TDCCavityGenerator() :
+  nCells(89),
   cellLength(2.833), // David Olsson 2020-06-05
-  radius(5.961), // David Olsson 2020-06-05
-  innerRadius(1.15),
+  cellRadius(5.961), // David Olsson 2020-06-05
+  irisRadius(1.16), // David Olsson 2020-06-05
   irisLength(0.5), // David Olsson 2020-06-05
+  couplerLength(6.0),
+  couplerWidth(21.2),
   wallThick(1.489), // David Olsson 2020-06-05
-  nCells(89),wallMat("Copper"),
-  couplerThick(6.0),
-  couplerWidth(21.2)
+  wallMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -80,15 +81,15 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDCCavityGenerator","generate");
 
-  Control.addVariable(keyName+"CellLength",cellLength);
-  Control.addVariable(keyName+"IrisLength",irisLength);
-  Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"NCells",nCells);
-  Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"CouplerThick",couplerThick);
+  Control.addVariable(keyName+"CellLength",cellLength);
+  Control.addVariable(keyName+"CellRadius",cellRadius);
+  Control.addVariable(keyName+"IrisLength",irisLength);
+  Control.addVariable(keyName+"IrisRadius",irisRadius);
+  Control.addVariable(keyName+"CouplerLength",couplerLength);
   Control.addVariable(keyName+"CouplerWidth",couplerWidth);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"WallMat",wallMat);
 
   return;
 

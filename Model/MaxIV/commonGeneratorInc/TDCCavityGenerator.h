@@ -39,16 +39,15 @@ class TDCCavityGenerator
 {
  private:
 
-  double cellLength;            ///< Normal cell length
-  double irisLength;            ///< Iris length
-  double radius;                ///< Wall inner radius
-  double innerRadius;           ///< Pipe inner radius
-  double wallThick;             ///< Wall thickness
-
   int nCells;                   ///< Number of regular cells
-  std::string wallMat;          ///< Wall material
-  double couplerThick;          ///< coupler cell thickness
+  double cellLength;            ///< Normal cell length
+  double cellRadius;            ///< Normal cell inner radius
+  double irisLength;            ///< Iris length
+  double irisRadius;            ///< Iris radius
+  double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
+  double wallThick;             ///< Wall thickness
+  std::string wallMat;          ///< Wall material
 
  public:
 

@@ -44,17 +44,15 @@ class TDCCavity :
 {
  private:
 
+  int    nCells;                ///< Number of regular cells
   double cellLength;            ///< Normal cell total length (void+iris)
+  double cellRadius;            ///< Normal cell inner radius
   double irisLength;            ///< Iris length
-  double radius;                ///< Wall inner radius
-  double innerRadius;           ///< Pipe inner radius
-  double wallThick;             ///< Wall thickness
-
-  int nCells;                   ///< Number of regular cells
-  int wallMat;                  ///< Wall material
-
-  double couplerThick;          ///< coupler cell thickness
+  double irisRadius;            ///< Iris inner radius
+  double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
+  double wallThick;             ///< Wall thickness
+  int    wallMat;               ///< Wall material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
