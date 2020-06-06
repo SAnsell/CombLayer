@@ -416,11 +416,10 @@ linac2SPFsegment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadD",73.0);
   LQGen.generateQuad(Control,lKey+"QuadE",113.2);
 
-  YagGen.setCF<CF40_22>();
-  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagScreenYAngle",90.0);
 
 
   return;
@@ -812,6 +811,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
+  setVariable::YagScreenGenerator YagGen;
 
   const Geometry::Vec3D startPt(-492.992,3457.251,0.0);
   const Geometry::Vec3D endPt(-547.597,3697.597,0.0);
@@ -833,6 +833,9 @@ linac2SPFsegment11(FuncDataBase& Control,
   
   setIonPump3OffsetPort(Control,lKey+"PumpA");  
 
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);  // in beam
+  Control.addVariable(lKey+"YagScreenYAngle",90.0);
+  
   PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
   CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
   return;

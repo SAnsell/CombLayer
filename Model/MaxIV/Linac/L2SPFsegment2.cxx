@@ -92,6 +92,7 @@
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
 #include "YagUnit.h"
+#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -121,7 +122,8 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   QuadC(new tdcSystem::LQuadF(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),
   QuadE(new tdcSystem::LQuadF(keyName+"QuadE")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit"))
+  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen"))
   /*!
     Constructor
     \param Key :: Name of construction key

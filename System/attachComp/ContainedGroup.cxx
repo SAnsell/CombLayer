@@ -208,6 +208,19 @@ ContainedGroup::clearRules()
   return;
 }
 
+void
+ContainedGroup::clearRule(const std::string& Key) 
+  /*!
+    Clear a specific rule
+    \param Key :: Key name for rule
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","clearRule");
+  
+  getCC(Key).clearRules();
+  return;
+}
+
 bool
 ContainedGroup::hasKey(const std::string& Key) const
   /*!

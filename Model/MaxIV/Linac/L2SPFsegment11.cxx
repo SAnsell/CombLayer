@@ -175,11 +175,14 @@ L2SPFsegment11::buildObjects(Simulation& System)
   pumpA->intersectPorts(System,2,1);
   pumpA->intersectPorts(System,2,0);
 
-  const constructSystem::portItem& yagPort=pumpA->getPort(2);
-  ELog::EM<<"Port == "<<yagPort.getLinkPt(yagPort.getSideIndex("OuterPlate"))
-	  <<ELog::endDiag;
+  ELog::EM<<"Cell == "<<pumpA->getCell("BackCap")<<ELog::endDiag;
+  yagScreen->setBeamAxis(VPB,VPB.getSideIndex("OuterPlate"));
+  yagScreen->createAll(System,*pumpA,2);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,pumpA->getCell("BackCap"));
+  yagScreen->insertInCell("Connect",System,pumpA->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,pumpA->getCell("Void"));
   //  yagScreen->createAll(System,VPB
-
     
   pipeB->createAll(System,VPB,"OuterPlate");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);

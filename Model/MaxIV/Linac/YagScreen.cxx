@@ -69,7 +69,7 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::ContainedGroup("Inner","Outer"),
+  attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -360,12 +360,11 @@ YagScreen::createObjects(Simulation& System)
   // mirror/screen thread
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -207 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
-  addOuterSurf("Inner",Out);
   if (inBeam)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 201 -1 -207 ");
       makeCell("ThreadInsidePipe",System,cellIndex++,threadMat,0.0,Out);
-      addOuterUnionSurf("Inner",Out);
+      addOuterSurf("Connect",Out);
 
       // build Mirror holder:
       Out=ModelSupport::getComposite
@@ -379,7 +378,6 @@ YagScreen::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"1019 -1007 -1004 -201");
       makeCell("MirrorVoid",System,cellIndex++,voidMat,0.0,Out);
-
 
       // yag screen
 
@@ -401,7 +399,7 @@ YagScreen::createObjects(Simulation& System)
       
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201 ");
-      addOuterUnionSurf("Inner",Out);      
+      addOuterSurf("Payload",Out);      
       
     }
       
