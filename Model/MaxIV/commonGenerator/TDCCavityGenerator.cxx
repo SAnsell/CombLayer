@@ -53,15 +53,12 @@ TDCCavityGenerator::TDCCavityGenerator() :
   nCells(89),
   cellLength(2.833), // David Olsson 2020-06-05
   cellRadius(5.961), // David Olsson 2020-06-05
-  irisLength(0.5), // David Olsson 2020-06-05
   irisRadius(1.16), // David Olsson 2020-06-05
+  irisLength(0.5), // David Olsson 2020-06-05
   couplerLength(6.0),
   couplerWidth(21.2),
   wallThick(1.489), // David Olsson 2020-06-05
-  wallMat("Copper"), // actually OFHC
-  flangeLength(3.7), // measured
-  flangeRadius(3.5), // measured
-  flangeMat("Stainless304L") // checked
+  wallMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -93,9 +90,6 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CouplerWidth",couplerWidth);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"FlangeLength",flangeLength);
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeMat",flangeMat);
 
   return;
 

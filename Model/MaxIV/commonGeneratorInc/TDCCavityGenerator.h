@@ -48,9 +48,6 @@ class TDCCavityGenerator
   double couplerWidth;          ///< coupler cell width
   double wallThick;             ///< Wall thickness
   std::string wallMat;          ///< Wall material
-  double flangeLength;          ///< Flange length
-  double flangeRadius;          ///< Flange outer radius
-  std::string flangeMat;        ///< Flange material
 
  public:
 
