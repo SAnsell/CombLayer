@@ -38,7 +38,9 @@ class TDCsegment20 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::TWCavity> cavity;      ///< TDC cavity section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< front flange
+  std::shared_ptr<tdcSystem::TWCavity> cavity;         ///< TDC cavity section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< back flange
 
   void buildObjects(Simulation&);
   void createLinks();

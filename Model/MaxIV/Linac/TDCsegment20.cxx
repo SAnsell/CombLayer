@@ -50,6 +50,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -58,6 +59,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "generalConstruct.h"
+#include "VacuumPipe.h"
 
 #include "TWCavity.h"
 
@@ -71,7 +74,9 @@ namespace tdcSystem
 
 TDCsegment20::TDCsegment20(const std::string& Key) :
   TDCsegment(Key,2),
-  cavity(new tdcSystem::TWCavity(keyName+"Cavity"))
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  cavity(new tdcSystem::TWCavity(keyName+"Cavity")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -80,7 +85,9 @@ TDCsegment20::TDCsegment20(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(pipeA);
   OR.addObject(cavity);
+  OR.addObject(pipeB);
 }
 
 TDCsegment20::~TDCsegment20()
@@ -105,10 +112,17 @@ TDCsegment20::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    cavity->copyCutSurf("front",*this,"front");
-  cavity->createAll(System,*this,0);
+    pipeA->copyCutSurf("front",*this,"front");
+  pipeA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
+
+  cavity->createAll(System,*pipeA,"back");
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*cavity,2);
   cavity->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*cavity,"back",*pipeB);
 
   buildZone->removeLastMaster(System);
 
@@ -123,7 +137,7 @@ TDCsegment20::createLinks()
 {
   ELog::RegMethod RegA("TDCsegment20","createLinks");
 
-  setLinkSignedCopy(0,*cavity,1);
+  setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*cavity,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
