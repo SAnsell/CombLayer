@@ -245,8 +245,10 @@ TDCCavity::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," -17 11 -21 ");
   makeCell("FrontCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -17 21 -101 ");
-  makeCell("FrontCouplerIris",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7 -17 21 -101 ");
+  makeCell("FrontCouplerIrisWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 21 -101 ");
+  makeCell("FrontCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
 
   // front coupler cell corners
   Out1=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ")+frontStr;
@@ -268,8 +270,10 @@ TDCCavity::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 22 -12 ");
   makeCell("BackCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 102 -22 ");
-  makeCell("BackCouplerIris",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 102 -22 ");
+  makeCell("BackCouplerIrisWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -22 ");
+  makeCell("BackCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
 
   // back coupler cell corners
   Out1=ModelSupport::getComposite(SMap,buildIndex," -107 102 ")+backStr;
@@ -281,19 +285,22 @@ TDCCavity::createObjects(Simulation& System)
 
   for (int i=0; i<nCells; ++i)
     {
-      if (i==0) {
+      if (i==0)
 	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 101 -1M -17 ");
-	Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M -17 ");
-	makeCell("Iris",System,cellIndex++,wallMat,0.0,Out1);
-      } else if (i==nCells-1) {
+      else if (i==nCells-1)
 	Out=ModelSupport::getComposite(SMap,buildIndex,SI-10," 2M -102 -17 ");
-      }
-      else {
+      else
 	Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,SI," 2M -1N -17 ");
-	Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M -17 ");
-	makeCell("Iris",System,cellIndex++,wallMat,0.0,Out1);
-      }
-      makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+
+      makeCell("NormalCell",System,cellIndex++,0,0.0,Out);
+
+      if (i!=nCells-1)
+	{
+	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M 7 -17 ");
+	  makeCell("IrisWall",System,cellIndex++,wallMat,0.0,Out1);
+	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M -7 ");
+	  makeCell("IrisVoid",System,cellIndex++,0,0.0,Out1);
+	}
 
       SI += 10;
     }
