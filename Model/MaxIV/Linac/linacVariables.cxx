@@ -63,7 +63,7 @@
 #include "ScrapperGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
-#include "TDCCavityGenerator.h"
+#include "TWCavityGenerator.h"
 
 namespace setVariable
 {
@@ -1208,7 +1208,7 @@ TDCsegment20(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment20");
 
-  setVariable::TDCCavityGenerator TDCGen;
+  setVariable::TWCavityGenerator TDCGen;
 
   const Geometry::Vec3D startPt(-637.608,6045.428,0.0);
   const Geometry::Vec3D endPt(-637.608,6358.791,0.0);

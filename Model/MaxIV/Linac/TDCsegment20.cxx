@@ -59,7 +59,7 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 
-#include "TDCCavity.h"
+#include "TWCavity.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment20.h"
@@ -71,7 +71,7 @@ namespace tdcSystem
 
 TDCsegment20::TDCsegment20(const std::string& Key) :
   TDCsegment(Key,2),
-  cavity(new tdcSystem::TDCCavity(keyName+"Cavity"))
+  cavity(new tdcSystem::TWCavity(keyName+"Cavity"))
   /*!
     Constructor
     \param Key :: Name of construction key

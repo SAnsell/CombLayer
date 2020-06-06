@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/Linac/TDCCavity.cxx
+ * File:   Model/MaxIV/Linac/TWCavity.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -60,12 +60,12 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
-#include "TDCCavity.h"
+#include "TWCavity.h"
 
 namespace tdcSystem
 {
 
-TDCCavity::TDCCavity(const std::string& Key)  :
+TWCavity::TWCavity(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
@@ -77,7 +77,7 @@ TDCCavity::TDCCavity(const std::string& Key)  :
   */
 {}
 
-TDCCavity::TDCCavity(const TDCCavity& A) :
+TWCavity::TWCavity(const TWCavity& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
@@ -91,15 +91,15 @@ TDCCavity::TDCCavity(const TDCCavity& A) :
   wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: TDCCavity to copy
+    \param A :: TWCavity to copy
   */
 {}
 
-TDCCavity&
-TDCCavity::operator=(const TDCCavity& A)
+TWCavity&
+TWCavity::operator=(const TWCavity& A)
   /*!
     Assignment operator
-    \param A :: TDCCavity to copy
+    \param A :: TWCavity to copy
     \return *this
   */
 {
@@ -123,30 +123,30 @@ TDCCavity::operator=(const TDCCavity& A)
   return *this;
 }
 
-TDCCavity*
-TDCCavity::clone() const
+TWCavity*
+TWCavity::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new TDCCavity(*this);
+    return new TWCavity(*this);
 }
 
-TDCCavity::~TDCCavity()
+TWCavity::~TWCavity()
   /*!
     Destructor
   */
 {}
 
 void
-TDCCavity::populate(const FuncDataBase& Control)
+TWCavity::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("TDCCavity","populate");
+  ELog::RegMethod RegA("TWCavity","populate");
 
   FixedRotate::populate(Control);
 
@@ -164,12 +164,12 @@ TDCCavity::populate(const FuncDataBase& Control)
 }
 
 void
-TDCCavity::createSurfaces()
+TWCavity::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("TDCCavity","createSurfaces");
+  ELog::RegMethod RegA("TWCavity","createSurfaces");
 
   const double totalLength(couplerLength*2+(cellLength+irisLength)*nCells-irisLength);
 
@@ -220,13 +220,13 @@ TDCCavity::createSurfaces()
 }
 
 void
-TDCCavity::createObjects(Simulation& System)
+TWCavity::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("TDCCavity","createObjects");
+  ELog::RegMethod RegA("TWCavity","createObjects");
 
   int SI(buildIndex+1000);
   std::string Out,Out1;
@@ -319,12 +319,12 @@ TDCCavity::createObjects(Simulation& System)
 
 
 void
-TDCCavity::createLinks()
+TWCavity::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("TDCCavity","createLinks");
+  ELog::RegMethod RegA("TWCavity","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
@@ -333,7 +333,7 @@ TDCCavity::createLinks()
 }
 
 void
-TDCCavity::createAll(Simulation& System,
+TWCavity::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -343,7 +343,7 @@ TDCCavity::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("TDCCavity","createAll");
+  ELog::RegMethod RegA("TWCavity","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

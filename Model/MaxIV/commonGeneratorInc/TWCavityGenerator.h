@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/LinacInc/TDCCavity.h
+ * File:   Model/MaxIV/LinacInc/TWCavityGenerator.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,56 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCCavity_h
-#define tdcSystem_TDCCavity_h
+#ifndef setVariable_TWCavityGenerator_h
+#define setVariable_TWCavityGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace tdcSystem
+namespace setVariable
 {
 
 /*!
-  \class TDCCavity
+  \class TWCavityGenerator
   \version 1.0
   \author Konstantin Batkov
   \date June 2020
-  \brief TDC cavity section
+  \brief TWCavityGenerator for variables
 */
 
-class TDCCavity :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate,
-    public attachSystem::CellMap,
-    public attachSystem::SurfMap,
-    public attachSystem::FrontBackCut
+class TWCavityGenerator
 {
  private:
 
-  int    nCells;                ///< Number of regular cells
-  double cellLength;            ///< Normal cell total length (void+iris)
+  int nCells;                   ///< Number of regular cells
+  double cellLength;            ///< Normal cell length
   double cellRadius;            ///< Normal cell inner radius
   double irisLength;            ///< Iris length
-  double irisRadius;            ///< Iris inner radius
+  double irisRadius;            ///< Iris radius
   double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
   double wallThick;             ///< Wall thickness
-  int    wallMat;               ///< Wall material
-
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  std::string wallMat;          ///< Wall material
 
  public:
 
-  TDCCavity(const std::string&);
-  TDCCavity(const TDCCavity&);
-  TDCCavity& operator=(const TDCCavity&);
-  virtual TDCCavity* clone() const;
-  virtual ~TDCCavity();
+  TWCavityGenerator();
+  TWCavityGenerator(const TWCavityGenerator&);
+  TWCavityGenerator& operator=(const TWCavityGenerator&);
+  virtual ~TWCavityGenerator();
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  virtual void generate(FuncDataBase&,const std::string&) const;
 
 };
 

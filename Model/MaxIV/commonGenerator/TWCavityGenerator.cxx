@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/TDCCavityGenerator.cxx
+ * File:   commonBeam/TWCavityGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -44,12 +44,12 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "TDCCavityGenerator.h"
+#include "TWCavityGenerator.h"
 
 namespace setVariable
 {
 
-TDCCavityGenerator::TDCCavityGenerator() :
+TWCavityGenerator::TWCavityGenerator() :
   nCells(89),
   cellLength(2.833), // David Olsson 2020-06-05
   cellRadius(5.961), // David Olsson 2020-06-05
@@ -64,14 +64,14 @@ TDCCavityGenerator::TDCCavityGenerator() :
   */
 {}
 
-TDCCavityGenerator::~TDCCavityGenerator()
+TWCavityGenerator::~TWCavityGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-TDCCavityGenerator::generate(FuncDataBase& Control,
+TWCavityGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -79,7 +79,7 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("TDCCavityGenerator","generate");
+  ELog::RegMethod RegA("TWCavityGenerator","generate");
 
   Control.addVariable(keyName+"NCells",nCells);
   Control.addVariable(keyName+"CellLength",cellLength);

@@ -24,7 +24,7 @@
 
 namespace tdcSystem
 {
-  class TDCCavity;
+  class TWCavity;
   /*!
     \class TDCsegment20
     \version 1.0
@@ -38,7 +38,7 @@ class TDCsegment20 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::TDCCavity> cavity;      ///< TDC cavity section
+  std::shared_ptr<tdcSystem::TWCavity> cavity;      ///< TDC cavity section
 
   void buildObjects(Simulation&);
   void createLinks();
