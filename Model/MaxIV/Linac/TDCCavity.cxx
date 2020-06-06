@@ -83,8 +83,8 @@ TDCCavity::TDCCavity(const TDCCavity& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  cellLength(A.cellLength),radius(A.radius),innerRadius(A.innerRadius),
-  irisLength(A.irisLength),
+  cellLength(A.cellLength),irisLength(A.irisLength),
+  radius(A.radius),innerRadius(A.innerRadius),
   wallThick(A.wallThick),
   nCells(A.nCells),wallMat(A.wallMat),
   couplerThick(A.couplerThick),
@@ -172,7 +172,7 @@ TDCCavity::createSurfaces()
 {
   ELog::RegMethod RegA("TDCCavity","createSurfaces");
 
-  const double totalLength(couplerThick*2+cellLength*nCells-irisLength);
+  const double totalLength(couplerThick*2+(cellLength+irisLength)*nCells-irisLength);
 
   if (!isActive("front"))
     {
@@ -210,7 +210,8 @@ TDCCavity::createSurfaces()
   int SI(buildIndex+1000);
   for (int i=0; i<nCells-1; ++i)
     {
-      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*(y-irisLength),Y);
+      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*(y),Y);
+      y += irisLength;
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(y),Y);
       y += cellLength;
       SI += 10;

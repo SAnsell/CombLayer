@@ -50,9 +50,11 @@ namespace setVariable
 {
 
 TDCCavityGenerator::TDCCavityGenerator() :
-  cellLength(10.0),radius(6.0),innerRadius(1.15),
-  irisLength(0.5),
-  wallThick(1.5),
+  cellLength(2.833), // David Olsson 2020-06-05
+  radius(5.961), // David Olsson 2020-06-05
+  innerRadius(1.15),
+  irisLength(0.5), // David Olsson 2020-06-05
+  wallThick(1.489), // David Olsson 2020-06-05
   nCells(89),wallMat("Copper"),
   couplerThick(6.0),
   couplerWidth(21.2)
