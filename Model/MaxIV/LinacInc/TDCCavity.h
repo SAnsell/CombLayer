@@ -49,10 +49,13 @@ class TDCCavity :
   double cellRadius;            ///< Normal cell inner radius
   double irisLength;            ///< Iris length
   double irisRadius;            ///< Iris inner radius
-  double couplerLength;         ///< coupler cell length
-  double couplerWidth;          ///< coupler cell width
+  double couplerLength;         ///< Coupler cell length
+  double couplerWidth;          ///< Coupler cell width
   double wallThick;             ///< Wall thickness
   int    wallMat;               ///< Wall material
+  double flangeLength;          ///< Flange length
+  double flangeRadius;          ///< Flange outer radius
+  int flangeMat;                ///< Flange material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
