@@ -249,9 +249,13 @@ TDCCavity::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," -17 21 -101 ");
   makeCell("FrontCouplerIris",System,cellIndex++,wallMat,0.0,Out);
 
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 (-103:104:-105:106) ")+frontStr;
-  makeCell("FrontCouplerOuterVoid",System,cellIndex++,0,0.0,Out);
+  // front coupler cell corners
+  Out1=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ")+frontStr;
+  for (const std::string surf : {" -103 ", " 104 ", " -105 ", " 106 "})
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,surf);
+      makeCell("FrontCouplerOuterVoid",System,cellIndex++,0,0.0,Out+Out1);
+    }
 
   // back coupler cell
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 102 103 -104 105 -106 ")+backStr;
@@ -268,8 +272,13 @@ TDCCavity::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 102 -22 ");
   makeCell("BackCouplerIris",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 102 (-103:104:-105:106) ")+backStr;
-  makeCell("BackCouplerOuterVoid",System,cellIndex++,0,0.0,Out);
+  // back coupler cell corners
+  Out1=ModelSupport::getComposite(SMap,buildIndex," -107 102 ")+backStr;
+  for (const std::string surf : {" -103 ", " 104 ", " -105 ", " 106 "})
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,surf);
+      makeCell("BackCouplerOuterVoid",System,cellIndex++,0,0.0,Out+Out1);
+    }
 
   for (int i=0; i<nCells; ++i)
     {
