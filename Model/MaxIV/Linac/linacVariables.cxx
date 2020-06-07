@@ -86,7 +86,9 @@ namespace linacVar
   void linac2SPFsegment8(FuncDataBase&,const std::string&);
   void linac2SPFsegment9(FuncDataBase&,const std::string&);
   void linac2SPFsegment10(FuncDataBase&,const std::string&);
-  void linac2SPFsegment11(FuncDataBase&,const std::string&);    
+  void linac2SPFsegment11(FuncDataBase&,const std::string&);
+  void linac2SPFsegment12(FuncDataBase&,const std::string&);
+  void linac2SPFsegment13(FuncDataBase&,const std::string&);    
   
 
   void TDCsegment14(FuncDataBase&,const std::string&);
@@ -132,7 +134,8 @@ setIonPump1Port(FuncDataBase& Control,
 
 void
 setIonPump2Port(FuncDataBase& Control,
-		const std::string& name)
+		const std::string& name,
+		const double )
 /*!
   Set the 2 port ion pump variables
   \param Control :: DataBase to use
@@ -150,8 +153,6 @@ setIonPump2Port(FuncDataBase& Control,
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<setVariable::CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
-  PItemGen.setNoPlate();
 
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
   Control.addVariable(name+"NPorts",2);
@@ -167,13 +168,12 @@ setIonPump2Port(FuncDataBase& Control,
   const double L1(7.5 - outerR);
 
 
-  PItemGen.setLength(L0);
+  PItemGen.setCF<setVariable::CF40_22>(L0); // Port0 length
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
   PItemGen.setLength(L1);
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
   PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
 
   return;
@@ -847,6 +847,96 @@ linac2SPFsegment11(FuncDataBase& Control,
   return;
 }
 
+void
+linac2SPFsegment12(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for segment 12
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment12");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BeamDividerGenerator BDGen;
+
+  const Geometry::Vec3D startPt(-547.597,3697.597,0.0);
+  const Geometry::Vec3D endPt(-593.379,3968.258,0.0);  // to segment 13
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",12.8);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.50);
+  
+  FPGen.generateFlat(Control,lKey+"FlatA",88.0);
+  Control.addVariable(lKey+"FlatAXYAngle",-1.6);
+  DIBGen.generate(Control,lKey+"DipoleA");
+
+  BDGen.generateDivider(Control,lKey+"BeamA");
+  Control.addVariable(lKey+"BeamAXYAngle",-1.6);
+  
+  BellowGen.generateBellow(Control,lKey+"BellowLA",0.0,7.50);
+
+  // small ion pump port:
+  // -----------------------
+  // horizontal off beam
+  const Geometry::Vec3D OPos(0.0,0.0,0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+  const double L0(8.5 - outerR);
+  const double L1(7.5 - outerR);
+
+  SimpleTubeGen.generateBlank(Control,name,0.0,12.0);
+  Control.addVariable(name+"NPorts",2);
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  PItemGen.setCF<setVariable::CF40>(L0); // Port0 length
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  PItemGen.setLength(L1);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  // -----------
+  
+  return;
+}
+
+void
+linac2SPFsegment13(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for segment 13
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment13");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LinacQuadGenerator LQGen;
+
+  const Geometry::Vec3D startPt(-593.379,3968.258,0.0);  
+  const Geometry::Vec3D endPt(-622.286,4226.013,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",6.4);
+
+
+  
+  return;
+}
+
 
 void
 TDCsegment14(FuncDataBase& Control,
@@ -1355,6 +1445,9 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment9(Control,"L2SPF9");
   linacVar::linac2SPFsegment10(Control,"L2SPF10");
   linacVar::linac2SPFsegment11(Control,"L2SPF11");
+  linacVar::linac2SPFsegment12(Control,"L2SPF12");
+  linacVar::linac2SPFsegment13(Control,"L2SPF13");
+      
 
   /// TDC segments 14-28
   linacVar::TDCsegment14(Control,"TDC14");
