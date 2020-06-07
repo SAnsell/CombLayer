@@ -75,6 +75,7 @@
 #include "ScrapperGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "TWCavityGenerator.h"
 
 namespace setVariable
 {
@@ -252,16 +253,34 @@ SingleItemVariables(FuncDataBase& Control)
   CSGen.generateCeramicSep(Control,"CerSep");
 
   setVariable::BeamDividerGenerator BDGen;
-  BDGen.generateDivider(Control,"BeamDiv");  
+  BDGen.generateDivider(Control,"BeamDiv");
 
   setVariable::EBeamStopGenerator EBGen;
-  EBGen.generateEBeamStop(Control,"EBeam",0);  
+  EBGen.generateEBeamStop(Control,"EBeam",0);
 
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
-  
+
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");
+
+  // traveling wave cavity
+  PGen.setNoWindow();
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  setVariable::TWCavityGenerator TDCGen;
+
+  const double flangeLength(3.7);
+  PGen.generatePipe(Control,"PipeA",0.0,flangeLength);
+  Control.addVariable("PipeARadius",1.16);
+  Control.addVariable("PipeAFeThick",0.2);
+
+  TDCGen.generate(Control,"TWCavity");
+
+  PGen.generatePipe(Control,"PipeB",0.0,flangeLength);
+  Control.addParse<double>("PipeBRadius","PipeARadius");
+  Control.addParse<double>("PipeBFeThick","PipeAFeThick");
+  //////////
 
   return;
 }

@@ -87,6 +87,7 @@
 #include "Scrapper.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
+#include "TWCavity.h"
 
 #include "makeSingleItem.h"
 
@@ -125,7 +126,7 @@ makeSingleItem::build(Simulation& System,
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","BPM","BeamDivider","Scrapper",
+      "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
       "Help","help"
     });
 
@@ -450,6 +451,30 @@ makeSingleItem::build(Simulation& System,
       DIB->setCutSurf("Inner",*VC,"outerPipe");
       DIB->addInsertCell(voidCell);
       DIB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="TWCavity") // traveling wave cavity
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	pipeA(new constructSystem::VacuumPipe("PipeA"));
+      std::shared_ptr<tdcSystem::TWCavity> cavity(new tdcSystem::TWCavity("TWCavity"));
+      std::shared_ptr<constructSystem::VacuumPipe>
+	pipeB(new constructSystem::VacuumPipe("PipeB"));
+
+      OR.addObject(pipeA);
+      OR.addObject(cavity);
+      OR.addObject(pipeB);
+
+      pipeA->addInsertCell(voidCell);
+      pipeA->createAll(System,World::masterOrigin(),0);
+
+      cavity->addInsertCell(voidCell);
+      cavity->createAll(System,*pipeA,"back");
+
+      pipeB->addInsertCell(voidCell);
+      pipeB->createAll(System,*cavity,"back");
 
       return;
     }

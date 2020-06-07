@@ -1224,7 +1224,6 @@ TDCsegment20(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeARadius",1.16); // inner radius -
   Control.addVariable(lKey+"PipeAFeThick",0.2); // wall thick -
 
-
   TDCGen.generate(Control,lKey+"Cavity");
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,flangeLength);
