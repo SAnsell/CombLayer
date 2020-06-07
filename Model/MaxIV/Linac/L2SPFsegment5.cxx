@@ -101,6 +101,8 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   OR.addObject(beamA);
   OR.addObject(dipoleB);
   OR.addObject(bellowA);
+
+  setFirstItem(flatA);
 }
 
 L2SPFsegment5::~L2SPFsegment5()

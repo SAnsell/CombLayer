@@ -464,13 +464,6 @@ YagScreen::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("YagScreen","createAll");
 
-  if (!isActive("side"))
-    ELog::EM<<"Set pipeSide surface to simplify outer rule of YagScreen"
-	    <<ELog::endWarn;
-  if (!isActive("front"))
-    ELog::EM<<"Set pipeFront surface to simplify outer rule of YagScreen"
-	    <<ELog::endWarn;
-
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

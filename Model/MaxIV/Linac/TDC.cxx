@@ -248,6 +248,20 @@ TDC::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("TDC","createAll");
 
+  // this is requires to stop non-alphabetical segments
+  // being built out of order
+  static const std::vector<std::string> buildOrder
+    ({
+      "L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
+      "L2SPFsegment4","L2SPFsegment5","L2SPFsegment6",
+      "L2SPFsegment7","L2SPFsegment8","L2SPFsegment9",
+      "L2SPFsegment10","L2SPFsegment11","L2SPFsegment12",
+      "L2SPFsegment13",
+      "TDCsegment14","TDCsegment15","TDCsegment16",
+      "TDCsegment17","TDCsegment18","TDCsegment19",
+      "TDCsegment20","TDCsegment21","TDCsegment22"
+    });
+  
   typedef std::tuple<std::string,std::string> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
@@ -279,55 +293,56 @@ TDC::createAll(Simulation& System,
 
   // special case of L2SPFsegment10 :
   
-  for(const std::string& BL : activeINJ)
+  for(const std::string& BL : buildOrder)
     {
-      
-      SegTYPE::const_iterator mc=SegMap.find(BL);
-      if (mc==SegMap.end())
-	throw ColErr::InContainerError<std::string>(BL,"Beamline");
-
-      const LinkTYPE seglink=segmentLinkMap.at(BL);
-      const std::string& bzName=std::get<0>(seglink);
-      const std::string& prevName=std::get<1>(seglink);
-      SegTYPE::const_iterator prevC=SegMap.find(prevName);
-
-      const std::shared_ptr<TDCsegment>& segPtr=mc->second;
-
-      std::unique_ptr<attachSystem::InnerZone> buildZone=
-	buildInnerZone(System.getDataBase(),bzName);
-      std::unique_ptr<attachSystem::InnerZone> secondZone;
-
-      
-      if (prevC!=SegMap.end())
+      if (activeINJ.find(BL)!=activeINJ.end())
 	{
-	  const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
-	  if (prevPtr->hasLastSurf())
-	    {
-	      buildZone->setFront(prevPtr->getLastSurf());
-	      segPtr->setCutSurf("front",prevPtr->getLastSurf());
-	    }
-	}
-
-      buildZone->constructMasterCell(System);
-      segPtr->setInnerZone(buildZone.get());
-      // special case of L2SPFsegment10 :
-      
-      if (BL=="L2SPFsegment10")
-	{
-	  secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
-	  segPtr->setNextZone(secondZone.get());
-	}
+	  SegTYPE::const_iterator mc=SegMap.find(BL);
+	  if (mc==SegMap.end())
+	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
 	  
-      segPtr->createAll
-	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
-
-      // special case for join of wall
-      //      if (BL=="L2SPFsegment10")
-      //	processWallJoin();
-
-      segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  const LinkTYPE seglink=segmentLinkMap.at(BL);
+	  const std::string& bzName=std::get<0>(seglink);
+	  const std::string& prevName=std::get<1>(seglink);
+	  SegTYPE::const_iterator prevC=SegMap.find(prevName);
+	  
+	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
+	  
+	  std::unique_ptr<attachSystem::InnerZone> buildZone=
+	    buildInnerZone(System.getDataBase(),bzName);
+	  std::unique_ptr<attachSystem::InnerZone> secondZone;
+	  
+	  
+	  if (prevC!=SegMap.end())
+	    {
+	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
+	      if (prevPtr->hasLastSurf())
+		{
+		  buildZone->setFront(prevPtr->getLastSurf());
+		  segPtr->setFrontSurf(prevPtr->getLastSurf());
+		}
+	    }
+	  
+	  buildZone->constructMasterCell(System);
+	  segPtr->setInnerZone(buildZone.get());
+	  // special case of L2SPFsegment10 :
+	  
+	  if (BL=="L2SPFsegment10")
+	    {
+	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
+	      segPtr->setNextZone(secondZone.get());
+	    }
+	  
+	  segPtr->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  
+	  // special case for join of wall
+	  //      if (BL=="L2SPFsegment10")
+	  //	processWallJoin();
+	  
+	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	}
     }
-
   return;
 }
 

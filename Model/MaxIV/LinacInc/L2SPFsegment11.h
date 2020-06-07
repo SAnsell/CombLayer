@@ -71,7 +71,7 @@ class L2SPFsegment11 :
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::PipeTube> pumpA;   
+  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
   /// Yag screen for pump tube
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
   

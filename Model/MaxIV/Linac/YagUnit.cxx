@@ -329,7 +329,13 @@ YagUnit::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-      
+  
+  FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));
+
+  FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+156));
+
   return;
 }
 

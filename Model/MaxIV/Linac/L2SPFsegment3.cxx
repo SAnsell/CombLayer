@@ -115,7 +115,7 @@ L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   OR.addObject(bellowA);
   OR.addObject(flatA);
   OR.addObject(dipoleA);
@@ -124,6 +124,8 @@ L2SPFsegment3::L2SPFsegment3(const std::string& Key) :
   OR.addObject(cMagVertA);  
   OR.addObject(flatB);
   OR.addObject(dipoleB);
+
+  setFirstItem(bellowA);
 }
   
 L2SPFsegment3::~L2SPFsegment3()
@@ -152,6 +154,7 @@ L2SPFsegment3::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
+  flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
@@ -162,6 +165,7 @@ L2SPFsegment3::buildObjects(Simulation& System)
   correctorMagnetPair(System,*buildZone,pipeA,cMagHorA,cMagVertA);
   pipeTerminate(System,*buildZone,pipeA);
 
+  flatB->setFront(*pipeA,"back");
   flatB->createAll(System,*pipeA,"back");
   pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
@@ -169,8 +173,6 @@ L2SPFsegment3::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*flatB,"back",*bellowB);
-
-
   
   buildZone->removeLastMaster(System);  
   return;
@@ -205,7 +207,6 @@ L2SPFsegment3::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
   buildObjects(System);
   createLinks();
 

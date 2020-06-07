@@ -112,6 +112,8 @@ L2SPFsegment8::L2SPFsegment8(const std::string& Key) :
   OR.addObject(eBeamStop);
   OR.addObject(bellowB);
   OR.addObject(pipeA);
+
+  setFirstItem(bellowA);
 }
   
 L2SPFsegment8::~L2SPFsegment8()

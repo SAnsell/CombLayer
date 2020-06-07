@@ -45,7 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
+#include "Line.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -149,6 +149,9 @@ L2SPFsegment2::L2SPFsegment2(const std::string& Key) :
   OR.addObject(QuadD);
   OR.addObject(QuadE);
   OR.addObject(yagUnit);
+  OR.addObject(yagScreen);
+
+  setFirstItem(pipeA);
 }
   
 L2SPFsegment2::~L2SPFsegment2()
@@ -167,6 +170,7 @@ L2SPFsegment2::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("L2SPFsegment2","buildObjects");
 
+  int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
@@ -209,9 +213,17 @@ L2SPFsegment2::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadE);
   pipeTerminate(System,*buildZone,pipeE);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeE,"back",*yagUnit);
 
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
+  
   buildZone->removeLastMaster(System);  
   return;
 }

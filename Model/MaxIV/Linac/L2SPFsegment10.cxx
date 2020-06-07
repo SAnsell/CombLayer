@@ -129,6 +129,8 @@ L2SPFsegment10::L2SPFsegment10(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(QuadA);
   OR.addObject(cMagVertA);
+
+  setFirstItem(bellowA);
 }
   
 L2SPFsegment10::~L2SPFsegment10()
@@ -217,6 +219,7 @@ L2SPFsegment10::buildObjects(Simulation& System)
 
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
+
   masterCell=nextZone->constructMasterCell(System,*pipeA,2);
   // allows the first surface of pipe to be the start of the masterCell
   outerCell=nextZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
@@ -264,7 +267,7 @@ L2SPFsegment10::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkSignedCopy(1,*pipeC,2); 
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

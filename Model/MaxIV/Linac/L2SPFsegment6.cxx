@@ -121,6 +121,8 @@ L2SPFsegment6::L2SPFsegment6(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(beamStop);
   OR.addObject(bellowB);
+
+  setFirstItem(pipeA);
 }
   
 L2SPFsegment6::~L2SPFsegment6()

@@ -419,7 +419,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
-  Control.addVariable(lKey+"YagScreenYAngle",90.0);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
 
   return;
@@ -498,6 +498,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
 
 
   const Geometry::Vec3D startPt(-15.322,1155.107,0);
@@ -522,6 +523,9 @@ linac2SPFsegment4(FuncDataBase& Control,
 
   YagUnitGen.setCF<CF40_22>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
@@ -734,7 +738,7 @@ linac2SPFsegment9(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",0.0,56.6);   
 
   CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",50.50,0);
+  CMGen.generateMag(Control,lKey+"CMagHorA",48.50,0);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
@@ -811,6 +815,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
+  setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagGen;
 
   const Geometry::Vec3D startPt(-492.992,3457.251,0.0);
@@ -831,10 +836,11 @@ linac2SPFsegment11(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",0.0,43.50);   
   LQGen.generateQuad(Control,lKey+"QuadA",20.5);
   
-  setIonPump3OffsetPort(Control,lKey+"PumpA");  
+  // setIonPump3OffsetPort(Control,lKey+"PumpA");  
 
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);  // in beam
-  Control.addVariable(lKey+"YagScreenYAngle",90.0);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   
   PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
   CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
