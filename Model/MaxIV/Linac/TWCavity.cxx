@@ -171,6 +171,7 @@ TWCavity::createSurfaces()
 {
   ELog::RegMethod RegA("TWCavity","createSurfaces");
 
+  // -irisLengh since last cell does not have iris (its inside back copuler cell)
   const double totalLength(couplerLength*2+(cellLength+irisLength)*nCells-irisLength);
 
   if (!isActive("front"))
@@ -185,8 +186,8 @@ TWCavity::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(wallThick),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(totalLength-wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(couplerLength-irisLength-cellLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(totalLength-couplerLength+irisLength+cellLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(couplerLength-irisLength),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(totalLength-couplerLength+irisLength),Y);

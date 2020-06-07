@@ -44,8 +44,8 @@ class TWCavityGenerator
   double cellRadius;            ///< Normal cell inner radius
   double irisLength;            ///< Iris length
   double irisRadius;            ///< Iris radius
-  double couplerLength;         ///< coupler cell length
-  double couplerWidth;          ///< coupler cell width
+  double couplerLength;         ///< Coupler cell length
+  double couplerWidth;          ///< Coupler cell width
   double wallThick;             ///< Wall thickness
   std::string wallMat;          ///< Wall material
 

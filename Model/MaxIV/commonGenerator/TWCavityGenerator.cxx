@@ -53,12 +53,12 @@ TWCavityGenerator::TWCavityGenerator() :
   nCells(89),
   cellLength(2.833), // David Olsson 2020-06-05
   cellRadius(5.961), // David Olsson 2020-06-05
-  irisRadius(1.16), // David Olsson 2020-06-05
   irisLength(0.5), // David Olsson 2020-06-05
-  couplerLength(6.0),
-  couplerWidth(21.2),
+  irisRadius(1.16), // David Olsson 2020-06-05
+  couplerLength(4.9295),
+  couplerWidth(21.2), // measured
   wallThick(1.489), // David Olsson 2020-06-05
-  wallMat("Copper")
+  wallMat("Copper") // actually OFHC
   /*!
     Constructor and defaults
   */
