@@ -251,8 +251,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::CeramicSepGenerator CSGen;
   CSGen.generateCeramicSep(Control,"CerSep");
 
-  setVariable::BeamDividerGenerator BDGen;
-  BDGen.generateDivider(Control,"BeamDiv");  
+  setVariable::CF40 CF40unit;
+  setVariable::BeamDividerGenerator BDGen(CF40unit);
+  BDGen.generateDivider(Control,"BeamDiv",0.0);  
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);  

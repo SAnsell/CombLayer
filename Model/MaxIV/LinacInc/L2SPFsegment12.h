@@ -77,10 +77,10 @@ class L2SPFsegment12 :
   std::shared_ptr<constructSystem::Bellows> bellowLA;
 
   /// Ionpump
-  std::shared_ptr<constructSystem::BlankPipe> ionPumpLA;
+  std::shared_ptr<constructSystem::BlankTube> ionPumpLA;
   
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeLA
+  std::shared_ptr<constructSystem::VacuumPipe> pipeLA;
 
   // LAST Unit in left cell
   std::shared_ptr<constructSystem::Bellows> bellowLB;
@@ -94,7 +94,7 @@ class L2SPFsegment12 :
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
 
     /// second  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> bellowRB;
+  std::shared_ptr<constructSystem::Bellows> bellowRB;
   
 
   void buildObjects(Simulation&);

@@ -83,12 +83,12 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "BlankTube.h"
 #include "Bellows.h"
-#include "LQuadF.h"
-#include "BPM.h"
-#include "CorrectorMag.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
+#include "FlatPipe.h"
+#include "BeamDivider.h"
+#include "DipoleDIBMag.h"
+
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -104,15 +104,15 @@ L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  flatA(new constructSystem::Bellows(keyName+"FlatA")),
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
-  ionPumpLA(new constructSystem::BlankPipe(keyName+"IonPumpLA")),
+  ionPumpLA(new constructSystem::BlankTube(keyName+"IonPumpLA")),
   pipeLA(new constructSystem::VacuumPipe(keyName+"pipeLA")),
   bellowLB(new constructSystem::Bellows(keyName+"BellowLB")),
 
-  flatB(new constructSystem::Bellows(keyName+"FlatB")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowRB(new constructSystem::Bellows(keyName+"BellowRB"))
   /*!
@@ -124,14 +124,14 @@ L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bellowA);
-  OR.addObject(flagA);
+  OR.addObject(flatA);
   OR.addObject(dipoleA);
   OR.addObject(beamA);
   OR.addObject(bellowLA);
   OR.addObject(ionPumpLA);
   OR.addObject(pipeLA);
   OR.addObject(bellowLB);
-  OR.addObject(flagB);
+  OR.addObject(flatB);
   OR.addObject(dipoleB);
   OR.addObject(bellowRB);
 }
@@ -169,9 +169,16 @@ L2SPFsegment12::buildObjects(Simulation& System)
   // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*flatA,"back",*beamA);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*beamA,"back",*bellowLA);
+
+
+  
 
   
   buildZone->removeLastMaster(System);  

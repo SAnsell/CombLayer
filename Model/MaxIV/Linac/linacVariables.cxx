@@ -134,13 +134,11 @@ setIonPump1Port(FuncDataBase& Control,
 
 void
 setIonPump2Port(FuncDataBase& Control,
-		const std::string& name,
-		const double )
+		const std::string& name)
 /*!
   Set the 2 port ion pump variables
   \param Control :: DataBase to use
   \param name :: name prefix
-  \param nPorts :: number of ports
  */
 {
   ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
@@ -549,7 +547,8 @@ linac2SPFsegment5(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment5");
 
-  setVariable::BeamDividerGenerator BDGen;
+  setVariable::CF40 CF40unit;
+  setVariable::BeamDividerGenerator BDGen(CF40unit);
   setVariable::BellowGenerator BellowGen;
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
@@ -564,8 +563,7 @@ linac2SPFsegment5(FuncDataBase& Control,
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
 
-  BDGen.generateDivider(Control,lKey+"BeamA");
-  Control.addVariable(lKey+"BeamAXYAngle",1.6);
+  BDGen.generateDivider(Control,lKey+"BeamA",1.6);
 
   FPGen.generateFlat(Control,lKey+"FlatB",82.0);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
@@ -858,12 +856,15 @@ linac2SPFsegment12(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment12");
 
+  setVariable::CF63 CF63unit;
   setVariable::PipeGenerator PGen;
+  setVariable::PortItemGenerator PItemGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BeamDividerGenerator BDGen;
-
+  setVariable::BeamDividerGenerator BDGen(CF63unit);
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  
   const Geometry::Vec3D startPt(-547.597,3697.597,0.0);
   const Geometry::Vec3D endPt(-593.379,3968.258,0.0);  // to segment 13
 
@@ -872,21 +873,29 @@ linac2SPFsegment12(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.50);
   
   FPGen.generateFlat(Control,lKey+"FlatA",88.0);
   Control.addVariable(lKey+"FlatAXYAngle",-1.6);
+  
   DIBGen.generate(Control,lKey+"DipoleA");
 
-  BDGen.generateDivider(Control,lKey+"BeamA");
-  Control.addVariable(lKey+"BeamAXYAngle",-1.6);
+  //  BDGen.setMainSize(60.0,3.2);
+  BDGen.setAFlangeCF<setVariable::CF50>();
+  BDGen.setBFlangeCF<setVariable::CF40>();
+  // -1: left side aligned
+  BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,-1);  
+
   
   BellowGen.generateBellow(Control,lKey+"BellowLA",0.0,7.50);
 
   // small ion pump port:
   // -----------------------
-  // horizontal off beam
+  // horizontal off 
   const Geometry::Vec3D OPos(0.0,0.0,0.0);
   const Geometry::Vec3D XVec(1,0,0);
   const double outerR =
@@ -894,19 +903,30 @@ linac2SPFsegment12(FuncDataBase& Control,
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,12.0);
-  Control.addVariable(name+"NPorts",2);
-  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  SimpleTubeGen.generateBlank(Control,"IonPumpLA",0.0,12.0);
+  Control.addVariable("IonPumpLANPorts",2);
+  Control.addVariable("IonPumpLAFlangeCapThick",
+		      setVariable::CF63::flangeLength);
   PItemGen.setCF<setVariable::CF40>(L0); // Port0 length
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+  PItemGen.generatePort(Control,"IonPumpLAPort0",OPos,-XVec);
 
   PItemGen.setLength(L1);
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+  PItemGen.generatePort(Control,"IonPumpLAPort1",OPos,XVec);
 
   // -----------
+  PGen.generatePipe(Control,lKey+"PipeLA",0.0,84.0);
+  BellowGen.generateBellow(Control,lKey+"BellowLB",0.0,7.50);  
+
+  // RIGHT SIDE
+
+  FPGen.generateFlat(Control,lKey+"FlatB",88.0);
+  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
+  DIBGen.generate(Control,lKey+"DipoleB");
   
+  BellowGen.generateBellow(Control,lKey+"BellowRB",0.0,7.50);
+  Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
   return;
 }
 

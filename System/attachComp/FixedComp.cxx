@@ -652,6 +652,7 @@ FixedComp::linkAngleRotate(const size_t sideIndex,
 
   LinkUnit& LItem=getLU(sideIndex);
 
+  ELog::EM<<"R == "<<keyName<<ELog::endDiag;
   const Geometry::Quaternion Qz=
     Geometry::Quaternion::calcQRotDeg(zAngle,Z);
   const Geometry::Quaternion Qy=

@@ -68,7 +68,8 @@ FlatPipeGenerator::FlatPipeGenerator() :
     Constructor and defaults
   */
 {}
-  
+
+
 FlatPipeGenerator::~FlatPipeGenerator() 
  /*!
    Destructor
@@ -100,7 +101,6 @@ FlatPipeGenerator::setBFlangeCF()
 }
 
 
-  
 void
 FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 				const std::string& keyName,
@@ -132,5 +132,6 @@ FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 
 }
 
+  
   
 }  // NAMESPACE setVariable
