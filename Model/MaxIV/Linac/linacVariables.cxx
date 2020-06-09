@@ -96,6 +96,7 @@ namespace linacVar
   void TDCsegment18(FuncDataBase&,const std::string&);
   void TDCsegment19(FuncDataBase&,const std::string&);
   void TDCsegment20(FuncDataBase&,const std::string&);
+  void TDCsegment21(FuncDataBase&,const std::string&);
   void TDCsegment22(FuncDataBase&,const std::string&);
 
 
@@ -1234,6 +1235,75 @@ TDCsegment20(FuncDataBase& Control,
 }
 
 void
+TDCsegment21(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment21");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
+
+  setVariable::PipeGenerator PGen;
+  setVariable::LinacQuadGenerator LQGen;
+  PGen.setNoWindow();
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::YagScreenGenerator YagGen;
+
+  const Geometry::Vec3D startPt(-637.608,6358.791,0.0);
+  const Geometry::Vec3D endPt(-637.608,6495.428,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",0.0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  const double pipeALength(34.0);
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0);
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
+  Control.addVariable(lKey+"PipeAFeThick",0.08); // wall thick
+
+  // QG (QH) type quadrupole magnet
+  LQGen.setRadius(0.56, 2.31);
+  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+
+  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
+  // measured - inner box half width/height
+  Control.addVariable(lKey+"QuadYokeOuter",9.5);
+  // adjusted so that nose is 1 cm thick as in the STEP file
+  Control.addVariable(lKey+"QuadPolePitch",26.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,40.0);
+
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+
+  setIonPump2Port(Control,lKey+"IonPump");
+  Control.addVariable(lKey+"IonPumpYAngle",90.0);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,126.0);
+
+  return;
+}
+
+void
 TDCsegment22(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -1389,7 +1459,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment18(Control,"TDC18");
   linacVar::TDCsegment19(Control,"TDC19");
   linacVar::TDCsegment20(Control,"TDC20");
-  //  linacVar::TDCsegment21(Control,"TDC20");
+  linacVar::TDCsegment21(Control,"TDC21");
   linacVar::TDCsegment22(Control,"TDC22");
 
   return;

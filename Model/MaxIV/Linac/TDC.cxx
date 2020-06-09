@@ -85,6 +85,7 @@
 #include "TDCsegment18.h"
 #include "TDCsegment19.h"
 #include "TDCsegment20.h"
+#include "TDCsegment21.h"
 
 #include "TDC.h"
 
@@ -115,7 +116,7 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
     { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
     { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
-    //    { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") }
+    { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") },
     { "TDCsegment22",std::make_shared<TDCsegment20>("TDC22") }
   } )
   /*!
