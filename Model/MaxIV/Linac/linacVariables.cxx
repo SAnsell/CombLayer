@@ -525,7 +525,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   YagUnitGen.setCF<CF40_22>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
