@@ -389,7 +389,7 @@ DipoleDIBMag::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 1003 -1004 1006 -2005 ");
   makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out+ICell);
-
+  
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -2 13 -14 15 -16 " );
   addOuterSurf(Out);

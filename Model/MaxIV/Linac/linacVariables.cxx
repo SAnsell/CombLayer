@@ -921,15 +921,14 @@ linac2SPFsegment12(FuncDataBase& Control,
   PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
 
   // -----------
-  PGen.generatePipe(Control,lKey+"PipeLA",0.0,84.0);
+  PGen.generatePipe(Control,lKey+"PipeLA",0.0,90.0);
   BellowGen.generateBellow(Control,lKey+"BellowLB",0.0,7.50);  
 
   // RIGHT SIDE
 
-  FPGen.generateFlat(Control,lKey+"FlatB",88.0);
+  FPGen.generateFlat(Control,lKey+"FlatB",83.0);
   Control.addVariable(lKey+"FlatBXYAngle",-1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
-  //  Control.addVariable(lKey+"DipoleBYAngle",180.0);
   
   BellowGen.generateBellow(Control,lKey+"BellowRB",0.0,7.50);
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);

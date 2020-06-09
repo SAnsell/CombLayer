@@ -164,10 +164,6 @@ L2SPFsegment12::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  
-
-  
-
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
@@ -200,33 +196,32 @@ L2SPFsegment12::buildObjects(Simulation& System)
   ionPumpLA->insertAllInCell(System,outerCell);
   beamA->insertInCell("Main",System,outerCell);
 
-  const int prevCell=pipeTerminateGroup(System,*buildZone,beamA,"back",
+  int cellA,cellB,cellC;
+  cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
 					{"Main","FlangeB"});
-
-
-
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
-  pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-					      
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
-  /*
-  flatB->setFront(VPB,"OuterPlate");
-  flatB->createAll(System,VPB,"OuterPlate");
-  
-  pipeMagGroup(System,*buildZone,flatB,
+  // this creates two buildZone cells:
+  cellB=pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
-  */
-  // outerCell=constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeLA);
-  // pipeLA->insertInCell(System,prevCell);
+  cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
-    
-  
-  
+  pipeLA->addInsertCell(cellA);
+  pipeLA->addInsertCell(cellB-1);
+  pipeLA->addInsertCell(cellC);
+  pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeLA);
+
+  // add last bellows
+  bellowRB->addInsertCell(outerCell);
+  bellowRB->setFront(*flatB,"back");
+  bellowRB->createAll(System,*flatB,"back");
+
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
+  bellowRB->insertInCell(System,outerCell);
   
   
   buildZone->removeLastMaster(System);  
