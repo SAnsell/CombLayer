@@ -31,27 +31,22 @@ namespace constructSystem
   class PipeTube;
 }
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
 
 namespace tdcSystem
 {
+  class BPM;
   class LQuadF;
+  class LSexupole;
   class CorrectorMag;
-  class CeramicSep;
+  class YagUnit;
   class YagScreen;
 
   /*!
     \class L2SPFsegment13
     \version 1.0
     \author S. Ansell
-    \date May 2020
-    \brief Seventh segment
+    \date June 2020
+    \brief Last L2SPF segment
   */
 
 class L2SPFsegment13 :
@@ -70,13 +65,12 @@ class L2SPFsegment13 :
 
   // main magnetic pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-
   
   /// Quad begining QSQ 
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA;
+  std::shared_ptr<tdcSystem::LSexupole> SexuA; 
 
   /// Quad endng QSQ 
   std::shared_ptr<tdcSystem::LQuadF> QuadB;
@@ -87,12 +81,11 @@ class L2SPFsegment13 :
   /// yag screen
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
-
-  /// exit pipe for 
+  /// exit pipe + corrector mag
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
 
+  /// corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVerC; 
 
   void buildObjects(Simulation&);
   void createLinks();

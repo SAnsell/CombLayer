@@ -145,10 +145,10 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       ELog::EM<<"Start Point  "<<startPoint<<"\n";
       ELog::EM<<"End Point    "<<endPoint<<"\n\n";
 
-      ELog::EM<<"readStart    "<<realStart<<"\n";
-      ELog::EM<<"realEnd      "<<realEnd<<"\n";
+      ELog::EM<<"model Start    "<<realStart<<"\n";
+      ELog::EM<<"model End      "<<realEnd<<"\n";
 
-      ELog::EM<<"shiftedEnd   "<<vEnd<<"\n\n";
+      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
 
       ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
       retFlag=1;
@@ -165,10 +165,10 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  ELog::EM<<"Start Point          "<<startPoint<<"\n";
 	  ELog::EM<<"Second  End Point    "<<sndEndPoint<<"\n\n";
 	  
-	  ELog::EM<<"readStart    "<<realStart<<"\n";
-	  ELog::EM<<"realEnd      "<<sndRealEnd<<"\n";
+	  ELog::EM<<"model Start    "<<realStart<<"\n";
+	  ELog::EM<<"model End      "<<sndRealEnd<<"\n";
 	  
-	  ELog::EM<<"shiftedEnd   "<<wEnd<<"\n\n";
+	  ELog::EM<<"expected End   "<<wEnd<<"\n\n";
 	  
 	  ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
 	  retFlag=1;

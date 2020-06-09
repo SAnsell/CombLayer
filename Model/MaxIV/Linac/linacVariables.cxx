@@ -365,7 +365,7 @@ linac2SPFsegment2(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
-  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
   const Geometry::Vec3D startPt(0,395.2,0);
@@ -415,7 +415,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
 
@@ -493,7 +493,6 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::LinacQuadGenerator LQGen;
   setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::YagScreenGenerator YagGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
 
@@ -521,7 +520,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   YagUnitGen.setCF<CF40_22>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -813,7 +812,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagScreenGenerator YagScreenGen;
 
   const Geometry::Vec3D startPt(-492.992,3457.251,0.0);
   const Geometry::Vec3D endPt(-547.597,3697.597,0.0);
@@ -836,7 +835,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   // setIonPump3OffsetPort(Control,lKey+"PumpA");  
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   
   PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
@@ -947,8 +946,12 @@ linac2SPFsegment13(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment13");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::LinacSexuGenerator LSGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
 
   const Geometry::Vec3D startPt(-593.379,3968.258,0.0);  
   const Geometry::Vec3D endPt(-622.286,4226.013,0.0);
@@ -957,8 +960,28 @@ linac2SPFsegment13(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
 
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,69.6); // measured
 
-  
+  CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
+
+ 
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,78.0); 
+  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
+  LSGen.generateSexu(Control,lKey+"SexuA",39.0);
+  LQGen.generateQuad(Control,lKey+"QuadB",60.9);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,69.6);
+  CMGen.generateMag(Control,lKey+"CMagVerC",12.5,1);  
   return;
 }
 
