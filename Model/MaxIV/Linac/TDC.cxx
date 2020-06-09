@@ -114,7 +114,9 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
     { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
-    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") }
+    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
+    //    { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") }
+    { "TDCsegment22",std::make_shared<TDCsegment20>("TDC22") }
   } )
   /*!
     Constructor
@@ -270,7 +272,9 @@ TDC::createAll(Simulation& System,
       {"TDCsegment17",{"tdc","TDCsegment16"}},
       {"TDCsegment18",{"tdc","TDCsegment17"}},
       {"TDCsegment19",{"tdc","TDCsegment18"}},
-      {"TDCsegment20",{"tdc","TDCsegment19"}}
+      {"TDCsegment20",{"tdc","TDCsegment19"}},
+      {"TDCsegment21",{"tdc","TDCsegment20"}},
+      {"TDCsegment22",{"tdc","TDCsegment21"}}
     });
   const int voidCell(74123);
 
@@ -280,10 +284,10 @@ TDC::createAll(Simulation& System,
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
   // special case of L2SPFsegment10 :
-  
+
   for(const std::string& BL : activeINJ)
     {
-      
+
       SegTYPE::const_iterator mc=SegMap.find(BL);
       if (mc==SegMap.end())
 	throw ColErr::InContainerError<std::string>(BL,"Beamline");
@@ -299,7 +303,7 @@ TDC::createAll(Simulation& System,
 	buildInnerZone(System.getDataBase(),bzName);
       std::unique_ptr<attachSystem::InnerZone> secondZone;
 
-      
+
       if (prevC!=SegMap.end())
 	{
 	  const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
@@ -313,13 +317,13 @@ TDC::createAll(Simulation& System,
       buildZone->constructMasterCell(System);
       segPtr->setInnerZone(buildZone.get());
       // special case of L2SPFsegment10 :
-      
+
       if (BL=="L2SPFsegment10")
 	{
 	  secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	  segPtr->setNextZone(secondZone.get());
 	}
-	  
+
       segPtr->createAll
 	(System,*injectionHall,injectionHall->getSideIndex("Origin"));
 

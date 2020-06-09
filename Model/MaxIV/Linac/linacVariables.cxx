@@ -96,6 +96,7 @@ namespace linacVar
   void TDCsegment18(FuncDataBase&,const std::string&);
   void TDCsegment19(FuncDataBase&,const std::string&);
   void TDCsegment20(FuncDataBase&,const std::string&);
+  void TDCsegment22(FuncDataBase&,const std::string&);
 
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -1232,6 +1233,27 @@ TDCsegment20(FuncDataBase& Control,
   return;
 }
 
+void
+TDCsegment22(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment22");
+
+  TDCsegment20(Control, lKey);
+
+  const Geometry::Vec3D startPt(-637.608,6495.428,0.0);
+  const Geometry::Vec3D endPt(-637.608,6808.791,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -1367,6 +1389,8 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment18(Control,"TDC18");
   linacVar::TDCsegment19(Control,"TDC19");
   linacVar::TDCsegment20(Control,"TDC20");
+  //  linacVar::TDCsegment21(Control,"TDC20");
+  linacVar::TDCsegment22(Control,"TDC22");
 
   return;
 }
