@@ -41,7 +41,8 @@ class TDCsegment21 :
   std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #4 Quadrupole type G (H)
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen
+  std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen unit
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< yag screen
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet

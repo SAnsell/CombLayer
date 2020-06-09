@@ -35,8 +35,6 @@
 #include <memory>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
@@ -70,6 +68,16 @@
 #include "LObjectSupport.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Line.h"
+#include "ContainedGroup.h"
+#include "YagScreen.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment21.h"
@@ -86,6 +94,7 @@ TDCsegment21::TDCsegment21(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
@@ -103,10 +112,13 @@ TDCsegment21::TDCsegment21(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(quad);
   OR.addObject(yagUnit);
+  OR.addObject(yagScreen);
   OR.addObject(pipeB);
   OR.addObject(cMagH);
   OR.addObject(cMagV);
   OR.addObject(bellowB);
+
+  setFirstItem(bellowA);
 }
 
 TDCsegment21::~TDCsegment21()
@@ -142,8 +154,15 @@ TDCsegment21::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeA);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   pipeB->createAll(System,*yagUnit, "back");
 

@@ -1262,6 +1262,7 @@ TDCsegment21(FuncDataBase& Control,
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagGen;
 
   const Geometry::Vec3D startPt(-637.608,6358.791,0.0);
   const Geometry::Vec3D endPt(-637.608,6495.428,0.0);
@@ -1301,6 +1302,9 @@ TDCsegment21(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
   Control.addVariable(lKey+"YagUnitPortRadius",1.7); // measured
   Control.addVariable(lKey+"YagUnitPortThick",0.2);  // measured
+
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.setCF<setVariable::CF40_22>();
   // measured 45.7, adjusted to have correct length
