@@ -114,6 +114,31 @@ buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
 
 Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,const int N,
+		  const int refPlaneN,const double Dist)
+  /*!
+    Builds a plane that is shifted relative to a current plane
+    \param SMap :: Surface Map system
+    \param N :: Initial Number
+    \param refPlaneN :: Plane indexto use as template
+
+    \param Dist :: Distance along normal to move plane
+    \return New plane ptr [inserted/tested]
+  */
+{
+  ELog::RegMethod("generateSurf","buildShiftedPlane(int)");
+  if (!refPlaneN) return 0;
+
+  const int PN=SMap.realSurf(refPlaneN);
+  const Geometry::Plane* PRef=SMap.realPtr<Geometry::Plane>(refPlaneN);
+  if (!PRef)
+    throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
+  return (PN<0) ?
+    buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
+    buildShiftedPlane(SMap,N,PRef,Dist);
+}
+
+Geometry::Plane*
+buildShiftedPlane(surfRegister& SMap,const int N,
 		  const Geometry::Plane* PN,
 		  const double Dist)
   /*!
@@ -130,12 +155,10 @@ buildShiftedPlane(surfRegister& SMap,const int N,
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
-
   Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
 
   PX->setPlane(*PN);
   PX->displace(PN->getNormal()*Dist);
-
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -166,6 +189,33 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
   const int NFound=SMap.registerSurf(N,PX);
   return SMap.realPtr<Geometry::Plane>(NFound);
 }
+
+
+Geometry::Plane*
+buildShiftedPlaneReversed(surfRegister& SMap,const int N,
+			  const int refPlaneN,const double Dist)
+  /*!
+    Builds a plane that is shifted relative to a current plane
+    \param SMap :: Surface Map system
+    \param N :: Initial Number
+    \param refPlaneN :: Plane indexto use as template
+    \param Dist :: Distance along normal to move plane
+    \return New plane ptr [inserted/tested]
+  */
+{
+  ELog::RegMethod("generateSurf","buildShiftedPlaneReversed(int)");
+  if (!refPlaneN) return 0;
+
+  const int PN=SMap.realSurf(refPlaneN);
+  const Geometry::Plane* PRef=SMap.realPtr<Geometry::Plane>(refPlaneN);
+
+  if (!PRef)
+    throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
+  return (PN>0) ?
+    buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
+    buildShiftedPlane(SMap,N,PRef,Dist);
+}
+
 
 Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,

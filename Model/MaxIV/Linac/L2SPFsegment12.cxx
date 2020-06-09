@@ -101,7 +101,7 @@ namespace tdcSystem
 
   
 L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,3),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
@@ -109,7 +109,7 @@ L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
   ionPumpLA(new constructSystem::BlankTube(keyName+"IonPumpLA")),
-  pipeLA(new constructSystem::VacuumPipe(keyName+"pipeLA")),
+  pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
   bellowLB(new constructSystem::Bellows(keyName+"BellowLB")),
 
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
@@ -164,22 +164,70 @@ L2SPFsegment12::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
+  
+
+  
+
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,flatA,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+
+  beamA->setCutSurf("front",*flatA,"back");
+  beamA->createAll(System,*flatA,"back");
+  pipeTerminateGroup(System,*buildZone,beamA,"exit",
+		     {"Exit","Box","FlangeE","FlangeA","Main"});
+
+  pipeTerminateGroup(System,*buildZone,beamA,"exit",
+		     {"Exit","Box","FlangeE","FlangeA","Main"});
+
+  bellowLA->setCutSurf("front",*beamA,"exit");
+  bellowLA->createAll(System,*beamA,"exit");
+  outerCell=pipeTerminate(System,*buildZone,bellowLA);
+  beamA->insertInCell("Main",System,outerCell);
+
+
+  // FAKE INSERT REQUIRED
+  ionPumpLA->addAllInsertCell(masterCell->getName());
+  ionPumpLA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  ionPumpLA->createAll(System,*bellowLA,"back");
+
+  const constructSystem::portItem& VPB=ionPumpLA->getPort(1);
+  outerCell=buildZone->createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  ionPumpLA->insertAllInCell(System,outerCell);
+  beamA->insertInCell("Main",System,outerCell);
+
+  const int prevCell=pipeTerminateGroup(System,*buildZone,beamA,"back",
+					{"Main","FlangeB"});
+
+
+
+  flatB->setFront(*beamA,"back");
+  flatB->createAll(System,*beamA,"back");
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+					      
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  /*
+  flatB->setFront(VPB,"OuterPlate");
+  flatB->createAll(System,VPB,"OuterPlate");
   
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatA,"back",*beamA);
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  */
+  // outerCell=constructSystem::constructUnit
+  //   (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeLA);
+  // pipeLA->insertInCell(System,prevCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamA,"back",*bellowLA);
-
-
+    
   
-
+  
+  
   
   buildZone->removeLastMaster(System);  
   return;
@@ -193,6 +241,11 @@ L2SPFsegment12::createLinks()
 {
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowA,2);
+  setLinkSignedCopy(2,*bellowA,2);
+
+
+  //  setLinkSignedCopy(1,*bellowLA,2);
+  //  setLinkSignedCopy(2,*bellowLA,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

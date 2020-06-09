@@ -122,7 +122,6 @@ setIonPump1Port(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.setMat("Stainless304L"); // mat checked
-  SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
 
   Control.addVariable(name+"NPorts",1);
@@ -468,8 +467,8 @@ linac2SPFsegment3(FuncDataBase& Control,
 
   FPGen.generateFlat(Control,lKey+"FlatB",83.8);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
-  DIBGen.generate(Control,lKey+"DipoleB");
 
+  DIBGen.generate(Control,lKey+"DipoleB");
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.6);
@@ -867,10 +866,12 @@ linac2SPFsegment12(FuncDataBase& Control,
   
   const Geometry::Vec3D startPt(-547.597,3697.597,0.0);
   const Geometry::Vec3D endPt(-593.379,3968.258,0.0);  // to segment 13
+  const Geometry::Vec3D exitPt(-609.286,3969.122,0.0);  // to segment 30
 
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"SndEndOffset",exitPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
   PGen.setCF<setVariable::CF40_22>();
@@ -887,33 +888,37 @@ linac2SPFsegment12(FuncDataBase& Control,
   //  BDGen.setMainSize(60.0,3.2);
   BDGen.setAFlangeCF<setVariable::CF50>();
   BDGen.setBFlangeCF<setVariable::CF40>();
-  // -1: left side aligned
+  BDGen.setEFlangeCF<setVariable::CF40>();
+  //Angle(1.6) / short on left /  -1: left side aligned
   BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,-1);  
 
-  
   BellowGen.generateBellow(Control,lKey+"BellowLA",0.0,7.50);
 
   // small ion pump port:
   // -----------------------
   // horizontal off 
-  const Geometry::Vec3D OPos(0.0,0.0,0.0);
+  const Geometry::Vec3D OPos(0.0,2.2,0.0);
   const Geometry::Vec3D XVec(1,0,0);
   const double outerR =
     setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
-  SimpleTubeGen.generateBlank(Control,"IonPumpLA",0.0,12.0);
-  Control.addVariable("IonPumpLANPorts",2);
-  Control.addVariable("IonPumpLAFlangeCapThick",
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<setVariable::CF63>();
+
+  SimpleTubeGen.generateBlank(Control,lKey+"IonPumpLA",0.0,12.5);
+  Control.addVariable(lKey+"IonPumpLANPorts",2);
+  Control.addVariable(lKey+"IonPumpLAFlangeCapThick",
 		      setVariable::CF63::flangeLength);
+
   PItemGen.setCF<setVariable::CF40>(L0); // Port0 length
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,"IonPumpLAPort0",OPos,-XVec);
+  PItemGen.generatePort(Control,lKey+"IonPumpLAPort0",OPos,-XVec);
 
   PItemGen.setLength(L1);
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,"IonPumpLAPort1",OPos,XVec);
+  PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
 
   // -----------
   PGen.generatePipe(Control,lKey+"PipeLA",0.0,84.0);
@@ -924,6 +929,7 @@ linac2SPFsegment12(FuncDataBase& Control,
   FPGen.generateFlat(Control,lKey+"FlatB",88.0);
   Control.addVariable(lKey+"FlatBXYAngle",-1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
+  //  Control.addVariable(lKey+"DipoleBYAngle",180.0);
   
   BellowGen.generateBellow(Control,lKey+"BellowRB",0.0,7.50);
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
@@ -1442,8 +1448,8 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("tdcFrontXStep",-419.0+linacVar::zeroX);
   Control.addVariable("tdcFrontYStep",3152.0+linacVar::zeroY);
-  Control.addVariable("tdcFrontOuterLeft",100.0);
-  Control.addVariable("tdcFrontOuterRight",100.0);
+  Control.addVariable("tdcFrontOuterLeft",50.0);
+  Control.addVariable("tdcFrontOuterRight",50.0);
   Control.addVariable("tdcFrontOuterTop",100.0);
   Control.addVariable("tdcFrontXYAngle",12.0);
 

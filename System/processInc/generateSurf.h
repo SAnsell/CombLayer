@@ -38,8 +38,15 @@ buildSignedShiftedPlane(surfRegister&,const int,const int,
 			const double);
 Geometry::Plane*
 buildShiftedPlane(surfRegister&,const int,
+		  const int,const double);
+Geometry::Plane*
+buildShiftedPlane(surfRegister&,const int,
 		  const Geometry::Plane*,
 		  const double);
+Geometry::Plane*
+buildShiftedPlaneReversed(surfRegister&,const int,
+			  const int,const double);
+
 Geometry::Plane*
 buildShiftedPlaneReversed(surfRegister&,const int,
 			  const Geometry::Plane*,

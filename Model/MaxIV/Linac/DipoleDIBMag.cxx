@@ -38,7 +38,9 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Surface.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -157,7 +159,7 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("DipoleDIBMag","populate");
 
   FixedRotate::populate(Control);
-
+  ELog::EM<<"Angle["<<keyName<<"] == "<<yAngle<<ELog::endDiag;
   magOffset=Control.EvalVar<double>(keyName+"MagOffset");
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");
@@ -213,15 +215,11 @@ DipoleDIBMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(frameHeight/2.0),Z);
 
   // magnets
-  ModelSupport::buildPlane(SMap,buildIndex+1003,
-			   Origin-X*(magWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,
-			   Origin+X*(magWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(magWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(magWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+1013,
-			   Origin-X*(magInnerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1014,
-			   Origin+X*(magInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1013,Origin-X*(magInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1014,Origin+X*(magInnerWidth/2.0),X);
 
   const Geometry::Vec3D LOrg(Origin-Z*(magOffset/2.0)); // lower tier
   ModelSupport::buildPlane(SMap,buildIndex+1005,LOrg-Z*magHeight,Z);
@@ -248,24 +246,16 @@ DipoleDIBMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(magLength/2.0-Rout),Y);
 
   // gaps between frame and magnets
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+23,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1003),
-				  -hGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+24,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1004),
-				  hGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+25,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1005),
-				  -vGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+26,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+2006),
-				  vGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1013),
-				  hGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+1014),
-				  -hGap);
+
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(magWidth/2.0+hGap),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(magWidth/2.0+hGap),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+25,LOrg-Z*(magHeight+vGap),Z);
+
+  //  ModelSupport::buildPlane(SMap,buildIndex+26,TOrg+Z*(magHeight+vGap),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+26,buildIndex+2006,vGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+1013,vGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+1014,vGap);
 
   return;
 }

@@ -76,7 +76,7 @@ class L2SPFsegment12 :
   // bellow on left exit
   std::shared_ptr<constructSystem::Bellows> bellowLA;
 
-  /// Ionpump
+  /// Ion pump
   std::shared_ptr<constructSystem::BlankTube> ionPumpLA;
   
   /// first pipe
