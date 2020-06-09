@@ -134,6 +134,8 @@ L2SPFsegment9::L2SPFsegment9(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(QuadA);
   OR.addObject(bellowC);
+
+  setFirstItem(ceramicBellowA);
 }
   
 L2SPFsegment9::~L2SPFsegment9()
@@ -227,6 +229,7 @@ L2SPFsegment9::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  ceramicBellowA->setCutSurf("front",FC,sideIndex);
   buildObjects(System);
   createLinks();
   

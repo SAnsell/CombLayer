@@ -57,7 +57,8 @@ class VirtualTube :
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect for new-origin
   Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
-
+  double postYRotation;       ///< Post Y rotation if Y aligned to port.
+  
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
@@ -93,7 +94,8 @@ class VirtualTube :
   int splitVoidPorts(Simulation&,const std::string&,const int,
 		     const int,const std::vector<size_t>&);
 
-  void setPortRotation(const size_t,const Geometry::Vec3D&);
+  void setPortRotation(const size_t,const Geometry::Vec3D&,
+		       const double =0.0);
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;

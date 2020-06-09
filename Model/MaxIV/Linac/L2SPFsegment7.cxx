@@ -119,6 +119,8 @@ L2SPFsegment7::L2SPFsegment7(const std::string& Key) :
   OR.addObject(bpm);
   OR.addObject(pipeB);
   OR.addObject(cMagVertA);
+
+  setFirstItem(pipeA);  
 }
   
 L2SPFsegment7::~L2SPFsegment7()

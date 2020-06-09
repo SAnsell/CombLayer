@@ -31,7 +31,7 @@ namespace tdcSystem
   \class YagUnit
   \version 1.0
   \author S. Ansell
-  \date January 2019
+  \date May 2020
 
   \brief YagUnit for Max-IV
 */

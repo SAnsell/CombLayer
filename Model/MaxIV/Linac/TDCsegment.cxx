@@ -66,7 +66,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(nullptr),
-  lastFlag(0)
+  lastFlag(0),firstItemPtr(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -79,6 +79,32 @@ TDCsegment::~TDCsegment()
     Destructor
    */
 {}
+
+void
+TDCsegment::setFirstItem
+  (const std::shared_ptr<attachSystem::FixedComp>& FCptr)
+  /*!
+    Allocate the first pointer
+    \param FCptr :: FixedComp Point to pass
+   */
+{
+  firstItemPtr=dynamic_cast<attachSystem::ExternalCut*>(FCptr.get());
+  return;
+}
+
+void
+TDCsegment::setFrontSurf(const HeadRule& HR)
+  /*!
+    Set the front surface if need to join
+    \param HR :: Front head rule
+  */
+{
+  
+  if (firstItemPtr)
+    firstItemPtr->setCutSurf("front",HR);
+  return;
+}
+
 
 bool
 TDCsegment::totalPathCheck(const FuncDataBase& Control,

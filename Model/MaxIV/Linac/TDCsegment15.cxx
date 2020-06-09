@@ -41,6 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -158,12 +159,12 @@ TDCsegment15::buildObjects(Simulation& System)
 				   ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
-  yagScreen->addInsertCell(outerCell);
-  yagScreen->setScreenCentre(*ionPump,0);
+  yagScreen->addAllInsertCell(outerCell);
+  yagScreen->setBeamAxis(*ionPump,0);
 
   ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
-  yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
-  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerBack"));
+  //  yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
+  //  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerBack"));
 
   // Side can be changed with signs of XVec in the Port[12] variables
   // 2 can be set but YAGScreen::setPipeFront above must be changed to "InnerFront"

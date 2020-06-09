@@ -41,7 +41,10 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Line.h"
 #include "inputParam.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -155,13 +158,15 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item == "YAG" || item=="YagSceen")
+  if (item == "YAG" || item=="YagScreen")
     {
       std::shared_ptr<tdcSystem::YagScreen>
 	YAG(new tdcSystem::YagScreen("YAG"));
       OR.addObject(YAG);
 
-      YAG->addInsertCell(voidCell);
+      YAG->addAllInsertCell(voidCell);
+      YAG->setBeamAxis(Geometry::Vec3D(0,-10,0),
+		       Geometry::Vec3D(1,0,0));
       YAG->createAll(System,World::masterOrigin(),0);
 
       return;

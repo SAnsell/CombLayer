@@ -45,7 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
+#include "Line.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -88,6 +88,7 @@
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
+#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -108,6 +109,7 @@ L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
   SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
   QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   cMagHorC(new tdcSystem::CorrectorMag(keyName+"CMagHorC")),
@@ -128,6 +130,7 @@ L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
   OR.addObject(SexuA);
   OR.addObject(QuadB);
   OR.addObject(yagUnit);
+  OR.addObject(yagScreen);
   OR.addObject(bellowA);
   OR.addObject(pipeC);
   OR.addObject(cMagHorC);
@@ -173,8 +176,15 @@ L2SPFsegment4::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*yagUnit,"back",*bellowA);

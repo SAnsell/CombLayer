@@ -48,6 +48,10 @@ class TDCsegment :
 
   bool lastFlag;      ///< Front valid
   HeadRule lastRule;  ///< Surface for headrule
+
+  attachSystem::ExternalCut* firstItemPtr;
+
+  void setFirstItem(const std::shared_ptr<attachSystem::FixedComp>&);
   
  public:
   
@@ -56,7 +60,7 @@ class TDCsegment :
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
 
-
+  
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
   
   /// set the current inner zone [allows joining of segments]
@@ -66,6 +70,8 @@ class TDCsegment :
   void setNextZone(attachSystem::InnerZone* IZPtr)
     {  nextZone=IZPtr; }
 
+
+  
   void setLastSurf(const HeadRule&);
   /// clear front flag
   void clearLastSurf() { lastFlag=0; }
@@ -73,6 +79,8 @@ class TDCsegment :
   bool hasLastSurf() const { return lastFlag; }
   /// access rule
   const HeadRule& getLastSurf() const { return lastRule; }
+
+  void setFrontSurf(const HeadRule&);
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;

@@ -81,6 +81,9 @@ class L2SPFsegment4 :
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
 
+  /// yag screen
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+
   /// exit pipe for corrector mags
   std::shared_ptr<constructSystem::Bellows> bellowA;   
 

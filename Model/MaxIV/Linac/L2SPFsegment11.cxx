@@ -45,7 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
+#include "Line.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -87,7 +87,8 @@
 #include "LQuadF.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
-#include "CeramicSep.h"
+#include "YagUnit.h"
+#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -106,7 +107,8 @@ L2SPFsegment11::L2SPFsegment11(const std::string& Key) :
   bpm(new tdcSystem::BPM(keyName+"BPM")),  
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  pumpA(new constructSystem::PipeTube(keyName+"PumpA")),
+  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA"))
   /*!
@@ -121,9 +123,11 @@ L2SPFsegment11::L2SPFsegment11(const std::string& Key) :
   OR.addObject(bpm);
   OR.addObject(pipeA);
   OR.addObject(QuadA);
-  OR.addObject(pumpA);
+  OR.addObject(yagUnit);
   OR.addObject(pipeB);
   OR.addObject(cMagHorA);
+
+  setFirstItem(bellowA);
 }
   
 L2SPFsegment11::~L2SPFsegment11()
@@ -161,20 +165,18 @@ L2SPFsegment11::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+
   
-  // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*pipeA,"back");
-
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
-  pumpA->intersectPorts(System,2,1);
-  pumpA->intersectPorts(System,2,0);
-
-  pipeB->createAll(System,VPB,"OuterPlate");
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+    
+  pipeB->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);
   

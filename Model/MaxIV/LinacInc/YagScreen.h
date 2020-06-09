@@ -35,53 +35,76 @@ namespace tdcSystem
   \brief Yag screen
 */
 
-class YagScreen : public attachSystem::ContainedComp,
+class YagScreen :
+    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {
  private:
 
-  double jbLength;              ///< electronics junction box length
-  double jbWidth;               ///< electronics junction box width
-  double jbHeight;              ///< electronics junction box height
-  double jbWallThick;           ///< electronics junction box wall thickness
-  int    jbWallMat;             ///< electronics junction box wall material
-  int    jbMat;                 ///< electronics junction box cable/inside material
+  double juncBoxLength;         ///< electronics junction box length
+  double juncBoxWidth;          ///< electronics junction box width
+  double juncBoxHeight;         ///< electronics junction box height
+  double juncBoxWallThick;      ///< electronics junction box wall thickness
 
-  double ftLength;              ///< linear pneumatics feedthrough length
-  double ftInnerRadius;         ///< linear pneumatics feedthrough inner radius
-  double ftWallThick;           ///< linear pneumatics feedthrough wall thickness
-  double ftFlangeLen;           ///< linear pneumatics feedthrough flange length
-  double ftFlangeRadius;        ///< linear pneumatics feedthrough flange radius
-  int    ftWallMat;             ///< linear pneumatics feedthrough wall material
+
+  double feedLength;            ///< linear pneumatics feedthrough length
+  double feedInnerRadius;       ///< linear pneumatics feedthrough inner radius
+  double feedWallThick;         ///< linear pneumatics feedthrough wall thickness
+  double feedFlangeLen;         ///< linear pneumatics feedthrough flange length
+  double feedFlangeRadius;      ///< linear pneumatics feedthrough flange radius
 
   double threadLift;            ///< screen thread lift
-  double threadRad;             ///< screen thread inner radius
-  int    threadMat;             ///< screen thread material
+  double threadRadius;          ///< screen thread inner radius
+
+  // volume containing Yag screen + mirror
+
+  double holderWidth;           ///< Flat across holder
+  double holderDepth;           ///< In beamaxis
+  double holderShortLen;         ///< short length of trapizium
+  double holderLongLen;         ///< long length
+
+  double mirrorAngle;           ///< Flat (mirror) angle
   double mirrorRadius;          ///< quartz mirror radius
-  double mirrorAngle;           ///< quartz mirror inclination angle [deg]
   double mirrorThick;           ///< quartz mirror thickness
-  int    mirrorMat;             ///< mirror  material
 
-  double screenOffset;          ///< offset of the screen from the mirror
-  double screenRadius;          ///< screen radius
   double screenAngle;           ///< screen inclination angle [deg]
-  double screenHolderRadius;    ///< screen holder outer radius
+  double screenVOffset;         ///< screen vertical offset
+  double screenRadius;          ///< Radius of screen
+  double screenThick;           ///< Thickness of screen
 
-  double screenHolderThick;    ///< screen holder thickness
-  int    screenHolderMat;       ///< screen holder material
+  double screenHolderRadius;    ///< screen holder thickness
+  double screenHolderThick;     ///< screen holder thickness
 
-  bool screenCentreActive;      ///< flag to use screen centre
-  /// Norminal point to get screen centre from [over-writes holderLift]
-  Geometry::Vec3D screenCentre;
-  std::string pipeSide;         ///< side surface of the pipe where the screen and mirror are inserted
-  std::string pipeFront;        ///< front surface of this pipe
+  int voidMat;                  ///< void material
 
-  int    voidMat;               ///< void material
+  /// electronics junction box cable/inside material
+  int juncBoxMat;                
+  int juncBoxWallMat;        ///< electronics junction box wall material
+  int threadMat;             ///< screen thread material
+                            
+  int holderMat;            ///< screen holder material
+  int mirrorMat;            ///< mirror  material
+  int screenMat;            ///< screen  material
+  int screenHolderMat;      ///< screen holder  material
+  int feedWallMat;          ///< Feedthrough wall material  
 
-  bool   inBeam;                ///< screen and mirror are in the beam
+  // Geometry points for object / surface building :
+  
+  Geometry::Vec3D mirrorCentre;        ///< central axis with beam point
+  Geometry::Vec3D mirrorStart;         ///< Cut start point 
+  Geometry::Vec3D mirrorImpact;        ///< Mirror-beam impact point  
+  Geometry::Vec3D screenImpact;        ///< Screen-beam impact point
+  Geometry::Vec3D threadEnd;           ///< Thread end point
 
-  void calcThreadLength();
+
+  bool inBeam;                ///< screen and mirror are in the beam
+
+  /// Norminal line to get screen centre 
+  Geometry::Line beamAxis;
+
+  void calcImpactVector();
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -93,12 +116,10 @@ class YagScreen : public attachSystem::ContainedComp,
   YagScreen(const std::string&);
   YagScreen(const YagScreen&);
   YagScreen& operator=(const YagScreen&);
-  virtual YagScreen* clone() const;
   virtual ~YagScreen();
 
-  void setScreenCentre(const attachSystem::FixedComp&,const long int);
-  void setPipeSide(const attachSystem::FixedComp&, const long int);
-  void setPipeFront(const attachSystem::FixedComp&, const long int);
+  void setBeamAxis(const attachSystem::FixedComp&,const long int);
+  void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

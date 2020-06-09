@@ -78,6 +78,7 @@ class ContainedGroup
   virtual std::string getCompContainer(const std::string&) const;
 
   void clearRules();
+  void clearRule(const std::string&);
   /// Test if has rule
   bool hasOuterSurf(const std::string&) const;
   bool hasBoundary(const std::string&) const;

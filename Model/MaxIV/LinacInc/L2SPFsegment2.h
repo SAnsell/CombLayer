@@ -44,6 +44,7 @@ namespace tdcSystem
   class BPM;
   class EArrivalMon;
   class YagUnit;
+  class YagScreen;
   class LQuadF;
   
   /*!
@@ -100,6 +101,8 @@ class L2SPFsegment2 :
 
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
+  /// yag screen
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
   void buildObjects(Simulation&);
   void createLinks();
