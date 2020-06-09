@@ -235,12 +235,8 @@ L2SPFsegment12::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowA,2);
-  setLinkSignedCopy(2,*bellowA,2);
-
-
-  //  setLinkSignedCopy(1,*bellowLA,2);
-  //  setLinkSignedCopy(2,*bellowLA,2);
+  setLinkSignedCopy(1,*bellowLB,2);
+  setLinkSignedCopy(2,*bellowRB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
