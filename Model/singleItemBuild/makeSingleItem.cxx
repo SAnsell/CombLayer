@@ -91,6 +91,9 @@
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TWCavity.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+
 
 #include "makeSingleItem.h"
 
@@ -130,6 +133,7 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
+      "Bellow",
       "Help","help"
     });
 
@@ -480,6 +484,18 @@ makeSingleItem::build(Simulation& System,
 
       pipeB->addInsertCell(voidCell);
       pipeB->createAll(System,*cavity,"back");
+
+      return;
+    }
+
+  if (item=="Bellow")
+    {
+      std::shared_ptr<constructSystem::Bellows>
+	bellow(new constructSystem::Bellows("Bellow"));
+      OR.addObject(bellow);
+
+      bellow->addInsertCell(voidCell);
+      bellow->createAll(System,World::masterOrigin(),0);
 
       return;
     }

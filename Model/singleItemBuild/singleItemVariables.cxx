@@ -76,6 +76,8 @@
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "TWCavityGenerator.h"
+#include "SplitPipeGenerator.h"
+#include "BellowGenerator.h"
 
 namespace setVariable
 {
@@ -280,7 +282,11 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.generatePipe(Control,"PipeB",0.0,flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
   Control.addParse<double>("PipeBFeThick","PipeAFeThick");
-  //////////
+
+  // Bellow
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,"Bellow",0.0,7.5);
 
   return;
 }
