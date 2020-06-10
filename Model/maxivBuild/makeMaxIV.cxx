@@ -176,7 +176,7 @@ makeMaxIV::buildInjection(Simulation& System,
 	    "L2SPFsegment10", "L2SPFsegment11"  } },
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16",
 	       "TDCsegment17","TDCsegment18", "TDCsegment19",
-	       "TDCsegment20","TDCsegment21","TDCsegment22"} },
+	       "TDCsegment20","TDCsegment21","TDCsegment22","TDCsegment23"} },
        {"L2SPFsegment1",{} },                             // first only
        {"L2SPFsegment2",{} },                             // second only
        {"L2SPFsegment3",{} },                             // third only
@@ -196,7 +196,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDCsegment19",{} },                              // 19th only
        {"TDCsegment20",{} },                              // 20th only
        {"TDCsegment21",{} },                              // 21th only
-       {"TDCsegment22",{} }                               // 22th only
+       {"TDCsegment22",{} },                              // 22th only
+       {"TDCsegment23",{} }                               // 23th only
     });
 
   const int voidCell(74123);
