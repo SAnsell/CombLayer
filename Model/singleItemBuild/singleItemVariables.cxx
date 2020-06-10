@@ -233,6 +233,14 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,"QHVC",-40.0,80.0);
+  Control.addVariable("QHVCRadius",0.4);
+  LQGen.setRadius(0.56, 2.31);
+  LQGen.generateQuad(Control,"QH",20.0);
+  Control.addVariable("QHLength",18.7);
+  Control.addVariable("QHYokeOuter",9.5);
+  Control.addVariable("QHPolePitch",26.0);
 
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;

@@ -71,6 +71,7 @@
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuadF.h"
+#include "LQuadH.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
@@ -127,7 +128,7 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuadF","LSexupole",
+      "default","CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -274,6 +275,30 @@ makeSingleItem::build(Simulation& System,
 
       QF->addInsertCell(voidCell);
       QF->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="LQuadH")
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("QHVC"));
+      std::shared_ptr<tdcSystem::LQuadH>
+	QH(new tdcSystem::LQuadH("QH","QH"));
+
+      OR.addObject(VC);
+      OR.addObject(QH);
+
+      // QH->addInsertCell(voidCell);
+      // QH->createAll(System,World::masterOrigin(),0);
+
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      QH->setCutSurf("Inner",*VC,"outerPipe");
+      QH->addInsertCell(voidCell);
+      QH->createAll(System,World::masterOrigin(),0);
+
 
       return;
     }
