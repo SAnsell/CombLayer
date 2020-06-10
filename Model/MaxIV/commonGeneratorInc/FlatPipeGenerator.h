@@ -39,8 +39,11 @@ class FlatPipeGenerator
 {
  private:
 
-  double width;                  ///< void width [inner]
-  double height;                 ///< void height [inner]
+  double frontWidth;                 ///< void width [inner]
+  double frontHeight;                ///< void height [inner]
+  double backWidth;                  ///< void width [inner]
+  double backHeight;                 ///< void height [inner]
+  
   double length;                 ///< void length [total]
   
   double wallThick;              ///< pipe thickness

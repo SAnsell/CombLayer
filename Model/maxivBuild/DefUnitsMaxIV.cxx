@@ -177,7 +177,8 @@ setMaxIVLinac(defaultConfig& A,
      { "TDCsegment17", "World 0"},
      { "TDCsegment18", "World 0"},
      { "TDCsegment19", "World 0"},
-     { "TDCsegment20", "World 0"}
+     { "TDCsegment20", "World 0"},
+     { "TDCsegment25", "World 0"}
     };
 
   size_t unitIndex(0);

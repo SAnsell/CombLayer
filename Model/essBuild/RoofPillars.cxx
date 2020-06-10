@@ -448,28 +448,28 @@ RoofPillars::createSurfaces()
               // top plate
               // Full height
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+6,
-				      PPtr,topFootHeight-topFootThick);
+				      SNum,topFootHeight-topFootThick);
               topFootPlate.addIntersection(SMap.realSurf(footIndex+6));
               // Full height
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+16,
-				      PPtr,topFootHeight);	      
+				      SNum,topFootHeight);	      
               topFoot.addIntersection(SMap.realSurf(footIndex+16));
               // Beam inner meta; 
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+26,
-				      PPtr,beamWallThick);	      
+				      SNum,beamWallThick);	      
               baseBeam.addIntersection(SMap.realSurf(footIndex+26));
 	      // Beam Top inner metal [down -wallThick]
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+36,
-				      PPtr,topFootHeight-beamRoofThick); 
+				      SNum,topFootHeight-beamRoofThick); 
               topBeam.addIntersection(SMap.realSurf(footIndex+36));
 
               // Beam inner meta; 
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+46,
-				      PPtr,longWallThick);	      
+				      SNum,longWallThick);	      
               baseLong.addIntersection(SMap.realSurf(footIndex+46));
 	      // Beam Top inner metal [down -wallThick]
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+56,
-				      PPtr,topFootHeight-longRoofThick); 
+				      SNum,topFootHeight-longRoofThick); 
               topLong.addIntersection(SMap.realSurf(footIndex+56));
 	      
 	      footIndex++;

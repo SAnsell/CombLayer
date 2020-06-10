@@ -93,14 +93,14 @@ buildRotatedPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
-			const int N,const Geometry::Plane* PN,
+			const int N,const int refPN,
 			const double Dist)
   /*!
     Divider based on signed value 
     \param SMap :: Surface Map system
     \param signedValue :: Deciding value
     \param N :: Initial Number
-    \param PN :: Plane to use as template
+    \param refPN :: Plane to use as template 
     \param Dist :: Distance along normal to move plane
     \return New plane ptr [inserted/tested]
    */
@@ -108,8 +108,8 @@ buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
   ELog::RegMethod("generateSurf","buildSignedShiftedPlane");
   
   return (signValue>=0) ?
-    buildShiftedPlane(SMap,N,PN,Dist) :
-    buildShiftedPlaneReversed(SMap,N,PN,Dist);  
+    buildShiftedPlane(SMap,N,refPN,Dist) :
+    buildShiftedPlaneReversed(SMap,N,refPN,Dist);  
 }
 
 Geometry::Plane*
@@ -363,7 +363,7 @@ buildCone(surfRegister& SMap,const int N,
     \param SMap :: Surface Map
     \param N :: Surface number
     \param circleCent :: Centre of circle
-    \param radius :: Radius of circle
+    \param radius :: Radius of circle [normal to axis]
     \param A :: Axis [FORWARD going]
     \param angleDeg :: angle of cone [deg]
     \return New cone
@@ -578,9 +578,9 @@ buildShiftedSurf(surfRegister& SMap,
   if (PPtr)
     {
       if (SN*dFlag>0)
-	buildShiftedPlane(SMap,index,PPtr,dFlag*length);
+	buildShiftedPlane(SMap,index,SN,dFlag*length);
       else
-	buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
+	buildShiftedPlaneReversed(SMap,index,SN,dFlag*length);
       return SMap.realSurfPtr(index);
     }
   
@@ -629,7 +629,7 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
     {
       int sideFlag=PPtr->side(expandCentre);
       if (sideFlag==0) sideFlag=1;
-      buildShiftedPlane(SMap,index,PPtr, -sideFlag*dExtra);
+      buildShiftedPlane(SMap,index,SN, -sideFlag*dExtra);
       return SMap.realSurfPtr(index);
     }
   

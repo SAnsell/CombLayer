@@ -99,6 +99,7 @@ namespace linacVar
   void TDCsegment19(FuncDataBase&,const std::string&);
   void TDCsegment20(FuncDataBase&,const std::string&);
 
+  void TDCsegment25(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -1365,6 +1366,53 @@ TDCsegment20(FuncDataBase& Control,
   return;
 }
 
+void
+TDCsegment25(FuncDataBase& Control,
+	    const std::string& lKey)
+  /*!
+    Set the variables for segment 25
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment25");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+
+  const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
+  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
+  const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
+			       
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndAOffset",endAPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndBOffset",endBPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndCOffset",endCPt+linacVar::zeroOffset);
+
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  FPGen.generateFlat(Control,lKey+"FlatA",82.0);
+  Control.addVariable(lKey+"FlatAXYAngle",1.6);
+  DIBGen.generate(Control,lKey+"DipoleA");
+
+  BDGen.generateDivider(Control,lKey+"BeamA",1.6);
+
+  FPGen.generateFlat(Control,lKey+"FlatB",82.0);
+  Control.addVariable(lKey+"FlatBXYAngle",1.6);
+  DIBGen.generate(Control,lKey+"DipoleB");
+
+  // again not larger size
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+  Control.addVariable(lKey+"BellowAXYAngle",1.6);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -1431,6 +1479,8 @@ wallVariables(FuncDataBase& Control,
 
   return;
 }
+
+
 
 }  // NAMESPACE linacVAR
 

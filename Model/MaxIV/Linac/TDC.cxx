@@ -118,7 +118,8 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
     { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
-    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") }
+    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
+    { "TDCSegment25",std::make_shared<TDCSegment25>("TDC25") }
   } )
   /*!
     Constructor
@@ -263,7 +264,8 @@ TDC::createAll(Simulation& System,
       "L2SPFsegment13",
       "TDCsegment14","TDCsegment15","TDCsegment16",
       "TDCsegment17","TDCsegment18","TDCsegment19",
-      "TDCsegment20","TDCsegment21","TDCsegment22"
+      "TDCsegment20","TDCsegment21","TDCsegment22",
+      "TDCsegment25"
     });
   
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -288,7 +290,8 @@ TDC::createAll(Simulation& System,
       {"TDCsegment17",{"tdc","TDCsegment16"}},
       {"TDCsegment18",{"tdc","TDCsegment17"}},
       {"TDCsegment19",{"tdc","TDCsegment18"}},
-      {"TDCsegment20",{"tdc","TDCsegment19"}}
+      {"TDCsegment20",{"tdc","TDCsegment19"}},
+      {"TDCsegment25",{"tdc","TDCsegment24"}}
     });
   const int voidCell(74123);
 

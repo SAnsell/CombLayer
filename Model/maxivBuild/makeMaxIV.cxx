@@ -199,7 +199,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDCsegment17",{} },                              // 17th only
        {"TDCsegment18",{} },                              // 18th only
        {"TDCsegment19",{} },                              // 19th only
-       {"TDCsegment20",{} }                               // 20th only
+       {"TDCsegment20",{} },                               // 20th only
+       {"TDCsegment25",{} }                               // 20th only
     });
 
   const int voidCell(74123);
