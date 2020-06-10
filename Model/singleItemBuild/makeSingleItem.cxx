@@ -133,7 +133,7 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow",
+      "Bellow", "VacuumPipe",
       "Help","help"
     });
 
@@ -499,6 +499,20 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+    if (item == "VacuumPipe" )
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VC"));
+
+      OR.addObject(VC);
+
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
 
   if (item=="Help" || item=="help")
     {
