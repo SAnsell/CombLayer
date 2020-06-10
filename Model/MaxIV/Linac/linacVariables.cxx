@@ -1297,7 +1297,6 @@ TDCsegment21(FuncDataBase& Control,
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  YagUnitGen.setCF<CF40_22>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
   Control.addVariable(lKey+"YagUnitPortRadius",1.7); // measured
