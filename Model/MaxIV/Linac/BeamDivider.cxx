@@ -331,7 +331,6 @@ BeamDivider::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
   FixedComp::setLineConnect(2,exitOrg,RAxis);
 
-  ELog::EM<<"Exit = "<<getLinkPt(3)<<ELog::endDiag;
   FixedComp::nameSideIndex(2,"exit");
   return;
 }

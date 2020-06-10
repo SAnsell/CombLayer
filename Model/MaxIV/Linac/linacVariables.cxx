@@ -309,7 +309,7 @@ linac2SPFsegment1(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
   //  corrector mag and pie
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,55.73);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,55.90);
   CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
 
@@ -386,7 +386,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   // note larger unit
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,114.0);
 
@@ -403,11 +403,11 @@ linac2SPFsegment2(FuncDataBase& Control,
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
 
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeE",0.0,132.4);
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,133.34);
 
   LQGen.generateQuad(Control,lKey+"QuadC",23.54);
   LQGen.generateQuad(Control,lKey+"QuadD",73.0);
@@ -451,7 +451,7 @@ linac2SPFsegment3(FuncDataBase& Control,
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.6);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.3);
 
   FPGen.generateFlat(Control,lKey+"FlatA",83.0);
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
@@ -465,7 +465,7 @@ linac2SPFsegment3(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
 
-  FPGen.generateFlat(Control,lKey+"FlatB",83.8);
+  FPGen.generateFlat(Control,lKey+"FlatB",84.2);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
 
   DIBGen.generate(Control,lKey+"DipoleB");
@@ -511,7 +511,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,80.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,80.1); // measured
 
   LQGen.generateQuad(Control,lKey+"QuadA",17.2);
   LSGen.generateSexu(Control,lKey+"SexuA",39.1);
@@ -524,7 +524,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,70.0); // measured
 
@@ -569,7 +569,7 @@ linac2SPFsegment5(FuncDataBase& Control,
 
   // again not larger size
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.58);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
   Control.addVariable(lKey+"BellowAXYAngle",1.6);
 
   return;
@@ -587,10 +587,10 @@ linac2SPFsegment6(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","linac2SPFsegment6");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::EBeamStopGenerator EBGen;
   setVariable::ScrapperGenerator SCGen;
-
+  setVariable::CeramicSepGenerator CSGen;
+  
   const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
   const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
@@ -602,7 +602,7 @@ linac2SPFsegment6(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeA",0.0,61.75);
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,20.5);
 
   PGen.setBFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeC",0.0,55.0);
@@ -613,13 +613,11 @@ linac2SPFsegment6(FuncDataBase& Control,
   PGen.setAFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeD",0.0,19.50);
 
-  // again longer.
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,14.0);
+  CSGen.generateCeramicSep(Control,lKey+"CeramicA");  
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,14.0);
+  CSGen.generateCeramicSep(Control,lKey+"CeramicB");  
 
 
   return;
@@ -691,7 +689,7 @@ linac2SPFsegment8(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,308.0);
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,308.5);
 
 
   return;
@@ -785,7 +783,7 @@ linac2SPFsegment10(FuncDataBase& Control,
   GateGen.generateValve(Control,lKey+"GateValve",0.0,0);
   setIonPump2Port(Control, lKey+"PumpA");  
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,153.00);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,152.00);
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);  
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,125.0);
@@ -838,7 +836,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,153.30);
   CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
   return;
 }
@@ -869,8 +867,8 @@ linac2SPFsegment12(FuncDataBase& Control,
 
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"SndEndOffset",exitPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",exitPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"SndEndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
   PGen.setCF<setVariable::CF40_22>();
@@ -889,7 +887,7 @@ linac2SPFsegment12(FuncDataBase& Control,
   BDGen.setBFlangeCF<setVariable::CF40>();
   BDGen.setEFlangeCF<setVariable::CF40>();
   //Angle(1.6) / short on left /  -1: left side aligned
-  BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,-1);  
+  BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,0);  
 
   BellowGen.generateBellow(Control,lKey+"BellowLA",0.0,7.50);
 
@@ -920,12 +918,12 @@ linac2SPFsegment12(FuncDataBase& Control,
   PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
 
   // -----------
-  PGen.generatePipe(Control,lKey+"PipeLA",0.0,90.0);
+  PGen.generatePipe(Control,lKey+"PipeLA",0.0,100.0);
   BellowGen.generateBellow(Control,lKey+"BellowLB",0.0,7.50);  
 
   // RIGHT SIDE
 
-  FPGen.generateFlat(Control,lKey+"FlatB",83.0);
+  FPGen.generateFlat(Control,lKey+"FlatB",90.0);
   Control.addVariable(lKey+"FlatBXYAngle",-1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
   

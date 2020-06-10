@@ -59,7 +59,7 @@ namespace setVariable
 
 template<>
 BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
-  boxLength(60.0),wallThick(0.2),
+  boxLength(55.0),wallThick(0.2),
   mainWidth(3.0),exitWidth(1.0),
   height(3.0),mainXStep(0.0),exitXStep(1.0),
   exitAngle(3.2),mainLength(32.5),
@@ -81,9 +81,9 @@ BeamDividerGenerator::BeamDividerGenerator(const CF40&) :
   boxLength(60.0),wallThick(0.2),
   mainWidth(1.0),exitWidth(1.0),
   height(3.0),mainXStep(0.0),exitXStep(0.0),
-  exitAngle(2.86),mainLength(95.0),
+  exitAngle(2.86),mainLength(35.5),
   mainRadius(CF40_22::innerRadius),mainThick(CF40_22::wallThick),
-  exitLength(14.5), exitRadius(CF40_22::innerRadius),
+  exitLength(14.0), exitRadius(CF40_22::innerRadius),
   exitThick(CF40_22::wallThick),
   flangeARadius(CF50::innerRadius),flangeALength(CF50::flangeLength),
   flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),

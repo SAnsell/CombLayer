@@ -225,11 +225,10 @@ L2SPFsegment9::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment9","build");
+  ELog::RegMethod RControl("L2SPFsegment9","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  ceramicBellowA->setCutSurf("front",FC,sideIndex);
   buildObjects(System);
   createLinks();
   

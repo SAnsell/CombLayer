@@ -143,16 +143,24 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
     {
       ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
       ELog::EM<<"Start Point  "<<startPoint<<"\n";
-      ELog::EM<<"End Point    "<<endPoint<<"\n\n";
+      ELog::EM<<"End Point    "<<endPoint<<"\n";
+      ELog::EM<<"length ==    "<<startPoint.Distance(endPoint)<<"\n";
+      const double cosA=(realEnd-realStart).unit().
+	      dotProd((startPoint-endPoint).unit());
+      double angleError=acos(cosA)*180.0/M_PI;
+      if (angleError>90.0) angleError-=180.0;
+      ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
 
-      ELog::EM<<"model Start    "<<realStart<<"\n";
-      ELog::EM<<"model End      "<<realEnd<<"\n";
+      ELog::EM<<"model Start     "<<realStart<<"\n";
+      ELog::EM<<"model End       "<<realEnd<<"\n";
+      ELog::EM<<"model length == "<<realEnd.Distance(realStart)<<"\n\n";
 
       ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
 
       ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
       retFlag=1;
     }
+  
   if (sndEndPoint.Distance(endPoint)>0.1)
     {
       const Geometry::Vec3D sndRealEnd=FixedComp::getLinkPt(3);
@@ -161,12 +169,21 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       const double D=wEnd.Distance(sndEndPoint);
       if (D>0.1)
 	{
+	  const double cosA=(sndRealEnd-realStart).unit().
+	    dotProd((startPoint-sndEndPoint).unit());
+	  double angleError=acos(cosA)*180.0/M_PI;
+	  if (angleError>90.0) angleError-=180.0;
+	  
+	  
 	  ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
 	  ELog::EM<<"Start Point          "<<startPoint<<"\n";
-	  ELog::EM<<"Second  End Point    "<<sndEndPoint<<"\n\n";
-	  
+	  ELog::EM<<"Second  End Point    "<<sndEndPoint<<"\n";
+	  ELog::EM<<"length ==    "<<startPoint.Distance(sndEndPoint)<<"\n";
+	  ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
+	    
 	  ELog::EM<<"model Start    "<<realStart<<"\n";
 	  ELog::EM<<"model End      "<<sndRealEnd<<"\n";
+	  ELog::EM<<"model length == "<<sndRealEnd.Distance(realStart)<<"\n\n";
 	  
 	  ELog::EM<<"expected End   "<<wEnd<<"\n\n";
 	  

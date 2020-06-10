@@ -159,7 +159,7 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("DipoleDIBMag","populate");
 
   FixedRotate::populate(Control);
-  ELog::EM<<"Angle["<<keyName<<"] == "<<yAngle<<ELog::endDiag;
+
   magOffset=Control.EvalVar<double>(keyName+"MagOffset");
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");

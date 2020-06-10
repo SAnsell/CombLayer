@@ -81,6 +81,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "CeramicSep.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
 
@@ -102,9 +103,9 @@ L2SPFsegment6::L2SPFsegment6(const std::string& Key) :
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   scrapper(new tdcSystem::Scrapper(keyName+"Scrapper")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  ceramicA(new tdcSystem::CeramicSep(keyName+"CeramicA")),
   beamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
+  ceramicB(new tdcSystem::CeramicSep(keyName+"CeramicB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -118,9 +119,9 @@ L2SPFsegment6::L2SPFsegment6(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(scrapper);
   OR.addObject(pipeD);
-  OR.addObject(bellowA);
+  OR.addObject(ceramicA);
   OR.addObject(beamStop);
-  OR.addObject(bellowB);
+  OR.addObject(ceramicB);
 
   setFirstItem(pipeA);
 }
@@ -163,11 +164,11 @@ L2SPFsegment6::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*scrapper,"back",*pipeD);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*bellowA);
+    (System,*buildZone,masterCell,*pipeD,"back",*ceramicA);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*beamStop);
+    (System,*buildZone,masterCell,*ceramicA,"back",*beamStop);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamStop,"back",*bellowB);
+    (System,*buildZone,masterCell,*beamStop,"back",*ceramicB);
 
   
   buildZone->removeLastMaster(System);  
@@ -181,7 +182,7 @@ L2SPFsegment6::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*bellowB,2);
+  setLinkSignedCopy(1,*ceramicB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
@@ -199,7 +200,7 @@ L2SPFsegment6::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment6","build");
+  ELog::RegMethod RControl("L2SPFsegment6","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
