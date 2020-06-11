@@ -213,7 +213,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid",""}}
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
