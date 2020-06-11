@@ -61,7 +61,6 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
-
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "BPM.h"
@@ -72,11 +71,10 @@
 #include "CorrectorMag.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-
 #include "ContainedGroup.h"
-
+#include "portItem.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
+#include "BlankTube.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment24.h"
@@ -89,7 +87,7 @@ namespace tdcSystem
 TDCsegment24::TDCsegment24(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
@@ -145,13 +143,19 @@ TDCsegment24::buildObjects(Simulation& System)
 
   // Ion pump
   ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setFront(*pipeA,2);
-  ionPump->createAll(System,*pipeA,2);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ionPump,2);
+  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
+  ionPump->createAll(System,*pipeA,"back");
+
+  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
+  outerCell=
+    buildZone->createOuterVoidUnit(System,
+  				   masterCell,
+  				   ionPumpBackPort,
+  				   ionPumpBackPort.getSideIndex("OuterPlate"));
   ionPump->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*ionPump,"back",*bellow);
+    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*bellow);
 
   pipeB->createAll(System,*bellow, "back");
 

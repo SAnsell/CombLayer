@@ -152,7 +152,7 @@ setIonPump2Port(FuncDataBase& Control,
   const Geometry::Vec3D OPos(0.0,0.0,0.0);
   const Geometry::Vec3D XVec(1,0,0);
 
-  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setMat("Stainless304L");
   SimpleTubeGen.setCF<setVariable::CF63>();
   PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
   PItemGen.setNoPlate();
@@ -160,6 +160,8 @@ setIonPump2Port(FuncDataBase& Control,
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
   Control.addVariable(name+"NPorts",2);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+
 
   // Outer radius of the vertical pipe
   const double outerR =
@@ -170,13 +172,10 @@ setIonPump2Port(FuncDataBase& Control,
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
-
   PItemGen.setLength(L0);
-  PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
   PItemGen.setLength(L1);
-  PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
   PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
 
@@ -1459,13 +1458,14 @@ TDCsegment24(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeA",0.0,325.8); // measured
 
-  setIonPump1Port(Control,lKey+"IonPump");
-  Control.addVariable(lKey+"IonPumpLength",16.0); // measured
+  setIonPump2Port(Control,lKey+"IonPump");
+  Control.addVariable(lKey+"IonPumpYAngle",90.0);
+  Control.addVariable(lKey+"IonPumpPort0Length",5.0); // measured
+  Control.addVariable(lKey+"IonPumpPort1Length",3.8); // measured
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
@@ -1476,8 +1476,8 @@ TDCsegment24(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
 
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
