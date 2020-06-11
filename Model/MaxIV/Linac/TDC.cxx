@@ -87,6 +87,7 @@
 #include "TDCsegment20.h"
 #include "TDCsegment21.h"
 #include "TDCsegment23.h"
+#include "TDCsegment24.h"
 
 #include "TDC.h"
 
@@ -119,7 +120,8 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
     { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") },
     { "TDCsegment22",std::make_shared<TDCsegment20>("TDC22") },
-    { "TDCsegment23",std::make_shared<TDCsegment23>("TDC23") }
+    { "TDCsegment23",std::make_shared<TDCsegment23>("TDC23") },
+    { "TDCsegment24",std::make_shared<TDCsegment24>("TDC24") }
   } )
   /*!
     Constructor
@@ -265,7 +267,7 @@ TDC::createAll(Simulation& System,
       "TDCsegment14","TDCsegment15","TDCsegment16",
       "TDCsegment17","TDCsegment18","TDCsegment19",
       "TDCsegment20","TDCsegment21","TDCsegment22",
-      "TDCsegment23"
+      "TDCsegment23","TDCsegment24"
     });
 
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -291,7 +293,8 @@ TDC::createAll(Simulation& System,
       {"TDCsegment20",{"tdc","TDCsegment19"}},
       {"TDCsegment21",{"tdc","TDCsegment20"}},
       {"TDCsegment22",{"tdc","TDCsegment21"}},
-      {"TDCsegment23",{"tdc","TDCsegment22"}}
+      {"TDCsegment23",{"tdc","TDCsegment22"}},
+      {"TDCsegment24",{"tdc","TDCsegment23"}}
     });
   const int voidCell(74123);
 

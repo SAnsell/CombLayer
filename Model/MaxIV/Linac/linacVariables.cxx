@@ -99,6 +99,7 @@ namespace linacVar
   void TDCsegment21(FuncDataBase&,const std::string&);
   void TDCsegment22(FuncDataBase&,const std::string&);
   void TDCsegment23(FuncDataBase&,const std::string&);
+  void TDCsegment24(FuncDataBase&,const std::string&);
 
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -1432,6 +1433,99 @@ TDCsegment23(FuncDataBase& Control,
   return;
 }
 
+void
+TDCsegment24(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment24");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::BPMGenerator BPMGen;
+
+  setVariable::PipeGenerator PGen;
+  PGen.setNoWindow();
+
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagGen;
+  setVariable::CylGateValveGenerator CGateGen;
+
+  const Geometry::Vec3D startPt(-637.608, 6808.791, 0.0);
+  const Geometry::Vec3D endPt(-637.608, 6960.961, 0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",0.0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+
+  const double pipeALength(34.0);
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
+  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
+
+  // QG (QH) type quadrupole magnet
+  LQGen.setRadius(0.56, 2.31);
+  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
+  // inner box half width/height
+  Control.addVariable(lKey+"QuadYokeOuter",9.5);
+  // adjusted so that nose is 1 cm thick as in the STEP file
+  Control.addVariable(lKey+"QuadPolePitch",26.0);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  Control.addVariable(lKey+"BPMRadius", 1.3);
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+
+  const double pipeBLength(40.0); // OK
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
+
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
+  Control.addVariable(lKey+"YagUnitPortRadius",1.7);
+  Control.addVariable(lKey+"YagUnitPortThick",0.2);
+  Control.addVariable(lKey+"YagUnitFrontLength",13.0);
+  Control.addVariable(lKey+"YagUnitBackLength",7.0);
+  Control.addVariable(lKey+"YagUnitDepth",13.0);
+  Control.addVariable(lKey+"YagUnitHeight",5.9);
+  Control.addVariable(lKey+"YagUnitViewZStep",-3.2); // guess
+  Control.addVariable(lKey+"YagUnitYAngle",90);
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,6.5);
+
+  // gate length is 7.2
+  CGateGen.generateGate(Control,lKey+"Gate",0);
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -1570,6 +1664,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment21(Control,"TDC21");
   linacVar::TDCsegment22(Control,"TDC22");
   linacVar::TDCsegment23(Control,"TDC23");
+  linacVar::TDCsegment24(Control,"TDC24");
 
   return;
 }
