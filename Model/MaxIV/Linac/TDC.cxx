@@ -353,10 +353,6 @@ TDC::createAll(Simulation& System,
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 
-	  // special case for join of wall
-	  //      if (BL=="L2SPFsegment10")
-	  //	processWallJoin();
-
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	}
     }

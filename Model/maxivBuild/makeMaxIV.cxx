@@ -179,7 +179,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	} },
        {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16",
 	       "TDCsegment17","TDCsegment18", "TDCsegment19",
-	       "TDCsegment20","TDCsegment21","TDCsegment22","TDCsegment23","TDCsegment24"} },
+	       "TDCsegment20","TDCsegment21","TDCsegment22",
+	       "TDCsegment23","TDCsegment24"} },
        {"L2SPFsegment1",{} },                             // first only
        {"L2SPFsegment2",{} },                             // second only
        {"L2SPFsegment3",{} },                             // third only

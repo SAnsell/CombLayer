@@ -497,7 +497,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagScreenGenerator YagScreenGen;
 
 
   const Geometry::Vec3D startPt(-15.322,1155.107,0);
