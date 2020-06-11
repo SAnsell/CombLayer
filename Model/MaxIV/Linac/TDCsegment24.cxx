@@ -36,6 +36,8 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -43,6 +45,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -67,19 +70,13 @@
 #include "LQuadH.h"
 #include "LObjectSupport.h"
 #include "CorrectorMag.h"
-#include "YagUnit.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Line.h"
 #include "ContainedGroup.h"
-#include "YagScreen.h"
 
-#include "CylGateValve.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment24.h"
@@ -91,19 +88,15 @@ namespace tdcSystem
 
 TDCsegment24::TDCsegment24(const std::string& Key) :
   TDCsegment(Key,2),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  quad(new tdcSystem::LQuadH(keyName+"Quad")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  gate(new xraySystem::CylGateValve(keyName+"Gate")),
-  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
+  quad(new tdcSystem::LQuadH(keyName+"Quad"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -112,21 +105,17 @@ TDCsegment24::TDCsegment24(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
   OR.addObject(pipeA);
-  OR.addObject(quad);
-  OR.addObject(bpm);
-  OR.addObject(bellowB);
+  OR.addObject(ionPump);
+  OR.addObject(bellow);
   OR.addObject(pipeB);
   OR.addObject(cMagH);
   OR.addObject(cMagV);
-  OR.addObject(yagScreen);
-  OR.addObject(yagUnit);
+  OR.addObject(bpm);
   OR.addObject(pipeC);
-  OR.addObject(gate);
-  OR.addObject(bellowC);
+  OR.addObject(quad);
 
-  setFirstItem(bellowA);
+  setFirstItem(pipeA);
 }
 
 TDCsegment24::~TDCsegment24()
@@ -148,46 +137,34 @@ TDCsegment24::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  bellowA->createAll(System,*this,0);
+  pipeA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
 
-  pipeA->createAll(System,*bellowA, "back");
-
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeA);
+  // Ion pump
+  ionPump->addAllInsertCell(masterCell->getName());
+  ionPump->setFront(*pipeA,2);
+  ionPump->createAll(System,*pipeA,2);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ionPump,2);
+  ionPump->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+    (System,*buildZone,masterCell,*ionPump,"back",*bellow);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*bellowB);
-
-  pipeB->createAll(System,*bellowB, "back");
+  pipeB->createAll(System,*bellow, "back");
 
   correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
   pipeTerminate(System,*buildZone,pipeB);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
-
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,-3);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*pipeC);
+    (System,*buildZone,masterCell,*pipeB,"back",*bpm);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*gate);
+  pipeC->createAll(System,*bpm, "back");
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*bellowC);
+  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",quad);
+  pipeTerminate(System,*buildZone,pipeC);
 
   buildZone->removeLastMaster(System);
 
@@ -202,8 +179,8 @@ TDCsegment24::createLinks()
 {
   ELog::RegMethod RegA("TDCsegment24","createLinks");
 
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowC,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*pipeC,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
   return;

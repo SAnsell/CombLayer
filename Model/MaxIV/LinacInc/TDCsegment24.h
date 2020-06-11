@@ -29,7 +29,7 @@ namespace tdcSystem
     \version 1.0
     \author K. Batkov
     \date June 2020
-    \brief TDC segment 23
+    \brief TDC segment 43
   */
 
 class TDCsegment24 :
@@ -37,19 +37,15 @@ class TDCsegment24 :
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #2 VC Ø10x1- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #3 Quadrupole type G (H)
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM - 304L
-  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 Horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 Vertical corrector magnet
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< #7 Yag screen - 304L
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #8 Yag screen unit (ionPump)
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<xraySystem::CylGateValve> gate;     ///< #10 Gate valve 48132 CE44
-  std::shared_ptr<constructSystem::Bellows> bellowC;       ///< #1 Bellows 304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #1 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::PipeTube> ionPump;     ///< #3 Ion Pump 75l cf63
+  std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;         ///< #6 Horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;         ///< #6 Vertical corrector magnet
+  std::shared_ptr<tdcSystem::BPM> bpm;                    ///< #7 BPM - 304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;     ///< #8 VC Ø10x1- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::LQuadH> quad;                ///< #9 type G
 
   void buildObjects(Simulation&);
   void createLinks();
