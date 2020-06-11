@@ -421,7 +421,7 @@ linac2SPFsegment2(FuncDataBase& Control,
 
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
 
@@ -500,7 +500,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::YagScreenGenerator YagGen;
 
 
   const Geometry::Vec3D startPt(-15.322,1155.107,0);
@@ -526,7 +526,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   YagUnitGen.setCF<CF40_22>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -841,7 +841,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   setIonPump3OffsetPort(Control,lKey+"PumpA");
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,153.50);
@@ -961,7 +961,7 @@ TDCsegment15(FuncDataBase& Control,
   Control.addVariable(pumpName+"Port1Length",9.5);
   Control.addVariable(pumpName+"Port2Length",3.2);
 
-  YagGen.generateScreen(Control,lKey+"YAG",1);   // closed
+  YagGen.generateScreen(Control,lKey+"YAG",0);
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,167.0);
 
@@ -1303,7 +1303,7 @@ TDCsegment21(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitPortRadius",1.7); // measured
   Control.addVariable(lKey+"YagUnitPortThick",0.2);  // measured
 
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.setCF<setVariable::CF40_22>();
@@ -1413,7 +1413,7 @@ TDCsegment23(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitHeight",5.9); // measured
   Control.addVariable(lKey+"YagUnitViewZStep",-3.2); // guess
   Control.addVariable(lKey+"YagUnitYAngle",90);
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.setCF<setVariable::CF40_22>();
