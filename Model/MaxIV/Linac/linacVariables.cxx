@@ -1407,6 +1407,8 @@ TDCsegment23(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
   Control.addVariable(lKey+"YagUnitPortRadius",1.7);
   Control.addVariable(lKey+"YagUnitPortThick",0.2);
+  Control.addVariable(lKey+"YagUnitFrontLength",13.0);
+  Control.addVariable(lKey+"YagUnitBackLength",7.0);
   YagGen.generateScreen(Control,lKey+"YagScreen",1);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
@@ -1415,11 +1417,11 @@ TDCsegment23(FuncDataBase& Control,
 
   // gate length is 7.2
   CGateGen.generateGate(Control,lKey+"Gate",0);
-  Control.addVariable(lKey+"GateBWallThick",0.3);
-  Control.addVariable(lKey+"GateBPortThick",0.1);
-  Control.addVariable(lKey+"GateBYAngle",180.0);
-  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",180.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
   BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);
 
