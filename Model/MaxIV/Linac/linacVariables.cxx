@@ -1423,7 +1423,7 @@ TDCsegment23(FuncDataBase& Control,
   CGateGen.generateGate(Control,lKey+"Gate",0);
   Control.addVariable(lKey+"GateWallThick",0.3);
   Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",180.0);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
   Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
   Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
