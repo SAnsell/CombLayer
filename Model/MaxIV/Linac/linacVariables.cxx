@@ -1396,8 +1396,11 @@ TDCsegment25(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
+  const double startWidth(2.33/2.0);
+  const double endWidth(2.33/2.0);
   TPGen.setBFlangeCF<CF100>();
-  TPGen.generateTri(Control,lKey+"TriPipeA",80.0);
+  TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
+  TPGen.generateTri(Control,lKey+"TriPipeA");
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
   Control.setVariable(lKey+"DipoleAYAngle",90);
