@@ -119,9 +119,10 @@ global_settings {
     #declare cameraAngle = 50;
   #break
   #case(23) // TDC segment 23
-    #declare cameraLocation = <-460, 7360, 20>;
-    #declare cameraLookAt   = <-485, 7360, 0>;
-    #declare projection = 1;
+    #declare cameraLocation = <-350, 7290, 50>;
+    #declare cameraLookAt   = <-485, 7355, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #case(1000) // beamline view
     #declare cameraLocation = <200, 160, 40>;
