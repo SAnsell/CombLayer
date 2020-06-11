@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 21;
+#declare view = 23;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -15,7 +15,7 @@
 #declare projection = 0;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -117,6 +117,11 @@ global_settings {
     #declare cameraLookAt   = <-485, 6920, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
+  #break
+  #case(23) // TDC segment 23
+    #declare cameraLocation = <-460, 7360, 20>;
+    #declare cameraLookAt   = <-485, 7360, 0>;
+    #declare projection = 1;
   #break
   #case(1000) // beamline view
     #declare cameraLocation = <200, 160, 40>;
