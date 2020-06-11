@@ -1456,8 +1456,8 @@ TDCsegment24(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagGen;
   setVariable::CylGateValveGenerator CGateGen;
 
-  const Geometry::Vec3D startPt(-637.608, 6808.791, 0.0);
-  const Geometry::Vec3D endPt(-637.608, 6960.961, 0.0);
+  const Geometry::Vec3D startPt(-637.608, 6960.961, 0.0);
+  const Geometry::Vec3D endPt(-637.608, 7406.261, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
