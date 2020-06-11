@@ -1409,6 +1409,10 @@ TDCsegment23(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitPortThick",0.2);
   Control.addVariable(lKey+"YagUnitFrontLength",13.0);
   Control.addVariable(lKey+"YagUnitBackLength",7.0);
+  Control.addVariable(lKey+"YagUnitDepth",13.0); // measured
+  Control.addVariable(lKey+"YagUnitHeight",5.9); // measured
+  Control.addVariable(lKey+"YagUnitViewZStep",-3.2); // guess
+  Control.addVariable(lKey+"YagUnitYAngle",90);
   YagGen.generateScreen(Control,lKey+"YagScreen",1);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
@@ -1538,7 +1542,7 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("tdcOuterLeft",50.0);
+  Control.addVariable("tdcOuterLeft",70.0);
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
 
