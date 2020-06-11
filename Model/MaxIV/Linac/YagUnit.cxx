@@ -72,7 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h" 
@@ -86,7 +86,7 @@ namespace tdcSystem
 {
 
 YagUnit::YagUnit(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -113,7 +113,7 @@ YagUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("YagUnit","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");

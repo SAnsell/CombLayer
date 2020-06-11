@@ -193,14 +193,22 @@ FlatPipe::createSurfaces()
   if (std::abs(frontHeight-backHeight)<Geometry::zeroTol)
     {
       const double R(frontHeight/2.0);
-      const Geometry::Vec3D LAxis((length*Y-X*((backWidth-frontWidth)/2.0)).unit());
-      const Geometry::Vec3D RAxis((length*Y+X*((backWidth-frontWidth)/2.0)).unit());
+      const Geometry::Vec3D LAxis
+	((Y*length-X*((backWidth-frontWidth)/2.0)).unit());
+      const Geometry::Vec3D RAxis
+	((Y*length+X*((backWidth-frontWidth)/2.0)).unit());
 
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-X*(frontWidth/2.0),LAxis,R);
-      ModelSupport::buildCylinder(SMap,buildIndex+8,Origin+X*(frontWidth/2.0),RAxis,R);
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+7,Origin-X*(frontWidth/2.0),LAxis,R);
 
-      ModelSupport::buildCylinder(SMap,buildIndex+17,Origin-X*(wallThick+frontWidth/2.0),LAxis,R);
-      ModelSupport::buildCylinder(SMap,buildIndex+18,Origin+X*(wallThick+frontWidth/2.0),RAxis,R);
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+8,Origin+X*(frontWidth/2.0),RAxis,R);
+
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+17,Origin-X*(wallThick+frontWidth/2.0),LAxis,R);
+
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+18,Origin+X*(wallThick+frontWidth/2.0),RAxis,R);
       
     }
   else // CONE VERSION
@@ -336,7 +344,7 @@ FlatPipe::createLinks()
 
   // top lift point : Out is an complemnt of the volume
   std::string Out;
-  FixedComp::setConnect(7,Origin+Z*(wallThick+height/2.0),Z);
+  FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
   Out=ModelSupport::getComposite
     (SMap,buildIndex," (-15 : 16 : (-3 17) : (4 18))");
   FixedComp::setLinkSurf(7,Out);

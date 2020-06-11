@@ -64,9 +64,8 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "FlatPipe.h"
+#include "TriPipe.h"
 #include "DipoleDIBMag.h"
-#include "BeamDivider.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -79,14 +78,8 @@ namespace tdcSystem
 
 TDCsegment25::TDCsegment25(const std::string& Key) :
   TDCsegment(Key,2),
-
-  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
-  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
-  beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
-  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
-  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA"))
-
+  triPipeA(new tdcSystem::TriPipe(keyName+"TriA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -95,14 +88,10 @@ TDCsegment25::TDCsegment25(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(flatA);
+  OR.addObject(triPipeA);
   OR.addObject(dipoleA);
-  OR.addObject(flatB);
-  OR.addObject(beamA);
-  OR.addObject(dipoleB);
-  OR.addObject(bellowA);
 
-  setFirstItem(flatA);
+  setFirstItem(triPipeA);
 }
 
 TDCsegment25::~TDCsegment25()
@@ -128,16 +117,16 @@ TDCsegment25::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    flatA->copyCutSurf("front",*this,"front");
-  flatA->createAll(System,*this,0);
+    triPipeA->copyCutSurf("front",*this,"front");
+  triPipeA->createAll(System,*this,0);
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
+  pipeMagGroup(System,*buildZone,triPipeA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*flatA,"back",*beamA);
+  //   (System,*buildZone,masterCell,*triPipeA,"back",*beamA);
 
   // flatB->setFront(*beamA,"back");
   // flatB->createAll(System,*beamA,"back");
@@ -160,8 +149,8 @@ TDCsegment25::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*flatA,1);
-  setLinkSignedCopy(1,*bellowA,2);
+  setLinkSignedCopy(0,*triPipeA,1);
+  setLinkSignedCopy(1,*triPipeA,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }

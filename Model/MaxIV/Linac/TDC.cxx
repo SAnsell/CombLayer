@@ -88,6 +88,8 @@
 #include "TDCsegment19.h"
 #include "TDCsegment20.h"
 
+#include "TDCsegment25.h"
+
 #include "TDC.h"
 
 namespace tdcSystem
@@ -119,7 +121,7 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
     { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
     { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
-    { "TDCSegment25",std::make_shared<TDCSegment25>("TDC25") }
+    { "TDCSegment25",std::make_shared<TDCsegment25>("TDC25") }
   } )
   /*!
     Constructor

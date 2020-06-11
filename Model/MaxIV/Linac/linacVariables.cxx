@@ -59,6 +59,7 @@
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
+#include "TriPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
 #include "CeramicSepGenerator.h"
@@ -1378,7 +1379,7 @@ TDCsegment25(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment25");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::FlatPipeGenerator FPGen;
+  setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
   const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
@@ -1387,28 +1388,20 @@ TDCsegment25(FuncDataBase& Control,
   const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
 			       
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndAOffset",endAPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndBOffset",endBPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndCOffset",endCPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndAOffset",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
 
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
 
-  FPGen.generateFlat(Control,lKey+"FlatA",82.0);
+  TPGen.setBFlangeCF<CF100>();
+  TPGen.generateTri(Control,lKey+"TriPipeA",80.0);
   Control.addVariable(lKey+"FlatAXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleA");
-
-  BDGen.generateDivider(Control,lKey+"BeamA",1.6);
-
-  FPGen.generateFlat(Control,lKey+"FlatB",82.0);
-  Control.addVariable(lKey+"FlatBXYAngle",1.6);
-  DIBGen.generate(Control,lKey+"DipoleB");
-
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
-  Control.addVariable(lKey+"BellowAXYAngle",1.6);
+  Control.setVariable(lKey+"DipoleAYAngle",90);
+  
 
   return;
 }

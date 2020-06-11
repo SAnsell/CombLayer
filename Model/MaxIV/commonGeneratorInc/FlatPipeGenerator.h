@@ -55,7 +55,8 @@ class FlatPipeGenerator
   double flangeBLength;          ///< Joining Flange length
     
   std::string voidMat;                   ///< Void material
-  std::string wallMat;                     ///< Pipe material
+  std::string wallMat;                   ///< Pipe material
+  std::string flangeMat;                 ///< Flange material
 
   
  public:
