@@ -15,7 +15,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -65,9 +65,9 @@ global_settings {
 
 #switch ( view )
   #case(0)
-    #declare cameraLocation = <20, -10.0, 30.0>;
-    #declare cameraLookAt   = <0, 10, 0>;
-    #declare cameraAngle = 60;
+    #declare cameraLocation = <-10, -20.0, 1.0>;
+    #declare cameraLookAt   = <0, 5, 0>;
+    #declare cameraAngle = 50;
   #break
   #else
     #declare cameraLocation = <100, 100, 100>;

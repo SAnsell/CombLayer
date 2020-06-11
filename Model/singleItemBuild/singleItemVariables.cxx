@@ -75,6 +75,9 @@
 #include "ScrapperGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "TWCavityGenerator.h"
+#include "SplitPipeGenerator.h"
+#include "BellowGenerator.h"
 
 namespace setVariable
 {
@@ -230,6 +233,14 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,"QHVC",-40.0,80.0);
+  Control.addVariable("QHVCRadius",0.4);
+  LQGen.setRadius(0.56, 2.31);
+  LQGen.generateQuad(Control,"QH",20.0);
+  Control.addVariable("QHLength",18.7);
+  Control.addVariable("QHYokeOuter",9.5);
+  Control.addVariable("QHPolePitch",26.0);
 
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;
@@ -256,13 +267,35 @@ SingleItemVariables(FuncDataBase& Control)
   BDGen.generateDivider(Control,"BeamDiv",0.0);  
 
   setVariable::EBeamStopGenerator EBGen;
-  EBGen.generateEBeamStop(Control,"EBeam",0);  
+  EBGen.generateEBeamStop(Control,"EBeam",0);
 
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
-  
+
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");
+
+  // traveling wave cavity
+  PGen.setNoWindow();
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  setVariable::TWCavityGenerator TDCGen;
+
+  const double flangeLength(3.7);
+  PGen.generatePipe(Control,"PipeA",0.0,flangeLength);
+  Control.addVariable("PipeARadius",1.16);
+  Control.addVariable("PipeAFeThick",0.2);
+
+  TDCGen.generate(Control,"TWCavity");
+
+  PGen.generatePipe(Control,"PipeB",0.0,flangeLength);
+  Control.addParse<double>("PipeBRadius","PipeARadius");
+  Control.addParse<double>("PipeBFeThick","PipeAFeThick");
+
+  // Bellow
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,"Bellow",0.0,7.5);
 
   return;
 }

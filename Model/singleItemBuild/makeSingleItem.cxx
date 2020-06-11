@@ -71,6 +71,7 @@
 #include "Sexupole.h"
 #include "Octupole.h"
 #include "LQuadF.h"
+#include "LQuadH.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
 #include "EPSeparator.h"
@@ -90,6 +91,10 @@
 #include "Scrapper.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
+#include "TWCavity.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+
 
 #include "makeSingleItem.h"
 
@@ -123,12 +128,13 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuadF","LSexupole",
+      "default","CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","BPM","BeamDivider","Scrapper",
+      "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
+      "Bellow", "VacuumPipe",
       "Help","help"
     });
 
@@ -269,6 +275,30 @@ makeSingleItem::build(Simulation& System,
 
       QF->addInsertCell(voidCell);
       QF->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="LQuadH")
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("QHVC"));
+      std::shared_ptr<tdcSystem::LQuadH>
+	QH(new tdcSystem::LQuadH("QH","QH"));
+
+      OR.addObject(VC);
+      OR.addObject(QH);
+
+      // QH->addInsertCell(voidCell);
+      // QH->createAll(System,World::masterOrigin(),0);
+
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      QH->setCutSurf("Inner",*VC,"outerPipe");
+      QH->addInsertCell(voidCell);
+      QH->createAll(System,World::masterOrigin(),0);
+
 
       return;
     }
@@ -458,6 +488,56 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+  if (item=="TWCavity") // traveling wave cavity
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	pipeA(new constructSystem::VacuumPipe("PipeA"));
+      std::shared_ptr<tdcSystem::TWCavity> cavity(new tdcSystem::TWCavity("TWCavity"));
+      std::shared_ptr<constructSystem::VacuumPipe>
+	pipeB(new constructSystem::VacuumPipe("PipeB"));
+
+      OR.addObject(pipeA);
+      OR.addObject(cavity);
+      OR.addObject(pipeB);
+
+      pipeA->addInsertCell(voidCell);
+      pipeA->createAll(System,World::masterOrigin(),0);
+
+      cavity->addInsertCell(voidCell);
+      cavity->createAll(System,*pipeA,"back");
+
+      pipeB->addInsertCell(voidCell);
+      pipeB->createAll(System,*cavity,"back");
+
+      return;
+    }
+
+  if (item=="Bellow")
+    {
+      std::shared_ptr<constructSystem::Bellows>
+	bellow(new constructSystem::Bellows("Bellow"));
+      OR.addObject(bellow);
+
+      bellow->addInsertCell(voidCell);
+      bellow->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+    if (item == "VacuumPipe" )
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VC"));
+
+      OR.addObject(VC);
+
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
 
   if (item=="Help" || item=="help")
     {

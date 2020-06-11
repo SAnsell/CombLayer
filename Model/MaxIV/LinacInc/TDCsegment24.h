@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment20.h
+ * File:   LinacInc/TDCsegment24.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,38 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment20_h
-#define tdcSystem_TDCsegment20_h
+#ifndef tdcSystem_TDCsegment24_h
+#define tdcSystem_TDCsegment24_h
 
 namespace tdcSystem
 {
-  class TWCavity;
   /*!
-    \class TDCsegment20
+    \class TDCsegment24
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 15
+    \date June 2020
+    \brief TDC segment 43
   */
 
-class TDCsegment20 :
+class TDCsegment24 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< front flange
-  std::shared_ptr<tdcSystem::TWCavity> cavity;         ///< TDC cavity section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< back flange
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #1 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #3 Ion Pump 75l cf63
+  std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;         ///< #6 Horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;         ///< #6 Vertical corrector magnet
+  std::shared_ptr<tdcSystem::BPM> bpm;                    ///< #7 BPM - 304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;     ///< #8 VC Ø10x1- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::LQuadH> quad;                ///< #9 type G
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment20(const std::string&);
-  TDCsegment20(const TDCsegment20&);
-  TDCsegment20& operator=(const TDCsegment20&);
-  ~TDCsegment20();
+  TDCsegment24(const std::string&);
+  TDCsegment24(const TDCsegment24&);
+  TDCsegment24& operator=(const TDCsegment24&);
+  ~TDCsegment24();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

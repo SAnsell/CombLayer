@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/TDCCavityGenerator.cxx
+ * File:   commonBeam/TWCavityGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -44,28 +44,34 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "TDCCavityGenerator.h"
+#include "TWCavityGenerator.h"
 
 namespace setVariable
 {
 
-TDCCavityGenerator::TDCCavityGenerator() :
-  length(312.363),width(5.0),height(15.0),
-  wallThick(1.0),
-  mainMat(0),wallMat(0)
+TWCavityGenerator::TWCavityGenerator() :
+  nCells(89),
+  cellLength(2.833), // David Olsson 2020-06-05
+  cellRadius(5.961), // David Olsson 2020-06-05
+  irisLength(0.5), // David Olsson 2020-06-05
+  irisRadius(1.16), // David Olsson 2020-06-05
+  couplerLength(4.9295),
+  couplerWidth(21.2), // measured
+  wallThick(1.489), // David Olsson 2020-06-05
+  wallMat("Copper") // actually OFHC
   /*!
     Constructor and defaults
   */
 {}
 
-TDCCavityGenerator::~TDCCavityGenerator()
+TWCavityGenerator::~TWCavityGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-TDCCavityGenerator::generate(FuncDataBase& Control,
+TWCavityGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -73,13 +79,16 @@ TDCCavityGenerator::generate(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("TDCCavityGenerator","generate");
+  ELog::RegMethod RegA("TWCavityGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"NCells",nCells);
+  Control.addVariable(keyName+"CellLength",cellLength);
+  Control.addVariable(keyName+"CellRadius",cellRadius);
+  Control.addVariable(keyName+"IrisLength",irisLength);
+  Control.addVariable(keyName+"IrisRadius",irisRadius);
+  Control.addVariable(keyName+"CouplerLength",couplerLength);
+  Control.addVariable(keyName+"CouplerWidth",couplerWidth);
   Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
   return;

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/LinacInc/TDCCavity.h
+ * File:   Model/MaxIV/LinacInc/TWCavity.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCCavity_h
-#define tdcSystem_TDCCavity_h
+#ifndef tdcSystem_TWCavity_h
+#define tdcSystem_TWCavity_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace tdcSystem
 {
 
 /*!
-  \class TDCCavity
+  \class TWCavity
   \version 1.0
   \author Konstantin Batkov
   \date June 2020
-  \brief TDC cavity section
+  \brief Traveling wave cavity
 */
 
-class TDCCavity :
+class TWCavity :
     public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
@@ -44,30 +44,30 @@ class TDCCavity :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  int    nCells;                ///< Number of regular cells
+  double cellLength;            ///< Normal cell total length (void+iris)
+  double cellRadius;            ///< Normal cell inner radius
+  double irisLength;            ///< Iris length
+  double irisRadius;            ///< Iris inner radius
+  double couplerLength;         ///< coupler cell length
+  double couplerWidth;          ///< coupler cell width
   double wallThick;             ///< Wall thickness
-
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  int    wallMat;               ///< Wall material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCCavity(const std::string&);
-  TDCCavity(const TDCCavity&);
-  TDCCavity& operator=(const TDCCavity&);
-  virtual TDCCavity* clone() const;
-  virtual ~TDCCavity();
+  TWCavity(const std::string&);
+  TWCavity(const TWCavity&);
+  TWCavity& operator=(const TWCavity&);
+  virtual TWCavity* clone() const;
+  virtual ~TWCavity();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
