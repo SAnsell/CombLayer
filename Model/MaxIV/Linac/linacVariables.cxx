@@ -1360,9 +1360,10 @@ TDCsegment23(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagGen;
+  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-637.608, 6808.791, 0.0);
-  const Geometry::Vec3D endPt(-637.608, 69609.61, 0.0);
+  const Geometry::Vec3D endPt(-637.608, 6960.961, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -1370,47 +1371,57 @@ TDCsegment23(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);  // measured
+  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // OK
 
-
-  BPMGen.setCF<setVariable::CF40_22>();
-  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3);
-
-  const double pipeALength(34.0);
+  const double pipeALength(34.0); // OK
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,34.0); // OK
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - OK
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick - measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
+  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-
   Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
-  Control.addVariable(lKey+"YagUnitPortRadius",1.7); // measured
-  Control.addVariable(lKey+"YagUnitPortThick",0.2);  // measured
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  Control.addVariable(lKey+"BPMRadius", 1.3);
 
-  YagGen.generateScreen(Control,lKey+"YagScreen",1);
-  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // OK
 
+  const double pipeBLength(40.0); // OK
   PGen.setCF<setVariable::CF40_22>();
-  // measured 45.7, adjusted to have correct length
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,45.437);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
 
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
   CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
+  Control.addVariable(lKey+"YagUnitPortRadius",1.7);
+  Control.addVariable(lKey+"YagUnitPortThick",0.2);
+  YagGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,6.5); // OK
+
+  // gate length is 7.2
+  CGateGen.generateGate(Control,lKey+"Gate",0);
+  Control.addVariable(lKey+"GateBWallThick",0.3);
+  Control.addVariable(lKey+"GateBPortThick",0.1);
+  Control.addVariable(lKey+"GateBYAngle",180.0);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5);
 
   return;
 }

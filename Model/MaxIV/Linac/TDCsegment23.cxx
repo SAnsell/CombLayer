@@ -79,6 +79,8 @@
 #include "ContainedGroup.h"
 #include "YagScreen.h"
 
+#include "CylGateValve.h"
+
 #include "TDCsegment.h"
 #include "TDCsegment23.h"
 
@@ -93,13 +95,15 @@ TDCsegment23::TDCsegment23(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  gate(new constructSystem::CylGateValve(keyName+"Gate")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  gate(new xraySystem::CylGateValve(keyName+"Gate")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -112,13 +116,15 @@ TDCsegment23::TDCsegment23(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(quad);
   OR.addObject(bpm);
+  OR.addObject(bellowB);
   OR.addObject(pipeB);
   OR.addObject(cMagH);
   OR.addObject(cMagV);
   OR.addObject(yagScreen);
   OR.addObject(yagUnit);
+  OR.addObject(pipeC);
   OR.addObject(gate);
-  OR.addObject(bellowB);
+  OR.addObject(bellowC);
 
   setFirstItem(bellowA);
 }
@@ -148,16 +154,24 @@ TDCsegment23::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
-
-  pipeA->createAll(System,*bpm, "back");
+  pipeA->createAll(System,*bellowA, "back");
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeA);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bpm,"back",*bellowB);
+
+  pipeB->createAll(System,*bellowB, "back");
+
+  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  pipeTerminate(System,*buildZone,pipeB);
+
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -166,13 +180,14 @@ TDCsegment23::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
-  pipeB->createAll(System,*yagUnit, "back");
-
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*yagUnit,"back",*pipeC);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
+    (System,*buildZone,masterCell,*pipeC,"back",*gate);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gate,"back",*bellowC);
 
   buildZone->removeLastMaster(System);
 
@@ -188,7 +203,7 @@ TDCsegment23::createLinks()
   ELog::RegMethod RegA("TDCsegment23","createLinks");
 
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowB,2);
+  setLinkSignedCopy(1,*bellowC,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
   return;
