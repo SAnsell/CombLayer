@@ -151,16 +151,17 @@ WallLead::createSurfaces()
   if (!frontActive() || !backActive())
     throw ColErr::EmptyContainer("back/front not set for:"+keyName);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,extraLeadDepth);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,-1,Y,extraLeadDepth);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+21,1,Y,
+  FrontBackCut::getShiftedFront(SMap,buildIndex+21,-1,Y,
 				extraLeadDepth+steelThick);
-
-  FrontBackCut::getShiftedFront(SMap,buildIndex+31,1,Y,
+  FrontBackCut::getShiftedFront(SMap,buildIndex+31,-1,Y,
 				extraLeadDepth+steelThick+frontLength);
 
   if (backLength>Geometry::zeroTol)
-    ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,-1,Y,backLength);
+    {
+      ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,-1,Y,-backLength);
+    }
 
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);

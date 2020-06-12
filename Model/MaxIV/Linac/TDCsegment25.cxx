@@ -64,6 +64,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "VacuumPipe.h"
 #include "TriPipe.h"
 #include "DipoleDIBMag.h"
 
@@ -78,8 +79,10 @@ namespace tdcSystem
 
 TDCsegment25::TDCsegment25(const std::string& Key) :
   TDCsegment(Key,2),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
-  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA"))
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,10 +91,12 @@ TDCsegment25::TDCsegment25(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(bellowA);
   OR.addObject(triPipeA);
   OR.addObject(dipoleA);
+  OR.addObject(pipeB);
 
-  setFirstItem(triPipeA);
+  setFirstItem(bellowA);
 }
 
 TDCsegment25::~TDCsegment25()
@@ -116,28 +121,29 @@ TDCsegment25::buildObjects(Simulation& System)
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
-  if (isActive("front"))
-    triPipeA->copyCutSurf("front",*this,"front");
-  triPipeA->createAll(System,*this,0);
+  //  if (isActive("front"))
+    //    bellowA->copyCutSurf("front",*this,"front");
+  bellowA->createAll(System,*this,0);
+  return;
+  
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
+  ELog::EM<<"Bellow == "<<bellowA->getLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"Bellow == "<<bellowA->getLinkPt(2)<<ELog::endDiag;
+  buildZone->removeLastMaster(System);  
+  return;
+  triPipeA->setFront(*bellowA,2);
+  triPipeA->createAll(System,*bellowA,"back");
 
   // insert-units : Origin : excludeSurf
-  //  pipeMagGroup(System,*buildZone,triPipeA,
-  //     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeMagGroup(System,*buildZone,triPipeA,
+	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
+  return;
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
 
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*triPipeA,"back",*beamA);
-
-  // flatB->setFront(*beamA,"back");
-  // flatB->createAll(System,*beamA,"back");
-  // // insert-units : Origin : excludeSurf
-  // pipeMagGroup(System,*buildZone,flatB,
-  //    {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  // pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
-
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*flatB,"back",*bellowA);
-
+  
   buildZone->removeLastMaster(System);  
 
   return;
@@ -149,8 +155,9 @@ TDCsegment25::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*triPipeA,1);
-  setLinkSignedCopy(1,*triPipeA,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*bellowA,2);
+  //    setLinkSignedCopy(1,*triPipeA,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }

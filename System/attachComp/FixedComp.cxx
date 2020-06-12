@@ -126,7 +126,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     \param KN :: KeyName
     \param NL :: Number of links
     \param O :: Origin Point
-    \param xV :: X direction
+v    \param xV :: X direction
     \param yV :: Y direction
     \param zV :: Z direction
   */

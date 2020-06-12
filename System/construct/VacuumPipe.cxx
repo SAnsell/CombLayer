@@ -382,14 +382,15 @@ VacuumPipe::createSurfaces()
     }
 
   // Back Inner void
-  FrontBackCut::getShiftedBack(SMap,buildIndex+102,-1,Y,flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+102,1,Y,-flangeBLength);
   if (activeWindow & 2)
     {
-      getShiftedBack(SMap,buildIndex+1101,-1,Y,
-		     (flangeBLength-windowBack.thick)/2.0);
-      getShiftedBack(SMap,buildIndex+1102,-1,Y,
-		     (flangeBLength+windowBack.thick)/2.0);
+      getShiftedBack(SMap,buildIndex+1101,1,Y,
+		     -(flangeBLength-windowBack.thick)/2.0);
+      getShiftedBack(SMap,buildIndex+1102,1,Y,
+		     -(flangeBLength+windowBack.thick)/2.0);
     }
+
 
   // add data to surface
   if (activeWindow & 1)

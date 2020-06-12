@@ -430,7 +430,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(HR)");
   
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)

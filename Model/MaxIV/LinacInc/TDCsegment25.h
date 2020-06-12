@@ -22,13 +22,11 @@
 #ifndef tdcSystem_TDCsegment25_h
 #define tdcSystem_TDCsegment25_h
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
+namespace constructSystem
+{
+ class Bellows;
+ class VacuumPipe;
+}
 
 namespace tdcSystem
 {
@@ -49,11 +47,16 @@ class TDCsegment25 :
  private:
 
   /// first pipe
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+  /// first pipe
   std::shared_ptr<tdcSystem::TriPipe> triPipeA;
 
   /// first  dipole
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
 
+  /// Join pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  
 
   void buildObjects(Simulation&);
   void createLinks();

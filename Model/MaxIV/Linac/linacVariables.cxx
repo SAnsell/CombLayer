@@ -1379,6 +1379,7 @@ TDCsegment25(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","TDCsegment25");
 
   setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PGen;
   setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
@@ -1388,24 +1389,26 @@ TDCsegment25(FuncDataBase& Control,
   const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
 			       
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndAOffset",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
 
-
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
-
+  
   const double startWidth(2.33/2.0);
-  const double endWidth(2.33/2.0);
+  const double endWidth(6.70/2.0);
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,lKey+"TriPipeA");
   Control.addVariable(lKey+"TriPipeYAngle",90);
   
   DIBGen.generate(Control,lKey+"DipoleA");
-  Control.addVariable(lKey+"DipoleAYAngle",90.0);
-  
+
+  PGen.setCF<CF100>();
+  PGen.setBFlangeCF<CF150>();
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,16.15);
 
   return;
 }
@@ -1525,6 +1528,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcOuterLeft",50.0);
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
+  
+  Control.addVariable("spfXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("spfYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("spfOuterLeft",50.0);
+  Control.addVariable("spfOuterRight",50.0);
+  Control.addVariable("spfOuterTop",100.0);
 
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");

@@ -73,6 +73,7 @@
 #include "BeamDividerGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
+#include "TriPipeGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 
@@ -206,6 +207,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
+
+  const double startWidth(2.33/2.0);
+  const double endWidth(6.70/2.0);
+  setVariable::TriPipeGenerator TPGen;
+  TPGen.setBFlangeCF<CF100>();
+  TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
+  TPGen.generateTri(Control,"TriPipe");
 
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);

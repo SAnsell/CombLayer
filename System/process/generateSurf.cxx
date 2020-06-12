@@ -132,7 +132,7 @@ buildShiftedPlane(surfRegister& SMap,const int N,
   const Geometry::Plane* PRef=SMap.realPtr<Geometry::Plane>(refPlaneN);
   if (!PRef)
     throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
-  return (PN<0) ?
+  return (PN*refPlaneN<0) ?
     buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
     buildShiftedPlane(SMap,N,PRef,Dist);
 }
@@ -198,7 +198,7 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
     Builds a plane that is shifted relative to a current plane
     \param SMap :: Surface Map system
     \param N :: Initial Number
-    \param refPlaneN :: Plane indexto use as template
+    \param refPlaneN :: Plane index to use as template
     \param Dist :: Distance along normal to move plane
     \return New plane ptr [inserted/tested]
   */
@@ -211,7 +211,7 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
 
   if (!PRef)
     throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
-  return (PN>0) ?
+  return (PN*N>0) ?
     buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
     buildShiftedPlane(SMap,N,PRef,Dist);
 }
@@ -562,7 +562,7 @@ buildShiftedSurf(surfRegister& SMap,
     Support function to calculate the shifted surface based
     on surface type and form
     \param SMap :: local surface register
-    \param SN :: HeadRule to extract plane surf
+    \param SN :: Surface to use
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)
     \param YAxis :: Direction of cylindical shift [NOT PLANE]
@@ -577,10 +577,10 @@ buildShiftedSurf(surfRegister& SMap,
     dynamic_cast<const Geometry::Plane*>(SPtr);
   if (PPtr)
     {
-      if (SN*dFlag>0)
-	buildShiftedPlane(SMap,index,SN,dFlag*length);
+      if (dFlag>=0)
+	buildShiftedPlane(SMap,index,SN,length);
       else
-	buildShiftedPlaneReversed(SMap,index,SN,dFlag*length);
+	buildShiftedPlaneReversed(SMap,index,SN,length);
       return SMap.realSurfPtr(index);
     }
   

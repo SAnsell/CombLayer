@@ -88,6 +88,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "Scrapper.h"
+#include "TriPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 
@@ -127,7 +128,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
-      "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "TriPipe","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper",
       "Help","help"
     });
@@ -438,6 +439,17 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item == "TriPipe")
+    {
+      std::shared_ptr<tdcSystem::TriPipe>
+	tp(new tdcSystem::TriPipe("TriPipe"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
 
   if (item=="DipoleDIBMag")
     {

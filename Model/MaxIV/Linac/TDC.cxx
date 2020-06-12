@@ -213,7 +213,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid",""}}
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid",""}},
+      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -293,7 +294,7 @@ TDC::createAll(Simulation& System,
       {"TDCsegment18",{"tdc","TDCsegment17"}},
       {"TDCsegment19",{"tdc","TDCsegment18"}},
       {"TDCsegment20",{"tdc","TDCsegment19"}},
-      {"TDCsegment25",{"tdc","TDCsegment24"}}
+      {"TDCsegment25",{"spf","TDCsegment24"}}
     });
   const int voidCell(74123);
 

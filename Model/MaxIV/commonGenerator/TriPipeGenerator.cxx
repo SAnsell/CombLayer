@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/TriPipeGenerator.cxx
+ * File:   commonGenerator/TriPipeGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -62,7 +62,7 @@ TriPipeGenerator::TriPipeGenerator() :
   axisXYAngle(0.0),axisZAngle(0.0),
   frontWidth(2.7),frontHeight(1.0),
   backWidth(2.7),backHeight(1.0),
-  wallThick(0.75),
+  length(80.0),wallThick(0.75),
   flangeARadius(CF40::flangeRadius),
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
@@ -105,14 +105,14 @@ TriPipeGenerator::setBFlangeCF()
 }
 
 void
-TriPipeGenerator::setXYWindow(const double LWA,const double LWB,
-			      const double RWA,const double RWB)
+TriPipeGenerator::setXYWindow(const double LWA,const double RWA,
+			      const double LWB,const double RWB)
   /*!
     Sets the width window based on +/- values of the width
     \param LWA :: left width front
-    \param LWB :: left width back
     \param RWA :: right width front
-    \param RWB :: rigth width back
+    \param LWB :: left width back
+    \param RWB :: right width back
   */
 {
   ELog::RegMethod RegA("TriPipeGenerator","setXYWindow");
@@ -120,7 +120,7 @@ TriPipeGenerator::setXYWindow(const double LWA,const double LWB,
   frontWidth=LWA+RWA;
   backWidth=LWB+RWB;
   axisXStep=(RWA-LWA)/2.0;    // offset
-
+  
   const double tanA=((RWB-RWA)/2.0-axisXStep)/length;
   axisXYAngle=atan(tanA);
   

@@ -581,7 +581,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
-
+  ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());
@@ -591,7 +591,13 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
+
+
   bellowA->createAll(System,*collA,1);
+
+  lastComp=bellowA;
+  return;
+
 
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
   dipolePipe->setBack(*bellowA,2);
@@ -600,9 +606,13 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
+  lastComp=dipolePipe;
+  return;
+
   // note : bellowA is reversed
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
+  
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
@@ -628,6 +638,13 @@ R1FrontEnd::buildObjects(Simulation& System)
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
+
+  if (stopPoint=="Heat")
+    {
+      lastComp=heatPipe;
+      return;
+    }
+
   
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
