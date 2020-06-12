@@ -132,7 +132,9 @@ buildShiftedPlane(surfRegister& SMap,const int N,
   const Geometry::Plane* PRef=SMap.realPtr<Geometry::Plane>(refPlaneN);
   if (!PRef)
     throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
-  return (PN*refPlaneN<0) ?
+
+  // CARE: PN * refPlaneN is BIGGER than an integer storage
+  return ((PN<0 && refPlaneN>0) || (PN>0 && refPlaneN<0) ) ?
     buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
     buildShiftedPlane(SMap,N,PRef,Dist);
 }
@@ -211,9 +213,13 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
 
   if (!PRef)
     throw ColErr::InContainerError<int>(refPlaneN,"Reference Plane");
-  return (PN*N>0) ?
-    buildShiftedPlaneReversed(SMap,N,PRef,Dist) :
-    buildShiftedPlane(SMap,N,PRef,Dist);
+
+
+  // CARE: PN * refPlaneN is BIGGER than an integer storage
+  return ((PN<0 && refPlaneN>0) || (PN>0 && refPlaneN<0) ) ?
+    buildShiftedPlane(SMap,N,PRef,Dist) :
+    buildShiftedPlaneReversed(SMap,N,PRef,Dist);
+    
 }
 
 
@@ -569,7 +575,7 @@ buildShiftedSurf(surfRegister& SMap,
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("generateSurf[F]","makeShiftedSurf");
   
   const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
   

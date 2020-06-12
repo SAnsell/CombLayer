@@ -435,6 +435,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
     {
+      ELog::EM<<"SNX = "<<SN<<ELog::endDiag;
       const Geometry::Surface* SPtr=
 	ModelSupport::buildShiftedSurf(SMap,SN,index,dFlag,YAxis,length);
       if (SPtr) return;

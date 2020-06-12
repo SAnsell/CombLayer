@@ -540,6 +540,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R1FrontEnd","buildObjects");
 
+
   int outerCell;
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
@@ -550,12 +551,17 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
+  return;
+
 
   quadUnit->setCutSurf("front",undulatorFC,2);
   quadUnit->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
+
   quadUnit->insertInCell(System,outerCell);
   quadUnit->createQuads(System,outerCell);
+
+  return;
 
 
   dipoleChamber->setCutSurf("front",*quadUnit,2);
@@ -592,11 +598,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
 
-
-  bellowA->createAll(System,*collA,1);
-
-  lastComp=bellowA;
-  return;
 
 
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
@@ -672,8 +673,9 @@ R1FrontEnd::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+
   buildObjects(System);
-  createLinks();
+  //  createLinks();
 
   std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   Out+=frontRule()+backRule();

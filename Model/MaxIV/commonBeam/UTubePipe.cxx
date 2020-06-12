@@ -203,8 +203,12 @@ UTubePipe::createSurfaces()
 			       Origin-Y*(length/2.0),Y); 
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
+  ELog::EM<<"PREFront == "<<SMap.realSurf(buildIndex+1)<<ELog::endDiag;  
   getShiftedFront(SMap,buildIndex+11,1,Y,flangeALength);
 
+  
+  ELog::EM<<"Front == "<<*SMap.realSurfPtr(buildIndex+1)<<ELog::endDiag;
+  ELog::EM<<"Front == "<<*SMap.realSurfPtr(buildIndex+11)<<ELog::endDiag;
   
   if (!backActive())
     {
@@ -212,7 +216,7 @@ UTubePipe::createSurfaces()
 			       Origin+Y*(length/2.0),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  getShiftedBack(SMap,buildIndex+12,1,Y,-flangeBLength);
+  getShiftedBack(SMap,buildIndex+12,1,Y,flangeBLength);
 
   // main pipe
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
