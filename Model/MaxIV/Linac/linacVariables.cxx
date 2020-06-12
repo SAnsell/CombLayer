@@ -1401,9 +1401,10 @@ TDCsegment25(FuncDataBase& Control,
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,lKey+"TriPipeA");
-  Control.addVariable(lKey+"FlatAXYAngle",1.6);
+  Control.addVariable(lKey+"TriPipeYAngle",90);
+  
   DIBGen.generate(Control,lKey+"DipoleA");
-  Control.setVariable(lKey+"DipoleAYAngle",90);
+  Control.addVariable(lKey+"DipoleAYAngle",90.0);
   
 
   return;
@@ -1549,6 +1550,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment18(Control,"TDC18");
   linacVar::TDCsegment19(Control,"TDC19");
   linacVar::TDCsegment20(Control,"TDC20");
+  linacVar::TDCsegment25(Control,"TDC25");
 
   return;
 }

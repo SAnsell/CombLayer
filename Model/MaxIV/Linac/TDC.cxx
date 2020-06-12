@@ -121,7 +121,7 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
     { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
     { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
-    { "TDCSegment25",std::make_shared<TDCsegment25>("TDC25") }
+    { "TDCsegment25",std::make_shared<TDCsegment25>("TDC25") }
   } )
   /*!
     Constructor
@@ -308,11 +308,11 @@ TDC::createAll(Simulation& System,
     {
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
-		
+
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
 	  if (mc==SegMap.end())
 	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
-	  
+	  ELog::EM<<"DS "<<ELog::endDiag;	  
 	  const LinkTYPE seglink=segmentLinkMap.at(BL);
 	  const std::string& bzName=std::get<0>(seglink);
 	  const std::string& prevName=std::get<1>(seglink);

@@ -78,7 +78,7 @@ namespace tdcSystem
 
 TDCsegment25::TDCsegment25(const std::string& Key) :
   TDCsegment(Key,2),
-  triPipeA(new tdcSystem::TriPipe(keyName+"TriA")),
+  triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA"))
   /*!
     Constructor
@@ -121,8 +121,8 @@ TDCsegment25::buildObjects(Simulation& System)
   triPipeA->createAll(System,*this,0);
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,triPipeA,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  //  pipeMagGroup(System,*buildZone,triPipeA,
+  //     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   // constructSystem::constructUnit
