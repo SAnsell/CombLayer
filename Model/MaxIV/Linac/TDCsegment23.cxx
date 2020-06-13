@@ -73,8 +73,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 
-#include "Surface.h"
-#include "Quadratic.h"
 #include "Line.h"
 #include "ContainedGroup.h"
 #include "YagScreen.h"
