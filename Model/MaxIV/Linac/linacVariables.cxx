@@ -1529,6 +1529,7 @@ TDCsegment30(FuncDataBase& Control,
   std::string name=lKey+"Gauge";
   SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+  Control.addVariable(name+"YAngle", 180.0);
 
   Control.addVariable(name+"NPorts",1);
   PItemGen.setCF<setVariable::CF40_22>(5.1); //
@@ -1541,15 +1542,21 @@ TDCsegment30(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",0.0,436.5-0.084514221); // measured
 
   BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // measured
 
+  // IonPump
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
-  //  Control.addVariable(lKey+"IonPumpYAngle",90.0);
+  Control.addVariable(pumpName+"Length",10.0+setVariable::CF63::flangeLength);
+  const double portOffset(1.7);
+  Control.addVariable(pumpName+"Port0Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(pumpName+"Port1Centre", Geometry::Vec3D(0, portOffset, 0));
 
+  // CMagV
   const double pipeBLength(511.3); // measured
   PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
-  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,1);
 
   return;
 }
