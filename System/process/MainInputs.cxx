@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   process/MainInputs.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -63,7 +63,7 @@ createPHITSInputs(inputParam& IParam)
   IParam.setDesc("icntl","Control parameter for output");
   return;
 }
-  
+
 void
 createInputs(inputParam& IParam)
   /*!
@@ -76,7 +76,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   createPHITSInputs(IParam);
-  
+
   IParam.regMulti("activation","activation",10000,1);
 
   IParam.regFlag("a","axis");
@@ -110,7 +110,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);
   IParam.regDefItem<int>("m","multi",1,1);
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
-                                 std::string("shielding"));  
+                                 std::string("shielding"));
   IParam.regItem("matFile","matFile");
   IParam.regItem("maxEnergy","maxEnergy");   // default max energy
   IParam.regFlag("M","mesh");
@@ -122,9 +122,9 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
-  IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regItem("povray","PovRay");
+  IParam.regItem("povray","POVRAY");
+  IParam.regFlag("phits","PHITS");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regFlag("noThermal","noThermal");
@@ -134,12 +134,12 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regMulti("postOffset","postOffset",10000,1,8);
   IParam.regDefItem<std::string>("print","printTable",1,
-				 "10 20 40 50 110 120");  
+				 "10 20 40 50 110 120");
   IParam.regItem("PTRAC","ptrac");
 
   IParam.regItem("r","renum");
   IParam.regMulti("report","report",1000,0);
-  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
+  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03");
 
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regMulti("sdefType","sdefType",10,0);
@@ -148,7 +148,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
-  IParam.regItem("singleItem","singleItem");  
+  IParam.regItem("singleItem","singleItem");
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
@@ -171,7 +171,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("volCard","volCard");
   IParam.regDefItem<int>("VN","volNum",1,20000);
   IParam.regMulti("volCell","volCells",100,1,100);
-    
+
   IParam.regFlag("void","void");
   IParam.regMulti("voidObject","voidObject",1000);
   IParam.regItem("vtkMesh","vtkMesh",1);
@@ -207,7 +207,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wLAM","wLAM",1000,0);
   IParam.regMulti("wCUT","wCUT",1000,0);
   IParam.regMulti("wMAT","wMAT",1000,0);
-  
+
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
   IParam.regItem("wwgNorm","wwgNorm",0,30);
@@ -217,8 +217,8 @@ createInputs(inputParam& IParam)
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
-  IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
-  
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
+
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
@@ -243,7 +243,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("imp","Importance regions");
   IParam.setDesc("m","Create multiple files (diff: RNDseed)");
   IParam.setDesc("matDB","Set the material database to use "
-                 "(shielding or neutronics)");  
+                 "(shielding or neutronics)");
   IParam.setDesc("matFile","Set the materials from a file");
 
   IParam.setDesc("M","Add mesh tally");
@@ -257,7 +257,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
-  IParam.setDesc("PovRay","PovRay output");
+  IParam.setDesc("POVRAY","POV-Ray output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("Mag","Activate magnetic field [Vector]");
@@ -278,8 +278,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("sdefSource","Extra data for source.F");
   IParam.setDesc("singleItem","Single item for singleItem method");
-  
-  IParam.setDesc("physModel","Physics Model"); 
+
+  IParam.setDesc("physModel","Physics Model");
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
@@ -322,7 +322,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
   IParam.setDesc("wwgNorm"," normalization step : "
 		 "[weightRange - lowRange - highRange - powerRange]");
-  
+
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");
   return;
@@ -349,7 +349,7 @@ createSiliconInputs(inputParam& IParam)
   IParam.setDesc("bias","");
   IParam.setDesc("detSize","Width/Height of the area-detector");
   IParam.setDesc("lambda","Wavelength in angstrom");
-  IParam.setDesc("material","Moderator material");  
+  IParam.setDesc("material","Moderator material");
   IParam.setDesc("silicon","Silicon vane material");
   IParam.setDesc("nps","Number of simulated points");
   IParam.setDesc("output","Output file");
@@ -357,7 +357,7 @@ createSiliconInputs(inputParam& IParam)
   return;
 }
 
-void 
+void
 createSinbadInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for sinbad
@@ -367,7 +367,7 @@ createSinbadInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainInputs[F]","createSinbadInputs");
 
   createInputs(IParam);
-  IParam.setValue("sdefType",std::string("sinbad"));    
+  IParam.setValue("sdefType",std::string("sinbad"));
 
   IParam.regDefItem<std::string>("preName","preName",1,"49");
 
@@ -375,7 +375,7 @@ createSinbadInputs(inputParam& IParam)
   return;
 }
 
-void 
+void
 createDelftInputs(inputParam& IParam)
   /*!
     Set the specialise inputs
@@ -412,7 +412,7 @@ createDelftInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("kcode"),1);
   IParam.setValue("sdefType",std::string("kcode"),2);
   IParam.setValue("sdefType",std::string("kcode"),3);
-  
+
   return;
 }
 
@@ -430,8 +430,8 @@ void createFullInputs(inputParam& IParam)
   IParam.regDefItem<int>("cf","collFlag",1,7);
   IParam.regItem("decFile","decFile",1,1);
   IParam.regDefItem<std::string>("decType","decType",1,"standard");
-  IParam.regFlag("h","horr");  
-  IParam.regFlag("orthoH","orthoH");  
+  IParam.regFlag("h","horr");
+  IParam.regFlag("orthoH","orthoH");
   IParam.regMulti("t","target",5);
   IParam.regDefItem<int>("zoomShutterGN","zoomShutterGN",1,4);
 
@@ -445,8 +445,8 @@ void createFullInputs(inputParam& IParam)
   IParam.setDesc("zoomShutterGN","Number of sections between B4C "
 		 "in zoom shutter");
 
-  IParam.setValue("targetType",std::string("t2Target"));  
-  IParam.setValue("sdefType",std::string("TS2"));  
+  IParam.setValue("targetType",std::string("t2Target"));
+  IParam.setValue("sdefType",std::string("TS2"));
   return;
 }
 
@@ -459,10 +459,10 @@ createFilterInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createFilterInputs");
   createInputs(IParam);
-  
+
 
   IParam.setValue("sdefType",std::string("Beam"));
-  IParam.setFlag("voidUnMask");  
+  IParam.setFlag("voidUnMask");
   return;
 }
 
@@ -476,7 +476,7 @@ createGammaInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainInputs[F]","createGammaInputs");
   createInputs(IParam);
 
-  IParam.setValue("sdefType",std::string("Gamma"));  
+  IParam.setValue("sdefType",std::string("Gamma"));
   return;
 }
 
@@ -491,7 +491,7 @@ createPhotonInputs(inputParam& IParam)
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("Laser"));
-  IParam.setFlag("voidUnMask");  
+  IParam.setFlag("voidUnMask");
   return;
 }
 
@@ -505,20 +505,20 @@ createTS1Inputs(inputParam& IParam)
   ELog::RegMethod RegA("MainInputs[F]","createTS1Inputs");
   createInputs(IParam);
 
-  IParam.regDefItem<std::string>("CH4PreType","CH4PreType",1,"Wrapper");  
+  IParam.regDefItem<std::string>("CH4PreType","CH4PreType",1,"Wrapper");
   IParam.setDesc("CH4PreType","Name of CH4 Premoderator");
-  IParam.regDefItem<std::string>("CH4ModType","CH4ModType",1,"Basic");  
+  IParam.regDefItem<std::string>("CH4ModType","CH4ModType",1,"Basic");
   IParam.setDesc("CH4ModType","Name of CH4 Moderator");
-  IParam.regDefItem<std::string>("WaterModType","WaterModType",1,"Triangle");  
+  IParam.regDefItem<std::string>("WaterModType","WaterModType",1,"Triangle");
   IParam.setDesc("WaterModType","Name of Water [top] Moderator");
-  IParam.regDefItem<std::string>("H2ModType","H2ModType",1,"Basic");  
+  IParam.regDefItem<std::string>("H2ModType","H2ModType",1,"Basic");
   IParam.setDesc("H2ModType","Name of H2 Moderator");
 
-  IParam.regFlag("BeRods","BeRods");  
+  IParam.regFlag("BeRods","BeRods");
   IParam.setDesc("BeRods","Divide the Be into rods");
 
-  IParam.setValue("sdefType",std::string("TS1"));  
-  IParam.setValue("targetType",std::string("t1PlateTarget"));  
+  IParam.setValue("sdefType",std::string("TS1"));
+  IParam.setValue("targetType",std::string("t1PlateTarget"));
 
   return;
 }
@@ -533,9 +533,9 @@ createBilbauInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainInputs[F]","createBilbauInputs");
   createInputs(IParam);
 
-  //  IParam.setValue("sdefEnergy",50.0);    
-  IParam.setValue("sdefType",std::string("TS1"));  
-  
+  //  IParam.setValue("sdefEnergy",50.0);
+  IParam.setValue("sdefType",std::string("TS1"));
+
 
   return;
 }
@@ -549,8 +549,8 @@ createBNCTInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createSNSInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("ess"));  
+
+  IParam.setValue("sdefType",std::string("ess"));
   return;
 }
 
@@ -570,7 +570,7 @@ createD4CInputs(inputParam& IParam)
   IParam.regDefItem<int>("MS","multiScat",1,0);
   IParam.setDesc("multiScat","Consider only 1 collision ");
 
-  IParam.setValue("sdefType",std::string("D4C"));  
+  IParam.setValue("sdefType",std::string("D4C"));
   //  IParam.setFlag("Monte");
   return;
 }
@@ -598,8 +598,8 @@ createCuInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createCutInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("TS1"));    
+
+  IParam.setValue("sdefType",std::string("TS1"));
   return;
 }
 
@@ -612,8 +612,8 @@ createPipeInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createPipeInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("Point"));    
+
+  IParam.setValue("sdefType",std::string("Point"));
   return;
 }
 
@@ -628,10 +628,10 @@ createLinacInputs(inputParam& IParam)
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("essLinac"));
-  
+
   return;
 }
-  
+
 
 void
 createSingleItemInputs(inputParam& IParam)
@@ -645,7 +645,7 @@ createSingleItemInputs(inputParam& IParam)
   return;
 }
 
-  
+
 void
 createEPBInputs(inputParam& IParam)
   /*!
@@ -655,8 +655,8 @@ createEPBInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createEPBInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("ess"));  
+
+  IParam.setValue("sdefType",std::string("ess"));
   return;
 }
 
@@ -669,8 +669,8 @@ createSNSInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainInputs[F]","createSNSInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("ess"));  
+
+  IParam.setValue("sdefType",std::string("ess"));
   return;
 }
 
@@ -684,7 +684,7 @@ createMuonInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainInputs[F]","createMuonInputs");
   createInputs(IParam);
 
-  IParam.setValue("sdefType",std::string("TS1EpbColl")); 
+  IParam.setValue("sdefType",std::string("TS1EpbColl"));
   return;
 }
 
@@ -696,7 +696,7 @@ createLensInputs(inputParam& IParam)
   */
 {
   ELog::RegMethod RegA("MainInputs[F]","createLensInputs");
-  
+
   createInputs(IParam);
   IParam.regMulti("TS","surfTally",1000,2,2);
   IParam.regMulti("TE","tallyEnergy",1000,1,1);

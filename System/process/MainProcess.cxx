@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   process/MainProcess.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -99,7 +99,7 @@ void
 activateLogging(ELog::RegMethod& RControl)
   /*!
     Sets up the Main flags for logging
-    \param RControl :: Any RegMethod 
+    \param RControl :: Any RegMethod
   */
 {  // Set up output information:
   ELog::EM.setNBasePtr(RControl.getBasePtr());
@@ -130,7 +130,7 @@ getVariables(std::vector<std::string>& Names,
     \param Names :: Initial set of values from ARGV
     \param AddValues :: -va options [new variables]
     \param Values :: -v options [existing variables]
-    \param IterVal :: Iteration variables 
+    \param IterVal :: Iteration variables
    */
 {
   ELog::RegMethod RegA("MainProcess","getVariables");
@@ -165,14 +165,14 @@ setRunTimeVariable(FuncDataBase& Control,
 		   const std::map<std::string,std::string>& VMap,
 		   const std::map<std::string,std::string>& AVMap)
   /*!
-    Set runtime variables 
+    Set runtime variables
     \param Control :: Function Data base to update
     \param VMap :: Map of variable + values
     \param AVMap :: Map of variable to add + values
    */
 {
   ELog::RegMethod RegA("MainProcess[F]","setRunTimeVariable");
-  
+
   std::map<std::string,std::string>::const_iterator mc;
   for(mc=VMap.begin();mc!=VMap.end();mc++)
     {
@@ -211,7 +211,7 @@ void
 incRunTimeVariable(FuncDataBase& Control,
 		   const std::map<std::string,double>& VMap)
   /*!
-    Increase runtime variables 
+    Increase runtime variables
     \param Control :: Function Data base to update
     \param VMap :: Map of variable + values
    */
@@ -245,7 +245,7 @@ renumberCells(Simulation& System,const inputParam& IParam)
 
   if (!IParam.flag("renum") && !IParam.flag("cellRange"))
     return;
-  
+
   if (IParam.flag("renum"))
     {
       std::vector<int> rOffset;
@@ -263,16 +263,16 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	    (i+1<dataCnt) ? IParam.getValue<std::string>("renum",i+1) : "";
 
 	  int xOffset(0);
-	  int xRange(10000);	  
+	  int xRange(10000);
 	  i+=2;
-	  if (!StrFunc::convert(Name,xOffset) || 
+	  if (!StrFunc::convert(Name,xOffset) ||
 	      !StrFunc::convert(Range,xRange))
 	    {
 	      xOffset=System.getFirstCell(Name);
-	      xRange=System.getLastCell(Name)-xOffset;			
+	      xRange=System.getLastCell(Name)-xOffset;
 	      i--;              // using names
 	    }
-	  
+
 	  if (xOffset>0)
 	    {
 	      rOffset.push_back(xOffset);
@@ -308,9 +308,9 @@ setVariables(Simulation& System,const inputParam& IParam,
 {
   ELog::RegMethod RegA("MainProcess","setVariables");
 
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;  
+  std::map<std::string,std::string> Values;
+  std::map<std::string,std::string> AddValues;
+  std::map<std::string,double> IterVal;
 
 
   for(size_t i=0;i<IParam.setCnt("xml");i++)
@@ -322,7 +322,7 @@ setVariables(Simulation& System,const inputParam& IParam,
   mainSystem::getVariables(Names,AddValues,Values,IterVal);
   mainSystem::setRunTimeVariable(System.getDataBase(),Values,AddValues);
 
-  if (IParam.flag("xmlout")) 
+  if (IParam.flag("xmlout"))
     {
       ELog::EM<<"Xout == "<<IParam.getValue<std::string>("xmlout")
 	      <<ELog::endCrit;
@@ -371,7 +371,7 @@ createSimulation(inputParam& IParam,
 		 std::string& Oname)
   /*!
     Creates the simulation and populates the variables
-    \param IParam :: Input Parameter 
+    \param IParam :: Input Parameter
     \param Names :: Vector of inputs
     \param Oname :: output file name
     \return Simulation type
@@ -391,7 +391,7 @@ createSimulation(inputParam& IParam,
   if (Oname[0]=='-')
     {
       IParam.writeDescription(ELog::EM.Estream());
-      ELog::EM<<ELog::endDiag; 
+      ELog::EM<<ELog::endDiag;
       return 0;
     }
   // DEBUG
@@ -410,10 +410,10 @@ createSimulation(inputParam& IParam,
       masterWrite::Instance().setZero(1e-14);
       SimPtr=new SimFLUKA;
     }
-  else if (IParam.flag("PovRay"))
+  else if (IParam.flag("POVRAY"))
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
-    SimPtr=new SimMonte; 
+    SimPtr=new SimMonte;
   else
     {
       SimMCNP* SMCPtr=new SimMCNP;
@@ -423,14 +423,14 @@ createSimulation(inputParam& IParam,
 
   // OR.setObjectGroup(*SimPtr);
   // buildWorld(*SimPtr);
-  
+
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
   // CNF split the cells
   SimPtr->setCellCNF(IParam.getDefValue<size_t>(0,"cellCNF"));
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
-  
+
   return SimPtr;
 }
 
@@ -448,7 +448,7 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
   ELog::RegMethod RegA("MainProcess","InputModifications");
 
   mainSystem::setVariables(*SimPtr,IParam,Names);
-  if (!Names.empty()) 
+  if (!Names.empty())
     ELog::EM<<"Unable to understand values "<<Names[0]<<ELog::endErr;
 
   return;
@@ -464,7 +464,7 @@ setMaterialsDataBase(const inputParam& IParam)
   ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
 
   const std::string materials=IParam.getValue<std::string>("matDB");
-  
+
   // Add extra materials to the DBMaterials
   if (materials=="neutronics")
     ModelSupport::addESSMaterial();
@@ -480,7 +480,7 @@ setMaterialsDataBase(const inputParam& IParam)
 	" -- shielding [S.Ansell original naming]\n"
 	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
       throw ColErr::ExitAbort("help");
-    }	
+    }
   else
     throw ColErr::InContainerError<std::string>
       (materials,"Materials Data Base type");
@@ -496,7 +496,7 @@ setMaterialsDataBase(const inputParam& IParam)
     }
   return;
 }
-  
+
 void
 exitDelete(Simulation* SimPtr)
  /*!
@@ -524,7 +524,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
 
-  // Definitions section 
+  // Definitions section
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
   if (IParam.flag("noVariables"))
@@ -536,7 +536,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 
   //
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
-  
+
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   tallyModification(*SimFLUKAPtr,IParam);
 
@@ -574,9 +574,9 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 
   ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
   SimPHITSPtr->prepareWrite();  // this can be deleteted??
-  
+
   phitsSystem::tallySelection(*SimPHITSPtr,IParam);
-    
+
   SimProcess::importanceSim(*SimPHITSPtr,IParam);
 
   SimProcess::inputProcessForSim(*SimPHITSPtr,IParam); // energy cut etc
@@ -607,11 +607,11 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
     \param OName :: output file name
    */
 {
-  // Definitions section 
+  // Definitions section
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
 
-  
+
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
 
@@ -650,7 +650,7 @@ buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
    */
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
-  // Definitions section 
+  // Definitions section
 
   // if (IParam.flag("noVariables"))
   //   SimPOVRayPtr->setNoVariables();
@@ -680,7 +680,7 @@ buildFullSimulation(Simulation* SimPtr,
 
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
-  
+
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
@@ -698,7 +698,7 @@ buildFullSimulation(Simulation* SimPtr,
       buildFullSimMCNP(SimMCPtr,IParam,OName);
       return;
     }
-  
+
   SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
   if (SimFLUKAPtr)
     {
@@ -708,20 +708,19 @@ buildFullSimulation(Simulation* SimPtr,
 
   SimPOVRay* SimPOVPtr=dynamic_cast<SimPOVRay*>(SimPtr);
   if (SimPOVPtr)
-    {      
+    {
       buildFullSimPOVRay(SimPOVPtr,IParam,OName);
       return;
     }
 
   SimPHITS* SimPHITSPtr=dynamic_cast<SimPHITS*>(SimPtr);
   if (SimPHITSPtr)
-    {      
+    {
       buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
- 
+
   return;
 }
-                      
-}  // NAMESPACE mainSystem
 
+}  // NAMESPACE mainSystem
