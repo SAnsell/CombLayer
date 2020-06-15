@@ -142,7 +142,7 @@ SPECIES::build(Simulation& System,
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  return;
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -150,7 +150,7 @@ SPECIES::build(Simulation& System,
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole" ||
       stopPoint=="Heat") return;
-  return;
+
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
@@ -160,7 +160,6 @@ SPECIES::build(Simulation& System,
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
-
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,

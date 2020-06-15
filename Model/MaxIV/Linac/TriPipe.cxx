@@ -165,7 +165,7 @@ TriPipe::createSurfaces()
     }
   // use this so angled fronts correctly make
   FrontBackCut::getShiftedFront
-    (SMap,buildIndex+11,1,Y,flangeALength);
+    (SMap,buildIndex+11,Y,flangeALength);
 
 
   
@@ -175,7 +175,7 @@ TriPipe::createSurfaces()
 			       Origin+Y*(length/2.0),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  FrontBackCut::getShiftedBack(SMap,buildIndex+12,1,Y,-flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
 
   attachSystem::FixedOffsetUnit PipeFC("Axis",Origin-Y*(length/2.0),Y,Z);
 

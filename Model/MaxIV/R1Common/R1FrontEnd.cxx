@@ -552,15 +552,12 @@ R1FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 
-  return;
   quadUnit->setCutSurf("front",undulatorFC,2);
   quadUnit->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
 
   quadUnit->insertInCell(System,outerCell);
   quadUnit->createQuads(System,outerCell);
-
-
 
 
   dipoleChamber->setCutSurf("front",*quadUnit,2);
@@ -596,7 +593,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);
-  return;
+
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
   dipolePipe->setBack(*bellowA,2);
 
@@ -619,8 +616,6 @@ R1FrontEnd::buildObjects(Simulation& System)
     }
  
 
-  lastComp=dipolePipe;
-  return;
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
@@ -632,6 +627,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   bellowC->createAll(System,*ionPA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
+
 
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
@@ -647,6 +643,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
+
 
   setCell("MasterVoid",masterCell->getName());
   lastComp=bellowK;
@@ -672,7 +669,7 @@ R1FrontEnd::createAll(Simulation& System,
   createSurfaces();
 
   buildObjects(System);
-  //  createLinks();
+  createLinks();
 
   std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   Out+=frontRule()+backRule();

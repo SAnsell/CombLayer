@@ -271,8 +271,8 @@ GrateMonoBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,Y,flangeBRadius);
 
   // Flange cut
-  FrontBackCut::getShiftedFront(SMap,buildIndex+111,1,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+211,1,Y,-flangeBLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+111,Y,flangeALength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+211,Y,-flangeBLength);
 
 
   // Top plate:

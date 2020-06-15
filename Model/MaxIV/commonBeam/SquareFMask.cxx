@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SquareFMask.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,10 +81,11 @@ namespace xraySystem
 {
 
 SquareFMask::SquareFMask(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
-  
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  attachSystem::FrontBackCut()  
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -292,7 +293,7 @@ SquareFMask::createObjects(Simulation& System)
 
       HeadRule pipeHR[4];
       for(size_t i=0;i<4;i++)
-	{	  
+	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-7M -1003 -1004 ");
 	  CellMap::makeCell("PipeA",System,cellIndex++,waterMat,0.0,Out);
 	  pipeHR[i].addUnion(Out);
@@ -313,36 +314,49 @@ SquareFMask::createObjects(Simulation& System)
       const std::string FC=ModelSupport::getComposite
 	(SMap,buildIndex," 3 -4 5 -6 (-103:104:-105:106) ");
 
+      size_t index(1);
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1001 ");
       CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
 			FC+Out+pipeHR[0].display());
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
-      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			FC+Out+pipeHR[1].display());
-      
-      if (minLength>(pipeYStep[2]+pipeYStep[3])/2.0)
+
+      if (minLength>pipeYStep[index])
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
+	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			    FC+Out+pipeHR[index].display());
+	  index++;
+	}
+	
+      if (minLength>pipeYStep[index])
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1021 ");
 	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			FC+Out+pipeHR[2].display());
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -101 ");
+			    FC+Out+pipeHR[index].display());
+	  index++;
+	}
+      if (minLength>pipeYStep[3]-pipeRadius)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -101");
 	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			    FC+Out+pipeHR[3].display());
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+			    FC+Out+pipeHR[index].display());
+	  index++;
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -101 ");
-	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			FC+Out+pipeHR[2].display());
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
-	  Out+=pipeHR[3].display();
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -101");
+	  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,FC+Out);
 	}
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+      for(;index<4;index++)
+	Out+=pipeHR[index].display();
+
       CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
     }
-  else   // two simple sections:
+  else   // two simple sections [NO pipes]
     {
       // metal [ inner section]
       Out=ModelSupport::getComposite
@@ -353,7 +367,7 @@ SquareFMask::createObjects(Simulation& System)
 	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
       CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
     }
-  
+
   // Front flange:
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 7 -17 ");
