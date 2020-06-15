@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment5.cxx
+ * File: Linac/L2SPFsegment25.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -124,14 +124,10 @@ TDCsegment25::buildObjects(Simulation& System)
   //  if (isActive("front"))
     //    bellowA->copyCutSurf("front",*this,"front");
   bellowA->createAll(System,*this,0);
-  return;
   
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
-  ELog::EM<<"Bellow == "<<bellowA->getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"Bellow == "<<bellowA->getLinkPt(2)<<ELog::endDiag;
-  buildZone->removeLastMaster(System);  
-  return;
+
   triPipeA->setFront(*bellowA,2);
   triPipeA->createAll(System,*bellowA,"back");
 
@@ -139,7 +135,7 @@ TDCsegment25::buildObjects(Simulation& System)
   pipeMagGroup(System,*buildZone,triPipeA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
   pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
-  return;
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
 
