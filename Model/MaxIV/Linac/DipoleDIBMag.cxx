@@ -253,9 +253,9 @@ DipoleDIBMag::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+25,LOrg-Z*(magHeight+vGap),Z);
 
   //  ModelSupport::buildPlane(SMap,buildIndex+26,TOrg+Z*(magHeight+vGap),Z);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+26,buildIndex+2006,vGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+1013,vGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+1014,-vGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+26,buildIndex+2006,Z,vGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,buildIndex+1013,X,vGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,buildIndex+1014,X,-vGap);
 
   return;
 }

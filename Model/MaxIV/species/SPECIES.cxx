@@ -134,6 +134,7 @@ SPECIES::build(Simulation& System,
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
+
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
@@ -149,7 +150,7 @@ SPECIES::build(Simulation& System,
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole" ||
       stopPoint=="Heat") return;
-
+  return;
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));

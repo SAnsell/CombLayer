@@ -551,9 +551,8 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
+
   return;
-
-
   quadUnit->setCutSurf("front",undulatorFC,2);
   quadUnit->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
@@ -561,7 +560,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   quadUnit->insertInCell(System,outerCell);
   quadUnit->createQuads(System,outerCell);
 
-  return;
+
 
 
   dipoleChamber->setCutSurf("front",*quadUnit,2);
@@ -587,7 +586,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
-  ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());
@@ -597,24 +595,20 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
-
-
-
+  bellowA->createAll(System,*collA,1);
+  return;
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
   dipolePipe->setBack(*bellowA,2);
+
   dipolePipe->createAll(System,*dipoleChamber,
 			dipoleChamber->getSideIndex("exit"));  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-  lastComp=dipolePipe;
-  return;
-
   // note : bellowA is reversed
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
   
-
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
 
@@ -623,7 +617,10 @@ R1FrontEnd::buildObjects(Simulation& System)
       lastComp=dipolePipe;
       return;
     }
+ 
 
+  lastComp=dipolePipe;
+  return;
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);

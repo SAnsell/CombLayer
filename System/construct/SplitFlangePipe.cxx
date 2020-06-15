@@ -280,10 +280,11 @@ SplitFlangePipe::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);    
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   ELog::EM<<"Front == "<<getRule("front")<<ELog::endDiag;
   ELog::EM<<"Front == "<<*SMap.realSurfPtr(3170001)<<ELog::endDiag;
   getShiftedFront(SMap,buildIndex+11,1,Y,flangeALength);
-  getShiftedFront(SMap,buildIndex+21,1,Y,flangeALength+bellowStep);
+  getShiftedFront(SMap,buildIndex+21,1,Y,(flangeALength+bellowStep));
   ELog::EM<<"Front == "<<*SMap.realSurfPtr(buildIndex+11)<<ELog::endDiag;
   ELog::EM<<"Front == "<<*SMap.realSurfPtr(buildIndex+21)<<ELog::endDiag;
   if (!backActive())
@@ -292,7 +293,7 @@ SplitFlangePipe::createSurfaces()
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,-flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+12,1,Y,-flangeBLength);
   FrontBackCut::getShiftedBack(SMap,buildIndex+22,1,Y,
 			       -(flangeBLength+bellowStep));
   

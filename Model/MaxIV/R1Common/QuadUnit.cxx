@@ -205,8 +205,8 @@ QuadUnit::createSurfaces()
     }
 
   // front flange:
-  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+101,1,Y,flangeALength);
-  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+102,1,Y,-flangeBLength);
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+101,Y,flangeALength);
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+102,Y,-flangeBLength);
 
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);

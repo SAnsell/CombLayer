@@ -199,11 +199,10 @@ RingDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
 
-
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+200,1,Y,-(innerThick));
+    (SMap,"innerWall",buildIndex+200,-1,Y,-innerThick);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+201,1,Y,-(innerThick+gapSpace));
+    (SMap,"innerWall",buildIndex+201,-1,Y,-(innerThick+gapSpace));
 
   // lift step
   ExternalCut::makeShiftedSurf
