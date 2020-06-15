@@ -162,22 +162,22 @@ PortChicane::createSurfaces()
   ELog::RegMethod RegA("PortChicane","createSurface");
 
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+11,X,-clearGap);
+    (SMap,"innerWall",buildIndex+11,Y,-clearGap);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+21,X,-(clearGap+innerSkin));
+    (SMap,"innerWall",buildIndex+21,Y,-(clearGap+innerSkin));
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+31,X,-(clearGap+innerSkin+innerPlate));
+    (SMap,"innerWall",buildIndex+31,Y,-(clearGap+innerSkin+innerPlate));
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+41,X,-(clearGap+2*innerSkin+innerPlate));
+    (SMap,"innerWall",buildIndex+41,Y,-(clearGap+2*innerSkin+innerPlate));
 
   ExternalCut::makeShiftedSurf
-    (SMap,"outerWall",buildIndex+12,X,clearGap);
+    (SMap,"outerWall",buildIndex+12,Y,clearGap);
   ExternalCut::makeShiftedSurf
-    (SMap,"outerWall",buildIndex+22,X,clearGap+outerSkin);
+    (SMap,"outerWall",buildIndex+22,Y,clearGap+outerSkin);
   ExternalCut::makeShiftedSurf
-    (SMap,"outerWall",buildIndex+32,X,clearGap+outerSkin+outerPlate);
+    (SMap,"outerWall",buildIndex+32,Y,clearGap+outerSkin+outerPlate);
   ExternalCut::makeShiftedSurf
-    (SMap,"outerWall",buildIndex+42,X,clearGap+2*outerSkin+outerPlate);
+    (SMap,"outerWall",buildIndex+42,Y,clearGap+2*outerSkin+outerPlate);
 
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -278,7 +278,7 @@ PortChicane::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
       makeCell("InnerBaseOver",System,cellIndex++,0,0.0,Out+outerStr);
-
+ 
       Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
       makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
 
