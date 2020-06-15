@@ -162,7 +162,8 @@ SixPortPump::createSurfaces()
 
   // vertical/horizontal dividers
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
-  ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+300,Origin,Z);
 
   // main pipe and thicness
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
@@ -251,79 +252,74 @@ SixPortPump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 303 -313 ");
   makeCell("LeftFlange",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 303 -313 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -303 323 ");
   makeCell("LeftPlate",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 304 17 ");
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 -304 17 ");
   makeCell("RightVoid",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 304 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -304 17 ");
   makeCell("RightWall",System,cellIndex++,mainMat,0.0,Out);
   
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -304 314 ");
+  makeCell("RightFlange",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 314 -324");
+  makeCell("RightPlate",System,cellIndex++,mainMat,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 17 ");
+  makeCell("LowVoid",System,cellIndex++,mainMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 ");
+  makeCell("LowWall",System,cellIndex++,mainMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 155 -105 -107 ");
-  makeCell("PlateA",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
+  makeCell("LowFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -106 116 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 425 -405");
+  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
+
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -156 106 -107 ");
-  makeCell("PlateB",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 17 ");
+  makeCell("TopVoid",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 115 -116 327 17 -107 (200:227)");
-  makeCell("OutTube",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 ");
+  makeCell("TopWall",System,cellIndex++,mainMat,0.0,Out);
+  
 
-  // view
-  Out=ModelSupport::getComposite(SMap,buildIndex," 307 7 -200 -207 203");
-  makeCell("viewVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 -406 416 ");
+  makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 17 -200 -217 207 203");
-  makeCell("viewTube",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 -426 406");
+  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -227 217 203 -213");
-  makeCell("viewFlange",System,cellIndex++,mainMat,0.0,Out);
+  // cross void
+  Out=ModelSupport::getComposite(SMap,buildIndex," -327 313 -314 17 417 317 ");
+  makeCell("HorOuter",System,cellIndex++,0,0.0,Out);
+  // vert void
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417 327 ");
+  makeCell("VertOuter",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -227 -203 253 ");
-  makeCell("viewPlate",System,cellIndex++,mainMat,0.0,Out);
+  // front void
+  Out=ModelSupport::getComposite(SMap,buildIndex," -200 17 327 427 -107 101");
+  makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 217 -227 -200 17 213 327");
-  makeCell("viewOut",System,cellIndex++,0,0.0,Out);
-
-
-  // view 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 7 -307 ");
-  makeCell("frontPort",System,cellIndex++,voidMat,0.0,Out+frontStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) -100 17 307 -317 ");
-  makeCell("frontWall",System,cellIndex++,mainMat,0.0,Out+frontStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -411 -327 317 ");
-  makeCell("frontFlange",System,cellIndex++,mainMat,0.0,Out+frontStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (217:200) 411 -100 17 -327 317 ");
-  makeCell("frontOut",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 7 -307 ");
-  makeCell("backPort",System,cellIndex++,voidMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," (207:200) 100 17 307 -317 ");
-  makeCell("backWall",System,cellIndex++,mainMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 512 -327 317 ");
-  makeCell("backFlange",System,cellIndex++,mainMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," (217:200) -512 100 17 -327 317 ");
-  makeCell("backOut",System,cellIndex++,0,0.0,Out);
+  // back void
+  Out=ModelSupport::getComposite(SMap,buildIndex," 200 17 327 427 -207 -202 ");
+  makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
 
   // outer void box:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 155 -156 253 (-327 : -107 : (-227 -200)) ");
-  addOuterSurf(Out+frontStr+backStr);
-  
+  if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
+      addOuterSurf(Out+frontStr+backStr);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"(303 -327 -304) : (405 -406 -427)");
+      addOuterUnionSurf(Out+frontStr+backStr);
+    }
   return;
 }
 
@@ -338,11 +334,6 @@ SixPortPump::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
   
-  FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));
-
-  FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+156));
 
   return;
 }
