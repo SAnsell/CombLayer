@@ -141,8 +141,7 @@ t1BulkShield::t1BulkShield(const t1BulkShield& A) :
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   totalHeight(A.totalHeight),totalDepth(A.totalDepth),
-  ironMat(A.ironMat),shutterCell(A.shutterCell),
-  innerCell(A.innerCell),outerCell(A.outerCell)
+  ironMat(A.ironMat)
   /*!
     Copy constructor
     \param A :: t1BulkShield to copy
@@ -173,9 +172,6 @@ t1BulkShield::operator=(const t1BulkShield& A)
       totalHeight=A.totalHeight;
       totalDepth=A.totalDepth;
       ironMat=A.ironMat;
-      shutterCell=A.shutterCell;
-      innerCell=A.innerCell;
-      outerCell=A.outerCell;
     }
   return *this;
 }
@@ -313,10 +309,6 @@ t1BulkShield::createShutters(Simulation& System)
       OR.addObject(GData.back());
     }
 
-  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
-  if (!shutterObj)
-    throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
-
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
@@ -328,7 +320,8 @@ t1BulkShield::createShutters(Simulation& System)
 				   totalDepth,totalHeight);
       GData[i]->setDivide(50000);     /// ARRRHHH....
       GData[i]->createAll(System,*this,0);    
-      shutterObj->addSurfString(GData[i]->getExclude());
+
+      CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
 
   return;
@@ -343,6 +336,8 @@ t1BulkShield::createBulkInserts(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","createBulkInserts");
 
+  const int innerCell=CellMap::getCell("innerCell");
+  const int outerCell=CellMap::getCell("outerCell");
   for(size_t i=0;i<numberBeamLines;i++)
     {
       BData.push_back(std::shared_ptr<BulkInsert>
@@ -373,15 +368,12 @@ t1BulkShield::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
   makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
-  //  shutterCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
   makeCell("innerCell",System,cellIndex++,ironMat,0.0,Out);
-//  innerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
   makeCell("outerCell",System,cellIndex++,ironMat,0.0,Out);
-//  outerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
   addOuterSurf(Out);

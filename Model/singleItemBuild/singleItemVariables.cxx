@@ -73,6 +73,7 @@
 #include "BeamDividerGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
+#include "FlatPipeGenerator.h"
 #include "TriPipeGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
@@ -215,6 +216,10 @@ SingleItemVariables(FuncDataBase& Control)
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,"TriPipe");
 
+  setVariable::FlatPipeGenerator FPGen;
+  FPGen.generateFlat(Control,"FlatPipe",80.0);
+  Control.addVariable("FlatPipeXYAngle",0);
+  
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 

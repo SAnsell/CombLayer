@@ -88,6 +88,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "Scrapper.h"
+#include "FlatPipe.h"
 #include "TriPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
@@ -128,7 +129,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
-      "TriPipe","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "FlatPipe","TriPipe","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper",
       "Help","help"
     });
@@ -443,6 +444,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::TriPipe>
 	tp(new tdcSystem::TriPipe("TriPipe"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  
+  if (item == "FlatPipe")
+    {
+      std::shared_ptr<tdcSystem::FlatPipe>
+	tp(new tdcSystem::FlatPipe("FlatPipe"));
       OR.addObject(tp);
 
       tp->addAllInsertCell(voidCell);

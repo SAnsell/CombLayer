@@ -114,7 +114,7 @@ FlatPipe::populate(const FuncDataBase& Control)
 
   // Void + Wall:
   frontWidth=Control.EvalVar<double>(keyName+"FrontWidth");
-  backWidth=Control.EvalVar<double>(keyName+"BackWidth");  
+  backWidth=Control.EvalVar<double>(keyName+"BackWidth");
   frontHeight=Control.EvalVar<double>(keyName+"FrontHeight");
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
 
@@ -167,32 +167,36 @@ FlatPipe::createSurfaces()
   FrontBackCut::getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
 
   // main pipe
+
+  const Geometry::Vec3D& OrgA=Origin-Y*(length/2.0);
+  const Geometry::Vec3D& OrgB=Origin+Y*(length/2.0);
+
   ModelSupport::buildPlane(SMap,buildIndex+3,
-			   Origin-X*(frontWidth/2.0),
-			   Origin-X*(backWidth/2.0),
-			   Origin-X*(backWidth/2.0)+Z,
+			   OrgA-X*(frontWidth/2.0),
+			   OrgB-X*(backWidth/2.0),
+			   OrgB-X*(backWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+4,
-			   Origin+X*(frontWidth/2.0),
-			   Origin+X*(backWidth/2.0),
-			   Origin+X*(backWidth/2.0)+Z,
+			   OrgA+X*(frontWidth/2.0),
+			   OrgB+X*(backWidth/2.0),
+			   OrgB+X*(backWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+5,
-			   Origin-Z*(frontHeight/2.0),
-			   Origin-Z*(backHeight/2.0),
-			   Origin-Z*(backHeight/2.0)+X,
+			   OrgA-Z*(frontHeight/2.0),
+			   OrgB-Z*(backHeight/2.0),
+			   OrgB-Z*(backHeight/2.0)+X,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,
-			   Origin+Z*(frontHeight/2.0),
-			   Origin+Z*(backHeight/2.0),
-			   Origin+Z*(backHeight/2.0)+X,
+			   OrgA+Z*(frontHeight/2.0),
+			   OrgB+Z*(backHeight/2.0),
+			   OrgB+Z*(backHeight/2.0)+X,
 			   Z);
 
 
   // two inner
   if (std::abs(frontHeight-backHeight)<Geometry::zeroTol)
     {
-      const double R(frontHeight/2.0);
+      const double R(frontHeight/2.0+wallThick);
       const Geometry::Vec3D LAxis
 	((Y*length-X*((backWidth-frontWidth)/2.0)).unit());
       const Geometry::Vec3D RAxis
@@ -234,24 +238,24 @@ FlatPipe::createSurfaces()
   // main pipe walls
   // main pipe
   ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(wallThick+frontWidth/2.0),
-			   Origin-X*(wallThick+backWidth/2.0),
-			   Origin-X*(wallThick+backWidth/2.0)+Z,
+			   OrgA-X*(wallThick+frontWidth/2.0),
+			   OrgB-X*(wallThick+backWidth/2.0),
+			   OrgB-X*(wallThick+backWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*(wallThick+frontWidth/2.0),
-			   Origin+X*(wallThick+backWidth/2.0),
-			   Origin+X*(wallThick+backWidth/2.0)+Z,
+			   OrgA+X*(wallThick+frontWidth/2.0),
+			   OrgB+X*(wallThick+backWidth/2.0),
+			   OrgB+X*(wallThick+backWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+15,
-			   Origin-Z*(wallThick+frontHeight/2.0),
-			   Origin-Z*(wallThick+backHeight/2.0),
-			   Origin-Z*(wallThick+backHeight/2.0)+X,
+			   OrgA-Z*(wallThick+frontHeight/2.0),
+			   OrgB-Z*(wallThick+backHeight/2.0),
+			   OrgB-Z*(wallThick+backHeight/2.0)+X,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(wallThick+frontHeight/2.0),
-			   Origin+Z*(wallThick+backHeight/2.0),
-			   Origin+Z*(wallThick+backHeight/2.0)+X,
+			   OrgA+Z*(wallThick+frontHeight/2.0),
+			   OrgB+Z*(wallThick+backHeight/2.0),
+			   OrgB+Z*(wallThick+backHeight/2.0)+X,
 			   Z);
   
   // FLANGE SURFACES FRONT/BACK:
@@ -308,10 +312,9 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
   addOuterSurf("FlangeB",Out+backStr);
 
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 15 -16 (3:-17) (-4:-18)");
-
-
   
   addOuterSurf("Pipe",Out);
   return;
