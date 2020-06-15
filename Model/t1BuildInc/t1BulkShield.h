@@ -70,7 +70,6 @@ class t1BulkShield :
 
   int ironMat;                    ///< Shield material
 
-
   // Functions:
 
   void populate(const FuncDataBase&);
