@@ -62,6 +62,7 @@
 #include "TriPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
+#include "SixPortGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TDCCavityGenerator.h"
@@ -1382,6 +1383,7 @@ TDCsegment25(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::SixPortGenerator SPortGen;
 
   const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
   const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
@@ -1410,6 +1412,9 @@ TDCsegment25(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,16.15);
 
+  SPortGen.setCF<CF150>();
+  SPortGen.generateSixPort(Control,lKey+"SixPortA");
+  
   return;
 }
 

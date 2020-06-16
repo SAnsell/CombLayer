@@ -58,22 +58,19 @@ namespace setVariable
 {
 
 SixPortGenerator::SixPortGenerator() :
-  radius(CF63::innerRadius),height(13.2),
-  depth(6.8),wallThick(CF63::wallThick),
-  flangeRadius(CF63::flangeRadius),
-  flangeLength(CF63::flangeLength),
-  plateThick(CF63::flangeLength),
-  viewZStep(3.2),viewRadius(CF63::innerRadius),
-  viewLength(9.27),viewThick(CF63::wallThick),
-  viewFlangeRadius(CF63::flangeRadius),
-  viewFlangeLength(CF63::flangeLength),
-  viewPlateThick(CF63::flangeLength),
-  portRadius(CF40::innerRadius),portThick(CF40::wallThick),
-  portFlangeRadius(CF40::flangeRadius),
-  portFlangeLength(CF40::flangeLength),
-  frontLength(9.0),backLength(11.2),
-  outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304")
+  radius(CF100::innerRadius),linkRadius(CF100::innerRadius),
+  wallThick(CF100::wallThick),
+  frontLength(22.0),backLength(22.0),
+  sideLength(22.0),
+  flangeARadius(CF100::flangeRadius),
+  flangeBRadius(CF100::flangeRadius),
+  flangeSRadius(CF100::flangeRadius),
+  flangeALength(CF100::flangeLength),
+  flangeBLength(CF100::flangeLength),
+  flangeSLength(CF100::flangeLength),
+  plateThick(CF100::flangeLength),
+  voidMat("Void"),mainMat("Stainless304"),
+  flangeMat("Stainless304"),plateMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -92,6 +89,10 @@ SixPortGenerator::setCF()
     Setter for flange A
    */
 {
+  radius=CF::innerRadius;
+  linkRadius=CF::innerRadius;
+  wallThick=CF::wallThick;
+  
   setFlangeCF<CF>();
   return;
 }
@@ -103,8 +104,12 @@ SixPortGenerator::setFlangeCF()
     Setter for flange A
    */
 {
-  flangeRadius=CF::flangeRadius;
-  flangeLength=CF::flangeLength;
+  flangeARadius=CF::flangeRadius;
+  flangeALength=CF::flangeLength;
+  flangeBRadius=CF::flangeRadius;
+  flangeBLength=CF::flangeLength;
+  flangeSRadius=CF::flangeRadius;
+  flangeSLength=CF::flangeLength;
   return;
 }
 
@@ -119,7 +124,28 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("SixPortGenerator","generateSixPort");
   
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"LinkRadius",linkRadius);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"FrontLength",frontLength);
+  Control.addVariable(keyName+"BackLength",backLength);
+  Control.addVariable(keyName+"SideLength",sideLength);
+
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeSRadius",flangeSRadius);
   
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+  Control.addVariable(keyName+"FlangeSLength",flangeSLength);
+
+  Control.addVariable(keyName+"PlateThick",plateThick);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
+  Control.addVariable(keyName+"PlateMat",plateMat);
+
   return;
 
 }
@@ -128,7 +154,11 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
 
 template void SixPortGenerator::setCF<CF100>();
 template void SixPortGenerator::setCF<CF120>();
+template void SixPortGenerator::setCF<CF150>();
 
+template void SixPortGenerator::setFlangeCF<CF100>();
+template void SixPortGenerator::setFlangeCF<CF120>();
+template void SixPortGenerator::setFlangeCF<CF150>();
 
 
 ///\endcond TEPLATE

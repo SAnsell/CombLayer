@@ -67,6 +67,9 @@
 #include "VacuumPipe.h"
 #include "TriPipe.h"
 #include "DipoleDIBMag.h"
+#include "SixPortTube.h"
+#include "subPipeUnit.h"
+#include "MultiPipe.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -82,7 +85,8 @@ TDCsegment25::TDCsegment25(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  sixPortA(new tdcSystem::SixPortTube(keyName+"SixPortA"))
   /*!
     Constructor
     \param Key :: Name of construction key

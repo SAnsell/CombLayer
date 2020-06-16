@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/SixPortPump.h
+ * File:   LinacInc/SixPortTube.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_SixPortPump_h
-#define tdcSystem_SixPortPump_h
+#ifndef tdcSystem_SixPortTube_h
+#define tdcSystem_SixPortTube_h
 
 class Simulation;
 
@@ -29,15 +29,15 @@ namespace tdcSystem
 {
 
   /*!
-  \class SixPortPump
+  \class SixPortTube
   \version 1.0
   \author S. Ansell
   \date May 2020
 
-  \brief SixPortPump for Max-IV
+  \brief SixPortTube for Max-IV
 */
 
-class SixPortPump :
+class SixPortTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -76,11 +76,11 @@ class SixPortPump :
 
  public:
 
-  SixPortPump(const std::string&);
-  SixPortPump(const std::string&,const std::string&);
-  SixPortPump(const SixPortPump&);
-  SixPortPump& operator=(const SixPortPump&);
-  virtual ~SixPortPump();
+  SixPortTube(const std::string&);
+  SixPortTube(const std::string&,const std::string&);
+  SixPortTube(const SixPortTube&);
+  SixPortTube& operator=(const SixPortTube&);
+  virtual ~SixPortTube();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

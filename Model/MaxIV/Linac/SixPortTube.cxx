@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Linac/SixPortPump.cxx
+ * File:   Linac/SixPortTube.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "SixPortPump.h"
+#include "SixPortTube.h"
 
 namespace tdcSystem
 {
 
-SixPortPump::SixPortPump(const std::string& Key) :
+SixPortTube::SixPortTube(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -98,27 +98,27 @@ SixPortPump::SixPortPump(const std::string& Key) :
 {}
 
 
-SixPortPump::~SixPortPump() 
+SixPortTube::~SixPortTube() 
   /*!
     Destructor
   */
 {}
 
 void
-SixPortPump::populate(const FuncDataBase& Control)
+SixPortTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("SixPortPump","populate");
+  ELog::RegMethod RegA("SixPortTube","populate");
 
   FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   linkRadius=Control.EvalVar<double>(keyName+"LinkRadius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  
+
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
   sideLength=Control.EvalVar<double>(keyName+"SideLength");
@@ -136,18 +136,19 @@ SixPortPump::populate(const FuncDataBase& Control)
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
-  
+
+  ELog::EM<<"Wall thick "<<wallThick<<" "<<plateThick<<ELog::endDiag;
   return;
 }
 
 
 void
-SixPortPump::createSurfaces()
+SixPortTube::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("SixPortPump","createSurfaces");
+  ELog::RegMethod RegA("SixPortTube","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -170,7 +171,7 @@ SixPortPump::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,Origin-Y*(frontLength-flangeAlLngth),Y);
+    (SMap,buildIndex+101,Origin-Y*(frontLength-flangeALength),Y);
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
 
   ModelSupport::buildPlane
@@ -182,13 +183,13 @@ SixPortPump::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*sideLength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+313,Origin-X*(sideLength-flangeSlength),X);
+    (SMap,buildIndex+313,Origin-X*(sideLength-flangeSLength),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+323,Origin-X*(sideLength+plateThick),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*sideLength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+314,Origin+X*(sideLength-flangeSlength),X);
+    (SMap,buildIndex+314,Origin+X*(sideLength-flangeSLength),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+324,Origin+X*(sideLength+plateThick),X);
 
@@ -199,13 +200,13 @@ SixPortPump::createSurfaces()
   // vertical tube
   ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*sideLength,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+415,Origin-Z*(sideLength-flangeSlength),Z);
+    (SMap,buildIndex+415,Origin-Z*(sideLength-flangeSLength),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+425,Origin-Z*(sideLength+plateThick),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*sideLength,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+416,Origin+Z*(sideLength-flangeSlength),Z);
+    (SMap,buildIndex+416,Origin+Z*(sideLength-flangeSLength),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+426,Origin+Z*(sideLength+plateThick),Z);
   
@@ -217,13 +218,13 @@ SixPortPump::createSurfaces()
 }
 
 void
-SixPortPump::createObjects(Simulation& System)
+SixPortTube::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("SixPortPump","createObjects");
+  ELog::RegMethod RegA("SixPortTube","createObjects");
 
   std::string Out;
   
@@ -243,57 +244,60 @@ SixPortPump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 202 17 -107 ");
   makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -307 303 17 ");
-  makeCell("LeftVoid",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -317 307 303 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -307 303 7  ");
+  makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -100 -317 307 303 17 407 ");
   makeCell("LeftWall",System,cellIndex++,mainMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 303 -313 ");
-  makeCell("LeftFlange",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("LeftFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -303 323 ");
-  makeCell("LeftPlate",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -327 -303 323 ");
+  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,Out);
 
+  // Right
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 -304 17 ");
-  makeCell("RightVoid",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -307 -304 7  ");
+  makeCell("RightVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -304 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -304 17 407 ");
   makeCell("RightWall",System,cellIndex++,mainMat,0.0,Out);
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -304 314 ");
-  makeCell("RightFlange",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("RightFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 314 -324");
-  makeCell("RightPlate",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -327 304 -324");
+  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,Out);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 17 ");
-  makeCell("LowVoid",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 ");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 7 307 ");
+  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 317");
   makeCell("LowWall",System,cellIndex++,mainMat,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
   makeCell("LowFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 425 -405");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -405");
   makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 17 ");
-  makeCell("TopVoid",System,cellIndex++,mainMat,0.0,Out);
+  // TOP
+  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 7 307 ");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 ");
-  makeCell("TopWall",System,cellIndex++,mainMat,0.0,Out);
-  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 317");
+  makeCell("TopWall",System,cellIndex++,mainMat,0.0,Out);  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 -406 416 ");
   makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 -426 406");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -426 406");
   makeCell("TopPlate",System,cellIndex++,plateMat,0.0,Out);
 
   // cross void
@@ -316,20 +320,28 @@ SixPortPump::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
       addOuterSurf(Out+frontStr+backStr);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"(303 -327 -304) : (405 -406 -427)");
-      addOuterUnionSurf(Out+frontStr+backStr);
     }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 -200");
+      addOuterSurf(Out+frontStr);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-207 200");
+      addOuterSurf(Out+backStr);
+    }
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"(323 -327 -324) : (425 -426 -427)");
+  addOuterUnionSurf(Out+frontStr+backStr);
+
   return;
 }
 
 void 
-SixPortPump::createLinks()
+SixPortTube::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("SixPortPump","createLinks");
+  ELog::RegMethod RegA("SixPortTube","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -339,7 +351,7 @@ SixPortPump::createLinks()
 }
 
 void
-SixPortPump::createAll(Simulation& System,
+SixPortTube::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -349,7 +361,7 @@ SixPortPump::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("SixPortPump","createAll");
+  ELog::RegMethod RegA("SixPortTube","createAll");
   
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,2.0*frontLength);

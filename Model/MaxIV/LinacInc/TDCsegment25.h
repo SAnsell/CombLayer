@@ -32,6 +32,9 @@ namespace tdcSystem
 {
   class FlatPipe;
   class TriPipe;
+  class SixPortTube;
+  class MultiPipe;
+  class DipoleDIBMag;
 
   /*!
     \class TDCsegment25
@@ -56,6 +59,12 @@ class TDCsegment25 :
 
   /// Join pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// multi-way
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortA;
+
+  /// MultiPipe
+  std::shared_ptr<tdcSystem::MultiPipe> multiPipe;
   
 
   void buildObjects(Simulation&);

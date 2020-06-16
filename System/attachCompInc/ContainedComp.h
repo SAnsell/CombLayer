@@ -23,6 +23,8 @@
 #define attachSystem_ContainedComp_h
 
 class Simulation;
+class HeadRule;
+
 
 namespace Geometry
 {
@@ -97,9 +99,11 @@ class ContainedComp
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
   void addOuterSurf(const ContainedComp&);
+  void addOuterSurf(const HeadRule&);
   
   void addOuterUnionSurf(const std::string&);
   void addOuterUnionSurf(const ContainedComp&);
+  void addOuterUnionSurf(const HeadRule&);
   
   void addBoundarySurf(const int);
   void addBoundarySurf(const std::string&);

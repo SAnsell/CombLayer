@@ -74,7 +74,10 @@
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
 #include "FlatPipeGenerator.h"
+#include "SixPortGenerator.h"
 #include "TriPipeGenerator.h"
+#include "subPipeUnit.h"
+#include "MultiPipeGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 
@@ -208,6 +211,14 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
+
+  setVariable::SixPortGenerator SPGen;
+  SPGen.generateSixPort(Control,"SixPort");
+
+  // multipipe
+  setVariable::MultiPipeGenerator MPGen;
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,1.0),80.0, 0.0, 0.0);
+  MPGen.generateMulti(Control,"MultiPipe");
 
   const double startWidth(2.33/2.0);
   const double endWidth(6.70/2.0);
