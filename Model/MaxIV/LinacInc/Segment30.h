@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment15.h
+ * File:   LinacInc/Segment30.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,40 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment15_h
-#define tdcSystem_TDCsegment15_h
+#ifndef tdcSystem_Segment30_h
+#define tdcSystem_Segment30_h
 
 namespace tdcSystem
 {
-  class YagScreen;
   /*!
-    \class TDCsegment15
+    \class Segment30
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 15
+    \brief TDC segment 17
   */
 
-class TDCsegment15 :
+class Segment30 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
-  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
+  std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
+  std::shared_ptr<constructSystem::BlankTube> ionPump;  ///< #4 Ion pump 75l cf63 1 port
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #7 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       ///< #8 Corrector magnet type D - vertical
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment15(const std::string&);
-  TDCsegment15(const TDCsegment15&);
-  TDCsegment15& operator=(const TDCsegment15&);
-  ~TDCsegment15();
+  Segment30(const std::string&);
+  Segment30(const Segment30&);
+  Segment30& operator=(const Segment30&);
+  ~Segment30();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

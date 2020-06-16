@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment20.h
+ * File:   LinacInc/Segment18.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,38 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment20_h
-#define tdcSystem_TDCsegment20_h
+#ifndef tdcSystem_Segment18_h
+#define tdcSystem_Segment18_h
 
 namespace tdcSystem
 {
-  class TWCavity;
   /*!
-    \class TDCsegment20
+    \class Segment18
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 15
+    \brief TDC segment 18
   */
 
-class TDCsegment20 :
+class Segment18 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< front flange
-  std::shared_ptr<tdcSystem::TWCavity> cavity;         ///< TDC cavity section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< back flange
+  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
+  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
+  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
+  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment20(const std::string&);
-  TDCsegment20(const TDCsegment20&);
-  TDCsegment20& operator=(const TDCsegment20&);
-  ~TDCsegment20();
+  Segment18(const std::string&);
+  Segment18(const Segment18&);
+  Segment18& operator=(const Segment18&);
+  ~Segment18();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment21.h
+ * File:   LinacInc/Segment14.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,44 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment21_h
-#define tdcSystem_TDCsegment21_h
+#ifndef tdcSystem_Segment14_h
+#define tdcSystem_Segment14_h
+
+namespace constructSystem
+{
+  class GateValveCube;
+}
 
 namespace tdcSystem
 {
+  class DipoleDIBMag;
   /*!
-    \class TDCsegment21
+    \class Segment14
     \version 1.0
     \author K. Batkov
-    \date June 2020
-    \brief TDC segment 21
+    \date May 2020
+    \brief TDC segment 14
   */
 
-class TDCsegment21 :
+class Segment14 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
-  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #4 Quadrupole type G (H)
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen unit
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< yag screen
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
-  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
+  std::shared_ptr<constructSystem::Bellows> bellowA;   ///< First bellow
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dm1
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dm1;        ///< First dipole magnet
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dm2
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dm2;        ///< Second dipole magnet
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<constructSystem::Bellows> bellowB;   ///< Last bellow
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment21(const std::string&);
-  TDCsegment21(const TDCsegment21&);
-  TDCsegment21& operator=(const TDCsegment21&);
-  ~TDCsegment21();
+  Segment14(const std::string&);
+  Segment14(const Segment14&);
+  Segment14& operator=(const Segment14&);
+  ~Segment14();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

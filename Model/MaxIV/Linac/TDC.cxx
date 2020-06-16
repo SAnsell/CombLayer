@@ -78,17 +78,17 @@
 #include "L2SPFsegment10.h"
 #include "L2SPFsegment11.h"
 
-#include "TDCsegment14.h"
-#include "TDCsegment15.h"
-#include "TDCsegment16.h"
-#include "TDCsegment17.h"
-#include "TDCsegment18.h"
-#include "TDCsegment19.h"
-#include "TDCsegment20.h"
-#include "TDCsegment21.h"
-#include "TDCsegment23.h"
-#include "TDCsegment24.h"
-#include "TDCsegment30.h"
+#include "Segment14.h"
+#include "Segment15.h"
+#include "Segment16.h"
+#include "Segment17.h"
+#include "Segment18.h"
+#include "Segment19.h"
+#include "Segment20.h"
+#include "Segment21.h"
+#include "Segment23.h"
+#include "Segment24.h"
+#include "Segment30.h"
 
 #include "TDC.h"
 
@@ -112,18 +112,18 @@ TDC::TDC(const std::string& KN) :
     { "L2SPFsegment9",std::make_shared<L2SPFsegment9>("L2SPF9") },
     { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
     { "L2SPFsegment11",std::make_shared<L2SPFsegment11>("L2SPF11") },
-    { "TDCsegment14",std::make_shared<TDCsegment14>("TDC14") },
-    { "TDCsegment15",std::make_shared<TDCsegment15>("TDC15") },
-    { "TDCsegment16",std::make_shared<TDCsegment16>("TDC16") },
-    { "TDCsegment17",std::make_shared<TDCsegment17>("TDC17") },
-    { "TDCsegment18",std::make_shared<TDCsegment18>("TDC18") },
-    { "TDCsegment19",std::make_shared<TDCsegment19>("TDC19") },
-    { "TDCsegment20",std::make_shared<TDCsegment20>("TDC20") },
-    { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") },
-    { "TDCsegment22",std::make_shared<TDCsegment20>("TDC22") },
-    { "TDCsegment23",std::make_shared<TDCsegment23>("TDC23") },
-    { "TDCsegment24",std::make_shared<TDCsegment24>("TDC24") },
-    { "TDCsegment30",std::make_shared<TDCsegment30>("TDC30") }
+    { "Segment14",std::make_shared<Segment14>("TDC14") },
+    { "Segment15",std::make_shared<Segment15>("TDC15") },
+    { "Segment16",std::make_shared<Segment16>("TDC16") },
+    { "Segment17",std::make_shared<Segment17>("TDC17") },
+    { "Segment18",std::make_shared<Segment18>("TDC18") },
+    { "Segment19",std::make_shared<Segment19>("TDC19") },
+    { "Segment20",std::make_shared<Segment20>("TDC20") },
+    { "Segment21",std::make_shared<Segment21>("TDC21") },
+    { "TDCsegment22",std::make_shared<Segment20>("TDC22") },
+    { "Segment23",std::make_shared<Segment23>("TDC23") },
+    { "Segment24",std::make_shared<Segment24>("TDC24") },
+    { "Segment30",std::make_shared<Segment30>("TDC30") }
   } )
   /*!
     Constructor
@@ -266,12 +266,12 @@ TDC::createAll(Simulation& System,
       "L2SPFsegment7","L2SPFsegment8","L2SPFsegment9",
       "L2SPFsegment10","L2SPFsegment11","L2SPFsegment12",
       "L2SPFsegment13",
-      "TDCsegment14","TDCsegment15","TDCsegment16",
-      "TDCsegment17","TDCsegment18","TDCsegment19",
-      "TDCsegment20","TDCsegment21","TDCsegment22",
-      "TDCsegment23","TDCsegment24","TDCsegment25",
+      "Segment14","Segment15","Segment16",
+      "Segment17","Segment18","Segment19",
+      "Segment20","Segment21","TDCsegment22",
+      "Segment23","Segment24","TDCsegment25",
       "TDCsegment26","TDCsegment27","TDCsegment28",
-      "TDCsegment29","TDCsegment30"
+      "TDCsegment29","Segment30"
     });
 
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -288,18 +288,18 @@ TDC::createAll(Simulation& System,
       {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
       {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
       {"L2SPFsegment11",{"tdcFront","L2SPFsegment10"}},
-      {"TDCsegment14",{"tdc",""}},
-      {"TDCsegment15",{"tdc","TDCsegment14"}},
-      {"TDCsegment16",{"tdc","TDCsegment15"}},
-      {"TDCsegment17",{"tdc","TDCsegment16"}},
-      {"TDCsegment18",{"tdc","TDCsegment17"}},
-      {"TDCsegment19",{"tdc","TDCsegment18"}},
-      {"TDCsegment20",{"tdc","TDCsegment19"}},
-      {"TDCsegment21",{"tdc","TDCsegment20"}},
-      {"TDCsegment22",{"tdc","TDCsegment21"}},
-      {"TDCsegment23",{"tdc","TDCsegment22"}},
-      {"TDCsegment24",{"tdc","TDCsegment23"}},
-      {"TDCsegment30",{"tdc","TDCsegment29"}}
+      {"Segment14",{"tdc",""}},
+      {"Segment15",{"tdc","Segment14"}},
+      {"Segment16",{"tdc","Segment15"}},
+      {"Segment17",{"tdc","Segment16"}},
+      {"Segment18",{"tdc","Segment17"}},
+      {"Segment19",{"tdc","Segment18"}},
+      {"Segment20",{"tdc","Segment19"}},
+      {"Segment21",{"tdc","Segment20"}},
+      {"TDCsegment22",{"tdc","Segment21"}},
+      {"Segment23",{"tdc","TDCsegment22"}},
+      {"Segment24",{"tdc","Segment23"}},
+      {"Segment30",{"tdc","TDCsegment29"}}
     });
   const int voidCell(74123);
 

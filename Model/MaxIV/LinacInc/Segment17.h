@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment30.h
+ * File:   LinacInc/Segment17.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,40 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment30_h
-#define tdcSystem_TDCsegment30_h
+#ifndef tdcSystem_Segment17_h
+#define tdcSystem_Segment17_h
 
 namespace tdcSystem
 {
+  class YagScreen;
   /*!
-    \class TDCsegment30
+    \class Segment17
     \version 1.0
     \author K. Batkov
     \date May 2020
     \brief TDC segment 17
   */
 
-class TDCsegment30 :
+class Segment17 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;  ///< #4 Ion pump 75l cf63 1 port
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #7 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       ///< #8 Corrector magnet type D - vertical
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
+  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #2
+  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment30(const std::string&);
-  TDCsegment30(const TDCsegment30&);
-  TDCsegment30& operator=(const TDCsegment30&);
-  ~TDCsegment30();
+  Segment17(const std::string&);
+  Segment17(const Segment17&);
+  Segment17& operator=(const Segment17&);
+  ~Segment17();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

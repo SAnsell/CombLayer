@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment16.h
+ * File:   LinacInc/Segment16.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,21 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment16_h
-#define tdcSystem_TDCsegment16_h
+#ifndef tdcSystem_Segment16_h
+#define tdcSystem_Segment16_h
 
 namespace tdcSystem
 {
   class LQuadH;
   /*!
-    \class TDCsegment16
+    \class Segment16
     \version 1.0
     \author K. Batkov
     \date May 2020
     \brief TDC segment 16
   */
 
-class TDCsegment16 :
+class Segment16 :
   public TDCsegment
 {
  private:
@@ -54,10 +54,10 @@ class TDCsegment16 :
 
  public:
 
-  TDCsegment16(const std::string&);
-  TDCsegment16(const TDCsegment16&);
-  TDCsegment16& operator=(const TDCsegment16&);
-  ~TDCsegment16();
+  Segment16(const std::string&);
+  Segment16(const Segment16&);
+  Segment16& operator=(const Segment16&);
+  ~Segment16();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
