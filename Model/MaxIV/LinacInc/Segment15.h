@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment20.h
+ * File:   LinacInc/Segment15.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,38 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment20_h
-#define tdcSystem_TDCsegment20_h
+#ifndef tdcSystem_Segment15_h
+#define tdcSystem_Segment15_h
 
 namespace tdcSystem
 {
-  class TWCavity;
+  class YagScreen;
   /*!
-    \class TDCsegment20
+    \class Segment15
     \version 1.0
     \author K. Batkov
     \date May 2020
     \brief TDC segment 15
   */
 
-class TDCsegment20 :
+class Segment15 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< front flange
-  std::shared_ptr<tdcSystem::TWCavity> cavity;         ///< TDC cavity section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< back flange
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
+  std::shared_ptr<constructSystem::PipeTube> mirrorChamber; ///< #2 Mirror chamber
+  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment20(const std::string&);
-  TDCsegment20(const TDCsegment20&);
-  TDCsegment20& operator=(const TDCsegment20&);
-  ~TDCsegment20();
+  Segment15(const std::string&);
+  Segment15(const Segment15&);
+  Segment15& operator=(const Segment15&);
+  ~Segment15();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

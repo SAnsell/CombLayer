@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment16.h
+ * File:   LinacInc/Segment24.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,45 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment16_h
-#define tdcSystem_TDCsegment16_h
+#ifndef tdcSystem_Segment24_h
+#define tdcSystem_Segment24_h
 
 namespace tdcSystem
 {
-  class LQuadH;
   /*!
-    \class TDCsegment16
+    \class Segment24
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 16
+    \date June 2020
+    \brief TDC segment 43
   */
 
-class TDCsegment16 :
+class Segment24 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
-  std::shared_ptr<tdcSystem::LQuadH> quad;                  ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
-  std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #7
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #1 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #3 Ion Pump 75l cf63
+  std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;         ///< #6 Horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;         ///< #6 Vertical corrector magnet
+  std::shared_ptr<tdcSystem::BPM> bpm;                    ///< #7 BPM - 304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;     ///< #8 VC Ø10x1- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::LQuadH> quad;                ///< #9 type G
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment16(const std::string&);
-  TDCsegment16(const TDCsegment16&);
-  TDCsegment16& operator=(const TDCsegment16&);
-  ~TDCsegment16();
+  Segment24(const std::string&);
+  Segment24(const Segment24&);
+  Segment24& operator=(const Segment24&);
+  ~Segment24();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

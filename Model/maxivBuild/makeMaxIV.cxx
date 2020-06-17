@@ -180,10 +180,12 @@ makeMaxIV::buildInjection(Simulation& System,
 	 "L2SPFsegment10", "L2SPFsegment11", "L2SPFsegment12",
 	 "L2SPFsegment13"
 	} },
-       {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16",
-	       "TDCsegment17","TDCsegment18", "TDCsegment19",
-	       "TDCsegment20","TDCsegment21","TDCsegment22",
-	       "TDCsegment23","TDCsegment24"} },
+       {"TDC",{"Segment14","Segment15","Segment16",
+	       "Segment17","Segment18", "Segment19",
+	       "Segment20","Segment21","Segment22",
+	       "Segment23","Segment24",
+	       "Segment30","Segment31"} },
+
        {"L2SPFsegment1",{} },                             // first only
        {"L2SPFsegment2",{} },                             // second only
        {"L2SPFsegment3",{} },                             // third only
@@ -197,18 +199,20 @@ makeMaxIV::buildInjection(Simulation& System,
        {"L2SPFsegment11",{} },                             // TDC
        {"L2SPFsegment12",{} },                             // TDC
        {"L2SPFsegment13",{} },                             // TDC
-       {"TDCsegment14",{} },                              // 14th only
-       {"TDCsegment15",{} },                              // 15th only
-       {"TDCsegment16",{} },                              // 16th only
-       {"TDCsegment17",{} },                              // 17th only
-       {"TDCsegment18",{} },                              // 18th only
-       {"TDCsegment19",{} },                              // 19th only
-       {"TDCsegment20",{} },                              // 20th only
-       {"TDCsegment21",{} },                              // 21th only
-       {"TDCsegment22",{} },                              // 22th only
-       {"TDCsegment23",{} },                              // 23th only
-       {"TDCsegment24",{} },                              // 24th only
-       {"TDCsegment25",{} }                               // 25th only
+       {"Segment14",{} },                              // 14th only
+       {"Segment15",{} },                              // 15th only
+       {"Segment16",{} },                              // 16th only
+       {"Segment17",{} },                              // 17th only
+       {"Segment18",{} },                              // 18th only
+       {"Segment19",{} },                              // 19th only
+       {"Segment20",{} },                              // 20th only
+       {"Segment21",{} },                              // 21th only
+       {"Segment22",{} },                              // 22th only
+       {"Segment23",{} },                              // 23th only
+       {"Segment24",{} },                              // 24th only
+       {"Segment24",{} },                              // 25th only
+       {"Segment30",{} },                              // 30th only
+       {"Segment31",{} }                               // 31th only
     });
 
   bool activeLinac(0);

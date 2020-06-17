@@ -94,19 +94,20 @@ namespace linacVar
   void linac2SPFsegment12(FuncDataBase&,const std::string&);
   void linac2SPFsegment13(FuncDataBase&,const std::string&);    
   
-  void TDCsegment14(FuncDataBase&,const std::string&);
-  void TDCsegment15(FuncDataBase&,const std::string&);
-  void TDCsegment16(FuncDataBase&,const std::string&);
-  void TDCsegment17(FuncDataBase&,const std::string&);
-  void TDCsegment18(FuncDataBase&,const std::string&);
-  void TDCsegment19(FuncDataBase&,const std::string&);
-  void TDCsegment20(FuncDataBase&,const std::string&);
-  void TDCsegment21(FuncDataBase&,const std::string&);
-  void TDCsegment22(FuncDataBase&,const std::string&);
-  void TDCsegment23(FuncDataBase&,const std::string&);
-  void TDCsegment24(FuncDataBase&,const std::string&);
-
-  void TDCsegment25(FuncDataBase&,const std::string&);
+  void Segment14(FuncDataBase&,const std::string&);
+  void Segment15(FuncDataBase&,const std::string&);
+  void Segment16(FuncDataBase&,const std::string&);
+  void Segment17(FuncDataBase&,const std::string&);
+  void Segment18(FuncDataBase&,const std::string&);
+  void Segment19(FuncDataBase&,const std::string&);
+  void Segment20(FuncDataBase&,const std::string&);
+  void Segment21(FuncDataBase&,const std::string&);
+  void Segment22(FuncDataBase&,const std::string&);
+  void Segment23(FuncDataBase&,const std::string&);
+  void Segment24(FuncDataBase&,const std::string&);
+  void Segment25(FuncDataBase&,const std::string&);
+  void Segment30(FuncDataBase&,const std::string&);
+  void Segment31(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -169,7 +170,7 @@ setIonPump2Port(FuncDataBase& Control,
   const double outerR =
     setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
   // length of ports 0 and 1
-  // measured at TDCsegment18 from front/back to the centre
+  // measured at Segment18 from front/back to the centre
   // but it looks like these lengths are the same for all 2 port ion pumps
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
@@ -995,7 +996,7 @@ linac2SPFsegment13(FuncDataBase& Control,
 
 
 void
-TDCsegment14(FuncDataBase& Control,
+Segment14(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1003,7 +1004,7 @@ TDCsegment14(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment14");
+  ELog::RegMethod RegA("linacVariables[F]","Segment14");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
@@ -1047,7 +1048,7 @@ TDCsegment14(FuncDataBase& Control,
 }
 
 void
-TDCsegment15(FuncDataBase& Control,
+Segment15(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1055,7 +1056,7 @@ TDCsegment15(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment15");
+  ELog::RegMethod RegA("linacVariables[F]","Segment15");
 
   setVariable::PipeGenerator PGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -1113,7 +1114,7 @@ TDCsegment15(FuncDataBase& Control,
 }
 
 void
-TDCsegment16(FuncDataBase& Control,
+Segment16(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1121,7 +1122,7 @@ TDCsegment16(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment16");
+  ELog::RegMethod RegA("linacVariables[F]","Segment16");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
@@ -1182,7 +1183,7 @@ TDCsegment16(FuncDataBase& Control,
 }
 
 void
-TDCsegment17(FuncDataBase& Control,
+Segment17(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1190,7 +1191,7 @@ TDCsegment17(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment17");
+  ELog::RegMethod RegA("linacVariables[F]","Segment17");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
 
@@ -1222,7 +1223,7 @@ TDCsegment17(FuncDataBase& Control,
 }
 
 void
-TDCsegment18(FuncDataBase& Control,
+Segment18(FuncDataBase& Control,
 	     const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1230,7 +1231,7 @@ TDCsegment18(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment18");
+  ELog::RegMethod RegA("linacVariables[F]","Segment18");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
@@ -1286,7 +1287,7 @@ TDCsegment18(FuncDataBase& Control,
 }
 
 void
-TDCsegment19(FuncDataBase& Control,
+Segment19(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1294,7 +1295,7 @@ TDCsegment19(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment19");
+  ELog::RegMethod RegA("linacVariables[F]","Segment19");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -1349,7 +1350,7 @@ TDCsegment19(FuncDataBase& Control,
 }
 
 void
-TDCsegment20(FuncDataBase& Control,
+Segment20(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1357,7 +1358,7 @@ TDCsegment20(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment20");
+  ELog::RegMethod RegA("linacVariables[F]","Segment20");
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
@@ -1384,7 +1385,7 @@ TDCsegment20(FuncDataBase& Control,
 }
 
 void
-TDCsegment21(FuncDataBase& Control,
+Segment21(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1392,7 +1393,7 @@ TDCsegment21(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment21");
+  ELog::RegMethod RegA("linacVariables[F]","Segment21");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
@@ -1459,7 +1460,7 @@ TDCsegment21(FuncDataBase& Control,
 }
 
 void
-TDCsegment22(FuncDataBase& Control,
+Segment22(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1467,9 +1468,9 @@ TDCsegment22(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment22");
+  ELog::RegMethod RegA("linacVariables[F]","Segment22");
 
-  TDCsegment20(Control, lKey);
+  Segment20(Control, lKey);
 
   const Geometry::Vec3D startPt(-637.608,6495.428,0.0);
   const Geometry::Vec3D endPt(-637.608,6808.791,0.0);
@@ -1480,7 +1481,7 @@ TDCsegment22(FuncDataBase& Control,
 }
 
 void
-TDCsegment23(FuncDataBase& Control,
+Segment23(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1488,7 +1489,7 @@ TDCsegment23(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment23");
+  ELog::RegMethod RegA("linacVariables[F]","Segment23");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
@@ -1573,7 +1574,7 @@ TDCsegment23(FuncDataBase& Control,
 }
 
 void
-TDCsegment24(FuncDataBase& Control,
+Segment24(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
     Set the variables for the main walls
@@ -1581,7 +1582,7 @@ TDCsegment24(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment24");
+  ELog::RegMethod RegA("linacVariables[F]","Segment24");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
@@ -1644,15 +1645,16 @@ TDCsegment24(FuncDataBase& Control,
 }
 
 void
-TDCsegment25(FuncDataBase& Control,
-	    const std::string& lKey)
+Segment25(FuncDataBase& Control,
+	  const std::string& lKey)
   /*!
     Set the variables for segment 25
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","TDCsegment25");
+
+  ELog::RegMethod RegA("linacVariables[F]","Segment25");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
@@ -1700,6 +1702,138 @@ TDCsegment25(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowUp",0.0,7.5);
   BellowGen.generateBellow(Control,lKey+"BellowFlat",0.0,7.5);
   BellowGen.generateBellow(Control,lKey+"BellowDown",0.0,7.5);
+  return;
+}
+  
+void
+Segment30(FuncDataBase& Control,
+	  const std::string& lKey)
+  /*!
+    Set the variables for segment 25
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment30");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::CorrectorMagGenerator CMGen;
+
+  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
+  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  // TMath::ATan((675.249-457.286)/(5409.49-4450.12))*TMath::RadToDeg() = -12.799971
+  // Control.addVariable(lKey+"XYAngle",-12.799971);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  // Gauge
+  std::string name=lKey+"Gauge";
+  SimpleTubeGen.setCF<CF40_22>();
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+  Control.addVariable(name+"YAngle", 180.0);
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF40_22>(5.1); //
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,436.5-0.084514221); // measured
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // measured
+
+  // IonPump
+  const std::string pumpName=lKey+"IonPump";
+  setIonPump2Port(Control,pumpName);
+  Control.addVariable(pumpName+"Length",10.0+setVariable::CF63::flangeLength);
+  const double portOffset(1.7);
+  Control.addVariable(pumpName+"Port0Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(pumpName+"Port1Centre", Geometry::Vec3D(0, portOffset, 0));
+
+  // CMagV
+  const double pipeBLength(511.3); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
+  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,1);
+
+  return;
+}
+
+void
+Segment31(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment31");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::CorrectorMagGenerator CMGen;
+
+  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
+  // TDC31
+  // const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
+  // const Geometry::Vec3D endPt(-921.651, 5344.0, 0.0);
+
+  // TDC30
+  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
+  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  // TMath::ATan((675.249-457.286)/(5409.49-4450.12))*TMath::RadToDeg() = -12.799971
+  // Control.addVariable(lKey+"XYAngle",-12.799971);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  // Gauge
+  std::string name=lKey+"Gauge";
+  SimpleTubeGen.setCF<CF40_22>();
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+  Control.addVariable(name+"YAngle", 180.0);
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF40_22>(5.1); //
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,436.5-0.084514221); // measured
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // measured
+
+  // IonPump
+  const std::string pumpName=lKey+"IonPump";
+  setIonPump2Port(Control,pumpName);
+  Control.addVariable(pumpName+"Length",10.0+setVariable::CF63::flangeLength);
+  const double portOffset(1.7);
+  Control.addVariable(pumpName+"Port0Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(pumpName+"Port1Centre", Geometry::Vec3D(0, portOffset, 0));
+
+  // CMagV
+  const double pipeBLength(511.3); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
+  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,1);
+
   return;
 }
 
@@ -1840,20 +1974,20 @@ LINACvariables(FuncDataBase& Control)
   linacVar::linac2SPFsegment12(Control,"L2SPF12");
   linacVar::linac2SPFsegment13(Control,"L2SPF13");
       
-
-  /// TDC segments 14-28
-  linacVar::TDCsegment14(Control,"TDC14");
-  linacVar::TDCsegment15(Control,"TDC15");
-  linacVar::TDCsegment16(Control,"TDC16");
-  linacVar::TDCsegment17(Control,"TDC17");
-  linacVar::TDCsegment18(Control,"TDC18");
-  linacVar::TDCsegment19(Control,"TDC19");
-  linacVar::TDCsegment20(Control,"TDC20");
-  linacVar::TDCsegment21(Control,"TDC21");
-  linacVar::TDCsegment22(Control,"TDC22");
-  linacVar::TDCsegment23(Control,"TDC23");
-  linacVar::TDCsegment24(Control,"TDC24");
-  linacVar::TDCsegment25(Control,"TDC25");
+  linacVar::Segment14(Control,"TDC14");
+  linacVar::Segment15(Control,"TDC15");
+  linacVar::Segment16(Control,"TDC16");
+  linacVar::Segment17(Control,"TDC17");
+  linacVar::Segment18(Control,"TDC18");
+  linacVar::Segment19(Control,"TDC19");
+  linacVar::Segment20(Control,"TDC20");
+  linacVar::Segment21(Control,"TDC21");
+  linacVar::Segment22(Control,"TDC22");
+  linacVar::Segment23(Control,"TDC23");
+  linacVar::Segment24(Control,"TDC24");
+  linacVar::Segment25(Control,"TDC25");
+  linacVar::Segment30(Control,"TDC30");
+  linacVar::Segment31(Control,"TDC31");
 
   return;
 }

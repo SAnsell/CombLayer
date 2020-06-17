@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/TDCsegment19.cxx
+ * File: Linac/Segment14.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,15 +45,14 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -63,29 +60,33 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
+#include "LObjectSupport.h"
 
+#include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+
+#include "DipoleDIBMag.h"
 #include "GateValveCube.h"
-#include "CylGateValve.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 
 #include "TDCsegment.h"
-#include "TDCsegment19.h"
+#include "Segment14.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-TDCsegment19::TDCsegment19(const std::string& Key) :
+Segment14::Segment14(const std::string& Key) :
   TDCsegment(Key,2),
+
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  gauge(new constructSystem::PipeTube(keyName+"Gauge")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
   gateA(new constructSystem::GateValveCube(keyName+"GateA")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
-  gateB(new xraySystem::CylGateValve(keyName+"GateB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
@@ -95,62 +96,60 @@ TDCsegment19::TDCsegment19(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(gauge);
+  OR.addObject(dm1);
+  OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(dm2);
   OR.addObject(gateA);
-  OR.addObject(ionPump);
-  OR.addObject(gateB);
   OR.addObject(bellowB);
 }
 
-TDCsegment19::~TDCsegment19()
+Segment14::~Segment14()
   /*!
     Destructor
    */
 {}
 
+
+
 void
-TDCsegment19::buildObjects(Simulation& System)
+Segment14::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("TDCsegment19","buildObjects");
+  ELog::RegMethod RegA("Segment14","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  // Gauge
-  gauge->addAllInsertCell(masterCell->getName());
-  gauge->setFront(*bellowA,2);
-  gauge->createAll(System,*bellowA,2);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
-  gauge->insertAllInCell(System,outerCell);
+  // constructSystem::constructUnit
+  //   (System,*buildZone,masterCell,*bellowA,"back",*pipeA);
 
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gauge,"back",*gateA);
-
-  // Ion pump
-  ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setFront(*gateA,2);
-  ionPump->createAll(System,*gateA,2);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ionPump,2);
-  ionPump->insertAllInCell(System,outerCell);
+  pipeA->createAll(System,*bellowA,"back");
+  pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dm1);
+  pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*ionPump,"back",*gateB);
+    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+
+  pipeC->createAll(System,*pipeB,"back");
+  pipeMagUnit(System,*buildZone,pipeC,"Origin","outerPipe",dm2);
+  pipeTerminate(System,*buildZone,pipeC);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateB,"back",*bellowB);
+    (System,*buildZone,masterCell,*pipeC,"back",*gateA);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gateA,"back",*bellowB);
 
   buildZone->removeLastMaster(System);
 
@@ -158,12 +157,12 @@ TDCsegment19::buildObjects(Simulation& System)
 }
 
 void
-TDCsegment19::createLinks()
+Segment14::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("TDCsegment19","createLinks");
+  ELog::RegMethod RegA("Segment14","createLinks");
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
@@ -173,9 +172,9 @@ TDCsegment19::createLinks()
 }
 
 void
-TDCsegment19::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+Segment14::createAll(Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -184,7 +183,7 @@ TDCsegment19::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("TDCsegment19","build");
+  ELog::RegMethod RControl("Segment14","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

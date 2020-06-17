@@ -83,6 +83,8 @@
 #include "TWCavityGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "PipeTubeGenerator.h"
+#include "PortItemGenerator.h"
 
 namespace setVariable
 {
@@ -322,6 +324,24 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",0.0,7.5);
+
+  // PipeTube
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,"PipeTube",0.0,20.0);
+  //  Control.addVariable("PipeTubeYAngle", 90.0);
+  Control.addVariable("PipeTubeNPorts",2);
+  PItemGen.setCF<setVariable::CF40>(6.0);
+  PItemGen.generatePort(Control,"PipeTubePort0",
+			Geometry::Vec3D(0.0, 3.0, 0.0),
+			Geometry::Vec3D(0.5, -0.5, 0.866));
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
+  PItemGen.setNoPlate();
+  PItemGen.setCF<setVariable::CF40>(7.0);
+  PItemGen.generatePort(Control,"PipeTubePort1",
+			Geometry::Vec3D(0.0, -3.0, 0.0),
+			Geometry::Vec3D(-1.0, 0.0, 0.0));
 
   return;
 }

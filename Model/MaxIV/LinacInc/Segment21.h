@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment18.h
+ * File:   LinacInc/Segment21.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,43 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment18_h
-#define tdcSystem_TDCsegment18_h
+#ifndef tdcSystem_Segment21_h
+#define tdcSystem_Segment21_h
 
 namespace tdcSystem
 {
   /*!
-    \class TDCsegment18
+    \class Segment21
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 18
+    \date June 2020
+    \brief TDC segment 21
   */
 
-class TDCsegment18 :
+class Segment21 :
   public TDCsegment
 {
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
+  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
+  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #4 Quadrupole type G (H)
+  std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen unit
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< yag screen
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 - horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #6 - vertical corrector magnet
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
-  std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  TDCsegment18(const std::string&);
-  TDCsegment18(const TDCsegment18&);
-  TDCsegment18& operator=(const TDCsegment18&);
-  ~TDCsegment18();
+  Segment21(const std::string&);
+  Segment21(const Segment21&);
+  Segment21& operator=(const Segment21&);
+  ~Segment21();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment23.h
+ * File:   LinacInc/Segment23.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,20 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment23_h
-#define tdcSystem_TDCsegment23_h
+#ifndef tdcSystem_Segment23_h
+#define tdcSystem_Segment23_h
 
 namespace tdcSystem
 {
   /*!
-    \class TDCsegment23
+    \class Segment23
     \version 1.0
     \author K. Batkov
     \date June 2020
     \brief TDC segment 23
   */
 
-class TDCsegment23 :
+class Segment23 :
   public TDCsegment
 {
  private:
@@ -56,10 +56,10 @@ class TDCsegment23 :
 
  public:
 
-  TDCsegment23(const std::string&);
-  TDCsegment23(const TDCsegment23&);
-  TDCsegment23& operator=(const TDCsegment23&);
-  ~TDCsegment23();
+  Segment23(const std::string&);
+  Segment23(const Segment23&);
+  Segment23& operator=(const Segment23&);
+  ~Segment23();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

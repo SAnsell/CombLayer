@@ -99,6 +99,8 @@
 #include "TWCavity.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
 
 
 #include "makeSingleItem.h"
@@ -140,7 +142,7 @@ makeSingleItem::build(Simulation& System,
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe","MultiPipe",
+      "Bellow", "VacuumPipe","MultiPipe","PipeTube",
       "Help","help"
     });
 
@@ -587,6 +589,19 @@ makeSingleItem::build(Simulation& System,
 
       VC->addInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+    if (item == "PipeTube" )
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	pipeTube(new constructSystem::PipeTube("PipeTube"));
+
+      OR.addObject(pipeTube);
+
+      pipeTube->addAllInsertCell(voidCell);
+      pipeTube->createAll(System,World::masterOrigin(),0);
 
       return;
     }

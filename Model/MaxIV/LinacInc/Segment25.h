@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/TDCsegment25.h
+ * File:   LinacInc/Segment25.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_TDCsegment25_h
-#define tdcSystem_TDCsegment25_h
+#ifndef tdcSystem_Segment25_h
+#define tdcSystem_Segment25_h
 
 namespace constructSystem
 {
@@ -37,14 +37,14 @@ namespace tdcSystem
   class DipoleDIBMag;
 
   /*!
-    \class TDCsegment25
+    \class Segment25
     \version 1.0
     \author S. Ansell
     \date June 2020
     \brief Dividing segment in the TDC from the linac
   */
 
-class TDCsegment25 :
+class Segment25 :
   public TDCsegment
 {
  private:
@@ -76,10 +76,10 @@ class TDCsegment25 :
 
  public:
 
-  TDCsegment25(const std::string&);
-  TDCsegment25(const TDCsegment25&);
-  TDCsegment25& operator=(const TDCsegment25&);
-  ~TDCsegment25();
+  Segment25(const std::string&);
+  Segment25(const Segment25&);
+  Segment25& operator=(const Segment25&);
+  ~Segment25();
 
 
   using FixedComp::createAll;
