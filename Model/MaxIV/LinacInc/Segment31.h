@@ -28,8 +28,8 @@ namespace tdcSystem
     \class Segment31
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 17
+    \date June 2020
+    \brief TDC segment 31
   */
 
 class Segment31 :
@@ -37,12 +37,19 @@ class Segment31 :
 {
  private:
 
-  std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
+  std::shared_ptr<constructSystem::Bellows> bellowA;    ///< #1 Bellows – 304L
+  std::shared_ptr<constructSystem::BlankTube> ionPumpA; ///< #3
+  std::shared_ptr<xraySystem::CylGateValve> gate;       ///< #4 Gate valve 48132 CE44
+  std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows – 304L
+  std::shared_ptr<tdcSystem::BPM> bpm;                  ///< #5 BPM – 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;  ///< #4 Ion pump 75l cf63 1 port
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #7 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       ///< #8 Corrector magnet type D - vertical
+  std::shared_ptr<tdcSystem::LQuadF> quad;              ///< #7 Quadropole magnet type F
+  std::shared_ptr<constructSystem::Bellows> bellowC;    ///< #1 Bellows – 304L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #8 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;       ///< #9 Corrector magnet type D
+  std::shared_ptr<constructSystem::BlankTube> ionPumpB; ///< #3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   ///< #8 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::Bellows> bellowD;    ///< #1 Bellows – 304L
 
   void buildObjects(Simulation&);
   void createLinks();

@@ -28,8 +28,8 @@ namespace tdcSystem
     \class Segment30
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 17
+    \date June 2020
+    \brief TDC segment 30
   */
 
 class Segment30 :

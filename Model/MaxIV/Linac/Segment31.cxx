@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,7 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -68,12 +65,14 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VirtualTube.h"
-#include "PipeTube.h"
 #include "VacuumPipe.h"
 #include "portItem.h"
 #include "BlankTube.h"
 #include "CorrectorMag.h"
 #include "LObjectSupport.h"
+#include "CylGateValve.h"
+#include "BPM.h"
+#include "LQuadF.h"
 
 #include "TDCsegment.h"
 #include "Segment31.h"
@@ -85,12 +84,19 @@ namespace tdcSystem
 
 Segment31::Segment31(const std::string& Key) :
   TDCsegment(Key,2),
-  gauge(new constructSystem::PipeTube(keyName+"Gauge")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  ionPumpA(new constructSystem::BlankTube(keyName+"IonPumpA")),
+  gate(new xraySystem::CylGateValve(keyName+"Gate")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  bellow(new constructSystem::Bellows(keyName+"Bellow")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  quad(new tdcSystem::LQuadF(keyName+"Quad")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
+  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
+  ionPumpB(new constructSystem::BlankTube(keyName+"IonPumpB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  bellowD(new constructSystem::Bellows(keyName+"BellowD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -99,14 +105,21 @@ Segment31::Segment31(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(gauge);
+  OR.addObject(bellowA);
+  OR.addObject(ionPumpA);
+  OR.addObject(gate);
+  OR.addObject(bellowB);
+  OR.addObject(bpm);
   OR.addObject(pipeA);
-  OR.addObject(bellow);
-  OR.addObject(ionPump);
+  OR.addObject(quad);
+  OR.addObject(bellowC);
   OR.addObject(pipeB);
-  OR.addObject(cMagV);
+  OR.addObject(cMagH);
+  OR.addObject(ionPumpB);
+  OR.addObject(pipeC);
+  OR.addObject(bellowD);
 
-  setFirstItem(gauge);
+  setFirstItem(bellowA);
 }
 
 Segment31::~Segment31()
@@ -128,38 +141,43 @@ Segment31::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  // Gauge
-  gauge->addAllInsertCell(masterCell->getName());
-  if (isActive("front"))
-    gauge->copyCutSurf("front", *this, "front");
-  gauge->createAll(System,*this,0);
+  bellowA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*gauge,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
-  gauge->insertAllInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
+
+  const constructSystem::portItem& ionPumpABackPort =
+    buildIonPump2Port(System,masterCell,*bellowA,"back",*ionPumpA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gauge,"back",*pipeA);
+    (System,*buildZone,masterCell,ionPumpABackPort,"OuterPlate",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellow);
+    (System,*buildZone,masterCell,*gate,"back",*bellowB);
 
-  // Ion pump
-  ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump->createAll(System,*bellow,"back");
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
 
-  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
-  outerCell=
-    buildZone->createOuterVoidUnit(System,
-  				   masterCell,
-  				   ionPumpBackPort,
-  				   ionPumpBackPort.getSideIndex("OuterPlate"));
-  ionPump->insertAllInCell(System,outerCell);
+  pipeA->createAll(System,*bpm, "back");
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
+  pipeTerminate(System,*buildZone,pipeA);
 
-  pipeB->createAll(System,ionPumpBackPort,"OuterPlate");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*bellowC);
+
+  pipeB->createAll(System,*bellowC,"back");
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
   pipeTerminate(System,*buildZone,pipeB);
+
+  const constructSystem::portItem& ionPumpBBackPort =
+    buildIonPump2Port(System,masterCell,*pipeB,"back",*ionPumpB);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,ionPumpBBackPort,"OuterPlate",*pipeC);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeC,"back",*bellowD);
 
   buildZone->removeLastMaster(System);
 
@@ -174,8 +192,8 @@ Segment31::createLinks()
 {
   ELog::RegMethod RegA("Segment31","createLinks");
 
-  setLinkSignedCopy(0,*gauge,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*bellowD,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
   return;

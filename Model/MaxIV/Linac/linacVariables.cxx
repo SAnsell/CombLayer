@@ -170,7 +170,6 @@ setIonPump2Port(FuncDataBase& Control,
     setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
   // length of ports 0 and 1
   // measured at Segment18 from front/back to the centre
-  // but it looks like these lengths are the same for all 2 port ion pumps
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
@@ -1572,11 +1571,15 @@ Segment31(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment31");
+
   setVariable::PipeGenerator PGen;
+  PGen.setNoWindow();
   setVariable::BellowGenerator BellowGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::CorrectorMagGenerator CMGen;
+  setVariable::CylGateValveGenerator CGateGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadGenerator LQGen;
 
   ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
   // TDC31
@@ -1587,47 +1590,69 @@ Segment31(FuncDataBase& Control,
   const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
   const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
 
-
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  // TMath::ATan((675.249-457.286)/(5409.49-4450.12))*TMath::RadToDeg() = -12.799971
-  // Control.addVariable(lKey+"XYAngle",-12.799971);
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  // Gauge
-  std::string name=lKey+"Gauge";
-  SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
-  Control.addVariable(name+"YAngle", 180.0);
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(5.1); //
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
-
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setMat("Stainless316L","Stainless304L");
-  PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,436.5-0.084514221); // measured
-
+  // BellowA
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // measured
+  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // OK
 
-  // IonPump
-  const std::string pumpName=lKey+"IonPump";
-  setIonPump2Port(Control,pumpName);
-  Control.addVariable(pumpName+"Length",10.0+setVariable::CF63::flangeLength);
-  const double portOffset(1.7);
-  Control.addVariable(pumpName+"Port0Centre", Geometry::Vec3D(0, portOffset, 0));
-  Control.addVariable(pumpName+"Port1Centre", Geometry::Vec3D(0, portOffset, 0));
+  const std::string pumpAName=lKey+"IonPumpA";
+  setIonPump2Port(Control,pumpAName); // length 16 cm checked
 
-  // CMagV
-  const double pipeBLength(511.3); // measured
+  CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // OK
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  Control.addVariable(lKey+"BPMRadius", 1.3);
+
+  // PipeA and Quadrupole
+  const double pipeALength(42.5); // OK
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
+  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
+  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
+
+  // QF type quadrupole magnet
+  //  LQGen.setRadius(0.56, 2.31);
+  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
+  // inner box half width/height
+  Control.addVariable(lKey+"QuadYokeOuter",9.5);
+  // adjusted so that nose is 1 cm thick as in the STEP file
+  Control.addVariable(lKey+"QuadPolePitch",26.0);
+
+  // BellowC
+  BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5); // OK
+
+  // CMagH
+  const double pipeBLength(232.7); // OK
   PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
-  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,1);
+  CMGen.generateMag(Control,lKey+"CMagH",pipeBLength-12.0,0);
+
+  // IonPumpB
+  const std::string pumpBName=lKey+"IonPumpB";
+  setIonPump2Port(Control,pumpBName);
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+  Control.addVariable(pumpBName+"Port0Length",10.0-outerR); // OK
+  Control.addVariable(pumpBName+"Port1Length",10.0-outerR); // OK
+
+  // PipeC
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,55.6); // OK
+
+  // BellowD
+  BellowGen.generateBellow(Control,lKey+"BellowD",0.0,7.5);
 
   return;
 }
