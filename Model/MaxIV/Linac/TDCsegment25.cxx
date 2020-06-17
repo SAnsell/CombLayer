@@ -86,7 +86,11 @@ TDCsegment25::TDCsegment25(const std::string& Key) :
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  sixPortA(new tdcSystem::SixPortTube(keyName+"SixPortA"))
+  sixPortA(new tdcSystem::SixPortTube(keyName+"SixPortA")),
+  multiPipe(new tdcSystem::MultiPipe(keyName+"MultiPipe")),
+  bellowUp(new constructSystem::Bellows(keyName+"BellowUp")),
+  bellowFlat(new constructSystem::Bellows(keyName+"BellowFlat")),
+  bellowDown(new constructSystem::Bellows(keyName+"BellowDown"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -99,6 +103,11 @@ TDCsegment25::TDCsegment25(const std::string& Key) :
   OR.addObject(triPipeA);
   OR.addObject(dipoleA);
   OR.addObject(pipeB);
+  OR.addObject(sixPortA);
+  OR.addObject(multiPipe);
+  OR.addObject(bellowUp);
+  OR.addObject(bellowFlat);
+  OR.addObject(bellowDown);
 
   setFirstItem(bellowA);
 }
@@ -143,6 +152,23 @@ TDCsegment25::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
 
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
+
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,*sixPortA,"back",*multiPipe);
+
+  bellowUp->createAll(System,*multiPipe,2);
+
+  bellowFlat->addInsertCell(outerCell);
+  bellowFlat->createAll(System,*multiPipe,3);
+
+  bellowDown->addInsertCell(outerCell);
+  bellowDown->createAll(System,*multiPipe,4);
+
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowUp,2);
+  bellowUp->insertInCell(System,outerCell);
+  bellowFlat->insertInCell(System,outerCell);
   
   buildZone->removeLastMaster(System);  
 

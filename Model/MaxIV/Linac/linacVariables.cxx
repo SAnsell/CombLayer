@@ -65,6 +65,8 @@
 #include "SixPortGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
+#include "subPipeUnit.h"
+#include "MultiPipeGenerator.h"
 #include "TDCCavityGenerator.h"
 
 namespace setVariable
@@ -1414,7 +1416,17 @@ TDCsegment25(FuncDataBase& Control,
 
   SPortGen.setCF<CF150>();
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
-  
+
+  // multipipe
+  setVariable::MultiPipeGenerator MPGen;
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 3.7);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, 0.0);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -3.7);
+  MPGen.generateMulti(Control,lKey+"MultiPipe");
+
+  BellowGen.generateBellow(Control,lKey+"BellowUp",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowFlat",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowDown",0.0,7.5);
   return;
 }
 

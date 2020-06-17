@@ -66,6 +66,10 @@ class TDCsegment25 :
   /// MultiPipe
   std::shared_ptr<tdcSystem::MultiPipe> multiPipe;
   
+  /// Exit bellows
+  std::shared_ptr<constructSystem::Bellows> bellowUp;
+  std::shared_ptr<constructSystem::Bellows> bellowFlat;
+  std::shared_ptr<constructSystem::Bellows> bellowDown;
 
   void buildObjects(Simulation&);
   void createLinks();

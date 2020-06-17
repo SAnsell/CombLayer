@@ -232,17 +232,17 @@ SixPortTube::createObjects(Simulation& System)
   const std::string backStr=getRuleStr("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -17 407 307");
-  makeCell("MainTube",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 407 307");
+  makeCell("MainTube",System,cellIndex++,mainMat,0.0,Out+frontStr+backStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -101 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 17 -107 ");
+  makeCell("FlangeA",System,cellIndex++,mainMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 202 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 202 17 -107 ");
+  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out+backStr);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -100 -307 303 7  ");
@@ -271,8 +271,6 @@ SixPortTube::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -327 304 -324");
   makeCell("RightPlate",System,cellIndex++,plateMat,0.0,Out);
-
-
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 7 307 ");
@@ -345,8 +343,19 @@ SixPortTube::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-  
 
+  FixedComp::setConnect(2,Origin-X*(sideLength+plateThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));
+
+  FixedComp::setConnect(3,Origin+X*(sideLength+plateThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
+
+  FixedComp::setConnect(4,Origin-Z*(sideLength+plateThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+425));
+
+  FixedComp::setConnect(5,Origin+Z*(sideLength+plateThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
+  
   return;
 }
 
