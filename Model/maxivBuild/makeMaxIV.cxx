@@ -207,7 +207,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDCsegment21",{} },                              // 21th only
        {"TDCsegment22",{} },                              // 22th only
        {"TDCsegment23",{} },                              // 23th only
-       {"TDCsegment24",{} }                               // 24th only
+       {"TDCsegment24",{} },                              // 24th only
        {"TDCsegment25",{} }                               // 25th only
     });
 
