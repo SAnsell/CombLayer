@@ -191,14 +191,14 @@ GratingUnit::createSurfaces()
 
 
   ExternalCut::makeShiftedSurf
-    (SMap,"innerFront",buildIndex+101,1,GY,-slidePlateLength);
+    (SMap,"innerFront",buildIndex+101,GY,-slidePlateLength);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerBack",buildIndex+201,-1,GY,-slidePlateLength);
+    (SMap,"innerBack",buildIndex+201,GY,slidePlateLength);
 
   ExternalCut::makeShiftedSurf
-    (SMap,"innerLeft",buildIndex+3,1,GX,-slidePlateWidth);
+    (SMap,"innerLeft",buildIndex+3,GX,-slidePlateWidth);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerRight",buildIndex+4,-1,GX,-slidePlateWidth);
+    (SMap,"innerRight",buildIndex+4,GX,slidePlateWidth);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin+GZ*slidePlateZGap,GZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,
@@ -206,9 +206,9 @@ GratingUnit::createSurfaces()
 
   // Main support bars
   ExternalCut::makeShiftedSurf
-    (SMap,"innerFront",buildIndex+1001,1,GY,-mainBarYWidth);
+    (SMap,"innerFront",buildIndex+1001,GY,-mainBarYWidth);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerBack",buildIndex+1002,-1,GY,-mainBarYWidth);
+    (SMap,"innerBack",buildIndex+1002,GY,mainBarYWidth);
 
   ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-GX*(mainBarXLen/2.0),GX);
   ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+GX*(mainBarXLen/2.0),GX);

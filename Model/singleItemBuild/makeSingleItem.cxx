@@ -88,7 +88,12 @@
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
+#include "SixPortTube.h"
 #include "Scrapper.h"
+#include "FlatPipe.h"
+#include "TriPipe.h"
+#include "subPipeUnit.h"
+#include "MultiPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TWCavity.h"
@@ -132,9 +137,10 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
+      "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe",
+      "Bellow", "VacuumPipe","MultiPipe",
       "Help","help"
     });
 
@@ -468,6 +474,53 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item=="SixPort")
+    {
+      std::shared_ptr<tdcSystem::SixPortTube>
+	SP(new tdcSystem::SixPortTube("SixPort"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "TriPipe")
+    {
+      std::shared_ptr<tdcSystem::TriPipe>
+	tp(new tdcSystem::TriPipe("TriPipe"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "MultiPipe")
+    {
+      std::shared_ptr<tdcSystem::MultiPipe>
+	tp(new tdcSystem::MultiPipe("MultiPipe"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  
+  if (item == "FlatPipe")
+    {
+      std::shared_ptr<tdcSystem::FlatPipe>
+	tp(new tdcSystem::FlatPipe("FlatPipe"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
 
   if (item=="DipoleDIBMag")
     {

@@ -118,6 +118,7 @@ makeMaxIV::getActiveStop(const std::map<std::string,std::string>& beamStop,
 
   std::map<std::string,std::string>::const_iterator mc;
   mc=beamStop.find(BL);
+
   return (mc!=beamStop.end()) ? mc->second : "";
 }
 
@@ -143,8 +144,10 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 
   for(const mTYPE::value_type& SP : stopUnits)
     {
+      ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
       if (beamNAMES.find(SP.first)==beamNAMES.end())
 	{
+	  ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
 	  // make generic
 	  for(const std::string Item : beamNAMES)
 	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific
@@ -205,6 +208,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDCsegment22",{} },                              // 22th only
        {"TDCsegment23",{} },                              // 23th only
        {"TDCsegment24",{} }                               // 24th only
+       {"TDCsegment25",{} }                               // 25th only
     });
 
   bool activeLinac(0);
@@ -319,7 +323,6 @@ makeMaxIV::buildR1Ring(Simulation& System,
 
       if (!activeStop.empty())
 	{
-	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
 	  BLPtr->setStopPoint(activeStop);
 	}
 

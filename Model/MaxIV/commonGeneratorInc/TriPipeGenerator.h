@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/FlatPipe.h
+ * File:   commonGeneratorInc/TriPipeGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,35 +19,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FlatPipe_h
-#define xraySystem_FlatPipe_h
+#ifndef setVariable_TriPipeGenerator_h
+#define setVariable_TriPipeGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace tdcSystem
+namespace setVariable
 {
-  
+
 /*!
-  \class FlatPipe
+  \class TriPipeGenerator
   \version 1.0
   \author S. Ansell
-  \date July 2015
-  \brief FlatPipe unit  
+  \date April 2020
+  \brief TriPipeGenerator for variables
 */
 
-class FlatPipe :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+class TriPipeGenerator 
 {
  private:
+
+  double axisXStep;                 ///< step about Z
+  double axisZStep;                 ///< step about X 
+
+  double axisXYAngle;                ///< Rotation about Z
+  double axisZAngle;                 ///< Rotation about X 
+ 
+  double frontWidth;                 ///< void width [inner]
+  double frontHeight;                ///< void height [inner]
+  double backWidth;                  ///< void width [inner]
+  double backHeight;                 ///< void height [inner]
   
-  double frontWidth;             ///< void width at front  [inner]
-  double backWidth;              ///< void width at back [inner]
-  double frontHeight;            ///< void height [front/inner]
-  double backHeight;             ///< void height [back/inner]
   double length;                 ///< void length [total]
   
   double wallThick;              ///< pipe thickness
@@ -58,26 +60,24 @@ class FlatPipe :
   double flangeBRadius;          ///< Joining Flange radius 
   double flangeBLength;          ///< Joining Flange length
     
-  int voidMat;                   ///< Void material
-  int wallMat;                     ///< Pipe material
-
-  
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-
+  std::string voidMat;           ///< Void material
+  std::string wallMat;           ///< Pipe material
+  std::string flangeMat;         ///< Void material
   
  public:
 
-  FlatPipe(const std::string&);
-  FlatPipe(const FlatPipe&);
-  FlatPipe& operator=(const FlatPipe&);
-  virtual ~FlatPipe();
+  TriPipeGenerator();
+  TriPipeGenerator(const TriPipeGenerator&);
+  TriPipeGenerator& operator=(const TriPipeGenerator&);
+  virtual ~TriPipeGenerator();
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void setLength(const double L) { length=L; }
+  
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
+  void setXYWindow(const double,const double,const double,const double);
+  
+  void generateTri(FuncDataBase&,const std::string&) const;
 
 };
 

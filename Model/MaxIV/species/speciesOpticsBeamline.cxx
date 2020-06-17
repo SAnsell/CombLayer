@@ -505,7 +505,7 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   monoVessel->createAll(System,*offPipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
-  
+
   grating->addInsertCell(monoVessel->getCell("Void"));
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
@@ -744,11 +744,11 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
   addLeadBrick(System);
-
-
+  
   buildMono(System,masterCellA,*pipeD,2);
   buildM3Mirror(System,masterCellA,*offPipeB,2);
 
+  
   MonteCarlo::Object* masterCellB(0);
   const constructSystem::portItem& API=M3Tube->getPort(1);
   const long int sideIndex=API.getSideIndex("OuterPlate");

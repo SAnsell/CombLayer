@@ -166,7 +166,6 @@ L2SPFsegment4::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
   
-
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
 

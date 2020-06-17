@@ -3,7 +3,7 @@
  
  * File:   commonBeam/RingDoor.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,15 +199,15 @@ RingDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
 
-
+  // Y Points out of ring:
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+200,-1,Y,innerThick);
+    (SMap,"innerWall",buildIndex+200,Y,innerThick);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+201,-1,Y,innerThick+gapSpace);
+    (SMap,"innerWall",buildIndex+201,Y,innerThick+gapSpace);
 
   // lift step
   ExternalCut::makeShiftedSurf
-    (SMap,"floor",buildIndex+1005,1,Z,underStepHeight);
+    (SMap,"floor",buildIndex+1005,Z,underStepHeight);
   ModelSupport::buildPlane
     (SMap,buildIndex+1003,Origin-X*(underStepWidth+underStepXSep/2.0),X);
   ModelSupport::buildPlane
@@ -244,31 +244,31 @@ RingDoor::createObjects(Simulation& System)
   const std::string floorStr=ExternalCut::getRuleStr("floor");
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"200 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
+    (SMap,buildIndex,"-200 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"200 (-3:4:6) 13 -14 -16 ");
+    (SMap,buildIndex,"-200 (-3:4:6) 13 -14 -16 ");
   makeCell("InnerGap",System,cellIndex++,0,0.0,Out+innerStr+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"200 (-13:14:16) 33 -34 -36 ");
+    (SMap,buildIndex,"-200 (-13:14:16) 33 -34 -36 ");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,Out+innerStr+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-200 201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005) ");
+    (SMap,buildIndex,"200 -201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005) ");
   makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,Out+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-200 201 23 -24 -26 (-3:4:6) ");
+    (SMap,buildIndex,"200 -201 23 -24 -26 (-3:4:6) ");
   makeCell("MidGap",System,cellIndex++,0,0.0,Out+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-201 23 -24 -26 (-1003:1004:1005) (-1013:1014:1005)");
+    (SMap,buildIndex,"201 23 -24 -26 (-1003:1004:1005) (-1013:1014:1005)");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,Out+outerStr+floorStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-200 (-23:24:26) 33 -34 -36 ");
+    (SMap,buildIndex,"200 (-23:24:26) 33 -34 -36 ");
   makeCell("OuterGap",System,cellIndex++,0,0.0,Out+outerStr+floorStr);
 
   // Tubes

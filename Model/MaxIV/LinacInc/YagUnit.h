@@ -37,7 +37,7 @@ namespace tdcSystem
 */
 
 class YagUnit :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap,

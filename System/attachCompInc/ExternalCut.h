@@ -59,7 +59,7 @@ class ExternalCut
 
   static void makeShiftedSurf(ModelSupport::surfRegister&,
 			      const HeadRule&,const int,
-			      const int,const Geometry::Vec3D&,const double);
+			      const Geometry::Vec3D&,const double);
   static void makeExpandedSurf(ModelSupport::surfRegister&,
 			       const HeadRule&,const int,
 			       const Geometry::Vec3D&,
@@ -110,7 +110,7 @@ class ExternalCut
 
   
   void makeShiftedSurf(ModelSupport::surfRegister&,
-		       const std::string&,const int,
+		       const std::string&,
 		       const int,const Geometry::Vec3D&,const double) const;
   
   void makeExpandedSurf(ModelSupport::surfRegister&,

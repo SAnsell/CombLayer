@@ -91,6 +91,8 @@
 #include "TDCsegment23.h"
 #include "TDCsegment24.h"
 
+#include "TDCsegment25.h"
+
 #include "TDC.h"
 
 namespace tdcSystem
@@ -125,7 +127,8 @@ TDC::TDC(const std::string& KN) :
     { "TDCsegment21",std::make_shared<TDCsegment21>("TDC21") },
     { "TDCsegment22",std::make_shared<TDCsegment20>("TDC22") },
     { "TDCsegment23",std::make_shared<TDCsegment23>("TDC23") },
-    { "TDCsegment24",std::make_shared<TDCsegment24>("TDC24") }
+    { "TDCsegment24",std::make_shared<TDCsegment24>("TDC24") },
+    { "TDCsegment25",std::make_shared<TDCsegment25>("TDC25") }
   } )
   /*!
     Constructor
@@ -217,7 +220,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}}
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -271,7 +275,8 @@ TDC::createAll(Simulation& System,
       "TDCsegment14","TDCsegment15","TDCsegment16",
       "TDCsegment17","TDCsegment18","TDCsegment19",
       "TDCsegment20","TDCsegment21","TDCsegment22",
-      "TDCsegment23","TDCsegment24"
+      "TDCsegment23","TDCsegment24",
+      "TDCsegment25"
     });
 
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -300,7 +305,9 @@ TDC::createAll(Simulation& System,
       {"TDCsegment21",{"tdc","TDCsegment20"}},
       {"TDCsegment22",{"tdc","TDCsegment21"}},
       {"TDCsegment23",{"tdc","TDCsegment22"}},
-      {"TDCsegment24",{"tdc","TDCsegment23"}}
+      {"TDCsegment24",{"tdc","TDCsegment23"}},
+      {"TDCsegment25",{"spf","TDCsegment24"}}
+
     });
   const int voidCell(74123);
 
@@ -315,11 +322,10 @@ TDC::createAll(Simulation& System,
     {
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
-		
+
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
 	  if (mc==SegMap.end())
 	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
-
 	  const LinkTYPE seglink=segmentLinkMap.at(BL);
 	  const std::string& bzName=std::get<0>(seglink);
 	  const std::string& prevName=std::get<1>(seglink);

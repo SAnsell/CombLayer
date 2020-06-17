@@ -59,11 +59,16 @@
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "FlatPipeGenerator.h"
+#include "TriPipeGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
+#include "SixPortGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TWCavityGenerator.h"
+#include "subPipeUnit.h"
+#include "MultiPipeGenerator.h"
+#include "TDCCavityGenerator.h"
 
 namespace setVariable
 {
@@ -102,6 +107,7 @@ namespace linacVar
   void TDCsegment23(FuncDataBase&,const std::string&);
   void TDCsegment24(FuncDataBase&,const std::string&);
 
+  void TDCsegment25(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -1638,6 +1644,66 @@ TDCsegment24(FuncDataBase& Control,
   return;
 }
 
+void
+TDCsegment25(FuncDataBase& Control,
+	    const std::string& lKey)
+  /*!
+    Set the variables for segment 25
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","TDCsegment25");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PGen;
+  setVariable::TriPipeGenerator TPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::SixPortGenerator SPortGen;
+
+  const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
+  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
+  const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
+			       
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5);
+  
+  const double startWidth(2.33/2.0);
+  const double endWidth(6.70/2.0);
+  TPGen.setBFlangeCF<CF100>();
+  TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
+  TPGen.generateTri(Control,lKey+"TriPipeA");
+  Control.addVariable(lKey+"TriPipeYAngle",90);
+  
+  DIBGen.generate(Control,lKey+"DipoleA");
+
+  PGen.setCF<CF100>();
+  PGen.setBFlangeCF<CF150>();
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,16.15);
+
+  SPortGen.setCF<CF150>();
+  SPortGen.generateSixPort(Control,lKey+"SixPortA");
+
+  // multipipe
+  setVariable::MultiPipeGenerator MPGen;
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 3.7);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, 0.0);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -3.7);
+  MPGen.generateMulti(Control,lKey+"MultiPipe");
+
+  BellowGen.generateBellow(Control,lKey+"BellowUp",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowFlat",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowDown",0.0,7.5);
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -1705,6 +1771,8 @@ wallVariables(FuncDataBase& Control,
   return;
 }
 
+
+
 }  // NAMESPACE linacVAR
 
 void
@@ -1751,6 +1819,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcOuterLeft",70.0);
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
+  
+  Control.addVariable("spfXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("spfYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("spfOuterLeft",50.0);
+  Control.addVariable("spfOuterRight",50.0);
+  Control.addVariable("spfOuterTop",100.0);
 
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
@@ -1780,6 +1854,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::TDCsegment22(Control,"TDC22");
   linacVar::TDCsegment23(Control,"TDC23");
   linacVar::TDCsegment24(Control,"TDC24");
+  linacVar::TDCsegment25(Control,"TDC25");
 
   return;
 }

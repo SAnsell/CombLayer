@@ -133,12 +133,12 @@ FLEXPES::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("FLEXPES","build");
   
-  frontBeam->setStopPoint(stopPoint);
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
-  
+
+  frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));

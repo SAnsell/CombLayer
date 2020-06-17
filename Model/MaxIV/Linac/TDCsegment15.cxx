@@ -72,6 +72,7 @@
 #include "BlankTube.h"
 #include "PipeTube.h"
 #include "YagScreen.h"
+#include "YagScreen.h"
 
 #include "TDCsegment.h"
 #include "TDCsegment15.h"

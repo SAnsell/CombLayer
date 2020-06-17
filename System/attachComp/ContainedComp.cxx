@@ -224,13 +224,30 @@ ContainedComp::addOuterSurf(const int SN)
 }
 
 void
+ContainedComp::addOuterSurf(const HeadRule& HR) 
+  /*!
+    Add a set of surfaces to the output
+    \param HR ::  Surface string [fully decomposed]
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addOuterSurf(HeadRule)");
+
+  if (HR.hasRule())
+    {
+      outerSurf.addIntersection(HR);
+      outerSurf.populateSurf();
+    }
+  return;
+}
+
+void
 ContainedComp::addOuterSurf(const std::string& SList) 
   /*!
     Add a set of surfaces to the output
     \param SList ::  Surface string [fully decomposed]
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addInterSurf(std::string)");
+  ELog::RegMethod RegA("ContainedComp","addOuterSurf(std::string)");
   if (!SList.empty())
     {
       outerSurf.addIntersection(SList);
@@ -261,9 +278,27 @@ ContainedComp::addOuterUnionSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(std::string)");
+
   outerSurf.addUnion(SList);
   outerSurf.populateSurf();
 
+  return;
+}
+
+void
+ContainedComp::addOuterUnionSurf(const HeadRule& HR) 
+  /*!
+    Add a set of surfaces to the output
+    \param HR ::  Surface string [fully decomposed]
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(HeadRule)");
+
+  if (HR.hasRule())
+    {
+      outerSurf.addUnion(HR);
+      outerSurf.populateSurf();
+    }
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,11 +200,12 @@ PlateTarget::populate(const FuncDataBase& Control)
   
 void
 PlateTarget::createUnitVector(const attachSystem::FixedComp& FC,
-			      const int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed compontent [front of target void vessel]
     - Y Down the beamline
+    \param sideIndex :: link pint
   */
 {
   ELog::RegMethod RegA("PlateTarget","createUnitVector");

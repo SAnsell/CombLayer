@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/FlatPipe.h
+ * File:   commonBeamInc/TriPipe.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FlatPipe_h
-#define xraySystem_FlatPipe_h
+#ifndef xraySystem_TriPipe_h
+#define xraySystem_TriPipe_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace tdcSystem
 {
   
 /*!
-  \class FlatPipe
+  \class TriPipe
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief FlatPipe unit  
+  \brief TriPipe unit  
 */
 
-class FlatPipe :
+class TriPipe :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
@@ -43,6 +43,12 @@ class FlatPipe :
   public attachSystem::FrontBackCut
 {
  private:
+
+  double axisXStep;                ///< Rotation about Z
+  double axisZStep;                 ///< Rotation about X
+
+  double axisXYAngle;                ///< Rotation about Z
+  double axisZAngle;                 ///< Rotation about X
   
   double frontWidth;             ///< void width at front  [inner]
   double backWidth;              ///< void width at back [inner]
@@ -59,7 +65,8 @@ class FlatPipe :
   double flangeBLength;          ///< Joining Flange length
     
   int voidMat;                   ///< Void material
-  int wallMat;                     ///< Pipe material
+  int wallMat;                   ///< Pipe material
+  int flangeMat;                 ///< Flange material
 
   
   void populate(const FuncDataBase&);
@@ -70,10 +77,10 @@ class FlatPipe :
   
  public:
 
-  FlatPipe(const std::string&);
-  FlatPipe(const FlatPipe&);
-  FlatPipe& operator=(const FlatPipe&);
-  virtual ~FlatPipe();
+  TriPipe(const std::string&);
+  TriPipe(const TriPipe&);
+  TriPipe& operator=(const TriPipe&);
+  virtual ~TriPipe();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -70,11 +70,6 @@ class t1BulkShield :
 
   int ironMat;                    ///< Shield material
 
-  // Set during build:
-  int shutterCell;                ///< Shutter cell 
-  int innerCell;                  ///< Inner cell
-  int outerCell;                  ///< Outer cell
-
   // Functions:
 
   void populate(const FuncDataBase&);

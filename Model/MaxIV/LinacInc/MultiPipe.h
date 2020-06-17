@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/FlatPipe.h
+ * File:   LinacInc/MultiPipe.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,63 +19,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FlatPipe_h
-#define xraySystem_FlatPipe_h
+#ifndef tdcSystem_MultiPipe_h
+#define tdcSystem_MultiPipe_h
 
 class Simulation;
 
 namespace tdcSystem
 {
+  class subPipeUnit;
   
 /*!
-  \class FlatPipe
+  \class MultiPipe
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief FlatPipe unit  
+  \brief MultiPipe unit [simplified round pipe]
 */
 
-class FlatPipe :
+class MultiPipe :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::ExternalCut
 {
  private:
   
-  double frontWidth;             ///< void width at front  [inner]
-  double backWidth;              ///< void width at back [inner]
-  double frontHeight;            ///< void height [front/inner]
-  double backHeight;             ///< void height [back/inner]
-  double length;                 ///< void length [total]
-  
-  double wallThick;              ///< pipe thickness
+  double flangeRadius;
+  double flangeLength;
 
-  double flangeARadius;          ///< Joining Flange radius 
-  double flangeALength;          ///< Joining Flange length
+  std::vector<subPipeUnit> pipes;
 
-  double flangeBRadius;          ///< Joining Flange radius 
-  double flangeBLength;          ///< Joining Flange length
-    
-  int voidMat;                   ///< Void material
-  int wallMat;                     ///< Pipe material
+  int flangeMat;                    ///< Pipe material
 
-  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
+  void applyActiveFrontBack();
   
  public:
 
-  FlatPipe(const std::string&);
-  FlatPipe(const FlatPipe&);
-  FlatPipe& operator=(const FlatPipe&);
-  virtual ~FlatPipe();
+  MultiPipe(const std::string&);
+  MultiPipe(const MultiPipe&);
+  MultiPipe& operator=(const MultiPipe&);
+  virtual ~MultiPipe();
 
-  using FixedComp::createAll;
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/FlatPipeGenerator.cxx
+ * File:   commonGenerator/SixPortGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,27 +52,31 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "FlatPipeGenerator.h"
+#include "SixPortGenerator.h"
 
 namespace setVariable
 {
 
-FlatPipeGenerator::FlatPipeGenerator() :
-  frontWidth(2.7),frontHeight(1.0),
-  backWidth(2.7),backHeight(1.0),
-  wallThick(0.75),
-  flangeARadius(CF40::flangeRadius),
-  flangeALength(CF40::flangeLength),
-  flangeBRadius(CF40::flangeRadius),
-  flangeBLength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304L")
+SixPortGenerator::SixPortGenerator() :
+  radius(CF100::innerRadius),linkRadius(CF100::innerRadius),
+  wallThick(CF100::wallThick),
+  frontLength(22.0),backLength(22.0),
+  sideLength(22.0),
+  flangeARadius(CF100::flangeRadius),
+  flangeBRadius(CF100::flangeRadius),
+  flangeSRadius(CF100::flangeRadius),
+  flangeALength(CF100::flangeLength),
+  flangeBLength(CF100::flangeLength),
+  flangeSLength(CF100::flangeLength),
+  plateThick(CF100::flangeLength),
+  voidMat("Void"),mainMat("Stainless304"),
+  flangeMat("Stainless304"),plateMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
-
-FlatPipeGenerator::~FlatPipeGenerator() 
+  
+SixPortGenerator::~SixPortGenerator() 
  /*!
    Destructor
  */
@@ -80,63 +84,83 @@ FlatPipeGenerator::~FlatPipeGenerator()
 
 template<typename CF>
 void
-FlatPipeGenerator::setAFlangeCF()
+SixPortGenerator::setCF()
   /*!
-    Set the front flange
-  */
+    Setter for flange A
+   */
 {
-  flangeARadius=CF::flangeRadius;
-  flangeALength=CF::flangeLength;
+  radius=CF::innerRadius;
+  linkRadius=CF::innerRadius;
+  wallThick=CF::wallThick;
+  
+  setFlangeCF<CF>();
   return;
 }
 
 template<typename CF>
 void
-FlatPipeGenerator::setBFlangeCF()
+SixPortGenerator::setFlangeCF()
   /*!
-    Set the back flange
+    Setter for flange A
    */
 {
+  flangeARadius=CF::flangeRadius;
+  flangeALength=CF::flangeLength;
   flangeBRadius=CF::flangeRadius;
   flangeBLength=CF::flangeLength;
+  flangeSRadius=CF::flangeRadius;
+  flangeSLength=CF::flangeLength;
   return;
 }
-
 
 void
-FlatPipeGenerator::generateFlat(FuncDataBase& Control,
-				const std::string& keyName,
-				const double length)  const
+SixPortGenerator::generateSixPort(FuncDataBase& Control,
+				  const std::string& keyName) const
 /*!
-    Primary funciton for setting the variables
+    Primary function for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("FlatPipeGenerator","generateFlat");
-
-
-  Control.addVariable(keyName+"Length",length);   
-  Control.addVariable(keyName+"FrontWidth",frontWidth);
-  Control.addVariable(keyName+"FrontHeight",frontHeight);
-  Control.addVariable(keyName+"BackWidth",backWidth);
-  Control.addVariable(keyName+"BackHeight",backHeight);
-
+  ELog::RegMethod RegA("SixPortGenerator","generateSixPort");
+  
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"LinkRadius",linkRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"FrontLength",frontLength);
+  Control.addVariable(keyName+"BackLength",backLength);
+  Control.addVariable(keyName+"SideLength",sideLength);
+
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
-  Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeSRadius",flangeSRadius);
+  
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+  Control.addVariable(keyName+"FlangeSLength",flangeSLength);
+
+  Control.addVariable(keyName+"PlateThick",plateThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-  
+  Control.addVariable(keyName+"PlateMat",plateMat);
+
   return;
 
 }
 
-  
+///\cond TEMPLATE
+
+template void SixPortGenerator::setCF<CF100>();
+template void SixPortGenerator::setCF<CF120>();
+template void SixPortGenerator::setCF<CF150>();
+
+template void SixPortGenerator::setFlangeCF<CF100>();
+template void SixPortGenerator::setFlangeCF<CF120>();
+template void SixPortGenerator::setFlangeCF<CF150>();
+
+
+///\endcond TEPLATE
   
 }  // NAMESPACE setVariable

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/FlatPipeGenerator.cxx
+ * File:   commonGenerator/TriPipeGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,15 +52,17 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "FlatPipeGenerator.h"
+#include "TriPipeGenerator.h"
 
 namespace setVariable
 {
 
-FlatPipeGenerator::FlatPipeGenerator() :
+TriPipeGenerator::TriPipeGenerator() :
+  axisXStep(0.0),axisZStep(0.0),
+  axisXYAngle(0.0),axisZAngle(0.0),
   frontWidth(2.7),frontHeight(1.0),
   backWidth(2.7),backHeight(1.0),
-  wallThick(0.75),
+  length(80.0),wallThick(0.75),
   flangeARadius(CF40::flangeRadius),
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
@@ -72,7 +74,7 @@ FlatPipeGenerator::FlatPipeGenerator() :
   */
 {}
 
-FlatPipeGenerator::~FlatPipeGenerator() 
+TriPipeGenerator::~TriPipeGenerator() 
  /*!
    Destructor
  */
@@ -80,7 +82,7 @@ FlatPipeGenerator::~FlatPipeGenerator()
 
 template<typename CF>
 void
-FlatPipeGenerator::setAFlangeCF()
+TriPipeGenerator::setAFlangeCF()
   /*!
     Set the front flange
   */
@@ -92,7 +94,7 @@ FlatPipeGenerator::setAFlangeCF()
 
 template<typename CF>
 void
-FlatPipeGenerator::setBFlangeCF()
+TriPipeGenerator::setBFlangeCF()
   /*!
     Set the back flange
    */
@@ -102,11 +104,32 @@ FlatPipeGenerator::setBFlangeCF()
   return;
 }
 
+void
+TriPipeGenerator::setXYWindow(const double LWA,const double RWA,
+			      const double LWB,const double RWB)
+  /*!
+    Sets the width window based on +/- values of the width
+    \param LWA :: left width front
+    \param RWA :: right width front
+    \param LWB :: left width back
+    \param RWB :: right width back
+  */
+{
+  ELog::RegMethod RegA("TriPipeGenerator","setXYWindow");
+
+  frontWidth=LWA+RWA;
+  backWidth=LWB+RWB;
+  axisXStep=(RWA-LWA)/2.0;    // offset
+  
+  const double tanA=((RWB-RWA)/2.0-axisXStep)/length;
+  axisXYAngle=atan(tanA);
+  
+  return;
+}
 
 void
-FlatPipeGenerator::generateFlat(FuncDataBase& Control,
-				const std::string& keyName,
-				const double length)  const
+TriPipeGenerator::generateTri(FuncDataBase& Control,
+			      const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -114,8 +137,12 @@ FlatPipeGenerator::generateFlat(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("FlatPipeGenerator","generateFlat");
+  ELog::RegMethod RegA("TriPipeGenerator","generateFlat");
 
+  Control.addVariable(keyName+"AxisXStep",axisXStep);
+  Control.addVariable(keyName+"AxisZStep",axisZStep);   
+  Control.addVariable(keyName+"AxisXYAngle",axisXYAngle);
+  Control.addVariable(keyName+"AxisZAngle",axisZAngle);   
 
   Control.addVariable(keyName+"Length",length);   
   Control.addVariable(keyName+"FrontWidth",frontWidth);
@@ -137,6 +164,10 @@ FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 
 }
 
+///\cond TEMPLATE
+
+template void TriPipeGenerator::setBFlangeCF<CF100>();
   
+///\endcond TEMPLATE
   
 }  // NAMESPACE setVariable

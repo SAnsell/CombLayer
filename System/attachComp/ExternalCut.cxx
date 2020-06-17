@@ -413,8 +413,7 @@ ExternalCut::createLink(const std::string& extName,
 void
 ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
 			     const HeadRule& HR,
-			     const int index,
-			     const int dFlag,
+			     const int newSN,
 			     const Geometry::Vec3D& YAxis,
 			     const double length)
   /*!
@@ -430,13 +429,13 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(HR)");
   
   std::set<int> FS=HR.getSurfSet();
-  for(const int& SN : FS)
+  for(const int& refSN : FS)
     {
       const Geometry::Surface* SPtr=
-	ModelSupport::buildShiftedSurf(SMap,SN,index,dFlag,YAxis,length);
+	ModelSupport::buildShiftedSurf(SMap,newSN,refSN,YAxis,length);
       if (SPtr) return;
     }
   throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
@@ -499,19 +498,17 @@ ExternalCut::interPoint(const std::string& extName,
 
 void
 ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
-			    const std::string& extName,
-			    const int index,
-			    const int dFlag,
-			    const Geometry::Vec3D& YAxis,
-			    const double length) const
+			     const std::string& extName,
+			     const int newSN,
+			     const Geometry::Vec3D& YAxis,
+			     const double length) const
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
     \param SMap :: local surface register
     \param extName :: cut unit name
-    \param index :: offset index
-    \param dFlag :: direction of surface axis (relative to HR.Plane) [-1/1]
-    \param YAxis :: Direction of cylindical shift [NOT PLANE]
+    \param newSN :: new surface number
+    \param YAxis :: Direction of normal/shift (approximate)
     \param dExtra :: displacement extra [cm]
   */
 {
@@ -521,7 +518,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   if (!CU)
     throw ColErr::InContainerError<std::string>(extName,"Unit not named");
   
-  makeShiftedSurf(SMap,CU->main,index,dFlag,YAxis,length);
+  makeShiftedSurf(SMap,CU->main,newSN,YAxis,length);
 
   return;
 }

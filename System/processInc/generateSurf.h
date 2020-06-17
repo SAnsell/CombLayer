@@ -34,19 +34,17 @@ buildRotatedPlane(surfRegister&,const int,
 
 Geometry::Plane*
 buildSignedShiftedPlane(surfRegister&,const int,const int,
-			const Geometry::Plane*,
-			const double);
+			const int,const double);
+
 Geometry::Plane*
 buildShiftedPlane(surfRegister&,const int,
-		  const int,const double);
+		  const int,const Geometry::Vec3D&,
+		  const double);
+
 Geometry::Plane*
 buildShiftedPlane(surfRegister&,const int,
 		  const Geometry::Plane*,
 		  const double);
-Geometry::Plane*
-buildShiftedPlaneReversed(surfRegister&,const int,
-			  const int,const double);
-
 Geometry::Plane*
 buildShiftedPlaneReversed(surfRegister&,const int,
 			  const Geometry::Plane*,
@@ -101,11 +99,9 @@ buildEllipticCyl(surfRegister&,const int,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,const double,
 		 const double);
 
-
- 
 Geometry::Surface*
 buildShiftedSurf(surfRegister&,const int,const int,
-		 const int,const Geometry::Vec3D&,const double);
+		 const Geometry::Vec3D&,const double);
  
 Geometry::Surface*
 buildExpandedSurf(surfRegister&,const int,const int,

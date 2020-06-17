@@ -402,28 +402,25 @@ FrontBackCut::createBackLinks(attachSystem::FixedComp& FC,
 void
 FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
 			      const int surfIndex,
-			      const int dFlag,
 			      const Geometry::Vec3D& YAxis,
 			      const double length) const
   /*!
     Support function to calculate the shifted surface for the front
     \param SMap :: Surface register
     \param surfIndex :: offset index [new]
-    \param dFlag :: direction flag
-    \param YAxis :: Axis for shift of sphere/cylinder
+    \param YAxis :: Axis for shift of sphere/cylinder/plane
     \param length :: length to shift by
   */
 {
   ELog::RegMethod RegA("FrontBackCut","getShiftedFront");
 
-  ExternalCut::makeShiftedSurf(SMap,"front",surfIndex,dFlag,YAxis,length);
+  ExternalCut::makeShiftedSurf(SMap,"front",surfIndex,YAxis,length);
   return;
 }
 
 void
 FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
 			     const int surfIndex,
-			     const int dFlag,
 			     const Geometry::Vec3D& YAxis,
 			     const double length) const
   /*!
@@ -431,13 +428,13 @@ FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
     \param SMap :: Surface register
     \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
-    \param YAxis :: Axid for shift of sphere/cylinder
+    \param YAxis :: Axid for shift of sphere/cylinder/plane
     \param length :: length to shift by
   */
 {
   ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
 
-  ExternalCut::makeShiftedSurf(SMap,"back",surfIndex,dFlag,YAxis,length);
+  ExternalCut::makeShiftedSurf(SMap,"back",surfIndex,YAxis,length);
   return;
 }
 
