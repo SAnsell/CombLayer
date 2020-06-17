@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/TDCsegment.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,11 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_TDCsegment_h
 #define tdcSystem_TDCsegment_h
+
+namespace constructSystem
+{
+  class portItem;
+  class BlankTube;
+}
 
 namespace tdcSystem
 {
@@ -52,17 +58,17 @@ class TDCsegment :
   attachSystem::ExternalCut* firstItemPtr;
 
   void setFirstItem(const std::shared_ptr<attachSystem::FixedComp>&);
-  
+
  public:
-  
+
   TDCsegment(const std::string&,const size_t);
   TDCsegment(const TDCsegment&);
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
 
-  
+
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
-  
+
   /// set the current inner zone [allows joining of segments]
   void setInnerZone(attachSystem::InnerZone* IZPtr) { buildZone=IZPtr; }
 
@@ -71,7 +77,7 @@ class TDCsegment :
     {  nextZone=IZPtr; }
 
 
-  
+
   void setLastSurf(const HeadRule&);
   /// clear front flag
   void clearLastSurf() { lastFlag=0; }
@@ -79,9 +85,13 @@ class TDCsegment :
   bool hasLastSurf() const { return lastFlag; }
   /// access rule
   const HeadRule& getLastSurf() const { return lastRule; }
+  const constructSystem::portItem& buildIonPump2Port(Simulation&,MonteCarlo::Object*,
+						     const attachSystem::FixedComp&,
+						     const std::string&,
+						     constructSystem::BlankTube&) const;
 
   void setFrontSurf(const HeadRule&);
-  
+
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
 
