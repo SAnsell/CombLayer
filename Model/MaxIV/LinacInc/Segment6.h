@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment10.h
+ * File:   LinacInc/Segment6.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment10_h
-#define tdcSystem_L2SPFsegment10_h
+#ifndef tdcSystem_Segment6_h
+#define tdcSystem_Segment6_h
 
 namespace constructSystem
 {
@@ -29,77 +29,71 @@ namespace constructSystem
   class portItem;
   class BlankTube;
   class PipeTube;
-  class GateValveCube;
 }
 
+/*!
+  \namespace xraySystem
+  \brief General xray optics system
+  \version 1.0
+  \date January 2018
+  \author S. Ansell
+*/
 
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
-  class InjectionHall;
-
+  class Scrapper;
+  class EBeamStop;
+  class CeramicSep;
+  
   /*!
-    \class L2SPFsegment10
+    \class Segment6
     \version 1.0
     \author S. Ansell
-    \date May 2020
-    \brief Seventh segment
+    \date April 2020
+    \brief Second segment in the TDC from the linac
   */
 
-class L2SPFsegment10 :
+class Segment6 :
   public TDCsegment
 {
  private:
 
-  const InjectionHall* IHall;      ///< Storage for injection hall if used.
-  
-  /// connection pipe
+  /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
-
-  /// first bellow [actually ceramic gap]
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
-
-  /// Gate valve holder
-  std::shared_ptr<constructSystem::GateValveCube> gateValve;   
-  
-  /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;   
-
-  /// connection pipe
+  /// seonc pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-
-  /// first bellow [actually ceramic gap]
-  std::shared_ptr<constructSystem::Bellows> bellowB;   
-
-  /// quad pipe
+  /// third pipe (falange change)
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
 
-  /// Quad
-  std::shared_ptr<tdcSystem::LQuadF> QuadA;
+  /// beam scrapper
+  std::shared_ptr<tdcSystem::Scrapper> scrapper;   
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+  /// fourth pipe (flange change)
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;   
 
+  /// long bellow
+  std::shared_ptr<tdcSystem::CeramicSep> ceramicA;   
 
-  double wallRadius;       ///< Hole radius in wall
-
-  void constructHole(Simulation&);
+  /// Electron beam stop
+  std::shared_ptr<tdcSystem::EBeamStop> beamStop;   
   
-  void populate(const FuncDataBase&);
-  void createSurfaces();
+  /// ceramicBellow [reversed]
+  std::shared_ptr<tdcSystem::CeramicSep> ceramicB;   
+
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment10(const std::string&);
-  L2SPFsegment10(const L2SPFsegment10&);
-  L2SPFsegment10& operator=(const L2SPFsegment10&);
-  ~L2SPFsegment10();
+  Segment6(const std::string&);
+  Segment6(const Segment6&);
+  Segment6& operator=(const Segment6&);
+  ~Segment6();
+
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+		 const long int);
 
 };
 

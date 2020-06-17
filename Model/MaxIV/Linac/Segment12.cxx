@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment12.cxx
+ * File: Linac/Segment12.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -92,7 +92,7 @@
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment12.h"
+#include "Segment12.h"
 
 namespace tdcSystem
 {
@@ -100,7 +100,7 @@ namespace tdcSystem
 // Note currently uncopied:
 
   
-L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
+Segment12::Segment12(const std::string& Key) :
   TDCsegment(Key,3),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -136,21 +136,21 @@ L2SPFsegment12::L2SPFsegment12(const std::string& Key) :
   OR.addObject(bellowRB);
 }
   
-L2SPFsegment12::~L2SPFsegment12()
+Segment12::~Segment12()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment12::buildObjects(Simulation& System)
+Segment12::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment12","buildObjects");
+  ELog::RegMethod RegA("Segment12","buildObjects");
 
   int outerCell;
 
@@ -229,7 +229,7 @@ L2SPFsegment12::buildObjects(Simulation& System)
 }
 
 void
-L2SPFsegment12::createLinks()
+Segment12::createLinks()
   /*!
     Create a front/back link
    */
@@ -243,7 +243,7 @@ L2SPFsegment12::createLinks()
 }
 
 void 
-L2SPFsegment12::createAll(Simulation& System,
+Segment12::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -254,7 +254,7 @@ L2SPFsegment12::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment12","build");
+  ELog::RegMethod RControl("Segment12","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

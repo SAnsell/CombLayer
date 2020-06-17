@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment12.h
+ * File:   LinacInc/Segment3.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,17 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment12_h
-#define tdcSystem_L2SPFsegment12_h
+#ifndef tdcSystem_Segment3_h
+#define tdcSystem_Segment3_h
 
 namespace constructSystem
 {
+  class OffsetFlangePipe;
   class VacuumPipe;
   class Bellows;
   class portItem;
   class BlankTube;
   class PipeTube;
 }
+
+namespace xraySystem
+{
+  class CylGateValve;
+}
+
 
 /*!
   \namespace xraySystem
@@ -41,75 +48,60 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuadF;
   class CorrectorMag;
-  class CeramicSep;
-  class YagScreen;
-
+  class DipoleDIBMag;
+  class FlatPipe;
+  
   /*!
-    \class L2SPFsegment12
+    \class Segment3
     \version 1.0
     \author S. Ansell
-    \date May 2020
-    \brief Seventh segment
+    \date April 2020
+    \brief Second segment in the TDC from the linac
   */
 
-class L2SPFsegment12 :
+class Segment3 :
   public TDCsegment
 {
  private:
 
-  /// entrance bellows
+  /// Bellows
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
-  /// first pipe
-  std::shared_ptr<tdcSystem::FlatPipe> flatA;
+  /// first pipe in dipole
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;   
 
   /// first  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
 
-  /// first pipe
-  std::shared_ptr<tdcSystem::BeamDivider> beamA;
+  /// first pipe in dipole
+  std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
 
-  // LEFT DIVIDER:
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;    ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
 
-  // bellow on left exit
-  std::shared_ptr<constructSystem::Bellows> bellowLA;
-
-  /// Ion pump
-  std::shared_ptr<constructSystem::BlankTube> ionPumpLA;
-  
-  /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeLA;
-
-  // LAST Unit in left cell
-  std::shared_ptr<constructSystem::Bellows> bellowLB;
-
-  // RIGHT DIVIDER:
-  
-  /// first pipe
-  std::shared_ptr<tdcSystem::FlatPipe> flatB;
-
+  /// second pipe in dipole
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;   
   /// second  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
 
-    /// second  dipole
-  std::shared_ptr<constructSystem::Bellows> bellowRB;
-  
+  /// Final bellow [including bend]
+  std::shared_ptr<constructSystem::Bellows> bellowB;
 
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment12(const std::string&);
-  L2SPFsegment12(const L2SPFsegment12&);
-  L2SPFsegment12& operator=(const L2SPFsegment12&);
-  ~L2SPFsegment12();
+  Segment3(const std::string&);
+  Segment3(const Segment3&);
+  Segment3& operator=(const Segment3&);
+  ~Segment3();
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment6.h
+ * File:   LinacInc/Segment7.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment6_h
-#define tdcSystem_L2SPFsegment6_h
+#ifndef tdcSystem_Segment7_h
+#define tdcSystem_Segment7_h
 
 namespace constructSystem
 {
@@ -41,54 +41,47 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class Scrapper;
-  class EBeamStop;
-  class CeramicSep;
-  
+  class LQuadF;
+  class CorrectorMag;
+
   /*!
-    \class L2SPFsegment6
+    \class Segment7
     \version 1.0
     \author S. Ansell
-    \date April 2020
-    \brief Second segment in the TDC from the linac
+    \date May 2020
+    \brief Seventh segment
   */
 
-class L2SPFsegment6 :
+class Segment7 :
   public TDCsegment
 {
  private:
 
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
-  /// seonc pipe
+
+  /// horizontal corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   
+  /// first quad
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
+  /// bpm
+  std::shared_ptr<tdcSystem::BPM> bpm;
+
+  /// second pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-  /// third pipe (falange change)
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
 
-  /// beam scrapper
-  std::shared_ptr<tdcSystem::Scrapper> scrapper;   
-
-  /// fourth pipe (flange change)
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD;   
-
-  /// long bellow
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicA;   
-
-  /// Electron beam stop
-  std::shared_ptr<tdcSystem::EBeamStop> beamStop;   
+  /// vertical corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   
   
-  /// ceramicBellow [reversed]
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicB;   
-
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment6(const std::string&);
-  L2SPFsegment6(const L2SPFsegment6&);
-  L2SPFsegment6& operator=(const L2SPFsegment6&);
-  ~L2SPFsegment6();
+  Segment7(const std::string&);
+  Segment7(const Segment7&);
+  Segment7& operator=(const Segment7&);
+  ~Segment7();
 
 
   using FixedComp::createAll;

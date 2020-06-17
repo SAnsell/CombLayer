@@ -174,11 +174,11 @@ makeMaxIV::buildInjection(Simulation& System,
   static ITYPE injectNAMES
 
     ({ {"L2SPF",
-	{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-	 "L2SPFsegment4", "L2SPFsegment5", "L2SPFsegment6",
-	 "L2SPFsegment7", "L2SPFsegment8", "L2SPFsegment9",
-	 "L2SPFsegment10", "L2SPFsegment11", "L2SPFsegment12",
-	 "L2SPFsegment13"
+	{"Segment1","Segment2","Segment3",
+	 "Segment4", "Segment5", "Segment6",
+	 "Segment7", "Segment8", "Segment9",
+	 "Segment10", "Segment11", "Segment12",
+	 "Segment13"
 	} },
        {"TDC",{"Segment14","Segment15","Segment16",
 	       "Segment17","Segment18", "Segment19",
@@ -186,19 +186,19 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment23","Segment24",
 	       "Segment30","Segment31"} },
 
-       {"L2SPFsegment1",{} },                             // first only
-       {"L2SPFsegment2",{} },                             // second only
-       {"L2SPFsegment3",{} },                             // third only
-       {"L2SPFsegment4",{} },                             // forth only
-       {"L2SPFsegment5",{} },                             // fifth only
-       {"L2SPFsegment6",{} },                             // fifth only
-       {"L2SPFsegment7",{} },                             // fifth only
-       {"L2SPFsegment8",{} },                             // fifth only
-       {"L2SPFsegment9",{} },                             // fifth only
-       {"L2SPFsegment10",{} },                             // wall unit
-       {"L2SPFsegment11",{} },                             // TDC
-       {"L2SPFsegment12",{} },                             // TDC
-       {"L2SPFsegment13",{} },                             // TDC
+       {"Segment1",{} },                             // first only
+       {"Segment2",{} },                             // second only
+       {"Segment3",{} },                             // third only
+       {"Segment4",{} },                             // forth only
+       {"Segment5",{} },                             // fifth only
+       {"Segment6",{} },                             // fifth only
+       {"Segment7",{} },                             // fifth only
+       {"Segment8",{} },                             // fifth only
+       {"Segment9",{} },                             // fifth only
+       {"Segment10",{} },                             // wall unit
+       {"Segment11",{} },                             // TDC
+       {"Segment12",{} },                             // TDC
+       {"Segment13",{} },                             // TDC
        {"Segment14",{} },                              // 14th only
        {"Segment15",{} },                              // 15th only
        {"Segment16",{} },                              // 16th only

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment1.h
+ * File:   LinacInc/Segment1.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment1_h
-#define tdcSystem_L2SPFsegment1_h
+#ifndef tdcSystem_Segment1_h
+#define tdcSystem_Segment1_h
 
 namespace constructSystem
 {
@@ -36,14 +36,14 @@ namespace tdcSystem
   class LQuadF;
   class CorrectorMag;
   /*!
-    \class L2SPFsegment1
+    \class Segment1
     \version 1.0
     \author S. Ansell
     \date April 2020
     \brief First segment in the TCD from the linac
   */
 
-class L2SPFsegment1 :
+class Segment1 :
   public TDCsegment
 {
  private:
@@ -76,10 +76,10 @@ class L2SPFsegment1 :
   
  public:
   
-  L2SPFsegment1(const std::string&);
-  L2SPFsegment1(const L2SPFsegment1&);
-  L2SPFsegment1& operator=(const L2SPFsegment1&);
-  ~L2SPFsegment1();
+  Segment1(const std::string&);
+  Segment1(const Segment1&);
+  Segment1& operator=(const Segment1&);
+  ~Segment1();
 
   
   void createAll(Simulation&,const attachSystem::FixedComp&,

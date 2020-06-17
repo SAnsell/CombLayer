@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment25.cxx
+ * File: Linac/Segment25.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *

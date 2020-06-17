@@ -66,19 +66,19 @@
 
 #include "InjectionHall.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment1.h"
-#include "L2SPFsegment2.h"
-#include "L2SPFsegment3.h"
-#include "L2SPFsegment4.h"
-#include "L2SPFsegment5.h"
-#include "L2SPFsegment6.h"
-#include "L2SPFsegment7.h"
-#include "L2SPFsegment8.h"
-#include "L2SPFsegment9.h"
-#include "L2SPFsegment10.h"
-#include "L2SPFsegment11.h"
-#include "L2SPFsegment12.h"
-#include "L2SPFsegment13.h"
+#include "Segment1.h"
+#include "Segment2.h"
+#include "Segment3.h"
+#include "Segment4.h"
+#include "Segment5.h"
+#include "Segment6.h"
+#include "Segment7.h"
+#include "Segment8.h"
+#include "Segment9.h"
+#include "Segment10.h"
+#include "Segment11.h"
+#include "Segment12.h"
+#include "Segment13.h"
 
 #include "Segment14.h"
 #include "Segment15.h"
@@ -106,19 +106,19 @@ TDC::TDC(const std::string& KN) :
   injectionHall(new InjectionHall("InjectionHall")),
   SegMap
   ({
-    { "L2SPFsegment1",std::make_shared<L2SPFsegment1>("L2SPF1") },
-    { "L2SPFsegment2",std::make_shared<L2SPFsegment2>("L2SPF2") },
-    { "L2SPFsegment3",std::make_shared<L2SPFsegment3>("L2SPF3") },
-    { "L2SPFsegment4",std::make_shared<L2SPFsegment4>("L2SPF4") },
-    { "L2SPFsegment5",std::make_shared<L2SPFsegment5>("L2SPF5") },
-    { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
-    { "L2SPFsegment7",std::make_shared<L2SPFsegment7>("L2SPF7") },
-    { "L2SPFsegment8",std::make_shared<L2SPFsegment8>("L2SPF8") },
-    { "L2SPFsegment9",std::make_shared<L2SPFsegment9>("L2SPF9") },
-    { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
-    { "L2SPFsegment11",std::make_shared<L2SPFsegment11>("L2SPF11") },
-    { "L2SPFsegment12",std::make_shared<L2SPFsegment12>("L2SPF12") },
-    { "L2SPFsegment13",std::make_shared<L2SPFsegment13>("L2SPF13") },
+    { "Segment1",std::make_shared<Segment1>("L2SPF1") },
+    { "Segment2",std::make_shared<Segment2>("L2SPF2") },
+    { "Segment3",std::make_shared<Segment3>("L2SPF3") },
+    { "Segment4",std::make_shared<Segment4>("L2SPF4") },
+    { "Segment5",std::make_shared<Segment5>("L2SPF5") },
+    { "Segment6",std::make_shared<Segment6>("L2SPF6") },
+    { "Segment7",std::make_shared<Segment7>("L2SPF7") },
+    { "Segment8",std::make_shared<Segment8>("L2SPF8") },
+    { "Segment9",std::make_shared<Segment9>("L2SPF9") },
+    { "Segment10",std::make_shared<Segment10>("L2SPF10") },
+    { "Segment11",std::make_shared<Segment11>("L2SPF11") },
+    { "Segment12",std::make_shared<Segment12>("L2SPF12") },
+    { "Segment13",std::make_shared<Segment13>("L2SPF13") },
     { "Segment14",std::make_shared<Segment14>("TDC14") },
     { "Segment15",std::make_shared<Segment15>("TDC15") },
     { "Segment16",std::make_shared<Segment16>("TDC16") },
@@ -272,11 +272,11 @@ TDC::createAll(Simulation& System,
   // being built out of order
   static const std::vector<std::string> buildOrder
     ({
-      "L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-      "L2SPFsegment4","L2SPFsegment5","L2SPFsegment6",
-      "L2SPFsegment7","L2SPFsegment8","L2SPFsegment9",
-      "L2SPFsegment10","L2SPFsegment11","L2SPFsegment12",
-      "L2SPFsegment13",
+      "Segment1","Segment2","Segment3",
+      "Segment4","Segment5","Segment6",
+      "Segment7","Segment8","Segment9",
+      "Segment10","Segment11","Segment12",
+      "Segment13",
       "Segment14","Segment15","Segment16",
       "Segment17","Segment18","Segment19",
       "Segment20","Segment21","Segment22",
@@ -288,19 +288,19 @@ TDC::createAll(Simulation& System,
   typedef std::tuple<std::string,std::string> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
-      {"L2SPFsegment1",{"l2spf",""}},
-      {"L2SPFsegment2",{"l2spf","L2SPFsegment1"}},
-      {"L2SPFsegment3",{"l2spf","L2SPFsegment2"}},
-      {"L2SPFsegment4",{"l2spf","L2SPFsegment3"}},
-      {"L2SPFsegment5",{"l2spfTurn","L2SPFsegment4"}},
-      {"L2SPFsegment6",{"l2spfTurn","L2SPFsegment5"}},
-      {"L2SPFsegment7",{"l2spfAngle","L2SPFsegment6"}},
-      {"L2SPFsegment8",{"l2spfAngle","L2SPFsegment7"}},
-      {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
-      {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
-      {"L2SPFsegment11",{"tdcFront","L2SPFsegment10"}},
-      {"L2SPFsegment12",{"tdcFront","L2SPFsegment11"}},
-      {"L2SPFsegment13",{"tdcFront","L2SPFsegment12"}},
+      {"Segment1",{"l2spf",""}},
+      {"Segment2",{"l2spf","Segment1"}},
+      {"Segment3",{"l2spf","Segment2"}},
+      {"Segment4",{"l2spf","Segment3"}},
+      {"Segment5",{"l2spfTurn","Segment4"}},
+      {"Segment6",{"l2spfTurn","Segment5"}},
+      {"Segment7",{"l2spfAngle","Segment6"}},
+      {"Segment8",{"l2spfAngle","Segment7"}},
+      {"Segment9",{"l2spfAngle","Segment8"}},
+      {"Segment10",{"l2spfAngle","Segment9"}},
+      {"Segment11",{"tdcFront","Segment10"}},
+      {"Segment12",{"tdcFront","Segment11"}},
+      {"Segment13",{"tdcFront","Segment12"}},
       {"Segment14",{"tdc",""}},
       {"Segment15",{"tdc","Segment14"}},
       {"Segment16",{"tdc","Segment15"}},
@@ -324,7 +324,7 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  // special case of L2SPFsegment10 :
+  // special case of Segment10 :
 
   for(const std::string& BL : buildOrder)
     {
@@ -356,9 +356,9 @@ TDC::createAll(Simulation& System,
 
 	  buildZone->constructMasterCell(System);
 	  segPtr->setInnerZone(buildZone.get());
-	  // special case of L2SPFsegment10 :
+	  // special case of Segment10 :
 
-	  if (BL=="L2SPFsegment10")
+	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());

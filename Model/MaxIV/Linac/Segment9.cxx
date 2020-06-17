@@ -1,7 +1,8 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment4.cxx
+ * File: Linac/Segment9.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -45,7 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Line.h"
+#include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -72,7 +73,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -81,40 +81,41 @@
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
+#include "portItem.h"
+#include "VirtualTube.h"
+#include "BlankTube.h"
 #include "Bellows.h"
-#include "CorrectorMag.h"
-#include "BPM.h"
 #include "LQuadF.h"
-#include "LSexupole.h"
+#include "BPM.h"
 #include "CorrectorMag.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
+#include "CeramicSep.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment4.h"
+#include "Segment9.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
+
   
-L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
+Segment9::Segment9(const std::string& Key) :
   TDCsegment(Key,2),
 
+  ceramicBellowA(new tdcSystem::CeramicSep(keyName+"CeramicBellowA")),
+  pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
+  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
+
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  bpm(new tdcSystem::BPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
-  QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagHorC(new tdcSystem::CorrectorMag(keyName+"CMagHorC")),
-  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC"))
   
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -123,36 +124,35 @@ L2SPFsegment4::L2SPFsegment4(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(ceramicBellowA);
+  OR.addObject(pumpA);
   OR.addObject(pipeA);
-  OR.addObject(bpmA);
+  OR.addObject(cMagVertA);
+  OR.addObject(cMagHorA);
+  OR.addObject(bellowB);
+  OR.addObject(bpm);
   OR.addObject(pipeB);
   OR.addObject(QuadA);
-  OR.addObject(SexuA);
-  OR.addObject(QuadB);
-  OR.addObject(yagUnit);
-  OR.addObject(yagScreen);
-  OR.addObject(bellowA);
-  OR.addObject(pipeC);
-  OR.addObject(cMagHorC);
-  OR.addObject(cMagVertC);  
+  OR.addObject(bellowC);
 
+  setFirstItem(ceramicBellowA);
 }
   
-L2SPFsegment4::~L2SPFsegment4()
+Segment9::~Segment9()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment4::buildObjects(Simulation& System)
+Segment9::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment4","buildObjects");
+  ELog::RegMethod RegA("Segment9","buildObjects");
 
   int outerCell;
 
@@ -161,56 +161,60 @@ L2SPFsegment4::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    pipeA->copyCutSurf("front",*this,"front");
-  pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+    ceramicBellowA->copyCutSurf("front",*this,"front");
+  ceramicBellowA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramicBellowA,2);
+  ceramicBellowA->insertInCell(System,outerCell);
+
+
+  // FAKE INSERT REQUIRED
+  pumpA->addAllInsertCell(masterCell->getName());
+  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpA->createAll(System,*ceramicBellowA,"back");
+
+  const constructSystem::portItem& VPB=pumpA->getPort(1);
+  outerCell=buildZone->createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  pumpA->insertAllInCell(System,outerCell);
+
+  pipeA->createAll(System,VPB,"OuterPlate");
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVertA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
+  pipeTerminate(System,*buildZone,pipeA);
   
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,masterCell,*pipeA,"back",*bellowB);
 
-  pipeB->createAll(System,*bpmA,"back");
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
+  
+  pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
-
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,-3);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*bellowA);
+    (System,*buildZone,masterCell,*pipeB,"back",*bellowC);
 
-  pipeC->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,*buildZone,pipeC,cMagHorC,cMagVertC);
-  pipeTerminate(System,*buildZone,pipeC);  
-  
+
   buildZone->removeLastMaster(System);  
   return;
 }
 
 void
-L2SPFsegment4::createLinks()
+Segment9::createLinks()
   /*!
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkSignedCopy(0,*ceramicBellowA,1);
+  setLinkSignedCopy(1,*bellowC,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
 void 
-L2SPFsegment4::createAll(Simulation& System,
+Segment9::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -221,13 +225,13 @@ L2SPFsegment4::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment4","build");
+  ELog::RegMethod RControl("Segment9","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-
+  
   return;
 }
 
