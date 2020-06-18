@@ -540,6 +540,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R1FrontEnd","buildObjects");
 
+
   int outerCell;
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
@@ -554,6 +555,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   quadUnit->setCutSurf("front",undulatorFC,2);
   quadUnit->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
+
   quadUnit->insertInCell(System,outerCell);
   quadUnit->createQuads(System,outerCell);
 
@@ -581,7 +583,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
-
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());
@@ -595,6 +596,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
   dipolePipe->setBack(*bellowA,2);
+
   dipolePipe->createAll(System,*dipoleChamber,
 			dipoleChamber->getSideIndex("exit"));  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
@@ -603,7 +605,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   // note : bellowA is reversed
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
-
+  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
 
@@ -612,6 +614,7 @@ R1FrontEnd::buildObjects(Simulation& System)
       lastComp=dipolePipe;
       return;
     }
+ 
 
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
@@ -625,13 +628,22 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
+
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
+
+  if (stopPoint=="Heat")
+    {
+      lastComp=heatPipe;
+      return;
+    }
+
   
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
+
 
   setCell("MasterVoid",masterCell->getName());
   lastComp=bellowK;
@@ -655,6 +667,7 @@ R1FrontEnd::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+
   buildObjects(System);
   createLinks();
 

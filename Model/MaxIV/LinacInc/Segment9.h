@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment11.h
+ * File:   LinacInc/Segment9.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment11_h
-#define tdcSystem_L2SPFsegment11_h
+#ifndef tdcSystem_Segment9_h
+#define tdcSystem_Segment9_h
 
 namespace constructSystem
 {
@@ -44,52 +44,54 @@ namespace tdcSystem
   class LQuadF;
   class CorrectorMag;
   class CeramicSep;
-  class YagScreen;
 
   /*!
-    \class L2SPFsegment11
+    \class Segment9
     \version 1.0
     \author S. Ansell
     \date May 2020
     \brief Seventh segment
   */
 
-class L2SPFsegment11 :
+class Segment9 :
   public TDCsegment
 {
  private:
 
-  /// first bellow 
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
-
-  /// Beam postion monitor
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  /// first bellow [actually ceramic gap]
+  std::shared_ptr<tdcSystem::CeramicSep> ceramicBellowA;   
+  /// ion pump [rotated]
+  std::shared_ptr<constructSystem::BlankTube> pumpA;   
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 
-  /// Quad 
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   ///< corrector mag
+
+  /// second bellow
+  std::shared_ptr<constructSystem::Bellows> bellowB;   
+
+  /// bpm
+  std::shared_ptr<tdcSystem::BPM> bpm;
+  
+  /// quad pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  /// Quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
-  /// ion pump [rotated]
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
-  /// Yag screen for pump tube
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-  
-  /// exit pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-
-  /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;  
+  /// exit bellows
+  std::shared_ptr<constructSystem::Bellows> bellowC;   
 
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment11(const std::string&);
-  L2SPFsegment11(const L2SPFsegment11&);
-  L2SPFsegment11& operator=(const L2SPFsegment11&);
-  ~L2SPFsegment11();
+  Segment9(const std::string&);
+  Segment9(const Segment9&);
+  Segment9& operator=(const Segment9&);
+  ~Segment9();
+
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

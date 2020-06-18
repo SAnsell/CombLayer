@@ -37,7 +37,7 @@ namespace tdcSystem
 */
 
 class BeamDivider :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap,
@@ -52,7 +52,7 @@ class BeamDivider :
   double height;                   ///< box height
 
   double mainXStep;                ///< Main step [from box end]
-  
+
   double exitXStep;                ///< Exit step [from box end]
   double exitAngle;                ///< angle on right
 

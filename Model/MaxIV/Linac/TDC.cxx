@@ -66,17 +66,19 @@
 
 #include "InjectionHall.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment1.h"
-#include "L2SPFsegment2.h"
-#include "L2SPFsegment3.h"
-#include "L2SPFsegment4.h"
-#include "L2SPFsegment5.h"
-#include "L2SPFsegment6.h"
-#include "L2SPFsegment7.h"
-#include "L2SPFsegment8.h"
-#include "L2SPFsegment9.h"
-#include "L2SPFsegment10.h"
-#include "L2SPFsegment11.h"
+#include "Segment1.h"
+#include "Segment2.h"
+#include "Segment3.h"
+#include "Segment4.h"
+#include "Segment5.h"
+#include "Segment6.h"
+#include "Segment7.h"
+#include "Segment8.h"
+#include "Segment9.h"
+#include "Segment10.h"
+#include "Segment11.h"
+#include "Segment12.h"
+#include "Segment13.h"
 
 #include "Segment14.h"
 #include "Segment15.h"
@@ -88,8 +90,10 @@
 #include "Segment21.h"
 #include "Segment23.h"
 #include "Segment24.h"
+#include "Segment25.h"
 #include "Segment30.h"
 #include "Segment31.h"
+
 
 #include "TDC.h"
 
@@ -102,17 +106,19 @@ TDC::TDC(const std::string& KN) :
   injectionHall(new InjectionHall("InjectionHall")),
   SegMap
   ({
-    { "L2SPFsegment1",std::make_shared<L2SPFsegment1>("L2SPF1") },
-    { "L2SPFsegment2",std::make_shared<L2SPFsegment2>("L2SPF2") },
-    { "L2SPFsegment3",std::make_shared<L2SPFsegment3>("L2SPF3") },
-    { "L2SPFsegment4",std::make_shared<L2SPFsegment4>("L2SPF4") },
-    { "L2SPFsegment5",std::make_shared<L2SPFsegment5>("L2SPF5") },
-    { "L2SPFsegment6",std::make_shared<L2SPFsegment6>("L2SPF6") },
-    { "L2SPFsegment7",std::make_shared<L2SPFsegment7>("L2SPF7") },
-    { "L2SPFsegment8",std::make_shared<L2SPFsegment8>("L2SPF8") },
-    { "L2SPFsegment9",std::make_shared<L2SPFsegment9>("L2SPF9") },
-    { "L2SPFsegment10",std::make_shared<L2SPFsegment10>("L2SPF10") },
-    { "L2SPFsegment11",std::make_shared<L2SPFsegment11>("L2SPF11") },
+    { "Segment1",std::make_shared<Segment1>("L2SPF1") },
+    { "Segment2",std::make_shared<Segment2>("L2SPF2") },
+    { "Segment3",std::make_shared<Segment3>("L2SPF3") },
+    { "Segment4",std::make_shared<Segment4>("L2SPF4") },
+    { "Segment5",std::make_shared<Segment5>("L2SPF5") },
+    { "Segment6",std::make_shared<Segment6>("L2SPF6") },
+    { "Segment7",std::make_shared<Segment7>("L2SPF7") },
+    { "Segment8",std::make_shared<Segment8>("L2SPF8") },
+    { "Segment9",std::make_shared<Segment9>("L2SPF9") },
+    { "Segment10",std::make_shared<Segment10>("L2SPF10") },
+    { "Segment11",std::make_shared<Segment11>("L2SPF11") },
+    { "Segment12",std::make_shared<Segment12>("L2SPF12") },
+    { "Segment13",std::make_shared<Segment13>("L2SPF13") },
     { "Segment14",std::make_shared<Segment14>("TDC14") },
     { "Segment15",std::make_shared<Segment15>("TDC15") },
     { "Segment16",std::make_shared<Segment16>("TDC16") },
@@ -124,8 +130,10 @@ TDC::TDC(const std::string& KN) :
     { "Segment22",std::make_shared<Segment20>("TDC22") },
     { "Segment23",std::make_shared<Segment23>("TDC23") },
     { "Segment24",std::make_shared<Segment24>("TDC24") },
+    { "Segment25",std::make_shared<Segment25>("TDC25") },
     { "Segment30",std::make_shared<Segment30>("TDC30") },
     { "Segment31",std::make_shared<Segment31>("TDC31") }
+
   } )
   /*!
     Constructor
@@ -217,7 +225,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
-      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}}
+      {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -263,11 +272,11 @@ TDC::createAll(Simulation& System,
   // being built out of order
   static const std::vector<std::string> buildOrder
     ({
-      "L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-      "L2SPFsegment4","L2SPFsegment5","L2SPFsegment6",
-      "L2SPFsegment7","L2SPFsegment8","L2SPFsegment9",
-      "L2SPFsegment10","L2SPFsegment11","L2SPFsegment12",
-      "L2SPFsegment13",
+      "Segment1","Segment2","Segment3",
+      "Segment4","Segment5","Segment6",
+      "Segment7","Segment8","Segment9",
+      "Segment10","Segment11","Segment12",
+      "Segment13",
       "Segment14","Segment15","Segment16",
       "Segment17","Segment18","Segment19",
       "Segment20","Segment21","Segment22",
@@ -279,17 +288,19 @@ TDC::createAll(Simulation& System,
   typedef std::tuple<std::string,std::string> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
-      {"L2SPFsegment1",{"l2spf",""}},
-      {"L2SPFsegment2",{"l2spf","L2SPFsegment1"}},
-      {"L2SPFsegment3",{"l2spf","L2SPFsegment2"}},
-      {"L2SPFsegment4",{"l2spf","L2SPFsegment3"}},
-      {"L2SPFsegment5",{"l2spfTurn","L2SPFsegment4"}},
-      {"L2SPFsegment6",{"l2spfTurn","L2SPFsegment5"}},
-      {"L2SPFsegment7",{"l2spfAngle","L2SPFsegment6"}},
-      {"L2SPFsegment8",{"l2spfAngle","L2SPFsegment7"}},
-      {"L2SPFsegment9",{"l2spfAngle","L2SPFsegment8"}},
-      {"L2SPFsegment10",{"l2spfAngle","L2SPFsegment9"}},
-      {"L2SPFsegment11",{"tdcFront","L2SPFsegment10"}},
+      {"Segment1",{"l2spf",""}},
+      {"Segment2",{"l2spf","Segment1"}},
+      {"Segment3",{"l2spf","Segment2"}},
+      {"Segment4",{"l2spf","Segment3"}},
+      {"Segment5",{"l2spfTurn","Segment4"}},
+      {"Segment6",{"l2spfTurn","Segment5"}},
+      {"Segment7",{"l2spfAngle","Segment6"}},
+      {"Segment8",{"l2spfAngle","Segment7"}},
+      {"Segment9",{"l2spfAngle","Segment8"}},
+      {"Segment10",{"l2spfAngle","Segment9"}},
+      {"Segment11",{"tdcFront","Segment10"}},
+      {"Segment12",{"tdcFront","Segment11"}},
+      {"Segment13",{"tdcFront","Segment12"}},
       {"Segment14",{"tdc",""}},
       {"Segment15",{"tdc","Segment14"}},
       {"Segment16",{"tdc","Segment15"}},
@@ -301,8 +312,10 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdc","Segment21"}},
       {"Segment23",{"tdc","Segment22"}},
       {"Segment24",{"tdc","Segment23"}},
+      {"Segment25",{"spf","segment24"}},
       {"Segment30",{"tdc","Segment29"}},
       {"Segment31",{"tdc","Segment30"}}
+
     });
   const int voidCell(74123);
 
@@ -311,16 +324,16 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  // special case of L2SPFsegment10 :
+  // special case of Segment10 :
 
   for(const std::string& BL : buildOrder)
     {
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
+
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
 	  if (mc==SegMap.end())
 	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
-
 	  const LinkTYPE seglink=segmentLinkMap.at(BL);
 	  const std::string& bzName=std::get<0>(seglink);
 	  const std::string& prevName=std::get<1>(seglink);
@@ -331,8 +344,6 @@ TDC::createAll(Simulation& System,
 	  std::unique_ptr<attachSystem::InnerZone> buildZone=
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
-
-
 	  if (prevC!=SegMap.end())
 	    {
 	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
@@ -345,9 +356,9 @@ TDC::createAll(Simulation& System,
 
 	  buildZone->constructMasterCell(System);
 	  segPtr->setInnerZone(buildZone.get());
-	  // special case of L2SPFsegment10 :
+	  // special case of Segment10 :
 
-	  if (BL=="L2SPFsegment10")
+	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
@@ -355,10 +366,6 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-
-	  // special case for join of wall
-	  //      if (BL=="L2SPFsegment10")
-	  //	processWallJoin();
 
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	}

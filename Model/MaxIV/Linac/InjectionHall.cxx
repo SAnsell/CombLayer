@@ -308,6 +308,7 @@ InjectionHall::createSurfaces()
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
+  SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
   SurfMap::setSurf("MidAngleWall",SMap.realSurf(buildIndex+1111));

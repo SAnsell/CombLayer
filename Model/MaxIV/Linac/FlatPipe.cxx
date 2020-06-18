@@ -113,8 +113,11 @@ FlatPipe::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   // Void + Wall:
-  width=Control.EvalVar<double>(keyName+"Width");  
-  height=Control.EvalVar<double>(keyName+"Height");
+  frontWidth=Control.EvalVar<double>(keyName+"FrontWidth");
+  backWidth=Control.EvalVar<double>(keyName+"BackWidth");
+  frontHeight=Control.EvalVar<double>(keyName+"FrontHeight");
+  backHeight=Control.EvalVar<double>(keyName+"BackHeight");
+
   length=Control.EvalVar<double>(keyName+"Length");
   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -152,7 +155,7 @@ FlatPipe::createSurfaces()
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
   // use this so angled fronts correctly make
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,flangeALength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,flangeALength);
 
   
   if (!backActive())
@@ -161,30 +164,99 @@ FlatPipe::createSurfaces()
 			       Origin+Y*(length/2.0),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
 
   // main pipe
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z); 
+
+  const Geometry::Vec3D& OrgA=Origin-Y*(length/2.0);
+  const Geometry::Vec3D& OrgB=Origin+Y*(length/2.0);
+
+  ModelSupport::buildPlane(SMap,buildIndex+3,
+			   OrgA-X*(frontWidth/2.0),
+			   OrgB-X*(backWidth/2.0),
+			   OrgB-X*(backWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,
+			   OrgA+X*(frontWidth/2.0),
+			   OrgB+X*(backWidth/2.0),
+			   OrgB+X*(backWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,
+			   OrgA-Z*(frontHeight/2.0),
+			   OrgB-Z*(backHeight/2.0),
+			   OrgB-Z*(backHeight/2.0)+X,
+			   Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,
+			   OrgA+Z*(frontHeight/2.0),
+			   OrgB+Z*(backHeight/2.0),
+			   OrgB+Z*(backHeight/2.0)+X,
+			   Z);
+
 
   // two inner
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-X*(width/2.0),Y,height/2.0);
-  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin+X*(width/2.0),Y,height/2.0);
+  if (std::abs(frontHeight-backHeight)<Geometry::zeroTol)
+    {
+      const double R(frontHeight/2.0+wallThick);
+      const Geometry::Vec3D LAxis
+	((Y*length-X*((backWidth-frontWidth)/2.0)).unit());
+      const Geometry::Vec3D RAxis
+	((Y*length+X*((backWidth-frontWidth)/2.0)).unit());
 
-  ModelSupport::buildCylinder(SMap,buildIndex+17,
-			      Origin-X*(width/2.0),Y,height/2.0+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+18,
-			      Origin+X*(width/2.0),Y,height/2.0+wallThick);
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+7,Origin-X*(frontWidth/2.0),LAxis,R);
 
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+8,Origin+X*(frontWidth/2.0),RAxis,R);
+
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+17,Origin-X*(wallThick+frontWidth/2.0),LAxis,R);
+
+      ModelSupport::buildCylinder
+	(SMap,buildIndex+18,Origin+X*(wallThick+frontWidth/2.0),RAxis,R);
+      
+    }
+  else // CONE VERSION
+    {
+      // buildCone takes 4 vectors:
+      // Centre point [point on central axis ]
+      // axis
+      // Point A / Point B :: on cone boundary
+      /*
+      Geometry::Vec3D LeftMid(Origin+
+      ModelSupport::buildCone(SMap,buildIndex+7,
+			      Origin-X*(width/2.0),Y,height/2.0);
+      ModelSupport::buildCone(SMap,buildIndex+8,Origin+X*(width/2.0),Y,height/2.0);
+      
+      ModelSupport::buildCone(SMap,buildIndex+17,
+				  Origin-X*(width/2.0),Y,height/2.0+wallThick);
+      ModelSupport::buildCone(SMap,buildIndex+18,
+				  Origin+X*(width/2.0),Y,height/2.0+wallThick);
+      */
+    }
+  
 
   // main pipe walls
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wallThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallThick+height/2.0),Z); 
-
+  // main pipe
+  ModelSupport::buildPlane(SMap,buildIndex+13,
+			   OrgA-X*(wallThick+frontWidth/2.0),
+			   OrgB-X*(wallThick+backWidth/2.0),
+			   OrgB-X*(wallThick+backWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,
+			   OrgA+X*(wallThick+frontWidth/2.0),
+			   OrgB+X*(wallThick+backWidth/2.0),
+			   OrgB+X*(wallThick+backWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,
+			   OrgA-Z*(wallThick+frontHeight/2.0),
+			   OrgB-Z*(wallThick+backHeight/2.0),
+			   OrgB-Z*(wallThick+backHeight/2.0)+X,
+			   Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,
+			   OrgA+Z*(wallThick+frontHeight/2.0),
+			   OrgB+Z*(wallThick+backHeight/2.0),
+			   OrgB+Z*(wallThick+backHeight/2.0)+X,
+			   Z);
   
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
@@ -240,10 +312,9 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
   addOuterSurf("FlangeB",Out+backStr);
 
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 15 -16 (3:-17) (-4:-18)");
-
-
   
   addOuterSurf("Pipe",Out);
   return;
@@ -261,10 +332,12 @@ FlatPipe::createLinks()
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(wallThick+height/2.0+width/2.0),-X);
-  FixedComp::setConnect(3,Origin-X*(wallThick+height/2.0+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
+  const double H((frontHeight+backHeight)/2.0);
+  const double W((frontWidth+backWidth)/2.0);
+  FixedComp::setConnect(2,Origin-X*(wallThick+H+W),-X);
+  FixedComp::setConnect(3,Origin-X*(wallThick+H+W),X);
+  FixedComp::setConnect(4,Origin-Z*(wallThick+H+W),-Z);
+  FixedComp::setConnect(5,Origin+Z*(wallThick+H+W),Z);
   
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+18));
@@ -274,7 +347,7 @@ FlatPipe::createLinks()
 
   // top lift point : Out is an complemnt of the volume
   std::string Out;
-  FixedComp::setConnect(7,Origin+Z*(wallThick+height/2.0),Z);
+  FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
   Out=ModelSupport::getComposite
     (SMap,buildIndex," (-15 : 16 : (-3 17) : (4 18))");
   FixedComp::setLinkSurf(7,Out);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment4.h
+ * File:   LinacInc/Segment11.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment4_h
-#define tdcSystem_L2SPFsegment4_h
+#ifndef tdcSystem_Segment11_h
+#define tdcSystem_Segment11_h
 
 namespace constructSystem
 {
@@ -41,74 +41,59 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class CorrectorMag;
   class LQuadF;
-  class LSexupole;
-  class BPM;
+  class CorrectorMag;
+  class CeramicSep;
+  class YagScreen;
 
-  
   /*!
-    \class L2SPFsegment4
+    \class Segment11
     \version 1.0
     \author S. Ansell
-    \date April 2020
-    \brief Second segment in the TDC from the linac
+    \date May 2020
+    \brief Seventh segment
   */
 
-class L2SPFsegment4 :
+class Segment11 :
   public TDCsegment
 {
  private:
 
-  /// first pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
-
-  /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;
-
-  // first pipe in dipole
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-  
-  /// Quad begining QSQ 
-  std::shared_ptr<tdcSystem::LQuadF> QuadA;
-
-  /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA;
-
-  /// Quad endng QSQ 
-  std::shared_ptr<tdcSystem::LQuadF> QuadB;
-  
-  /// yag station
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
-
-  /// yag screen
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-
-  /// exit pipe for corrector mags
+  /// first bellow 
   std::shared_ptr<constructSystem::Bellows> bellowA;   
 
-  /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
+  /// Beam postion monitor
+  std::shared_ptr<tdcSystem::BPM> bpm;
+  /// first pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+
+  /// Quad 
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
+
+  /// ion pump [rotated]
+  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
+  /// Yag screen for pump tube
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
   
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorC;    ///< corrector mag
-  
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
+  /// exit pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+
+  /// corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;  
 
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment4(const std::string&);
-  L2SPFsegment4(const L2SPFsegment4&);
-  L2SPFsegment4& operator=(const L2SPFsegment4&);
-  ~L2SPFsegment4();
-
+  Segment11(const std::string&);
+  Segment11(const Segment11&);
+  Segment11& operator=(const Segment11&);
+  ~Segment11();
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&,
-			 const long int);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

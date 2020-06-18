@@ -144,7 +144,7 @@ FixedRotate::populate(const FuncDataBase& Control)
   xAngle=Control.EvalDefVar<double>(keyName+"XAngle",xAngle);
   yAngle=Control.EvalDefVar<double>(keyName+"YAngle",yAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
-  
+
   return;
   
 }
@@ -299,7 +299,7 @@ FixedRotate::applyOffset()
   */
 {
   ELog::RegMethod RegA("FixedRotate","applyOffset");
-    
+
   FixedComp::applyAngleRotate(preXAngle,preYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);

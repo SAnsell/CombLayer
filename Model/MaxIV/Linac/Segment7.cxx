@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment7.cxx
+ * File: Linac/Segment7.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -87,7 +87,7 @@
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment7.h"
+#include "Segment7.h"
 
 namespace tdcSystem
 {
@@ -95,7 +95,7 @@ namespace tdcSystem
 // Note currently uncopied:
 
   
-L2SPFsegment7::L2SPFsegment7(const std::string& Key) :
+Segment7::Segment7(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
@@ -123,21 +123,21 @@ L2SPFsegment7::L2SPFsegment7(const std::string& Key) :
   setFirstItem(pipeA);  
 }
   
-L2SPFsegment7::~L2SPFsegment7()
+Segment7::~Segment7()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment7::buildObjects(Simulation& System)
+Segment7::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment7","buildObjects");
+  ELog::RegMethod RegA("Segment7","buildObjects");
 
   int outerCell;
 
@@ -168,7 +168,7 @@ L2SPFsegment7::buildObjects(Simulation& System)
 }
 
 void
-L2SPFsegment7::createLinks()
+Segment7::createLinks()
   /*!
     Create a front/back link
    */
@@ -181,7 +181,7 @@ L2SPFsegment7::createLinks()
 }
 
 void 
-L2SPFsegment7::createAll(Simulation& System,
+Segment7::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -192,7 +192,7 @@ L2SPFsegment7::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment7","build");
+  ELog::RegMethod RControl("Segment7","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

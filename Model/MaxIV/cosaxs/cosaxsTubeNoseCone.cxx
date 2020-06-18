@@ -228,18 +228,14 @@ cosaxsTubeNoseCone::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(backPlateHeight/2.0),Z);
 
   // front plate rim (band)
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+23),
-				  backPlateRimThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+24),
-				  -backPlateRimThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+35,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+25),
-				  backPlateRimThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+36,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+26),
-				  -backPlateRimThick);
+  ModelSupport::buildPlane(SMap,buildIndex+33,
+				  Origin-X*(backPlateWidth/2.0-backPlateRimThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,
+				  Origin+X*(backPlateWidth/2.0+backPlateRimThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+35,
+				  Origin-Z*(backPlateHeight/2.0-backPlateRimThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,
+				  Origin+Z*(backPlateHeight/2.0-backPlateRimThick),Z);
 
   // inclined walls
   const double tv(backPlateHeight-backPlateRimThick*2+wallThick*2);
@@ -256,41 +252,33 @@ cosaxsTubeNoseCone::createSurfaces()
 				  length);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+43,
-				  Origin-X*(frontPlateWidth/2.0)+Y*(dy),X,Z,thetaH);
+				  Origin-X*(frontPlateWidth/2.0)+Y*dy,X,Z,thetaH);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+44,
-				  Origin+X*(frontPlateWidth/2.0)+Y*(dy),X,Z,-thetaH);
+				  Origin+X*(frontPlateWidth/2.0)+Y*dy,X,Z,-thetaH);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+45,
 				  Origin-Z*(frontPlateHeight/2.0)+Y*(dy),Z,X,-thetaV);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+46,
 				  Origin+Z*(frontPlateHeight/2.0)+Y*(dy),Z,X,thetaV);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+53,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+43),
-				  wallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+54,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+44),
-				  -wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+43,X,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+54,buildIndex+44,X,-wallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+55,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+45),
-				  wallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+56,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+46),
-				  -wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+55,buildIndex+45,Z,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+56,buildIndex+46,Z,-wallThick);
 
   // flange
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,pipeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+108,Origin,Y,pipeRadius+pipeWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+109,Origin,Y,flangeRadius);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+101,1,Y,flangeLength);
-  FrontBackCut::getShiftedFront(SMap,buildIndex+102,1,Y,pipeLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+101,Y,flangeLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+102,Y,pipeLength);
 
   // Window
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,pipeRadius+windowRadius);
-  FrontBackCut::getShiftedFront(SMap,buildIndex+1001,1,Y,(flangeLength-windowThick)/2.0);
-  FrontBackCut::getShiftedFront(SMap,buildIndex+1002,1,Y,(flangeLength+windowThick)/2.0);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+1001,Y,(flangeLength-windowThick)/2.0);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+1002,Y,(flangeLength+windowThick)/2.0);
 
   return;
 }

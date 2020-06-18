@@ -1,7 +1,7 @@
-/*********************************************************************
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
-
- * File:   LinacInc/L2SPFsegment5.h
+ 
+ * File:   LinacInc/Segment8.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -16,11 +16,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment5_h
-#define tdcSystem_L2SPFsegment5_h
+#ifndef tdcSystem_Segment8_h
+#define tdcSystem_Segment8_h
+
+namespace constructSystem
+{
+  class VacuumPipe;
+  class Bellows;
+  class portItem;
+  class BlankTube;
+  class PipeTube;
+}
 
 /*!
   \namespace xraySystem
@@ -32,48 +41,40 @@
 
 namespace tdcSystem
 {
-  class BeamDivider;
+  class LQuadF;
+  class CorrectorMag;
 
   /*!
-    \class L2SPFsegment5
+    \class Segment8
     \version 1.0
     \author S. Ansell
-    \date April 2020
-    \brief Second segment in the TDC from the linac
+    \date May 2020
+    \brief Seventh segment
   */
 
-class L2SPFsegment5 :
+class Segment8 :
   public TDCsegment
 {
  private:
 
+  /// first bellow
+  std::shared_ptr<constructSystem::Bellows> bellowA;   
+  /// Beam stop
+  std::shared_ptr<tdcSystem::EBeamStop> eBeamStop;   
+  /// second bellow
+  std::shared_ptr<constructSystem::Bellows> bellowB;   
   /// first pipe
-  std::shared_ptr<tdcSystem::FlatPipe> flatA;
-
-  /// first  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
-
-  /// first pipe
-  std::shared_ptr<tdcSystem::BeamDivider> beamA;
-
- /// first pipe
-  std::shared_ptr<tdcSystem::FlatPipe> flatB;
-
-  /// second  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
-
-  /// exit bellows
-  std::shared_ptr<constructSystem::Bellows> bellowA;
-
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  
   void buildObjects(Simulation&);
   void createLinks();
-
+  
  public:
-
-  L2SPFsegment5(const std::string&);
-  L2SPFsegment5(const L2SPFsegment5&);
-  L2SPFsegment5& operator=(const L2SPFsegment5&);
-  ~L2SPFsegment5();
+  
+  Segment8(const std::string&);
+  Segment8(const Segment8&);
+  Segment8& operator=(const Segment8&);
+  ~Segment8();
 
 
   using FixedComp::createAll;

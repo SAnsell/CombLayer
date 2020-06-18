@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TwinPipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -183,7 +182,7 @@ TwinPipe::createSurfaces()
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
 
-  makeShiftedSurf(SMap,"front",buildIndex+11,1,Y,flangeCJLength);
+  makeShiftedSurf(SMap,"front",buildIndex+11,Y,flangeCJLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeCJRadius);
   
   // Pipe A

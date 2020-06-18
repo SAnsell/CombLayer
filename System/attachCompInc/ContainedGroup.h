@@ -23,6 +23,7 @@
 #define attachSystem_ContainedGroup_h
 
 class Simulation;
+class HeadRule;
 
 namespace Geometry
 {
@@ -85,9 +86,11 @@ class ContainedGroup
   
   void addOuterSurf(const std::string&,const int);
   void addOuterSurf(const std::string&,const std::string&);
+  void addOuterSurf(const std::string&,const HeadRule&);
   void addOuterSurf(const std::string&,const ContainedComp&);
 
   void addOuterUnionSurf(const std::string&,const std::string&);
+  void addOuterUnionSurf(const std::string&,const HeadRule&);
   void addOuterUnionSurf(const std::string&,const ContainedComp&);
 
   void addBoundarySurf(const std::string&,const int);

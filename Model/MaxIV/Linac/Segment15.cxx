@@ -72,6 +72,7 @@
 #include "BlankTube.h"
 #include "PipeTube.h"
 #include "YagScreen.h"
+#include "YagScreen.h"
 
 #include "TDCsegment.h"
 #include "Segment15.h"
@@ -137,10 +138,12 @@ Segment15::buildObjects(Simulation& System)
       mirrorChamber->intersectPorts(System,i,j);
 
   const constructSystem::portItem& mirrorChamberPort1=mirrorChamber->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit(System,
-					  masterCell,
-					  mirrorChamberPort1,
-					  mirrorChamberPort1.getSideIndex("OuterPlate"));
+  outerCell=buildZone->createOuterVoidUnit
+    (System,
+     masterCell,
+     mirrorChamberPort1,
+     mirrorChamberPort1.getSideIndex("OuterPlate"));
+  
   mirrorChamber->insertAllInCell(System,outerCell);
 
   // Ion pump

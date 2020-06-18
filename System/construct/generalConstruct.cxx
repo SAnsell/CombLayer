@@ -93,7 +93,9 @@ internalUnit(Simulation& System,
     \param masterCell :: main master cell
     \param linkUnit :: Previous link unit to use
     \param sideName :: Link point to use
-    \param buildUnit :: New unit to construct
+    \param FC :: FixedComponent to build
+    \param ECut :: Object to set the front unit to
+    \param CC :: Contained component to insert object
   */
 {
   ELog::RegMethod RegA("generalConstruct[F]","internalUnit");

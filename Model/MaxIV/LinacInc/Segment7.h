@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/L2SPFsegment8.h
+ * File:   LinacInc/Segment7.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment8_h
-#define tdcSystem_L2SPFsegment8_h
+#ifndef tdcSystem_Segment7_h
+#define tdcSystem_Segment7_h
 
 namespace constructSystem
 {
@@ -45,36 +45,43 @@ namespace tdcSystem
   class CorrectorMag;
 
   /*!
-    \class L2SPFsegment8
+    \class Segment7
     \version 1.0
     \author S. Ansell
     \date May 2020
     \brief Seventh segment
   */
 
-class L2SPFsegment8 :
+class Segment7 :
   public TDCsegment
 {
  private:
 
-  /// first bellow
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
-  /// Beam stop
-  std::shared_ptr<tdcSystem::EBeamStop> eBeamStop;   
-  /// second bellow
-  std::shared_ptr<constructSystem::Bellows> bellowB;   
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+
+  /// horizontal corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   
+  /// first quad
+  std::shared_ptr<tdcSystem::LQuadF> QuadA;
+  /// bpm
+  std::shared_ptr<tdcSystem::BPM> bpm;
+
+  /// second pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+
+  /// vertical corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   
   
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  L2SPFsegment8(const std::string&);
-  L2SPFsegment8(const L2SPFsegment8&);
-  L2SPFsegment8& operator=(const L2SPFsegment8&);
-  ~L2SPFsegment8();
+  Segment7(const std::string&);
+  Segment7(const Segment7&);
+  Segment7& operator=(const Segment7&);
+  ~Segment7();
 
 
   using FixedComp::createAll;

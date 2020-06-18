@@ -140,6 +140,7 @@ MAXPEEM::build(Simulation& System,
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
+  frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
@@ -150,6 +151,10 @@ MAXPEEM::build(Simulation& System,
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
+
+  if (!stopPoint.empty())
+    ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));

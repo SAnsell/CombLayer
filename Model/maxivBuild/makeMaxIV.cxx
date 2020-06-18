@@ -118,6 +118,7 @@ makeMaxIV::getActiveStop(const std::map<std::string,std::string>& beamStop,
 
   std::map<std::string,std::string>::const_iterator mc;
   mc=beamStop.find(BL);
+
   return (mc!=beamStop.end()) ? mc->second : "";
 }
 
@@ -143,8 +144,10 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 
   for(const mTYPE::value_type& SP : stopUnits)
     {
+      ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
       if (beamNAMES.find(SP.first)==beamNAMES.end())
 	{
+	  ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
 	  // make generic
 	  for(const std::string Item : beamNAMES)
 	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific
@@ -170,26 +173,32 @@ makeMaxIV::buildInjection(Simulation& System,
   typedef const std::map<std::string,std::set<std::string> > ITYPE;
   static ITYPE injectNAMES
 
-    ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-	    "L2SPFsegment4", "L2SPFsegment5", "L2SPFsegment6",
-	    "L2SPFsegment7", "L2SPFsegment8", "L2SPFsegment9",
-	    "L2SPFsegment10", "L2SPFsegment11"  } },
+    ({ {"L2SPF",
+	{"Segment1","Segment2","Segment3",
+	 "Segment4", "Segment5", "Segment6",
+	 "Segment7", "Segment8", "Segment9",
+	 "Segment10", "Segment11", "Segment12",
+	 "Segment13"
+	} },
        {"TDC",{"Segment14","Segment15","Segment16",
 	       "Segment17","Segment18", "Segment19",
 	       "Segment20","Segment21","Segment22",
 	       "Segment23","Segment24",
 	       "Segment30","Segment31"} },
-       {"L2SPFsegment1",{} },                             // first only
-       {"L2SPFsegment2",{} },                             // second only
-       {"L2SPFsegment3",{} },                             // third only
-       {"L2SPFsegment4",{} },                             // forth only
-       {"L2SPFsegment5",{} },                             // fifth only
-       {"L2SPFsegment6",{} },                             // fifth only
-       {"L2SPFsegment7",{} },                             // fifth only
-       {"L2SPFsegment8",{} },                             // fifth only
-       {"L2SPFsegment9",{} },                             // fifth only
-       {"L2SPFsegment10",{} },                             // wall unit
-       {"L2SPFsegment11",{} },                             // TDC
+
+       {"Segment1",{} },                             // first only
+       {"Segment2",{} },                             // second only
+       {"Segment3",{} },                             // third only
+       {"Segment4",{} },                             // forth only
+       {"Segment5",{} },                             // fifth only
+       {"Segment6",{} },                             // fifth only
+       {"Segment7",{} },                             // fifth only
+       {"Segment8",{} },                             // fifth only
+       {"Segment9",{} },                             // fifth only
+       {"Segment10",{} },                             // wall unit
+       {"Segment11",{} },                             // TDC
+       {"Segment12",{} },                             // TDC
+       {"Segment13",{} },                             // TDC
        {"Segment14",{} },                              // 14th only
        {"Segment15",{} },                              // 15th only
        {"Segment16",{} },                              // 16th only
@@ -201,6 +210,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment22",{} },                              // 22th only
        {"Segment23",{} },                              // 23th only
        {"Segment24",{} },                              // 24th only
+       {"Segment24",{} },                              // 25th only
        {"Segment30",{} },                              // 30th only
        {"Segment31",{} }                               // 31th only
     });
@@ -317,7 +327,6 @@ makeMaxIV::buildR1Ring(Simulation& System,
 
       if (!activeStop.empty())
 	{
-	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
 	  BLPtr->setStopPoint(activeStop);
 	}
 

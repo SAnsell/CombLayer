@@ -289,10 +289,6 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2013,screenImpact-Z*screenHolderRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+2014,screenImpact+Z*screenHolderRadius,Z);
 
-  ELog::EM<<"Mirror centre == "<<mirrorCentre<<ELog::endDiag;
-  ELog::EM<<"Mirror start ==  "<<mirrorStart<<ELog::endDiag;
-  ELog::EM<<"Mirror impact == "<<mirrorImpact<<ELog::endDiag;
-  ELog::EM<<"Thread End ==    "<<threadEnd<<ELog::endDiag;
   return;
 }
 

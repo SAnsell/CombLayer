@@ -280,7 +280,7 @@ OffsetFlangePipe::createSurfaces()
 			       Origin-Y*(length/2.0),flangeAYAxis); 
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  getShiftedFront(SMap,buildIndex+11,1,flangeAYAxis,flangeALength);
+  getShiftedFront(SMap,buildIndex+11,flangeAYAxis,flangeALength);
 
   
   if (!backActive())
@@ -296,7 +296,7 @@ OffsetFlangePipe::createSurfaces()
 			       Origin+Y*(length/2.0),flangeBYAxis);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  getShiftedBack(SMap,buildIndex+12,-1,flangeBYAxis,flangeBLength);
+  getShiftedBack(SMap,buildIndex+12,flangeBYAxis,-flangeBLength);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);

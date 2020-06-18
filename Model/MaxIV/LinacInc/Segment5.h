@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   LinacInc/L2SPFsegment7.h
+
+ * File:   LinacInc/Segment5.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_L2SPFsegment7_h
-#define tdcSystem_L2SPFsegment7_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
+#ifndef tdcSystem_Segment5_h
+#define tdcSystem_Segment5_h
 
 /*!
   \namespace xraySystem
@@ -41,47 +32,48 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
+  class BeamDivider;
 
   /*!
-    \class L2SPFsegment7
+    \class Segment5
     \version 1.0
     \author S. Ansell
-    \date May 2020
-    \brief Seventh segment
+    \date April 2020
+    \brief Second segment in the TDC from the linac
   */
 
-class L2SPFsegment7 :
+class Segment5 :
   public TDCsegment
 {
  private:
 
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;
 
-  /// horizontal corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   
-  /// first quad
-  std::shared_ptr<tdcSystem::LQuadF> QuadA;
-  /// bpm
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  /// first  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
 
-  /// second pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  /// first pipe
+  std::shared_ptr<tdcSystem::BeamDivider> beamA;
 
-  /// vertical corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   
-  
+ /// first pipe
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;
+
+  /// second  dipole
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
+
+  /// exit bellows
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
-  L2SPFsegment7(const std::string&);
-  L2SPFsegment7(const L2SPFsegment7&);
-  L2SPFsegment7& operator=(const L2SPFsegment7&);
-  ~L2SPFsegment7();
+
+  Segment5(const std::string&);
+  Segment5(const Segment5&);
+  Segment5& operator=(const Segment5&);
+  ~Segment5();
 
 
   using FixedComp::createAll;

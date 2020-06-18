@@ -86,6 +86,7 @@
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
+#include "LObjectSupport.h"
 
 namespace tdcSystem
 {
@@ -272,19 +273,43 @@ pipeTerminateGroup(Simulation& System,
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split -
             currently at start of pipe
+    \param pipe :: Fixed component to use
     \return outerCell number
   */
 {
-  ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate");
+  ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate()");
+
+  return pipeTerminateGroup(System,buildZone,pipe,
+			    "back",containerSet);
+}
+
+int
+pipeTerminateGroup(Simulation& System,
+		   attachSystem::InnerZone& buildZone,
+		   const std::shared_ptr<attachSystem::FixedComp>& pipe,
+		   const std::string& linkName,
+		   const std::set<std::string>& containerSet)
+  /*!
+    Teminate a pipe in the inde of a Inner zone
+    \param System :: Simulation to use
+    \param buildZone :: Inner zoner to be split -
+            currently at start of pipe
+    \return outerCell number
+  */
+{
+  ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate(FC,string)");
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
   const int outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,*pipe,2);
+    buildZone.createOuterVoidUnit
+    (System,masterCell,*pipe,pipe->getSideIndex(linkName));
   attachSystem::ContainedGroup* CGPtr=
     dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+  
   if (!CGPtr)
-    throw ColErr::DynamicConv("FixedComp","ContainedGroup","pipe");
+    throw ColErr::DynamicConv("FixedComp","ContainedGroup",
+			    "pipe:"+pipe->getKeyName());
 
   for(const std::string& containerName : containerSet)
     CGPtr->insertInCell(containerName,System,outerCell);

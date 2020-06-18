@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: Linac/L2SPFsegment11.cxx
+ * File: Linac/Segment12.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -83,16 +83,16 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "BlankTube.h"
 #include "Bellows.h"
-#include "LQuadF.h"
-#include "BPM.h"
-#include "CorrectorMag.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
+#include "FlatPipe.h"
+#include "BeamDivider.h"
+#include "DipoleDIBMag.h"
+
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment11.h"
+#include "Segment12.h"
 
 namespace tdcSystem
 {
@@ -100,17 +100,21 @@ namespace tdcSystem
 // Note currently uncopied:
 
   
-L2SPFsegment11::L2SPFsegment11(const std::string& Key) :
-  TDCsegment(Key,2),
+Segment12::Segment12(const std::string& Key) :
+  TDCsegment(Key,3),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),  
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA"))
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
+  beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
+  bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
+  ionPumpLA(new constructSystem::BlankTube(keyName+"IonPumpLA")),
+  pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
+  bellowLB(new constructSystem::Bellows(keyName+"BellowLB")),
+
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
+  bellowRB(new constructSystem::Bellows(keyName+"BellowRB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -120,31 +124,33 @@ L2SPFsegment11::L2SPFsegment11(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bellowA);
-  OR.addObject(bpm);
-  OR.addObject(pipeA);
-  OR.addObject(QuadA);
-  OR.addObject(yagUnit);
-  OR.addObject(pipeB);
-  OR.addObject(cMagHorA);
-
-  setFirstItem(bellowA);
+  OR.addObject(flatA);
+  OR.addObject(dipoleA);
+  OR.addObject(beamA);
+  OR.addObject(bellowLA);
+  OR.addObject(ionPumpLA);
+  OR.addObject(pipeLA);
+  OR.addObject(bellowLB);
+  OR.addObject(flatB);
+  OR.addObject(dipoleB);
+  OR.addObject(bellowRB);
 }
   
-L2SPFsegment11::~L2SPFsegment11()
+Segment12::~Segment12()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment11::buildObjects(Simulation& System)
+Segment12::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment11","buildObjects");
+  ELog::RegMethod RegA("Segment12","buildObjects");
 
   int outerCell;
 
@@ -158,47 +164,86 @@ L2SPFsegment11::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+  flatA->setFront(*bellowA,"back");
+  flatA->createAll(System,*bellowA,"back");
+  // insert-units : Origin : excludeSurf
+  pipeMagGroup(System,*buildZone,flatA,
+	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
-  pipeA->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  beamA->setCutSurf("front",*flatA,"back");
+  beamA->createAll(System,*flatA,"back");
+  pipeTerminateGroup(System,*buildZone,beamA,"exit",
+		     {"Exit","Box","FlangeE","FlangeA","Main"});
+
+  pipeTerminateGroup(System,*buildZone,beamA,"exit",
+		     {"Exit","Box","FlangeE","FlangeA","Main"});
+
+  bellowLA->setCutSurf("front",*beamA,"exit");
+  bellowLA->createAll(System,*beamA,"exit");
+  outerCell=pipeTerminate(System,*buildZone,bellowLA);
+  beamA->insertInCell("Main",System,outerCell);
+
+
+  // FAKE INSERT REQUIRED
+  ionPumpLA->addAllInsertCell(masterCell->getName());
+  ionPumpLA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  ionPumpLA->createAll(System,*bellowLA,"back");
+
+  const constructSystem::portItem& VPB=ionPumpLA->getPort(1);
+  outerCell=buildZone->createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  ionPumpLA->insertAllInCell(System,outerCell);
+  beamA->insertInCell("Main",System,outerCell);
+
+  int cellA,cellB,cellC;
+  cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
+					{"Main","FlangeB"});
+  flatB->setFront(*beamA,"back");
+  flatB->createAll(System,*beamA,"back");
+
+  // this creates two buildZone cells:
+  cellB=pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  pipeLA->addInsertCell(cellA);
+  pipeLA->addInsertCell(cellB-1);
+  pipeLA->addInsertCell(cellC);
+  pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeLA);
+
+  // add last bellows
+  bellowRB->addInsertCell(outerCell);
+  bellowRB->setFront(*flatB,"back");
+  bellowRB->createAll(System,*flatB,"back");
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
-
+    (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
+  bellowRB->insertInCell(System,outerCell);
   
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,-3);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-    
-  pipeB->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
-  pipeTerminate(System,*buildZone,pipeB);
   
   buildZone->removeLastMaster(System);  
   return;
 }
 
 void
-L2SPFsegment11::createLinks()
+Segment12::createLinks()
   /*!
     Create a front/back link
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(1,*bellowLB,2);
+  setLinkSignedCopy(2,*bellowRB,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
 void 
-L2SPFsegment11::createAll(Simulation& System,
+Segment12::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -209,7 +254,7 @@ L2SPFsegment11::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment11","build");
+  ELog::RegMethod RControl("Segment12","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

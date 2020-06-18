@@ -297,6 +297,20 @@ ContainedGroup::addOuterSurf(const std::string& Key,const int SN)
   getCC(Key).addOuterSurf(SN);
   return;
 }
+
+void
+ContainedGroup::addOuterSurf(const std::string& Key,const HeadRule& HR) 
+  /*!
+    Add a surface to the output
+    \param Key :: Key name for rule
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterSurf(HR)");
+  
+  getCC(Key).addOuterSurf(HR);
+  return;
+}
   
 void
 ContainedGroup::addOuterSurf(const std::string& Key,
@@ -326,6 +340,21 @@ ContainedGroup::addOuterSurf(const std::string& Key,
   return;
 }
   
+void
+ContainedGroup::addOuterUnionSurf(const std::string& Key,
+				  const HeadRule& HR) 
+/*!
+  Add a set of surfaces to the output
+  \param Key :: Key name for rule
+  \param HR ::  HeadRule of surfaces
+*/
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterUnionSurf(HR)");
+  
+  getCC(Key).addOuterUnionSurf(HR);
+  return;
+}
+
 void
 ContainedGroup::addOuterUnionSurf(const std::string& Key,
 				  const std::string& SList) 

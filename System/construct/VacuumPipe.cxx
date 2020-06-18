@@ -366,12 +366,12 @@ VacuumPipe::createSurfaces()
     }
 
   // Front Inner void
-  getShiftedFront(SMap,buildIndex+101,1,Y,flangeALength);
+  getShiftedFront(SMap,buildIndex+101,Y,flangeALength);
   if (activeWindow & 1)
     {
-      getShiftedFront(SMap,buildIndex+1001,1,Y,
+      getShiftedFront(SMap,buildIndex+1001,Y,
 		      (flangeALength-windowFront.thick)/2.0);
-      getShiftedFront(SMap,buildIndex+1002,1,Y,
+      getShiftedFront(SMap,buildIndex+1002,Y,
 		      (flangeALength+windowFront.thick)/2.0);
     }
   // add data to surface
@@ -382,14 +382,15 @@ VacuumPipe::createSurfaces()
     }
 
   // Back Inner void
-  FrontBackCut::getShiftedBack(SMap,buildIndex+102,-1,Y,flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+102,Y,-flangeBLength);
   if (activeWindow & 2)
     {
-      getShiftedBack(SMap,buildIndex+1101,-1,Y,
-		     (flangeBLength-windowBack.thick)/2.0);
-      getShiftedBack(SMap,buildIndex+1102,-1,Y,
-		     (flangeBLength+windowBack.thick)/2.0);
+      getShiftedBack(SMap,buildIndex+1101,Y,
+		     -(flangeBLength-windowBack.thick)/2.0);
+      getShiftedBack(SMap,buildIndex+1102,Y,
+		     -(flangeBLength+windowBack.thick)/2.0);
     }
+
 
   // add data to surface
   if (activeWindow & 1)

@@ -294,7 +294,6 @@ EBeamStop::createSurfaces()
   const double coneLen=stopRadius*(stopRadius+supportConeLen)/
     (stopRadius-supportConeRadius);
   const double coneAngle=atan(stopRadius/coneLen)*180.0/M_PI;
-  ELog::EM<<"L == "<<coneLen<<" "<<coneAngle<<ELog::endDiag;
 
   Geometry::Vec3D midCentre=Origin+Y*stopPortYStep;
   Geometry::Vec3D coneCentre=Origin+Y*stopPortYStep-Z*coneLen;

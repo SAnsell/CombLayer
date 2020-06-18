@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/L2SPFsegment5.cxx
+ * File: Linac/Segment25.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -64,29 +64,33 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "FlatPipe.h"
+#include "VacuumPipe.h"
+#include "TriPipe.h"
 #include "DipoleDIBMag.h"
-#include "BeamDivider.h"
+#include "SixPortTube.h"
+#include "subPipeUnit.h"
+#include "MultiPipe.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "L2SPFsegment5.h"
+#include "Segment25.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
+Segment25::Segment25(const std::string& Key) :
   TDCsegment(Key,2),
-
-  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
-  beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
-  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
-  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA"))
-
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  sixPortA(new tdcSystem::SixPortTube(keyName+"SixPortA")),
+  multiPipe(new tdcSystem::MultiPipe(keyName+"MultiPipe")),
+  bellowUp(new constructSystem::Bellows(keyName+"BellowUp")),
+  bellowFlat(new constructSystem::Bellows(keyName+"BellowFlat")),
+  bellowDown(new constructSystem::Bellows(keyName+"BellowDown"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -95,31 +99,34 @@ L2SPFsegment5::L2SPFsegment5(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(flatA);
-  OR.addObject(dipoleA);
-  OR.addObject(flatB);
-  OR.addObject(beamA);
-  OR.addObject(dipoleB);
   OR.addObject(bellowA);
+  OR.addObject(triPipeA);
+  OR.addObject(dipoleA);
+  OR.addObject(pipeB);
+  OR.addObject(sixPortA);
+  OR.addObject(multiPipe);
+  OR.addObject(bellowUp);
+  OR.addObject(bellowFlat);
+  OR.addObject(bellowDown);
 
-  setFirstItem(flatA);
+  setFirstItem(bellowA);
 }
 
-L2SPFsegment5::~L2SPFsegment5()
+Segment25::~Segment25()
   /*!
     Destructor
    */
 {}
 
 void
-L2SPFsegment5::buildObjects(Simulation& System)
+Segment25::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("L2SPFsegment5","buildObjects");
+  ELog::RegMethod RegA("Segment25","buildObjects");
 
   int outerCell;
 
@@ -127,49 +134,62 @@ L2SPFsegment5::buildObjects(Simulation& System)
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
 
-  if (isActive("front"))
-    flatA->copyCutSurf("front",*this,"front");
-  flatA->createAll(System,*this,0);
+  //  if (isActive("front"))
+    //    bellowA->copyCutSurf("front",*this,"front");
+  bellowA->createAll(System,*this,0);
+  
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
+
+  triPipeA->setFront(*bellowA,2);
+  triPipeA->createAll(System,*bellowA,"back");
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  pipeMagGroup(System,*buildZone,triPipeA,
+	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatA,"back",*beamA);
-
-  flatB->setFront(*beamA,"back");
-  flatB->createAll(System,*beamA,"back");
-  // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+    (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatB,"back",*bellowA);
+    (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
 
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,*sixPortA,"back",*multiPipe);
+
+  bellowUp->createAll(System,*multiPipe,2);
+
+  bellowFlat->addInsertCell(outerCell);
+  bellowFlat->createAll(System,*multiPipe,3);
+
+  bellowDown->addInsertCell(outerCell);
+  bellowDown->createAll(System,*multiPipe,4);
+
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowUp,2);
+  bellowUp->insertInCell(System,outerCell);
+  bellowFlat->insertInCell(System,outerCell);
+  
   buildZone->removeLastMaster(System);  
 
   return;
 }
 
 void
-L2SPFsegment5::createLinks()
+Segment25::createLinks()
   /*!
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*flatA,1);
+  setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowA,2);
-  ELog::EM<<"Flag A = "<<getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"Flag B = "<<getLinkPt(2)<<ELog::endDiag;
+  //    setLinkSignedCopy(1,*triPipeA,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
 void
-L2SPFsegment5::createAll(Simulation& System,
+Segment25::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -180,7 +200,7 @@ L2SPFsegment5::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("L2SPFsegment5","build");
+  ELog::RegMethod RControl("Segment25","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

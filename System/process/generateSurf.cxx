@@ -93,25 +93,58 @@ buildRotatedPlane(surfRegister& SMap,const int N,
 
 Geometry::Plane*
 buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
-			const int N,const Geometry::Plane* PN,
+			const int N,const int refPN,
 			const double Dist)
   /*!
     Divider based on signed value 
     \param SMap :: Surface Map system
     \param signedValue :: Deciding value
     \param N :: Initial Number
-    \param PN :: Plane to use as template
+    \param refPN :: Plane to use as template 
     \param Dist :: Distance along normal to move plane
     \return New plane ptr [inserted/tested]
    */
 {
   ELog::RegMethod("generateSurf","buildSignedShiftedPlane");
-  
+
+  Geometry::Plane* PX=
+    SMap.realPtr<Geometry::Plane>(refPN);
   return (signValue>=0) ?
-    buildShiftedPlane(SMap,N,PN,Dist) :
-    buildShiftedPlaneReversed(SMap,N,PN,Dist);  
+    buildShiftedPlane(SMap,N,PX,Dist) :
+    buildShiftedPlaneReversed(SMap,N,PX,Dist);  
 }
 
+
+Geometry::Plane*
+buildShiftedPlane(surfRegister& SMap,
+		  const int newSN,
+		  const int refSN,
+		  const Geometry::Vec3D& YAxis,
+		  const double length)
+  /*!
+    Support function to calculate the shifted surface based
+    on surface type and form
+    \param SMap :: local surface register
+    \param newSN :: New surface nubmer
+    \param refSN :: reference surface number
+    \param YAxis :: Direction plane normal (approximate)
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("generateSurf[F]","makeShiftedPlane");
+
+  // this throws
+  const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(refSN);
+  const Geometry::Vec3D& PNorm=PPtr->getNormal();
+  if (YAxis.dotProd(PNorm)>=0.0)
+    buildShiftedPlane(SMap,newSN,PPtr,length);
+  else
+    buildShiftedPlaneReversed(SMap,newSN,PPtr,length);
+  
+  return SMap.realPtr<Geometry::Plane>(newSN);  
+} 
+
+  
 Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,const int N,
 		  const Geometry::Plane* PN,
@@ -130,12 +163,10 @@ buildShiftedPlane(surfRegister& SMap,const int N,
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
-
   Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
 
   PX->setPlane(*PN);
   PX->displace(PN->getNormal()*Dist);
-
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -313,7 +344,7 @@ buildCone(surfRegister& SMap,const int N,
     \param SMap :: Surface Map
     \param N :: Surface number
     \param circleCent :: Centre of circle
-    \param radius :: Radius of circle
+    \param radius :: Radius of circle [normal to axis]
     \param A :: Axis [FORWARD going]
     \param angleDeg :: angle of cone [deg]
     \return New cone
@@ -503,35 +534,35 @@ buildEllipticCyl(surfRegister& SMap,const int N,
 
 Geometry::Surface*
 buildShiftedSurf(surfRegister& SMap,
-		const int SN,
-		const int index,
-		const int dFlag,
-		const Geometry::Vec3D& YAxis,
-		const double length)
+		 const int newSN,
+		 const int refSN,
+		 const Geometry::Vec3D& YAxis,
+		 const double length)
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
     \param SMap :: local surface register
-    \param SN :: HeadRule to extract plane surf
-    \param index :: offset index
-    \param dFlag :: direction of surface axis (relative to HR.Plane)
+    \param newSN :: New surface nubmer
+    \param refSN :: reference surface number
     \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("generateSurf[F]","makeShiftedSurf");
   
-  const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-  
+  const Geometry::Surface* SPtr=SMap.realSurfPtr(refSN);
+
   const Geometry::Plane* PPtr=
     dynamic_cast<const Geometry::Plane*>(SPtr);
   if (PPtr)
     {
-      if (SN*dFlag>0)
-	buildShiftedPlane(SMap,index,PPtr,dFlag*length);
+      const Geometry::Vec3D& PNorm=PPtr->getNormal();
+      if (YAxis.dotProd(PNorm)>=0.0)
+	buildShiftedPlane(SMap,newSN,PPtr,length);
       else
-	buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
-      return SMap.realSurfPtr(index);
+	buildShiftedPlaneReversed(SMap,newSN,PPtr,length);
+
+      return SMap.realSurfPtr(newSN);
     }
   
   const Geometry::Cylinder* CPtr=
@@ -539,13 +570,13 @@ buildShiftedSurf(surfRegister& SMap,
   // Cylinder case:
   if (CPtr)
     {
-      if (SN>0)
-	buildCylinder(SMap,index,CPtr->getCentre()+YAxis*length,
+      if (refSN>0)
+	buildCylinder(SMap,newSN,CPtr->getCentre()+YAxis*length,
 	   CPtr->getNormal(),CPtr->getRadius());
       else
-	buildCylinder(SMap,index,CPtr->getCentre()-YAxis*length,
+	buildCylinder(SMap,newSN,CPtr->getCentre()-YAxis*length,
 	       CPtr->getNormal(),CPtr->getRadius());
-      return SMap.realSurfPtr(index);
+      return SMap.realSurfPtr(newSN);
     }  
   return 0;
 } 
@@ -553,8 +584,8 @@ buildShiftedSurf(surfRegister& SMap,
 
 Geometry::Surface*
 buildExpandedSurf(ModelSupport::surfRegister& SMap,
-		 const int SN,
-		 const int index,
+		 const int refSN,
+		 const int newSN,
 		 const Geometry::Vec3D& expandCentre,
 		 const double dExtra) 
   /*!
@@ -562,8 +593,8 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
     on surface type and form. Moves away from the center if dExtra
     positive.
     \param SMap :: local surface register
-    \param SN :: surface to expand
-    \param index :: offset index
+    \param refSN :: surface to expand
+    \param newSN :: new surface
     \param expandCentre :: Centre for expansion
     \param dExtra :: displacement extra [cm]
     \return Surface ptr [nullPtr on failure]
@@ -571,7 +602,7 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
 {
   ELog::RegMethod RegA("generateSurf","buildExpandedSurf");
   
-  const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+  const Geometry::Surface* SPtr=SMap.realSurfPtr(refSN);
   // plane case does not use distance
   const Geometry::Plane* PPtr=
     dynamic_cast<const Geometry::Plane*>(SPtr);
@@ -579,8 +610,8 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
     {
       int sideFlag=PPtr->side(expandCentre);
       if (sideFlag==0) sideFlag=1;
-      buildShiftedPlane(SMap,index,PPtr, -sideFlag*dExtra);
-      return SMap.realSurfPtr(index);
+      buildShiftedPlane(SMap,newSN,PPtr,-sideFlag*dExtra);
+      return SMap.realSurfPtr(newSN);
     }
   
   const Geometry::Cylinder* CPtr=
@@ -598,8 +629,8 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
       const Geometry::Vec3D NC=CPtr->getCentre();
       
       ModelSupport::buildCylinder
-	(SMap,index,NC,CPtr->getNormal(),CPtr->getRadius()+dExtra);
-      return SMap.realSurfPtr(index);
+	(SMap,newSN,NC,CPtr->getNormal(),CPtr->getRadius()+dExtra);
+      return SMap.realSurfPtr(newSN);
     }
   return 0;
 } 

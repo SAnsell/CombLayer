@@ -54,6 +54,14 @@ pipeTerminateGroup(Simulation&,
 		   const std::shared_ptr<attachSystem::FixedComp>&,
 		   const std::set<std::string>&);
 
+int
+pipeTerminateGroup(Simulation&,
+		   attachSystem::InnerZone&,
+		   const std::shared_ptr<attachSystem::FixedComp>&,
+		   const std::string&,
+		   const std::set<std::string>&);
+
+
 
 int
 correctorMagnetPair(Simulation&,
