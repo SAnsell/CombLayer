@@ -1879,10 +1879,9 @@ Segment32(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment32");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator GateGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BellowGenerator BellowGen;
 
   ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
   // SPF32
@@ -1896,32 +1895,24 @@ Segment32(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   //  Control.addVariable(lKey+"XYAngle",3.1183);
 
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,8.82); // measured yStep, length
-
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.5); // measured
 
-  setVariable::DipoleDIBMagGenerator DIBGen;
-  DIBGen.generate(Control,lKey+"DM1");
+  DIBGen.generate(Control,lKey+"DMA");
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",0.0,94.4); // measured
 
   PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.5); // measured
 
-  DIBGen.generate(Control,lKey+"DM2");
+  DIBGen.generate(Control,lKey+"DMB");
 
-  GateGen.setLength(6.3);
-  GateGen.setCubeCF<setVariable::CF40_22>();
-  GateGen.generateValve(Control,lKey+"GateA",0.0,0);
-  Control.addVariable(lKey+"GateAPortALen",2.0);
-
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.44); // measured
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // measured
 
   return;
 }

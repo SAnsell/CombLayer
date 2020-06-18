@@ -197,9 +197,6 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 
       ELog::EM<<"ERROR dist   "<<D<<"\n\n";
 
-      ELog::EM<<"Length:      " << startPoint.Distance(endPoint) << "\n";
-      ELog::EM<<"Real length: " << realEnd.Distance(realStart) << ELog::endWarn;
-
       retFlag=1;
     }
 
