@@ -133,7 +133,8 @@ TDC::TDC(const std::string& KN) :
     { "Segment25",std::make_shared<Segment25>("TDC25") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
     { "Segment31",std::make_shared<Segment31>("SPF31") },
-    { "Segment32",std::make_shared<Segment32>("SPF32") }
+    { "Segment32",std::make_shared<Segment32>("SPF32") },
+    { "Segment34",std::make_shared<Segment32>("SPF34") }
 
   } )
   /*!
@@ -284,7 +285,7 @@ TDC::createAll(Simulation& System,
       "Segment23","Segment24","Segment25",
       "Segment26","Segment27","Segment28",
       "Segment29","Segment30","Segment31",
-      "Segment32"
+      "Segment32","Segment33","Segment34"
     });
 
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -314,10 +315,12 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdc","Segment21"}},
       {"Segment23",{"tdc","Segment22"}},
       {"Segment24",{"tdc","Segment23"}},
-      {"Segment25",{"spf","segment24"}},
+      {"Segment25",{"tdc","segment24"}},
       {"Segment30",{"tdc","Segment29"}},
       {"Segment31",{"tdc","Segment30"}},
-      {"Segment32",{"tdc","Segment32"}}
+      {"Segment32",{"tdc","Segment31"}},
+      {"Segment33",{"tdc","Segment32"}},
+      {"Segment34",{"tdc","Segment33"}}
 
     });
   const int voidCell(74123);

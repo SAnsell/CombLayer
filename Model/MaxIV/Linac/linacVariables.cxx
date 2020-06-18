@@ -109,6 +109,7 @@ namespace linacVar
   void Segment30(FuncDataBase&,const std::string&);
   void Segment31(FuncDataBase&,const std::string&);
   void Segment32(FuncDataBase&,const std::string&);
+  void Segment34(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -1919,6 +1920,32 @@ Segment32(FuncDataBase& Control,
   return;
 }
 
+void
+Segment34(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for the main walls
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment34");
+
+  Segment32(Control, lKey);
+
+  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
+  // SPF32
+  // const Geometry::Vec3D startPt(-995.514,5872.556,0.0);
+  // const Geometry::Vec3D endPt(-1010.0,6139.149,0.0);
+  // SPF30
+  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
+  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -2071,6 +2098,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment30(Control,"SPF30");
   linacVar::Segment31(Control,"SPF31");
   linacVar::Segment32(Control,"SPF32");
+  linacVar::Segment34(Control,"SPF34");
 
   return;
 }
