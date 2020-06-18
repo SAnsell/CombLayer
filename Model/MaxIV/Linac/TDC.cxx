@@ -328,9 +328,11 @@ TDC::createAll(Simulation& System,
 
   for(const std::string& BL : buildOrder)
     {
+	  
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
-
+	  ELog::EM<<"BL == "<<BL<<ELog::endDiag;
+      
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
 	  if (mc==SegMap.end())
 	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
@@ -363,7 +365,6 @@ TDC::createAll(Simulation& System,
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 

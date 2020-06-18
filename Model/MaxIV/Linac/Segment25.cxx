@@ -90,7 +90,14 @@ Segment25::Segment25(const std::string& Key) :
   multiPipe(new tdcSystem::MultiPipe(keyName+"MultiPipe")),
   bellowUp(new constructSystem::Bellows(keyName+"BellowUp")),
   bellowFlat(new constructSystem::Bellows(keyName+"BellowFlat")),
-  bellowDown(new constructSystem::Bellows(keyName+"BellowDown"))
+  bellowDown(new constructSystem::Bellows(keyName+"BellowDown")),
+  pipeUpA(new constructSystem::VacuumPipe(keyName+"PipeUpA")),
+  pipeFlatA(new constructSystem::VacuumPipe(keyName+"PipeFlatA")),
+  pipeDownA(new constructSystem::VacuumPipe(keyName+"PipeDownA")),
+  bellowUpB(new constructSystem::Bellows(keyName+"BellowUpB")),
+  bellowFlatB(new constructSystem::Bellows(keyName+"BellowFlatB")),
+  bellowDownB(new constructSystem::Bellows(keyName+"BellowDownB"))
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -108,6 +115,12 @@ Segment25::Segment25(const std::string& Key) :
   OR.addObject(bellowUp);
   OR.addObject(bellowFlat);
   OR.addObject(bellowDown);
+  OR.addObject(pipeUpA);
+  OR.addObject(pipeFlatA);
+  OR.addObject(pipeDownA);
+  OR.addObject(bellowUpB);
+  OR.addObject(bellowFlatB);
+  OR.addObject(bellowDownB);
 
   setFirstItem(bellowA);
 }
@@ -155,20 +168,46 @@ Segment25::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
 
-  outerCell=constructSystem::constructUnit
+  const int outerCellMulti=
+    constructSystem::constructUnit
     (System,*buildZone,masterCell,*sixPortA,"back",*multiPipe);
 
+  // BELLOWS:
   bellowUp->createAll(System,*multiPipe,2);
-
-  bellowFlat->addInsertCell(outerCell);
+  bellowFlat->addInsertCell(outerCellMulti);
   bellowFlat->createAll(System,*multiPipe,3);
 
-  bellowDown->addInsertCell(outerCell);
+  bellowDown->addInsertCell(outerCellMulti);
   bellowDown->createAll(System,*multiPipe,4);
 
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowUp,2);
-  bellowUp->insertInCell(System,outerCell);
-  bellowFlat->insertInCell(System,outerCell);
+  const int outerCellBellow=
+    buildZone->createOuterVoidUnit(System,masterCell,*bellowUp,2);
+  bellowUp->insertInCell(System,outerCellBellow);
+  bellowFlat->insertInCell(System,outerCellBellow);
+
+  // PIPE:
+  pipeFlatA->addInsertCell(outerCellBellow);
+  pipeDownA->addInsertCell(outerCellMulti);
+  pipeDownA->addInsertCell(outerCellBellow);
+  pipeUpA->createAll(System,*bellowUp,"back");
+
+  pipeFlatA->createAll(System,*bellowFlat,"back");
+  pipeDownA->createAll(System,*bellowDown,"back");
+
+  const int outerCellB=
+    buildZone->createOuterVoidUnit(System,masterCell,*pipeUpA,2);
+
+  pipeUpA->insertInCell(System,outerCellB);
+  pipeFlatA->insertInCell(System,outerCellB);
+  pipeDownA->insertInCell(System,outerCellB);
+
+  // BELLOWS B:
+  bellowUpB->createAll(System,*pipeUpA,"back");
+  bellowFlatB->createAll(System,*pipeFlatA,"back");
+  bellowDownB->createAll(System,*pipeDownA,"back");
+
+  const int outerCellC=
+    buildZone->createOuterVoidUnit(System,masterCell,*pipeUpA,2);
   
   buildZone->removeLastMaster(System);  
 

@@ -71,6 +71,16 @@ class Segment25 :
   std::shared_ptr<constructSystem::Bellows> bellowFlat;
   std::shared_ptr<constructSystem::Bellows> bellowDown;
 
+  /// Join pipe 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeUpA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeFlatA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeDownA;
+
+  /// Connect bellows
+  std::shared_ptr<constructSystem::Bellows> bellowUpB;
+  std::shared_ptr<constructSystem::Bellows> bellowFlatB;
+  std::shared_ptr<constructSystem::Bellows> bellowDownB;
+
   void buildObjects(Simulation&);
   void createLinks();
 

@@ -106,6 +106,7 @@ namespace linacVar
   void Segment23(FuncDataBase&,const std::string&);
   void Segment24(FuncDataBase&,const std::string&);
   void Segment25(FuncDataBase&,const std::string&);
+  void Segment26(FuncDataBase&,const std::string&);
   void Segment30(FuncDataBase&,const std::string&);
   void Segment31(FuncDataBase&,const std::string&);
 
@@ -1698,6 +1699,47 @@ Segment25(FuncDataBase& Control,
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, 0.0);
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -3.7);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
+
+  BellowGen.generateBellow(Control,lKey+"BellowUp",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowFlat",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowDown",0.0,7.5);
+
+  PGen.setCF<CF40>();
+  PGen.generatePipe(Control,lKey+"PipeUpA",0.0,300.0);
+  PGen.generatePipe(Control,lKey+"PipeFlatA",0.0,321.5);
+  PGen.generatePipe(Control,lKey+"PipeDownA",0.0,326.5);
+
+  BellowGen.generateBellow(Control,lKey+"BellowUpB",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowFlatB",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowDownB",0.0,7.5);
+
+  return;
+}
+  
+void
+Segment26(FuncDataBase& Control,
+	  const std::string& lKey)
+  /*!
+    Set the variables for segment 26
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+
+  ELog::RegMethod RegA("linacVariables[F]","Segment26");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PGen;
+
+  const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
+  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
+  const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
+			       
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
 
   BellowGen.generateBellow(Control,lKey+"BellowUp",0.0,7.5);
   BellowGen.generateBellow(Control,lKey+"BellowFlat",0.0,7.5);

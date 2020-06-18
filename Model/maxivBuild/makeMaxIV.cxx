@@ -183,7 +183,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"TDC",{"Segment14","Segment15","Segment16",
 	       "Segment17","Segment18", "Segment19",
 	       "Segment20","Segment21","Segment22",
-	       "Segment23","Segment24",
+	       "Segment23","Segment24","Segment25",
 	       "Segment30","Segment31"} },
 
        {"Segment1",{} },                             // first only
@@ -210,7 +210,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment22",{} },                              // 22th only
        {"Segment23",{} },                              // 23th only
        {"Segment24",{} },                              // 24th only
-       {"Segment24",{} },                              // 25th only
+       {"Segment25",{} },                              // 25th only
        {"Segment30",{} },                              // 30th only
        {"Segment31",{} }                               // 31th only
     });
