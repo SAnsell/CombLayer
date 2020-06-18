@@ -145,7 +145,7 @@ Segment30::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*pipeA,"back",*bellow);
 
   const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,masterCell,*bellow,"back",*ionPump);
+    buildIonPump2Port(System,*buildZone,masterCell,*bellow,"back",*ionPump);
 
   pipeB->createAll(System,ionPumpBackPort,"OuterPlate");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);

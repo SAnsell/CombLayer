@@ -85,7 +85,9 @@ class TDCsegment :
   bool hasLastSurf() const { return lastFlag; }
   /// access rule
   const HeadRule& getLastSurf() const { return lastRule; }
-  const constructSystem::portItem& buildIonPump2Port(Simulation&,MonteCarlo::Object*,
+  const constructSystem::portItem& buildIonPump2Port(Simulation&,
+						     attachSystem::InnerZone&,
+						     MonteCarlo::Object*,
 						     const attachSystem::FixedComp&,
 						     const std::string&,
 						     constructSystem::BlankTube&) const;

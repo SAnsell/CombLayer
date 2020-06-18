@@ -162,18 +162,8 @@ Segment16::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
 
-  // Ion pump
-  ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump->createAll(System,*bellowB,"back");
-
-  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
-  outerCell=
-    buildZone->createOuterVoidUnit(System,
-  				   masterCell,
-  				   ionPumpBackPort,
-  				   ionPumpBackPort.getSideIndex("OuterPlate"));
-  ionPump->insertAllInCell(System,outerCell);
+  const constructSystem::portItem& ionPumpBackPort =
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*ionPump);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);

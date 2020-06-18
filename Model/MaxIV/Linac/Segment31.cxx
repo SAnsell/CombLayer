@@ -148,7 +148,7 @@ Segment31::buildObjects(Simulation& System)
   bellowA->insertInCell(System,outerCell);
 
   const constructSystem::portItem& ionPumpABackPort =
-    buildIonPump2Port(System,masterCell,*bellowA,"back",*ionPumpA);
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*ionPumpA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpABackPort,"OuterPlate",*gate);
@@ -171,7 +171,7 @@ Segment31::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   const constructSystem::portItem& ionPumpBBackPort =
-    buildIonPump2Port(System,masterCell,*pipeB,"back",*ionPumpB);
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeB,"back",*ionPumpB);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpBBackPort,"OuterPlate",*pipeC);

@@ -119,8 +119,10 @@ TDCsegment::setFrontSurf(const HeadRule& HR)
 }
 
 const constructSystem::portItem&
-TDCsegment::buildIonPump2Port(Simulation& System, MonteCarlo::Object *masterCell,
-			      const attachSystem::FixedComp& FC,
+TDCsegment::buildIonPump2Port(Simulation& System,
+			      attachSystem::InnerZone& buildZone,
+			      MonteCarlo::Object *masterCell,
+			      const attachSystem::FixedComp& linkUnit,
 			      const std::string& sideName,
 			      constructSystem::BlankTube& ionPump) const
 /*!
@@ -129,17 +131,17 @@ TDCsegment::buildIonPump2Port(Simulation& System, MonteCarlo::Object *masterCell
 {
   ionPump.addAllInsertCell(masterCell->getName());
   ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump.createAll(System,FC,sideName);
+  ionPump.createAll(System,linkUnit,sideName);
 
-  const constructSystem::portItem& ionPumpBackPort=ionPump.getPort(1);
+  const constructSystem::portItem& port=ionPump.getPort(1);
   const int outerCell=
-    buildZone->createOuterVoidUnit(System,
-  				   masterCell,
-  				   ionPumpBackPort,
-  				   ionPumpBackPort.getSideIndex("OuterPlate"));
+    buildZone.createOuterVoidUnit(System,
+				  masterCell,
+				  port,
+				  port.getSideIndex("OuterPlate"));
   ionPump.insertAllInCell(System,outerCell);
 
-  return ionPumpBackPort;
+  return port;
 }
 
 bool

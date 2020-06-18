@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/L2SPFsegment10.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -99,7 +99,7 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 L2SPFsegment10::L2SPFsegment10(const std::string& Key) :
   TDCsegment(Key,2),
   IHall(nullptr),
@@ -132,7 +132,7 @@ L2SPFsegment10::L2SPFsegment10(const std::string& Key) :
 
   setFirstItem(bellowA);
 }
-  
+
 L2SPFsegment10::~L2SPFsegment10()
   /*!
     Destructor
@@ -147,7 +147,7 @@ L2SPFsegment10::populate(const FuncDataBase& Control)
    */
 {
   ELog::RegMethod RegA("L2SPFsegment10","populate");
-  
+
   FixedRotate::populate(Control);
 
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
@@ -182,17 +182,17 @@ L2SPFsegment10::constructHole(Simulation& System)
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
       pipeA->addInsertCell(this->getCell("WallVoid"));
       pipeA->addInsertCell(IHall->getCell("TVoid"));
-      
+
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
 
       // This might not be the best place for this:::
-	
+
     }
   return;
 }
 
-  
+
 void
 L2SPFsegment10::buildObjects(Simulation& System)
   /*!
@@ -211,7 +211,7 @@ L2SPFsegment10::buildObjects(Simulation& System)
   outerCell=masterCell->getName();
 
   constructHole(System);
-    
+
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
@@ -225,7 +225,7 @@ L2SPFsegment10::buildObjects(Simulation& System)
   outerCell=nextZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
 
   pipeA->insertInCell(System,outerCell);
-  pipeTerminate(System,*nextZone,pipeA);  
+  pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit
     (System,*nextZone,masterCell,*pipeA,"back",*bellowA);
@@ -233,16 +233,9 @@ L2SPFsegment10::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*nextZone,masterCell,*bellowA,"back",*gateValve);
 
-  // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*gateValve,"back");
+  const constructSystem::portItem& VPB =
+    buildIonPump2Port(System,*nextZone,masterCell,*gateValve,"back",*pumpA);
 
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=nextZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
-  
   constructSystem::constructUnit
     (System,*nextZone,masterCell,VPB,"OuterPlate",*pipeB);
 
@@ -255,8 +248,8 @@ L2SPFsegment10::buildObjects(Simulation& System)
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",QuadA);
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVertA);
   pipeTerminate(System,*nextZone,pipeC);
-  
-  nextZone->removeLastMaster(System);  
+
+  nextZone->removeLastMaster(System);
   return;
 }
 
@@ -267,13 +260,13 @@ L2SPFsegment10::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2); 
+  setLinkSignedCopy(1,*pipeC,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;
 }
 
-void 
+void
 L2SPFsegment10::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -294,10 +287,9 @@ L2SPFsegment10::createAll(Simulation& System,
   createSurfaces();
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-
