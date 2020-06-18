@@ -88,6 +88,8 @@ Segment20::Segment20(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(cavity);
   OR.addObject(pipeB);
+
+  setFirstItem(pipeA);
 }
 
 Segment20::~Segment20()

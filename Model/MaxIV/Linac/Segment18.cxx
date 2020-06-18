@@ -113,6 +113,8 @@ Segment18::Segment18(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(cMagH);
   OR.addObject(cMagV);
+
+  setFirstItem(bellowA);
 }
 
 Segment18::~Segment18()

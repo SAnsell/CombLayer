@@ -98,6 +98,8 @@ Segment17::Segment17(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(ionPump);
   OR.addObject(pipeB);
+
+  setFirstItem(pipeA);
 }
 
 Segment17::~Segment17()

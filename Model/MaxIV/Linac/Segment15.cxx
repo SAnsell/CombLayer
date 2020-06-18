@@ -102,6 +102,8 @@ Segment15::Segment15(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(yagScreen);
   OR.addObject(pipeB);
+
+  setFirstItem(pipeA);
 }
 
 Segment15::~Segment15()
@@ -143,7 +145,7 @@ Segment15::buildObjects(Simulation& System)
      masterCell,
      mirrorChamberPort1,
      mirrorChamberPort1.getSideIndex("OuterPlate"));
-  
+
   mirrorChamber->insertAllInCell(System,outerCell);
 
   // Ion pump
