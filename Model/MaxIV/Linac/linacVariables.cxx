@@ -1599,8 +1599,13 @@ Segment31(FuncDataBase& Control,
   BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
   BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // OK
 
-  const std::string pumpAName=lKey+"IonPumpA";
-  setIonPump2Port(Control,pumpAName); // length 16 cm checked
+  // IonPumpA
+  setIonPump2Port(Control,lKey+"IonPumpA"); // length 16 cm checked
+  Control.addVariable(lKey+"IonPumpALength",11.4+setVariable::CF63::flangeLength);
+  const double portOffset(1.7);
+  Control.addVariable(lKey+"IonPumpAPort0Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(lKey+"IonPumpAPort1Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(lKey+"IonPumpAYAngle",90.0);
 
   CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
   Control.addVariable(lKey+"GateWallThick",0.3);
@@ -1624,13 +1629,10 @@ Segment31(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
 
   // QF type quadrupole magnet
-  //  LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
+  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh OK
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
-  // adjusted so that nose is 1 cm thick as in the STEP file
-  Control.addVariable(lKey+"QuadPolePitch",26.0);
 
   // BellowC
   BellowGen.generateBellow(Control,lKey+"BellowC",0.0,7.5); // OK
@@ -1638,15 +1640,18 @@ Segment31(FuncDataBase& Control,
   // CMagH
   const double pipeBLength(232.7); // OK
   PGen.generatePipe(Control,lKey+"PipeB",0.0,pipeBLength);
-  CMGen.generateMag(Control,lKey+"CMagH",pipeBLength-12.0,0);
+  CMGen.generateMag(Control,lKey+"CMagH",25.0,0); // 25 is approx
 
   // IonPumpB
-  const std::string pumpBName=lKey+"IonPumpB";
-  setIonPump2Port(Control,pumpBName);
+  setIonPump2Port(Control,lKey+"IonPumpB");
   const double outerR =
     setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(pumpBName+"Port0Length",10.0-outerR); // OK
-  Control.addVariable(pumpBName+"Port1Length",10.0-outerR); // OK
+  Control.addVariable(lKey+"Port0Length",10.0-outerR); // OK
+  Control.addVariable(lKey+"Port1Length",10.0-outerR); // OK
+  Control.addVariable(lKey+"IonPumpBLength",11.4+setVariable::CF63::flangeLength); // approx
+  Control.addVariable(lKey+"IonPumpBPort0Centre", Geometry::Vec3D(0, portOffset, 0));
+  Control.addVariable(lKey+"IonPumpBPort1Centre", Geometry::Vec3D(0, portOffset, 0));
+
 
   // PipeC
   PGen.generatePipe(Control,lKey+"PipeC",0.0,55.6); // OK
