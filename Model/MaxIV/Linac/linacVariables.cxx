@@ -1009,7 +1009,7 @@ Segment14(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator GateGen;
+  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-622.286,4226.013,0.0);
   const Geometry::Vec3D endPt(-637.608,4507.2590,0.0);
@@ -1019,12 +1019,12 @@ Segment14(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,8.82); // measured yStep, length
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // measured yStep, length
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,82.5); // measured
 
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
@@ -1033,16 +1033,18 @@ Segment14(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",0.0,94.4); // measured
 
   PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,82.5); // measured
 
   DIBGen.generate(Control,lKey+"DM2");
 
-  GateGen.setLength(6.3);
-  GateGen.setCubeCF<setVariable::CF40_22>();
-  GateGen.generateValve(Control,lKey+"GateA",0.0,0);
-  Control.addVariable(lKey+"GateAPortALen",2.0);
+  CGateGen.generateGate(Control,lKey+"GateA",0);  // length 7.3 cm checked
+  Control.addVariable(lKey+"GateAWallThick",0.3);
+  Control.addVariable(lKey+"GateAPortThick",0.1);
+  Control.addVariable(lKey+"GateAYAngle",-90.0);
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.44); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5); // measured
 
   return;
 }

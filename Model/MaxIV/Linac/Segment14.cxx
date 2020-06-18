@@ -67,7 +67,7 @@
 #include "Bellows.h"
 
 #include "DipoleDIBMag.h"
-#include "GateValveCube.h"
+#include "CylGateValve.h"
 
 #include "TDCsegment.h"
 #include "Segment14.h"
@@ -86,7 +86,7 @@ Segment14::Segment14(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
-  gateA(new constructSystem::GateValveCube(keyName+"GateA")),
+  gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
@@ -104,6 +104,8 @@ Segment14::Segment14(const std::string& Key) :
   OR.addObject(dm2);
   OR.addObject(gateA);
   OR.addObject(bellowB);
+
+  setFirstItem(pipeA);
 }
 
 Segment14::~Segment14()

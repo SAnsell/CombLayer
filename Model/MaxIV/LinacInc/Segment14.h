@@ -49,7 +49,7 @@ class Segment14 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dm2
   std::shared_ptr<tdcSystem::DipoleDIBMag> dm2;        ///< Second dipole magnet
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<xraySystem::CylGateValve> gateA;     ///< #5 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;   ///< Last bellow
 
   void buildObjects(Simulation&);
