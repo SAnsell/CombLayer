@@ -49,6 +49,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "surfIndex.h"
 #include "BnId.h"
 #include "AcompTools.h"
@@ -863,7 +865,7 @@ HeadRule::getOppositeSurfaces() const
 const Geometry::Surface*
 HeadRule::getSurface(const int SN) const
   /*!
-    Get a specific surface 
+    Get a specific surface [unsigned] 
     \param SN :: Surface number
     \return Pointer to surface
    */
@@ -1111,6 +1113,44 @@ HeadRule::removeUnsignedItems(const int SN)
   const int cntB=removeItems(-SN);
   if (cntB<0) return cntB;
   return cntA+cntB;
+}
+
+int
+HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis)
+  /*!
+    Given a signed surface SN , removes the first instance 
+    of that surface from the Rule
+    \param ZAxis :: Directionally matched surface 
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeMatchedPlanes");
+
+  if (!HeadNode) return -1;
+  
+  const std::set<int> allSurf=getSurfSet();
+  std::set<int> activePlane;
+
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+      if (PPtr)
+	{
+	  if ((SNum>0 && PPtr->getNormal().dotProd(ZAxis) > 0.9) ||
+	      (SNum<0 && PPtr->getNormal().dotProd(ZAxis) < -0.9))
+	    {
+	      activePlane.emplace(SNum);
+	    } 
+	}
+    }
+  int cnt(0);
+  for(const int SN : activePlane)
+    cnt+=removeItems(SN);
+
+  return cnt;
 }
 
 int

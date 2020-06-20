@@ -35,6 +35,9 @@ namespace tdcSystem
   class SixPortTube;
   class MultiPipe;
   class DipoleDIBMag;
+  class YagUnit;
+  class YagScreen;
+  
 
   /*!
     \class Segment25
@@ -49,6 +52,9 @@ class Segment25 :
 {
  private:
 
+  attachSystem::InnerZone IZFlat;           ///< Flat inner zoner
+  attachSystem::InnerZone IZLower;          ///< Lower inner zone
+  
   /// first pipe
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// first pipe
@@ -81,9 +87,20 @@ class Segment25 :
   std::shared_ptr<constructSystem::Bellows> bellowFlatB;
   std::shared_ptr<constructSystem::Bellows> bellowDownB;
 
+
+  /// Double yag screen
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitUp;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitFlat;
+
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenUp;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenFlat;
+
+
   void buildObjects(Simulation&);
   void createLinks();
 
+  void createSplitInnerZone(Simulation&);
+  
  public:
 
   Segment25(const std::string&);

@@ -44,7 +44,6 @@ namespace tdcSystem
   class LQuadF;
   class CorrectorMag;
   class CeramicSep;
-  class YagScreen;
 
   /*!
     \class Segment12

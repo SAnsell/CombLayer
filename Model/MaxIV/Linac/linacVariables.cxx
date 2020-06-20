@@ -1662,7 +1662,10 @@ Segment25(FuncDataBase& Control,
   setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::SixPortGenerator SPortGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::YagUnitGenerator YagUnitGen;
 
+ 
   const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
   const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
   const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
@@ -1712,6 +1715,14 @@ Segment25(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowUpB",0.0,7.5);
   BellowGen.generateBellow(Control,lKey+"BellowFlatB",0.0,7.5);
   BellowGen.generateBellow(Control,lKey+"BellowDownB",0.0,7.5);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitUp");
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenUp",1);   // closed
+  Control.addVariable(lKey+"YagScreenUpYAngle",-90.0);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitFlat");
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenFlat",1);   // closed
+  Control.addVariable(lKey+"YagScreenFlatYAngle",-90.0);
 
   return;
 }

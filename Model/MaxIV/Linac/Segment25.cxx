@@ -38,7 +38,10 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -50,6 +53,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -61,6 +65,7 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
+#include "generateSurf.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -70,6 +75,8 @@
 #include "SixPortTube.h"
 #include "subPipeUnit.h"
 #include "MultiPipe.h"
+#include "YagUnit.h"
+#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -82,6 +89,7 @@ namespace tdcSystem
 
 Segment25::Segment25(const std::string& Key) :
   TDCsegment(Key,2),
+  IZFlat(*this,cellIndex),IZLower(*this,cellIndex),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
@@ -96,8 +104,13 @@ Segment25::Segment25(const std::string& Key) :
   pipeDownA(new constructSystem::VacuumPipe(keyName+"PipeDownA")),
   bellowUpB(new constructSystem::Bellows(keyName+"BellowUpB")),
   bellowFlatB(new constructSystem::Bellows(keyName+"BellowFlatB")),
-  bellowDownB(new constructSystem::Bellows(keyName+"BellowDownB"))
-  
+  bellowDownB(new constructSystem::Bellows(keyName+"BellowDownB")),
+
+  yagUnitUp(new tdcSystem::YagUnit(keyName+"YagUnitUp")),
+  yagUnitFlat(new tdcSystem::YagUnit(keyName+"YagUnitFlat")),
+  yagScreenUp(new tdcSystem::YagScreen(keyName+"YagScreenUp")),
+  yagScreenFlat(new tdcSystem::YagScreen(keyName+"YagScreenFlat"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -122,6 +135,11 @@ Segment25::Segment25(const std::string& Key) :
   OR.addObject(bellowFlatB);
   OR.addObject(bellowDownB);
 
+  OR.addObject(yagUnitUp);
+  OR.addObject(yagScreenUp);
+  OR.addObject(yagUnitFlat);
+  OR.addObject(yagScreenFlat);
+
   setFirstItem(bellowA);
 }
 
@@ -130,6 +148,38 @@ Segment25::~Segment25()
     Destructor
    */
 {}
+
+
+void
+Segment25::createSplitInnerZone(Simulation& System)
+  /*!
+    Spilit the innerZone into three parts.
+    \param System :: Simulatio to use
+   */
+{
+  ELog::RegMethod RegA("Segment25","createSplitInnerZone");
+  
+  IZFlat= *buildZone;
+  IZLower= *buildZone;
+
+  HeadRule HSurroundA=buildZone->getSurround();
+  HeadRule HSurroundB=buildZone->getSurround();
+  // create surfaces
+  attachSystem::FixedUnit FA("FA");
+  attachSystem::FixedUnit FB("FB");
+  FA.createPairVector(*bellowUpB,2,*bellowFlatB,2);
+  FB.createPairVector(*bellowFlatB,2,*bellowDownB,2);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5001,FA.getCentre(),FA.getZ());
+  ModelSupport::buildPlane(SMap,buildIndex+5002,FB.getCentre(),FB.getZ());
+  
+  const Geometry::Vec3D ZEffective(FA.getZ());
+  HSurroundA.removeMatchedPlanes(ZEffective);
+
+  ELog::EM<<"A == "<<HSurroundA<<ELog::endDiag;
+  ELog::EM<<"B == "<<HSurroundB<<ELog::endDiag;
+  return;
+}
 
 void
 Segment25::buildObjects(Simulation& System)
@@ -201,13 +251,30 @@ Segment25::buildObjects(Simulation& System)
   pipeFlatA->insertInCell(System,outerCellB);
   pipeDownA->insertInCell(System,outerCellB);
 
+
+  
   // BELLOWS B:
   bellowUpB->createAll(System,*pipeUpA,"back");
   bellowFlatB->createAll(System,*pipeFlatA,"back");
   bellowDownB->createAll(System,*pipeDownA,"back");
 
+  
   const int outerCellC=
-    buildZone->createOuterVoidUnit(System,masterCell,*pipeUpA,2);
+    buildZone->createOuterVoidUnit(System,masterCell,*bellowDownB,2);
+
+  createSplitInnerZone(System);
+    
+  // YAG screen:
+  yagUnitUp->createAll(System,*bellowUpB,"back");
+  yagUnitFlat->createAll(System,*bellowUpB,"back");
+
+  pipeFlatA->insertInCell(System,outerCellC);
+  pipeDownA->insertInCell(System,outerCellC);
+  bellowUpB->insertInCell(System,outerCellC);
+  bellowFlatB->insertInCell(System,outerCellC);
+  bellowDownB->insertInCell(System,outerCellC);
+
+
   
   buildZone->removeLastMaster(System);  
 
@@ -224,6 +291,9 @@ Segment25::createLinks()
   setLinkSignedCopy(1,*bellowA,2);
   //    setLinkSignedCopy(1,*triPipeA,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+
+  
+  
   return;
 }
 

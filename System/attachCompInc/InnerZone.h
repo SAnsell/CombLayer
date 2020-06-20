@@ -63,6 +63,7 @@ class InnerZone
   HeadRule surroundHR;               ///< Rule of surround
   HeadRule frontHR;                  ///< Rule of front
   HeadRule backHR;                   ///< Rule of back
+
   HeadRule middleHR;                 ///< Rule of middle 
 
   HeadRule frontDivider;             ///< Local front divider [if needed]
@@ -87,6 +88,9 @@ class InnerZone
   void setBack(const HeadRule&);
   void setMiddle(const HeadRule&);
 
+  /// access surround
+  const HeadRule& getSurround() const { return surroundHR; }
+  
   /// set the void material
   void setInnerMat(const int M) { voidMat=M; }
   

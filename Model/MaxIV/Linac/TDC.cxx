@@ -331,8 +331,6 @@ TDC::createAll(Simulation& System,
 	  
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
-	  ELog::EM<<"BL == "<<BL<<ELog::endDiag;
-      
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
 	  if (mc==SegMap.end())
 	    throw ColErr::InContainerError<std::string>(BL,"Beamline");
@@ -346,6 +344,7 @@ TDC::createAll(Simulation& System,
 	  std::unique_ptr<attachSystem::InnerZone> buildZone=
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
+	  std::unique_ptr<attachSystem::InnerZone> thirdZone;
 	  if (prevC!=SegMap.end())
 	    {
 	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);

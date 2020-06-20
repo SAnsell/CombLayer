@@ -59,7 +59,6 @@ class TDCsegment :
   TDCsegment(const TDCsegment&);
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
-
   
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
   
@@ -69,8 +68,6 @@ class TDCsegment :
   /// set the NEXT inner zone [allows joining of segments]
   void setNextZone(attachSystem::InnerZone* IZPtr)
     {  nextZone=IZPtr; }
-
-
   
   void setLastSurf(const HeadRule&);
   /// clear front flag
