@@ -1718,11 +1718,16 @@ Segment25(FuncDataBase& Control,
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitUp");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenUp",1);   // closed
-  Control.addVariable(lKey+"YagScreenUpYAngle",-90.0);
+  Control.addVariable(lKey+"YagUnitUpYAngle",90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitFlat");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenFlat",1);   // closed
-  Control.addVariable(lKey+"YagScreenFlatYAngle",-90.0);
+  Control.addVariable(lKey+"YagUnitFlatYAngle",90.0);
+
+  PGen.setCF<CF40>();
+  PGen.generatePipe(Control,lKey+"PipeUpB",0.0,216.5);
+  PGen.generatePipe(Control,lKey+"PipeFlatB",0.0,209.2);
+  PGen.generatePipe(Control,lKey+"PipeDownB",0.0,221.0);
 
   return;
 }

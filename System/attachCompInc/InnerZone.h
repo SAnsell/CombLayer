@@ -90,6 +90,12 @@ class InnerZone
 
   /// access surround
   const HeadRule& getSurround() const { return surroundHR; }
+  /// access front
+  const HeadRule& getFront() const { return frontHR; }
+  /// access front
+  const HeadRule& getBack() const { return backHR; }
+  /// access front
+  const HeadRule& getDivider() const { return frontDivider; }
   
   /// set the void material
   void setInnerMat(const int M) { voidMat=M; }

@@ -188,7 +188,9 @@ class Simulation : public objectGroups
     getOrderedMaterial() const;
 
   int removeDeadSurfaces(); 
+ 
   virtual void removeCell(const int);
+  virtual void removeCell(const MonteCarlo::Object*);
   virtual void removeCell(const attachSystem::FixedComp&);
   int removeAllSurface(const int);
 

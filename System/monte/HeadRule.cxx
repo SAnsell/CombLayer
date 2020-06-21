@@ -1129,7 +1129,8 @@ HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis)
   ELog::RegMethod RegA("HeadRule","removeMatchedPlanes");
 
   if (!HeadNode) return -1;
-  
+
+  populateSurf();
   const std::set<int> allSurf=getSurfSet();
   std::set<int> activePlane;
 

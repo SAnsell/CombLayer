@@ -52,7 +52,8 @@ class Segment25 :
 {
  private:
 
-  attachSystem::InnerZone IZFlat;           ///< Flat inner zoner
+  attachSystem::InnerZone IZTop;            ///< Upper inner zone
+  attachSystem::InnerZone IZFlat;           ///< Flat inner zone
   attachSystem::InnerZone IZLower;          ///< Lower inner zone
   
   /// first pipe
@@ -94,6 +95,11 @@ class Segment25 :
 
   std::shared_ptr<tdcSystem::YagScreen> yagScreenUp;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenFlat;
+
+  /// Exit pipe 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeUpB;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeFlatB;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeDownB;
 
 
   void buildObjects(Simulation&);

@@ -449,6 +449,30 @@ Simulation::removeCell(const attachSystem::FixedComp& FC)
 }
 
 void
+Simulation::removeCell(const MonteCarlo::Object* OPtr)
+  /*!
+    Removes the cell [Must exist]
+    This needs to check that OPtr->getName points
+    to the SAME object Ptr that is in OList
+    \param cellNumber :: cell to remove
+  */
+{
+  ELog::RegMethod RegItem("Simulation","removeCell(Obj)");
+
+  if (!OPtr) return;
+  const int cellNumber(OPtr->getName());
+
+  OTYPE::iterator vc=OList.find(cellNumber);
+  if (vc==OList.end())
+    throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
+  if (vc->second!=OPtr)
+    throw ColErr::InContainerError<int>(cellNumber,"Object different in OList");
+
+  removeCell(cellNumber);
+  return;
+}
+
+void
 Simulation::removeCell(const int cellNumber)
   /*!
     Removes the cell [Must exist]
