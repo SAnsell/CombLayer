@@ -101,6 +101,7 @@
 #include "Bellows.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "BlankTube.h"
 
 
 #include "makeSingleItem.h"
@@ -142,7 +143,7 @@ makeSingleItem::build(Simulation& System,
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe","MultiPipe","PipeTube",
+      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube",
       "Help","help"
     });
 
@@ -606,6 +607,18 @@ makeSingleItem::build(Simulation& System,
 
       pipeTube->addAllInsertCell(voidCell);
       pipeTube->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+    if (item == "BlankTube" )
+    {
+      std::shared_ptr<constructSystem::BlankTube>
+	blankTube(new constructSystem::BlankTube("BlankTube"));
+
+      OR.addObject(blankTube);
+
+      blankTube->addAllInsertCell(voidCell);
+      blankTube->createAll(System,World::masterOrigin(),0);
 
       return;
     }
