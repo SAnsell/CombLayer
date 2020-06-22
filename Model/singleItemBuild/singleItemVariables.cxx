@@ -237,7 +237,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::FlatPipeGenerator FPGen;
   FPGen.generateFlat(Control,"FlatPipe",80.0);
   Control.addVariable("FlatPipeXYAngle",0);
-  
+
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
@@ -260,6 +260,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PipeGenerator PGen;
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
+
+  LQGen.generateQuad(Control,"QF",20.0);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"QHVC",-40.0,80.0);
@@ -292,7 +294,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);
-  BDGen.generateDivider(Control,"BeamDiv",0.0);  
+  BDGen.generateDivider(Control,"BeamDiv",0.0);
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);

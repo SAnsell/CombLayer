@@ -276,11 +276,18 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="LQuadF")
     {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("QHVC"));
       std::shared_ptr<tdcSystem::LQuadF>
 	QF(new tdcSystem::LQuadF("QF","QF"));
 
+      OR.addObject(VC);
       OR.addObject(QF);
 
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      QF->setCutSurf("Inner",*VC,"outerPipe");
       QF->addInsertCell(voidCell);
       QF->createAll(System,World::masterOrigin(),0);
 
@@ -296,9 +303,6 @@ makeSingleItem::build(Simulation& System,
 
       OR.addObject(VC);
       OR.addObject(QH);
-
-      // QH->addInsertCell(voidCell);
-      // QH->createAll(System,World::masterOrigin(),0);
 
       VC->addInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
@@ -511,7 +515,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  
+
   if (item == "FlatPipe")
     {
       std::shared_ptr<tdcSystem::FlatPipe>
