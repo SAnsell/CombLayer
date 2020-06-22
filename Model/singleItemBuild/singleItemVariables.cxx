@@ -323,7 +323,7 @@ SingleItemVariables(FuncDataBase& Control)
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,"Bellow",0.0,7.5);
+  BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // PipeTube
   setVariable::PipeTubeGenerator SimpleTubeGen;

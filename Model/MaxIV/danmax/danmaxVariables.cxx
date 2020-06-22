@@ -314,7 +314,7 @@ connectVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
 
   BellowGen.setCF<setVariable::CF40>(); 
-  BellowGen.generateBellow(Control,beamName+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
   
   PipeGen.setBFlangeCF<setVariable::CF100>(); 
   PipeGen.generatePipe(Control,beamName+"FlangeA",0,5.0);
@@ -330,7 +330,7 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setAFlangeCF<setVariable::CF100>(); 
   PipeGen.generatePipe(Control,beamName+"FlangeB",0,5.0);
 
-  BellowGen.generateBellow(Control,beamName+"BellowB",0,16.0);
+  BellowGen.generateBellow(Control,beamName+"BellowB",16.0);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,beamName+"PipeB",0,325.0);
@@ -780,7 +780,7 @@ monoShutterVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowL",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
   
   return;
@@ -915,7 +915,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,opticsName+"InitBellow",0,6.0);
+  BellowGen.generateBellow(Control,opticsName+"InitBellow",6.0);
 
 
   // will be rotated vertical
@@ -951,9 +951,9 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>(); 
   BellowGen.setCF<setVariable::CF40>();
 
-  BellowGen.generateBellow(Control,opticsName+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
   PipeGen.generatePipe(Control,opticsName+"PipeA",0,38.3);
-  BellowGen.generateBellow(Control,opticsName+"BellowB",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
   const std::string collName=opticsName+"CollTubeA";
   SimpleTubeGen.setCF<CF150>();
@@ -980,14 +980,14 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
 
   // laue monochromator
-  BellowGen.generateBellow(Control,opticsName+"BellowC",0,8.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(Control,opticsName+"LauePipe",0,257.0);
-  BellowGen.generateBellow(Control,opticsName+"BellowD",0,8.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
   opticsSlitPackage(Control,opticsName);
 
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
-  BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowE",16.0);
 
   monoPackage(Control,opticsName); 
 
@@ -997,29 +997,29 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
-  BellowGen.generateBellow(Control,opticsName+"BellowF",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);    
 
   mirrorMonoPackage(Control,opticsName);
-  BellowGen.generateBellow(Control,opticsName+"BellowG",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowG",16.0);
   
   GateGen.generateValve(Control,opticsName+"GateE",0.0,0);  
 
   beamStopPackage(Control,opticsName); 
 
-  BellowGen.generateBellow(Control,opticsName+"BellowH",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowH",10.0);    
 
   viewBPackage(Control,opticsName);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowI",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowI",10.0);    
 
   lensPackage(Control,opticsName);
 
   GateGen.generateValve(Control,opticsName+"GateF",0.0,0);  
-  BellowGen.generateBellow(Control,opticsName+"BellowJ",0,10.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0);
   
   revBeamStopPackage(Control,opticsName);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowK",0,10.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowK",10.0);
   Control.addVariable(opticsName+"BellowKYAngle",180.0);
 
   monoShutterVariables(Control,opticsName);

@@ -184,6 +184,8 @@ setMaxIVLinac(defaultConfig& A,
      { "Segment23", "World 0"},
      { "Segment24", "World 0"},
      { "Segment25", "World 0"},
+     { "Segment26", "World 0"},
+     { "Segment27", "World 0"},
      { "Segment30", "World 0"},
      { "Segment31", "World 0"}
     };

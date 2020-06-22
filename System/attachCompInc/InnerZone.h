@@ -81,7 +81,7 @@ class InnerZone
   ~InnerZone() {}         ///< Destructor
 
   void setExtra();
-  void removeExtra() { extraHR.reset(); };
+  void removeExtra() { extraHR.reset(); };  
   void setSurround(const HeadRule&);
   void addMiddleToSurround(const int);
   void setFront(const HeadRule&);
@@ -187,6 +187,10 @@ class InnerZone
 
   void setInsertCells(const std::vector<int>&);
   void addInsertCells(const std::vector<int>&);
+
+  /// InsertCell number accessor
+  const std::vector<int>& getInsertCell() const
+    { return insertCN; }
   
   MonteCarlo::Object* constructMasterCell(Simulation&);
   MonteCarlo::Object* constructMasterCell(Simulation&,
@@ -195,7 +199,6 @@ class InnerZone
   MonteCarlo::Object* constructMasterCell(Simulation&,
 					  const attachSystem::FixedComp&,
 					  const std::string&);
-  
   
   void removeLastMaster(Simulation&);
   

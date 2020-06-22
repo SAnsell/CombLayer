@@ -91,6 +91,7 @@
 #include "Segment23.h"
 #include "Segment24.h"
 #include "Segment25.h"
+#include "Segment27.h"
 #include "Segment30.h"
 #include "Segment31.h"
 
@@ -131,6 +132,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment23",std::make_shared<Segment23>("TDC23") },
     { "Segment24",std::make_shared<Segment24>("TDC24") },
     { "Segment25",std::make_shared<Segment25>("TDC25") },
+    { "Segment27",std::make_shared<Segment27>("TDC27") },
     { "Segment30",std::make_shared<Segment30>("TDC30") },
     { "Segment31",std::make_shared<Segment31>("TDC31") }
 
@@ -281,7 +283,7 @@ TDC::createAll(Simulation& System,
       "Segment17","Segment18","Segment19",
       "Segment20","Segment21","Segment22",
       "Segment23","Segment24","Segment25",
-      "Segment26","Segment27","Segment28",
+      "Segment27","Segment28",
       "Segment29","Segment30","Segment31"
     });
 
@@ -313,6 +315,7 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22"}},
       {"Segment24",{"tdc","Segment23"}},
       {"Segment25",{"spf","segment24"}},
+      {"Segment27",{"spf","segment25"}},
       {"Segment30",{"tdc","Segment29"}},
       {"Segment31",{"tdc","Segment30"}}
 
@@ -324,7 +327,7 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  // special case of Segment10 :
+  // special case of Segment10 : Segment27
 
   for(const std::string& BL : buildOrder)
     {
@@ -354,16 +357,16 @@ TDC::createAll(Simulation& System,
 		  segPtr->setFrontSurf(prevPtr->getLastSurf());
 		}
 	    }
-
-	  buildZone->constructMasterCell(System);
-	  segPtr->setInnerZone(buildZone.get());
-	  // special case of Segment10 :
-
 	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
+	  
+	  buildZone->constructMasterCell(System);
+	  segPtr->setInnerZone(buildZone.get());
+	  // special case of Segment10 :
+
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 

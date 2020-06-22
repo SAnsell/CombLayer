@@ -3,7 +3,7 @@
  
  * File:   formax/formaxVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,7 +200,7 @@ monoShutterVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowJ",10.0);    
 
     // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -545,7 +545,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+  BellowGen.generateBellow(Control,preName+"InitBellow",6.0);
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
@@ -558,7 +558,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
+  BellowGen.generateBellow(Control,preName+"BellowA",17.6);
 
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
@@ -605,7 +605,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowB",12.0);
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
@@ -647,7 +647,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowC",12.0);
   
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
@@ -658,13 +658,13 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowD",18.0);
 
   formaxVar::diagUnit(Control,preName+"DiagBoxA");
   BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowE",12.0);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
@@ -675,12 +675,12 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowF",12.0);
 
   formaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",12.0);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
@@ -691,7 +691,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateH",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",18.0);
 
   formaxVar::diagUnit2(Control,preName+"DiagBoxC");
 
@@ -699,7 +699,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateI",0.0,0);
   
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowI",18.0);
 
   formaxVar::monoShutterVariables(Control,preName);
   
@@ -732,13 +732,14 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowA",10.0);
 
   LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",152.0);
+  Control.addVariable(baseName+"PipeAYStep",10.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipeCF<CF40>();
@@ -753,14 +754,16 @@ connectingVariables(FuncDataBase& Control)
   // temp offset
   LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
-			       PTubeGen.getTotalLength(4.0),188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",188.0);
+  Control.addVariable(baseName+"PipeBYStep",PTubeGen.getTotalLength(4.0));
   
-  BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
   LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
-
+  
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",188.0);
+  Control.addVariable(baseName+"PipeCYStep",10.0);
+  
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
   LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
@@ -768,11 +771,10 @@ connectingVariables(FuncDataBase& Control)
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
-			       PTubeGen.getTotalLength(4.0),172.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",172.0);
+  Control.addVariable(baseName+"PipeDYStep",PTubeGen.getTotalLength(4.0));
 
-
-  BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowC",10.0);
   LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
   
   return;

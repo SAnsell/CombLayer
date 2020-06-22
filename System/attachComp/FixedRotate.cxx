@@ -130,7 +130,7 @@ FixedRotate::populate(const FuncDataBase& Control)
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
     (keyName+"Offset",Geometry::Vec3D(xStep,yStep,zStep));
-  
+  ELog::EM<<"CEnt["<<keyName<<"] == "<<CentOffset<<ELog::endDiag;
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();

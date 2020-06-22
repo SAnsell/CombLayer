@@ -118,78 +118,60 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDCsegment","totalPathCheck");
 
-  const Geometry::Vec3D startPoint=
-    Control.EvalVar<Geometry::Vec3D>(keyName+"Offset");
-
-  const Geometry::Vec3D endPoint=
-    Control.EvalVar<Geometry::Vec3D>(keyName+"EndOffset");
-
-  const Geometry::Vec3D sndEndPoint=
-    Control.EvalDefVar<Geometry::Vec3D>(keyName+"SndEndOffset",endPoint);
-
-  //
-  // Note that this is likely different from true start point:
-  // as we can apply initial offset to the generation object
-  //
-  const Geometry::Vec3D realStart=FixedComp::getLinkPt(1);
-  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(2);
-
-  const Geometry::Vec3D vEnd(realEnd-(realStart-startPoint));
-
-  const double D=vEnd.Distance(endPoint);
-
   bool retFlag(0);
-  if (D>0.1)
+
+  size_t testNum(0);
+  const std::string Letters=" ABCDEF";
+  for(size_t i=0;i<Letters.size();i++)
     {
-      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
-      ELog::EM<<"Start Point  "<<startPoint<<"\n";
-      ELog::EM<<"End Point    "<<endPoint<<"\n";
-      ELog::EM<<"length ==    "<<startPoint.Distance(endPoint)<<"\n";
-      const double cosA=(realEnd-realStart).unit().
-	      dotProd((startPoint-endPoint).unit());
-      double angleError=acos(cosA)*180.0/M_PI;
-      if (angleError>90.0) angleError-=180.0;
-      ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
-
-      ELog::EM<<"model Start     "<<realStart<<"\n";
-      ELog::EM<<"model End       "<<realEnd<<"\n";
-      ELog::EM<<"model length == "<<realEnd.Distance(realStart)<<"\n\n";
-
-      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
-
-      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
-      retFlag=1;
-    }
-  
-  if (sndEndPoint.Distance(endPoint)>0.1)
-    {
-      const Geometry::Vec3D sndRealEnd=FixedComp::getLinkPt(3);
-      const Geometry::Vec3D wEnd(sndRealEnd-(realStart-startPoint));
-	
-      const double D=wEnd.Distance(sndEndPoint);
-      if (D>0.1)
+      const std::string AKey=keyName+"Offset"+Letters[i];
+      const std::string BKey=keyName+"End"+Letters[i]+"Offset";
+      if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
-	  const double cosA=(sndRealEnd-realStart).unit().
-	    dotProd((startPoint-sndEndPoint).unit());
-	  double angleError=acos(cosA)*180.0/M_PI;
-	  if (angleError>90.0) angleError-=180.0;
+	  testNum++;
+	  const Geometry::Vec3D startPoint=
+	    Control.EvalVar<Geometry::Vec3D>(AKey);
+	  const Geometry::Vec3D endPoint=
+	    Control.EvalVar<Geometry::Vec3D>(BKey);
+	  const std::string startLink=
+	    Control.EvalDefVar<std::string>(AKey+"Link","front");
+	  const std::string endLink=
+	    Control.EvalDefVar<std::string>(BKey+"Link","back");
+	  //
+	  // Note that this is likely different from true start point:
+	  // as we can apply initial offset to the generation object
+	  //
+	  const Geometry::Vec3D realStart=FixedComp::getLinkPt(startLink);
+	  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(endLink);
+	  const Geometry::Vec3D vEnd(realEnd-(realStart-startPoint));
 	  
+	  const double D=vEnd.Distance(endPoint);
 	  
-	  ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
-	  ELog::EM<<"Start Point          "<<startPoint<<"\n";
-	  ELog::EM<<"Second  End Point    "<<sndEndPoint<<"\n";
-	  ELog::EM<<"length ==    "<<startPoint.Distance(sndEndPoint)<<"\n";
-	  ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
-	    
-	  ELog::EM<<"model Start    "<<realStart<<"\n";
-	  ELog::EM<<"model End      "<<sndRealEnd<<"\n";
-	  ELog::EM<<"model length == "<<sndRealEnd.Distance(realStart)<<"\n\n";
-	  
-	  ELog::EM<<"expected End   "<<wEnd<<"\n\n";
-	  
-	  ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
-	  retFlag=1;
+	  if (D>0.1)
+	    {
+	      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
+	      ELog::EM<<"Test number "<<testNum<<"\n";
+	      ELog::EM<<"--------------------\n\n";
+	      ELog::EM<<"Start Point  "<<startPoint<<"\n";
+	      ELog::EM<<"End Point    "<<endPoint<<"\n";
+	      ELog::EM<<"length ==    "<<startPoint.Distance(endPoint)<<"\n";
+	      const double cosA=(realEnd-realStart).unit().
+		dotProd((startPoint-endPoint).unit());
+	      double angleError=acos(cosA)*180.0/M_PI;
+	      if (angleError>90.0) angleError-=180.0;
+	      ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
+	      
+	      ELog::EM<<"model Start     "<<realStart<<"\n";
+	      ELog::EM<<"model End       "<<realEnd<<"\n";
+	      ELog::EM<<"model length == "<<realEnd.Distance(realStart)<<"\n\n";
+	      
+	      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
+	      
+	      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
+	      retFlag=1;
+	    }
 	}
+  
     }
   return retFlag;
 }

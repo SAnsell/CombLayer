@@ -438,7 +438,7 @@ splitterVariables(FuncDataBase& Control,
 			  setVariable::CF50::flangeLength,
 			  setVariable::CF50::flangeRadius,
 			  setVariable::CF50::flangeLength);
-  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
+  BellowGen.generateBellow(Control,splitKey+"BellowAA",16.0);
 
   Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
 
@@ -471,7 +471,7 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,splitKey+"BellowAB",0,15.5);
+  BellowGen.generateBellow(Control,splitKey+"BellowAB",15.5);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -694,7 +694,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,11.0-1.4);
+  BellowGen.generateBellow(Control,preName+"InitBellow",11.0-1.4);
 
   // TODO:
   // and set FlangeLength to 1.27 cm (instead of 0.5)
@@ -730,7 +730,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,26.9);
+  BellowGen.generateBellow(Control,preName+"BellowA",26.9);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -786,12 +786,12 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   //  BellowGen.setBFlangeCF<setVariable::CF150>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,17.6);
+  BellowGen.generateBellow(Control,preName+"BellowB",17.6);
 
   m1MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,19.7);
+  BellowGen.generateBellow(Control,preName+"BellowC",19.7);
 
   // will be rotated vertical
   const std::string collName=preName+"PumpTubeA";
@@ -819,7 +819,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,21.5);
+  BellowGen.generateBellow(Control,preName+"BellowD",21.5);
 
   opticsSlitPackage(Control,preName);
 
@@ -831,7 +831,7 @@ opticsVariables(FuncDataBase& Control,
   //  Control.addVariable(preName+"GateCXYAngle",1);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,26.5);
+  BellowGen.generateBellow(Control,preName+"BellowE",26.5);
 
   // will be rotated vertical
   const std::string pumpTubeBname=preName+"PumpTubeB";
@@ -861,7 +861,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0+2.5);
+  BellowGen.generateBellow(Control,preName+"BellowF",12.0+2.5);
 
   JawGen.setRadius(setVariable::CF100::innerRadius);
   JawGen.setWallThick(2.6);
@@ -890,12 +890,12 @@ opticsVariables(FuncDataBase& Control,
   ///////////////////////////////////////////////////////////////////
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,17.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",17.0);
 
   m3MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,16.9);
+  BellowGen.generateBellow(Control,preName+"BellowH",16.9);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
@@ -922,7 +922,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,24.5);
+  BellowGen.generateBellow(Control,preName+"BellowI",24.5);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
@@ -933,7 +933,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",0,20.0);
+  BellowGen.generateBellow(Control,preName+"BellowJ",20.0);
 
   splitterVariables(Control,preName);
 

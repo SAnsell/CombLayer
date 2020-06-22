@@ -90,8 +90,9 @@ namespace tdcSystem
 
 Segment25::Segment25(const std::string& Key) :
   TDCsegment(Key,2),
-  IZTop(*this,cellIndex),IZFlat(*this,cellIndex),
-  IZLower(*this,cellIndex),
+  IZTop(new attachSystem::InnerZone(*this,cellIndex)),
+  IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
+  IZLower(new attachSystem::InnerZone(*this,cellIndex)),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
@@ -101,6 +102,7 @@ Segment25::Segment25(const std::string& Key) :
   bellowUp(new constructSystem::Bellows(keyName+"BellowUp")),
   bellowFlat(new constructSystem::Bellows(keyName+"BellowFlat")),
   bellowDown(new constructSystem::Bellows(keyName+"BellowDown")),
+
   pipeUpA(new constructSystem::VacuumPipe(keyName+"PipeUpA")),
   pipeFlatA(new constructSystem::VacuumPipe(keyName+"PipeFlatA")),
   pipeDownA(new constructSystem::VacuumPipe(keyName+"PipeDownA")),
@@ -172,9 +174,9 @@ Segment25::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment25","createSplitInnerZone");
   
-  IZTop= *buildZone;
-  IZFlat= *buildZone;
-  IZLower= *buildZone;
+  *IZTop = *buildZone;
+  *IZFlat = *buildZone;
+  *IZLower = *buildZone;
 
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
@@ -199,13 +201,13 @@ Segment25::createSplitInnerZone(Simulation& System)
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
-  IZTop.setSurround(HSurroundA);
-  IZFlat.setSurround(HSurroundB);
-  IZLower.setSurround(HSurroundC);
+  IZTop->setSurround(HSurroundA);
+  IZFlat->setSurround(HSurroundB);
+  IZLower->setSurround(HSurroundC);
 
-  IZTop.constructMasterCell(System);
-  IZFlat.constructMasterCell(System);
-  IZLower.constructMasterCell(System);
+  IZTop->constructMasterCell(System);
+  IZFlat->constructMasterCell(System);
+  IZLower->constructMasterCell(System);
 
   return;
 }
@@ -276,13 +278,13 @@ Segment25::buildObjects(Simulation& System)
   pipeDownA->createAll(System,*bellowDown,"back");
 
   
-  MonteCarlo::Object* masterCellA=IZTop.getMaster();
-  MonteCarlo::Object* masterCellB=IZFlat.getMaster();
-  MonteCarlo::Object* masterCellC=IZLower.getMaster();
+  MonteCarlo::Object* masterCellA=IZTop->getMaster();
+  MonteCarlo::Object* masterCellB=IZFlat->getMaster();
+  MonteCarlo::Object* masterCellC=IZLower->getMaster();
 
-  outerCellA=IZTop.createOuterVoidUnit(System,masterCellA,*pipeUpA,2);
-  outerCellB=IZFlat.createOuterVoidUnit(System,masterCellB,*pipeFlatA,2);
-  outerCellC=IZLower.createOuterVoidUnit(System,masterCellC,*pipeDownA,2);
+  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeUpA,2);
+  outerCellB=IZFlat->createOuterVoidUnit(System,masterCellB,*pipeFlatA,2);
+  outerCellC=IZLower->createOuterVoidUnit(System,masterCellC,*pipeDownA,2);
 
   pipeUpA->insertInCell(System,outerCellA);
   pipeFlatA->insertInCell(System,outerCellB);
@@ -290,38 +292,38 @@ Segment25::buildObjects(Simulation& System)
 
   // BELLOWS B:
   constructSystem::constructUnit
-    (System,IZTop,masterCellA,*pipeUpA,"back",*bellowUpB);
+    (System,*IZTop,masterCellA,*pipeUpA,"back",*bellowUpB);
   constructSystem::constructUnit
-    (System,IZFlat,masterCellB,*pipeFlatA,"back",*bellowFlatB);
+    (System,*IZFlat,masterCellB,*pipeFlatA,"back",*bellowFlatB);
   constructSystem::constructUnit
-    (System,IZLower,masterCellC,*pipeDownA,"back",*bellowDownB);
+    (System,*IZLower,masterCellC,*pipeDownA,"back",*bellowDownB);
 
   // YAG SCREENS:
   constructSystem::constructUnit
-    (System,IZTop,masterCellA,*bellowUpB,"back",*yagUnitUp);
+    (System,*IZTop,masterCellA,*bellowUpB,"back",*yagUnitUp);
 
   constructSystem::constructUnit
-    (System,IZFlat,masterCellB,*bellowFlatB,"back",*yagUnitFlat);
+    (System,*IZFlat,masterCellB,*bellowFlatB,"back",*yagUnitFlat);
 
 
 
   // BELLOWS B:
   constructSystem::constructUnit
-    (System,IZTop,masterCellA,*yagUnitUp,"back",*pipeUpB);
+    (System,*IZTop,masterCellA,*yagUnitUp,"back",*pipeUpB);
   constructSystem::constructUnit
-    (System,IZFlat,masterCellB,*yagUnitFlat,"back",*pipeFlatB);
+    (System,*IZFlat,masterCellB,*yagUnitFlat,"back",*pipeFlatB);
   constructSystem::constructUnit
-    (System,IZLower,masterCellC,*bellowDownB,"back",*pipeDownB);
+    (System,*IZLower,masterCellC,*bellowDownB,"back",*pipeDownB);
 
-  buildZone->refrontMasterCell(masterCell,IZFlat.getDivider());
+  buildZone->refrontMasterCell(masterCell,IZFlat->getDivider());
   System.removeCell(masterCell->getName());
   //  buildZone->removeLastMaster(System);
-  //  IZTop.removeLastMaster(System);
+  //  IZTop->removeLastMaster(System);
   //IZFlat.removeLastMaster(System);
   //IZLower.removeLastMaster(System);  
 
-  HeadRule Multi=IZTop.getDivider()+IZFlat.getDivider();
-  ELog::EM<<"Front == "<<IZTop.getDivider()<<ELog::endDiag;
+  HeadRule Multi=IZTop->getDivider()+IZFlat->getDivider();
+  ELog::EM<<"Front == "<<IZTop->getDivider()<<ELog::endDiag;
 
   
   return;

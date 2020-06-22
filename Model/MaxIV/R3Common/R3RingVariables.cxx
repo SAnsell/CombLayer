@@ -129,7 +129,7 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowE",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
 
   // Aperature pipe is movable:
   PipeGen.setCF<CF63>();
@@ -137,7 +137,7 @@ moveApertureTable(FuncDataBase& Control,
   collimatorVariables(Control,frontKey+"MoveCollA");
   
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowF",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
 
   // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
   CrossGen.setMat("Stainless304");
@@ -148,7 +148,7 @@ moveApertureTable(FuncDataBase& Control,
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowG",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
 
   // Aperature pipe is movable:
   PipeGen.setCF<CF63>();
@@ -158,7 +158,7 @@ moveApertureTable(FuncDataBase& Control,
   
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowH",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0);
 
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
@@ -192,7 +192,7 @@ shutterTable(FuncDataBase& Control,
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowI",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
@@ -212,7 +212,7 @@ shutterTable(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowJ",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeB";
@@ -274,7 +274,7 @@ shutterTable(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowK",0,11.05);
+  BellowGen.generateBellow(Control,frontKey+"BellowK",11.05);
   
   return;
 }
@@ -303,7 +303,7 @@ heatDumpTable(FuncDataBase& Control,
   heatDumpVariables(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
 
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeA";
@@ -437,11 +437,11 @@ R3FrontEndVariables(FuncDataBase& Control,
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
   
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,222.0);
@@ -461,7 +461,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   // note : reversed becaues using fixed FM
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();

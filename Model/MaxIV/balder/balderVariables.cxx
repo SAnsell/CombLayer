@@ -306,7 +306,7 @@ monoShutterVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowG",10.0);    
 
     // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -488,7 +488,7 @@ opticsVariables(FuncDataBase& Control,
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,opticsName+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
 
   // ACTUAL ROUND PIPE + 4 filter tubles and 1 base tube [large]
   
@@ -522,7 +522,7 @@ opticsVariables(FuncDataBase& Control,
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,opticsName+"BellowB",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowB",10.0);    
 
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
@@ -546,7 +546,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"BellowC",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowC",10.0);    
 
   PipeGen.setCF<setVariable::CF100>(); // was 2cm (why?)
   // [length is 38.3cm total]
@@ -554,8 +554,8 @@ opticsVariables(FuncDataBase& Control,
   // Length ignored  as joined front/back
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"MonoBellowA",0,50.0);   
-  BellowGen.generateBellow(Control,opticsName+"MonoBellowB",0,50.0);
+  BellowGen.generateBellow(Control,opticsName+"MonoBellowA",50.0);   
+  BellowGen.generateBellow(Control,opticsName+"MonoBellowB",50.0);
   
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]
@@ -615,7 +615,7 @@ opticsVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"BellowD",0,10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowD",10.0);    
 
   // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -629,7 +629,7 @@ opticsVariables(FuncDataBase& Control,
   // small flange bellows
   BellowGen.setCF<setVariable::CF40>(); 
   BellowGen.setBFlangeCF<setVariable::CF100>(); 
-  BellowGen.generateBellow(Control,opticsName+"BellowE",0,10.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowE",10.0);
 
   // SLITS [second pair]
   JawGen.setCF<setVariable::CF100>();
@@ -671,7 +671,7 @@ opticsVariables(FuncDataBase& Control,
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
-  BellowGen.generateBellow(Control,opticsName+"BellowF",0,13.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowF",13.0);
 
   monoShutterVariables(Control,opticsName);
   // pipe shield
@@ -719,14 +719,15 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",0,8.0);
+  BellowGen.generateBellow(Control,baseName+"BellowA",8.0);
 
   LBGen.setPlate(15.0,15.0,0.6);
   LBGen.generateBox(Control,baseName+"LeadA",4.5,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",9.0,152.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",152.0);
+  Control.addVariable(baseName+"PipeAYStep",9.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipeCF<CF40>();
@@ -742,14 +743,15 @@ connectingVariables(FuncDataBase& Control)
   LBGen.generateBox(Control,baseName+"PumpBoxA",4.50,12.0);
   //  PSGen.generateShield(Control,baseName+"PumpBoxAFShield",0.0,0.0);
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
-			       PTubeGen.getTotalLength(0.5),188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",188.0);
+  Control.addVariable(baseName+"PipeBYStep",PTubeGen.getTotalLength(0.5));
   
-  BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
   LBGen.generateBox(Control,baseName+"LeadB",4.5,12.0);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",9.0,188.0);
-
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",188.0);
+  Control.addVariable(baseName+"PipeCYStep",9.0);
+  
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,2.8);
   LBGen.generateBox(Control,baseName+"PumpBoxB",4.5,12.0);
@@ -757,11 +759,10 @@ connectingVariables(FuncDataBase& Control)
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
-			       PTubeGen.getTotalLength(0.5),172.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",172.0);
+  Control.addVariable(baseName+"PipeDYStep",PTubeGen.getTotalLength(0.5));
 
-
-  BellowGen.generateBellow(Control,baseName+"BellowC",0,8.0);
+  BellowGen.generateBellow(Control,baseName+"BellowC",8.0);
   LBGen.generateBox(Control,baseName+"LeadC",4.5,12.0);
   
   return;
@@ -802,14 +803,14 @@ BALDERvariables(FuncDataBase& Control)
 
   LeadPipeGen.setCF<setVariable::CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,54.5);
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",54.5);
 
   balderVar::shieldVariables(Control);
   balderVar::connectingVariables(Control);
 
   // note bellow skip
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",9.0,81.0);
-
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",81.0);
+  Control.addVariable("BalerJoinPipeCYStep",9.0);
 
   balderVar::exptHutVariables(Control,"BalderExpt");
 

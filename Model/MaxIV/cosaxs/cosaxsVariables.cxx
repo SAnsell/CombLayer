@@ -203,7 +203,7 @@ monoShutterVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowJ",10.0);    
 
     // joined and open
 
@@ -561,7 +561,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+  BellowGen.generateBellow(Control,preName+"InitBellow",6.0);
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
@@ -574,7 +574,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,13.6);
+  BellowGen.generateBellow(Control,preName+"BellowA",13.6);
 
   GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF40>();
@@ -621,7 +621,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowB",12.0);
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
@@ -663,7 +663,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowC",12.0);
 
   GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
@@ -676,13 +676,13 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowD",18.0);
 
   cosaxsVar::diagUnit(Control,preName+"DiagBoxA");
   BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowE",12.0);
 
   GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
@@ -695,12 +695,12 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowF",12.0);
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxB");
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",12.0);
   
   GateGen.setLength(1.5);
   GateGen.setCubeCF<setVariable::CF63>();
@@ -712,7 +712,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateH",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",18.0);
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxC");
 
@@ -720,7 +720,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateI",0.0,0);
   
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
+  BellowGen.generateBellow(Control,preName+"BellowI",18.0);
 
   cosaxsVar::monoShutterVariables(Control,preName);
   
@@ -752,7 +752,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,expName+"InitBellow",0,6.0);
+  BellowGen.generateBellow(Control,expName+"InitBellow",6.0);
 
   // Gate valve A - cube gate
   GateGen.setLength(2.5);
