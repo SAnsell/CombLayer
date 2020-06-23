@@ -109,6 +109,7 @@ namespace linacVar
   void Segment30(FuncDataBase&,const std::string&);
   void Segment31(FuncDataBase&,const std::string&);
   void Segment32(FuncDataBase&,const std::string&);
+  void Segment33(FuncDataBase&,const std::string&);
   void Segment34(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -1054,7 +1055,7 @@ void
 Segment15(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 15
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1120,7 +1121,7 @@ void
 Segment16(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 16
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1189,7 +1190,7 @@ void
 Segment17(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 17
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1229,7 +1230,7 @@ void
 Segment18(FuncDataBase& Control,
 	     const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 18
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1293,7 +1294,7 @@ void
 Segment19(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 19
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1356,7 +1357,7 @@ void
 Segment20(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 20
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1391,7 +1392,7 @@ void
 Segment21(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 21
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1466,7 +1467,7 @@ void
 Segment22(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 22
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1487,7 +1488,7 @@ void
 Segment23(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 23
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1580,7 +1581,7 @@ void
 Segment24(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for TDC segment 24
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1651,7 +1652,7 @@ void
 Segment25(FuncDataBase& Control,
 	  const std::string& lKey)
   /*!
-    Set the variables for segment 25
+    Set the variables for TDC segment 25
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1712,7 +1713,7 @@ void
 Segment30(FuncDataBase& Control,
 	  const std::string& lKey)
   /*!
-    Set the variables for segment 25
+    Set the variables for SPF segment 30
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1774,7 +1775,7 @@ void
 Segment31(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for SPF segment 31
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1875,7 +1876,7 @@ void
 Segment32(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for SPF segment 32
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -1921,10 +1922,73 @@ Segment32(FuncDataBase& Control,
 }
 
 void
+Segment33(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 33
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment33");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::LinacSexuGenerator LSGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::BellowGenerator BellowGen;
+
+  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
+  // SPF33
+  // const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
+  // const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
+  // SPF30
+  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
+  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  //  Control.addVariable(lKey+"XYAngle",6.4);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,67.0); // measured
+
+  CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
+  Control.addVariable(lKey+"BPMRadius", 1.3); // ????
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,81.5); // measured: 81.6, but adjusted to keep total length
+  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
+  LSGen.generateSexu(Control,lKey+"SexuA",39.0);
+  LQGen.generateQuad(Control,lKey+"QuadB",60.9);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,68.7);
+  CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // absent in the .step file
+
+  return;
+}
+
+
+void
 Segment34(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for the main walls
+    Set the variables for SPF segment 34
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -2098,6 +2162,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment30(Control,"SPF30");
   linacVar::Segment31(Control,"SPF31");
   linacVar::Segment32(Control,"SPF32");
+  linacVar::Segment33(Control,"SPF33");
   linacVar::Segment34(Control,"SPF34");
 
   return;

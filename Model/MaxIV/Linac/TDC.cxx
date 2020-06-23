@@ -94,6 +94,7 @@
 #include "Segment30.h"
 #include "Segment31.h"
 #include "Segment32.h"
+#include "Segment33.h"
 
 #include "TDC.h"
 
@@ -134,6 +135,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment30",std::make_shared<Segment30>("SPF30") },
     { "Segment31",std::make_shared<Segment31>("SPF31") },
     { "Segment32",std::make_shared<Segment32>("SPF32") },
+    { "Segment33",std::make_shared<Segment33>("SPF33") },
     { "Segment34",std::make_shared<Segment32>("SPF34") }
 
   } )
