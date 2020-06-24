@@ -256,10 +256,12 @@ SingleItemVariables(FuncDataBase& Control)
 
   //  corrector mag
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,"CM",0.0,0);
+  CMGen.generateMag(Control,"CM",0.0,0); // last argument is vertical/horizontal switch
   setVariable::PipeGenerator PGen;
+  PGen.setNoWindow();
   PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,"VC",-40.0,80.0);
+  PGen.setMat("Stainless316L");
+  PGen.generatePipe(Control,"CorrectorMagPipe",-20.0,40.0);
 
   LQGen.generateQuad(Control,"QF",20.0);
 
@@ -280,7 +282,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
 
-  PGen.setCF<setVariable::CF25>();
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
   setVariable::YagScreenGenerator YagGen;

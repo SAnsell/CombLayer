@@ -245,9 +245,9 @@ makeSingleItem::build(Simulation& System,
   if (item == "CorrectorMag" )
     {
       std::shared_ptr<constructSystem::VacuumPipe>
-	VC(new constructSystem::VacuumPipe("VC"));
+	VC(new constructSystem::VacuumPipe("CorrectorMagPipe"));
       std::shared_ptr<tdcSystem::CorrectorMag>
-	CM(new tdcSystem::CorrectorMag("CM","CM"));
+	CM(new tdcSystem::CorrectorMag("CM"));
 
       OR.addObject(VC);
       OR.addObject(CM);

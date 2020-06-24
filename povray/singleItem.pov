@@ -1,3 +1,5 @@
+// Usage:
+// povray povray/singleItem.pov <<< '"CorrectorMag"'
 #version 3.7;
 #include "colors.inc"
 #include "metals.inc"
@@ -6,7 +8,12 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 0;
+#fopen STDIN "/dev/stdin" read
+#read (STDIN, ITEM)
+
+// #fopen STDOUT "/dev/stdout" write
+// #write (STDOUT, ITEM)
+
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -63,16 +70,13 @@ global_settings {
   #end
 }
 
-#switch ( view )
-  #case(0)
-    #declare cameraLocation = <-20, -20.0, 20.0>;
-    #declare cameraLookAt   = <0, 8, 1.5>;
-    #declare cameraAngle = 45;
-  #break
+#if (!strcmp(ITEM,"CorrectorMag"))
+    #declare cameraLocation = <-30, -30.0, 20.0>;
+    #declare cameraLookAt   = <0, -3, 0.0>;
+    #declare cameraAngle = 50;
   #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
-#break
 #end
 
 #declare C_Sun= rgb <1,0.98,0.96>;
