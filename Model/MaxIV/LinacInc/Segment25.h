@@ -52,8 +52,8 @@ class Segment25 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Upper inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZFlat;       ///< Flat inner zone
+  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Flat inner zone
+  std::unique_ptr<attachSystem::InnerZone> IZMid;        ///< Mid inner zone
   std::unique_ptr<attachSystem::InnerZone> IZLower;      ///< Lower inner zone
   
   /// first pipe
@@ -74,32 +74,32 @@ class Segment25 :
   std::shared_ptr<tdcSystem::MultiPipe> multiPipe;
   
   /// Exit bellows
-  std::shared_ptr<constructSystem::Bellows> bellowUp;
-  std::shared_ptr<constructSystem::Bellows> bellowFlat;
-  std::shared_ptr<constructSystem::Bellows> bellowDown;
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  std::shared_ptr<constructSystem::Bellows> bellowCA;
 
   /// Join pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeUpA;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeFlatA;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeDownA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
 
   /// Connect bellows
-  std::shared_ptr<constructSystem::Bellows> bellowUpB;
-  std::shared_ptr<constructSystem::Bellows> bellowFlatB;
-  std::shared_ptr<constructSystem::Bellows> bellowDownB;
+  std::shared_ptr<constructSystem::Bellows> bellowAB;
+  std::shared_ptr<constructSystem::Bellows> bellowBB;
+  std::shared_ptr<constructSystem::Bellows> bellowCB;
 
 
   /// Double yag screen
-  std::shared_ptr<tdcSystem::YagUnit> yagUnitUp;
-  std::shared_ptr<tdcSystem::YagUnit> yagUnitFlat;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
 
-  std::shared_ptr<tdcSystem::YagScreen> yagScreenUp;
-  std::shared_ptr<tdcSystem::YagScreen> yagScreenFlat;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
   /// Exit pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeUpB;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeFlatB;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeDownB;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeAB;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeBB;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeCB;
 
 
   void buildObjects(Simulation&);

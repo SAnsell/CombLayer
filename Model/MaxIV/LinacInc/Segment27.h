@@ -83,7 +83,6 @@ class Segment27 :
   /// exit bellows
   std::shared_ptr<constructSystem::Bellows> bellowAC;
   std::shared_ptr<constructSystem::Bellows> bellowBC;
-  std::shared_ptr<constructSystem::Bellows> bellowCC;
 
   void buildObjects(Simulation&);
   void createLinks();

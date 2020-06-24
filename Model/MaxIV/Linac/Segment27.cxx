@@ -105,9 +105,7 @@ Segment27::Segment27(const std::string& Key) :
   yagUnitC(new tdcSystem::YagUnit(keyName+"YagUnitC")),
 
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
-  bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
-  bellowCC(new constructSystem::Bellows(keyName+"BellowCC"))
-
+  bellowBC(new constructSystem::Bellows(keyName+"BellowBC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -127,6 +125,13 @@ Segment27::Segment27(const std::string& Key) :
   OR.addObject(bellowAB);
   OR.addObject(bellowBB);
   OR.addObject(bellowCB);
+
+  OR.addObject(yagUnitA);
+  OR.addObject(yagUnitB);
+  OR.addObject(yagUnitC);
+
+  OR.addObject(bellowAC);
+  OR.addObject(bellowBC);
 
   setFirstItem(bellowAA);
 }
@@ -200,7 +205,6 @@ Segment27::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment27","buildObjects");
-  MonteCarlo::Object* Pre=System.findObject(1040006);
 
   int outerCellA,outerCellB,outerCellC;
 
@@ -248,8 +252,6 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZTop,masterCellA,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
     (System,*IZFlat,masterCellB,*yagUnitB,"back",*bellowBC);
-  constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*yagUnitC,"back",*bellowCC);
   
   IZTop->removeLastMaster(System);
   IZFlat->removeLastMaster(System);

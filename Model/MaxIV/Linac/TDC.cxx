@@ -376,9 +376,9 @@ TDC::createAll(Simulation& System,
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
-	    segPtr->createAll
-	      (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	    //	    segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  segPtr->createAll
+	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}
     }

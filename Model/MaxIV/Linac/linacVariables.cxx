@@ -1666,15 +1666,24 @@ Segment25(FuncDataBase& Control,
   setVariable::YagUnitGenerator YagUnitGen;
 
  
-  const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
-  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
-  const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
-  const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
-			       
+  const Geometry::Vec3D startPt(-637.608,7406.261,0.0);
+
+  const Geometry::Vec3D endPtA(-637.608,8173.261,0.0);
+  const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
+  const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
+
+
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetA",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetB",startPt+linacVar::zeroOffset);
+
   Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtC+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"BackLink","Flat");
+  Control.addVariable(lKey+"BackLinkA","Mid");
+  Control.addVariable(lKey+"BackLinkB","Lower");
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
@@ -1698,36 +1707,36 @@ Segment25(FuncDataBase& Control,
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 3.7);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, 0.0);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -3.7);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 0.0);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, -3.03406);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -5.82659);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
-  BellowGen.generateBellow(Control,lKey+"BellowUp",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowFlat",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowDown",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowBA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowCA",7.5);
 
   PGen.setCF<CF40>();
-  PGen.generatePipe(Control,lKey+"PipeUpA",0.0,300.0);
-  PGen.generatePipe(Control,lKey+"PipeFlatA",0.0,321.5);
-  PGen.generatePipe(Control,lKey+"PipeDownA",0.0,326.5);
+  PGen.generatePipe(Control,lKey+"PipeAA",0.0,300.0);
+  PGen.generatePipe(Control,lKey+"PipeBA",0.0,321.5);
+  PGen.generatePipe(Control,lKey+"PipeCA",0.0,326.5);
 
-  BellowGen.generateBellow(Control,lKey+"BellowUpB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowFlatB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowDownB",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAB",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitUp");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenUp",1);   // closed
-  Control.addVariable(lKey+"YagUnitUpYAngle",90.0);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  Control.addVariable(lKey+"YagUnitAYAngle",90.0);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitFlat");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenFlat",1);   // closed
-  Control.addVariable(lKey+"YagUnitFlatYAngle",90.0);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
   PGen.setCF<CF40>();
-  PGen.generatePipe(Control,lKey+"PipeUpB",0.0,216.5);
-  PGen.generatePipe(Control,lKey+"PipeFlatB",0.0,209.2);
-  PGen.generatePipe(Control,lKey+"PipeDownB",0.0,221.0);
+  PGen.generatePipe(Control,lKey+"PipeAB",0.0,216.5);
+  PGen.generatePipe(Control,lKey+"PipeBB",0.0,209.2);
+  PGen.generatePipe(Control,lKey+"PipeCB",0.0,221.0);
 
   return;
 }

@@ -124,8 +124,11 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   const std::string Letters=" ABCDEF";
   for(size_t i=0;i<Letters.size();i++)
     {
+
+      // main OffsetA / EndAOffset
+      // link point FrontALink / BackALink
       const std::string AKey=keyName+"Offset"+Letters[i];
-      const std::string BKey=keyName+"End"+Letters[i]+"Offset";
+      const std::string BKey=keyName+"EndOffset"+Letters[i];
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
 	  testNum++;
@@ -134,9 +137,12 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  const Geometry::Vec3D endPoint=
 	    Control.EvalVar<Geometry::Vec3D>(BKey);
 	  const std::string startLink=
-	    Control.EvalDefVar<std::string>(AKey+"Link","front");
+	    Control.EvalDefVar<std::string>
+	    (keyName+"FrontLink"+Letters[i],"front");
 	  const std::string endLink=
-	    Control.EvalDefVar<std::string>(BKey+"Link","back");
+	    (keyName+"BackLink"+Letters[i],"back");
+
+
 	  //
 	  // Note that this is likely different from true start point:
 	  // as we can apply initial offset to the generation object
