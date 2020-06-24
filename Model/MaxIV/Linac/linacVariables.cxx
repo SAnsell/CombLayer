@@ -111,6 +111,7 @@ namespace linacVar
   void Segment32(FuncDataBase&,const std::string&);
   void Segment33(FuncDataBase&,const std::string&);
   void Segment34(FuncDataBase&,const std::string&);
+  void Segment35(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2010,6 +2011,68 @@ Segment34(FuncDataBase& Control,
   return;
 }
 
+void
+Segment35(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 35
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment35");
+
+  setVariable::PipeGenerator PGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::LinacSexuGenerator LSGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::BellowGenerator BellowGen;
+
+  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
+  // SPF33
+  // const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
+  // const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
+  // SPF30
+  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
+  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  //  Control.addVariable(lKey+"XYAngle",6.4);
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,67.0); // measured
+
+  CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
+
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
+  Control.addVariable(lKey+"BPMRadius", 1.3); // ????
+
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,81.5); // measured: 81.6, but adjusted to keep total length
+  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
+  LSGen.generateSexu(Control,lKey+"SexuA",39.0);
+  LQGen.generateQuad(Control,lKey+"QuadB",60.9);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,68.7);
+  CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // absent in the .step file
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -2164,6 +2227,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment32(Control,"SPF32");
   linacVar::Segment33(Control,"SPF33");
   linacVar::Segment34(Control,"SPF34");
+  linacVar::Segment35(Control,"SPF35");
 
   return;
 }
