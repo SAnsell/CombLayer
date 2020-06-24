@@ -64,6 +64,10 @@
 #include "ModelSupport.h"
 #include "generateSurf.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Object.h"
+
 #include "InjectionHall.h"
 #include "TDCsegment.h"
 #include "Segment1.h"
@@ -228,7 +232,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
+      {"spf"  ,{"TDCMid","#Back","LongVoid",""}},
+      {"spfLong"  ,{"TDCLong","#Back","",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -249,7 +254,10 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   buildZone->setBack(injectionHall->getSurfRule(backSurfName));
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
-  buildZone->setInsertCells(injectionHall->getCells(voidName));
+
+  if (!voidName.empty())
+    buildZone->setInsertCells(injectionHall->getCells(voidName));
+
   if (!voidNameB.empty())
     buildZone->addInsertCells(injectionHall->getCells(voidNameB));
 
@@ -315,7 +323,7 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22"}},
       {"Segment24",{"tdc","Segment23"}},
       {"Segment25",{"spf","segment24"}},
-      {"Segment27",{"spf","segment25"}},
+      {"Segment27",{"spfLong","segment25"}},
       {"Segment30",{"tdc","Segment29"}},
       {"Segment31",{"tdc","Segment30"}}
 
@@ -347,7 +355,6 @@ TDC::createAll(Simulation& System,
 	  std::unique_ptr<attachSystem::InnerZone> buildZone=
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
-	  std::unique_ptr<attachSystem::InnerZone> thirdZone;
 	  if (prevC!=SegMap.end())
 	    {
 	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
@@ -362,15 +369,17 @@ TDC::createAll(Simulation& System,
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-	  
-	  buildZone->constructMasterCell(System);
+
 	  segPtr->setInnerZone(buildZone.get());
-	  // special case of Segment10 :
-
-	  segPtr->createAll
-	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-
-	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  if (BL!="Segment27")
+	    {
+	      buildZone->constructMasterCell(System);
+	      segPtr->setInnerZone(buildZone.get());
+	    }
+	    segPtr->createAll
+	      (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	    //	    segPtr->totalPathCheck(System.getDataBase(),0.1);
+	    
 	}
     }
   return;

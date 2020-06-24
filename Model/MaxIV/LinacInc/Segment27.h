@@ -89,6 +89,7 @@ class Segment27 :
   void createLinks();
 
   void createSplitInnerZone(Simulation&);
+  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
   
  public:
 

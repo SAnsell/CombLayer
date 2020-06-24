@@ -116,6 +116,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   linearLTurnLength=Control.EvalVar<double>(keyName+"LinearLTurnLength");
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
   
   linearWidth=Control.EvalVar<double>(keyName+"LinearWidth");
@@ -200,6 +201,10 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+201,Origin+Y*linearLTurnLength,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+211,Origin+Y*(linearLTurnLength+spfAngleLength),Y);
+  // Mid long : not used but useful for InnerZone division
+  ModelSupport::buildPlane
+    (SMap,buildIndex+221,
+     Origin+Y*(spfLongLength+linearLTurnLength+spfAngleLength),Y);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+203,LWPoint,PX);
@@ -317,6 +322,7 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("TDCCorner",SMap.realSurf(buildIndex+201));
   SurfMap::addSurf("TDCCorner",SMap.realSurf(buildIndex+203));
   SurfMap::setSurf("TDCMid",SMap.realSurf(buildIndex+211));
+  SurfMap::setSurf("TDCLong",SMap.realSurf(buildIndex+221));
 
   return;
 }

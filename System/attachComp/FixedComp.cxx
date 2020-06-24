@@ -401,7 +401,7 @@ FixedComp::createPairVector(const FixedComp& FCA,
   */
 {
   ELog::RegMethod RegA("FixedComp","createPairVector");
-  ELog::EM<<"Consruction == "<<ELog::endDiag;
+
   FixedUnit tmpFC("tmp");
   FixedComp::createUnitVector(FCA,sideIndexA,sideIndexA);
   tmpFC.createUnitVector(FCB,sideIndexB,sideIndexB);

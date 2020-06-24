@@ -160,6 +160,19 @@ InnerZone::operator=(const InnerZone& A)
   return *this;
 }
 
+HeadRule
+InnerZone::getVolumeExclude() const
+  /*!
+    Get the full excluded volume
+   */
+{
+  HeadRule Out(surroundHR);
+  Out*=frontHR;
+  Out *= frontDivider.complement();
+
+  return Out.complement();
+}
+  
 InnerZone
 InnerZone::buildMiddleZone(const int flag) const
   /*!
@@ -806,6 +819,7 @@ InnerZone::removeLastMaster(Simulation& System)
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
     }
+  	
   System.removeCell(masterCell->getName());
   masterCell=0;
   

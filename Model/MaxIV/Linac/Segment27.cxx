@@ -90,7 +90,24 @@ Segment27::Segment27(const std::string& Key) :
   IZLower(new attachSystem::InnerZone(*this,cellIndex)),
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
-  bellowCA(new constructSystem::Bellows(keyName+"BellowCA"))
+  bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
+
+  pipeAA(new constructSystem::VacuumPipe(keyName+"PipeAA")),
+  pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
+  pipeCA(new constructSystem::VacuumPipe(keyName+"PipeCA")),
+
+  bellowAB(new constructSystem::Bellows(keyName+"BellowAB")),
+  bellowBB(new constructSystem::Bellows(keyName+"BellowBB")),
+  bellowCB(new constructSystem::Bellows(keyName+"BellowCB")),
+  
+  yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
+  yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
+  yagUnitC(new tdcSystem::YagUnit(keyName+"YagUnitC")),
+
+  bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
+  bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
+  bellowCC(new constructSystem::Bellows(keyName+"BellowCC"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -102,6 +119,14 @@ Segment27::Segment27(const std::string& Key) :
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
   OR.addObject(bellowCA);
+
+  OR.addObject(pipeAA);
+  OR.addObject(pipeBA);
+  OR.addObject(pipeCA);
+
+  OR.addObject(bellowAB);
+  OR.addObject(bellowBB);
+  OR.addObject(bellowCB);
 
   setFirstItem(bellowAA);
 }
@@ -136,8 +161,6 @@ Segment27::createSplitInnerZone(Simulation& System)
   attachSystem::FixedUnit FB("FB");
   FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
   FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
-  ELog::EM<<"FA == "<<FA.getZ()<<ELog::endDiag;
-  ELog::EM<<"FB == "<<FB.getZ()<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
   ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
   
@@ -152,6 +175,10 @@ Segment27::createSplitInnerZone(Simulation& System)
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
+  IZTop->setFront(bellowAA->getFullRule(-1));
+  IZFlat->setFront(bellowBA->getFullRule(-1));
+  IZLower->setFront(bellowCA->getFullRule(-1));
+
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
@@ -159,6 +186,7 @@ Segment27::createSplitInnerZone(Simulation& System)
   IZTop->constructMasterCell(System);
   IZFlat->constructMasterCell(System);
   IZLower->constructMasterCell(System);
+
 
   return;
 }
@@ -172,6 +200,7 @@ Segment27::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment27","buildObjects");
+  MonteCarlo::Object* Pre=System.findObject(1040006);
 
   int outerCellA,outerCellB,outerCellC;
 
@@ -179,9 +208,6 @@ Segment27::buildObjects(Simulation& System)
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
 
-  for(const int CN : buildZone->getInsertCell())
-    ELog::EM<<"CN == "<<CN<<ELog::endDiag;
-  
   createSplitInnerZone(System);
 
   MonteCarlo::Object* masterCellA=IZTop->getMaster();
@@ -196,13 +222,39 @@ Segment27::buildObjects(Simulation& System)
   bellowBA->insertInCell(System,outerCellB);
   bellowCA->insertInCell(System,outerCellC);
 
-  System.removeCell(1030001);
-  IZTop->removeLastMaster(System);
-  IZFlat->removeLastMaster(System);
-  IZLower->removeLastMaster(System);
-  return;
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*bellowAA,"back",*pipeAA);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*bellowBA,"back",*pipeBA);
+  constructSystem::constructUnit
+    (System,*IZLower,masterCellC,*bellowCA,"back",*pipeCA);
+
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*pipeAA,"back",*bellowAB);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*pipeBA,"back",*bellowBB);
+  constructSystem::constructUnit
+    (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCB);
+
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*bellowAB,"back",*yagUnitA);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*bellowBB,"back",*yagUnitB);
+  constructSystem::constructUnit
+    (System,*IZLower,masterCellC,*bellowCB,"back",*yagUnitC);
 
   
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*yagUnitA,"back",*bellowAC);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*yagUnitB,"back",*bellowBC);
+  constructSystem::constructUnit
+    (System,*IZLower,masterCellC,*yagUnitC,"back",*bellowCC);
+  
+  IZTop->removeLastMaster(System);
+  IZFlat->removeLastMaster(System);
+  IZLower->removeLastMaster(System);  
+
   return;
 }
 
@@ -219,6 +271,28 @@ Segment27::createLinks()
 
   
   
+  return;
+}
+
+void
+Segment27::constructVoid(Simulation& System,
+			 const attachSystem::FixedComp& FC) const
+  /*!
+    Creates the space for the InnerZone
+  */
+{
+  ELog::RegMethod RegA("Segment27","constructVoid");
+
+  const attachSystem::CellMap* CPtr=
+    dynamic_cast<const attachSystem::CellMap*>(&FC);
+  if (CPtr)
+    {
+      const HeadRule volHR=IZTop->getVolumeExclude();
+
+      CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZFlat->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZLower->getVolumeExclude());
+    }
   return;
 }
 
@@ -241,7 +315,7 @@ Segment27::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-
+  constructVoid(System,FC);
   return;
 }
 

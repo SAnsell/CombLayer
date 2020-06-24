@@ -1779,11 +1779,11 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
 
   Control.addVariable(lKey+"BellowAAXAngle",
-		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
+		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"BellowBAXAngle",
-		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
+		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"BellowCAXAngle",
-		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
+		      std::atan((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
   
   PGen.generatePipe(Control,lKey+"PipeAA",0.0,216.5);
@@ -1965,6 +1965,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
   Control.addVariable(wallKey+"SPFAngleLength",4124.0);
+  Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
   Control.addVariable(wallKey+"LinearWidth",981.0);
@@ -2067,6 +2068,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfOuterLeft",50.0);
   Control.addVariable("spfOuterRight",50.0);
   Control.addVariable("spfOuterTop",100.0);
+
+  Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("spfLongOuterLeft",50.0);
+  Control.addVariable("spfLongOuterRight",50.0);
+  Control.addVariable("spfLongOuterTop",100.0);
 
 
   linacVar::linac2SPFsegment1(Control,"L2SPF1");
