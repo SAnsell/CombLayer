@@ -1730,8 +1730,8 @@ Segment30(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  // TMath::ATan((675.249-457.286)/(5409.49-4450.12))*TMath::RadToDeg() = -12.799971
-  // Control.addVariable(lKey+"XYAngle",-12.799971);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   const Geometry::Vec3D OPos(0,0.0,0);
   const Geometry::Vec3D XVec(1,0,0);
@@ -1792,17 +1792,13 @@ Segment31(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
 
-  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
-  // SPF31
-  // const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
-  // const Geometry::Vec3D endPt(-921.651, 5344.0, 0.0);
-
-  // SPF30
-  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
-  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D endPt(-921.651, 5344.0, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // BellowA
   BellowGen.setCF<setVariable::CF40_22>();
@@ -1888,17 +1884,13 @@ Segment32(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::BellowGenerator BellowGen;
 
-  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
-  // SPF32
-  // const Geometry::Vec3D startPt(-921.651,5344.0,0.0);
-  // const Geometry::Vec3D endPt(-965.763,5607.319,0.0);
-  // SPF30
-  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
-  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D startPt(-921.651,5344.0,0.0);
+  const Geometry::Vec3D endPt(-965.763,5607.319,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  //  Control.addVariable(lKey+"XYAngle",3.1183);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
@@ -1942,17 +1934,13 @@ Segment33(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
 
-  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
-  // SPF33
-  // const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
-  // const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
-  // SPF30
-  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
-  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
+  const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  //  Control.addVariable(lKey+"XYAngle",6.4);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -1998,15 +1986,13 @@ Segment34(FuncDataBase& Control,
 
   Segment32(Control, lKey);
 
-  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
-  // SPF32
-  // const Geometry::Vec3D startPt(-995.514,5872.556,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,6139.149,0.0);
-  // SPF30
-  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
-  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D startPt(-995.514,5872.556,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6139.149,0.0);
+
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   return;
 }
@@ -2031,17 +2017,13 @@ Segment35(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
 
-  ELog::EM << "start/endPt of Segment30 are used - otherwise clips the building wall" << ELog::endCrit;
-  // SPF33
-  // const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
-  // const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
-  // SPF30
-  const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
-  const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
+  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  //  Control.addVariable(lKey+"XYAngle",6.4);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -2189,8 +2171,17 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
 
-  Control.addVariable("spfXStep",-622.286+linacVar::zeroX);
-  Control.addVariable("spfYStep",4226.013+linacVar::zeroY);
+  // start/endPt of Segment30
+  Control.addVariable("spfAngleXStep",-609.286+linacVar::zeroX);
+  Control.addVariable("spfAngleYStep",3969.122+linacVar::zeroY);
+  Control.addVariable("spfAngleOuterLeft",50.0);
+  Control.addVariable("spfAngleOuterRight",100.0);
+  Control.addVariable("spfAngleOuterTop",100.0);
+  Control.addVariable("spfAngleXYAngle",12.8);
+
+  // start/endPt of Segment34
+  Control.addVariable("spfXStep",-995.514+linacVar::zeroX);
+  Control.addVariable("spfYStep",5872.556+linacVar::zeroY);
   Control.addVariable("spfOuterLeft",50.0);
   Control.addVariable("spfOuterRight",50.0);
   Control.addVariable("spfOuterTop",100.0);

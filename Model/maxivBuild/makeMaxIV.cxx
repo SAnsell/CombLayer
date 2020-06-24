@@ -185,10 +185,9 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment20","Segment21","Segment22",
 	       "Segment23","Segment24","Segment30",
 	       "Segment31","Segment32","Segment33",
-	       "Segment34","Segment35"}},
-	// {"SPF",{"Segment30",
-	// 	"Segment31","Segment32","Segment33",
-	// 	"Segment34"}},
+	       "Segment34"}},
+	 {"SPF",{"Segment30","Segment31","Segment32",
+		 "Segment33","Segment34","Segment35"}},
 
        {"Segment1",{} },                             // first only
        {"Segment2",{} },                             // second only

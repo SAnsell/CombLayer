@@ -232,7 +232,9 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
+      //      {"spf"  ,{"TDCMid","#Back","LongVoid",""}}
+      {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -321,12 +323,12 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22"}},
       {"Segment24",{"tdc","Segment23"}},
       {"Segment25",{"tdc","segment24"}},
-      {"Segment30",{"tdc","Segment29"}},
-      {"Segment31",{"tdc","Segment30"}},
-      {"Segment32",{"tdc","Segment31"}},
-      {"Segment33",{"tdc","Segment32"}},
-      {"Segment34",{"tdc","Segment33"}},
-      {"Segment35",{"tdc","Segment34"}}
+      {"Segment30",{"spfAngle","Segment29"}},
+      {"Segment31",{"spfAngle","Segment30"}},
+      {"Segment32",{"spfAngle","Segment31"}},
+      {"Segment33",{"spfAngle","Segment32"}},
+      {"Segment34",{"spf","Segment33"}},
+      {"Segment35",{"spf","Segment34"}}
 
     });
   const int voidCell(74123);
