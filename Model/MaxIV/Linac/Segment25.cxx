@@ -237,7 +237,10 @@ Segment25::buildObjects(Simulation& System)
 
   triPipeA->setFront(*bellowA,2);
   triPipeA->createAll(System,*bellowA,"back");
-
+  ELog::EM<<"TriPipe X:"<<triPipeA->getX()<<ELog::endDiag;
+  ELog::EM<<"TriPipe Y:"<<triPipeA->getY()<<ELog::endDiag;
+  ELog::EM<<"TriPipe Z:"<<triPipeA->getZ()<<ELog::endDiag;
+  
   // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,triPipeA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
@@ -245,6 +248,10 @@ Segment25::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
+
+  ELog::EM<<"Pipe X:"<<pipeB->getX()<<ELog::endDiag;
+  ELog::EM<<"Pipe Y:"<<pipeB->getY()<<ELog::endDiag;
+  ELog::EM<<"Pipe Z:"<<pipeB->getZ()<<ELog::endDiag;
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
@@ -266,8 +273,10 @@ Segment25::buildObjects(Simulation& System)
   bellowAA->insertInCell(System,outerCellBellow);
   bellowBA->insertInCell(System,outerCellBellow);
 
-  createSplitInnerZone(System);
+  buildZone->removeLastMaster(System);
 
+
+  createSplitInnerZone(System);
   
   // PIPE:
   pipeBA->addInsertCell(outerCellBellow);
@@ -315,13 +324,38 @@ Segment25::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZLower,masterCellC,*bellowCB,"back",*pipeCB);
 
-  buildZone->refrontMasterCell(masterCell,IZMid->getDivider());
-  System.removeCell(masterCell->getName());
+
+
+  //  buildZone->refrontMasterCell(masterCell,IZMid->getDivider());
+  //  System.removeCell(masterCell->getName());
+
   //  buildZone->removeLastMaster(System);
-  //  IZTop->removeLastMaster(System);
-  //IZMid.removeLastMaster(System);
-  //IZLower.removeLastMaster(System);  
+  IZTop->removeLastMaster(System);
+  IZMid->removeLastMaster(System);
+  IZLower->removeLastMaster(System);  
   
+  return;
+}
+
+void
+Segment25::constructVoid(Simulation& System,
+			 const attachSystem::FixedComp& FC) const
+  /*!
+    Creates the space for the InnerZone
+  */
+{
+  ELog::RegMethod RegA("Segment25","constructVoid");
+
+  const attachSystem::CellMap* CPtr=
+    dynamic_cast<const attachSystem::CellMap*>(&FC);
+  if (CPtr)
+    {
+      const HeadRule volHR=IZTop->getVolumeExclude();
+
+      CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZMid->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZLower->getVolumeExclude());
+    }
   return;
 }
 
@@ -364,7 +398,7 @@ Segment25::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-
+  constructVoid(System,FC);
   return;
 }
 

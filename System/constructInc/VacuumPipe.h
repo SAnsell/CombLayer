@@ -52,7 +52,7 @@ struct windowInfo
 */
 
 class VacuumPipe :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

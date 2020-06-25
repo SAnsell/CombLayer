@@ -285,8 +285,8 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FixedRotate","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
+  applyOffset();
   Origin+=Y*(length/2.0);
   return;
 }

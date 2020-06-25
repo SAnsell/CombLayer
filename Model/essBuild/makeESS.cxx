@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see Low<http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,11 +66,11 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
@@ -209,8 +209,6 @@ makeESS::makeESS() :
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
-  OR.addObject(ABHighBay);
-  OR.addObject(CDHighBay);
 }
 
 
@@ -1094,13 +1092,15 @@ makeESS::build(Simulation& System,
 
   // lower moderator
   if (lowModType != "None")
-    LowPreMod->createAll(System,World::masterOrigin(),0,true,
-			 Target->wheelHeight()/2.0,
-			 Reflector->getRadius());
-
-  TopPreMod->createAll(System,World::masterOrigin(),0,false,
-		       Target->wheelHeight()/2.0,
+    {
+      LowPreMod->setLayout(true,Target->wheelHeight()/2.0,
+			   Reflector->getRadius());
+      LowPreMod->createAll(System,World::masterOrigin(),0);
+    }
+  TopPreMod->setLayout(false,Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+
+  TopPreMod->createAll(System,World::masterOrigin(),0);
 
 
   if (lowModType == "Butterfly")
@@ -1127,12 +1127,14 @@ makeESS::build(Simulation& System,
 
   
   // Cap moderator DOES not span whole unit
-  TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
+  TopCapMod->setLayout(false,0.0,Reflector->getRadius());
+  TopCapMod->createAll(System,*TopMod,6);
 
   if (lowModType != "None")
-    LowCapMod->createAll(System,*LowMod,6,false,
-			 0.0,Reflector->getRadius());
+    {
+      LowCapMod->setLayout(false,0.0,Reflector->getRadius());
+      LowCapMod->createAll(System,*LowMod,6);
+    }
 
   buildPreWings(System);
 
@@ -1237,7 +1239,7 @@ makeESS::build(Simulation& System,
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
 
-  
+
   ModPipes->buildTopPipes(System,topPipeType);
   buildPillars(System,IParam);
   if (IParam.flag("bunkerFeed"))

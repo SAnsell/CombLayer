@@ -66,7 +66,7 @@
 #include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -80,7 +80,7 @@ namespace essSystem
 DiskLayerMod::DiskLayerMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedUnit(Key,9),
+  attachSystem::FixedRotate(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -90,9 +90,9 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
 
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedUnit(A),attachSystem::CellMap(A),
+  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  midIndex(A.midIndex),midZ(A.midZ),zStep(A.zStep),
+  midIndex(A.midIndex),midZ(A.midZ),
   outerRadius(A.outerRadius),thick(A.thick),radius(A.radius),
   mat(A.mat),temp(A.temp)
   /*!
@@ -113,13 +113,12 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       
       midIndex=A.midIndex;
       midZ=A.midZ;
-      zStep=A.zStep;
       outerRadius=A.outerRadius;
       thick=A.thick;
       radius=A.radius;
@@ -150,20 +149,15 @@ DiskLayerMod::~DiskLayerMod()
   
 
 void
-DiskLayerMod::populate(const FuncDataBase& Control,
-		     const double zShift,
-		     const double outRadius)
-  /*!
+DiskLayerMod::populate(const FuncDataBase& Control)
+ /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height a
-    \param outRadius :: Outer radius of reflector [-ve to ignore]
   */
 {
   ELog::RegMethod RegA("DiskLayerMod","populate");
 
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
-  outerRadius=outRadius;
+  FixedRotate::populate(Control);
 
   // clear stuff 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -208,30 +202,6 @@ DiskLayerMod::populate(const FuncDataBase& Control,
   midIndex=nLayers/2;
   return;
 }
-
-void
-DiskLayerMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-                               const long int sideIndex,const bool zRotate)
-  /*!
-    Create the unit vectors
-    \param refCentre :: Centre for object
-    \param sideIndex :: index for link
-    \param zRotate :: rotate Zaxis
-  */
-{
-  ELog::RegMethod RegA("DiskLayerMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(refCentre);
-  Origin=refCentre.getLinkPt(sideIndex);
-  if (zRotate)
-    {
-      X*=-1;
-      Z*=-1;
-    }
-  applyShift(0,0,zStep);
-
-  return;
-}
-
 
 void
 DiskLayerMod::createSurfaces()
@@ -464,26 +434,32 @@ DiskLayerMod::getHeight() const
 }
 
 void
+DiskLayerMod::setLayout(const bool zRotate,
+			const double VOffset,
+			const double ORad)
+{
+  if (zRotate) preYAngle=180.0;
+  zStep=VOffset;
+  outerRadius=ORad;
+  return;
+}
+  
+
+void
 DiskLayerMod::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex,
-		      const bool zRotate,
-		      const double VOffset,
-		      const double ORad)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
-    \param zRotate :: Rotate to -ve Z
-    \param VOffset :: Vertical offset from target
-    \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskLayerMod","createAll");
 
-  populate(System.getDataBase(),VOffset,ORad);
-  createUnitVector(FC,sideIndex,zRotate);
+  populate(System.getDataBase());
+  FixedComp::createUnitVector(FC,sideIndex,0);
 
   createSurfaces();
   createObjects(System);

@@ -69,6 +69,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -85,7 +86,7 @@ namespace constructSystem
 {
 
 VacuumPipe::VacuumPipe(const std::string& Key) :
-  attachSystem::FixedOffset(Key,11),
+  attachSystem::FixedRotate(Key,11),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
@@ -100,7 +101,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 }
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) :
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   frontJoin(A.frontJoin),
@@ -132,7 +133,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -185,7 +186,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumPipe","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);

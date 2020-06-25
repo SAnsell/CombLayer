@@ -103,7 +103,6 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
 
    OR.addObject(LeftUnit);
    OR.addObject(RightUnit);
-   OR.addObject(MidWater);
    OR.addObject(LeftWater);
    OR.addObject(RightWater);
 }
@@ -483,7 +482,8 @@ ButterflyModerator::createAll(Simulation& System,
   
   LeftUnit->createAll(System,*this,0);
   RightUnit->createAll(System,*this,0);
-  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
+  MidWater->setH2Wing(*LeftUnit,*RightUnit);
+  MidWater->createAll(System,*this,0);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");

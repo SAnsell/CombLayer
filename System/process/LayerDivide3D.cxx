@@ -3,7 +3,7 @@
  
  * File:   process/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -91,7 +91,7 @@ namespace ModelSupport
 {
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
-  FixedUnit(Key,0),
+  FixedComp(Key,0),CellMap(),SurfMap(),
   WallID({"Sector","Vert","Radial"}),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -100,7 +100,7 @@ LayerDivide3D::LayerDivide3D(const std::string& Key)  :
 {}
 
 LayerDivide3D::LayerDivide3D(const LayerDivide3D& A) : 
-  attachSystem::FixedUnit(A),attachSystem::CellMap(A),
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   Centre(A.Centre),
   AFrac(A.AFrac),BFrac(A.BFrac),CFrac(A.CFrac),

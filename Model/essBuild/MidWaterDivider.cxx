@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
@@ -96,8 +95,8 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedUnit(baseKey+extraKey,14),
-  baseName(baseKey)
+  attachSystem::FixedComp(baseKey+extraKey,14),
+  baseName(baseKey),AWingPtr(nullptr),BWingPtr(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Base Name for item in search
@@ -107,11 +106,11 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedUnit(A), baseName(A.baseName),
+  attachSystem::FixedComp(A), baseName(A.baseName),
   midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
-  modTemp(A.modTemp)
+  modTemp(A.modTemp),AWingPtr(A.AWingPtr),BWingPtr(A.BWingPtr)
   /*!
     Copy constructor
     \param A :: MidWaterDivider to copy
@@ -139,6 +138,8 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
+      AWingPtr=A.AWingPtr;
+      BWingPtr=A.BWingPtr;
     }
   return *this;
 }
@@ -186,33 +187,16 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Points down the MidWaterDivider direction
-    - X Across the MidWaterDivider
-    - Z up (towards the target)
-    \param FC :: fixed Comp [and link comp]
-  */
-{
-  ELog::RegMethod RegA("MidWaterDivider","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  return;
-}
 
 void
-MidWaterDivider::createLinks(const H2Wing& leftWing,
-			     const H2Wing& rightWing)
+MidWaterDivider::createLinks()
+
   /*!
     Construct links:
     - 1+2 and 3+4 are the triangle surfaces (left/right)
     - 5+6 and 7+8 are corner points for view
     - 9+10 are top/bottom
     
-    \param leftWing :: H2Wing connector  [left]
-    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
@@ -231,10 +215,10 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+132));  
 
   std::vector<int> surfN;
-  surfN.push_back(leftWing.getLinkSurf(1));
-  surfN.push_back(leftWing.getLinkSurf(3));
-  surfN.push_back(rightWing.getLinkSurf(1));
-  surfN.push_back(rightWing.getLinkSurf(3));
+  surfN.push_back(AWingPtr->getLinkSurf(1));
+  surfN.push_back(AWingPtr->getLinkSurf(3));
+  surfN.push_back(BWingPtr->getLinkSurf(1));
+  surfN.push_back(BWingPtr->getLinkSurf(3));
 
   // Now deterermine point which are divider points
   const Geometry::Plane* midPlane=
@@ -411,25 +395,20 @@ MidWaterDivider::createSurfaces()
   return;
 }
 
-
 void
-MidWaterDivider::createObjects(Simulation& System,
-			       const H2Wing& leftWing,
-			       const H2Wing& rightWing)
+MidWaterDivider::createObjects(Simulation& System)
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
-    \param leftWing :: H2Wing connector  [left]
-    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=leftWing.getLinkString(-5);
-  const std::string Top=leftWing.getLinkString(-6);
+  const std::string Base=AWingPtr->getLinkString(-5);
+  const std::string Top=AWingPtr->getLinkString(-6);
   
-  HeadRule LCut(leftWing.getLayerString(cutLayer,7));
-  HeadRule RCut(rightWing.getLayerString(cutLayer,7));
+  HeadRule LCut(AWingPtr->getLayerString(cutLayer,7));
+  HeadRule RCut(BWingPtr->getLayerString(cutLayer,7));
 
   LCut.makeComplement();
   RCut.makeComplement();
@@ -531,32 +510,28 @@ MidWaterDivider::createObjects(Simulation& System,
 }
 
 void
-MidWaterDivider::cutOuterWing(Simulation& System,
-			      const H2Wing& leftWing,
-			      const H2Wing& rightWing) const
+MidWaterDivider::cutOuterWing(Simulation& System) const
   /*!
     Cut the outer surface layer of the wings with the
     exclude version of the water layer
     \param System :: Simuation to extract objects rom
-    \param leftWing :: Left wing object
-    \param rightWing :: Right wing object
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","cutOuterWing");
 
-  const size_t lWing=leftWing.getNLayers();
-  const size_t rWing=rightWing.getNLayers();
+  const size_t lWing=AWingPtr->getNLayers();
+  const size_t rWing=BWingPtr->getNLayers();
 
   const std::string LBase=
-    leftWing.getLinkString(-5)+leftWing.getLinkString(-6);
+    AWingPtr->getLinkString(-5)+AWingPtr->getLinkString(-6);
   const std::string RBase=
-    rightWing.getLinkString(-5)+rightWing.getLinkString(-6);
+    BWingPtr->getLinkString(-5)+BWingPtr->getLinkString(-6);
 
   HeadRule cutRule;
   std::string Out;
   if (cutLayer+1<lWing)
     {
-      const int cellA=leftWing.getCell("Outer");
+      const int cellA=AWingPtr->getCell("Outer");
       
       MonteCarlo::Object* OPtr=System.findObject(cellA);
       if (!OPtr)
@@ -569,7 +544,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
     }
   if (cutLayer+1<rWing)
     {
-      const int cellB=rightWing.getCell("Outer");
+      const int cellB=BWingPtr->getCell("Outer");
       MonteCarlo::Object* OPtr=System.findObject(cellB);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
@@ -629,26 +604,27 @@ MidWaterDivider::getLayerString(const size_t,
 void
 MidWaterDivider::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
-			   const H2Wing& LA,
-			   const H2Wing& RA)
+			   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed object just for origin/axis
-    \param LA :: Left node object
-    \param RA :: Right node object
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createAll");
 
+  if (AWingPtr==BWingPtr || !AWingPtr || !BWingPtr)
+    throw ColErr::EmptyContainer("A/BWingPtr error");
+  
   populate(System.getDataBase());
-  height=LA.getLinkDistance(5,6)-topThick;
+  height=AWingPtr->getLinkDistance(5,6)-topThick;
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,LA,RA);
-  cutOuterWing(System,LA,RA);
-  createLinks(LA,RA);
+  createObjects(System);
+  cutOuterWing(System);
+  createLinks();
   insertObjects(System);       
   return;
 }

@@ -630,17 +630,7 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"TREX",        &TREXvariables},
      {"TESTBEAM",    &TESTBEAMvariables},
      {"VESPA",       &VESPAvariables},
-     {"VOR",         &VORvariables},
-     {"SHORTNMX",    &NMXvariables},
-     {"SHORTNMX",    &shortNMXvariables},
-     {"SHORTDREAM",  &DREAMvariables},
-     {"SHORTDREAM",  &shortDREAMvariables},
-     {"SHORTDREAM2", &DREAMvariables},
-     {"SHORTDREAM2", &shortDREAM2variables},
-     {"SHORTODIN",   &ODINvariables},
-     {"SHORTODIN",   &shortODINvariables}
-
-       
+     {"VOR",         &VORvariables}
    });
 
   

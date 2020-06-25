@@ -1687,29 +1687,35 @@ Segment25(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+
+  const double dipoleAngle(0.8);
+  const double magAngle(0.8);
+  const double multiAngle(magAngle+dipoleAngle);
   
   const double startWidth(2.33/2.0);
   const double endWidth(6.70/2.0);
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,lKey+"TriPipeA");
-  Control.addVariable(lKey+"TriPipeYAngle",90);
-  
+  Control.addVariable(lKey+"TriPipeAYAngle",90);
+  Control.addVariable(lKey+"TriPipeAXAngle",-dipoleAngle);
+
   DIBGen.generate(Control,lKey+"DipoleA");
 
   PGen.setCF<CF100>();
   PGen.setBFlangeCF<CF150>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeB",0.0,16.15);
-
+  Control.addVariable(lKey+"PipeBPreYAngle",-90);
+  Control.addVariable(lKey+"PipeBXAngle",-magAngle);
   SPortGen.setCF<CF150>();
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 0.0);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, -3.03406);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -5.82659);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0,multiAngle);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, -3.03406+multiAngle);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -5.82659+multiAngle);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
   BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);

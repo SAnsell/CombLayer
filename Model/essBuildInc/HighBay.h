@@ -38,10 +38,11 @@ namespace essSystem
   \brief Bunker wall 
 */
 
-class HighBay : public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class HighBay :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
@@ -63,6 +64,8 @@ class HighBay : public attachSystem::ContainedComp,
   void createSurfaces(const Bunker&,const Bunker&);
   void createObjects(Simulation&,const Bunker&,const Bunker&);
 
+  void createAll(Simulation&,const FixedComp&,const long int) {}
+  
  public:
 
   HighBay(const std::string&);

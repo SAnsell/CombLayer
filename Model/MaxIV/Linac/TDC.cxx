@@ -378,7 +378,7 @@ TDC::createAll(Simulation& System,
 	    }
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}
     }

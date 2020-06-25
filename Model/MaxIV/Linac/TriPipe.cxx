@@ -167,6 +167,9 @@ TriPipe::createSurfaces()
   FrontBackCut::getShiftedFront
     (SMap,buildIndex+11,Y,flangeALength);
 
+  ELog::EM<<"YY == "<<zAngle<<ELog::endDiag;
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
 
   
   if (!backActive())
@@ -334,7 +337,11 @@ TriPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("TriPipe","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,FIndex,length);
+    
+  FixedRotate::createCentredUnitVector(FC,FIndex,length);
+  ELog::EM<<"XYz == "<<X<<":"<<Y<<":"<<Z<<ELog::endDiag;
+
+  
   createSurfaces();    
   createObjects(System);
   createLinks();

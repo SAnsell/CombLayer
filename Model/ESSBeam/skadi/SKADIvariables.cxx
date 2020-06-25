@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadi/SKADIvariables.cxx
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2020 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -106,13 +105,13 @@ void SKADIvariables(FuncDataBase& Control)
 
   // Second part of the S
   PipeGen.generatePipe(Control,"skadiPipeD",1.5,325.5);
-  Control.addVariable("skadiPipeDZAngle",1.0);
+  Control.addVariable("skadiPipeDXAngle",1.0);
   FGen.setYOffset(2.5);
   FGen.generateBender(Control,"skadiBD",323.5,guideWidth,guideWidth,
 		      guideHeight,guideHeight,8400.0,270.0);
 
   PipeGen.generatePipe(Control,"skadiPipeE",1.5,124.0);
-  Control.addVariable("skadiPipeEZAngle",0.25);
+  Control.addVariable("skadiPipeEXAngle",0.25); // change to FixedRotate
   FGen.setYOffset(2.5);
   FGen.generateBender(Control,"skadiBE",122.0,guideWidth,guideWidth,
 		      guideHeight,guideHeight,8400.0,270.0);
