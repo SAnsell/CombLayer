@@ -1,3 +1,6 @@
+// Usage:
+// povray povray/singleItem.pov <<< '"Segment15"'
+
 #version 3.7;
 #include "colors.inc"
 #include "metals.inc"
@@ -6,7 +9,9 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 35;
+#fopen STDIN "/dev/stdin" read
+#read (STDIN, ITEM)
+
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -63,108 +68,108 @@ global_settings {
   #end
 }
 
-#switch ( view )
-  #case(0)
-    #declare cameraLocation = <80, 17, 0>;
-    #declare cameraLookAt   = <130, 4, 0>;
-    #declare cameraAngle = 30;
-  #break
-  #case(1)
-    #declare cameraLocation = <80, 130, 40>;
-    #declare cameraLookAt   = <130, 80, 0>;
-    #declare cameraAngle = 90;
-  #break
-  #case(15) // TDC segment 15
+#switch ( 0 )
+  // #case(0)
+  //   #declare cameraLocation = <80, 17, 0>;
+  //   #declare cameraLookAt   = <130, 4, 0>;
+  //   #declare cameraAngle = 30;
+  // #break
+  // #case(1)
+  //   #declare cameraLocation = <80, 130, 40>;
+  //   #declare cameraLookAt   = <130, 80, 0>;
+  //   #declare cameraAngle = 90;
+  // #break
+  #case(strcmp(ITEM,"Segment15")) // TDC segment 15
     #declare cameraLocation = <-433, 4980, 40>;
     #declare cameraLookAt   = <-485, 5030, 10>;
     #declare cameraAngle = 70;
     #declare projection = 0;
   #break
-  #case(16) // TDC segment 16
+  #case(strcmp(ITEM,"Segment16")) // TDC segment 16
     #declare cameraLocation = <-400, 5320, 40>;
     #declare cameraLookAt   = <-485, 5320, 0>;
     #declare projection = 1;
   #break
-  #case(1604) // TDC segment 16 - QuadA
+  #case(strcmp(ITEM,"Segment16QuadA")) // TDC segment 16 - QuadA
     #declare cameraLocation = <-430, 4890, 40>;
     #declare cameraLookAt   = <-485, 4867, 0>;
     #declare cameraAngle = 50;
   #break
-  #case(17) // TDC segment 17
+  #case(strcmp(ITEM,"Segment17")) // TDC segment 17
     #declare cameraLocation = <-430, 5450, 40>;
     #declare cameraLookAt   = <-485, 5520, 0>;
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(18) // TDC segment 18
+  #case(strcmp(ITEM,"Segment18")) // TDC segment 18
     #declare cameraLocation = <-400, 6300, 40>;
     #declare cameraLookAt   = <-485, 6350, 0>;
     #declare projection = 1;
   #break
-  #case(19) // TDC segment 19
+  #case(strcmp(ITEM,"Segment19")) // TDC segment 19
     #declare cameraLocation = <-460, 6495, 20>;
     #declare cameraLookAt   = <-485, 6500, 0>;
     #declare projection = 1;
   #break
-  #case(20) // TDC segment 20
+  #case(strcmp(ITEM,"Segment20")) // TDC segment 20
     #declare cameraLocation = <-655, 6960, 40>;
     #declare cameraLookAt   = <-485, 6750, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
-  #case(21) // TDC segment 21
+  #case(strcmp(ITEM,"Segment21")) // TDC segment 21
     #declare cameraLocation = <-655, 7000, 40>;
     #declare cameraLookAt   = <-485, 6920, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
-  #case(23) // TDC segment 23
+  #case(strcmp(ITEM,"Segment23")) // TDC segment 23
     #declare cameraLocation = <-350, 7290, 50>;
     #declare cameraLookAt   = <-485, 7355, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
-  #case(24) // TDC segment 24
+  #case(strcmp(ITEM,"Segment24")) // TDC segment 24
     #declare cameraLocation = <-300, 7950, 50>;
     #declare cameraLookAt   = <-485, 7750, 0>;
     #declare projection = 0;
     #declare cameraAngle = 60;
   #break
-  #case(30) // SPF segment 30
+  #case(strcmp(ITEM,"Segment30")) // SPF segment 30
     #declare cameraLocation = <-400, 4520, 30>;
     #declare cameraLookAt   = <-485, 4520, 0>;
     #declare projection = 1;
   #break
-  #case(31) // SPF segment 31
+  #case(strcmp(ITEM,"Segment31")) // SPF segment 31
     #declare cameraLocation = <-400, 4550, 30>;
     #declare cameraLookAt   = <-485, 4550, 0>;
     #declare projection = 1;
   #break
-  #case(32) // SPF segment 32
+  #case(strcmp(ITEM,"Segment32")) // SPF segment 32
     #declare cameraLocation = <-350, 4755, 30>;
     #declare cameraLookAt   = <-485, 4600, 0>;
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(33) // SPF segment 33
+  #case(strcmp(ITEM,"Segment33")) // SPF segment 33
     #declare cameraLocation = <-290, 4570, 70>;
     #declare cameraLookAt   = <-485, 4580, 0>;
     #declare projection = 1;
 //    #declare cameraAngle = 70;
   #break
-  #case(35) // SPF segment 35
-    #declare cameraLocation = <-756, 6575, 70>;
-    #declare cameraLookAt   = <-858, 6640, 0>;
+  #case(strcmp(ITEM,"Segment35")) // SPF segment 35
+    #declare cameraLocation = <-600, 6725, 70>;
+    #declare cameraLookAt   = <-858, 6725, 0>;
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(1000) // beamline view
+  #case(strcmp(ITEM,"Segment1000")) // beamline view
     #declare cameraLocation = <200, 160, 40>;
     #declare cameraLookAt   = <125, 160, 0>;
     #declare cameraAngle = 170;
     #declare projection = 1;
   #break
-  #case(1001) // beamline back view
+  #case(strcmp(ITEM,"Segment1001")) // beamline back view
     #declare cameraLocation = <200, 550, 40>;
     #declare cameraLookAt   = <125, 400, 0>;
     #declare cameraAngle = 90;
