@@ -189,11 +189,23 @@ makeSingleItem::build(Simulation& System,
   if (item == "YagUnit")
     {
       std::shared_ptr<tdcSystem::YagUnit>
-	YAG(new tdcSystem::YagUnit("YU"));
-      OR.addObject(YAG);
+	yagUnit(new tdcSystem::YagUnit("YU"));
 
-      YAG->addInsertCell(voidCell);
-      YAG->createAll(System,World::masterOrigin(),0);
+      std::shared_ptr<tdcSystem::YagScreen>
+	yagScreen(new tdcSystem::YagScreen("YAG"));
+
+      OR.addObject(yagUnit);
+      OR.addObject(yagScreen);
+
+      yagUnit->addInsertCell(voidCell);
+      yagUnit->createAll(System,World::masterOrigin(),0);
+
+      yagScreen->setBeamAxis(*yagUnit,1);
+      yagScreen->createAll(System,*yagUnit,4);
+      yagScreen->insertInCell("Outer",System,voidCell);
+      yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
+      yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+      yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
       return;
     }

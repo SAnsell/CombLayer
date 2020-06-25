@@ -76,6 +76,11 @@ global_settings {
     #declare cameraLookAt   = <0, -3, 0.0>;
     #declare cameraAngle = 50;
   #break
+  #case (strcmp(ITEM,"YagUnit"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
   #case (strcmp(ITEM,"YagUnitBig"))
     #declare cameraLocation = <-30, -30.0, 40.0>;
     #declare cameraLookAt   = <0.0, 0.0, 10.0>;

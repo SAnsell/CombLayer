@@ -308,6 +308,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");
+  Control.addVariable("YUYAngle",90.0);
 
   setVariable::YagUnitBigGenerator YagUnitBigGen;
   YagUnitBigGen.generateYagUnit(Control,"YUBig");
