@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/YagUnitBigGenerator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_YagUnitBigGenerator_h
@@ -35,29 +35,38 @@ namespace setVariable
   \brief YagUnitBigGenerator for variables
 */
 
-class YagUnitBigGenerator 
+class YagUnitBigGenerator
 {
  private:
 
-  double radius;               ///< void radius   
+  double radius;               ///< void radius
   double height;               ///< void height [+z]
   double depth;                ///< void depth [-z]
   double wallThick;            ///< pipe thickness
 
-  double flangeRadius;         ///< Joining Flange radius 
+  double flangeRadius;         ///< Joining Flange radius
   double flangeLength;         ///< Joining Flange length
   double plateThick;           ///< flange plate thick
 
   // centre port [left]
-  double viewZStep;            ///< Viewing Z-lift
-  double viewRadius;           ///< Viewing Radius
-  double viewThick;            ///< Wall thickness
-  double viewLength;           ///< viewing Length [centre to flange end]
-  double viewFlangeRadius;     ///< View Flange radius
-  double viewFlangeLength;     ///< Joining Flange length
-  double viewPlateThick;       ///< Cover plate thickness
+  double viewAZStep;            ///< Viewing Z-lift
+  double viewARadius;           ///< Viewing Radius
+  double viewAThick;            ///< Wall thickness
+  double viewALength;           ///< viewing Length [centre to flange end]
+  double viewAFlangeRadius;     ///< ViewA Flange radius
+  double viewAFlangeLength;     ///< Joining Flange length
+  double viewAPlateThick;       ///< Cover plate thickness
 
-  // front/back port 
+  // side view port [back]
+  double viewBYStep;            ///< Step from origin
+  double viewBRadius;           ///< Viewing Radius
+  double viewBThick;            ///< Wall thickness
+  double viewBLength;           ///< viewing Length [centre to flange end]
+  double viewBFlangeRadius;     ///< Flange outer Radius
+  double viewBFlangeLength;     ///< Flange length
+  double viewBPlateThick;       ///< View Flange Plate thickness
+
+  // front/back port
   double portRadius;         ///< port Radius
   double portThick;          ///< port wall thickness
   double portFlangeRadius;   ///< port flange Radius
@@ -71,7 +80,7 @@ class YagUnitBigGenerator
 
   std::string voidMat;               ///< void material
   std::string mainMat;               ///< wall material
-  
+
  public:
 
   YagUnitBigGenerator();
@@ -82,9 +91,9 @@ class YagUnitBigGenerator
   template<typename T> void setCF();
   template<typename T> void setFlangeCF();
   template<typename T> void setPortCF();
-  template<typename T> void setViewCF();
-  
-  void generateYagUnitBig(FuncDataBase&,
+  template<typename T> void setViewACF();
+
+  void generateYagUnit(FuncDataBase&,
 		       const std::string&) const;
 
 };
@@ -92,4 +101,3 @@ class YagUnitBigGenerator
 }
 
 #endif
- 

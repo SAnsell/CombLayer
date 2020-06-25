@@ -70,11 +70,18 @@ global_settings {
   #end
 }
 
-#if (!strcmp(ITEM,"CorrectorMag"))
+#switch (0)
+  #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;
     #declare cameraLookAt   = <0, -3, 0.0>;
     #declare cameraAngle = 50;
-  #else
+  #break
+  #case (strcmp(ITEM,"YagUnitBig"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+#else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
 #end

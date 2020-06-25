@@ -33,37 +33,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -217,7 +197,7 @@ YagUnitBig::createSurfaces()
     (SMap,buildIndex+253,viewAOrg-X*(viewALength+viewAPlateThick),X);
 
   // view B
-  const Geometry::Vec3D viewBOrg(Origin+Y*viewBYStep);
+  const Geometry::Vec3D viewBOrg(Origin-Y*viewBYStep);
   ModelSupport::buildCylinder(SMap,buildIndex+607,viewBOrg,Z,viewBRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+617,viewBOrg,Z,viewBRadius+viewBThick);
@@ -267,7 +247,7 @@ YagUnitBig::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 115 -106 -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -115 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -115 607 -7 ");
   makeCell("TubeA",System,cellIndex++,mainMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -301,20 +281,21 @@ YagUnitBig::createObjects(Simulation& System)
   makeCell("viewAOut",System,cellIndex++,0,0.0,Out);
 
   // viewB
-  Out=ModelSupport::getComposite(SMap,buildIndex," -607 653 -105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -607 603 -115 ");
   makeCell("viewBVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 607 -617 653 -105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 607 -617 603 -105 ");
   makeCell("viewBTube",System,cellIndex++,mainMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -627 617 653 -613 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -627 617 603 -613 ");
   makeCell("viewBFlange",System,cellIndex++,mainMat,0.0,Out);
-  // Out=ModelSupport::getComposite(SMap,buildIndex," -107 627 653 -613 ");
-  // makeCell("viewBFlange",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -107 617 613 -105 ");
   makeCell("viewBOut",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -107 627 653 -613 ");
   makeCell("viewBOut",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -627 653 -603 ");
+  makeCell("viewBPlate",System,cellIndex++,mainMat,0.0,Out);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -100 7 -307 ");

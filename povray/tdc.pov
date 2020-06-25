@@ -6,7 +6,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 33;
+#declare view = 35;
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -151,6 +151,12 @@ global_settings {
     #declare cameraLookAt   = <-485, 4580, 0>;
     #declare projection = 1;
 //    #declare cameraAngle = 70;
+  #break
+  #case(35) // SPF segment 35
+    #declare cameraLocation = <-756, 6575, 70>;
+    #declare cameraLookAt   = <-858, 6640, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
   #break
   #case(1000) // beamline view
     #declare cameraLocation = <200, 160, 40>;

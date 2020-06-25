@@ -92,10 +92,10 @@
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
-#include "subPipeUnit.h"
 #include "MultiPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
+#include "YagUnitBig.h"
 #include "TWCavity.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -142,7 +142,7 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","BPM","BeamDivider","Scrapper","TWCavity",
+      "YagUnit","YagUnitBig","BPM","BeamDivider","Scrapper","TWCavity",
       "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube",
       "Help","help"
     });
@@ -194,6 +194,30 @@ makeSingleItem::build(Simulation& System,
 
       YAG->addInsertCell(voidCell);
       YAG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "YagUnitBig")
+    {
+      std::shared_ptr<tdcSystem::YagUnitBig>
+	yagUnit(new tdcSystem::YagUnitBig("YUBig"));
+
+      std::shared_ptr<tdcSystem::YagScreen>
+	yagScreen(new tdcSystem::YagScreen("YAG"));
+
+      OR.addObject(yagUnit);
+      OR.addObject(yagScreen);
+
+      yagUnit->addInsertCell(voidCell);
+      yagUnit->createAll(System,World::masterOrigin(),0);
+
+      yagScreen->setBeamAxis(*yagUnit,1);
+      yagScreen->createAll(System,*yagUnit,4);
+      yagScreen->insertInCell("Outer",System,voidCell);
+      yagScreen->insertInCell("Connect",System,yagUnit->getCell("Plate"));
+      yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+      yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
 
       return;
     }

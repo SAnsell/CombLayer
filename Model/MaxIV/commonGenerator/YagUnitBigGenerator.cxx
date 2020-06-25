@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/YagUnitBigGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -58,28 +51,33 @@ namespace setVariable
 {
 
 YagUnitBigGenerator::YagUnitBigGenerator() :
-  radius(CF63::innerRadius),height(13.2),
+  radius(6.8),height(13.2),
   depth(6.8),wallThick(CF63::wallThick),
-  flangeRadius(CF63::flangeRadius),
-  flangeLength(CF63::flangeLength),
+  flangeRadius(CF150::flangeRadius),
+  flangeLength(CF100::flangeLength),
   plateThick(CF63::flangeLength),
-  viewZStep(3.2),viewRadius(CF63::innerRadius),
-  viewLength(9.27),viewThick(CF63::wallThick),
-  viewFlangeRadius(CF63::flangeRadius),
-  viewFlangeLength(CF63::flangeLength),
-  viewPlateThick(CF63::flangeLength),
+  viewAZStep(3.2),viewARadius(3.3),
+  viewAThick(CF63::wallThick),viewALength(13.67),
+  viewAFlangeRadius(5.6),
+  viewAFlangeLength(CF63::flangeLength),
+  viewAPlateThick(CF63::flangeLength),
+  viewBYStep(3.2),viewBRadius(3.3),
+  viewBThick(CF63::wallThick),viewBLength(11.27),
+  viewBFlangeRadius(5.6),
+  viewBFlangeLength(CF63::flangeLength),
+  viewBPlateThick(CF63::flangeLength),
   portRadius(CF40::innerRadius),portThick(CF40::wallThick),
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
-  frontLength(9.0),backLength(11.2),
+  frontLength(10.2),backLength(10.2),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304")
+  voidMat("Void"),mainMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
-YagUnitBigGenerator::~YagUnitBigGenerator() 
+
+YagUnitBigGenerator::~YagUnitBigGenerator()
  /*!
    Destructor
  */
@@ -109,16 +107,16 @@ YagUnitBigGenerator::setFlangeCF()
 }
 
 void
-YagUnitBigGenerator::generateYagUnitBig(FuncDataBase& Control,
+YagUnitBigGenerator::generateYagUnit(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary function for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
   */
 {
   ELog::RegMethod RegA("YagUnitBigGenerator","generateYagUnitBig");
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
@@ -127,13 +125,21 @@ YagUnitBigGenerator::generateYagUnitBig(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"PlateThick",plateThick);
 
-  Control.addVariable(keyName+"ViewZStep",viewZStep);
-  Control.addVariable(keyName+"ViewRadius",viewRadius);
-  Control.addVariable(keyName+"ViewThick",viewThick);
-  Control.addVariable(keyName+"ViewLength",viewLength);
-  Control.addVariable(keyName+"ViewFlangeRadius",viewFlangeRadius);
-  Control.addVariable(keyName+"ViewFlangeLength",viewFlangeLength);
-  Control.addVariable(keyName+"ViewPlateThick",viewPlateThick);
+  Control.addVariable(keyName+"ViewAZStep",viewAZStep);
+  Control.addVariable(keyName+"ViewARadius",viewARadius);
+  Control.addVariable(keyName+"ViewAThick",viewAThick);
+  Control.addVariable(keyName+"ViewALength",viewALength);
+  Control.addVariable(keyName+"ViewAFlangeRadius",viewAFlangeRadius);
+  Control.addVariable(keyName+"ViewAFlangeLength",viewAFlangeLength);
+  Control.addVariable(keyName+"ViewAPlateThick",viewAPlateThick);
+
+  Control.addVariable(keyName+"ViewBYStep",viewBYStep);
+  Control.addVariable(keyName+"ViewBRadius",viewBRadius);
+  Control.addVariable(keyName+"ViewBThick",viewBThick);
+  Control.addVariable(keyName+"ViewBLength",viewBLength);
+  Control.addVariable(keyName+"ViewBFlangeRadius",viewBFlangeRadius);
+  Control.addVariable(keyName+"ViewBFlangeLength",viewBFlangeLength);
+  Control.addVariable(keyName+"ViewBPlateThick",viewBPlateThick);
 
   Control.addVariable(keyName+"PortRadius",portRadius);
   Control.addVariable(keyName+"PortThick",portThick);
@@ -146,7 +152,7 @@ YagUnitBigGenerator::generateYagUnitBig(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MainMat",mainMat);
-  
+
   return;
 
 }
@@ -163,5 +169,5 @@ template void YagUnitBigGenerator::setFlangeCF<CF63>();
 
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable

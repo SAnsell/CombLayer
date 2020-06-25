@@ -30,7 +30,7 @@ namespace tdcSystem
 /*!
   \class YagUnitBig
   \version 1.0
-  \author S. Ansell
+  \author S. Ansell / K. Batkov
   \date June 2020
 
   \brief YagUnit big type for Max-IV
@@ -55,13 +55,22 @@ class YagUnitBig :
   double plateThick;           ///< flange plate thick
 
   // centre port [left]
-  double viewZStep;            ///< Step from origin
-  double viewRadius;           ///< Viewing Radius
-  double viewThick;            ///< Wall thickness
-  double viewLength;           ///< viewing Length [centre to flange end]
-  double viewFlangeRadius;     ///< Flange outer Radius
-  double viewFlangeLength;     ///< Flange length
-  double viewPlateThick;       ///< View Flange Plate thickness
+  double viewAZStep;            ///< Step from origin
+  double viewARadius;           ///< Viewing Radius
+  double viewAThick;            ///< Wall thickness
+  double viewALength;           ///< viewing Length [centre to flange end]
+  double viewAFlangeRadius;     ///< Flange outer Radius
+  double viewAFlangeLength;     ///< Flange length
+  double viewAPlateThick;       ///< View Flange Plate thickness
+
+  // side view port [back]
+  double viewBYStep;            ///< Step from origin
+  double viewBRadius;           ///< Viewing Radius
+  double viewBThick;            ///< Wall thickness
+  double viewBLength;           ///< viewing Length [centre to flange end]
+  double viewBFlangeRadius;     ///< Flange outer Radius
+  double viewBFlangeLength;     ///< Flange length
+  double viewBPlateThick;       ///< View Flange Plate thickness
 
   // front/back port
   double portRadius;         ///< port Radius

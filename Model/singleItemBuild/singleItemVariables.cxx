@@ -80,6 +80,7 @@
 #include "MultiPipeGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
@@ -287,6 +288,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
+  Control.addVariable("YAGYAngle",-90.0);
 
   setVariable::BPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
@@ -306,6 +308,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");
+
+  setVariable::YagUnitBigGenerator YagUnitBigGen;
+  YagUnitBigGen.generateYagUnit(Control,"YUBig");
+  Control.addVariable("YUBigYAngle",90.0);
 
   // traveling wave cavity
   PGen.setNoWindow();
