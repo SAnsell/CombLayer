@@ -58,6 +58,7 @@
 #include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "YagUnitBigGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "TriPipeGenerator.h"
 #include "BeamDividerGenerator.h"
@@ -2013,7 +2014,7 @@ Segment35(FuncDataBase& Control,
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacSexuGenerator LSGen;
-  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagUnitBigGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
 
@@ -2025,32 +2026,40 @@ Segment35(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+  Control.addVariable(lKey+"YagScreenZStep",-3.3);
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,67.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,37.5); // measured
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
+  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
 
   BPMGen.setCF<setVariable::CF40_22>();
-  BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3); // ????
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,81.5); // measured: 81.6, but adjusted to keep total length
-  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
-  LSGen.generateSexu(Control,lKey+"SexuA",39.0);
-  LQGen.generateQuad(Control,lKey+"QuadB",60.9);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,75.0);
+  LQGen.generateQuad(Control,lKey+"QuadB",19.0);
+  CMGen.generateMag(Control,lKey+"CMagH",45.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",65.0,0);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
-  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+  setIonPump2Port(Control, lKey+"MirrorChamber");
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+  Control.addVariable(lKey+"MirrorChamberPort0Length", 7.0-outerR);
+  Control.addVariable(lKey+"MirrorChamberPort1Length", 7.0-outerR);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,68.7);
-  CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,12.5);
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5); // absent in the .step file
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5);
 
   return;
 }

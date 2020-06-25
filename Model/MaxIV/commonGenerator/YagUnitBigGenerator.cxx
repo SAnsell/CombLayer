@@ -53,7 +53,7 @@ namespace setVariable
 YagUnitBigGenerator::YagUnitBigGenerator() :
   radius(6.8),height(13.2),
   depth(6.8),wallThick(CF63::wallThick),
-  flangeRadius(CF150::flangeRadius),
+  flangeRadius(CF150::flangeRadius-0.25), // -0.25 otherwise 2*R>front+back length => cuts neighbours
   flangeLength(CF100::flangeLength),
   plateThick(CF63::flangeLength),
   viewAZStep(3.2),viewARadius(3.3),
@@ -69,7 +69,7 @@ YagUnitBigGenerator::YagUnitBigGenerator() :
   portRadius(CF40::innerRadius),portThick(CF40::wallThick),
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
-  frontLength(10.2),backLength(10.2),
+  frontLength(10.0),backLength(10.0),
   outerRadius(CF63::flangeRadius*1.2),
   voidMat("Void"),mainMat("Stainless304L")
   /*!

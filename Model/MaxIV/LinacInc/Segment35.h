@@ -24,7 +24,7 @@
 
 namespace tdcSystem
 {
-
+  class YagUnitBig;
   /*!
     \class Segment35
     \version 1.0
@@ -38,11 +38,17 @@ class Segment35 :
 {
  private:
 
+  /// yag station [big type]
+  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;
+
+  /// yag screen
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+
   // first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
-  /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;
+  /// Quadrupole magnet
+  std::shared_ptr<tdcSystem::LQuadF> quadA;
 
   /// BPM
   std::shared_ptr<tdcSystem::BPM> bpm;
@@ -50,26 +56,20 @@ class Segment35 :
   // main magnetic pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
-  /// Quad begining QSQ
-  std::shared_ptr<tdcSystem::LQuadF> QuadA;
-
-  /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA;
-
   /// Quad endng QSQ
-  std::shared_ptr<tdcSystem::LQuadF> QuadB;
+  std::shared_ptr<tdcSystem::LQuadF> quadB;
 
-  /// yag station [verical]
-  std::shared_ptr<tdcSystem::YagUnit> yagUnit;
+  /// corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;
 
-  /// yag screen
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+  /// corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;
+
+  /// mirror chamber
+  std::shared_ptr<constructSystem::BlankTube> mirrorChamber;
 
   /// exit pipe + corrector mag
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-
-  /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVerC;
 
   /// bellow
   std::shared_ptr<constructSystem::Bellows> bellow;

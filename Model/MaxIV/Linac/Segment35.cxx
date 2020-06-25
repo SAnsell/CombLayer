@@ -68,12 +68,14 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "LQuadF.h"
-#include "LSexupole.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
-#include "YagUnit.h"
+#include "YagUnitBig.h"
 #include "YagScreen.h"
 #include "Bellows.h"
+#include "VirtualTube.h"
+#include "BlankTube.h"
+#include "portItem.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -88,17 +90,17 @@ namespace tdcSystem
 Segment35::Segment35(const std::string& Key) :
   TDCsegment(Key,2),
 
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
-  bpm(new tdcSystem::BPM(keyName+"BPMA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
-  QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
+  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
+  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
+  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  mirrorChamber(new constructSystem::BlankTube(keyName+"MirrorChamber")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagVerC(new tdcSystem::CorrectorMag(keyName+"CMagVerC")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
@@ -108,20 +110,20 @@ Segment35::Segment35(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
-  OR.addObject(cMagHorA);
-  OR.addObject(bpm);
-  OR.addObject(pipeB);
-  OR.addObject(QuadA);
-  OR.addObject(SexuA);
-  OR.addObject(QuadB);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
+  OR.addObject(pipeA);
+  OR.addObject(quadA);
+  OR.addObject(bpm);
+  OR.addObject(pipeB);
+  OR.addObject(quadB);
+  OR.addObject(cMagH);
+  OR.addObject(cMagV);
+  OR.addObject(mirrorChamber);
   OR.addObject(pipeC);
-  OR.addObject(cMagVerC);
   OR.addObject(bellow);
 
-  setFirstItem(pipeA);
+  setFirstItem(yagUnit);
 }
 
 Segment35::~Segment35()
@@ -147,34 +149,36 @@ Segment35::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    pipeA->copyCutSurf("front",*this,"front");
-  pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
+    yagUnit->copyCutSurf("front",*this,"front");
+  yagUnit->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*yagUnit,"back");
+  yagUnit->insertInCell(System,outerCell);
+
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,4);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Plate"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
+  pipeA->createAll(System,*yagUnit, "back");
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
   pipeTerminate(System,*buildZone,pipeB);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+  const constructSystem::portItem& ionPumpABackPort =
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeB,"back",*mirrorChamber);
 
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,4);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-
-  pipeC->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVerC);
-  pipeTerminate(System,*buildZone,pipeC);
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,ionPumpABackPort,"OuterPlate",*pipeC);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeC,"back",*bellow);
@@ -189,7 +193,7 @@ Segment35::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(0,*yagUnit,1);
   setLinkSignedCopy(1,*bellow,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
