@@ -2330,6 +2330,14 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
 
+  // segments 25-29
+  Control.addVariable("spfMidXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("spfMidYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("spfMidOuterLeft",50.0);
+  Control.addVariable("spfMidOuterRight",50.0);
+  Control.addVariable("spfMidOuterTop",100.0);
+
+  
   // start/endPt of Segment30
   Control.addVariable("spfAngleXStep",-609.286+linacVar::zeroX);
   Control.addVariable("spfAngleYStep",3969.122+linacVar::zeroY);
