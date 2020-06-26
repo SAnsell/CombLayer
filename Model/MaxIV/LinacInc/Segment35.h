@@ -50,8 +50,8 @@ class Segment35 :
   /// Quadrupole magnet
   std::shared_ptr<tdcSystem::LQuadF> quadA;
 
-  /// BPM
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  /// Button BPM
+  std::shared_ptr<constructSystem::VacuumPipe> bpm;
 
   // main magnetic pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;

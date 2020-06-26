@@ -68,7 +68,6 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "LQuadF.h"
-#include "BPM.h"
 #include "CorrectorMag.h"
 #include "YagUnitBig.h"
 #include "YagScreen.h"
@@ -94,7 +93,7 @@ Segment35::Segment35(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new constructSystem::VacuumPipe(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),

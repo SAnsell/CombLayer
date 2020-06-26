@@ -2010,10 +2010,9 @@ Segment35(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment35");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BPMGenerator BPMGen;
+  //  setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::LinacSexuGenerator LSGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
@@ -2040,11 +2039,12 @@ Segment35(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadA",17.1);
 
-  BPMGen.setCF<setVariable::CF40_22>();
-  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3); // ????
+  // BPMGen.setCF<setVariable::CF40_22>();
+  // BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  // Control.addVariable(lKey+"BPMRadius", 1.3); // ????
+  PGen.generatePipe(Control,lKey+"BPM",0.0,5.0); // measured
 
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,75.0);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,75.2); // measured
   LQGen.generateQuad(Control,lKey+"QuadB",19.0);
   CMGen.generateMag(Control,lKey+"CMagH",45.0,0);
   CMGen.generateMag(Control,lKey+"CMagV",65.0,0);
@@ -2055,7 +2055,7 @@ Segment35(FuncDataBase& Control,
   Control.addVariable(lKey+"MirrorChamberPort0Length", 7.0-outerR);
   Control.addVariable(lKey+"MirrorChamberPort1Length", 7.0-outerR);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,12.5);
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,12.6); // measured
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
