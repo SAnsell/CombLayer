@@ -112,7 +112,6 @@
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "GuideItem.h"
-#include "DiskPreMod.h"
 #include "DiskLayerMod.h"
 #include "PBIP.h"
 #include "Bunker.h"
@@ -1097,11 +1096,10 @@ makeESS::build(Simulation& System,
 			   Reflector->getRadius());
       LowPreMod->createAll(System,World::masterOrigin(),0);
     }
+
   TopPreMod->setLayout(false,Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
-
   TopPreMod->createAll(System,World::masterOrigin(),0);
-
 
   if (lowModType == "Butterfly")
     buildLowButterfly(System);
@@ -1129,6 +1127,7 @@ makeESS::build(Simulation& System,
   // Cap moderator DOES not span whole unit
   TopCapMod->setLayout(false,0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6);
+
 
   if (lowModType != "None")
     {

@@ -459,7 +459,7 @@ DiskLayerMod::createAll(Simulation& System,
   ELog::RegMethod RegA("DiskLayerMod","createAll");
 
   populate(System.getDataBase());
-  FixedComp::createUnitVector(FC,sideIndex,0);
+  FixedRotate::createUnitVector(FC,sideIndex,0);
 
   createSurfaces();
   createObjects(System);
