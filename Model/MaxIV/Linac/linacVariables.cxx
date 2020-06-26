@@ -2032,30 +2032,39 @@ Segment35(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
+  const double pipeALength(37.5); // measured
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,37.5); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
 
-  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
+  LQGen.generateQuad(Control,lKey+"QuadA",pipeALength/2.0); // approx
 
   // BPMGen.setCF<setVariable::CF40_22>();
   // BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   // Control.addVariable(lKey+"BPMRadius", 1.3); // ????
   PGen.generatePipe(Control,lKey+"BPM",0.0,5.0); // measured
+  Control.addVariable(lKey+"BPMFeThick", 1.9); // measured
+  Control.addVariable(lKey+"BPMFeMat", "Stainless304L"); // PDF
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,75.2); // measured
-  LQGen.generateQuad(Control,lKey+"QuadB",19.0);
-  CMGen.generateMag(Control,lKey+"CMagH",45.0,0);
+  LQGen.generateQuad(Control,lKey+"QuadB",19.0); // approx
+  CMGen.generateMag(Control,lKey+"CMagH",45.0,1);
   CMGen.generateMag(Control,lKey+"CMagV",65.0,0);
 
   setIonPump2Port(Control, lKey+"MirrorChamber");
+  Control.addVariable(lKey+"MirrorChamberYAngle", 180.0);
+  Control.addVariable(lKey+"MirrorChamberLength", 16.0);
   const double outerR =
     setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(lKey+"MirrorChamberPort0Length", 7.0-outerR);
-  Control.addVariable(lKey+"MirrorChamberPort1Length", 7.0-outerR);
+  Control.addVariable(lKey+"MirrorChamberPort0Length", 5.9-outerR);
+  Control.addVariable(lKey+"MirrorChamberPort1Length", 8.1-outerR);
+  const Geometry::Vec3D pPos(0.0,3.0+2.6,0.0);
+  Control.addVariable(lKey+"MirrorChamberPort0Centre", pPos);
+  Control.addVariable(lKey+"MirrorChamberPort1Centre", pPos);
 
   PGen.generatePipe(Control,lKey+"PipeC",0.0,12.6); // measured
+  Control.addVariable(lKey+"PipeCFeMat", "Stainless304L"); // PDF
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
