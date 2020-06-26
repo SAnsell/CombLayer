@@ -322,12 +322,11 @@ PipeGenerator::setBFlangeCF()
 
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
-                            const double yStep,const double length) const
+                            const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset
     \param length :: length of pipe
   */
 {
@@ -349,7 +348,6 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
 
     // VACUUM PIPES:
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)
     Control.addVariable(keyName+"Radius",pipeRadius);
   else

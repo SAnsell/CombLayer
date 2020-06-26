@@ -96,6 +96,7 @@
 #include "Segment24.h"
 #include "Segment25.h"
 #include "Segment27.h"
+#include "Segment28.h"
 #include "Segment30.h"
 #include "Segment31.h"
 #include "Segment32.h"
@@ -334,6 +335,7 @@ TDC::createAll(Simulation& System,
       {"Segment24",{"tdc","Segment23"}},
       {"Segment25",{"spfMid","segment24"}},
       {"Segment27",{"spfLong","segment25"}},
+      {"Segment28",{"spfLong","segment27"}},
       {"Segment30",{"spfAngle","Segment29"}},
       {"Segment31",{"spfAngle","Segment30"}},
       {"Segment32",{"spfAngle","Segment31"}},
@@ -384,7 +386,7 @@ TDC::createAll(Simulation& System,
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());
-	  if (BL!="Segment27")
+	  if (BL!="Segment27" || BL!="Segment28")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
