@@ -80,6 +80,7 @@
 #include "MultiPipeGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
+#include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
@@ -237,7 +238,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::FlatPipeGenerator FPGen;
   FPGen.generateFlat(Control,"FlatPipe",80.0);
   Control.addVariable("FlatPipeXYAngle",0);
-  
+
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
@@ -256,10 +257,14 @@ SingleItemVariables(FuncDataBase& Control)
 
   //  corrector mag
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,"CM",0.0,0);
+  CMGen.generateMag(Control,"CM",0.0,0); // last argument is vertical/horizontal switch
   setVariable::PipeGenerator PGen;
+  PGen.setNoWindow();
   PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,"VC",-40.0,80.0);
+  PGen.setMat("Stainless316L");
+  PGen.generatePipe(Control,"CorrectorMagPipe",-20.0,40.0);
+
+  LQGen.generateQuad(Control,"QF",20.0);
 
   PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"QHVC",-40.0,80.0);
@@ -278,11 +283,12 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
 
-  PGen.setCF<setVariable::CF25>();
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,"VC",-40.0,80.0);
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
+  Control.addVariable("YAGYAngle",-90.0);
 
   setVariable::BPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
@@ -292,7 +298,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);
-  BDGen.generateDivider(Control,"BeamDiv",0.0);  
+  BDGen.generateDivider(Control,"BeamDiv",0.0);
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);
@@ -302,6 +308,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");
+  Control.addVariable("YUYAngle",90.0);
+
+  setVariable::YagUnitBigGenerator YagUnitBigGen;
+  YagUnitBigGen.generateYagUnit(Control,"YUBig");
+  Control.addVariable("YUBigYAngle",90.0);
 
   // traveling wave cavity
   PGen.setNoWindow();
@@ -330,18 +341,41 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PortItemGenerator PItemGen;
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,"PipeTube",0.0,20.0);
+  // Control.addVariable("PipeTubeFlangeACapThick",setVariable::CF63::flangeLength);
+  // Control.addVariable("PipeTubeFlangeBCapThick",setVariable::CF63::flangeLength);
+  // Control.addVariable("PipeTubeFlangeCapMat","Lead");
   //  Control.addVariable("PipeTubeYAngle", 90.0);
   Control.addVariable("PipeTubeNPorts",2);
   PItemGen.setCF<setVariable::CF40>(6.0);
   PItemGen.generatePort(Control,"PipeTubePort0",
 			Geometry::Vec3D(0.0, 3.0, 0.0),
 			Geometry::Vec3D(0.5, -0.5, 0.866));
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.setNoPlate();
   PItemGen.setCF<setVariable::CF40>(7.0);
   PItemGen.generatePort(Control,"PipeTubePort1",
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
+
+  // BlankTube
+  SimpleTubeGen.generateBlank(Control,"BlankTube",0.0,20.0);
+  // Control.addVariable("BlankTubeFlangeCapThick",setVariable::CF63::flangeLength);
+  // Control.addVariable("BlankTubeFlangeCapMat","Lead");
+  //  Control.addVariable("BlankTubeYAngle", 30.0);
+  Control.addVariable("BlankTubeNPorts",2);
+  PItemGen.setCF<setVariable::CF40>(6.0);
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Aluminium");
+  PItemGen.generatePort(Control,"BlankTubePort0",
+			Geometry::Vec3D(0.0, 3.0, 0.0),
+			Geometry::Vec3D(0.5, -0.5, 0.866));
+
+  PItemGen.setNoPlate();
+  //  PItemGen.setCF<setVariable::CF40>(7.0);
+  PItemGen.setLength(7.0);
+  PItemGen.generatePort(Control,"BlankTubePort1",
+			Geometry::Vec3D(0.0, -3.0, 0.0),
+			Geometry::Vec3D(-1.0, 0.0, 0.0));
+  //  Control.addVariable("BlankTubePort1WallMat","Stainless316L");
+
 
   return;
 }

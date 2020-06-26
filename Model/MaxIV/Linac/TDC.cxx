@@ -98,7 +98,9 @@
 #include "Segment27.h"
 #include "Segment30.h"
 #include "Segment31.h"
-
+#include "Segment32.h"
+#include "Segment33.h"
+#include "Segment35.h"
 
 #include "TDC.h"
 
@@ -137,8 +139,12 @@ TDC::TDC(const std::string& KN) :
     { "Segment24",std::make_shared<Segment24>("TDC24") },
     { "Segment25",std::make_shared<Segment25>("TDC25") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
-    { "Segment30",std::make_shared<Segment30>("TDC30") },
-    { "Segment31",std::make_shared<Segment31>("TDC31") }
+    { "Segment30",std::make_shared<Segment30>("SPF30") },
+    { "Segment31",std::make_shared<Segment31>("SPF31") },
+    { "Segment32",std::make_shared<Segment32>("SPF32") },
+    { "Segment33",std::make_shared<Segment33>("SPF33") },
+    { "Segment34",std::make_shared<Segment32>("SPF34") },
+    { "Segment35",std::make_shared<Segment35>("SPF35") }
 
   } )
   /*!
@@ -232,8 +238,9 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spf"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfLong"  ,{"TDCLong","#Back","",""}}
+      {"spfLong"  ,{"TDCLong","#Back","",""}},
+      {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -293,6 +300,8 @@ TDC::createAll(Simulation& System,
       "Segment23","Segment24","Segment25",
       "Segment27","Segment28",
       "Segment29","Segment30","Segment31"
+      "Segment32","Segment33","Segment34",
+      "Segment35"
     });
 
   typedef std::tuple<std::string,std::string> LinkTYPE;
@@ -324,9 +333,12 @@ TDC::createAll(Simulation& System,
       {"Segment24",{"tdc","Segment23"}},
       {"Segment25",{"spf","segment24"}},
       {"Segment27",{"spfLong","segment25"}},
-      {"Segment30",{"tdc","Segment29"}},
-      {"Segment31",{"tdc","Segment30"}}
-
+      {"Segment30",{"spfAngle","Segment29"}},
+      {"Segment31",{"spfAngle","Segment30"}},
+      {"Segment32",{"spfAngle","Segment31"}},
+      {"Segment33",{"spfAngle","Segment32"}},
+      {"Segment34",{"spf","Segment33"}},
+      {"Segment35",{"spf","Segment34"}}
     });
   const int voidCell(74123);
 

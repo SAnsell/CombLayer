@@ -101,6 +101,8 @@ Segment19::Segment19(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(gateB);
   OR.addObject(bellowB);
+
+  setFirstItem(bellowA);
 }
 
 Segment19::~Segment19()

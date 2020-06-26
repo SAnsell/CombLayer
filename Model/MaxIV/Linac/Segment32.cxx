@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/Segment20.cxx
+ * File: Linac/Segment32.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -60,23 +60,29 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
+#include "LObjectSupport.h"
 #include "VacuumPipe.h"
-
-#include "TWCavity.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+#include "DipoleDIBMag.h"
 
 #include "TDCsegment.h"
-#include "Segment20.h"
+#include "Segment32.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-Segment20::Segment20(const std::string& Key) :
+Segment32::Segment32(const std::string& Key) :
   TDCsegment(Key,2),
+
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cavity(new tdcSystem::TWCavity(keyName+"Cavity")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  dmA(new tdcSystem::DipoleDIBMag(keyName+"DMA")),
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  dmB(new tdcSystem::DipoleDIBMag(keyName+"DMB")),
+  bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,45 +92,48 @@ Segment20::Segment20(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
-  OR.addObject(cavity);
+  OR.addObject(dmA);
   OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(dmB);
+  OR.addObject(bellow);
 
   setFirstItem(pipeA);
 }
 
-Segment20::~Segment20()
+Segment32::~Segment32()
   /*!
     Destructor
    */
 {}
 
+
+
 void
-Segment20::buildObjects(Simulation& System)
+Segment32::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment20","buildObjects");
+  ELog::RegMethod RegA("Segment32","buildObjects");
 
-  int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
-  if (isActive("front"))
-    pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  cavity->createAll(System,*pipeA,"back");
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*cavity,2);
-  cavity->insertInCell(System,outerCell);
+  pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dmA);
+  pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*cavity,"back",*pipeB);
+    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+
+  pipeC->createAll(System,*pipeB,"back");
+  pipeMagUnit(System,*buildZone,pipeC,"Origin","outerPipe",dmB);
+  pipeTerminate(System,*buildZone,pipeC);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeC,"back",*bellow);
 
   buildZone->removeLastMaster(System);
 
@@ -132,24 +141,24 @@ Segment20::buildObjects(Simulation& System)
 }
 
 void
-Segment20::createLinks()
+Segment32::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("Segment20","createLinks");
+  ELog::RegMethod RegA("Segment32","createLinks");
 
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(1,*bellow,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
   return;
 }
 
 void
-Segment20::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+Segment32::createAll(Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -158,7 +167,7 @@ Segment20::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment20","build");
+  ELog::RegMethod RControl("Segment32","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

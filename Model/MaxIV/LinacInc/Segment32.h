@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment30.h
+ * File:   LinacInc/Segment32.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,40 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment30_h
-#define tdcSystem_Segment30_h
+#ifndef tdcSystem_Segment32_h
+#define tdcSystem_Segment32_h
 
 namespace tdcSystem
 {
+  class DipoleDIBMag;
   /*!
-    \class Segment30
+    \class Segment32
     \version 1.0
     \author K. Batkov
     \date June 2020
-    \brief TDC segment 30
+    \brief TDC segment 32
   */
 
-class Segment30 :
+class Segment32 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;  ///< #4 Ion pump 75l cf63 1 port
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #7 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       ///< #8 Corrector magnet type D - vertical
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dmA
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dmA;        ///< First dipole magnet
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dmB
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dmB;        ///< Second dipole magnet
+  std::shared_ptr<constructSystem::Bellows> bellow;    ///< Bellow
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Segment30(const std::string&);
-  Segment30(const Segment30&);
-  Segment30& operator=(const Segment30&);
-  ~Segment30();
+  Segment32(const std::string&);
+  Segment32(const Segment32&);
+  Segment32& operator=(const Segment32&);
+  ~Segment32();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

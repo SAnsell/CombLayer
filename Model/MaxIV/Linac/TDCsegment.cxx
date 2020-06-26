@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/TDCsegment.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -35,23 +35,36 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Object.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "InnerZone.h"
+
+#include "VirtualTube.h"
+#include "BlankTube.h"
+#include "portItem.h"
+
 
 #include "TDCsegment.h"
 
@@ -59,7 +72,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::FixedRotate(Key,NL),
   attachSystem::ContainedComp(),
@@ -73,7 +86,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
     \param NL :: number of links
   */
 {}
-  
+
 TDCsegment::~TDCsegment()
   /*!
     Destructor
@@ -99,12 +112,37 @@ TDCsegment::setFrontSurf(const HeadRule& HR)
     \param HR :: Front head rule
   */
 {
-  
+
   if (firstItemPtr)
     firstItemPtr->setCutSurf("front",HR);
   return;
 }
 
+const constructSystem::portItem&
+TDCsegment::buildIonPump2Port(Simulation& System,
+			      attachSystem::InnerZone& buildZone,
+			      MonteCarlo::Object *masterCell,
+			      const attachSystem::FixedComp& linkUnit,
+			      const std::string& sideName,
+			      constructSystem::BlankTube& ionPump) const
+/*!
+  Build 2 port ion pump
+ */
+{
+  ionPump.addAllInsertCell(masterCell->getName());
+  ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
+  ionPump.createAll(System,linkUnit,sideName);
+
+  const constructSystem::portItem& port=ionPump.getPort(1);
+  const int outerCell=
+    buildZone.createOuterVoidUnit(System,
+				  masterCell,
+				  port,
+				  port.getSideIndex("OuterPlate"));
+  ionPump.insertAllInCell(System,outerCell);
+
+  return port;
+}
 
 bool
 TDCsegment::totalPathCheck(const FuncDataBase& Control,
@@ -112,7 +150,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   /*!
     Returns true if the last unit is in error
     \param Control :: DataBase for start/end variables
-    \param errDist :: Error distance [default 0.1 (1mm)] 
+    \param errDist :: Error distance [default 0.1 (1mm)]
     \return 1 if error by more than errDist
   */
 {
@@ -181,7 +219,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
     }
   return retFlag;
 }
-    
+
 void
 TDCsegment::setLastSurf(const HeadRule& HR)
   /*!
@@ -196,4 +234,3 @@ TDCsegment::setLastSurf(const HeadRule& HR)
 
 
 }   // NAMESPACE tdcSystem
-

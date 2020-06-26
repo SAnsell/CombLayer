@@ -29,7 +29,7 @@ namespace tdcSystem
     \version 1.0
     \author K. Batkov
     \date June 2020
-    \brief TDC segment 43
+    \brief TDC segment 24
   */
 
 class Segment24 :
