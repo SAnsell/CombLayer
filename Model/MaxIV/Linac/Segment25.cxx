@@ -237,9 +237,6 @@ Segment25::buildObjects(Simulation& System)
 
   triPipeA->setFront(*bellowA,2);
   triPipeA->createAll(System,*bellowA,"back");
-  ELog::EM<<"TriPipe X:"<<triPipeA->getX()<<ELog::endDiag;
-  ELog::EM<<"TriPipe Y:"<<triPipeA->getY()<<ELog::endDiag;
-  ELog::EM<<"TriPipe Z:"<<triPipeA->getZ()<<ELog::endDiag;
   
   // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,triPipeA,
@@ -248,10 +245,6 @@ Segment25::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
-
-  ELog::EM<<"Pipe X:"<<pipeB->getX()<<ELog::endDiag;
-  ELog::EM<<"Pipe Y:"<<pipeB->getY()<<ELog::endDiag;
-  ELog::EM<<"Pipe Z:"<<pipeB->getZ()<<ELog::endDiag;
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);

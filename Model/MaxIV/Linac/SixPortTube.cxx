@@ -137,7 +137,6 @@ SixPortTube::populate(const FuncDataBase& Control)
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
 
-  ELog::EM<<"Wall thick "<<wallThick<<" "<<plateThick<<ELog::endDiag;
   return;
 }
 

@@ -1128,7 +1128,6 @@ makeESS::build(Simulation& System,
   TopCapMod->setLayout(false,0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6);
 
-
   if (lowModType != "None")
     {
       LowCapMod->setLayout(false,0.0,Reflector->getRadius());
