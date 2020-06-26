@@ -1337,9 +1337,11 @@ Segment19(FuncDataBase& Control,
   RGateGen.setLength(3.5-2.0*setVariable::CF40_22::flangeLength);
   RGateGen.setCubeCF<setVariable::CF40_22>();
   RGateGen.generateValve(Control,lKey+"GateA",0.0,0);
-  //Control.addVariable(lKey+"GateAPortALen",2.0);
-  Control.addVariable(lKey+"GateABladeThick",0.5); // guess
-  Control.addVariable(lKey+"GateAWallMat","Stainless304L"); // email from Karl Åhnberg, 2 Jun 2020
+  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
+  // (email from Marek 2020-06-17)
+  Control.addVariable(lKey+"GateABladeMat","Stainless304");
+  Control.addVariable(lKey+"GateABladeThick",0.5); // guess (based on the gap measured)
+  Control.addVariable(lKey+"GateAWallMat","Stainless304"); // email from Karl Åhnberg, 2 Jun 2020
 
   setIonPump1Port(Control,lKey+"IonPump");
 
@@ -1348,7 +1350,9 @@ Segment19(FuncDataBase& Control,
   Control.addVariable(lKey+"GateBPortThick",0.1);
   Control.addVariable(lKey+"GateBYAngle",180.0);
   Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
+  // (email from Marek 2020-06-17)
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L");
 
   BellowGen.generateBellow(Control,lKey+"BellowB",0.0,7.5);
 
