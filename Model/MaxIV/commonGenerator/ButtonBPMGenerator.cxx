@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/BPMGenerator.cxx
+ * File:   commonBeam/ButtonBPMGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,44 +35,35 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "BPMGenerator.h"
+#include "ButtonBPMGenerator.h"
 
 namespace setVariable
 {
 
-BPMGenerator::BPMGenerator() :
-  radius(1.4),length(22.0),
-  outerThick(0.2),innerRadius(1.03),innerThick(0.18),
-  innerAngle(30.0),innerAngleOffset(45.0),
-  flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
-  flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
-  striplineRadius(3.7),striplineThick(2.4),
-  striplineYStep(3.1),striplineEnd(4.0),
-  voidMat("Void"),striplineMat("Stainless304L"),
-  flangeMat("Stainless304L"),outerMat("Stainless304L")
+ButtonBPMGenerator::ButtonBPMGenerator() :
+  radius(0.9),length(5.0),outerRadius(2.5),
+  innerRadius(0.95),
+  flangeInnerRadius(2.0),
+  flangeARadius(3.5),flangeBLength(1.3),
+  flangeBRadius(3.5),flangeALength(1.3),
+  voidMat("Void"),wallMat("Stainless304L"),
+  flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
 
-BPMGenerator::~BPMGenerator()
+ButtonBPMGenerator::~ButtonBPMGenerator()
  /*!
    Destructor
  */
@@ -80,19 +71,20 @@ BPMGenerator::~BPMGenerator()
 
 template<typename CF>
 void
-BPMGenerator::setCF()
+ButtonBPMGenerator::setCF()
   /*!
     Setter for flange A
    */
 {
   setAFlangeCF<CF>();
   setBFlangeCF<CF>();
+  innerRadius = CF::innerRadius;
   return;
 }
 
 template<typename CF>
 void
-BPMGenerator::setAFlangeCF()
+ButtonBPMGenerator::setAFlangeCF()
   /*!
     Setter for flange A
    */
@@ -104,7 +96,7 @@ BPMGenerator::setAFlangeCF()
 
 template<typename CF>
 void
-BPMGenerator::setBFlangeCF()
+ButtonBPMGenerator::setBFlangeCF()
   /*!
     Setter for flange B
    */
@@ -114,62 +106,46 @@ BPMGenerator::setBFlangeCF()
   return;
 }
 
-
 void
-BPMGenerator::generateBPM(FuncDataBase& Control,
-			  const std::string& keyName,
-			  const double yStep)  const
+ButtonBPMGenerator::generate(FuncDataBase& Control,
+			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
-    \param keyName :: head name for variable
-    \param yStep :: Step along beam centre
+    \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("BPMGenerator","generateBPM");
-
-  Control.addVariable(keyName+"YStep",yStep);
+  ELog::RegMethod RegA("ButtonBPMGenerator","generate");
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"OuterThick",outerThick);
-
   Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"InnerThick",innerThick);
-  Control.addVariable(keyName+"InnerAngle",innerAngle);
-  Control.addVariable(keyName+"InnerAngleOffset",innerAngleOffset);
-
+  Control.addVariable(keyName+"OuterRadius",outerRadius);
+  Control.addVariable(keyName+"FlangeInnerRadius",flangeInnerRadius);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
-  Control.addVariable(keyName+"FlangeALength",flangeALength);
-  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
-
-  Control.addVariable(keyName+"StriplineRadius",striplineRadius);
-  Control.addVariable(keyName+"StriplineThick",striplineThick);
-  Control.addVariable(keyName+"StriplineYStep",striplineYStep);
-  Control.addVariable(keyName+"StriplineEnd",striplineEnd);
-
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"StriplineMat",striplineMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-  Control.addVariable(keyName+"OuterMat",outerMat);
-
 
   return;
 
 }
 
+
 ///\cond TEMPLATE
 
-template void BPMGenerator::setCF<CF40_22>();
-template void BPMGenerator::setCF<CF40>();
+template void ButtonBPMGenerator::setCF<CF40_22>();
+template void ButtonBPMGenerator::setCF<CF40>();
 
-template void BPMGenerator::setAFlangeCF<CF40_22>();
-template void BPMGenerator::setAFlangeCF<CF40>();
+template void ButtonBPMGenerator::setAFlangeCF<CF40_22>();
+template void ButtonBPMGenerator::setAFlangeCF<CF40>();
 
-template void BPMGenerator::setBFlangeCF<CF40_22>();
-template void BPMGenerator::setBFlangeCF<CF40>();
+template void ButtonBPMGenerator::setBFlangeCF<CF40_22>();
+template void ButtonBPMGenerator::setBFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
 
-}  // NAMESPACE setVariable
+}  // namespace setVariable

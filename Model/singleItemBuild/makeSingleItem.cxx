@@ -102,6 +102,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "BlankTube.h"
+#include "ButtonBPM.h"
 
 
 #include "makeSingleItem.h"
@@ -143,7 +144,7 @@ makeSingleItem::build(Simulation& System,
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube",
+      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube","ButtonBPM",
       "Help","help"
     });
 
@@ -658,7 +659,21 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+    if (item == "ButtonBPM" )
+    {
+      std::shared_ptr<tdcSystem::ButtonBPM>
+	buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
 
+      OR.addObject(buttonBPM);
+
+      buttonBPM->addInsertCell(voidCell);
+      buttonBPM->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+
+  if (item=="Help" || item=="help")
 
   if (item=="Help" || item=="help")
     {
