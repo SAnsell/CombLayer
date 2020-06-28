@@ -44,7 +44,6 @@ class ButtonBPM :
 {
  private:
 
-  double radius;                ///< Void Radius
   double length;                ///< Total length including void
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Outer radius

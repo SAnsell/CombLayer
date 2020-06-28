@@ -39,10 +39,10 @@ class ButtonBPMGenerator
 {
  private:
 
-  double radius;                ///< Void adius
   double length;                ///< Total length including void
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Outer radius
+
   double flangeInnerRadius;     ///< Flange inner radius
   double flangeARadius;         ///< Flange A radius
   double flangeBLength;         ///< Flange B length

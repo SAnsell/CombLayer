@@ -83,8 +83,9 @@ ButtonBPM::ButtonBPM(const ButtonBPM& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  radius(A.radius),length(A.length),outerRadius(A.outerRadius),
+  length(A.length),
   innerRadius(A.innerRadius),
+  outerRadius(A.outerRadius),
   flangeInnerRadius(A.flangeInnerRadius),
   flangeARadius(A.flangeARadius),
   flangeBLength(A.flangeBLength),
@@ -115,7 +116,6 @@ ButtonBPM::operator=(const ButtonBPM& A)
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       innerRadius=A.innerRadius;
-      radius=A.radius;
       outerRadius=A.outerRadius;
       flangeInnerRadius=A.flangeInnerRadius;
       flangeARadius=A.flangeARadius;
@@ -156,7 +156,6 @@ ButtonBPM::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -211,7 +210,7 @@ ButtonBPM::createSurfaces()
     }
 
   // main pipe and thicness
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,outerRadius);
 
@@ -226,6 +225,10 @@ ButtonBPM::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+202,
                            Origin+Y*(length/2.0-flangeBLength),Y);
 
+  ModelSupport::buildPlane(SMap,buildIndex+111,
+                           Origin-Y*(length/2.0-flangeALength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+212,
+                           Origin+Y*(length/2.0-flangeBLength/2.0),Y);
   return;
 }
 
@@ -245,19 +248,31 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+frontStr+backStr;
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 ")+frontStr+backStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 101 -202 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -101 ");
+  makeCell("WallA",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 202 -212 ");
+  makeCell("WallB",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -107 -101 ")+frontStr;
-  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 111 -101 ");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 -111 ")+frontStr;
+  makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -207 202 ")+backStr;
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 202 -212 ");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 212 ")+backStr;
+  makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 ");
   makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,Out);
 
-  if (flangeARadius>flangeBRadius+Geometry::zeroTol)
+  if (flangeBRadius+Geometry::zeroTol<flangeARadius)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 207 -307 202 ") + backStr;
       makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -283,19 +298,8 @@ ButtonBPM::createLinks()
 {
   ELog::RegMethod RegA("ButtonBPM","createLinks");
 
-  FrontBackCut::createLinks(*this,Origin,Y);
-
-  FixedComp::setConnect(2,Origin-X*(radius/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-  FixedComp::setConnect(3,Origin+X*(radius/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-  FixedComp::setConnect(4,Origin-Z*(outerRadius/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(outerRadius/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back", *this,1,Origin,Y);
 
   return;
 }

@@ -51,8 +51,8 @@ namespace setVariable
 {
 
 ButtonBPMGenerator::ButtonBPMGenerator() :
-  radius(0.9),length(5.0),outerRadius(2.5),
-  innerRadius(0.95),
+  length(5.0),innerRadius(0.95),
+  outerRadius(2.5),
   flangeInnerRadius(2.0),
   flangeARadius(3.5),flangeBLength(1.3),
   flangeBRadius(3.5),flangeALength(1.3),
@@ -117,7 +117,6 @@ ButtonBPMGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ButtonBPMGenerator","generate");
 
-  Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"OuterRadius",outerRadius);

@@ -379,7 +379,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Button pickup BPM
   setVariable::ButtonBPMGenerator ButtonBPMGen;
-  ButtonBPMGen.setCF<setVariable::CF40>();
+  ButtonBPMGen.setCF<setVariable::CF40_22>();
   ButtonBPMGen.generate(Control,"ButtonBPM");
 
 
