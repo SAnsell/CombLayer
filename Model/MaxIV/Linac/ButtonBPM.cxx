@@ -59,6 +59,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "Quaternion.h"
 
 #include "ButtonBPM.h"
 
@@ -87,10 +88,24 @@ ButtonBPM::ButtonBPM(const ButtonBPM& A) :
   innerRadius(A.innerRadius),
   outerRadius(A.outerRadius),
   flangeInnerRadius(A.flangeInnerRadius),
+  flangeALength(A.flangeALength),
   flangeARadius(A.flangeARadius),
   flangeBLength(A.flangeBLength),
   flangeBRadius(A.flangeBRadius),
-  flangeALength(A.flangeALength),
+  flangeGap(A.flangeGap),
+  buttonYAngle(A.buttonYAngle),
+  buttonFlangeRadius(A.buttonFlangeRadius),
+  buttonFlangeLength(A.buttonFlangeLength),
+  buttonCaseLength(A.buttonCaseLength),
+  buttonCaseRadius(A.buttonCaseRadius),
+  buttonCaseMat(A.buttonCaseMat),
+  elThick(A.elThick),
+  elGap(A.elGap),
+  elCase(A.elCase),
+  elRadius(A.elRadius),
+  elMat(A.elMat),
+  ceramicThick(A.ceramicThick),
+  ceramicMat(A.ceramicMat),
   voidMat(A.voidMat),wallMat(A.wallMat),
   flangeMat(A.flangeMat)
   /*!
@@ -121,7 +136,21 @@ ButtonBPM::operator=(const ButtonBPM& A)
       flangeARadius=A.flangeARadius;
       flangeBLength=A.flangeBLength;
       flangeBRadius=A.flangeBRadius;
+      flangeGap=A.flangeGap;
       flangeALength=A.flangeALength;
+      buttonYAngle=A.buttonYAngle;
+      buttonFlangeRadius=A.buttonFlangeRadius;
+      buttonFlangeLength=A.buttonFlangeLength;
+      buttonCaseLength=A.buttonCaseLength;
+      buttonCaseRadius=A.buttonCaseRadius;
+      buttonCaseMat=A.buttonCaseMat;
+      elThick=A.elThick;
+      elGap=A.elGap;
+      elCase=A.elCase;
+      elRadius=A.elRadius;
+      elMat=A.elMat;
+      ceramicThick=A.ceramicThick;
+      ceramicMat=A.ceramicMat;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       flangeMat=A.flangeMat;
@@ -165,6 +194,22 @@ ButtonBPM::populate(const FuncDataBase& Control)
   flangeALength=Control.EvalHead<double>(keyName,"FlangeALength","FlangeLength");
   flangeBRadius=Control.EvalHead<double>(keyName,"FlangeBRadius","FlangeRadius");
   flangeBLength=Control.EvalHead<double>(keyName,"FlangeBLength","FlangeLength");
+  flangeGap=Control.EvalVar<double>(keyName+"FlangeGap");
+
+  buttonYAngle=Control.EvalVar<double>(keyName+"ButtonYAngle");
+  buttonFlangeRadius=Control.EvalVar<double>(keyName+"ButtonFlangeRadius");
+  buttonFlangeLength=Control.EvalVar<double>(keyName+"ButtonFlangeLength");
+  buttonCaseLength=Control.EvalVar<double>(keyName+"ButtonCaseLength");
+  buttonCaseRadius=Control.EvalVar<double>(keyName+"ButtonCaseRadius");
+  buttonCaseMat=ModelSupport::EvalMat<int>(Control,keyName+"ButtonCaseMat");
+
+  elThick=Control.EvalVar<double>(keyName+"ElectrodeThick");
+  elGap=Control.EvalVar<double>(keyName+"ElectrodeGap");
+  elCase=Control.EvalVar<double>(keyName+"ElectrodeCase");
+  elRadius=Control.EvalVar<double>(keyName+"ElectrodeRadius");
+  elMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
+  ceramicThick=Control.EvalVar<double>(keyName+"CeramicThick");
+  ceramicMat=ModelSupport::EvalMat<int>(Control,keyName+"CeramicMat");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -209,7 +254,7 @@ ButtonBPM::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  // main pipe and thicness
+  // pipe and flanges
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,outerRadius);
@@ -229,6 +274,36 @@ ButtonBPM::createSurfaces()
                            Origin-Y*(length/2.0-flangeALength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+212,
                            Origin+Y*(length/2.0-flangeBLength/2.0),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+121,
+                           Origin-Y*(length/2.0-flangeALength-flangeGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+222,
+                           Origin+Y*(length/2.0-flangeBLength-flangeGap),Y);
+
+  // buttons
+  const Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(buttonYAngle, Y);
+  const Geometry::Vec3D MX=QV.rotate(Z);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,MX,buttonFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+408,Origin,MX,buttonCaseRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+405,
+                           Origin+MX*(outerRadius-buttonCaseLength),MX);
+  ModelSupport::buildPlane(SMap,buildIndex+406,
+                           Origin+MX*(outerRadius),MX);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+416,buildIndex+406,MX,-buttonFlangeLength);
+
+  // electrode
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+506,buildIndex+405,MX,elThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+516,buildIndex+506,MX,elGap);
+  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,MX,elRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+508,Origin,MX,elRadius+elGap/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+509,Origin,MX,elRadius+elGap/2.0+elCase);
+
+  // ceramic
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+525,buildIndex+516,MX,elCase);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+526,buildIndex+516,MX,ceramicThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,MX,buttonCaseRadius-elCase);
+
   return;
 }
 
@@ -245,15 +320,21 @@ ButtonBPM::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+frontStr+backStr;
+  // pipe and flanges
+  Out=ModelSupport::getComposite(SMap,buildIndex," 407 -7 ")+frontStr+backStr;
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 101 -202 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 121 -222 407 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -101 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -121 ");
   makeCell("WallA",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 202 -212 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 222 -212 ");
   makeCell("WallB",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 101 -121 ");
+  makeCell("GapA",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 222 -202 ");
+  makeCell("GapB",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -107 -101 ")+frontStr;
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
@@ -269,7 +350,7 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 212 ")+backStr;
   makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 407 ");
   makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,Out);
 
   if (flangeBRadius+Geometry::zeroTol<flangeARadius)
@@ -282,6 +363,37 @@ ButtonBPM::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 107 -307 -101 ") + frontStr;
       makeCell("FlangeAVoid",System,cellIndex++,voidMat,0.0,Out);
     }
+
+  // buttons
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -407 (-405:406) ");
+  makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 416 -406 -407 ");
+  makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 526 -416 -408 ");
+  makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 525 -416 408 -407 ");
+  makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -525 509 -407 ");
+  makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -525 408 -509 ");
+  makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 -507 ");
+  makeCell("Electrode",System,cellIndex++,elMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 507 -508 ");
+  makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 506 -516 -508 ");
+  makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 508 -509 ");
+  makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 509 -407 ");
+  makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 -517 ");
+  makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 517 -408 ");
+  makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ")+frontStr+backStr;
   addOuterSurf(Out);

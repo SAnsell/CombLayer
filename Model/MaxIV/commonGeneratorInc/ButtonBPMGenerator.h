@@ -44,10 +44,25 @@ class ButtonBPMGenerator
   double outerRadius;           ///< Outer radius
 
   double flangeInnerRadius;     ///< Flange inner radius
+  double flangeALength;         ///< Flange A length
   double flangeARadius;         ///< Flange A radius
   double flangeBLength;         ///< Flange B length
   double flangeBRadius;         ///< Flange B radius
-  double flangeALength;         ///< Flange A length
+  double flangeGap;             ///< Gap length between flanges and main pipe body
+
+  double buttonYAngle;          ///< Y angle of buttons
+  double buttonFlangeRadius;    ///< Button case flange radius
+  double buttonFlangeLength;    ///< Button flange length
+  double buttonCaseLength;      ///< Button case length
+  double buttonCaseRadius;      ///< Button case radius
+  std::string buttonCaseMat;    ///< Button case material
+  double elThick;               ///< Electrode thickness
+  double elGap;                 ///< Void gap around electode
+  double elCase;                ///< Case thickness around electrode
+  double elRadius;              ///< Electrode radius
+  std::string elMat;            ///< Electrode material
+  double ceramicThick;          ///< Ceramic thickness
+  std::string ceramicMat;       ///< Ceramic material
 
   std::string voidMat;          ///< Void material
   std::string wallMat;          ///< Wall material

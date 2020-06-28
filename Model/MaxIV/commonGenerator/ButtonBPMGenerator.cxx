@@ -54,8 +54,22 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   length(5.0),innerRadius(0.95),
   outerRadius(2.5),
   flangeInnerRadius(2.0),
-  flangeARadius(3.5),flangeBLength(1.3),
-  flangeBRadius(3.5),flangeALength(1.3),
+  flangeALength(1.3),flangeARadius(3.5),
+  flangeBLength(1.3),flangeBRadius(3.5),
+  flangeGap(0.1),
+  buttonYAngle(45),
+  buttonFlangeRadius(0.65),
+  buttonFlangeLength(0.3),
+  buttonCaseLength(1.75),
+  buttonCaseRadius(0.4),
+  buttonCaseMat("Stainless304"),
+  elThick(0.4),
+  elGap(0.05),
+  elCase(0.035),
+  elRadius(0.47),
+  elMat("Stainless316L"),
+  ceramicThick(0.2),
+  ceramicMat("Al2O3"),
   voidMat("Void"),wallMat("Stainless304L"),
   flangeMat("Stainless304L")
   /*!
@@ -121,10 +135,24 @@ ButtonBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"OuterRadius",outerRadius);
   Control.addVariable(keyName+"FlangeInnerRadius",flangeInnerRadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
-  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeGap",flangeGap);
+  Control.addVariable(keyName+"ButtonYAngle",buttonYAngle);
+  Control.addVariable(keyName+"ButtonFlangeRadius",buttonFlangeRadius);
+  Control.addVariable(keyName+"ButtonFlangeLength",buttonFlangeLength);
+  Control.addVariable(keyName+"ButtonCaseLength",buttonCaseLength);
+  Control.addVariable(keyName+"ButtonCaseRadius",buttonCaseRadius);
+  Control.addVariable(keyName+"ButtonCaseMat",buttonCaseMat);
+  Control.addVariable(keyName+"ElectrodeThick",elThick);
+  Control.addVariable(keyName+"ElectrodeGap",elGap);
+  Control.addVariable(keyName+"ElectrodeCase",elCase);
+  Control.addVariable(keyName+"ElectrodeRadius",elRadius);
+  Control.addVariable(keyName+"ElectrodeMat",elMat);
+  Control.addVariable(keyName+"CeramicThick",ceramicThick);
+  Control.addVariable(keyName+"CeramicMat",ceramicMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);

@@ -49,10 +49,25 @@ class ButtonBPM :
   double outerRadius;           ///< Outer radius
 
   double flangeInnerRadius;     ///< Flange inner radius
+  double flangeALength;         ///< Flange A length
   double flangeARadius;         ///< Flange A radius
   double flangeBLength;         ///< Flange B length
   double flangeBRadius;         ///< Flange B radius
-  double flangeALength;         ///< Flange A length
+  double flangeGap;             ///< Gap length between flanges and main pipe body
+
+  double buttonYAngle;          ///< Y angle of buttons
+  double buttonFlangeRadius;    ///< Button case flange radius
+  double buttonFlangeLength;    ///< Button flange length
+  double buttonCaseLength;      ///< Button case length
+  double buttonCaseRadius;      ///< Button case radius
+  int buttonCaseMat;            ///< Button case material
+  double elThick;               ///< Electrode thickness
+  double elGap;                 ///< Void gap around electode
+  double elCase;                ///< Case thickness around electrode
+  double elRadius;              ///< Electrode radius
+  int elMat;                    ///< Electrode material
+  double ceramicThick;          ///< Ceramic thickness
+  int ceramicMat;               ///< Ceramic material
 
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
