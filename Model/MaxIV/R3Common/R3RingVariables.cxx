@@ -111,12 +111,12 @@ moveApertureTable(FuncDataBase& Control,
 		  const std::string& frontKey)
   /*!
     Builds the variables for the moveable apperature table
-    containing two movable aperatures, pumping and bellows
+    containing two movable apertures, pumping and bellows
     \param Control :: Database
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("cosaxsVariables[F]","moveApertureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -126,20 +126,21 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",24.0);
+  Control.addVariable(frontKey+"AperturePipeYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
   
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
 
-  // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
+  // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
@@ -150,9 +151,10 @@ moveApertureTable(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",24.0);
+  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
   
@@ -163,7 +165,8 @@ moveApertureTable(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  Control.addVariable(frontKey+"PipeCYStep",52.0);
   
   return;
 }
@@ -230,7 +233,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
   Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
 
 
@@ -262,7 +265,7 @@ shutterTable(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,20.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",20.0);
   Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
@@ -420,7 +423,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   // placeholder length (100.0)
-  PipeGen.generatePipe(Control,frontKey+"TransPipe",0,100.0); 
+  PipeGen.generatePipe(Control,frontKey+"TransPipe",100.0); 
   
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
@@ -432,7 +435,7 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   PipeGen.setCF<CF40>();
   PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,800.00); 
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",800.00); 
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
@@ -444,7 +447,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,222.0);
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
@@ -465,7 +468,7 @@ R3FrontEndVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,65.5);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",65.5);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
@@ -473,7 +476,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,exitLen);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",exitLen);
 
   return;
 }

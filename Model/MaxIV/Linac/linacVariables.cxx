@@ -842,7 +842,7 @@ linac2SPFsegment11(FuncDataBase& Control,
   BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,43.50);
+  PGen.generatePipe(Control,lKey+"PipeA",43.50);
   LQGen.generateQuad(Control,lKey+"QuadA",20.5);
 
   setIonPump3OffsetPort(Control,lKey+"PumpA");
@@ -1944,7 +1944,7 @@ Segment30(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,436.5-0.084514221); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",436.5-0.084514221); // measured
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
@@ -2160,7 +2160,7 @@ Segment33(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,68.7);
+  PGen.generatePipe(Control,lKey+"PipeC",68.7);
   CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
 
   BellowGen.setCF<setVariable::CF40_22>();

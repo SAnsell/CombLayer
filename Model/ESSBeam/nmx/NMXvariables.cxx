@@ -104,24 +104,29 @@ NMXvariables(FuncDataBase& Control)
                       bendRadius,bendAngle);
 
   // VACUUM PIPES:
-  PipeGen.generatePipe(Control,"nmxPipeA",50.0,400.0);
+  PipeGen.generatePipe(Control,"nmxPipeA",400.0);
+  Control.addVariable("nmxPipeAYStep",50.0);
   
   FGen.setYOffset(4.5);
   FGen.generateBender(Control,"nmxBB",394.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
-  PipeGen.generatePipe(Control,"nmxPipeB",0.0,400.0);
+  PipeGen.generatePipe(Control,"nmxPipeB",400.0);
+  Control.addVariable("nmxPipeBYStep",0.0);
 
   FGen.generateBender(Control,"nmxBC",394.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
-  PipeGen.generatePipe(Control,"nmxPipeC",0.0,400.0);
+  PipeGen.generatePipe(Control,"nmxPipeC",400.0);
+  Control.addVariable("nmxPipeCYStep",0.0);
 
   FGen.generateBender(Control,"nmxBD",394.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
-  PipeGen.generatePipe(Control,"nmxPipeD",0.0,400.0);
+  PipeGen.generatePipe(Control,"nmxPipeD",400.0);
+  Control.addVariable("nmxPipeDYStep",0.0);
 
   FGen.generateBender(Control,"nmxBE",224.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
-  PipeGen.generatePipe(Control,"nmxPipeE",0.0,230.0);
+  PipeGen.generatePipe(Control,"nmxPipeE",230.0);
+  Control.addVariable("nmxPipeEYStep",0.0);
 
     
   Control.addVariable("nmxBInsertHeight",20.0);

@@ -103,13 +103,15 @@ VORvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
 
   // VACUUM PIPE in Gamma shield
-  PipeGen.generatePipe(Control,"vorPipeB",8.0,46.0);
+  PipeGen.generatePipe(Control,"vorPipeB",46.0);
+  Control.addVariable("vorPipeBYStep",8.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,4.0,4.2);
 
   // VACUUM PIPE in Gamma shield
-  PipeGen.generatePipe(Control,"vorPipeC",2.0,326.0);
+  PipeGen.generatePipe(Control,"vorPipeC",326.0);
+  Control.addVariable("vorPipeCYStep",2.0);
   FGen.generateTaper(Control,"vorFC",322.0,3.4028,3.87,4.2,5.906);
 
   CGen.setMainRadius(26.0);
@@ -125,7 +127,8 @@ VORvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vorDBlade",0.0,10.0,22.50);
 
   // VACUUM PIPE in Gamma shield
-  PipeGen.generatePipe(Control,"vorPipeD",2.0,204.0);
+  PipeGen.generatePipe(Control,"vorPipeD",204.0);
+  Control.addVariable("vorPipeDYStep",2.0);
   FGen.generateTaper(Control,"vorFD",200.0,3.4028,3.87,4.2,5.906);
 
   
@@ -142,7 +145,8 @@ VORvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"vorPipeWall",1.0,348.0);
+  PipeGen.generatePipe(Control,"vorPipeWall",348.0);
+  Control.addVariable("vorPipeWallYStep",1.0);
 
   // Guide in wall
   FGen.clearYOffset();
@@ -170,7 +174,8 @@ VORvariables(FuncDataBase& Control)
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"vorShieldA",1430.0,40.0,40.0,40.0,3,8);
 
-  PipeGen.generatePipe(Control,"vorPipeOutA",2.0,1176.0);
+  PipeGen.generatePipe(Control,"vorPipeOutA",1176.0);
+  Control.addVariable("vorPipeOutAYStep",2.0);
   FGen.generateTaper(Control,"vorFOutA",1170.0,3.4028,3.87,4.2,5.906);
 
   PGen.setFeLayer(6.0);
@@ -195,7 +200,8 @@ VORvariables(FuncDataBase& Control)
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"vorShieldB",900.0,40.0,40.0,40.0,3,8);
 
-  PipeGen.generatePipe(Control,"vorPipeOutC",2.0,814.0);
+  PipeGen.generatePipe(Control,"vorPipeOutC",814.0);
+  Control.addVariable("vorPipeOutCYStep",2.0);
   FGen.generateTaper(Control,"vorFOutC",808.0,4.0,4.0,20.0,16.0);
   
 

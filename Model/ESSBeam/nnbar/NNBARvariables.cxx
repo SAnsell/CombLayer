@@ -97,7 +97,8 @@ NNBARvariables(FuncDataBase& Control)
   PipeGen.setPipe(35.0,1.0);
   PipeGen.setWindow(-4.0,1.0);
   PipeGen.setFlange(-8.0,4.0);
-  PipeGen.generatePipe(Control,"nnbarPipeB",8.0,46.0);
+  PipeGen.generatePipe(Control,"nnbarPipeB",46.0);
+  Control.addVariable("nnbarPipeBYStep",8.0);
 
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
@@ -105,14 +106,16 @@ NNBARvariables(FuncDataBase& Control)
 
   // Section from 6m to 10m
   PipeGen.setPipe(35.0,1.0);
-  PipeGen.generatePipe(Control,"nnbarPipeC",4.0,400.0);
+  PipeGen.generatePipe(Control,"nnbarPipeC",400.0);
+  Control.addVariable("nnbarPipeCYStep",4.0);
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"nnbarFC",392.0, 55.0,57.5, 25.0,27.5);
 
   // Section from 10m to 30m
   PipeGen.setPipe(35.0,1.0);
-  PipeGen.generatePipe(Control,"nnbarPipeD",4.0,2000.0);
+  PipeGen.generatePipe(Control,"nnbarPipeD",2000.0);
+  Control.addVariable("nnbarPipeDYStep",4.0);
 
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"nnbarFD",1992.0,57.5,27.5);
@@ -129,13 +132,15 @@ NNBARvariables(FuncDataBase& Control)
 
   LGen.generateLayer(Control,"nnbarShieldA",3500.0,1);
   // Section from 30m to 50m
-  PipeGen.generatePipe(Control,"nnbarPipeOutA",4.0,2000.0);
+  PipeGen.generatePipe(Control,"nnbarPipeOutA",2000.0);
+  Control.addVariable("nnbarPipeOutAYStep",4.0);
 
   FGen.setYOffset(12.0);
   FGen.generateRectangle(Control,"nnbarFOutA",1996.0,57.5,27.5);
 
   // Extra Section from 30m [Drift Tube]
-  PipeGen.generatePipe(Control,"nnbarPipeOutA",8.0,3000.0);
+  PipeGen.generatePipe(Control,"nnbarPipeOutA",3000.0);
+  Control.addVariable("nnbarPipeOutAYStep",8.0);
 
     // HUT:  
   Control.addVariable("nnbarCaveYStep",25.0);

@@ -454,7 +454,7 @@ opticsVariables(FuncDataBase& Control,
   // addaptor flange at beginning: [check]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>(); 
-  PipeGen.generatePipe(Control,opticsName+"InitPipe",0,10.0);
+  PipeGen.generatePipe(Control,opticsName+"InitPipe",10.0);
   
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
@@ -550,7 +550,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF100>(); // was 2cm (why?)
   // [length is 38.3cm total]
-  PipeGen.generatePipe(Control,opticsName+"DriftA",0,38.3);
+  PipeGen.generatePipe(Control,opticsName+"DriftA",38.3);
   // Length ignored  as joined front/back
 
   BellowGen.setCF<setVariable::CF100>();
@@ -560,7 +560,8 @@ opticsVariables(FuncDataBase& Control,
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]
   PipeGen.setCF<setVariable::CF100>();    
-  PipeGen.generatePipe(Control,opticsName+"DriftB",119.1,62.5); 
+  PipeGen.generatePipe(Control,opticsName+"DriftB",62.5);
+  Control.addVariable(opticsName+"DriftBYStep",119.1);
   Control.addVariable(opticsName+"DriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
@@ -571,7 +572,7 @@ opticsVariables(FuncDataBase& Control,
 
   // [length is 54.4cm total]
   PipeGen.setCF<setVariable::CF100>();    
-  PipeGen.generatePipe(Control,opticsName+"DriftC",0,54.4); 
+  PipeGen.generatePipe(Control,opticsName+"DriftC",54.4); 
 
   Control.addVariable(opticsName+"BeamStopZStep",-2.0);
   Control.addVariable(opticsName+"BeamStopWidth",4.0);
@@ -796,7 +797,7 @@ BALDERvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,130.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",130.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

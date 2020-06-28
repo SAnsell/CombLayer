@@ -108,7 +108,8 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorLen/2.0,undulatorLen);
+  PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
+  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -631,7 +632,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
+  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",6.0);
 
   // length
   DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
@@ -810,7 +811,7 @@ FORMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"FormaxJoinPipe",0,150.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipe",150.0);
 
   formaxVar::opticsHutVariables(Control,"FormaxOpticsHut");
   formaxVar::opticsVariables(Control,"Formax");

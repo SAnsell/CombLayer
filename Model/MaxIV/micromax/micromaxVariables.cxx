@@ -207,7 +207,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
   Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
 
 
@@ -239,7 +239,7 @@ shutterTable(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,21.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
   Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
@@ -287,12 +287,12 @@ moveApertureTable(FuncDataBase& Control,
 		  const std::string& frontKey)
   /*!
     Builds the variables for the moveable apperature table
-    containing two movable aperatures, pumping and bellows
+    containing two movable apertures, pumping and bellows
     \param Control :: Database
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("maxpeemVariables[F]","moveApertureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -302,20 +302,21 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",24.0);
+  Control.addVariable(frontKey+"AperturePipeYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
   
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
 
-  // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
+  // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
@@ -326,9 +327,10 @@ moveApertureTable(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",24.0);
+  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
   
@@ -339,8 +341,8 @@ moveApertureTable(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
-  
+  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  Control.addVariable(frontKey+"PipeCYStep",52.0);  
   return;
 }
 
@@ -448,7 +450,7 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",L);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -521,7 +523,7 @@ frontEndVariables(FuncDataBase& Control,
   
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,911.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",911.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -545,7 +547,7 @@ frontEndVariables(FuncDataBase& Control,
 
   
   PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",432.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
@@ -580,7 +582,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",95.0);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
@@ -588,7 +590,7 @@ frontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",50.0);
 
   return;
 }
@@ -868,7 +870,6 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::PortTubeGenerator PTubeGen;
@@ -881,6 +882,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremCollGenerator BremGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::MonoShutterGenerator MShutterGen;
+  setVariable::PipeGenerator PipeGen;
   
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -1121,7 +1123,6 @@ MICROMAXvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
   
   setVariable::PipeGenerator PipeGen;
-
   PipeGen.setNoWindow();
 
   micromaxVar::frontCaveVariables(Control,"MicromaxRingCaveA",1,1);
@@ -1131,7 +1132,7 @@ MICROMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicromaxJoinPipe",0,170.0);
+  PipeGen.generatePipe(Control,"MicromaxJoinPipe",170.0);
 
   micromaxVar::opticsHutVariables(Control,"MicromaxOpticsHut");
   micromaxVar::opticsVariables(Control,"Micromax");

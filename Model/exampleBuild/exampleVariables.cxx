@@ -82,8 +82,8 @@ linacTubeVariables(FuncDataBase& Control)
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Copper");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,"PipeA",0.0,12.0);
-  PipeGen.generatePipe(Control,"PipeB",0.0,18.0);
+  PipeGen.generatePipe(Control,"PipeA",12.0);
+  PipeGen.generatePipe(Control,"PipeB",18.0);
 
   // Gate valve A
   GateGen.setLength(6.3);

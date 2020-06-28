@@ -117,13 +117,15 @@ VESPAvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"vespaFA",350.0,3.5,4.0, 3.5,4.0);
 
   // Pipe in the gamma-shutter
-  PipeGen.generatePipe(Control,"vespaPipeA",6.5,46.0);
+  PipeGen.generatePipe(Control,"vespaPipeA",46.0);
+  Control.addVariable("vespaPipeAYStep",6.5);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"vespaFB",44.0,4.0,4.0);   
 
   // Pipe from the gamma-shutter to first chopper
-  PipeGen.generatePipe(Control,"vespaPipeB",2.0,54.0);
+  PipeGen.generatePipe(Control,"vespaPipeB",54.0);
+  Control.addVariable("vespaPipeBYStep",2.0);
   FGen.generateRectangle(Control,"vespaFC",50.0,4.0,4.0);   
 
   // First chopper
@@ -160,11 +162,12 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaPSCBottomBladeC",2.0,26.0,35.0);
 
   // JPipeCOut
-  RPGen.generatePipe(Control,"vespaJoinPipeCOut",0.0,15.0);
+  PipeGen.generatePipe(Control,"vespaJoinPipeCOut",15.0);
   FGen.generateRectangle(Control,"vespaFF",13.0,4.0,4.0);
 
   // VPipe
-  PipeGen.generatePipe(Control,"vespaPipeG",2.0,222.0);
+  PipeGen.generatePipe(Control,"vespaPipeG",222.0);
+  Control.addVariable("vespaPipeGYStep",2.0);
   FGen.generateTaper(Control,"vespaFG",218.0,4.0,4.0,4.0,4.0);
 
   // FOC
@@ -178,7 +181,8 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaFOCBlade",0.0,20.0,35.5);
 
   // VPipe to bunker wall
-  PipeGen.generatePipe(Control,"vespaPipeH",2.0,125.0);
+  PipeGen.generatePipe(Control,"vespaPipeH",125.0);
+  Control.addVariable("vespaPipeHYStep",2.0);
   FGen.generateTaper(Control,"vespaFH",121.0,4.0,4.0,4.0,4.0);
 
   
@@ -208,7 +212,8 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaT0Disk",2.0,20.0,30.0);
 
   // Optional pipe in wall
-  PipeGen.generatePipe(Control,"vespaPipeWall",4.0,348.0);
+  PipeGen.generatePipe(Control,"vespaPipeWall",348.0);
+  Control.addVariable("vespaPipeWallYStep",4.0);
   // Guide in wall
 
   FGen.clearYOffset();
@@ -223,7 +228,8 @@ VESPAvariables(FuncDataBase& Control)
   SGen.generateTriShield(Control,"vespaShieldA",350.0,80.0,80.0,80.0,1,9);
   
   PipeGen.setPipe(9.0,0.5);  // R/T
-  PipeGen.generatePipe(Control,"vespaPipeOutA",55.0,395.0);  
+  PipeGen.generatePipe(Control,"vespaPipeOutA",395.0);
+  Control.addVariable("vespaPipeOutAYStep",55.0);
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vespaFOutA",380.0,9.0,11.0,8.5,10.0);
@@ -244,7 +250,8 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaFOCBladeB",0.0,25.0,35.5);
 
   // Guide after wall [17.5m - 3.20] for wall
-  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,765.0);  //
+  PipeGen.generatePipe(Control,"vespaPipeOutB",765.0);
+  Control.addVariable("vespaPipeOutBYStep",2.0);
   Control.addVariable("vespaPipeOutBRadius",9.0);
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"vespaFOutB",750.0,9.0,11.0,8.5,10.0);
@@ -262,14 +269,15 @@ VESPAvariables(FuncDataBase& Control)
   for(size_t i=0;i<4;i++)
     {
       const std::string
-        shieldName("vespaShieldArray"+StrFunc::makeString(i));
+        shieldName("vespaShieldArray"+std::to_string(i));
       const std::string
-        vacName("vespaVPipeArray"+StrFunc::makeString(i));
+        vacName("vespaVPipeArray"+std::to_string(i));
       const std::string
-        focusName("vespaFocusArray"+StrFunc::makeString(i));
+        focusName("vespaFocusArray"+std::to_string(i));
 
       SGen.generateTriShield(Control,shieldName,slen,40.0,40.0,40.0,1,8);
-      PipeGen.generatePipe(Control,vacName,2.0,slen-2.0);  //
+      PipeGen.generatePipe(Control,vacName,slen-2.0);
+      Control.addVariable(vacName+"YStep",2.0);
       FGen.clearYOffset();
       FGen.generateRectangle(Control,focusName,slen-6.0,8.0,8.0);
     }
@@ -293,7 +301,8 @@ VESPAvariables(FuncDataBase& Control)
 
   SGen.generateShield(Control,"vespaShieldC",500.0,40.0,40.0,40.0,1,8);  
 
-  PipeGen.generatePipe(Control,"vespaPipeOutC",26.0,525.0);  //
+  PipeGen.generatePipe(Control,"vespaPipeOutC",525.0);
+  Control.addVariable("vespaPipeOutCYStep",26.0);
   Control.addVariable("vespaPipeOutCRadius",9.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vespaFOutC",520.0,9.0,11.0,8.5,10.0);

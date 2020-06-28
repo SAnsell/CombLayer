@@ -166,9 +166,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);
 
-  setVariable::RectPipeGenerator PipeGen;
-  PipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
-  PipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+  setVariable::RectPipeGenerator RPipeGen;
+  RPipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
+  RPipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
 
   setVariable::ChopperGenerator CGen;
   CGen.setMotorRadius(10.0);
@@ -262,12 +262,14 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.setNoWindow();
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L");
-  PGen.generatePipe(Control,"CorrectorMagPipe",-20.0,40.0);
+  PGen.generatePipe(Control,"CorrectorMagPipe",40.0);
+  Control.addVariable("CorrectorMagPipe",-20.0);
 
   LQGen.generateQuad(Control,"QF",20.0);
 
   PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,"QHVC",-40.0,80.0);
+  PGen.generatePipe(Control,"QHVC",80.0);
+  Control.addVariable("QHVC",-40.0);
   Control.addVariable("QHVCRadius",0.4);
   LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,"QH",20.0);
@@ -284,7 +286,8 @@ SingleItemVariables(FuncDataBase& Control)
   DIBGen.generate(Control,"DIB");
 
   PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,"VC",-40.0,80.0);
+  PGen.generatePipe(Control,"VC",80.0);
+  Control.addVariable("VC",-40.0);
 
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
@@ -321,13 +324,13 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TWCavityGenerator TDCGen;
 
   const double flangeLength(3.7);
-  PGen.generatePipe(Control,"PipeA",0.0,flangeLength);
+  RPipeGen.generatePipe(Control,"PipeA",0.0,flangeLength);
   Control.addVariable("PipeARadius",1.16);
   Control.addVariable("PipeAFeThick",0.2);
 
   TDCGen.generate(Control,"TWCavity");
 
-  PGen.generatePipe(Control,"PipeB",0.0,flangeLength);
+  RPipeGen.generatePipe(Control,"PipeB",0.0,flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
   Control.addParse<double>("PipeBFeThick","PipeAFeThick");
 

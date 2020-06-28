@@ -96,8 +96,8 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorLen/2.0,undulatorLen);
-
+  PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
+  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
   //  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
@@ -647,7 +647,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
+  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",6.0);
 
   // length
   DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
@@ -821,7 +821,7 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setWindow(2.7, 0.005);
   PipeGen.setWindowMat("Diamond");
   PipeGen.setAFlange(2.7,0.5);
-  PipeGen.generatePipe(Control,expName+"TelescopicSystem",0,100.0);
+  PipeGen.generatePipe(Control,expName+"TelescopicSystem",100.0);
 
   // sample area dimensions are arbitrary
   Control.addVariable(expName+"SampleAreaWidth",100.0);
@@ -1075,14 +1075,14 @@ COSAXSvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,130.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",130.0);
   
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
   cosaxsVar::exptHutVariables(Control,"Cosaxs");
   cosaxsVar::exptVariables(Control,"Cosaxs");
 
-  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",100.0);
 
   ShieldGen.setPlate(60.0,60.0,10.0);
   ShieldGen.generateShield(Control,"CosaxsScreenA",

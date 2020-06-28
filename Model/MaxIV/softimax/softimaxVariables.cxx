@@ -103,7 +103,9 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorPipeLen/2.0,undulatorPipeLen);
+  PipeGen.generatePipe(Control,undKey+"UPipe",
+		       undulatorPipeLen);
+  Control.addVariable("UPipeYStep",-undulatorPipeLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -339,7 +341,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,frontName,0.0,7.6);
+  PipeGen.generatePipe(Control,frontName,7.6);
   Control.addVariable(frontName+"WindowActive",0);
   constexpr double xstep(2.2);
   Control.addVariable(frontName+"FlangeBackXStep",-xstep);
@@ -387,7 +389,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
+  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
 
@@ -476,7 +478,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,90.3);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",90.3);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
@@ -501,7 +503,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,100.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",100.0);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
@@ -536,7 +538,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3Front",0.0,4.05);
+  PipeGen.generatePipe(Control,mirrorKey+"M3Front",4.05);
   Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
   Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
 
@@ -567,7 +569,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3Back",0.0,4.05);
+  PipeGen.generatePipe(Control,mirrorKey+"M3Back",4.05);
   Control.addVariable(mirrorKey+"M3BackWindowActive",0);
   Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
 
@@ -576,7 +578,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",0.0,5.85);
+  PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",5.85);
   Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
   Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
 
@@ -734,7 +736,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeA",0.0,10.9);
+  PipeGen.generatePipe(Control,preName+"PipeA",10.9);
   Control.addVariable(preName+"PipeAWindowActive",0);
 
   // will be rotated vertical
@@ -856,7 +858,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
   PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,74.0);
+  PipeGen.generatePipe(Control,preName+"JoinPipeA",74.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -903,7 +905,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF100>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeB",0.0,7.0);
+  PipeGen.generatePipe(Control,preName+"JoinPipeB",7.0);
 
   //////////// pumpTubeC
     // will be rotated vertical
@@ -926,7 +928,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeC",0.0,12.5);
+  PipeGen.generatePipe(Control,preName+"JoinPipeC",12.5);
 
   GateGen.setLength(4.5);
   GateGen.setCubeCF<setVariable::CF100>();
@@ -1006,7 +1008,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,158.95); // length adjusted to place M1 at 2400 from undulator centre
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",158.95); // length adjusted to place M1 at 2400 from undulator centre
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");

@@ -311,13 +311,13 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"Mat","Lead");
   Control.addVariable(connectName+"VoidMat","Void");
 
-  PipeGen.generatePipe(Control,beamName+"PipeA",0,425.0);
+  PipeGen.generatePipe(Control,beamName+"PipeA",425.0);
 
   BellowGen.setCF<setVariable::CF40>(); 
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
   
   PipeGen.setBFlangeCF<setVariable::CF100>(); 
-  PipeGen.generatePipe(Control,beamName+"FlangeA",0,5.0);
+  PipeGen.generatePipe(Control,beamName+"FlangeA",5.0);
   
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
@@ -328,12 +328,12 @@ connectVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>(); 
-  PipeGen.generatePipe(Control,beamName+"FlangeB",0,5.0);
+  PipeGen.generatePipe(Control,beamName+"FlangeB",5.0);
 
   BellowGen.generateBellow(Control,beamName+"BellowB",16.0);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,beamName+"PipeB",0,325.0);
+  PipeGen.generatePipe(Control,beamName+"PipeB",325.0);
   
   return;
 }
@@ -597,7 +597,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>(); 
-  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",0,4.0);
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",4.0);
 
   return;
 }
@@ -662,7 +662,7 @@ revBeamStopPackage(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>(); 
-  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",0,4.0);
+  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",4.0);
 
   return;
 }
@@ -771,10 +771,10 @@ monoShutterVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF63>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",0,4.0);
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",4.0);
   PipeGen.setAFlangeCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",0,4.0);
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",4.0);
 
   
   // bellows on shield block
@@ -952,7 +952,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
-  PipeGen.generatePipe(Control,opticsName+"PipeA",0,38.3);
+  PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
   const std::string collName=opticsName+"CollTubeA";
@@ -973,7 +973,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BremCollZStep",5.0);
 
   // filter pipe [add filter later]
-  PipeGen.generatePipe(Control,opticsName+"FilterPipe",0,3.0);
+  PipeGen.generatePipe(Control,opticsName+"FilterPipe",3.0);
 
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.setLength(1.1);
@@ -981,7 +981,7 @@ opticsVariables(FuncDataBase& Control,
 
   // laue monochromator
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",0,257.0);
+  PipeGen.generatePipe(Control,opticsName+"LauePipe",257.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
   opticsSlitPackage(Control,opticsName);
@@ -1062,13 +1062,13 @@ DANMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",0,150.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipe",150.0);
 
   danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut",beamXStep);
   danmaxVar::opticsVariables(Control,"Danmax");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",0,48.3);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",48.3);
 
   danmaxVar::shieldVariables(Control);
   danmaxVar::connectVariables(Control,"DanmaxConnectUnit");  
@@ -1076,7 +1076,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setWindow(2.7, 0.005);
   PipeGen.setWindowMat("Diamond");
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",0,54.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",54.0);
 
   danmaxVar::exptHutVariables(Control,"Danmax",beamXStep);
 
