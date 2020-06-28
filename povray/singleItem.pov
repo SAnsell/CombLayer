@@ -22,7 +22,7 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -71,6 +71,11 @@ global_settings {
 }
 
 #switch (0)
+  #case (strcmp(ITEM,"ButtonBPM"))
+    #declare cameraLocation = <-10, -10.0, 10.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
+    #declare cameraAngle = 40;
+  #break
   #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;
     #declare cameraLookAt   = <0, -3, 0.0>;
