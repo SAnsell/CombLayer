@@ -56,6 +56,8 @@ class ButtonBPMGenerator
   double buttonCaseLength;      ///< Button case length
   double buttonCaseRadius;      ///< Button case radius
   std::string buttonCaseMat;    ///< Button case material
+  double buttonHandleRadius;    ///< Button handle radius
+  double buttonHandleLength;    ///< Button handle length
   double elThick;               ///< Electrode thickness
   double elGap;                 ///< Void gap around electode
   double elCase;                ///< Case thickness around electrode

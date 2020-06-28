@@ -61,6 +61,8 @@ class ButtonBPM :
   double buttonCaseLength;      ///< Button case length
   double buttonCaseRadius;      ///< Button case radius
   int buttonCaseMat;            ///< Button case material
+  double buttonHandleRadius;    ///< Button handle radius
+  double buttonHandleLength;    ///< Button handle length
   double elThick;               ///< Electrode thickness
   double elGap;                 ///< Void gap around electode
   double elCase;                ///< Case thickness around electrode

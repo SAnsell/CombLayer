@@ -63,6 +63,8 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   buttonCaseLength(1.75),
   buttonCaseRadius(0.4),
   buttonCaseMat("Stainless304"),
+  buttonHandleRadius(0.27),
+  buttonHandleLength(0.85),
   elThick(0.4),
   elGap(0.05),
   elCase(0.035),
@@ -146,6 +148,8 @@ ButtonBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ButtonCaseLength",buttonCaseLength);
   Control.addVariable(keyName+"ButtonCaseRadius",buttonCaseRadius);
   Control.addVariable(keyName+"ButtonCaseMat",buttonCaseMat);
+  Control.addVariable(keyName+"ButtonHandleRadius",buttonHandleRadius);
+  Control.addVariable(keyName+"ButtonHandleLength",buttonHandleLength);
   Control.addVariable(keyName+"ElectrodeThick",elThick);
   Control.addVariable(keyName+"ElectrodeGap",elGap);
   Control.addVariable(keyName+"ElectrodeCase",elCase);
