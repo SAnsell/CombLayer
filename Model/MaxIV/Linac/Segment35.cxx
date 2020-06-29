@@ -168,8 +168,6 @@ Segment35::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpm);
 
-  return;
-
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
@@ -196,7 +194,7 @@ Segment35::createLinks()
    */
 {
   setLinkSignedCopy(0,*yagUnit,1);
-  setLinkSignedCopy(1,*bpm,2); /////////////////////////////////// fix
+  setLinkSignedCopy(1,*bellow,2);
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

@@ -300,7 +300,6 @@ ButtonBPM::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+132,
                            Origin+Y*(buttonFlangeRadius),Y);
   // buttons
-
   Geometry::Vec3D Z1(-Z);
   Geometry::Vec3D X1(-X);
 
