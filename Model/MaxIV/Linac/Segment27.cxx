@@ -84,7 +84,7 @@ namespace tdcSystem
 // Note currently uncopied:
 
 Segment27::Segment27(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,6),
   IZTop(new attachSystem::InnerZone(*this,cellIndex)),
   IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
   IZLower(new attachSystem::InnerZone(*this,cellIndex)),
@@ -266,13 +266,26 @@ Segment27::createLinks()
     Create a front/back link
    */
 {
+  ELog::RegMethod RegA("Segment27","createLinks");
+  
   setLinkSignedCopy(0,*bellowAA,1);
-  setLinkSignedCopy(1,*bellowAA,2);
-  //    setLinkSignedCopy(1,*triPipeA,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  setLinkSignedCopy(1,*bellowAC,2);
 
-  
-  
+  setLinkSignedCopy(2,*bellowBA,1);
+  setLinkSignedCopy(3,*bellowBC,2);
+
+  setLinkSignedCopy(4,*bellowCA,1);
+  setLinkSignedCopy(5,*yagUnitC,2);
+
+  FixedComp::nameSideIndex(0,"frontFlat");
+  FixedComp::nameSideIndex(1,"backFlat");
+  FixedComp::nameSideIndex(2,"frontMid");
+  FixedComp::nameSideIndex(3,"backMid");
+  FixedComp::nameSideIndex(4,"frontLower");
+  FixedComp::nameSideIndex(5,"backLower");
+
+  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+    
   return;
 }
 

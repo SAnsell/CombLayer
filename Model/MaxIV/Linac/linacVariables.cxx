@@ -1795,9 +1795,16 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
       
-  Control.addVariable(lKey+"EndAOffset",endPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndCOffset",endPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"FrontLinkA","frontFlat");
+  Control.addVariable(lKey+"BackLinkA","backFlat");
+  Control.addVariable(lKey+"FrontLinkB","frontMid");
+  Control.addVariable(lKey+"BackLinkB","backMid");
+  Control.addVariable(lKey+"FrontLinkC","frontLower");
+  Control.addVariable(lKey+"BackLinkC","backLower");
 
 
 
@@ -1805,28 +1812,28 @@ Segment27(FuncDataBase& Control,
   PGen.setCF<CF40>();
   PGen.setNoWindow();
       
-  BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowCA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowCA",16.0);
+  
   Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
 
   Control.addVariable(lKey+"BellowAAXAngle",
-		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
+		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"BellowBAXAngle",
-		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
+		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"BellowCAXAngle",
-		      std::atan((endPtC-startPtC).unit()[2])*180.0/M_PI);
-
+		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
   
-  PGen.generatePipe(Control,lKey+"PipeAA",216.5);
-  PGen.generatePipe(Control,lKey+"PipeBA",209.2);
-  PGen.generatePipe(Control,lKey+"PipeCA",221.0);
-
-  BellowGen.generateBellow(Control,lKey+"BellowAB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
+  PGen.generatePipe(Control,lKey+"PipeAA",216.95);
+  PGen.generatePipe(Control,lKey+"PipeBA",210.4);
+  PGen.generatePipe(Control,lKey+"PipeCA",222.0);
+  
+  BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowCB",16.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -1840,9 +1847,9 @@ Segment27(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
   
-  BellowGen.generateBellow(Control,lKey+"BellowAC",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBC",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowCC",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAC",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBC",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowCC",16.0);
 
   
   return;
@@ -1873,8 +1880,13 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
       
-  Control.addVariable(lKey+"EndAOffset",endPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndBOffset",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"FrontLinkA","frontFlat");
+  Control.addVariable(lKey+"BackLinkA","backFlat");
+  Control.addVariable(lKey+"FrontLinkB","frontMid");
+  Control.addVariable(lKey+"BackLinkB","backMid");
 
   BellowGen.setCF<setVariable::CF40>();
   PGen.setCF<CF40>();
@@ -1891,14 +1903,14 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
   
-  BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
 
   PGen.generatePipe(Control,lKey+"PipeAB",290.0);
   PGen.generatePipe(Control,lKey+"PipeBB",290.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
 
   
   return;

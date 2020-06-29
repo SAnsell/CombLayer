@@ -51,13 +51,11 @@ class TDCsegment :
 
   /// System for next building a divided inner
   attachSystem::InnerZone* nextZone;
+  
+  std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
-  bool lastFlag;      ///< Front valid
-  HeadRule lastRule;  ///< Surface for headrule
-
-  attachSystem::ExternalCut* firstItemPtr;
-
-  void setFirstItem(const std::shared_ptr<attachSystem::FixedComp>&);
+  /// unmanaged resource
+  std::vector<attachSystem::ExternalCut*> firstItemVec;
 
  public:
 
@@ -75,14 +73,10 @@ class TDCsegment :
   void setNextZone(attachSystem::InnerZone* IZPtr)
     {  nextZone=IZPtr; }
 
-  void setLastSurf(const HeadRule&);
-  /// clear front flag
-  void clearLastSurf() { lastFlag=0; }
-  /// access flag
-  bool hasLastSurf() const { return lastFlag; }
-  /// access rule
-  const HeadRule& getLastSurf() const { return lastRule; }
-
+  /// accessor to join items
+  const std::vector<HeadRule>& getJoinItems() const
+    { return joinItems; }
+  
   const constructSystem::portItem&
   buildIonPump2Port(Simulation&,
 		    attachSystem::InnerZone&,
@@ -91,7 +85,8 @@ class TDCsegment :
 		    const std::string&,
 		    constructSystem::BlankTube&) const;
 
-  void setFrontSurf(const HeadRule&);
+  void setFrontSurfs(const std::vector<const HeadRule>&);
+  void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;

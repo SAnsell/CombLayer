@@ -140,6 +140,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment24",std::make_shared<Segment24>("TDC24") },
     { "Segment25",std::make_shared<Segment25>("TDC25") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
+    { "Segment28",std::make_shared<Segment28>("TDC28") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
     { "Segment31",std::make_shared<Segment31>("SPF31") },
     { "Segment32",std::make_shared<Segment32>("SPF32") },
@@ -373,10 +374,13 @@ TDC::createAll(Simulation& System,
 	  if (prevC!=SegMap.end())
 	    {
 	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
-	      if (prevPtr->hasLastSurf())
+	      const std::vector<const HeadRule>& prevJoinItems=
+		prevPtr->getJoinItems();
+	      
+	      if (!prevJoinItems.empty())
 		{
-		  buildZone->setFront(prevPtr->getLastSurf());
-		  segPtr->setFrontSurf(prevPtr->getLastSurf());
+		  buildZone->setFront(prevJoinItems.front());
+		  segPtr->setFrontSurfs(prevJoinItems);
 		}
 	    }
 	  if (BL=="Segment10")
@@ -386,13 +390,15 @@ TDC::createAll(Simulation& System,
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());
-	  if (BL!="Segment27" || BL!="Segment28")
+	  if (BL!="Segment27" && BL!="Segment28")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
+
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}

@@ -84,10 +84,9 @@ namespace tdcSystem
 // Note currently uncopied:
 
 Segment28::Segment28(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,6),
   IZTop(new attachSystem::InnerZone(*this,cellIndex)),
   IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
-
 
   pipeAA(new constructSystem::VacuumPipe(keyName+"PipeAA")),
   pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
@@ -150,7 +149,7 @@ Segment28::createSplitInnerZone(Simulation& System)
   // create surfaces
   attachSystem::FixedUnit FA("FA");
   attachSystem::FixedUnit FB("FB");
-  FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
+  FA.createPairVector(*pipeAA,-1,*pipeBA,-1);
   ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
   
   const Geometry::Vec3D ZEffective(FA.getZ());
@@ -160,8 +159,8 @@ Segment28::createSplitInnerZone(Simulation& System)
   HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
   HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
 
-  IZTop->setFront(bellowAA->getFullRule(-1));
-  IZFlat->setFront(bellowBA->getFullRule(-1));
+  IZTop->setFront(pipeAA->getFullRule(-1));
+  IZFlat->setFront(pipeBA->getFullRule(-1));
 
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
@@ -191,7 +190,7 @@ Segment28::buildObjects(Simulation& System)
 
   MonteCarlo::Object* masterCellA=IZTop->getMaster();
   MonteCarlo::Object* masterCellB=IZFlat->getMaster();
-
+  
   outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeAA,2);
   outerCellB=IZFlat->createOuterVoidUnit(System,masterCellB,*pipeBA,2);
 
@@ -227,7 +226,14 @@ Segment28::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*bellowBA,2);
+  setLinkSignedCopy(1,*bellowAB,2);
+  setLinkSignedCopy(2,*bellowBB,2);
+
+  FixedComp::nameSideIndex(1,"frontFlat");
+  FixedComp::nameSideIndex(1,"backFlat");
+  FixedComp::nameSideIndex(2,"Mid");
+
+
   //    setLinkSignedCopy(1,*triPipeA,2);
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
@@ -271,7 +277,7 @@ Segment28::createAll(Simulation& System,
   ELog::RegMethod RControl("Segment28","build");
 
   FixedRotate::populate(System.getDataBase());
-  
+
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();

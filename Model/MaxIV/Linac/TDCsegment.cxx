@@ -94,27 +94,34 @@ TDCsegment::~TDCsegment()
 {}
 
 void
-TDCsegment::setFirstItem
+TDCsegment::setFirstItems
   (const std::shared_ptr<attachSystem::FixedComp>& FCptr)
   /*!
     Allocate the first pointer
     \param FCptr :: FixedComp Point to pass
    */
 {
-  firstItemPtr=dynamic_cast<attachSystem::ExternalCut*>(FCptr.get());
+  const attachSystem::ExternalCut* EPtr=
+    dynamic_cast<const attachSystem::ExternalCut*>(FCptr.get());
+  if (!EPtr)
+    throw ColErr::DynamicConv("ExternalCut","FixedComp","FCPtr");
+  firstItemVec.push_back(EPtr);
+  
   return;
 }
 
+
 void
-TDCsegment::setFrontSurf(const HeadRule& HR)
+TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   /*!
     Set the front surface if need to join
     \param HR :: Front head rule
   */
 {
 
-  if (firstItemPtr)
-    firstItemPtr->setCutSurf("front",HR);
+  for(size_t i=0;i<HRvec.size() && i<firstItemVec.size();
+      if (firstItemPtr)
+	firstItemPtr->setCutSurf("front",HR);
   return;
 }
 
@@ -162,11 +169,12 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   const std::string Letters=" ABCDEF";
   for(size_t i=0;i<Letters.size();i++)
     {
-
       // main OffsetA / EndAOffset
       // link point FrontALink / BackALink
       const std::string AKey=keyName+"Offset"+Letters[i];
       const std::string BKey=keyName+"EndOffset"+Letters[i];
+
+
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
 	  testNum++;
@@ -178,8 +186,8 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	    Control.EvalDefVar<std::string>
 	    (keyName+"FrontLink"+Letters[i],"front");
 	  const std::string endLink=
+	    Control.EvalDefVar<std::string>
 	    (keyName+"BackLink"+Letters[i],"back");
-
 
 	  //
 	  // Note that this is likely different from true start point:
@@ -200,8 +208,9 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	      ELog::EM<<"End Point    "<<endPoint<<"\n";
 	      ELog::EM<<"length ==    "<<startPoint.Distance(endPoint)<<"\n";
 	      const double cosA=(realEnd-realStart).unit().
-		dotProd((startPoint-endPoint).unit());
-	      double angleError=acos(cosA)*180.0/M_PI;
+		dotProd((endPoint-startPoint).unit());
+	      double angleError=(cosA>(1.0-1e-7)) ? 0.0 : acos(cosA);
+	      angleError*=180.0/M_PI;
 	      if (angleError>90.0) angleError-=180.0;
 	      ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
 	      
