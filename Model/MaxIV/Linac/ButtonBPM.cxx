@@ -296,37 +296,44 @@ ButtonBPM::createSurfaces()
                            Origin+Y*(length/2.0-flangeBLength-flangeGap),Y);
 
   // buttons
-  const Geometry::Quaternion QV = Geometry::Quaternion::calcQRotDeg(buttonYAngle, Y);
-  const Geometry::Vec3D MX=QV.rotate(Z);
+  const Geometry::Quaternion Q1 = Geometry::Quaternion::calcQRotDeg(buttonYAngle, Y);
+  const Geometry::Quaternion Q2 = Geometry::Quaternion::calcQRotDeg(180.0+buttonYAngle, Y);
+  const std::vector<Geometry::Vec3D> MX({Q1.rotate(Z),Q2.rotate(Z)});
 
-  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,MX,buttonFlangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+408,Origin,MX,buttonCaseRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+409,Origin,MX,buttonHandleRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+405,
-                           Origin+MX*(outerRadius-buttonCaseLength),MX);
-  ModelSupport::buildPlane(SMap,buildIndex+406,
-                           Origin+MX*(outerRadius),MX);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+416,buildIndex+406,MX,-buttonFlangeLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+426,buildIndex+406,MX,buttonHandleLength);
+  int SI(buildIndex);
 
-  // electrode
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+506,buildIndex+405,MX,elThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+516,buildIndex+506,MX,elGap);
-  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,MX,elRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+508,Origin,MX,elRadius+elGap/2.0);
-  ModelSupport::buildCylinder(SMap,buildIndex+509,Origin,MX,elRadius+elGap/2.0+elCase);
+  for (size_t i=0; i<2; ++i)
+    {
+      ModelSupport::buildCylinder(SMap,SI+407,Origin,MX[i],buttonFlangeRadius);
+      ModelSupport::buildCylinder(SMap,SI+408,Origin,MX[i],buttonCaseRadius);
+      ModelSupport::buildCylinder(SMap,SI+409,Origin,MX[i],buttonHandleRadius);
+      ModelSupport::buildPlane(SMap,SI+405,
+			       Origin+MX[i]*(outerRadius-buttonCaseLength),MX[i]);
+      ModelSupport::buildPlane(SMap,SI+406,
+			       Origin+MX[i]*(outerRadius),MX[i]);
+      ModelSupport::buildShiftedPlane(SMap,SI+416,SI+406,MX[i],-buttonFlangeLength);
+      ModelSupport::buildShiftedPlane(SMap,SI+426,SI+406,MX[i],buttonHandleLength);
 
-  // ceramic
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+525,buildIndex+516,MX,elCase);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+526,buildIndex+516,MX,ceramicThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,MX,buttonCaseRadius-elCase);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+536,buildIndex+526,MX,elCase);
+      // electrode
+      ModelSupport::buildShiftedPlane(SMap,SI+506,SI+405,MX[i],elThick);
+      ModelSupport::buildShiftedPlane(SMap,SI+516,SI+506,MX[i],elGap);
+      ModelSupport::buildCylinder(SMap,SI+507,Origin,MX[i],elRadius);
+      ModelSupport::buildCylinder(SMap,SI+508,Origin,MX[i],elRadius+elGap/2.0);
+      ModelSupport::buildCylinder(SMap,SI+509,Origin,MX[i],elRadius+elGap/2.0+elCase);
 
-  // pin
-  ModelSupport::buildCylinder(SMap,buildIndex+607,Origin,MX,pinRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+617,Origin,MX,pinOuterRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+627,Origin,MX,pinOuterRadius+elGap);
+      // ceramic
+      ModelSupport::buildShiftedPlane(SMap,SI+525,SI+516,MX[i],elCase);
+      ModelSupport::buildShiftedPlane(SMap,SI+526,SI+516,MX[i],ceramicThick);
+      ModelSupport::buildCylinder(SMap,SI+517,Origin,MX[i],buttonCaseRadius-elCase);
+      ModelSupport::buildShiftedPlane(SMap,SI+536,SI+526,MX[i],elCase);
 
+      // pin
+      ModelSupport::buildCylinder(SMap,SI+607,Origin,MX[i],pinRadius);
+      ModelSupport::buildCylinder(SMap,SI+617,Origin,MX[i],pinOuterRadius);
+      ModelSupport::buildCylinder(SMap,SI+627,Origin,MX[i],pinOuterRadius+elGap);
+
+      SI += 1000;
+    }
   return;
 }
 
@@ -388,57 +395,64 @@ ButtonBPM::createObjects(Simulation& System)
     }
 
   // buttons
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -407 -405 ");
-  makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -407 426 ");
-  makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 409 -407 406 -426 ");
+  int SI(buildIndex);
+
+  Out=ModelSupport::getComposite(SMap,SI,SI+1000," -407 -405M -405 ");
   makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 627 -409 406 -426 ");
-  makeCell("ButtonHandle",System,cellIndex++,buttonCaseMat,0.0,Out);
+  for (size_t i=0; i<2; ++i)
+    {
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," -107M -407 426 ");
+      makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 416 -406 627 -407 ");
-  makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 409 -407 406 -426 ");
+      makeCell("ButtonHandle",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 627 -409 406 -426 ");
+      makeCell("ButtonHandle",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 536 -416 627 -408 ");
-  makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 526 -536 517 -408 ");
-  makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 416 -406 627 -407 ");
+      makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 525 -416 408 -407 ");
-  makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 536 -416 627 -408 ");
+      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 526 -536 517 -408 ");
+      makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -525 509 -407 ");
-  makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -525 408 -509 ");
-  makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 525 -416 408 -407 ");
+      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 607 -507 ");
-  makeCell("Electrode",System,cellIndex++,elMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 507 -508 ");
-  makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 506 -516 607 -508 ");
-  makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 508 -509 ");
-  makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 509 -407 ");
-  makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 516 -525 509 -407 ");
+      makeCell("ButtonCaseOut",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 516 -525 408 -509 ");
+      makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 607 -517 ");
-  makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 517 -408 ");
-  makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 526 -536 617 -517 ");
-  makeCell("CeramicGap",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 405 -506 607 -507 ");
+      makeCell("Electrode",System,cellIndex++,elMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 405 -506 507 -508 ");
+      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 506 -516 607 -508 ");
+      makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 405 -516 508 -509 ");
+      makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 405 -516 509 -407 ");
+      makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -607 405 -526 ");
-  makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -617 526 -426");
-  makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -627 617 536 -426");
-  makeCell("PinGap",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 516 -526 607 -517 ");
+      makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 516 -526 517 -408 ");
+      makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," 526 -536 617 -517 ");
+      makeCell("CeramicGap",System,cellIndex++,voidMat,0.0,Out);
 
+      Out=ModelSupport::getComposite(SMap,SI," -607 405 -526 ");
+      makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," -617 526 -426");
+      makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,SI," -627 617 536 -426");
+      makeCell("PinGap",System,cellIndex++,voidMat,0.0,Out);
+
+      SI += 1000;
+    }
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ")+frontStr+backStr;
   addOuterSurf(Out);
 
