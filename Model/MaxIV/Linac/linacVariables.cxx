@@ -114,6 +114,7 @@ namespace linacVar
   void Segment33(FuncDataBase&,const std::string&);
   void Segment34(FuncDataBase&,const std::string&);
   void Segment35(FuncDataBase&,const std::string&);
+  void Segment36(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2048,9 +2049,6 @@ Segment35(FuncDataBase& Control,
 
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generate(Control,lKey+"BPM");
-  // PGen.generatePipe(Control,lKey+"BPM",0.0,5.0); // measured
-  // Control.addVariable(lKey+"BPMFeThick", 1.9); // measured
-  // Control.addVariable(lKey+"BPMFeMat", "Stainless304L"); // PDF
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,75.2); // measured
   LQGen.generateQuad(Control,lKey+"QuadB",19.0); // approx
@@ -2074,6 +2072,59 @@ Segment35(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5);
+
+  return;
+}
+
+void
+Segment36(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 36
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment36");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeGenerator PGen;
+  //  setVariable::BPMGenerator BPMGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::YagUnitBigGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::ButtonBPMGenerator BPMGen;
+
+  const Geometry::Vec3D startPt(-1010.0,6310.949,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6729.589,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  // Gauge
+  std::string name=lKey+"Gauge";
+  SimpleTubeGen.setCF<CF40_22>();
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+  Control.addVariable(name+"YAngle", 180.0);
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF40_22>(5.1); //
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  const double pipeALength(37.5); // measured
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
 
   return;
 }
@@ -2242,6 +2293,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment33(Control,"SPF33");
   linacVar::Segment34(Control,"SPF34");
   linacVar::Segment35(Control,"SPF35");
+  linacVar::Segment36(Control,"SPF36");
 
   return;
 }
