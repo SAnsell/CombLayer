@@ -69,6 +69,7 @@
 #include "TWCavityGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
+#include "ButtonBPMGenerator.h"
 
 namespace setVariable
 {
@@ -2020,6 +2021,7 @@ Segment35(FuncDataBase& Control,
   setVariable::YagUnitBigGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::ButtonBPMGenerator BPMGen;
 
   const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
   const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
@@ -2044,12 +2046,11 @@ Segment35(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadA",pipeALength/2.0); // approx
 
-  // BPMGen.setCF<setVariable::CF40_22>();
-  // BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  // Control.addVariable(lKey+"BPMRadius", 1.3); // ????
-  PGen.generatePipe(Control,lKey+"BPM",0.0,5.0); // measured
-  Control.addVariable(lKey+"BPMFeThick", 1.9); // measured
-  Control.addVariable(lKey+"BPMFeMat", "Stainless304L"); // PDF
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generate(Control,lKey+"BPM");
+  // PGen.generatePipe(Control,lKey+"BPM",0.0,5.0); // measured
+  // Control.addVariable(lKey+"BPMFeThick", 1.9); // measured
+  // Control.addVariable(lKey+"BPMFeMat", "Stainless304L"); // PDF
 
   PGen.generatePipe(Control,lKey+"PipeB",0.0,75.2); // measured
   LQGen.generateQuad(Control,lKey+"QuadB",19.0); // approx

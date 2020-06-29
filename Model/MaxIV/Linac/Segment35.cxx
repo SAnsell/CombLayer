@@ -75,6 +75,7 @@
 #include "VirtualTube.h"
 #include "BlankTube.h"
 #include "portItem.h"
+#include "ButtonBPM.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -93,7 +94,7 @@ Segment35::Segment35(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  bpm(new constructSystem::VacuumPipe(keyName+"BPM")),
+  bpm(new tdcSystem::ButtonBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
@@ -167,6 +168,8 @@ Segment35::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpm);
 
+  return;
+
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
@@ -193,7 +196,7 @@ Segment35::createLinks()
    */
 {
   setLinkSignedCopy(0,*yagUnit,1);
-  setLinkSignedCopy(1,*bellow,2);
+  setLinkSignedCopy(1,*bpm,2); /////////////////////////////////// fix
 
   TDCsegment::setLastSurf(FixedComp::getFullRule(2));
   return;

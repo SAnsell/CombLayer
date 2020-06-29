@@ -25,6 +25,7 @@
 namespace tdcSystem
 {
   class YagUnitBig;
+  class ButtonBPM;
   /*!
     \class Segment35
     \version 1.0
@@ -51,7 +52,7 @@ class Segment35 :
   std::shared_ptr<tdcSystem::LQuadF> quadA;
 
   /// Button BPM
-  std::shared_ptr<constructSystem::VacuumPipe> bpm;
+  std::shared_ptr<tdcSystem::ButtonBPM> bpm;
 
   // main magnetic pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
