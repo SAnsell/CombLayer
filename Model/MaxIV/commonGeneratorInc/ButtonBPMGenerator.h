@@ -65,6 +65,9 @@ class ButtonBPMGenerator
   std::string elMat;            ///< Electrode material
   double ceramicThick;          ///< Ceramic thickness
   std::string ceramicMat;       ///< Ceramic material
+  double pinRadius;             ///< Pin radius [smaller]
+  double pinOuterRadius;        ///< Pin radius [larger]
+  std::string pinMat;           ///< Pin material
 
   std::string voidMat;          ///< Void material
   std::string wallMat;          ///< Wall material

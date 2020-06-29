@@ -70,6 +70,9 @@ class ButtonBPM :
   int elMat;                    ///< Electrode material
   double ceramicThick;          ///< Ceramic thickness
   int ceramicMat;               ///< Ceramic material
+  double pinRadius;             ///< Pin radius [smaller]
+  double pinOuterRadius;        ///< Pin radius [larger]
+  int pinMat;                   ///< Pin material
 
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material

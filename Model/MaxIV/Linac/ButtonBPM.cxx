@@ -108,6 +108,9 @@ ButtonBPM::ButtonBPM(const ButtonBPM& A) :
   elMat(A.elMat),
   ceramicThick(A.ceramicThick),
   ceramicMat(A.ceramicMat),
+  pinRadius(A.pinRadius),
+  pinOuterRadius(A.pinOuterRadius),
+  pinMat(A.pinMat),
   voidMat(A.voidMat),wallMat(A.wallMat),
   flangeMat(A.flangeMat)
   /*!
@@ -155,6 +158,9 @@ ButtonBPM::operator=(const ButtonBPM& A)
       elMat=A.elMat;
       ceramicThick=A.ceramicThick;
       ceramicMat=A.ceramicMat;
+      pinRadius=A.pinRadius;
+      pinOuterRadius=A.pinOuterRadius;
+      pinMat=A.pinMat;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       flangeMat=A.flangeMat;
@@ -216,6 +222,9 @@ ButtonBPM::populate(const FuncDataBase& Control)
   elMat=ModelSupport::EvalMat<int>(Control,keyName+"ElectrodeMat");
   ceramicThick=Control.EvalVar<double>(keyName+"CeramicThick");
   ceramicMat=ModelSupport::EvalMat<int>(Control,keyName+"CeramicMat");
+  pinRadius=Control.EvalVar<double>(keyName+"PinRadius");
+  pinOuterRadius=Control.EvalVar<double>(keyName+"PinOuterRadius");
+  pinMat=ModelSupport::EvalMat<int>(Control,keyName+"PinMat");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -311,8 +320,12 @@ ButtonBPM::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+525,buildIndex+516,MX,elCase);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+526,buildIndex+516,MX,ceramicThick);
   ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,MX,buttonCaseRadius-elCase);
-
   ModelSupport::buildShiftedPlane(SMap,buildIndex+536,buildIndex+526,MX,elCase);
+
+  // pin
+  ModelSupport::buildCylinder(SMap,buildIndex+607,Origin,MX,pinRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+617,Origin,MX,pinOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+627,Origin,MX,pinOuterRadius+elGap);
 
   return;
 }
@@ -382,13 +395,13 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 409 -407 406 -426 ");
   makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -409 406 -426 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 627 -409 406 -426 ");
   makeCell("ButtonHandle",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 416 -406 -407 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 416 -406 627 -407 ");
   makeCell("ButtonFlange",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 536 -416 -408 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 536 -416 627 -408 ");
   makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 526 -536 517 -408 ");
   makeCell("ButtonCase",System,cellIndex++,buttonCaseMat,0.0,Out);
@@ -401,23 +414,30 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 516 -525 408 -509 ");
   makeCell("ButtonCaseOut",System,cellIndex++,buttonCaseMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 -507 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 607 -507 ");
   makeCell("Electrode",System,cellIndex++,elMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 405 -506 507 -508 ");
   makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 506 -516 -508 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 506 -516 607 -508 ");
   makeCell("ElectrodeGap",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 508 -509 ");
   makeCell("ElectrodeCase",System,cellIndex++,buttonCaseMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 405 -516 509 -407 ");
   makeCell("ElectrodeOut",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 -517 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 607 -517 ");
   makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 516 -526 517 -408 ");
   makeCell("CeramicCase",System,cellIndex++,buttonCaseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 526 -536 -517 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 526 -536 617 -517 ");
   makeCell("CeramicGap",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -607 405 -526 ");
+  makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -617 526 -426");
+  makeCell("Pin",System,cellIndex++,pinMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -627 617 536 -426");
+  makeCell("PinGap",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ")+frontStr+backStr;
   addOuterSurf(Out);

@@ -72,6 +72,9 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   elMat("Stainless316L"),
   ceramicThick(0.2),
   ceramicMat("Al2O3"),
+  pinRadius(0.05),
+  pinOuterRadius(0.09),
+  pinMat("Stainless304"),
   voidMat("Void"),wallMat("Stainless304L"),
   flangeMat("Stainless304L")
   /*!
@@ -157,6 +160,9 @@ ButtonBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ElectrodeMat",elMat);
   Control.addVariable(keyName+"CeramicThick",ceramicThick);
   Control.addVariable(keyName+"CeramicMat",ceramicMat);
+  Control.addVariable(keyName+"PinRadius",pinRadius);
+  Control.addVariable(keyName+"PinOuterRadius",pinOuterRadius);
+  Control.addVariable(keyName+"PinMat",pinMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
