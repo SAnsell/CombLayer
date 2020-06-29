@@ -295,14 +295,20 @@ ButtonBPM::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+222,
                            Origin+Y*(length/2.0-flangeBLength-flangeGap),Y);
 
+  ModelSupport::buildPlane(SMap,buildIndex+131,
+                           Origin-Y*(buttonFlangeRadius),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+132,
+                           Origin+Y*(buttonFlangeRadius),Y);
   // buttons
+  Geometry::Vec3D Z1(0,0,-1);
+  Geometry::Vec3D X1(-1,0,0);
   const Geometry::Quaternion Q1 = Geometry::Quaternion::calcQRotDeg(buttonYAngle, Y);
-  const Geometry::Quaternion Q2 = Geometry::Quaternion::calcQRotDeg(180.0+buttonYAngle, Y);
-  const std::vector<Geometry::Vec3D> MX({Q1.rotate(Z),Q2.rotate(Z)});
+  const std::vector<Geometry::Vec3D> MX({Q1.rotate(Z),Q1.rotate(Z1),
+					 Q1.rotate(X),Q1.rotate(X1)});
 
   int SI(buildIndex);
 
-  for (size_t i=0; i<2; ++i)
+  for (size_t i=0; i<4; ++i)
     {
       ModelSupport::buildCylinder(SMap,SI+407,Origin,MX[i],buttonFlangeRadius);
       ModelSupport::buildCylinder(SMap,SI+408,Origin,MX[i],buttonCaseRadius);
@@ -346,15 +352,19 @@ ButtonBPM::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButtonBPM","createObjects");
 
+  int SI(buildIndex);
+
   std::string Out;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
   // pipe and flanges
-  Out=ModelSupport::getComposite(SMap,buildIndex," 407 -7 ")+frontStr+backStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -131 -7 ")+frontStr;
+  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 132 -7 ")+backStr;
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 121 -222 407 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 7 -27 121 -222 407 407M ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -121 ");
   makeCell("WallA",System,cellIndex++,wallMat,0.0,Out);
@@ -380,7 +390,7 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 212 ")+backStr;
   makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 407 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 27 -307 101 -202 407 407M ");
   makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,Out);
 
   if (flangeBRadius+Geometry::zeroTol<flangeARadius)
@@ -395,14 +405,20 @@ ButtonBPM::createObjects(Simulation& System)
     }
 
   // buttons
-  int SI(buildIndex);
+  Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
+  				 " 131 -132 -7 (407:-405 -405M) (407N:-405N -3405) ");
+  makeCell("ButtonHolderCenter",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,SI,SI+1000," -407 -405M -405 ");
-  makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
+  // corners
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,SI+1000," 7 -407M -405M -405N ");
+  makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000,SI+3000," 7 -407M -405M -405N ");
+  makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
 
-  for (size_t i=0; i<2; ++i)
+
+  for (size_t i=0; i<4; ++i)
     {
-      Out=ModelSupport::getComposite(SMap,SI,buildIndex," -107M -407 426 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI," -107 -407M 426M ");
       makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,SI," 409 -407 406 -426 ");
