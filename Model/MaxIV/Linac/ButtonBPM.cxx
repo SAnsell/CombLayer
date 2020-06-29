@@ -300,12 +300,14 @@ ButtonBPM::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+132,
                            Origin+Y*(buttonFlangeRadius),Y);
   // buttons
-  Geometry::Vec3D Z1(-Z);
-  Geometry::Vec3D X1(-X);
+  Geometry::Vec3D Z1(Z);
+  Geometry::Vec3D X1(X);
+  Geometry::Vec3D Z2(-Z);
+  Geometry::Vec3D X2(-X);
 
   const Geometry::Quaternion QY = Geometry::Quaternion::calcQRotDeg(buttonYAngle, Y);
-  const std::vector<Geometry::Vec3D> MX({QY.rotate(Z),QY.rotate(Z1),
-					 QY.rotate(X),QY.rotate(X1)});
+  const std::vector<Geometry::Vec3D> MX({QY.rotate(Z1),QY.rotate(Z2),
+					 QY.rotate(X1),QY.rotate(X2)});
 
   int SI(buildIndex);
 
