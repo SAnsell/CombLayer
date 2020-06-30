@@ -164,10 +164,9 @@ global_settings {
     #declare cameraAngle = 70;
   #break
   #case(strcmp(ITEM,"Segment36")) // SPF segment 36
-    #declare cameraLocation = <-815, 6785, 70>;
+    #declare cameraLocation = <-760, 6900, 30>;
     #declare cameraLookAt   = <-858, 6900, 0>;
-    #declare projection = 0;
-    #declare cameraAngle = 70;
+    #declare projection = 1;
   #break
   #case(strcmp(ITEM,"Segment1000")) // beamline view
     #declare cameraLocation = <200, 160, 40>;
@@ -233,4 +232,4 @@ camera {
 
 background { color White }
 
-#include "b.inc"
+#include "a.inc"
