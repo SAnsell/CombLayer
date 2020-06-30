@@ -2088,12 +2088,8 @@ Segment36(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PGen;
-  //  setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::YagUnitBigGenerator YagUnitGen;
-  setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::BPMGenerator BPMGen;
   setVariable::EArrivalMonGenerator EArrGen;
   setVariable::CylGateValveGenerator CGateGen;
@@ -2151,7 +2147,6 @@ Segment36(FuncDataBase& Control,
   EArrGen.setCF<setVariable::CF40_22>();
   EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
   Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
-
 
   // Gate
   CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
