@@ -238,7 +238,8 @@ Segment12::createLinks()
   setLinkSignedCopy(1,*bellowLB,2);
   setLinkSignedCopy(2,*bellowRB,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(3));
   return;
 }
 
