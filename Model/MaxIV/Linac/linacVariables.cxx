@@ -2106,19 +2106,17 @@ Segment36(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
   // Gauge
   std::string name=lKey+"Gauge";
   SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
-  Control.addVariable(name+"YAngle", 180.0);
 
   Control.addVariable(name+"NPorts",1);
   PItemGen.setCF<setVariable::CF40_22>(5.1); //
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+  PItemGen.generatePort(Control,name+"Port0",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(1,0,0));
 
   // Pipes
   PGen.setCF<setVariable::CF40_22>();
@@ -2159,7 +2157,7 @@ Segment36(FuncDataBase& Control,
   CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
   Control.addVariable(lKey+"GateWallThick",0.3);
   Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",-90.0);
+  Control.addVariable(lKey+"GateYAngle",180.0);
   Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
   Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
