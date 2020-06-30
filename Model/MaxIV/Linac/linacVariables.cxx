@@ -1326,7 +1326,6 @@ Segment19(FuncDataBase& Control,
 
   // Vacuum gauge
   std::string name=lKey+"Gauge";
-  SimpleTubeGen.setMat("Stainless304L");
   SimpleTubeGen.setCF<CF40_22>();
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
 
@@ -2121,12 +2120,16 @@ Segment36(FuncDataBase& Control,
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
-  // PipeA
-  const double pipeALength(146.9); // measured
+  // Pipes
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
+  const double pipeALength(146.9); // measured
   PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,98.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,30.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,33.3); // measured
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,35.0); // measured
 
   // magnet locations based on front surfaces of yokes
   // Quadrupole magnets
@@ -2146,19 +2149,11 @@ Segment36(FuncDataBase& Control,
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
-  // PipeB
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,98.7);
-
   // Beam arrival monitor
   EArrGen.setCF<setVariable::CF40_22>();
   EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
   Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
 
-  // PipeC
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,30.0);
-
-  // PipeD
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,33.3);
 
   // Gate
   CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
@@ -2167,8 +2162,6 @@ Segment36(FuncDataBase& Control,
   Control.addVariable(lKey+"GateYAngle",-90.0);
   Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
   Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
-
-  PGen.generatePipe(Control,lKey+"PipeE",0.0,35.0);
 
   return;
 }
