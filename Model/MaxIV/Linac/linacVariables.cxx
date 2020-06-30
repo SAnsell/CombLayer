@@ -2016,7 +2016,6 @@ Segment35(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment35");
 
   setVariable::PipeGenerator PGen;
-  //  setVariable::BPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
@@ -2096,7 +2095,9 @@ Segment36(FuncDataBase& Control,
   setVariable::YagUnitBigGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::ButtonBPMGenerator BPMGen;
+  setVariable::BPMGenerator BPMGen;
+  setVariable::EArrivalMonGenerator EArrGen;
+  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-1010.0,6310.949,0.0);
   const Geometry::Vec3D endPt(-1010.0,6729.589,0.0);
@@ -2120,11 +2121,54 @@ Segment36(FuncDataBase& Control,
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
-  const double pipeALength(37.5); // measured
+  // PipeA
+  const double pipeALength(146.9); // measured
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
+
+  // magnet locations based on front surfaces of yokes
+  // Quadrupole magnets
+  LQGen.generateQuad(Control,lKey+"QuadA",18.55); // measured
+  Control.addVariable(lKey+"QuadALength",18.7); // measured
+  LQGen.generateQuad(Control,lKey+"QuadB",128.55); // measured
+  Control.addVariable(lKey+"QuadBLength",18.7); // measured
+
+  // Corrector magnets
+  CMGen.generateMag(Control,lKey+"CMagH",42.35+1.3,0); // measured with wrong CMagH length
+  // Control.addVariable(lKey+"CMagHMagInnerLength",10.3); // 11.5
+  // Control.addVariable(lKey+"CMagHMagLength",14.2-1.2); //
+  CMGen.generateMag(Control,lKey+"CMagV",61.05+1.1,1); // measured with wrong CMagV length
+
+  // Beam position monitors
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
+  BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
+
+  // PipeB
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,98.7);
+
+  // Beam arrival monitor
+  EArrGen.setCF<setVariable::CF40_22>();
+  EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
+  Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
+
+  // PipeC
+  PGen.generatePipe(Control,lKey+"PipeC",0.0,30.0);
+
+  // PipeD
+  PGen.generatePipe(Control,lKey+"PipeD",0.0,33.3);
+
+  // Gate
+  CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  PGen.generatePipe(Control,lKey+"PipeE",0.0,35.0);
 
   return;
 }
