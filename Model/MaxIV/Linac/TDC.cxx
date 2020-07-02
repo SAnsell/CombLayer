@@ -307,42 +307,43 @@ TDC::createAll(Simulation& System,
       "Segment35"
     });
 
-  typedef std::tuple<std::string,std::string> LinkTYPE;
+  // buildZone : previous : firstVecIndex
+  typedef std::tuple<std::string,std::string,size_t> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
-      {"Segment1",{"l2spf",""}},
-      {"Segment2",{"l2spf","Segment1"}},
-      {"Segment3",{"l2spf","Segment2"}},
-      {"Segment4",{"l2spf","Segment3"}},
-      {"Segment5",{"l2spfTurn","Segment4"}},
-      {"Segment6",{"l2spfTurn","Segment5"}},
-      {"Segment7",{"l2spfAngle","Segment6"}},
-      {"Segment8",{"l2spfAngle","Segment7"}},
-      {"Segment9",{"l2spfAngle","Segment8"}},
-      {"Segment10",{"l2spfAngle","Segment9"}},
-      {"Segment11",{"tdcFront","Segment10"}},
-      {"Segment12",{"tdcFront","Segment11"}},
-      {"Segment13",{"tdcFront","Segment12"}},
-      {"Segment14",{"tdc",""}},
-      {"Segment15",{"tdc","Segment14"}},
-      {"Segment16",{"tdc","Segment15"}},
-      {"Segment17",{"tdc","Segment16"}},
-      {"Segment18",{"tdc","Segment17"}},
-      {"Segment19",{"tdc","Segment18"}},
-      {"Segment20",{"tdc","Segment19"}},
-      {"Segment21",{"tdc","Segment20"}},
-      {"Segment22",{"tdc","Segment21"}},
-      {"Segment23",{"tdc","Segment22"}},
-      {"Segment24",{"tdc","Segment23"}},
-      {"Segment25",{"spfMid","segment24"}},
-      {"Segment27",{"spfLong","segment25"}},
-      {"Segment28",{"spfLong","segment27"}},
-      {"Segment30",{"spfAngle","Segment29"}},
-      {"Segment31",{"spfAngle","Segment30"}},
-      {"Segment32",{"spfAngle","Segment31"}},
-      {"Segment33",{"spfAngle","Segment32"}},
-      {"Segment34",{"spf","Segment33"}},
-      {"Segment35",{"spf","Segment34"}}
+      {"Segment1",{"l2spf","",1}},
+      {"Segment2",{"l2spf","Segment1",1}},
+      {"Segment3",{"l2spf","Segment2",1}},
+      {"Segment4",{"l2spf","Segment3",1}},
+      {"Segment5",{"l2spfTurn","Segment4",1}},
+      {"Segment6",{"l2spfTurn","Segment5",1}},
+      {"Segment7",{"l2spfAngle","Segment6",1}},
+      {"Segment8",{"l2spfAngle","Segment7",1}},
+      {"Segment9",{"l2spfAngle","Segment8",1}},
+      {"Segment10",{"l2spfAngle","Segment9",1}},
+      {"Segment11",{"tdcFront","Segment10",1}},
+      {"Segment12",{"tdcFront","Segment11",1}},
+      {"Segment13",{"tdcFront","Segment12",1}},
+      {"Segment14",{"tdc","",1}},
+      {"Segment15",{"tdc","Segment14",1}},
+      {"Segment16",{"tdc","Segment15",1}},
+      {"Segment17",{"tdc","Segment16",1}},
+      {"Segment18",{"tdc","Segment17",1}},
+      {"Segment19",{"tdc","Segment18",1}},
+      {"Segment20",{"tdc","Segment19",1}},
+      {"Segment21",{"tdc","Segment20",1}},
+      {"Segment22",{"tdc","Segment21",1}},
+      {"Segment23",{"tdc","Segment22",1}},
+      {"Segment24",{"tdc","Segment23",1}},
+      {"Segment25",{"spfMid","segment24",1}},
+      {"Segment27",{"spfLong","segment25",1}},
+      {"Segment28",{"spfLong","segment27",1}},
+      {"Segment30",{"spfAngle","Segment29",1}},
+      {"Segment31",{"spfAngle","Segment30",1}},
+      {"Segment32",{"spfAngle","Segment31",1}},
+      {"Segment33",{"spfAngle","Segment32",1}},
+      {"Segment34",{"spf","Segment33",1}},
+      {"Segment35",{"spf","Segment34",1}}
     });
   const int voidCell(74123);
 
@@ -364,18 +365,21 @@ TDC::createAll(Simulation& System,
 	  const LinkTYPE seglink=segmentLinkMap.at(BL);
 	  const std::string& bzName=std::get<0>(seglink);
 	  const std::string& prevName=std::get<1>(seglink);
+	  const size_t& prevIndex=std::get<2>(seglink);
 	  SegTYPE::const_iterator prevC=SegMap.find(prevName);
+	  const TDCsegment* prevSegPtr=
+	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
 
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
 
 	  std::unique_ptr<attachSystem::InnerZone> buildZone=
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
-	  if (prevC!=SegMap.end())
+
+	  if (prevSegPtr)
 	    {
-	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
 	      const std::vector<HeadRule>& prevJoinItems=
-		prevPtr->getJoinItems();
+		prevSegPtr->getJoinItems();
 	      
 	      if (!prevJoinItems.empty())
 		{
@@ -383,6 +387,7 @@ TDC::createAll(Simulation& System,
 		  segPtr->setFrontSurfs(prevJoinItems);
 		}
 	    }
+	  
 	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
@@ -398,7 +403,7 @@ TDC::createAll(Simulation& System,
 	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-
+	  segPtr->insertPrevSegment(System,prevSegPtr);
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}

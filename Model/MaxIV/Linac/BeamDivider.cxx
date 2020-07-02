@@ -211,7 +211,6 @@ BeamDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+502,
 			   exitOrg+RAxis*(boxLength+exitLength),RAxis);
   Geometry::Vec3D YY(0,1,0);
-  ELog::EM<<"YEXIT "<<std::acos(RAxis.dotProd(YY))*180.0/M_PI<<ELog::endDiag;
 
   ModelSupport::buildCylinder
     (SMap,buildIndex+507,exitOrg,RAxis,exitRadius);

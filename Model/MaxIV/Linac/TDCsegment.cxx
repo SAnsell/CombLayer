@@ -111,6 +111,22 @@ TDCsegment::setFirstItems
   return;
 }
 
+void
+TDCsegment::setFirstItems(attachSystem::FixedComp* FCptr)
+  /*!
+    Allocate the first pointer
+    \param FCptr :: FixedComp Point to pass
+   */
+{
+  attachSystem::ExternalCut* EPtr=
+    dynamic_cast<attachSystem::ExternalCut*>(FCptr);
+
+  // This can be Null
+  firstItemVec.push_back(EPtr);
+  
+  return;
+}
+
 
 void
 TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
@@ -120,11 +136,12 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   */
 {
   ELog::RegMethod RegA("TDCsegement","setFrontSurfs");
-  
+
   for(size_t i=0;i<HRvec.size() && i<firstItemVec.size();i++)
     {
       attachSystem::ExternalCut* FPtr=firstItemVec[i];
-      FPtr->setCutSurf("front",HRvec[i]);
+      if (FPtr)
+	FPtr->setCutSurf("front",HRvec[i]);
     }
   return;
 }

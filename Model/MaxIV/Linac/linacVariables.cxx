@@ -951,7 +951,7 @@ linac2SPFsegment12(FuncDataBase& Control,
   FPGen.generateFlat(Control,lKey+"FlatB",85.4);
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
-  Control.addVariable(lKey+"DipoleBXStep",2.0);
+  Control.addVariable(lKey+"DipoleBXStep",6.0);
   
   BellowGen.generateBellow(Control,lKey+"BellowRB",7.5);
 

@@ -222,8 +222,9 @@ Segment12::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
   bellowRB->insertInCell(System,outerCell);
-  
-  
+
+  // transfer to segment 13
+  CellMap::addCell("LastCell",outerCell);
   buildZone->removeLastMaster(System);  
   return;
 }

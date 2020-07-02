@@ -132,6 +132,7 @@ Segment13::Segment13(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(cMagVerC);
 
+  setFirstItems(nullptr);          /// skip straight joing
   setFirstItems(pipeA);
 }
   
@@ -159,6 +160,7 @@ Segment13::buildObjects(Simulation& System)
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
+
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeA);
@@ -203,6 +205,22 @@ Segment13::createLinks()
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
+
+void
+Segment13::insertPrevSegment(Simulation& System,
+			     const TDCsegment* prevSegPtr) const
+  /*!
+    Insert components that need to be in previous
+    objects
+   */
+{
+  ELog::RegMethod RegA("Segment13","insertPrevSegment");
+  if (prevSegPtr)
+    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell"));
+  return;
+}
+
+
 
 void 
 Segment13::createAll(Simulation& System,

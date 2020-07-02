@@ -87,7 +87,10 @@ class TDCsegment :
 
   void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
+  void setFirstItems(attachSystem::FixedComp*);
 
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
+  
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
 
