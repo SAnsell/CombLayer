@@ -186,6 +186,8 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 
   bool retFlag(0);
 
+  const double tolDist=
+    Control.EvalDefVar<double>(keyName+"Tolerance",errDist);
   size_t testNum(0);
   const std::string Letters=" ABCDEF";
   for(size_t i=0;i<Letters.size();i++)
@@ -220,7 +222,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  
 	  const double D=vEnd.Distance(cadEnd);
 	  
-	  if (D>0.1)
+	  if (D>tolDist)
 	    {
 	      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
 	      ELog::EM<<"Test number "<<testNum<<"\n";
@@ -236,7 +238,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	      double angleError=(cosA>(1.0-1e-7)) ? 0.0 : acos(cosA);
 	      angleError*=180.0/M_PI;
 	      if (angleError>90.0) angleError-=180.0;
-	      if (std::abs(angleError)>Geometry::zeroTol)
+	      if (std::abs(angleError)>tolDist/10.0)
 		{
 		  const Geometry::Vec3D YY(0,1,0);
 		  const double angModel=180.0*acos(modelDVec.dotProd(YY))/M_PI;

@@ -144,6 +144,10 @@ Segment16::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
+  
+  buildZone->removeLastMaster(System);
+  return;
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*bellowA,"back",*bpm);
 
@@ -171,7 +175,6 @@ Segment16::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);
 
   buildZone->removeLastMaster(System);
-
   return;
 }
 
@@ -185,6 +188,8 @@ Segment16::createLinks()
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*pipeC,2);
+
+  //  setLinkSignedCopy(1,*bellowA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

@@ -196,7 +196,6 @@ FlatPipe::createSurfaces()
   // two inner
   if (std::abs(frontHeight-backHeight)<Geometry::zeroTol)
     {
-      ELog::EM<<"FCentere = "<<OrgA<<ELog::endDiag;
       const double R(frontHeight/2.0);
       const Geometry::Vec3D LAxis
 	((Y*length-X*((backWidth-frontWidth)/2.0)).unit());

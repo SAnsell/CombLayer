@@ -532,7 +532,7 @@ linac2SPFsegment4(FuncDataBase& Control,
   LSGen.generateSexu(Control,lKey+"SexuA",39.1);
   LQGen.generateQuad(Control,lKey+"QuadB",62.15);
 
-  YagUnitGen.setCF<CF40_22>();
+  YagUnitGen.setCF<CF50>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
@@ -882,6 +882,7 @@ linac2SPFsegment12(FuncDataBase& Control,
   const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 13
   const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 30
 
+  Control.addVariable(lKey+"Tolerance",0.3);
   Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtA+linacVar::zeroOffset);
@@ -1080,7 +1081,8 @@ Segment15(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::YagScreenGenerator YagGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
 
   const Geometry::Vec3D startPt(-637.608,4507.259,0.0);
   const Geometry::Vec3D endPt(-637.608,4730.259,0.0);
@@ -1120,12 +1122,13 @@ Segment15(FuncDataBase& Control,
   PItemGen.setLength(2.25); // measured
   PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
 
-  const std::string pumpName=lKey+"IonPump";
-  setIonPump3Port(Control,pumpName);
-  Control.addVariable(pumpName+"Port1Length",9.5);
-  Control.addVariable(pumpName+"Port2Length",3.2);
 
-  YagGen.generateScreen(Control,lKey+"YAG",0);
+
+  YagUnitGen.setCF<CF63>();
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",167.0);
 
