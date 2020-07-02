@@ -115,6 +115,7 @@ namespace linacVar
   void Segment34(FuncDataBase&,const std::string&);
   void Segment35(FuncDataBase&,const std::string&);
   void Segment36(FuncDataBase&,const std::string&);
+  void Segment37(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2159,6 +2160,46 @@ Segment36(FuncDataBase& Control,
   return;
 }
 
+void
+Segment37(FuncDataBase& Control,
+		  const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 37
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment37");
+
+  setVariable::CeramicSepGenerator CSGen;
+  setVariable::EBeamStopGenerator EBGen;
+  setVariable::PipeGenerator PGen;
+
+  const Geometry::Vec3D startPt(-1010.0,6729.589,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6825.849,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  CSGen.generateCeramicSep(Control,lKey+"CeramicA");
+  CSGen.generateCeramicSep(Control,lKey+"CeramicB");
+
+  EBGen.generateEBeamStop(Control,lKey+"BeamStop",0);
+  Control.addVariable(lKey+"BeamStopWallThick",1.0); // measured
+  Control.addVariable(lKey+"BeamStopLength",41.0); // measured
+  Control.addVariable(lKey+"BeamStopWidth",11.0); // measured
+  Control.addVariable(lKey+"BeamStopStopRadius",5.2); // measured
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setNoWindow();
+
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"Pipe",0.0,20.26);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -2324,6 +2365,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment34(Control,"SPF34");
   linacVar::Segment35(Control,"SPF35");
   linacVar::Segment36(Control,"SPF36");
+  linacVar::Segment37(Control,"SPF37");
 
   return;
 }
