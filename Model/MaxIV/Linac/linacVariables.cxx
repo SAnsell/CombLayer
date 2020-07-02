@@ -116,6 +116,7 @@ namespace linacVar
   void Segment35(FuncDataBase&,const std::string&);
   void Segment36(FuncDataBase&,const std::string&);
   void Segment37(FuncDataBase&,const std::string&);
+  void Segment38(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2180,7 +2181,7 @@ Segment37(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
-		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   CSGen.generateCeramicSep(Control,lKey+"CeramicA");
   CSGen.generateCeramicSep(Control,lKey+"CeramicB");
@@ -2196,6 +2197,46 @@ Segment37(FuncDataBase& Control,
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"Pipe",0.0,20.26);
+
+  return;
+}
+
+void
+Segment38(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 38
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment17");
+  setVariable::PipeGenerator PGen;
+  setVariable::BellowGenerator BellowGen;
+
+  const Geometry::Vec3D startPt(-1010.0,6825.849,0.0);
+  const Geometry::Vec3D endPt(-1010.0,7355.379,0.0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Aluminium","Aluminium");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",0.0,285.0); // measured
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeB",0.0,221.0); // measured
+
+
+  const std::string pumpName=lKey+"IonPump";
+  setIonPump2Port(Control,pumpName);
+  Control.addVariable(lKey+"IonPumpYAngle",180.0);
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // measured
 
   return;
 }
@@ -2366,6 +2407,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment35(Control,"SPF35");
   linacVar::Segment36(Control,"SPF36");
   linacVar::Segment37(Control,"SPF37");
+  linacVar::Segment38(Control,"SPF38");
 
   return;
 }

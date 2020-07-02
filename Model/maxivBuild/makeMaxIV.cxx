@@ -187,8 +187,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment31","Segment32","Segment33",
 	       "Segment34"}},
 	 {"SPF",{"Segment30","Segment31","Segment32",
-		 "Segment33","Segment34","Segment35","Segment36",
-		 "Segment37"}},
+		 "Segment33","Segment34","Segment35",
+		 "Segment36","Segment37","Segment38"}},
 
        {"Segment1",{} },                             // first only
        {"Segment2",{} },                             // second only
@@ -222,7 +222,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment34",{} },                              // 34th only
        {"Segment35",{} },                              // 35th only
        {"Segment36",{} },                              // 36th only
-       {"Segment37",{} }                               // 37th only
+       {"Segment37",{} },                              // 37th only
+       {"Segment38",{} }                               // 38th only
     });
 
   bool activeLinac(0);
