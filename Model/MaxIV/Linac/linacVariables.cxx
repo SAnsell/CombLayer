@@ -117,6 +117,7 @@ namespace linacVar
   void Segment36(FuncDataBase&,const std::string&);
   void Segment37(FuncDataBase&,const std::string&);
   void Segment38(FuncDataBase&,const std::string&);
+  void Segment39(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2241,6 +2242,71 @@ Segment38(FuncDataBase& Control,
   return;
 }
 
+void
+Segment39(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 39
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment17");
+
+  ELog::EM << "SPH39: start/end of SPF38 are used to avoid geometry error" << ELog::endWarn;
+  // SPF39
+  // const Geometry::Vec3D startPt(-1010.0,7355.379,0.0);
+  // const Geometry::Vec3D endPt(-1010.0,7449.099,0.0);
+
+  // SPF38
+  const Geometry::Vec3D startPt(-1010.0,6825.849,0.0);
+  const Geometry::Vec3D endPt(-1010.0,7355.379,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Stripline BPM
+  setVariable::BPMGenerator BPMGen;
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  // Yag screen and its unit
+  setVariable::YagUnitBigGenerator YagUnitGen;
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  setVariable::YagScreenGenerator YagScreenGen;
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+  Control.addVariable(lKey+"YagScreenZStep",-3.3);
+
+  // Gate
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  // Pipe
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"Pipe",0.0,37.0);
+
+  // Bellow
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5);
+
+  return;
+}
+
 
 void
 wallVariables(FuncDataBase& Control,
@@ -2408,6 +2474,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment36(Control,"SPF36");
   linacVar::Segment37(Control,"SPF37");
   linacVar::Segment38(Control,"SPF38");
+  linacVar::Segment39(Control,"SPF39");
 
   return;
 }
