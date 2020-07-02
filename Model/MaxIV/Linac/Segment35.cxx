@@ -122,7 +122,7 @@ Segment35::Segment35(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(bellow);
 
-  setFirstItem(yagUnit);
+  setFirstItems(yagUnit);
 }
 
 Segment35::~Segment35()
@@ -195,7 +195,7 @@ Segment35::createLinks()
   setLinkSignedCopy(0,*yagUnit,1);
   setLinkSignedCopy(1,*bellow,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

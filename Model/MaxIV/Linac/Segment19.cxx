@@ -102,7 +102,7 @@ Segment19::Segment19(const std::string& Key) :
   OR.addObject(gateB);
   OR.addObject(bellowB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment19::~Segment19()

@@ -133,7 +133,7 @@ Segment27::Segment27(const std::string& Key) :
   OR.addObject(bellowAC);
   OR.addObject(bellowBC);
 
-  setFirstItem(bellowAA);
+  setFirstItems(bellowAA);
 }
 
 Segment27::~Segment27()
@@ -284,7 +284,7 @@ Segment27::createLinks()
   FixedComp::nameSideIndex(4,"frontLower");
   FixedComp::nameSideIndex(5,"backLower");
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
     
   return;
 }

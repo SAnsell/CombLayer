@@ -116,7 +116,7 @@ Segment21::Segment21(const std::string& Key) :
   OR.addObject(cMagV);
   OR.addObject(bellowB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment21::~Segment21()

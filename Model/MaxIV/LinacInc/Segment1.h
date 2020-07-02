@@ -73,7 +73,7 @@ class Segment1 :
   
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
   
   Segment1(const std::string&);

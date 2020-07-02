@@ -210,6 +210,9 @@ BeamDivider::createSurfaces()
   // Exit [500]
   ModelSupport::buildPlane(SMap,buildIndex+502,
 			   exitOrg+RAxis*(boxLength+exitLength),RAxis);
+  Geometry::Vec3D YY(0,1,0);
+  ELog::EM<<"YEXIT "<<std::acos(RAxis.dotProd(YY))*180.0/M_PI<<ELog::endDiag;
+
   ModelSupport::buildCylinder
     (SMap,buildIndex+507,exitOrg,RAxis,exitRadius);
   ModelSupport::buildCylinder
@@ -318,7 +321,6 @@ BeamDivider::createLinks()
    */
 {
   ELog::RegMethod RegA("BeamDivider","createLinks");
-
   const Geometry::Vec3D mainOrg(Origin+X*mainXStep);
   const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
   const double ang(M_PI*exitAngle/180.0);
@@ -347,9 +349,11 @@ BeamDivider::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BeamDivider","createAll");
-  
+  Geometry::Vec3D YA(0,1,0);
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();

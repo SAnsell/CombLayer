@@ -125,7 +125,7 @@ Segment3::Segment3(const std::string& Key) :
   OR.addObject(flatB);
   OR.addObject(dipoleB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
   
 Segment3::~Segment3()

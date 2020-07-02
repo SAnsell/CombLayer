@@ -123,7 +123,7 @@ Segment6::Segment6(const std::string& Key) :
   OR.addObject(beamStop);
   OR.addObject(ceramicB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
   
 Segment6::~Segment6()

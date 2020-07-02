@@ -120,7 +120,7 @@ Segment28::Segment28(const std::string& Key) :
   OR.addObject(bellowAB);
   OR.addObject(bellowBB);
 
-  setFirstItem(pipeAA);
+  setFirstItems(pipeAA);
 }
 
 Segment28::~Segment28()
@@ -229,13 +229,13 @@ Segment28::createLinks()
   setLinkSignedCopy(1,*bellowAB,2);
   setLinkSignedCopy(2,*bellowBB,2);
 
-  FixedComp::nameSideIndex(1,"frontFlat");
+  FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");
   FixedComp::nameSideIndex(2,"Mid");
 
 
   //    setLinkSignedCopy(1,*triPipeA,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   
   
@@ -277,7 +277,6 @@ Segment28::createAll(Simulation& System,
   ELog::RegMethod RControl("Segment28","build");
 
   FixedRotate::populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();

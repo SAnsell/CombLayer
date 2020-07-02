@@ -98,7 +98,7 @@ Segment32::Segment32(const std::string& Key) :
   OR.addObject(dmB);
   OR.addObject(bellow);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment32::~Segment32()
@@ -150,7 +150,7 @@ Segment32::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*bellow,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
 }

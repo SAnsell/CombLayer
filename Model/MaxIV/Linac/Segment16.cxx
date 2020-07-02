@@ -116,7 +116,7 @@ Segment16::Segment16(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(pipeC);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment16::~Segment16()

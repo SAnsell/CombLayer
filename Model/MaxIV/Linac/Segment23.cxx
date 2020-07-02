@@ -124,7 +124,7 @@ Segment23::Segment23(const std::string& Key) :
   OR.addObject(gate);
   OR.addObject(bellowC);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment23::~Segment23()
@@ -202,7 +202,7 @@ Segment23::createLinks()
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowC,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
 }

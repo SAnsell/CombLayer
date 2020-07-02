@@ -101,7 +101,7 @@ namespace tdcSystem
 
   
 Segment12::Segment12(const std::string& Key) :
-  TDCsegment(Key,3),
+  TDCsegment(Key,6),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
@@ -235,9 +235,14 @@ Segment12::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowLB,2);
-  setLinkSignedCopy(2,*bellowRB,2);
+  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
 
+  setLinkSignedCopy(2,*bellowRB,2);  // magnet exti
+
+  FixedComp::nameSideIndex(1,"straightExit");
+  FixedComp::nameSideIndex(2,"magnetExit");
+  ELog::EM<<"Frnt == "<<bellowA->getLinkPt(1)<<ELog::endDiag;
+  
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   return;

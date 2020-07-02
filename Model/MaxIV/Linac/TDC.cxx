@@ -374,7 +374,7 @@ TDC::createAll(Simulation& System,
 	  if (prevC!=SegMap.end())
 	    {
 	      const std::shared_ptr<TDCsegment>& prevPtr(prevC->second);
-	      const std::vector<const HeadRule>& prevJoinItems=
+	      const std::vector<HeadRule>& prevJoinItems=
 		prevPtr->getJoinItems();
 	      
 	      if (!prevJoinItems.empty())
@@ -395,7 +395,7 @@ TDC::createAll(Simulation& System,
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
-
+	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 

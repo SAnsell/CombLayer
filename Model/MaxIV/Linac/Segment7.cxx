@@ -120,7 +120,7 @@ Segment7::Segment7(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(cMagVertA);
 
-  setFirstItem(pipeA);  
+  setFirstItems(pipeA);  
 }
   
 Segment7::~Segment7()

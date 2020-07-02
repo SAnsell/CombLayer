@@ -40,6 +40,7 @@
 #include "RegMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Exception.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "Code.h"
@@ -78,8 +79,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(nullptr),
-  lastFlag(0),firstItemPtr(nullptr)
+  buildZone(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -101,10 +101,11 @@ TDCsegment::setFirstItems
     \param FCptr :: FixedComp Point to pass
    */
 {
-  const attachSystem::ExternalCut* EPtr=
-    dynamic_cast<const attachSystem::ExternalCut*>(FCptr.get());
+  attachSystem::ExternalCut* EPtr=
+    dynamic_cast<attachSystem::ExternalCut*>(FCptr.get());
   if (!EPtr)
     throw ColErr::DynamicConv("ExternalCut","FixedComp","FCPtr");
+
   firstItemVec.push_back(EPtr);
   
   return;
@@ -118,10 +119,13 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
     \param HR :: Front head rule
   */
 {
-
-  for(size_t i=0;i<HRvec.size() && i<firstItemVec.size();
-      if (firstItemPtr)
-	firstItemPtr->setCutSurf("front",HR);
+  ELog::RegMethod RegA("TDCsegement","setFrontSurfs");
+  
+  for(size_t i=0;i<HRvec.size() && i<firstItemVec.size();i++)
+    {
+      attachSystem::ExternalCut* FPtr=firstItemVec[i];
+      FPtr->setCutSurf("front",HRvec[i]);
+    }
   return;
 }
 
@@ -178,9 +182,9 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
 	  testNum++;
-	  const Geometry::Vec3D startPoint=
+	  const Geometry::Vec3D cadStart=
 	    Control.EvalVar<Geometry::Vec3D>(AKey);
-	  const Geometry::Vec3D endPoint=
+	  const Geometry::Vec3D cadEnd=
 	    Control.EvalVar<Geometry::Vec3D>(BKey);
 	  const std::string startLink=
 	    Control.EvalDefVar<std::string>
@@ -193,30 +197,42 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  // Note that this is likely different from true start point:
 	  // as we can apply initial offset to the generation object
 	  //
-	  const Geometry::Vec3D realStart=FixedComp::getLinkPt(startLink);
-	  const Geometry::Vec3D realEnd=FixedComp::getLinkPt(endLink);
-	  const Geometry::Vec3D vEnd(realEnd-(realStart-startPoint));
+	  const Geometry::Vec3D modelStart=FixedComp::getLinkPt(startLink);
+	  const Geometry::Vec3D modelEnd=FixedComp::getLinkPt(endLink);
+	  const Geometry::Vec3D vEnd(modelEnd-(modelStart-cadStart));
 	  
-	  const double D=vEnd.Distance(endPoint);
+	  const double D=vEnd.Distance(cadEnd);
 	  
 	  if (D>0.1)
 	    {
 	      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
 	      ELog::EM<<"Test number "<<testNum<<"\n";
 	      ELog::EM<<"--------------------\n\n";
-	      ELog::EM<<"Start Point  "<<startPoint<<"\n";
-	      ELog::EM<<"End Point    "<<endPoint<<"\n";
-	      ELog::EM<<"length ==    "<<startPoint.Distance(endPoint)<<"\n";
-	      const double cosA=(realEnd-realStart).unit().
-		dotProd((endPoint-startPoint).unit());
+	      ELog::EM<<"CAD Start Point  "<<cadStart<<"\n";
+	      ELog::EM<<"CAD End Point    "<<cadEnd<<"\n";
+	      ELog::EM<<"CAD length ==    "<<cadStart.Distance(cadEnd)<<"\n";
+
+	      const Geometry::Vec3D modelDVec((modelEnd-modelStart).unit());
+	      const Geometry::Vec3D cadDVec((cadEnd-cadStart).unit());
+
+	      const double cosA=modelDVec.dotProd(cadDVec);
 	      double angleError=(cosA>(1.0-1e-7)) ? 0.0 : acos(cosA);
 	      angleError*=180.0/M_PI;
 	      if (angleError>90.0) angleError-=180.0;
-	      ELog::EM<<"Angle error ==    "<<angleError<<"\n\n";
+	      if (std::abs(angleError)>Geometry::zeroTol)
+		{
+		  const Geometry::Vec3D YY(0,1,0);
+		  const double angModel=180.0*acos(modelDVec.dotProd(YY))/M_PI;
+		  const double angCAD=180.0*acos(cadDVec.dotProd(YY))/M_PI;
+		  
+		  ELog::EM<<"Model Angle   ==    "<<angModel<<"\n";
+		  ELog::EM<<"CAD Angle     ==    "<<angCAD<<"\n";
+		  ELog::EM<<"Angle error    ==    "<<angleError<<"\n\n";
+		}
 	      
-	      ELog::EM<<"model Start     "<<realStart<<"\n";
-	      ELog::EM<<"model End       "<<realEnd<<"\n";
-	      ELog::EM<<"model length == "<<realEnd.Distance(realStart)<<"\n\n";
+	      ELog::EM<<"model Start     "<<modelStart<<"\n";
+	      ELog::EM<<"model End       "<<modelEnd<<"\n";
+	      ELog::EM<<"model length == "<<modelEnd.Distance(modelStart)<<"\n\n";
 	      
 	      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
 	      
@@ -227,18 +243,6 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   
     }
   return retFlag;
-}
-
-void
-TDCsegment::setLastSurf(const HeadRule& HR)
-  /*!
-    Set the last surface rule
-    \param HR :: Head rule to use
-   */
-{
-  lastFlag=1;
-  lastRule=HR;
-  return;
 }
 
 

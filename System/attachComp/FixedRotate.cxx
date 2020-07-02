@@ -264,7 +264,7 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedRotate","createUnitVector");
-
+      
   FixedComp::createUnitVector(FC,sideIndex);  
   applyOffset();
     

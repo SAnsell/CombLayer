@@ -155,7 +155,7 @@ Segment25::Segment25(const std::string& Key) :
   OR.addObject(pipeBB);
   OR.addObject(pipeCB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment25::~Segment25()
@@ -366,7 +366,7 @@ Segment25::createLinks()
   FixedComp::nameSideIndex(1,"Flat");
   FixedComp::nameSideIndex(2,"Mid");
   FixedComp::nameSideIndex(3,"Lower");
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   
   

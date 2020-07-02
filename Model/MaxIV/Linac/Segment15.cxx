@@ -103,7 +103,7 @@ Segment15::Segment15(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(pipeB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment15::~Segment15()

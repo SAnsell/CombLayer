@@ -878,23 +878,30 @@ linac2SPFsegment12(FuncDataBase& Control,
   setVariable::BeamDividerGenerator BDGen(CF63unit);
   setVariable::PipeTubeGenerator SimpleTubeGen;
 
-  const Geometry::Vec3D startPt(-547.597,3697.597,0.0);
-  const Geometry::Vec3D endPt(-593.379,3968.258,0.0);  // to segment 13
-  const Geometry::Vec3D exitPt(-609.286,3969.122,0.0);  // to segment 30
+  const Geometry::Vec3D startPtA(-547.597,3697.597,0.0);
+  const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 13
+  const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 30
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetB",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffset",exitPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"SndEndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"FrontLinkA","front");
+  Control.addVariable(lKey+"BackLinkA","straightExit");
+  Control.addVariable(lKey+"FrontLinkB","front");
+  Control.addVariable(lKey+"BackLinkB","magnetExit");
+
   Control.addVariable(lKey+"XYAngle",12.8);
-
+  
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
   
-  FPGen.generateFlat(Control,lKey+"FlatA",88.0);
+  FPGen.generateFlat(Control,lKey+"FlatA",85.4);
   Control.addVariable(lKey+"FlatAXYAngle",-1.6);
 
   DIBGen.generate(Control,lKey+"DipoleA");
@@ -903,7 +910,8 @@ linac2SPFsegment12(FuncDataBase& Control,
   BDGen.setAFlangeCF<setVariable::CF50>();
   BDGen.setBFlangeCF<setVariable::CF40>();
   BDGen.setEFlangeCF<setVariable::CF40>();
-  //Angle(1.6) / short on left /  -1: left side aligned
+  //Angle (1.6) / short on left /  -1: left side aligned
+  // angle of 1.6 gets us to direct (12.8 against y for exitpipe)
   BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,0);
 
   BellowGen.generateBellow(Control,lKey+"BellowLA",7.5);
@@ -935,14 +943,15 @@ linac2SPFsegment12(FuncDataBase& Control,
   PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
 
   // -----------
-  PGen.generatePipe(Control,lKey+"PipeLA",100.0);
+  PGen.generatePipe(Control,lKey+"PipeLA",93.3);
   BellowGen.generateBellow(Control,lKey+"BellowLB",7.5);  
 
   // RIGHT SIDE
 
-  FPGen.generateFlat(Control,lKey+"FlatB",90.0);
-  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
+  FPGen.generateFlat(Control,lKey+"FlatB",85.4);
+  Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBXStep",2.0);
   
   BellowGen.generateBellow(Control,lKey+"BellowRB",7.5);
 

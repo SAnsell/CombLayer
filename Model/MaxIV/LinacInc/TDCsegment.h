@@ -85,7 +85,7 @@ class TDCsegment :
 		    const std::string&,
 		    constructSystem::BlankTube&) const;
 
-  void setFrontSurfs(const std::vector<const HeadRule>&);
+  void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

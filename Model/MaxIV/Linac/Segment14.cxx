@@ -105,7 +105,7 @@ Segment14::Segment14(const std::string& Key) :
   OR.addObject(gateA);
   OR.addObject(bellowB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment14::~Segment14()
