@@ -345,19 +345,19 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdc","Segment21",1}},
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
-      {"Segment25",{"spfMid","segment24",1}},
-      {"Segment27",{"spfLong","segment25",1}},
-      {"Segment28",{"spfLong","segment27",1}},
-      {"Segment30",{"spfAngle","Segment29",1}},
+      {"Segment25",{"spfMid","Segment24",1}},
+      {"Segment27",{"spfLong","Segment25",1}},
+      {"Segment28",{"spfLong","Segment27",1}},
+      {"Segment30",{"spfAngle","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
-      {"Segment34",{"spf","Segment33"}},
-      {"Segment35",{"spf","Segment34"}},
-      {"Segment36",{"spf","Segment35"}},
-      {"Segment37",{"spf","Segment36"}},
-      {"Segment38",{"spf","Segment37"}},
-      {"Segment39",{"spf","Segment38"}}
+      {"Segment34",{"spf","Segment33",1}},
+      {"Segment35",{"spf","Segment34",1}},
+      {"Segment36",{"spf","Segment35",1}},
+      {"Segment37",{"spf","Segment36",1}},
+      {"Segment38",{"spf","Segment37",1}},
+      {"Segment39",{"spf","Segment38",1}}
     });
   const int voidCell(74123);
 
@@ -394,7 +394,6 @@ TDC::createAll(Simulation& System,
 	    {
 	      const std::vector<HeadRule>& prevJoinItems=
 		prevSegPtr->getJoinItems();
-	      
 	      if (!prevJoinItems.empty())
 		{
 		  buildZone->setFront(prevJoinItems.front());
@@ -418,7 +417,7 @@ TDC::createAll(Simulation& System,
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
-	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}
     }

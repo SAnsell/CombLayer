@@ -2339,11 +2339,11 @@ Segment36(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   const double pipeALength(146.9); // measured
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,pipeALength);
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,98.7); // measured
-  PGen.generatePipe(Control,lKey+"PipeC",0.0,30.0); // measured
-  PGen.generatePipe(Control,lKey+"PipeD",0.0,33.3); // measured
-  PGen.generatePipe(Control,lKey+"PipeE",0.0,35.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",pipeALength);
+  PGen.generatePipe(Control,lKey+"PipeB",98.7); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",30.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeD",33.3); // measured
+  PGen.generatePipe(Control,lKey+"PipeE",35.0); // measured
 
   // magnet locations based on front surfaces of yokes
   // Quadrupole magnets
@@ -2414,7 +2414,7 @@ Segment37(FuncDataBase& Control,
   PGen.setNoWindow();
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"Pipe",0.0,20.26);
+  PGen.generatePipe(Control,lKey+"Pipe",20.26);
 
   return;
 }
@@ -2443,9 +2443,9 @@ Segment38(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",0.0,285.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",285.0); // measured
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",0.0,221.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",221.0); // measured
 
 
   const std::string pumpName=lKey+"IonPump";
@@ -2454,7 +2454,7 @@ Segment38(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",0.0,7.5); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
 
   return;
 }
@@ -2513,13 +2513,13 @@ Segment39(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",0.0,37.0);
+  PGen.generatePipe(Control,lKey+"Pipe",37.0);
 
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",0.0,7.5);
+  BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
 
   return;
 }

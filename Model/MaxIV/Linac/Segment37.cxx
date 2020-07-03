@@ -94,7 +94,7 @@ Segment37::Segment37(const std::string& Key) :
   OR.addObject(ceramicB);
   OR.addObject(pipe);
 
-  setFirstItem(ceramicA);
+  setFirstItems(ceramicA);
 }
 
 Segment37::~Segment37()
@@ -147,7 +147,7 @@ Segment37::createLinks()
   setLinkSignedCopy(0,*ceramicA,1);
   setLinkSignedCopy(1,*pipe,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

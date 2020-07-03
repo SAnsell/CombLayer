@@ -124,7 +124,7 @@ Segment36::Segment36(const std::string& Key) :
   OR.addObject(gate);
   OR.addObject(pipeE);
 
-  setFirstItem(gauge);
+  setFirstItems(gauge);
 }
 
 Segment36::~Segment36()
@@ -202,7 +202,7 @@ Segment36::createLinks()
   setLinkSignedCopy(0,*gauge,1);
   setLinkSignedCopy(1,*pipeE,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

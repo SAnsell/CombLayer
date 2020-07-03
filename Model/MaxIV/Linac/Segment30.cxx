@@ -133,16 +133,21 @@ Segment30::buildObjects(Simulation& System)
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
+
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System,*gauge,-1);
+
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
   gauge->insertAllInCell(System,outerCell);
+
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gauge,"back",*pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bellow);
+  buildZone->removeLastMaster(System);
+  return;
 
   const constructSystem::portItem& ionPumpBackPort =
     buildIonPump2Port(System,*buildZone,masterCell,*bellow,"back",*ionPump);
@@ -165,7 +170,9 @@ Segment30::createLinks()
   ELog::RegMethod RegA("Segment30","createLinks");
 
   setLinkSignedCopy(0,*gauge,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  //  setLinkSignedCopy(1,*pipeB,2);
+
+  setLinkSignedCopy(0,*gauge,2);
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
