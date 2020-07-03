@@ -102,6 +102,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "BlankTube.h"
+#include "ButtonBPM.h"
 
 
 #include "makeSingleItem.h"
@@ -143,7 +144,7 @@ makeSingleItem::build(Simulation& System,
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","BPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube",
+      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube","ButtonBPM",
       "Help","help"
     });
 
@@ -354,11 +355,18 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="LSexupole")
     {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("QHVC"));
       std::shared_ptr<tdcSystem::LSexupole>
 	LS(new tdcSystem::LSexupole("LS","LS"));
 
+      OR.addObject(VC);
       OR.addObject(LS);
 
+      VC->addInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      LS->setCutSurf("Inner",*VC,"outerPipe");
       LS->addInsertCell(voidCell);
       LS->createAll(System,World::masterOrigin(),0);
 
@@ -658,7 +666,21 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+    if (item == "ButtonBPM" )
+    {
+      std::shared_ptr<tdcSystem::ButtonBPM>
+	buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
 
+      OR.addObject(buttonBPM);
+
+      buttonBPM->addInsertCell(voidCell);
+      buttonBPM->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+
+  if (item=="Help" || item=="help")
 
   if (item=="Help" || item=="help")
     {

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/Segment17.cxx
+ * File: Linac/Segment38.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -70,19 +70,19 @@
 #include "BlankTube.h"
 
 #include "TDCsegment.h"
-#include "Segment17.h"
+#include "Segment38.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-Segment17::Segment17(const std::string& Key) :
+Segment38::Segment38(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,28 +92,28 @@ Segment17::Segment17(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
-  OR.addObject(bellowA);
   OR.addObject(ionPump);
   OR.addObject(pipeB);
+  OR.addObject(bellowA);
 
-  setFirstItems(pipeA);
+  setFirstItem(pipeA);
 }
 
-Segment17::~Segment17()
+Segment38::~Segment38()
   /*!
     Destructor
    */
 {}
 
 void
-Segment17::buildObjects(Simulation& System)
+Segment38::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment17","buildObjects");
+  ELog::RegMethod RegA("Segment38","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -124,14 +124,14 @@ Segment17::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
-
   const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*ionPump);
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*ionPump);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeB,"back",*bellowA);
 
   buildZone->removeLastMaster(System);
 
@@ -139,22 +139,22 @@ Segment17::buildObjects(Simulation& System)
 }
 
 void
-Segment17::createLinks()
+Segment38::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("Segment17","createLinks");
+  ELog::RegMethod RegA("Segment38","createLinks");
 
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(1,*bellowA,2);
+  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
-  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
 void
-Segment17::createAll(Simulation& System,
+Segment38::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -165,7 +165,7 @@ Segment17::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment17","build");
+  ELog::RegMethod RControl("Segment38","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

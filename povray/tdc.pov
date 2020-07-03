@@ -163,6 +163,28 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
+  #case(strcmp(ITEM,"Segment36")) // SPF segment 36
+    #declare cameraLocation = <-760, 6900, 30>;
+    #declare cameraLookAt   = <-858, 6900, 0>;
+    #declare projection = 1;
+  #break
+  #case(strcmp(ITEM,"Segment37")) // SPF segment 37
+    #declare cameraLocation = <-760, 7200, 30>;
+    #declare cameraLookAt   = <-858, 7250, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment38")) // SPF segment 38
+    #declare cameraLocation = <-760, 7600, 30>;
+    #declare cameraLookAt   = <-858, 7600, 0>;
+    #declare projection = 1;
+  #break
+  #case(strcmp(ITEM,"Segment39")) // SPF segment 39
+    #declare cameraLocation = <-760, 7300, 60>;
+    #declare cameraLookAt   = <-858, 7350, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
   #case(strcmp(ITEM,"Segment1000")) // beamline view
     #declare cameraLocation = <200, 160, 40>;
     #declare cameraLookAt   = <125, 160, 0>;
@@ -227,4 +249,4 @@ camera {
 
 background { color White }
 
-#include "b.inc"
+#include "a.inc"

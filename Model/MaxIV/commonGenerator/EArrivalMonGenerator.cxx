@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/EArrivalMonGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,13 +67,13 @@ EArrivalMonGenerator::EArrivalMonGenerator() :
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
   windowThick(0.7),voidMat("Void"),mainMat("Copper"),
-  windowMat("SiO2"),flangeMat("Stainless304")
+  windowMat("SiO2"),flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
-EArrivalMonGenerator::~EArrivalMonGenerator() 
+
+EArrivalMonGenerator::~EArrivalMonGenerator()
  /*!
    Destructor
  */
@@ -103,14 +103,14 @@ EArrivalMonGenerator::setFlangeCF()
   return;
 }
 
-    
+
 void
 EArrivalMonGenerator::generateMon(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double yStep)  const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
   */
@@ -159,5 +159,5 @@ template void EArrivalMonGenerator::setFlangeCF<CF40_22>();
 template void EArrivalMonGenerator::setFlangeCF<CF40>();
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable

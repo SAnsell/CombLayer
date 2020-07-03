@@ -102,6 +102,10 @@
 #include "Segment32.h"
 #include "Segment33.h"
 #include "Segment35.h"
+#include "Segment36.h"
+#include "Segment37.h"
+#include "Segment38.h"
+#include "Segment39.h"
 
 #include "TDC.h"
 
@@ -146,7 +150,11 @@ TDC::TDC(const std::string& KN) :
     { "Segment32",std::make_shared<Segment32>("SPF32") },
     { "Segment33",std::make_shared<Segment33>("SPF33") },
     { "Segment34",std::make_shared<Segment32>("SPF34") },
-    { "Segment35",std::make_shared<Segment35>("SPF35") }
+    { "Segment35",std::make_shared<Segment35>("SPF35") },
+    { "Segment36",std::make_shared<Segment36>("SPF36") },
+    { "Segment37",std::make_shared<Segment37>("SPF37") },
+    { "Segment38",std::make_shared<Segment38>("SPF38") },
+    { "Segment39",std::make_shared<Segment39>("SPF39") }
 
   } )
   /*!
@@ -304,13 +312,15 @@ TDC::createAll(Simulation& System,
       "Segment27","Segment28",
       "Segment29","Segment30","Segment31"
       "Segment32","Segment33","Segment34",
-      "Segment35"
+      "Segment35","Segment36","Segment37",
+      "Segment38","Segment39"
     });
 
   // buildZone : previous : firstVecIndex
   typedef std::tuple<std::string,std::string,size_t> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
+
       {"Segment1",{"l2spf","",1}},
       {"Segment2",{"l2spf","Segment1",1}},
       {"Segment3",{"l2spf","Segment2",1}},
@@ -342,8 +352,12 @@ TDC::createAll(Simulation& System,
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
-      {"Segment34",{"spf","Segment33",1}},
-      {"Segment35",{"spf","Segment34",1}}
+      {"Segment34",{"spf","Segment33"}},
+      {"Segment35",{"spf","Segment34"}},
+      {"Segment36",{"spf","Segment35"}},
+      {"Segment37",{"spf","Segment36"}},
+      {"Segment38",{"spf","Segment37"}},
+      {"Segment39",{"spf","Segment38"}}
     });
   const int voidCell(74123);
 

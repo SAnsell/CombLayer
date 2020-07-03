@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment35.h
+ * File:   LinacInc/Segment36.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,71 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment35_h
-#define tdcSystem_Segment35_h
+#ifndef tdcSystem_Segment36_h
+#define tdcSystem_Segment36_h
 
 namespace tdcSystem
 {
-  class YagUnitBig;
-  class ButtonBPM;
+  class BPM;
   /*!
-    \class Segment35
+    \class Segment36
     \version 1.0
     \author K. Batkov
     \date June 2020
-    \brief SPF segment 35
+    \brief SPF segment 36
   */
 
-class Segment35 :
+class Segment36 :
   public TDCsegment
 {
  private:
-
-  /// yag station [big type]
-  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;
-
-  /// yag screen
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-
-  // first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-
-  /// Quadrupole magnet
-  std::shared_ptr<tdcSystem::LQuadF> quadA;
-
-  /// Button BPM
-  std::shared_ptr<tdcSystem::ButtonBPM> bpm;
-
-  // main magnetic pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-
-  /// Quad endng QSQ
-  std::shared_ptr<tdcSystem::LQuadF> quadB;
-
-  /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;
-
-  /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;
-
-  /// mirror chamber
-  std::shared_ptr<constructSystem::BlankTube> mirrorChamber;
-
-  /// exit pipe + corrector mag
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-
-  /// bellow
-  std::shared_ptr<constructSystem::Bellows> bellow;
+  std::shared_ptr<constructSystem::PipeTube> gauge;   // #3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #4
+  std::shared_ptr<tdcSystem::LQuadF> quadA;           // #5
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;     // #6
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;     // #6
+  std::shared_ptr<tdcSystem::LQuadF> quadB;           // #5
+  std::shared_ptr<tdcSystem::BPM> bpmA;                // #9 - stripline BPM
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #8
+  std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon; // #9
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #10
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #11
+  std::shared_ptr<tdcSystem::BPM> bpmB;               // #12
+  std::shared_ptr<xraySystem::CylGateValve> gate;     // #13
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #11
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Segment35(const std::string&);
-  Segment35(const Segment35&);
-  Segment35& operator=(const Segment35&);
-  ~Segment35();
+  Segment36(const std::string&);
+  Segment36(const Segment36&);
+  Segment36& operator=(const Segment36&);
+  ~Segment36();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

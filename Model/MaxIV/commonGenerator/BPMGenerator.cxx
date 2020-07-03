@@ -106,7 +106,7 @@ template<typename CF>
 void
 BPMGenerator::setBFlangeCF()
   /*!
-    Setter for flange A
+    Setter for flange B
    */
 {
   flangeBRadius=CF::flangeRadius;

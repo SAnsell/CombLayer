@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment17.h
+ * File:   LinacInc/Segment37.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,41 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment17_h
-#define tdcSystem_Segment17_h
+#ifndef tdcSystem_Segment37_h
+#define tdcSystem_Segment37_h
 
 namespace tdcSystem
 {
+
   /*!
-    \class Segment17
+    \class Segment37
     \version 1.0
     \author K. Batkov
-    \date May 2020
-    \brief TDC segment 17
+    \date July 2020
+    \brief SPF segment 37
   */
 
-class Segment17 :
+class Segment37 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
-  std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #2
-  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
+  std::shared_ptr<tdcSystem::CeramicSep> ceramicA;   // #1 ceramic gap
+  std::shared_ptr<tdcSystem::EBeamStop> beamStop;    // #2 electron beam stop
+  std::shared_ptr<tdcSystem::CeramicSep> ceramicB;   // #1 ceramic gap
+  std::shared_ptr<constructSystem::VacuumPipe> pipe; // #3
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Segment17(const std::string&);
-  Segment17(const Segment17&);
-  Segment17& operator=(const Segment17&);
-  ~Segment17();
+  Segment37(const std::string&);
+  Segment37(const Segment37&);
+  Segment37& operator=(const Segment37&);
+  ~Segment37();
+
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

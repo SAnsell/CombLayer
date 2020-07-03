@@ -69,6 +69,7 @@
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "BPMGenerator.h"
+#include "ButtonBPMGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "EBeamStopGenerator.h"
@@ -378,6 +379,11 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
   //  Control.addVariable("BlankTubePort1WallMat","Stainless316L");
+
+  // Button pickup BPM
+  setVariable::ButtonBPMGenerator ButtonBPMGen;
+  ButtonBPMGen.setCF<setVariable::CF40_22>();
+  ButtonBPMGen.generate(Control,"ButtonBPM");
 
 
   return;
