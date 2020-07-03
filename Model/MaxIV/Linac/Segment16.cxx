@@ -144,10 +144,6 @@ Segment16::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  
-  buildZone->removeLastMaster(System);
-  return;
-
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*bellowA,"back",*bpm);
 
