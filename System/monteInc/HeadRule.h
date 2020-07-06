@@ -133,6 +133,7 @@ class HeadRule
   
   int removeItems(const int);
   int removeUnsignedItems(const int);
+  int removeMatchedPlanes(const Geometry::Vec3D&);
   void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);

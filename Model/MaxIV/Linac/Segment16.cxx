@@ -116,7 +116,7 @@ Segment16::Segment16(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(pipeC);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment16::~Segment16()
@@ -171,7 +171,6 @@ Segment16::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);
 
   buildZone->removeLastMaster(System);
-
   return;
 }
 
@@ -185,8 +184,10 @@ Segment16::createLinks()
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*pipeC,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
+  //  setLinkSignedCopy(1,*bellowA,2);
+
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

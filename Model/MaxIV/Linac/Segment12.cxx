@@ -101,7 +101,7 @@ namespace tdcSystem
 
   
 Segment12::Segment12(const std::string& Key) :
-  TDCsegment(Key,3),
+  TDCsegment(Key,6),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
@@ -134,6 +134,8 @@ Segment12::Segment12(const std::string& Key) :
   OR.addObject(flatB);
   OR.addObject(dipoleB);
   OR.addObject(bellowRB);
+
+  setFirstItems(bellowA);
 }
   
 Segment12::~Segment12()
@@ -160,10 +162,11 @@ Segment12::buildObjects(Simulation& System)
 
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
+
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
-
+  
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
@@ -222,8 +225,9 @@ Segment12::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
   bellowRB->insertInCell(System,outerCell);
-  
-  
+
+  // transfer to segment 13
+  CellMap::addCell("LastCell",outerCell);
   buildZone->removeLastMaster(System);  
   return;
 }
@@ -235,10 +239,15 @@ Segment12::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowLB,2);
-  setLinkSignedCopy(2,*bellowRB,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
+  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
+
+  FixedComp::nameSideIndex(1,"straightExit");
+  FixedComp::nameSideIndex(2,"magnetExit");
+  
+  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(3));
   return;
 }
 

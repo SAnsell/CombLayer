@@ -135,7 +135,7 @@ Segment9::Segment9(const std::string& Key) :
   OR.addObject(QuadA);
   OR.addObject(bellowC);
 
-  setFirstItem(ceramicBellowA);
+  setFirstItems(ceramicBellowA);
 }
   
 Segment9::~Segment9()
@@ -209,7 +209,7 @@ Segment9::createLinks()
   setLinkSignedCopy(0,*ceramicBellowA,1);
   setLinkSignedCopy(1,*bellowC,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

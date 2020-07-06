@@ -116,7 +116,7 @@ Segment21::Segment21(const std::string& Key) :
   OR.addObject(cMagV);
   OR.addObject(bellowB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment21::~Segment21()
@@ -185,8 +185,8 @@ Segment21::createLinks()
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

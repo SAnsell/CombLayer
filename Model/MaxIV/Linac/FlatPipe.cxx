@@ -196,23 +196,23 @@ FlatPipe::createSurfaces()
   // two inner
   if (std::abs(frontHeight-backHeight)<Geometry::zeroTol)
     {
-      const double R(frontHeight/2.0+wallThick);
+      const double R(frontHeight/2.0);
       const Geometry::Vec3D LAxis
 	((Y*length-X*((backWidth-frontWidth)/2.0)).unit());
       const Geometry::Vec3D RAxis
 	((Y*length+X*((backWidth-frontWidth)/2.0)).unit());
 
       ModelSupport::buildCylinder
-	(SMap,buildIndex+7,Origin-X*(frontWidth/2.0),LAxis,R);
+	(SMap,buildIndex+7,OrgA-X*(frontWidth/2.0),LAxis,R);
 
       ModelSupport::buildCylinder
-	(SMap,buildIndex+8,Origin+X*(frontWidth/2.0),RAxis,R);
+	(SMap,buildIndex+8,OrgA+X*(frontWidth/2.0),RAxis,R);
 
       ModelSupport::buildCylinder
-	(SMap,buildIndex+17,Origin-X*(wallThick+frontWidth/2.0),LAxis,R);
+	(SMap,buildIndex+17,OrgA-X*(frontWidth/2.0),LAxis,R+wallThick);
 
       ModelSupport::buildCylinder
-	(SMap,buildIndex+18,Origin+X*(wallThick+frontWidth/2.0),RAxis,R);
+	(SMap,buildIndex+18,OrgA+X*(frontWidth/2.0),RAxis,R+wallThick);
       
     }
   else // CONE VERSION

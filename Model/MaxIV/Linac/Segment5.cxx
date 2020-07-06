@@ -102,7 +102,7 @@ Segment5::Segment5(const std::string& Key) :
   OR.addObject(dipoleB);
   OR.addObject(bellowA);
 
-  setFirstItem(flatA);
+  setFirstItems(flatA);
 }
 
 Segment5::~Segment5()
@@ -162,7 +162,8 @@ Segment5::createLinks()
 {
   setLinkSignedCopy(0,*flatA,1);
   setLinkSignedCopy(1,*bellowA,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

@@ -89,6 +89,7 @@ class Segment13 :
 
   void buildObjects(Simulation&);
   void createLinks();
+
   
  public:
   
@@ -96,6 +97,8 @@ class Segment13 :
   Segment13(const Segment13&);
   Segment13& operator=(const Segment13&);
   ~Segment13();
+
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

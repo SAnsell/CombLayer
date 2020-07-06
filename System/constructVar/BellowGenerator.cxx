@@ -141,7 +141,6 @@ BellowGenerator::setMat(const std::string& PMat,
 void
 BellowGenerator::generateBellow(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,
 				const double length) const
   /*!
     Primary funciton for setting the variables
@@ -153,7 +152,7 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BellowGenerator","generatorBellow");
 
-  SplitPipeGenerator::generatePipe(Control,keyName,yStep,length);
+  SplitPipeGenerator::generatePipe(Control,keyName,length);
   // VACUUM PIPES:
   Control.addVariable(keyName+"BellowThick",bellowThick);
   Control.addVariable(keyName+"BellowStep",bellowStep);

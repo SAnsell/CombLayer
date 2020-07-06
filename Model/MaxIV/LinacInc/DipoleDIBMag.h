@@ -60,9 +60,6 @@ class DipoleDIBMag :
   int frameMat; ///< Frame material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

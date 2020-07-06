@@ -71,7 +71,7 @@
 #include "VirtualTube.h"
 #include "BlankTube.h"
 #include "PipeTube.h"
-#include "YagScreen.h"
+#include "YagUnit.h"
 #include "YagScreen.h"
 
 #include "TDCsegment.h"
@@ -86,8 +86,8 @@ Segment15::Segment15(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YAG")),
+  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -99,11 +99,11 @@ Segment15::Segment15(const std::string& Key) :
 
   OR.addObject(pipeA);
   OR.addObject(mirrorChamber);
-  OR.addObject(ionPump);
+  OR.addObject(yagUnit);
   OR.addObject(yagScreen);
   OR.addObject(pipeB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment15::~Segment15()
@@ -148,36 +148,21 @@ Segment15::buildObjects(Simulation& System)
 
   mirrorChamber->insertAllInCell(System,outerCell);
 
-  // Ion pump
-  ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setPortRotation(5, Geometry::Vec3D(1,0,0));
-  ionPump->createAll(System,mirrorChamberPort1,2);
+  
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);
 
-  ionPump->intersectPorts(System,0,1);
-  ionPump->intersectPorts(System,0,2);
-
-  const constructSystem::portItem& ionPumpBackPort=ionPump->getPort(1);
-  outerCell=
-    buildZone->createOuterVoidUnit(System,
-				   masterCell,
-				   ionPumpBackPort,
-				   ionPumpBackPort.getSideIndex("OuterPlate"));
-  ionPump->insertAllInCell(System,outerCell);
-
-  yagScreen->addAllInsertCell(outerCell);
-  yagScreen->setBeamAxis(*ionPump,0);
-
-  ionPump->deleteCell(System,"Void"); // will be rebuilt by yagScreen
-  //  yagScreen->setPipeSide(*ionPump,ionPump->getSideIndex("InnerSide"));
-  //  yagScreen->setPipeFront(*ionPump,ionPump->getSideIndex("InnerBack"));
-
-  // Side can be changed with signs of XVec in the Port[12] variables
-  // 2 can be set but YAGScreen::setPipeFront above must be changed to "InnerFront"
-  yagScreen->createAll(System,*ionPump, 1);
+  yagScreen->setBeamAxis(*yagUnit,1);
+  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->insertInCell("Outer",System,outerCell);
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
+  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
+    (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
 
+  
   buildZone->removeLastMaster(System);
 
   return;
@@ -193,8 +178,8 @@ Segment15::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

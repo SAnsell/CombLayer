@@ -99,10 +99,12 @@ MAGICvariables(FuncDataBase& Control)
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"magicFA",350.0,12.4,3.0 ,4.0,3.0);
 
-  PipeGen.generatePipe(Control,"magicPipeB",8.0,44.0);
+  PipeGen.generatePipe(Control,"magicPipeB",44.0);
+  Control.addVariable("magicPipeBYStep",8.0);
 
   // out to 6.18m
-  PipeGen.generatePipe(Control,"magicPipeC",10.0,75.0);
+  PipeGen.generatePipe(Control,"magicPipeC",75.0);
+  Control.addVariable("magicPipeCYStep",10.0);
   
 
   FGen.setLayer(1,0.5,"SiCrystal");
@@ -123,17 +125,20 @@ MAGICvariables(FuncDataBase& Control)
 
 
   // out from ChopA (6.5m) to 12m
-  PipeGen.generatePipe(Control,"magicPipeD",3.0,650.0);
+  PipeGen.generatePipe(Control,"magicPipeD",650.0);
+  Control.addVariable("magicPipeDYStep",3.0);
 
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"magicFD",646.0 ,2.7,4.08  ,2.4,4.06 );
 
   // out (12m to 19m)
-  PipeGen.generatePipe(Control,"magicPipeE",3.0,600.0);
+  PipeGen.generatePipe(Control,"magicPipeE",600.0);
+  Control.addVariable("magicPipeEYStep",3.0);
   FGen.generateTaper(Control,"magicFE",596.0 ,4.08,4.93, 4.06,4.79 );
   // out (19m to bunker wall)
-  PipeGen.generatePipe(Control,"magicPipeF",3.0,490.0);
+  PipeGen.generatePipe(Control,"magicPipeF",490.0);
+  Control.addVariable("magicPipeFYStep",3.0);
   FGen.generateTaper(Control,"magicFF",486.0 ,4.93,5.60,  4.79,5.50 );
 
     // BEAM INSERT:
@@ -145,13 +150,15 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicBInsertRightWall",1.0);
   Control.addVariable("magicBInsertWallMat","Stainless304");       
   // Optional pipe in wall
-  PipeGen.generatePipe(Control,"magicPipeWall",4.0,348.0);
+  PipeGen.generatePipe(Control,"magicPipeWall",348.0);
+  Control.addVariable("magicPipeWallYStep",4.0);
   // Guide in wall
   FGen.generateTaper(Control,"magicFWall",346.0 ,5.60,5.89, 5.50,5.80 );
   
   // 28m to 38m
   SGen.generateShield(Control,"magicShieldA",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutA",5.0,994.0);
+  PipeGen.generatePipe(Control,"magicPipeOutA",994.0);
+  Control.addVariable("magicPipeOutAYStep",5.0);
   FGen.clearYOffset();
   FGen.setYMainOffset(8.0);  
   FGen.generateTaper(Control,"magicOutFA",990.0, 5.89,6.65, 5.80,6.60 );
@@ -159,27 +166,32 @@ MAGICvariables(FuncDataBase& Control)
   // 38m to 48m
   FGen.setYMainOffset(4.0);  
   SGen.generateShield(Control,"magicShieldB",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutB",4.0,996.0);
+  PipeGen.generatePipe(Control,"magicPipeOutB",996.0);
+  Control.addVariable("magicPipeOutBYStep",4.0);
   FGen.generateTaper(Control,"magicOutFB",992.0, 6.65,7.20, 6.60,7.18 );
  
   // 48m to 58m
   SGen.generateShield(Control,"magicShieldC",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutC",6.0,996.0);
+  PipeGen.generatePipe(Control,"magicPipeOutC",996.0);
+  Control.addVariable("magicPipeOutCYStep",6.0);
   FGen.generateTaper(Control,"magicOutFC",992.0, 7.20,7.60, 7.18,7.58 );
 
   // 58m to 68m
   SGen.generateShield(Control,"magicShieldD",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutD",6.0,996.0);
+  PipeGen.generatePipe(Control,"magicPipeOutD",996.0);
+  Control.addVariable("magicPipeOutDYStep",6.0);
   FGen.generateTaper(Control,"magicOutFD",992.0, 7.20,7.60, 7.18,7.58 );
 
   // 68m to 78m
   SGen.generateShield(Control,"magicShieldE",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutE",6.0,996.0);
+  PipeGen.generatePipe(Control,"magicPipeOutE",996.0);
+  Control.addVariable("magicPipeOutEYStep",6.0);
   FGen.generateTaper(Control,"magicOutFE",992.0, 7.20,7.60, 7.18,7.58 );
   
   // 78 to 83m
   SGen.generateShield(Control,"magicShieldF",590.0,40.0,40.0,60.0,2,8);
-  PipeGen.generatePipe(Control,"magicPipeOutF",6.0,586.0);
+  PipeGen.generatePipe(Control,"magicPipeOutF",586.0);
+  Control.addVariable("magicPipeOutFYStep",6.0);
   FGen.generateTaper(Control,"magicOutFF",582.0, 7.20,7.60, 7.18,7.58 );
 
   PGen.setFeLayer(6.0);
@@ -189,7 +201,8 @@ MAGICvariables(FuncDataBase& Control)
   // 78 to 83m
   SGen.generateShield(Control,"magicShieldG",1000.0,40.0,40.0,60.0,4,8);
   Control.addVariable("magicShieldGYStep",300.0);
-  PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
+  PipeGen.generatePipe(Control,"magicPipeOutG",994.0);
+  Control.addVariable("magicPipeOutGYStep",5.0);
   FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
 
 

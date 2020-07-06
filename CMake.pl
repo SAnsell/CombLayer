@@ -74,8 +74,8 @@ foreach my $mainProg (@masterProg)
 			     beer  bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
-			     trex  vor  vespa shortOdin shortNmx
-			     shortDream simpleItem beamline instrument );
+			     trex  vor  vespa 
+			     simpleItem beamline instrument );
 	
 	push(@ess,@mainLib);
 	$gM->addDepUnit("ess", [@ess,@essSupport]);
@@ -87,8 +87,8 @@ foreach my $mainProg (@masterProg)
 			     beer  bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
-			     trex  vor  vespa shortOdin shortNmx
-			     shortDream simpleItem beamline instrument );
+			     trex  vor  vespa 
+			     simpleItem beamline instrument );
 
 	push(@essBeam,@mainLib);
 	$gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);

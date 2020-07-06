@@ -120,7 +120,7 @@ Segment7::Segment7(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(cMagVertA);
 
-  setFirstItem(pipeA);  
+  setFirstItems(pipeA);  
 }
   
 Segment7::~Segment7()
@@ -176,7 +176,7 @@ Segment7::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

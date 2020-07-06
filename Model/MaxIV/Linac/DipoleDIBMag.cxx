@@ -179,23 +179,6 @@ DipoleDIBMag::populate(const FuncDataBase& Control)
 }
 
 void
-DipoleDIBMag::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("DipoleDIBMag","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 DipoleDIBMag::createSurfaces()
   /*!
     Create All the surfaces

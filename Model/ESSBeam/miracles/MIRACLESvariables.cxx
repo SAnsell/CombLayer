@@ -103,13 +103,15 @@ MIRACLESvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"miraclesFA",350.0, 6.0,5.0 ,5.0,9.5);
   
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
+  PipeGen.generatePipe(Control,"miraclesPipeB",44.0);
+  Control.addVariable("miraclesPipeBYStep",8.0);
   FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 
   // Pipe to collimator:
-  PipeGen.generatePipe(Control,"miraclesPipeC",2.0,96.0);
+  PipeGen.generatePipe(Control,"miraclesPipeC",96.0);
+  Control.addVariable("miraclesPipeCYStep",2.0);
   FGen.setYCentreOffset(-5.0);
   FGen.generateTaper(Control,"miraclesFC",84.0, 4.857,4.0, 9.857,12.0);
 
@@ -134,7 +136,8 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"miraclesBBladeLow",2.0,22.5,35.0);
 
   // Pipe after first chopper unit
-  PipeGen.generatePipe(Control,"miraclesPipeD",2.0,34.0);
+  PipeGen.generatePipe(Control,"miraclesPipeD",34.0);
+  Control.addVariable("miraclesPipeDYStep",2.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFD",32.0, 5.0,4.857,  9.5,9.85714);
 
@@ -152,7 +155,8 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
+  PipeGen.generatePipe(Control,"miraclesPipeE",359.0);
+  Control.addVariable("miraclesPipeEYStep",2.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
 
@@ -180,11 +184,13 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesShutterATopVoid",8.1);
 
   PipeGen.setRectPipe(16.0,16.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeF",2.0,520.0);
+  PipeGen.generatePipe(Control,"miraclesPipeF",520.0);
+  Control.addVariable("miraclesPipeFYStep",2.0);
   FGen.generateTaper(Control,"miraclesFF",516.0, 5.0,4.857,  9.5,9.85714);
 
   PipeGen.setRectPipe(16.0,16.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeG",2.0,730.0);
+  PipeGen.generatePipe(Control,"miraclesPipeG",730.0);
+  Control.addVariable("miraclesPipeGYStep",2.0);
   FGen.generateBender(Control,"miraclesBG",724.0, 12.0,12.0,12.0,12.0,
 		    500000.0,0.0 );
 
@@ -199,7 +205,8 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesBInsertWallMat","Stainless304");       
   
   // Optional pipe in wall
-  PipeGen.generatePipe(Control,"miraclesPipeWall",4.0,348.0);
+  PipeGen.generatePipe(Control,"miraclesPipeWall",348.0);
+  Control.addVariable("miraclesPipeWallYStep",4.0);
 
   FGen.generateBender(Control,"miraclesFWall",344.0, 12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
@@ -208,12 +215,14 @@ MIRACLESvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
 
   PipeGen.setPipe(10.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeOutA",4.0,1495.0);  
+  PipeGen.generatePipe(Control,"miraclesPipeOutA",1495.0);
+  Control.addVariable("miraclesPipeOutAYStep",4.0);
   FGen.generateBender(Control,"miraclesBOutA",1491.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
 
-  PipeGen.generatePipe(Control,"miraclesPipeOutB",1.0,1498.0);  
+  PipeGen.generatePipe(Control,"miraclesPipeOutB",1498.0);
+  Control.addVariable("miraclesPipeOutBYStep",1.0);
   FGen.generateBender(Control,"miraclesBOutB",1494.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);

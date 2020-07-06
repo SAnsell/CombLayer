@@ -3,7 +3,7 @@
  
  * File:   micromax/micromaxVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ shutterTable(FuncDataBase& Control,
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowI",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
@@ -189,7 +189,7 @@ shutterTable(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowJ",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeB";
@@ -207,7 +207,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
   Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
 
 
@@ -239,7 +239,7 @@ shutterTable(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,21.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",21.0);
   Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
 
@@ -251,7 +251,7 @@ shutterTable(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowK",0,11.05);
+  BellowGen.generateBellow(Control,frontKey+"BellowK",11.05);
   
   
   return;
@@ -287,12 +287,12 @@ moveApertureTable(FuncDataBase& Control,
 		  const std::string& frontKey)
   /*!
     Builds the variables for the moveable apperature table
-    containing two movable aperatures, pumping and bellows
+    containing two movable apertures, pumping and bellows
     \param Control :: Database
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("maxpeemVariables[F]","moveApertureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -302,20 +302,21 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowE",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",24.0);
+  Control.addVariable(frontKey+"AperturePipeYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
   
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowF",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
 
-  // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
+  // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
@@ -324,23 +325,24 @@ moveApertureTable(FuncDataBase& Control,
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowG",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
 
-  // Aperature pipe is movable:
+  // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",24.0);
+  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
   
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowH",0,14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0);
 
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
-  
+  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  Control.addVariable(frontKey+"PipeCYStep",52.0);  
   return;
 }
 
@@ -368,7 +370,7 @@ heatDumpTable(FuncDataBase& Control,
   heatDumpVariables(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
 
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeA";
@@ -448,7 +450,7 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",L);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -521,11 +523,11 @@ frontEndVariables(FuncDataBase& Control,
   
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,911.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",911.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
@@ -541,11 +543,11 @@ frontEndVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   
   PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",432.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
@@ -554,7 +556,7 @@ frontEndVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
 
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
@@ -580,7 +582,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",95.0);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
@@ -588,7 +590,7 @@ frontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",50.0);
 
   return;
 }
@@ -868,7 +870,6 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::PortTubeGenerator PTubeGen;
@@ -881,12 +882,13 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremCollGenerator BremGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::MonoShutterGenerator MShutterGen;
+  setVariable::PipeGenerator PipeGen;
   
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+  BellowGen.generateBellow(Control,preName+"InitBellow",6.0);
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
@@ -899,7 +901,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
+  BellowGen.generateBellow(Control,preName+"BellowA",17.0);
 
   BremGen.setCF<CF63>();
   BremGen.setAperature(1.0,1.0,0.2,0.2,0.3,0.3);
@@ -943,7 +945,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowB",12.0);
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
@@ -976,7 +978,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowC",12.0);
   
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
@@ -987,13 +989,13 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowD",12.0);
 
   micromaxVar::diagUnit(Control,preName+"DiagBoxA");
 
   
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowE",12.0);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
@@ -1004,12 +1006,12 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowF",12.0);
 
   micromaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",12.0);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
@@ -1020,7 +1022,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",12.0);
 
   micromaxVar::diagUnit2(Control,preName+"DiagBoxC");
 
@@ -1058,13 +1060,14 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowA",10.0);
 
   LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",152.0);
+  Control.addVariable(baseName+"PipeAYStep",10.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipeCF<CF40>();
@@ -1080,14 +1083,15 @@ connectingVariables(FuncDataBase& Control)
   // temp offset
   LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
-			       PTubeGen.getTotalLength(4.0),188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",188.0);
+  Control.addVariable(baseName+"PipeBYStep",PTubeGen.getTotalLength(4.0));
   
-  BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
   LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
-
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",188.0);
+  Control.addVariable(baseName+"PipeCYStep",10.0);
+  
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
   LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
@@ -1095,11 +1099,10 @@ connectingVariables(FuncDataBase& Control)
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
-			       PTubeGen.getTotalLength(4.0),172.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",172.0);
+  Control.addVariable(baseName+"PipeDYStep",PTubeGen.getTotalLength(4.0));
 
-
-  BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
+  BellowGen.generateBellow(Control,baseName+"BellowC",10.0);
   LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
   
   return;
@@ -1120,10 +1123,7 @@ MICROMAXvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
   
   setVariable::PipeGenerator PipeGen;
-  setVariable::LeadPipeGenerator LeadPipeGen;
-
-  PipeGen.setWindow(-2.0,0.0);   // no window
-
+  PipeGen.setNoWindow();
 
   micromaxVar::frontCaveVariables(Control,"MicromaxRingCaveA",1,1);
   micromaxVar::frontCaveVariables(Control,"MicromaxRingCaveB",0,0);
@@ -1132,7 +1132,7 @@ MICROMAXvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"MicromaxJoinPipe",0,170.0);
+  PipeGen.generatePipe(Control,"MicromaxJoinPipe",170.0);
 
   micromaxVar::opticsHutVariables(Control,"MicromaxOpticsHut");
   micromaxVar::opticsVariables(Control,"Micromax");

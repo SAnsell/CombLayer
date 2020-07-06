@@ -3,7 +3,7 @@
  
  * File:   essBuild/HighBay.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -82,7 +83,8 @@ namespace essSystem
 {
 
 HighBay::HighBay(const std::string& key) :
-  attachSystem::ContainedComp(),attachSystem::FixedUnit(key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -91,7 +93,7 @@ HighBay::HighBay(const std::string& key) :
 {}
 
 HighBay::HighBay(const HighBay& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   baseName(A.baseName),length(A.length),height(A.height),roofThick(A.roofThick),
   wallMat(A.wallMat),roofMat(A.roofMat),curtainCut(A.curtainCut)

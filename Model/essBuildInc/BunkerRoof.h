@@ -38,10 +38,11 @@ namespace essSystem
   \brief Bunker roof 
 */
 
-class BunkerRoof : public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class BunkerRoof :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 
@@ -95,6 +96,11 @@ class BunkerRoof : public attachSystem::ContainedComp,
   void initialize(const FuncDataBase&,
 		  const attachSystem::FixedComp&,
 		  const long int);
+
+  /// null object for FixedComp
+  virtual void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int) {}
 
 };
 

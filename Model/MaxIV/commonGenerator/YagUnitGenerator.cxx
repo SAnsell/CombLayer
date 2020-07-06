@@ -155,10 +155,12 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
 
 template void YagUnitGenerator::setCF<CF40_22>();
 template void YagUnitGenerator::setCF<CF40>();
+template void YagUnitGenerator::setCF<CF50>();
 template void YagUnitGenerator::setCF<CF63>();
 
 template void YagUnitGenerator::setFlangeCF<CF40_22>();
 template void YagUnitGenerator::setFlangeCF<CF40>();
+template void YagUnitGenerator::setFlangeCF<CF50>();
 template void YagUnitGenerator::setFlangeCF<CF63>();
 
 

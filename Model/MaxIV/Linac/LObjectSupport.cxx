@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Line.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -86,6 +87,8 @@
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
+#include "YagUnit.h"
+#include "YagScreen.h"
 #include "LObjectSupport.h"
 
 namespace tdcSystem
@@ -317,6 +320,31 @@ pipeTerminateGroup(Simulation& System,
   return outerCell;
 }
 
+void
+constructYagScreen(Simulation& System,const tdcSystem::YagUnit& yagUnit,
+		   tdcSystem::YagScreen& yagScreen,const int outerCell)
+  /*!
+    Construct the YagScreen in a YagUnit
+    \param System ::Simulation to use
+    \param yagUnit :: yag unit vessel
+    \param yagScreen :: yag screen object
+    \param outerCell :: outer cell
+   */
+{
+  ELog::RegMethod RegA("LObjectSupport","constructYagScreen");
+
+  // does beamaxis need to a unit
+  yagScreen.setBeamAxis(yagUnit,1);
+  yagScreen.createAll(System,yagUnit,-3);
+  yagScreen.insertInCell("Outer",System,outerCell);
+  yagScreen.insertInCell("Connect",System,yagUnit.getCell("PlateA"));
+  yagScreen.insertInCell("Connect",System,yagUnit.getCell("Void"));
+  yagScreen.insertInCell("Payload",System,yagUnit.getCell("Void"));
+
+  return;
+}
+
+
 ///\cond TEMPLATE
 
 
@@ -385,6 +413,7 @@ int pipeMagGroup(Simulation&,
 		 const std::string&,
 		 const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
 
+  
 
 
 ///\endcond TEMPLATE

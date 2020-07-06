@@ -3,7 +3,7 @@
  
  * File:   constructVar/LeadPipeGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,19 +137,17 @@ LeadPipeGenerator::setMat(const std::string& PMat,
 void
 LeadPipeGenerator::generateCladPipe(FuncDataBase& Control,
 				    const std::string& keyName,
-				    const double yStep,
 				    const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
     \param length :: length of pipe
   */
 {
   ELog::RegMethod RegA("LeadPipeGenerator","generatorCladPipe");
 
-  SplitPipeGenerator::generatePipe(Control,keyName,yStep,length);
+  SplitPipeGenerator::generatePipe(Control,keyName,length);
   
   // VACUUM PIPES:
   Control.addVariable(keyName+"CladThick",cladThick);

@@ -227,7 +227,6 @@ FixedOffset::populate(const std::string& baseName,
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();
 
-
   xStep=Control.EvalDefTail<double>(keyName,baseName,"XStep",xStep);
   yStep=Control.EvalDefTail<double>(keyName,baseName,"YStep",yStep);
   zStep=Control.EvalDefTail<double>(keyName,baseName,"ZStep",zStep);

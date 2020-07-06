@@ -51,13 +51,11 @@ class TDCsegment :
 
   /// System for next building a divided inner
   attachSystem::InnerZone* nextZone;
+  
+  std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
-  bool lastFlag;      ///< Front valid
-  HeadRule lastRule;  ///< Surface for headrule
-
-  attachSystem::ExternalCut* firstItemPtr;
-
-  void setFirstItem(const std::shared_ptr<attachSystem::FixedComp>&);
+  /// unmanaged resource
+  std::vector<attachSystem::ExternalCut*> firstItemVec;
 
  public:
 
@@ -65,7 +63,6 @@ class TDCsegment :
   TDCsegment(const TDCsegment&);
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
-
 
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
 
@@ -76,24 +73,24 @@ class TDCsegment :
   void setNextZone(attachSystem::InnerZone* IZPtr)
     {  nextZone=IZPtr; }
 
+  /// accessor to join items
+  const std::vector<HeadRule>& getJoinItems() const
+    { return joinItems; }
+  
+  const constructSystem::portItem&
+  buildIonPump2Port(Simulation&,
+		    attachSystem::InnerZone&,
+		    MonteCarlo::Object*,
+		    const attachSystem::FixedComp&,
+		    const std::string&,
+		    constructSystem::BlankTube&) const;
 
+  void setFrontSurfs(const std::vector<HeadRule>&);
+  void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
+  void setFirstItems(attachSystem::FixedComp*);
 
-  void setLastSurf(const HeadRule&);
-  /// clear front flag
-  void clearLastSurf() { lastFlag=0; }
-  /// access flag
-  bool hasLastSurf() const { return lastFlag; }
-  /// access rule
-  const HeadRule& getLastSurf() const { return lastRule; }
-  const constructSystem::portItem& buildIonPump2Port(Simulation&,
-						     attachSystem::InnerZone&,
-						     MonteCarlo::Object*,
-						     const attachSystem::FixedComp&,
-						     const std::string&,
-						     constructSystem::BlankTube&) const;
-
-  void setFrontSurf(const HeadRule&);
-
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
+  
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
 

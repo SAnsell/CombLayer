@@ -432,7 +432,7 @@ SplitFlangePipe::setJoinFront(const attachSystem::FixedComp& FC,
   frontJoin=1;
   FPt=FC.getLinkPt(sideIndex);
   FAxis=FC.getLinkAxis(sideIndex);
-    
+
   return;
 }
   

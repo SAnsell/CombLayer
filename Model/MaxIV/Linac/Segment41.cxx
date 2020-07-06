@@ -104,7 +104,7 @@ Segment41::Segment41(const std::string& Key) :
   OR.addObject(pipe);
   OR.addObject(bellow);
 
-  setFirstItem(bpm);
+  setFirstItems(bpm);
 }
 
 Segment41::~Segment41()
@@ -166,7 +166,8 @@ Segment41::createLinks()
 
   setLinkSignedCopy(0,*bpm,1);
   setLinkSignedCopy(1,*bellow,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
 }

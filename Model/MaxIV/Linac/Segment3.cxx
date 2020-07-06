@@ -125,7 +125,7 @@ Segment3::Segment3(const std::string& Key) :
   OR.addObject(flatB);
   OR.addObject(dipoleB);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
   
 Segment3::~Segment3()
@@ -187,7 +187,7 @@ Segment3::createLinks()
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

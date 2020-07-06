@@ -101,7 +101,8 @@ DREAMvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0);
   PipeGen.setMat("Copper");
-  PipeGen.generatePipe(Control,"dreamPipeB",6.5,26.0);
+  PipeGen.generatePipe(Control,"dreamPipeB",26.0);
+  Control.addVariable("dreamPipeBYStep",6.5);
   FGen.clearYOffset();
     //  FGen.generateTaper(Control,"dreamFB",50.0,2.88,2.11,3.81,3.95);   
   FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);   
@@ -124,9 +125,11 @@ DREAMvariables(FuncDataBase& Control)
    
     // VACUUM PIPE: SDisk to T0 (A)
   PipeGen.setMat("Aluminium");
-  PipeGen.generatePipe(Control,"dreamPipeC0",0.5,28.5);
+  PipeGen.generatePipe(Control,"dreamPipeC0",28.5);
+  Control.addVariable("dreamPipeC0YStep",0.5);
   PipeGen.setWindow(-2.0,0.5);
-  PipeGen.generatePipe(Control,"dreamPipeC",0.5,320.0);
+  PipeGen.generatePipe(Control,"dreamPipeC",320.0);
+  Control.addVariable("dreamPipeCYStep",0.5);
 
   FGen.setLayer(1,0.8,"Aluminium");
   FGen.setLayer(2,0.5,"Void");
@@ -147,7 +150,8 @@ DREAMvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{35.0,25.0});
   BGen.generateBlades(Control,"dreamBandADisk",0.5,22.0,30.0);
 
-  PipeGen.generatePipe(Control,"dreamPipeD",0.5,77.5);
+  PipeGen.generatePipe(Control,"dreamPipeD",77.5);
+  Control.addVariable("dreamPipeDYStep",0.5);
   FGen.generateTaper(Control,"dreamFD",75.5,3.6,3.90,4.77,4.9); 
 
   // T0 chopper:
@@ -159,13 +163,15 @@ DREAMvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"dreamT0DiskA",0.0,20.0,30.0);
 
-  PipeGen.generatePipe(Control,"dreamPipeE1",0.5,536.0);
+  PipeGen.generatePipe(Control,"dreamPipeE1",536.0);
+  Control.addVariable("dreamPipeE1YStep",0.5);
   FGen.generateTaper(Control,"dreamFE1",534.0,4.05,5.32,4.96,5.57);
   Control.addVariable("dreamCollimBYStep",310.5);
   Control.addVariable("dreamCollimBLength",50.0);
   Control.addVariable("dreamCollimBMat","Copper"); 
 
-  PipeGen.generatePipe(Control,"dreamPipeE2",0.5,536.0);
+  PipeGen.generatePipe(Control,"dreamPipeE2",536.0);
+  Control.addVariable("dreamPipeE2YStep",0.5);
   FGen.generateTaper(Control,"dreamFE2",534.0,5.32,5.82,5.58,5.84);
 
   Control.addVariable("dreamCollimCYStep",26.0);
@@ -173,10 +179,12 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCollimCMat","Copper"); 
 
   //Heavy Shutter
-  PipeGen.generatePipe(Control,"dreamPipeF",0.5,200.0);
+  PipeGen.generatePipe(Control,"dreamPipeF",200.0);
+  Control.addVariable("dreamPipeFYStep",0.5);
   FGen.generateTaper(Control,"dreamFF",198.0,5.82,5.86,5.84,5.86); 
 
-  PipeGen.generatePipe(Control,"dreamPipeG",0.5,62.5);
+  PipeGen.generatePipe(Control,"dreamPipeG",62.5);
+  Control.addVariable("dreamPipeGYStep",0.5);
   FGen.generateRectangle(Control,"dreamFG",60.5,5.86,5.86); 
 
   // BEAM INSERT:
@@ -209,7 +217,8 @@ DREAMvariables(FuncDataBase& Control)
 
   // Guide Section 2 (after wall) [+17.6m]  
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.generatePipe(Control,"dreamPipeOutA",0.5,1314.5);  //
+  PipeGen.generatePipe(Control,"dreamPipeOutA",1314.5);
+  Control.addVariable("dreamPipeOutAYStep",0.5);
   FGen.clearYOffset();
   FGen.setLayer(1,1.0,"Borosilicate");
   FGen.setLayer(2,0.5,"Void");
@@ -217,18 +226,21 @@ DREAMvariables(FuncDataBase& Control)
 
   // Guide Section 3 [+17.6m]
   SGen.generateShield(Control,"dreamShieldB",1760.0,32.0,32.0,32.0,8,8);  
-  PipeGen.generatePipe(Control,"dreamPipeOutB",0.0,1760.0);
+  PipeGen.generatePipe(Control,"dreamPipeOutB",1760.0);
+  Control.addVariable("dreamPipeOutBYStep",0.0);
   FGen.generateRectangle(Control,"dreamFOutB",1758.0,5.86,5.86); // end of third part
 
   // Part of Guide Section 4 [+11.85m]
   SGen.generateShield(Control,"dreamShieldC",1185.0,32.0,32.0,32.0,8,8);  
-  PipeGen.generatePipe(Control,"dreamPipeOutC",0.0,1185);
+  PipeGen.generatePipe(Control,"dreamPipeOutC",1185);
+  Control.addVariable("dreamPipeOutCYStep",0.0);
   FGen.generateOctagon(Control,"dreamFOutC",1183.0,5.86,4.34); 
 
   PipeGen.setWindowMat("Void"); 
   PipeGen.setWindow(-2.0,0.0);
   // Part of Guide Section 4 inside Cave
-  PipeGen.generatePipe(Control,"dreamPipeCaveA",0.0,516.36);
+  PipeGen.generatePipe(Control,"dreamPipeCaveA",516.36);
+  Control.addVariable("dreamPipeCaveAYStep",0.0);
   FGen.generateOctagon(Control,"dreamFCaveA",516.36,4.33,1.5);
 
   // Boron Nose

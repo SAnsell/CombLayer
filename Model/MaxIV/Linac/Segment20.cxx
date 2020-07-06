@@ -89,7 +89,7 @@ Segment20::Segment20(const std::string& Key) :
   OR.addObject(cavity);
   OR.addObject(pipeB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment20::~Segment20()
@@ -141,8 +141,8 @@ Segment20::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

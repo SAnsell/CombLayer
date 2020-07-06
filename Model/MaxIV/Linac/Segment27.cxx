@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/Segment25.cxx
+ * File: Linac/Segment27.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -71,34 +71,23 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
-#include "TriPipe.h"
-#include "DipoleDIBMag.h"
-#include "SixPortTube.h"
-#include "subPipeUnit.h"
-#include "MultiPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
-#include "Segment25.h"
+#include "Segment27.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-Segment25::Segment25(const std::string& Key) :
+Segment27::Segment27(const std::string& Key) :
   TDCsegment(Key,6),
   IZTop(new attachSystem::InnerZone(*this,cellIndex)),
-  IZMid(new attachSystem::InnerZone(*this,cellIndex)),
+  IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
   IZLower(new attachSystem::InnerZone(*this,cellIndex)),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
-  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  sixPortA(new tdcSystem::SixPortTube(keyName+"SixPortA")),
-  multiPipe(new tdcSystem::MultiPipe(keyName+"MultiPipe")),
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
   bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
@@ -110,16 +99,13 @@ Segment25::Segment25(const std::string& Key) :
   bellowAB(new constructSystem::Bellows(keyName+"BellowAB")),
   bellowBB(new constructSystem::Bellows(keyName+"BellowBB")),
   bellowCB(new constructSystem::Bellows(keyName+"BellowCB")),
-
+  
   yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
   yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
-  yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
-  yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
+  yagUnitC(new tdcSystem::YagUnit(keyName+"YagUnitC")),
 
-  pipeAB(new constructSystem::VacuumPipe(keyName+"PipeAB")),
-  pipeBB(new constructSystem::VacuumPipe(keyName+"PipeBB")),
-  pipeCB(new constructSystem::VacuumPipe(keyName+"PipeCB"))
-
+  bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
+  bellowBC(new constructSystem::Bellows(keyName+"BellowBC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -128,12 +114,6 @@ Segment25::Segment25(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
-  OR.addObject(triPipeA);
-  OR.addObject(dipoleA);
-  OR.addObject(pipeB);
-  OR.addObject(sixPortA);
-  OR.addObject(multiPipe);
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
   OR.addObject(bellowCA);
@@ -147,18 +127,16 @@ Segment25::Segment25(const std::string& Key) :
   OR.addObject(bellowCB);
 
   OR.addObject(yagUnitA);
-  OR.addObject(yagScreenA);
   OR.addObject(yagUnitB);
-  OR.addObject(yagScreenB);
+  OR.addObject(yagUnitC);
 
-  OR.addObject(pipeAB);
-  OR.addObject(pipeBB);
-  OR.addObject(pipeCB);
+  OR.addObject(bellowAC);
+  OR.addObject(bellowBC);
 
-  setFirstItems(bellowA);
+  setFirstItems(bellowAA);
 }
 
-Segment25::~Segment25()
+Segment27::~Segment27()
   /*!
     Destructor
    */
@@ -166,27 +144,28 @@ Segment25::~Segment25()
 
 
 void
-Segment25::createSplitInnerZone(Simulation& System)
+Segment27::createSplitInnerZone(Simulation& System)
   /*!
     Spilit the innerZone into three parts.
     \param System :: Simulatio to use
    */
 {
-  ELog::RegMethod RegA("Segment25","createSplitInnerZone");
+  ELog::RegMethod RegA("Segment27","createSplitInnerZone");
   
   *IZTop = *buildZone;
-  *IZMid = *buildZone;
+  *IZFlat = *buildZone;
   *IZLower = *buildZone;
 
+  
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
+
   // create surfaces
   attachSystem::FixedUnit FA("FA");
   attachSystem::FixedUnit FB("FB");
-  FA.createPairVector(*bellowAA,2,*bellowBA,2);
-  FB.createPairVector(*bellowBA,2,*bellowCA,2);
-
+  FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
+  FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
   ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
   ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
   
@@ -201,141 +180,123 @@ Segment25::createSplitInnerZone(Simulation& System)
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
+  IZTop->setFront(bellowAA->getFullRule(-1));
+  IZFlat->setFront(bellowBA->getFullRule(-1));
+  IZLower->setFront(bellowCA->getFullRule(-1));
+
   IZTop->setSurround(HSurroundA);
-  IZMid->setSurround(HSurroundB);
+  IZFlat->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
 
   IZTop->constructMasterCell(System);
-  IZMid->constructMasterCell(System);
+  IZFlat->constructMasterCell(System);
   IZLower->constructMasterCell(System);
+
 
   return;
 }
 
 void
-Segment25::buildObjects(Simulation& System)
+Segment27::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment25","buildObjects");
+  ELog::RegMethod RegA("Segment27","buildObjects");
 
-  int outerCell,outerCellA,outerCellB,outerCellC;
+  int outerCellA,outerCellB,outerCellC;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
-  bellowA->createAll(System,*this,0);
-  
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
-
-  triPipeA->setFront(*bellowA,2);
-  triPipeA->createAll(System,*bellowA,"back");
-  
-  // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,triPipeA,
-	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
-
-  const int outerCellMulti=
-    constructSystem::constructUnit
-    (System,*buildZone,masterCell,*sixPortA,"back",*multiPipe);
-
-  // BELLOWS:
-  bellowAA->createAll(System,*multiPipe,2);
-  bellowBA->addInsertCell(outerCellMulti);
-  bellowBA->createAll(System,*multiPipe,3);
-
-  bellowCA->addInsertCell(outerCellMulti);
-  bellowCA->createAll(System,*multiPipe,4);
-
-  const int outerCellBellow=
-    buildZone->createOuterVoidUnit(System,masterCell,*bellowAA,2);
-  bellowAA->insertInCell(System,outerCellBellow);
-  bellowBA->insertInCell(System,outerCellBellow);
-
-  buildZone->removeLastMaster(System);
-
+  bellowAA->createAll(System,*this,0);
+  bellowBA->createAll(System,*this,0);
+  bellowCA->createAll(System,*this,0);
 
   createSplitInnerZone(System);
-  
-  // PIPE:
-  pipeBA->addInsertCell(outerCellBellow);
-  pipeCA->addInsertCell(outerCellBellow);
-  pipeCA->addInsertCell(outerCellMulti);
-  pipeAA->createAll(System,*bellowAA,"back");
-  pipeBA->createAll(System,*bellowBA,"back");
-  pipeCA->createAll(System,*bellowCA,"back");
 
-  
   MonteCarlo::Object* masterCellA=IZTop->getMaster();
-  MonteCarlo::Object* masterCellB=IZMid->getMaster();
+  MonteCarlo::Object* masterCellB=IZFlat->getMaster();
   MonteCarlo::Object* masterCellC=IZLower->getMaster();
 
-  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeAA,2);
-  outerCellB=IZMid->createOuterVoidUnit(System,masterCellB,*pipeBA,2);
-  outerCellC=IZLower->createOuterVoidUnit(System,masterCellC,*pipeCA,2);
+  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*bellowAA,2);
+  outerCellB=IZFlat->createOuterVoidUnit(System,masterCellB,*bellowBA,2);
+  outerCellC=IZLower->createOuterVoidUnit(System,masterCellC,*bellowCA,2);
 
-  pipeAA->insertInCell(System,outerCellA);
-  pipeBA->insertInCell(System,outerCellB);
-  pipeCA->insertInCell(System,outerCellC);
+  bellowAA->insertInCell(System,outerCellA);
+  bellowBA->insertInCell(System,outerCellB);
+  bellowCA->insertInCell(System,outerCellC);
 
-  // BELLOWS B:
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*bellowAA,"back",*pipeAA);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*bellowBA,"back",*pipeBA);
+  constructSystem::constructUnit
+    (System,*IZLower,masterCellC,*bellowCA,"back",*pipeCA);
+
   constructSystem::constructUnit
     (System,*IZTop,masterCellA,*pipeAA,"back",*bellowAB);
   constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*pipeBA,"back",*bellowBB);
+    (System,*IZFlat,masterCellB,*pipeBA,"back",*bellowBB);
   constructSystem::constructUnit
     (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCB);
 
-  // YAG SCREENS:
   constructSystem::constructUnit
     (System,*IZTop,masterCellA,*bellowAB,"back",*yagUnitA);
-
   constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*bellowBB,"back",*yagUnitB);
-
-
-
-  // BELLOWS B:
+    (System,*IZFlat,masterCellB,*bellowBB,"back",*yagUnitB);
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*yagUnitA,"back",*pipeAB);
-  constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*yagUnitB,"back",*pipeBB);
-  constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*bellowCB,"back",*pipeCB);
+    (System,*IZLower,masterCellC,*bellowCB,"back",*yagUnitC);
 
-
-
-  //  buildZone->refrontMasterCell(masterCell,IZMid->getDivider());
-  //  System.removeCell(masterCell->getName());
-
-  //  buildZone->removeLastMaster(System);
-  IZTop->removeLastMaster(System);
-  IZMid->removeLastMaster(System);
-  IZLower->removeLastMaster(System);  
   
+  constructSystem::constructUnit
+    (System,*IZTop,masterCellA,*yagUnitA,"back",*bellowAC);
+  constructSystem::constructUnit
+    (System,*IZFlat,masterCellB,*yagUnitB,"back",*bellowBC);
+  
+  IZTop->removeLastMaster(System);
+  IZFlat->removeLastMaster(System);
+  IZLower->removeLastMaster(System);  
+
   return;
 }
 
 void
-Segment25::constructVoid(Simulation& System,
+Segment27::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+  ELog::RegMethod RegA("Segment27","createLinks");
+  
+  setLinkSignedCopy(0,*bellowAA,1);
+  setLinkSignedCopy(1,*bellowAC,2);
+
+  setLinkSignedCopy(2,*bellowBA,1);
+  setLinkSignedCopy(3,*bellowBC,2);
+
+  setLinkSignedCopy(4,*bellowCA,1);
+  setLinkSignedCopy(5,*yagUnitC,2);
+
+  FixedComp::nameSideIndex(0,"frontFlat");
+  FixedComp::nameSideIndex(1,"backFlat");
+  FixedComp::nameSideIndex(2,"frontMid");
+  FixedComp::nameSideIndex(3,"backMid");
+  FixedComp::nameSideIndex(4,"frontLower");
+  FixedComp::nameSideIndex(5,"backLower");
+
+  joinItems.push_back(FixedComp::getFullRule(2));
+    
+  return;
+}
+
+void
+Segment27::constructVoid(Simulation& System,
 			 const attachSystem::FixedComp& FC) const
   /*!
     Creates the space for the InnerZone
   */
 {
-  ELog::RegMethod RegA("Segment25","constructVoid");
+  ELog::RegMethod RegA("Segment27","constructVoid");
 
   const attachSystem::CellMap* CPtr=
     dynamic_cast<const attachSystem::CellMap*>(&FC);
@@ -344,35 +305,14 @@ Segment25::constructVoid(Simulation& System,
       const HeadRule volHR=IZTop->getVolumeExclude();
 
       CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZMid->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZFlat->getVolumeExclude());
       CPtr->insertComponent(System,"LongVoid",IZLower->getVolumeExclude());
     }
   return;
 }
 
 void
-Segment25::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeAB,2);
-  setLinkSignedCopy(2,*pipeBB,2);
-  setLinkSignedCopy(3,*pipeCB,2);
-
-  FixedComp::nameSideIndex(1,"Flat");
-  FixedComp::nameSideIndex(2,"Mid");
-  FixedComp::nameSideIndex(3,"Lower");
-  joinItems.push_back(FixedComp::getFullRule(2));
-
-  
-  
-  return;
-}
-
-void
-Segment25::createAll(Simulation& System,
+Segment27::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
   /*!
@@ -383,9 +323,10 @@ Segment25::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment25","build");
+  ELog::RegMethod RControl("Segment27","build");
 
   FixedRotate::populate(System.getDataBase());
+  
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();

@@ -37,7 +37,8 @@ namespace ModelSupport
 */
 
 
-class LayerDivide3D : public attachSystem::FixedUnit,
+class LayerDivide3D :
+    public attachSystem::FixedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -100,7 +101,9 @@ class LayerDivide3D : public attachSystem::FixedUnit,
 		     const std::string&,const std::string&);
   
   void divideCell(Simulation&,const int);
-    
+
+  void createAll(Simulation&,const FixedComp&,const long int) {}
+  
 };
 
 }

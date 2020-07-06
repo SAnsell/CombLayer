@@ -103,7 +103,9 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",-undulatorPipeLen/2.0,undulatorPipeLen);
+  PipeGen.generatePipe(Control,undKey+"UPipe",
+		       undulatorPipeLen);
+  Control.addVariable("UPipeYStep",-undulatorPipeLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -339,7 +341,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,frontName,0.0,7.6);
+  PipeGen.generatePipe(Control,frontName,7.6);
   Control.addVariable(frontName+"WindowActive",0);
   constexpr double xstep(2.2);
   Control.addVariable(frontName+"FlangeBackXStep",-xstep);
@@ -387,7 +389,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,0.0,4.5); // yStep, length
+  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
   Control.addVariable(backName+"WindowActive",0);
   Control.addVariable(backName+"XYAngle",2*theta);
 
@@ -438,7 +440,7 @@ splitterVariables(FuncDataBase& Control,
 			  setVariable::CF50::flangeLength,
 			  setVariable::CF50::flangeRadius,
 			  setVariable::CF50::flangeLength);
-  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
+  BellowGen.generateBellow(Control,splitKey+"BellowAA",16.0);
 
   Control.copyVarSet(splitKey+"BellowAA", splitKey+"BellowBA");
 
@@ -471,12 +473,12 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,splitKey+"BellowAB",0,15.5);
+  BellowGen.generateBellow(Control,splitKey+"BellowAB",15.5);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",0.0,90.3);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",90.3);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
@@ -501,7 +503,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
-  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",0.0,100.0);
+  PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",100.0);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
   Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
@@ -536,7 +538,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3Front",0.0,4.05);
+  PipeGen.generatePipe(Control,mirrorKey+"M3Front",4.05);
   Control.addVariable(mirrorKey+"M3FrontWindowActive",0);
   Control.addVariable(mirrorKey+"M3FrontFlangeBackLength",0.2); // measured STEP
 
@@ -567,7 +569,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setAFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3Back",0.0,4.05);
+  PipeGen.generatePipe(Control,mirrorKey+"M3Back",4.05);
   Control.addVariable(mirrorKey+"M3BackWindowActive",0);
   Control.addVariable(mirrorKey+"M3BackFlangeFrontLength",0.2); // measured STEP
 
@@ -576,7 +578,7 @@ m3MirrorVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",0.0,5.85);
+  PipeGen.generatePipe(Control,mirrorKey+"M3STXMFront",5.85);
   Control.addVariable(mirrorKey+"M3STXMFrontWindowActive",0);
   Control.addVariable(mirrorKey+"M3STXMFrontFlangeBackLength",0.2);
 
@@ -694,7 +696,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"InitBellow",0,11.0-1.4);
+  BellowGen.generateBellow(Control,preName+"InitBellow",11.0-1.4);
 
   // TODO:
   // and set FlangeLength to 1.27 cm (instead of 0.5)
@@ -730,11 +732,11 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   //  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,26.9);
+  BellowGen.generateBellow(Control,preName+"BellowA",26.9);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeA",0.0,10.9);
+  PipeGen.generatePipe(Control,preName+"PipeA",10.9);
   Control.addVariable(preName+"PipeAWindowActive",0);
 
   // will be rotated vertical
@@ -786,12 +788,12 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF63>();
   //  BellowGen.setBFlangeCF<setVariable::CF150>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,17.6);
+  BellowGen.generateBellow(Control,preName+"BellowB",17.6);
 
   m1MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,19.7);
+  BellowGen.generateBellow(Control,preName+"BellowC",19.7);
 
   // will be rotated vertical
   const std::string collName=preName+"PumpTubeA";
@@ -819,7 +821,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,21.5);
+  BellowGen.generateBellow(Control,preName+"BellowD",21.5);
 
   opticsSlitPackage(Control,preName);
 
@@ -831,7 +833,7 @@ opticsVariables(FuncDataBase& Control,
   //  Control.addVariable(preName+"GateCXYAngle",1);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,26.5);
+  BellowGen.generateBellow(Control,preName+"BellowE",26.5);
 
   // will be rotated vertical
   const std::string pumpTubeBname=preName+"PumpTubeB";
@@ -856,12 +858,12 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
   PipeGen.setBFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,74.0);
+  PipeGen.generatePipe(Control,preName+"JoinPipeA",74.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0+2.5);
+  BellowGen.generateBellow(Control,preName+"BellowF",12.0+2.5);
 
   JawGen.setRadius(setVariable::CF100::innerRadius);
   JawGen.setWallThick(2.6);
@@ -890,12 +892,12 @@ opticsVariables(FuncDataBase& Control,
   ///////////////////////////////////////////////////////////////////
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,17.0);
+  BellowGen.generateBellow(Control,preName+"BellowG",17.0);
 
   m3MirrorVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,16.9);
+  BellowGen.generateBellow(Control,preName+"BellowH",16.9);
 
   GateGen.setCubeCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
@@ -903,7 +905,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF63>();
   PipeGen.setBFlangeCF<CF100>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeB",0.0,7.0);
+  PipeGen.generatePipe(Control,preName+"JoinPipeB",7.0);
 
   //////////// pumpTubeC
     // will be rotated vertical
@@ -922,18 +924,18 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,24.5);
+  BellowGen.generateBellow(Control,preName+"BellowI",24.5);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,preName+"JoinPipeC",0.0,12.5);
+  PipeGen.generatePipe(Control,preName+"JoinPipeC",12.5);
 
   GateGen.setLength(4.5);
   GateGen.setCubeCF<setVariable::CF100>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",0,20.0);
+  BellowGen.generateBellow(Control,preName+"BellowJ",20.0);
 
   splitterVariables(Control,preName);
 
@@ -1006,7 +1008,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",0,158.95); // length adjusted to place M1 at 2400 from undulator centre
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",158.95); // length adjusted to place M1 at 2400 from undulator centre
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");

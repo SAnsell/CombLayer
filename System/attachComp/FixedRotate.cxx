@@ -130,7 +130,7 @@ FixedRotate::populate(const FuncDataBase& Control)
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
     (keyName+"Offset",Geometry::Vec3D(xStep,yStep,zStep));
-  
+
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();
@@ -264,8 +264,27 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedRotate","createUnitVector");
-
+      
   FixedComp::createUnitVector(FC,sideIndex);  
+  applyOffset();
+    
+  return;
+}
+
+void
+FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int orgIndex,
+			      const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param orgIndex :: link point for origin
+    \param basisIndex :: link point for basis (xyz)
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(int,int)");
+
+  FixedComp::createUnitVector(FC,orgIndex,basisIndex);  
   applyOffset();
     
   return;
@@ -282,11 +301,11 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
     \param length :: full length of object
   */
 {
-  ELog::RegMethod RegA("FixedRotate","createUnitVector");
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(length)");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
+  applyOffset();
   Origin+=Y*(length/2.0);
   return;
 }

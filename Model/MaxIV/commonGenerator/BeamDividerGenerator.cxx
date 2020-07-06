@@ -56,15 +56,19 @@
 
 namespace setVariable
 {
-
+  
 template<>
 BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
-  boxLength(55.0),wallThick(0.2),
+  boxLength(56.1),wallThick(0.4),
   mainWidth(3.0),exitWidth(1.0),
-  height(3.0),mainXStep(0.0),exitXStep(1.0),
-  exitAngle(3.2),mainLength(32.5),
-  mainRadius(CF40_22::innerRadius),mainThick(CF40_22::wallThick),
-  exitLength(4.5), exitRadius(CF16::innerRadius),
+  height(3.0),
+  mainXStep(-1.37),
+  exitXStep(1.25),
+  exitAngle(3.2),mainLength(32.71),
+  mainRadius(CF40_22::innerRadius),
+  mainThick(CF40_22::wallThick),
+  exitLength(5.1),
+  exitRadius(CF16::innerRadius),
   exitThick(CF16::wallThick),
   flangeARadius(CF63::innerRadius),flangeALength(CF63::flangeLength),
   flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),
@@ -179,6 +183,8 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
     Control.addVariable(keyName+"ZAngle",ZAngle-exitAngle);
   else
     Control.addVariable(keyName+"ZAngle",ZAngle);
+
+  Control.addVariable(keyName+"XStep",-1.1);
 
   
   Control.addVariable(keyName+"BoxLength",boxLength);

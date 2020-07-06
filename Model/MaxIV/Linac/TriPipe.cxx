@@ -127,7 +127,7 @@ TriPipe::populate(const FuncDataBase& Control)
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  ELog::EM<<"Lenght == "<<length<<ELog::endDiag;
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
@@ -166,8 +166,6 @@ TriPipe::createSurfaces()
   // use this so angled fronts correctly make
   FrontBackCut::getShiftedFront
     (SMap,buildIndex+11,Y,flangeALength);
-
-
   
   if (!backActive())
     {
@@ -334,7 +332,8 @@ TriPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("TriPipe","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,FIndex,length);
+  FixedRotate::createCentredUnitVector(FC,FIndex,length);
+  
   createSurfaces();    
   createObjects(System);
   createLinks();

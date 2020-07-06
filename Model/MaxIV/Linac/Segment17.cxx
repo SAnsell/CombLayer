@@ -96,7 +96,7 @@ Segment17::Segment17(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(pipeB);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
 
 Segment17::~Segment17()
@@ -148,8 +148,8 @@ Segment17::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeB,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
 
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

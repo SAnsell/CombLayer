@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREXvariables.cxx
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2020 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,11 +93,13 @@ void TREXvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"trexFMono",350.0,9.0,6.38,3.0,4.43);
 
   //  light shutter 
-  PipeGen.generatePipe(Control,"trexPipeBridge",6.5,42);
+  PipeGen.generatePipe(Control,"trexPipeBridge",42.0);
+  Control.addVariable("trexPipeBridgeYStep",6.5);
   FGen.generateTaper(Control,"trexFBridge",40.0,6.38,6.0,4.43,4.59);
 
   //   Vac pipe +  horizontal bender (Inside Bunker)
-  PipeGen.generatePipe(Control,"trexPipeInA",0.5,805.5);
+  PipeGen.generatePipe(Control,"trexPipeInA",805.5);
+  Control.addVariable("trexPipeInAYStep",0.5);
   FGen.generateBender(Control,"trexBInA",803.5,6.0,6.0,4.59,6.43,
                         1900000.0,0.0);
 
@@ -105,7 +107,8 @@ void TREXvariables(FuncDataBase& Control)
   Control.addVariable("trexCollimALength",50.0);
   Control.addVariable("trexCollimAMat","Copper"); 
   
-  PipeGen.generatePipe(Control,"trexPipeInB",1.5,805.5);
+  PipeGen.generatePipe(Control,"trexPipeInB",805.5);
+  Control.addVariable("trexPipeInBYStep",1.5);
   FGen.generateBender(Control,"trexBInB",803.5,6.0,6.0,6.43,7.52,
 	              1900000.0,0.0);
 
@@ -114,7 +117,9 @@ void TREXvariables(FuncDataBase& Control)
   Control.addVariable("trexCollimBMat","Copper");
 
   
-  PipeGen.generatePipe(Control,"trexPipeInC",1.5,200.0);
+  PipeGen.generatePipe(Control,"trexPipeInC",200.0);
+  Control.addVariable("trexPipeInCYStep",1.5);
+  Control.addVariable("trexPipeInBYStep",1.5);
   FGen.generateBender(Control,"trexBInC",198.0,6.0,6.0,7.52,7.72,
   		      1900000.0,0.0);
 
@@ -203,7 +208,8 @@ void TREXvariables(FuncDataBase& Control)
 		      shieldTotalThick,shieldTotalThick,shieldTotalThick,1,8);
   Control.addVariable("trexShieldAYStep",184.25);
 
-  PipeGen.generatePipe(Control,"trexPipeOutA",0.25,369.5);
+  PipeGen.generatePipe(Control,"trexPipeOutA",369.5);
+  Control.addVariable("trexPipeOutAYStep",0.25);
   Control.addVariable("trexPipeOutAXYAngle",-0.0086);
   
   FGen.setLayer(1,0.5,"Borosilicate");
@@ -227,7 +233,8 @@ void TREXvariables(FuncDataBase& Control)
 		      shieldTotalThick,shieldTotalThick,shieldTotalThick,
 		      1,8);
 
-  PipeGen.generatePipe(Control,"trexPipeOutB",0.25,762.5);
+  PipeGen.generatePipe(Control,"trexPipeOutB",762.5);
+  Control.addVariable("trexPipeOutBYStep",0.25);
   FGen.generateBender(Control,"trexBOutB",760.5,6.0,6.0,8.27,8.40,
  		      1900000.0,0.0);
 
@@ -256,15 +263,17 @@ void TREXvariables(FuncDataBase& Control)
   
   for(size_t i=0;i<7;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
-      PipeGen.generatePipe(Control,"trexPipeOutC"+strNum,0.25,707.75);
+      const std::string strNum(std::to_string(i));
+      PipeGen.generatePipe(Control,"trexPipeOutC"+strNum,707.75);
+      Control.addVariable("trexPipeOutC"+strNum+"YStep",0.25);
       FGen.generateBender(Control,"trexBOutC"+strNum,705.75,6.0,6.0,8.50,
 			  8.50,1900000.0,0.0);
     }
   SGen.generateShield(Control,"trexShieldD",576.5,shieldTotalThick,
                       shieldTotalThick,shieldTotalThick,4,8);
   
-  PipeGen.generatePipe(Control,"trexPipeOutD",0.25,576.0);
+  PipeGen.generatePipe(Control,"trexPipeOutD",576.0);
+  Control.addVariable("trexPipeOutDYStep",0.25);
   FGen.generateBender(Control,"trexBOutD",574.0,6.0,6.0,8.50,8.50,
 		      1900000.0,0.0);
 
@@ -281,13 +290,15 @@ void TREXvariables(FuncDataBase& Control)
 
   SGen.generateShield(Control,"trexShieldE",1366.5,shieldTotalThick,
                       shieldTotalThick,shieldTotalThick,1,8);
-  PipeGen.generatePipe(Control,"trexPipeOutE",0.25,1366.0);
+  PipeGen.generatePipe(Control,"trexPipeOutE",1366.0);
+  Control.addVariable("trexPipeOutEYStep",0.25);
   FGen.generateRectangle(Control,"trexGOutE",1364.0,6.0,8.50);
 
   SGen.generateShield(Control,"trexShieldF",5106.0,shieldTotalThick,
                       shieldTotalThick,shieldTotalThick,1,8);
   
-  PipeGen.generatePipe(Control,"trexPipeOutF0",0.25,638.0);
+  PipeGen.generatePipe(Control,"trexPipeOutF0",638.0);
+  Control.addVariable("trexPipeOutF0YStep",0.25);
   FGen.generateTaper(Control,"trexGOutF0",636.0,6.0,6.23,8.5,8.5);
   
   double FVS[7]={8.50,8.50,8.48,8.29,7.92,7.27,6.28};
@@ -296,13 +307,15 @@ void TREXvariables(FuncDataBase& Control)
   double FHE[7]={6.78,7.01,6.98,6.74,6.19,5.28,3.81};
   for(size_t i=1;i<7;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
-      PipeGen.generatePipe(Control,"trexPipeOutF"+strNum,0.25,638.0);
+      const std::string strNum(std::to_string(i));
+      PipeGen.generatePipe(Control,"trexPipeOutF"+strNum,638.0);
+      Control.addVariable("trexPipeOutF"+strNum+"YStep",0.25);
       FGen.generateTaper(Control,"trexGOutF"+strNum,636.0,FHS[i-1],FHE[i-1],
 			 FVS[i-1],FVE[i-1]);
     }
   
-  PipeGen.generatePipe(Control,"trexPipeOutF7",0.25,638.0);
+  PipeGen.generatePipe(Control,"trexPipeOutF7",638.0);
+  Control.addVariable("trexPipeOutF7YStep",0.25);
   FGen.generateTaper(Control,"trexGOutF7",636.0,FHS[6],FHE[6],
 			 FVS[6],FVE[6]);
 
@@ -314,7 +327,8 @@ void TREXvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"trexGDisk",0.0,25.0,35.0);
 
   FGen.clearYOffset();
-  PipeGen.generatePipe(Control,"trexPipeOutH",0.25,289.5);
+  PipeGen.generatePipe(Control,"trexPipeOutH",289.5);
+  Control.addVariable("trexPipeOutHYStep",0.25);
   FGen.generateTaper(Control,"trexGOutH",287.5,3.57,2.52,4.61,3.71);
   CGen.generateChopper(Control,"trexChopperH",8.0,16.0,8.0);
   Control.addVariable("trexChopperHYStep",310.0);

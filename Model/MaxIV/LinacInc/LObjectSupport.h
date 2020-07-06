@@ -43,6 +43,13 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CorrectorMag;
+  class YagUnit;
+  class YagScreen;
+
+void
+constructYagScreen(Simulation&,const tdcSystem::YagUnit&,
+		   tdcSystem::YagScreen&,const int);
+
   
 int
 pipeTerminate(Simulation&,

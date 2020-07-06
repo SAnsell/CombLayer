@@ -119,7 +119,7 @@ Segment31::Segment31(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(bellowD);
 
-  setFirstItem(bellowA);
+  setFirstItems(bellowA);
 }
 
 Segment31::~Segment31()
@@ -194,7 +194,7 @@ Segment31::createLinks()
 
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowD,2);
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
 }

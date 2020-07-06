@@ -95,6 +95,7 @@ struct CF40
   static constexpr size_t nBolts=6;
 };
 
+
 /*!
   \struct CF40_22
   \version 1.0

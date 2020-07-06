@@ -91,7 +91,7 @@ namespace essSystem
 
 BunkerWall::BunkerWall(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(bunkerName+"Wall",6,20000),
+  attachSystem::FixedComp(bunkerName+"Wall",6,20000),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
   activeWall(0),frontSurf(0),backSurf(0),
   topSurf(0),baseSurf(0)
@@ -102,7 +102,7 @@ BunkerWall::BunkerWall(const std::string& bunkerName) :
 {}
 
 BunkerWall::BunkerWall(const BunkerWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   baseName(A.baseName),wallThick(A.wallThick),
   wallMat(A.wallMat),activeWall(A.activeWall),nVert(A.nVert),
@@ -213,21 +213,6 @@ BunkerWall::populate(const FuncDataBase& Control)
 }
   
 void
-BunkerWall::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-/*!
-    Create the unit vectors
-    \param FC :: Linked object (bunker )
-    \param sideIndex :: Side for linkage centre (wall)
-  */
-{
-  ELog::RegMethod RegA("BunkerWall","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  return;
-}
-
-void
 BunkerWall::setVertSurf(const int BS,const int TS)
   /*!
     Set the top/base vertical surfaces
@@ -323,9 +308,9 @@ BunkerWall::createSector(Simulation& System,
 
  
 void
-BunkerWall::initialize(const FuncDataBase& Control,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex)
+BunkerWall::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const long int linkIndex)
 
   /*!
     Generic function to initialize everything
@@ -336,7 +321,7 @@ BunkerWall::initialize(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BunkerWall","initialize");
 
-  populate(Control);  
+  populate(System.getDataBase());  
   createUnitVector(FC,linkIndex);
 
   return;

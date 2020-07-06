@@ -103,13 +103,15 @@ FREIAvariables(FuncDataBase& Control)
 
   // Pipe in gamma shield
   FGen.setLayer(1,0.5,"Aluminium");
-  PipeGen.generatePipe(Control,"freiaPipeB",8.0,40.0);
+  PipeGen.generatePipe(Control,"freiaPipeB",40.0);
+  Control.addVariable("freiaPipeBYStep",8.0);
   FGen.clearYOffset();
   FGen.generateBender(Control,"freiaBB",36.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
 
   // Pipe in to first ch
-  PipeGen.generatePipe(Control,"freiaPipeC",4.0,46.0);
+  PipeGen.generatePipe(Control,"freiaPipeC",46.0);
+  Control.addVariable("freiaPipeCYStep",4.0);
   Control.addVariable("freiaYStep",6.0);   // step + flange  
   FGen.generateBender(Control,"freiaBC",44.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
@@ -137,7 +139,8 @@ FREIAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"freiaWFMBlade",0.0,40.0,75.0);
 
   PipeGen.setPipe(14.0,0.5);
-  PipeGen.generatePipe(Control,"freiaPipeD",2.0,125.0);
+  PipeGen.generatePipe(Control,"freiaPipeD",125.0);
+  Control.addVariable("freiaPipeDYStep",2.0);
   FGen.generateBender(Control,"freiaBD",121.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -152,7 +155,8 @@ FREIAvariables(FuncDataBase& Control)
   BGen.addPhase({275},{30.0});
   BGen.generateBlades(Control,"freiaFOC1Blade",0.0,40.0,75.0);
 
-  PipeGen.generatePipe(Control,"freiaPipeE",2.0,132.0);
+  PipeGen.generatePipe(Control,"freiaPipeE",132.0);
+  Control.addVariable("freiaPipeEYStep",2.0);
   FGen.generateBender(Control,"freiaBE",128.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -169,7 +173,8 @@ FREIAvariables(FuncDataBase& Control)
 
   // Double Blade chopper
 
-  PipeGen.generatePipe(Control,"freiaPipeF",2.0,102.0);
+  PipeGen.generatePipe(Control,"freiaPipeF",102.0);
+  Control.addVariable("freiaPipeFYStep",2.0);
   FGen.generateBender(Control,"freiaBF",98.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -196,7 +201,8 @@ FREIAvariables(FuncDataBase& Control)
   // Guide in wall
   FGen.generateTaper(Control,"freiaFWall",346.0,6.0,6.0,6.0,6.0);
   // Optional pipe in wall
-  PipeGen.generatePipe(Control,"freiaPipeWall",4.0,348.0);
+  PipeGen.generatePipe(Control,"freiaPipeWall",348.0);
+  Control.addVariable("freiaPipeWallYStep",4.0);
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);
@@ -220,7 +226,8 @@ FREIAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"freiaFOC3Blade",0.0,40.0,75.0);
 
 
-  PipeGen.generatePipe(Control,"freiaPipeOutA",30.0,450.0);
+  PipeGen.generatePipe(Control,"freiaPipeOutA",450.0);
+  Control.addVariable("freiaPipeOutAYStep",30.0);
   FGen.generateTaper(Control,"freiaOutFA",442.0,4.0,4.0,20.0,16.0);
 
   PGen.setFeLayer(6.0);

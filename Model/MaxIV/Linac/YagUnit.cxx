@@ -123,6 +123,10 @@ YagUnit::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
+  if (radius+wallThick>flangeRadius-Geometry::zeroTol)
+    throw ColErr::OrderError(radius+wallThick,flangeRadius,
+			     "Radius+wall bigger than FlangeRadius");
+  
   viewZStep=Control.EvalVar<double>(keyName+"ViewZStep");
   viewRadius=Control.EvalVar<double>(keyName+"ViewRadius");
   viewThick=Control.EvalVar<double>(keyName+"ViewThick");

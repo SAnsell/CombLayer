@@ -3,7 +3,7 @@
  
  * File:   essBuild/targetVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

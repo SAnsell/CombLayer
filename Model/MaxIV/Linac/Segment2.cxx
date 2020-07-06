@@ -151,7 +151,7 @@ Segment2::Segment2(const std::string& Key) :
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
 
-  setFirstItem(pipeA);
+  setFirstItems(pipeA);
 }
   
 Segment2::~Segment2()
@@ -237,7 +237,7 @@ Segment2::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*yagUnit,2);
 
-  TDCsegment::setLastSurf(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 

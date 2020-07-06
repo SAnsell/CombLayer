@@ -108,13 +108,15 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBlockShutterDefMat","Stainless304");
 
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"lokiPipeB",7.0,43.0);
+  PipeGen.generatePipe(Control,"lokiPipeB",43.0);
+  Control.addVariable("lokiPipeBYStep",7.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
 
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"lokiPipeBLink",2.0,44.0);
+  PipeGen.generatePipe(Control,"lokiPipeBLink",44.0);
+  Control.addVariable("lokiPipeBLinkYStep",2.0);
   FGen.clearYOffset();
   FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
   
@@ -136,7 +138,8 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(5.0,0.8);  // Rad / thick
   PipeGen.setWindow(-2.0,0.8);  // window offset/ thick
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"lokiPipeC",1.0,488.0);
+  PipeGen.generatePipe(Control,"lokiPipeC",488.0);
+  Control.addVariable("lokiPipeCYStep",1.0);
   FGen.generateRectangle(Control,"lokiFC",485.0,2.5,3.0);
 
 
@@ -163,7 +166,8 @@ LOKIvariables(FuncDataBase& Control)
 
   FGen.generateBender(Control,"lokiFWall",355.0,2.5,2.5,2.5,2.5,6125.0,-90.0); 
   // Optional pipe in wall
-  PipeGen.generatePipe(Control,"lokiPipeWall",4.0,348.0);
+  PipeGen.generatePipe(Control,"lokiPipeWall",348.0);
+  Control.addVariable("lokiPipeWallYStep",4.0);
 
   PGen.setFeLayer(20.0);
   PGen.setConcLayer(30.0);
@@ -190,7 +194,8 @@ LOKIvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"lokiShieldA",270.0,100.0,100.0,150.0,8,8);
 
  // straight after fifth chopper inside the collimator drum
-  PipeGen.generatePipe(Control,"lokiPipeOutA",0.5,270.0);
+  PipeGen.generatePipe(Control,"lokiPipeOutA",270.0);
+  Control.addVariable("lokiPipeOutAYStep",0.5);
   
   //  FGen.setYOffset(-134.0);
   FGen.clearYOffset();
@@ -213,7 +218,8 @@ LOKIvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"lokiShieldB",280.0,100.0,100.0,200.0,8,8);
 
 
-  PipeGen.generatePipe(Control,"lokiPipeOutB",1.0,270.0); 
+  PipeGen.generatePipe(Control,"lokiPipeOutB",270.0);
+  Control.addVariable("lokiPipeOutBYStep",1.0);
   FGen.generateRectangle(Control,"lokiFOutB",268.0,2.5,3.0); 
   
 
@@ -255,7 +261,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCaveFeMat","Stainless304");
   Control.addVariable("lokiCaveConcMat","Concrete");
 
-  PipeGen.generatePipe(Control,"lokiPipeOutC",1.0,150.0);
+  PipeGen.generatePipe(Control,"lokiPipeOutC",150.0);
+  Control.addVariable("lokiPipeOutCYStep",1.0);
   FGen.generateRectangle(Control,"lokiFOutC",146.0,2.5,3.0);
   
     // Vacumm tank
