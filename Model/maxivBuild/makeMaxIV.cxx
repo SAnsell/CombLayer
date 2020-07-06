@@ -186,46 +186,48 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment23","Segment24","Segment30",
 	       "Segment31","Segment32","Segment33",
 	       "Segment34"}},
-	 {"SPF",{"Segment30","Segment31","Segment32",
-		 "Segment33","Segment34","Segment35",
-		 "Segment36","Segment37","Segment38",
-		 "Segment39"}},
+       {"SPF",{"Segment30","Segment31","Segment32",
+	       "Segment33","Segment34","Segment35",
+	       "Segment36","Segment37","Segment38",
+	       "Segment39","Segment40","Segment41"}},
 
        {"Segment1",{} },                             // first only
        {"Segment2",{} },                             // second only
        {"Segment3",{} },                             // third only
        {"Segment4",{} },                             // forth only
        {"Segment5",{} },                             // fifth only
-       {"Segment6",{} },                             // fifth only
-       {"Segment7",{} },                             // fifth only
-       {"Segment8",{} },                             // fifth only
-       {"Segment9",{} },                             // fifth only
-       {"Segment10",{} },                             // wall unit
-       {"Segment11",{} },                             // TDC
-       {"Segment12",{} },                             // TDC
-       {"Segment13",{} },                             // TDC
-       {"Segment14",{} },                              // 14th only
-       {"Segment15",{} },                              // 15th only
-       {"Segment16",{} },                              // 16th only
-       {"Segment17",{} },                              // 17th only
-       {"Segment18",{} },                              // 18th only
-       {"Segment19",{} },                              // 19th only
-       {"Segment20",{} },                              // 20th only
-       {"Segment21",{} },                              // 21th only
-       {"Segment22",{} },                              // 22th only
-       {"Segment23",{} },                              // 23th only
-       {"Segment24",{} },                              // 24th only
-       {"Segment24",{} },                              // 25th only
-       {"Segment30",{} },                              // 30th only
-       {"Segment31",{} },                              // 31th only
-       {"Segment32",{} },                              // 32th only
-       {"Segment33",{} },                              // 33th only
-       {"Segment34",{} },                              // 34th only
-       {"Segment35",{} },                              // 35th only
-       {"Segment36",{} },                              // 36th only
-       {"Segment37",{} },                              // 37th only
-       {"Segment38",{} },                              // 38th only
-       {"Segment39",{} }                               // 39th only
+       {"Segment6",{} },                             // 6th only
+       {"Segment7",{} },                             // 7h only
+       {"Segment8",{} },                             // 8th only
+       {"Segment9",{} },                             // 9th only
+       {"Segment10",{} },                            // wall unit
+       {"Segment11",{} },                            // TDC
+       {"Segment12",{} },                            // TDC
+       {"Segment13",{} },                            // TDC
+       {"Segment14",{} },                            // 14th only
+       {"Segment15",{} },                            // 15th only
+       {"Segment16",{} },                            // 16th only
+       {"Segment17",{} },                            // 17th only
+       {"Segment18",{} },                            // 18th only
+       {"Segment19",{} },                            // 19th only
+       {"Segment20",{} },                            // 20th only
+       {"Segment21",{} },                            // 21st only
+       {"Segment22",{} },                            // 22nd only
+       {"Segment23",{} },                            // 23rd only
+       {"Segment24",{} },                            // 24th only
+       {"Segment24",{} },                            // 25th only
+       {"Segment30",{} },                            // 30th only
+       {"Segment31",{} },                            // 31st only
+       {"Segment32",{} },                            // 32nd only
+       {"Segment33",{} },                            // 33rd only
+       {"Segment34",{} },                            // 34th only
+       {"Segment35",{} },                            // 35th only
+       {"Segment36",{} },                            // 36th only
+       {"Segment37",{} },                            // 37th only
+       {"Segment38",{} },                            // 38th only
+       {"Segment39",{} },                            // 39th only
+       {"Segment40",{} },                            // 40th only
+       {"Segment41",{} }                             // 41st only
     });
 
   bool activeLinac(0);
