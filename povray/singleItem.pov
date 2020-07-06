@@ -26,6 +26,43 @@
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
+#switch (0)
+  #case (strcmp(ITEM,"ButtonBPM"))
+    #declare cameraLocation = <-10, -10.0, 10.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
+    #declare cameraAngle = 40;
+  #break
+  #case(strcmp(ITEM,"CorrectorMag"))
+    #declare cameraLocation = <-30, -30.0, 20.0>;
+    #declare cameraLookAt   = <0, -3, 0.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case (strcmp(ITEM,"YagUnit"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case (strcmp(ITEM,"YagUnitBig"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case (strcmp(ITEM,"LSexupole"))
+    #declare cameraLocation = <-30, 70.0, 30.0>;
+    #declare cameraLookAt   = <10.0, 0.0, -10.0>;
+    #declare cameraAngle = 40;
+  #break
+  #case (strcmp(ITEM,"Sexupole"))
+    #declare cameraLocation = <-30, 70.0, 30.0>;
+    #declare cameraLookAt   = <10.0, 5.0, -11.0>;
+    #declare cameraAngle = 25;
+  #break
+#else
+    #declare cameraLocation = <100, 100, 100>;
+    #declare cameraLookAt   = <0, 0, 0>;
+#end
+
+#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   #declare RadOK=0;
@@ -69,39 +106,6 @@ global_settings {
     }
   #end
 }
-
-#switch (0)
-  #case (strcmp(ITEM,"ButtonBPM"))
-    #declare cameraLocation = <-10, -10.0, 10.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
-    #declare cameraAngle = 40;
-  #break
-  #case(strcmp(ITEM,"CorrectorMag"))
-    #declare cameraLocation = <-30, -30.0, 20.0>;
-    #declare cameraLookAt   = <0, -3, 0.0>;
-    #declare cameraAngle = 50;
-  #break
-  #case (strcmp(ITEM,"YagUnit"))
-    #declare cameraLocation = <-30, -30.0, 40.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
-    #declare cameraAngle = 50;
-  #break
-  #case (strcmp(ITEM,"YagUnitBig"))
-    #declare cameraLocation = <-30, -30.0, 40.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
-    #declare cameraAngle = 50;
-  #break
-  #case (strcmp(ITEM,"LSexupole"))
-    #declare cameraLocation = <-30, 70.0, 30.0>;
-    #declare cameraLookAt   = <10.0, 0.0, -10.0>;
-    #declare cameraAngle = 40;
-  #break
-#else
-    #declare cameraLocation = <100, 100, 100>;
-    #declare cameraLookAt   = <0, 0, 0>;
-#end
-
-#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   light_source { // front
