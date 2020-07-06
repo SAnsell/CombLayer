@@ -37,12 +37,11 @@ class Segment41 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::BPM> bpm;               // #1
-  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;    // #2
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;   // #2
+  std::shared_ptr<constructSystem::Bellows> bellowA; // #1
+  std::shared_ptr<tdcSystem::BPM> bpm;               // #2
   std::shared_ptr<xraySystem::CylGateValve> gate;    // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipe; // #4
-  std::shared_ptr<constructSystem::Bellows> bellow;  // #5
+  std::shared_ptr<constructSystem::Bellows> bellowB; // #1
 
   void buildObjects(Simulation&);
   void createLinks();

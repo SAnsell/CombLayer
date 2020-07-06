@@ -2440,7 +2440,6 @@ Segment38(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.setNoWindow();
@@ -2544,27 +2543,24 @@ Segment41(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+
   // Stripline BPM
   setVariable::BPMGenerator BPMGen;
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-
-  // Yag screen and its unit
-  setVariable::YagUnitBigGenerator YagUnitGen;
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitYAngle",90.0);
-
-  setVariable::YagScreenGenerator YagScreenGen;
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
-  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
-  Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   // Gate
   setVariable::CylGateValveGenerator CGateGen;
   CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
   Control.addVariable(lKey+"GateWallThick",0.3);
   Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",90.0);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
   Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
   Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
@@ -2573,13 +2569,7 @@ Segment41(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",37.0);
-
-  // Bellow
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
+  PGen.generatePipe(Control,lKey+"Pipe",38.0);
 
   return;
 }

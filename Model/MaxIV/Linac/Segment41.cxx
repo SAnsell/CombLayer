@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -56,7 +53,6 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -69,8 +65,6 @@
 #include "Bellows.h"
 #include "VacuumPipe.h"
 #include "BPM.h"
-#include "YagUnitBig.h"
-#include "YagScreen.h"
 #include "CylGateValve.h"
 
 #include "TDCsegment.h"
@@ -84,11 +78,10 @@ namespace tdcSystem
 Segment41::Segment41(const std::string& Key) :
   TDCsegment(Key,2),
   bpm(new tdcSystem::BPM(keyName+"BPM")),
-  yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
-  bellow(new constructSystem::Bellows(keyName+"Bellow"))
+  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -98,11 +91,10 @@ Segment41::Segment41(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bpm);
-  OR.addObject(yagUnit);
-  OR.addObject(yagScreen);
+  OR.addObject(bellowA);
   OR.addObject(gate);
   OR.addObject(pipe);
-  OR.addObject(bellow);
+  OR.addObject(bellowB);
 
   setFirstItems(bpm);
 }
@@ -126,30 +118,23 @@ Segment41::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  bpm->createAll(System,*this,0);
+  bellowA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bpm,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bpm,2);
-  bpm->insertInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*yagUnit);
-
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,4);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Plate"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*gate);
+    (System,*buildZone,masterCell,*bpm,"back",*gate);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gate,"back",*pipe);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bellow);
+    (System,*buildZone,masterCell,*pipe,"back",*bellowB);
 
   buildZone->removeLastMaster(System);
 
@@ -164,8 +149,8 @@ Segment41::createLinks()
 {
   ELog::RegMethod RegA("Segment41","createLinks");
 
-  setLinkSignedCopy(0,*bpm,1);
-  setLinkSignedCopy(1,*bellow,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*bellowB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
