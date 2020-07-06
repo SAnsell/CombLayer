@@ -125,67 +125,40 @@ Segment30::createSplitInnerZone(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment27","createSplitInnerZone");
-  
-  *IZThin = *buildZone;
-  
-  
-  HeadRule HSurroundA=buildZone->getSurround();
-  HeadRule HSurroundB=buildZone->getSurround();
 
-  const Geometry::Vec3D sideOrg(sideSegment->getCentre());
-  const Geometry::Vec3D sideY((sideSegment->getY()+Y).unit());
+  if (sideSegment)
+    {
 
-  const Geometry::Vec3D midX=(sideY*Z);
-  ELog::EM<<"Side - "<<sideOrg<<ELog::endDiag;
-  ELog::EM<<"Side - "<<midX<<ELog::endDiag;
-  ELog::EM<<"Side - "<<sideY<<ELog::endDiag;
+      *IZThin = *buildZone;
+      
+      const Geometry::Vec3D sideOrg(sideSegment->getCentre());
+      const Geometry::Vec3D sideY((sideSegment->getY()+Y).unit());
+      
+      const Geometry::Vec3D midX=(sideY*Z);
+            
+      ModelSupport::buildPlane(SMap,buildIndex+5005,(sideOrg+Origin)/2.0,midX);
+      
+      for(const int CN : sideSegment->getCells("BuildVoid"))
+	{
+	  ELog::EM<<"Object == "<<CN<<ELog::endDiag;
+	  MonteCarlo::Object* OPtr=System.findObject(CN);
+	  if ((CN % 100) == 17)
+	    ELog::EM<<"Ce == "<<*OPtr<<ELog::endDiag;
+	  HeadRule HA=OPtr->getHeadRule();   // copy
+	  ELog::EM<<"Remove == "<<HA.removeOuterPlane(Origin+Y*10.0,-X,0.9)
+		  <<ELog::endDiag;
+	  HA.addIntersection(SMap.realSurf(buildIndex+5005));
+	  OPtr->procHeadRule(HA);
+	  if ((CN % 100) == 17)
+	    ELog::EM<<"Ce == "<<*OPtr<<ELog::endDiag;
 
-  ELog::EM<<"Cells = "<<ELog::endDiag;
-  for(const std::string& N : sideSegment->getNames())
-    ELog::EM<<"Cell = "<<N<<ELog::endDiag;
+	}
 
-  
-  for(const int CN : sideSegment->getCells("BuildVoid"))
-    ELog::EM<<"Cell = "<<CN<<ELog::endDiag;
-
-
-  ModelSupport::buildPlane(SMap,buildIndex+5005,(sideOrg+Origin)/2.0,midX);
-  //  for(const int CN : sideSegment->getCells()
-
-  
-  /*
-  // create surfaces
-  attachSystem::FixedUnit FA("FA");
-  attachSystem::FixedUnit FB("FB");
-  FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
-  FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
-  
-  const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
- 
-  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
-  HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
-
-  IZTop->setFront(bellowAA->getFullRule(-1));
-  IZFlat->setFront(bellowBA->getFullRule(-1));
-  IZLower->setFront(bellowCA->getFullRule(-1));
-
-  IZTop->setSurround(HSurroundA);
-  IZFlat->setSurround(HSurroundB);
-  IZLower->setSurround(HSurroundC);
-
-  IZTop->constructMasterCell(System);
-  IZFlat->constructMasterCell(System);
-  IZLower->constructMasterCell(System);
-  */
-
+      HeadRule HSurroundB=buildZone->getSurround();
+      HSurroundB.removeOuterPlane(Origin,X);
+      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));      
+      //      IZThin->constructMasterCell(System);
+    }
   return;
 }
   
@@ -200,25 +173,26 @@ Segment30::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","buildObjects");
 
+  return;
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  ELog::EM<<"Master cell == "<<Origin<<ELog::endErr;
+  MonteCarlo::Object* masterCell=IZThin->getMaster();
+  if (!masterCell)
+    {
+      ELog::EM<<"Building master cell"<<ELog::endDiag;
+      masterCell=IZThin->constructMasterCell(System);
+    }
 
   gauge->addAllInsertCell(masterCell->getName());
   // Gauge
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
-
-  ELog::EM<<"Master cell == "<<masterCell<<ELog::endErr;
-
-
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*gauge,-1);
-
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
   gauge->insertAllInCell(System,outerCell);
 
+  buildZone->removeLastMaster(System);
+  return;
+  
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gauge,"back",*pipeA);

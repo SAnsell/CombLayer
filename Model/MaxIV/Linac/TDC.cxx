@@ -348,7 +348,8 @@ TDC::createAll(Simulation& System,
       {"Segment25",{"spfMid","Segment24",1}},
       {"Segment27",{"spfLong","Segment25",1}},
       {"Segment28",{"spfLong","Segment27",1}},
-      {"Segment30",{"spfAngle","Segment12",2}},
+      {"Segment30",{"tdcFront","Segment12",2}},
+      //      {"Segment30",{"spfAngle","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -412,10 +413,10 @@ TDC::createAll(Simulation& System,
 		SegMap.find("Segment13")->second.get();
 	      segPtr->registerSideSegment(sidePtr);
 	    }
-	  else
-	    segPtr->setInnerZone(buildZone.get());
+
+	  segPtr->setInnerZone(buildZone.get());
 	  
-	  if (BL!="Segment27" && BL!="Segment28")
+	  if (BL!="Segment27" && BL!="Segment28" && BL!="Segment30")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());

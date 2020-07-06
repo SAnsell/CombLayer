@@ -1116,6 +1116,65 @@ HeadRule::removeUnsignedItems(const int SN)
 }
 
 int
+HeadRule::removeOuterPlane(const Geometry::Vec3D& LOrig,
+			   const Geometry::Vec3D& LAxis,
+			   const double normTol)
+  /*!
+    Removes the most outer surface in direction of line
+    NOTE : there is currenty NO expectation that the 
+    intersect point is VALID.
+    \param LAxis :: Origin of line
+    \param LAxis :: Directionally matched surface 
+    \param normTol :: How close the line/plane-normal must be
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  1
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeOuterPlane");
+
+  if (!HeadNode) return -1;
+
+  populateSurf();
+
+  const Geometry::Line ATrack(LOrig,LAxis);
+
+  const std::set<int> allSurf=getSurfSet();
+  double maxDist(Geometry::zeroTol);
+  int SN(0);
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+
+      std::vector<Geometry::Vec3D> Pt;
+      if (PPtr && ATrack.intersect(Pt,*PPtr))
+	{
+	  // only one point of intersection with plane
+	  const Geometry::Vec3D dVec(Pt[0]-LOrig);
+	  const double D=dVec.dotProd(LAxis);
+	  if (D>maxDist) // ensures is +ve
+	    {
+	      // Note : LAxis is in OPPOSITE direction to surface normal if +ve surf.
+	      //   and is in SAME direction if a -ve surf.
+	      const Geometry::Vec3D& Pnorm=PPtr->getNormal();
+	      const double DU=Pnorm.dotProd(LAxis);
+	      if ((DU>normTol && SNum<0) || (DU < -normTol && SNum>0))
+		{
+		  maxDist=D;
+		  SN=SNum;
+		}
+	    } 
+	}
+    }
+  if (!SN) return 0;
+  
+  removeItems(SN);
+  return SN;
+
+}
+
+int
 HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis)
   /*!
     Given a signed surface SN , removes the first instance 
@@ -2299,16 +2358,16 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
-
+ 
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
   
-  // IPTS contains non-exit points
+  // IPTS contains both non-exit and invalid points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  
+ 
   // Clear data
   Pts.clear();
   SNum.clear();
