@@ -79,7 +79,8 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(nullptr)
+  buildZone(nullptr),NCellInit(0),
+  sideSegment(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -197,7 +198,6 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       const std::string AKey=keyName+"Offset"+Letters[i];
       const std::string BKey=keyName+"EndOffset"+Letters[i];
 
-
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
 	  testNum++;
@@ -264,5 +264,40 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   return retFlag;
 }
 
+void
+TDCsegment::initCellMap()
+  /*!
+    Set inital value
+   */
+{
+  ELog::RegMethod RegA("TDCsegment","initCellMap");
+  
+  const attachSystem::CellMap* CPtr=
+    (buildZone) ? buildZone->getCellMap() :  0;
+
+  NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
+    ? CPtr->getNCells("OuterVoid") : 0;
+  
+  return;
+}
+
+void
+TDCsegment::captureCellMap()
+  /*!
+    Set inital value
+   */
+{
+  ELog::RegMethod RegA("TDCsegment","captureCellMap");
+  
+  const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
+  const size_t NCells=(CPtr) ?CPtr->getNCells("OuterVoid") : 0;
+
+  for(size_t i=NCellInit;i<NCells;i++)
+    CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
+
+  NCellInit=NCells;
+		     
+  return;
+}
 
 }   // NAMESPACE tdcSystem

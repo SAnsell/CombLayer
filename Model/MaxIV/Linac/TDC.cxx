@@ -406,17 +406,28 @@ TDC::createAll(Simulation& System,
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-
-	  segPtr->setInnerZone(buildZone.get());
+	  if (BL=="Segment30")
+	    {
+	      const TDCsegment* sidePtr=
+		SegMap.find("Segment13")->second.get();
+	      segPtr->registerSideSegment(sidePtr);
+	    }
+	  else
+	    segPtr->setInnerZone(buildZone.get());
+	  
 	  if (BL!="Segment27" && BL!="Segment28")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
 	  
+	  segPtr->initCellMap();
+	  
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
+
+	  segPtr->captureCellMap();
 	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}

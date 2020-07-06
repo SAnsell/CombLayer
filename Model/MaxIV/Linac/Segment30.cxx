@@ -64,6 +64,7 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
+#include "generateSurf.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -85,6 +86,7 @@ namespace tdcSystem
 
 Segment30::Segment30(const std::string& Key) :
   TDCsegment(Key,2),
+  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
   gauge(new constructSystem::PipeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
@@ -116,6 +118,79 @@ Segment30::~Segment30()
 {}
 
 void
+Segment30::createSplitInnerZone(Simulation& System)
+  /*!
+    Split the innerZone into two parts (assuming segment13 built)
+    \param System :: Simulatio to use
+   */
+{
+  ELog::RegMethod RegA("Segment27","createSplitInnerZone");
+  
+  *IZThin = *buildZone;
+  
+  
+  HeadRule HSurroundA=buildZone->getSurround();
+  HeadRule HSurroundB=buildZone->getSurround();
+
+  const Geometry::Vec3D sideOrg(sideSegment->getCentre());
+  const Geometry::Vec3D sideY((sideSegment->getY()+Y).unit());
+
+  const Geometry::Vec3D midX=(sideY*Z);
+  ELog::EM<<"Side - "<<sideOrg<<ELog::endDiag;
+  ELog::EM<<"Side - "<<midX<<ELog::endDiag;
+  ELog::EM<<"Side - "<<sideY<<ELog::endDiag;
+
+  ELog::EM<<"Cells = "<<ELog::endDiag;
+  for(const std::string& N : sideSegment->getNames())
+    ELog::EM<<"Cell = "<<N<<ELog::endDiag;
+
+  
+  for(const int CN : sideSegment->getCells("BuildVoid"))
+    ELog::EM<<"Cell = "<<CN<<ELog::endDiag;
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+5005,(sideOrg+Origin)/2.0,midX);
+  //  for(const int CN : sideSegment->getCells()
+
+  
+  /*
+  // create surfaces
+  attachSystem::FixedUnit FA("FA");
+  attachSystem::FixedUnit FB("FB");
+  FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
+  FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+  
+  const Geometry::Vec3D ZEffective(FA.getZ());
+  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
+  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
+  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+ 
+  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
+  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
+  HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
+
+  IZTop->setFront(bellowAA->getFullRule(-1));
+  IZFlat->setFront(bellowBA->getFullRule(-1));
+  IZLower->setFront(bellowCA->getFullRule(-1));
+
+  IZTop->setSurround(HSurroundA);
+  IZFlat->setSurround(HSurroundB);
+  IZLower->setSurround(HSurroundC);
+
+  IZTop->constructMasterCell(System);
+  IZFlat->constructMasterCell(System);
+  IZLower->constructMasterCell(System);
+  */
+
+  return;
+}
+  
+
+void
 Segment30::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -127,12 +202,16 @@ Segment30::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
+  ELog::EM<<"Master cell == "<<Origin<<ELog::endErr;
 
-  // Gauge
   gauge->addAllInsertCell(masterCell->getName());
+  // Gauge
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
+
+  ELog::EM<<"Master cell == "<<masterCell<<ELog::endErr;
+
 
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System,*gauge,-1);
@@ -170,9 +249,11 @@ Segment30::createLinks()
   ELog::RegMethod RegA("Segment30","createLinks");
 
   setLinkSignedCopy(0,*gauge,1);
+
   //  setLinkSignedCopy(1,*pipeB,2);
 
-  setLinkSignedCopy(0,*gauge,2);
+  setLinkSignedCopy(1,*gauge,2);
+
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
@@ -194,7 +275,7 @@ Segment30::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  createSplitInnerZone(System);
   buildObjects(System);
   createLinks();
   return;

@@ -49,11 +49,16 @@ class TDCsegment :
   /// System for building a divided inner
   attachSystem::InnerZone* buildZone;
 
+  size_t NCellInit;        ///< Cells at start of buildZone:
+
   /// System for next building a divided inner
   attachSystem::InnerZone* nextZone;
   
   std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
+  /// side by side segment (if share buildZone)
+  const TDCsegment* sideSegment;
+  
   /// unmanaged resource
   std::vector<attachSystem::ExternalCut*> firstItemVec;
 
@@ -89,6 +94,11 @@ class TDCsegment :
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
 
+  void registerSideSegment(const TDCsegment* SPtr){  sideSegment=SPtr; }
+
+  virtual void initCellMap();
+  virtual void captureCellMap();
+  
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
