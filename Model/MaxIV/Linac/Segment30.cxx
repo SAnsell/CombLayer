@@ -140,24 +140,18 @@ Segment30::createSplitInnerZone(Simulation& System)
       
       for(const int CN : sideSegment->getCells("BuildVoid"))
 	{
-	  ELog::EM<<"Object == "<<CN<<ELog::endDiag;
 	  MonteCarlo::Object* OPtr=System.findObject(CN);
-	  if ((CN % 100) == 17)
-	    ELog::EM<<"Ce == "<<*OPtr<<ELog::endDiag;
 	  HeadRule HA=OPtr->getHeadRule();   // copy
-	  ELog::EM<<"Remove == "<<HA.removeOuterPlane(Origin+Y*10.0,-X,0.9)
-		  <<ELog::endDiag;
+	  HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
 	  HA.addIntersection(SMap.realSurf(buildIndex+5005));
 	  OPtr->procHeadRule(HA);
-	  if ((CN % 100) == 17)
-	    ELog::EM<<"Ce == "<<*OPtr<<ELog::endDiag;
-
 	}
 
       HeadRule HSurroundB=buildZone->getSurround();
-      HSurroundB.removeOuterPlane(Origin,X);
-      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));      
-      //      IZThin->constructMasterCell(System);
+      HSurroundB.removeOuterPlane(Origin,X,0.9);
+      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+      IZThin->setSurround(HSurroundB);
+      IZThin->constructMasterCell(System);
     }
   return;
 }
