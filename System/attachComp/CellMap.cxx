@@ -414,6 +414,27 @@ CellMap::makeCell(const std::string& Key,Simulation& System,
 }
 
 void
+CellMap::makeCell(const std::string& Key,Simulation& System,
+		  const int cellIndex,const int matNumber,
+		  const double matTemp,const HeadRule& HR)
+
+  /*!
+    Builds a new cell in Simulation and registers it with the CellMap
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param cellIndex :: Cell index
+    \param matNumber :: Material number
+    \param matTemp :: Temperature
+    \param Out :: Boolean surface string
+  */
+{
+  ELog::RegMethod RegA("CellMap","makeCell");
+  System.addCell(cellIndex,matNumber,matTemp,HR);
+  addCell(Key,cellIndex);
+  return;
+}
+
+void
 CellMap::deleteCell(Simulation& System,
 		    const std::string& Key,
 		    const size_t Index) 

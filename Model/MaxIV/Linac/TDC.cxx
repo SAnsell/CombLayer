@@ -247,6 +247,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfLong"  ,{"TDCLong","#Back","",""}},
@@ -333,7 +334,7 @@ TDC::createAll(Simulation& System,
       {"Segment10",{"l2spfAngle","Segment9",1}},
       {"Segment11",{"tdcFront","Segment10",1}},
       {"Segment12",{"tdcFront","Segment11",1}},
-      {"Segment13",{"tdcFront","Segment12",1}},
+      {"Segment13",{"tdcMain","Segment12",1}},
       {"Segment14",{"tdc","Segment13",1}},
       {"Segment15",{"tdc","Segment14",1}},
       {"Segment16",{"tdc","Segment15",1}},
@@ -348,7 +349,7 @@ TDC::createAll(Simulation& System,
       {"Segment25",{"spfMid","Segment24",1}},
       {"Segment27",{"spfLong","Segment25",1}},
       {"Segment28",{"spfLong","Segment27",1}},
-      {"Segment30",{"tdcFront","Segment12",2}},
+      {"Segment30",{"tdcMain","Segment12",2}},
       //      {"Segment30",{"spfAngle","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
@@ -409,9 +410,14 @@ TDC::createAll(Simulation& System,
 	    }
 	  if (BL=="Segment30")
 	    {
-	      const TDCsegment* sidePtr=
+	      const TDCsegment* sidePtrA=
 		SegMap.find("Segment13")->second.get();
-	      segPtr->registerSideSegment(sidePtr);
+	      const TDCsegment* sidePtrB=
+		SegMap.find("Segment14")->second.get();
+	      if (sidePtrA->isBuilt())
+		segPtr->registerSideSegment(sidePtrA);
+	      if (sidePtrB->isBuilt())
+		segPtr->registerSideSegment(sidePtrB);
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());

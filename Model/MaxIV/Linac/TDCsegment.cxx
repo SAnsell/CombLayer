@@ -79,8 +79,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(nullptr),NCellInit(0),
-  sideSegment(nullptr)
+  buildZone(nullptr),NCellInit(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -128,7 +127,17 @@ TDCsegment::setFirstItems(attachSystem::FixedComp* FCptr)
   return;
 }
 
+void
+TDCsegment::registerSideSegment(const TDCsegment* SPtr)
+  /*!
+    Register a sideward segment
+   */
+{
+  sideVec.push_back(SPtr);
+  return;
+}
 
+  
 void
 TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   /*!

@@ -96,8 +96,8 @@ Segment14::Segment14(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
   OR.addObject(bellowA);
+  OR.addObject(pipeA);
   OR.addObject(dm1);
   OR.addObject(pipeB);
   OR.addObject(pipeC);
@@ -105,7 +105,7 @@ Segment14::Segment14(const std::string& Key) :
   OR.addObject(gateA);
   OR.addObject(bellowB);
 
-  setFirstItems(pipeA);
+  setFirstItems(bellowA);
 }
 
 Segment14::~Segment14()
@@ -128,6 +128,9 @@ Segment14::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
+
+  if (isActive("front"))
+    bellowA->copyCutSurf("front",*this,"front");
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
@@ -185,7 +188,7 @@ Segment14::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment14","build");
+  ELog::RegMethod RControl("Segment14","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -154,6 +154,9 @@ class CellMap  : public BaseMap
   void makeCell(const std::string&,
 		Simulation&,const int,const int,const double,
 		const std::string&);
+  void makeCell(const std::string&,
+		Simulation&,const int,const int,const double,
+		const HeadRule&);
   
   void deleteCell(Simulation&,const std::string&,const size_t =0);
 

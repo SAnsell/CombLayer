@@ -2635,6 +2635,13 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcFrontOuterTop",100.0);
   Control.addVariable("tdcFrontXYAngle",12.0);
 
+  Control.addVariable("tdcMainXStep",-419.0+linacVar::zeroX);
+  Control.addVariable("tdcMainYStep",3152.0+linacVar::zeroY);
+  Control.addVariable("tdcMainOuterLeft",50.0);
+  Control.addVariable("tdcMainOuterRight",50.0);
+  Control.addVariable("tdcMainOuterTop",100.0);
+  Control.addVariable("tdcMainXYAngle",12.0);
+
   Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
   Control.addVariable("tdcOuterLeft",70.0);

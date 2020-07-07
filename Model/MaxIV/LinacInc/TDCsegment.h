@@ -57,7 +57,7 @@ class TDCsegment :
   std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
   /// side by side segment (if share buildZone)
-  const TDCsegment* sideSegment;
+  std::vector<const TDCsegment*> sideVec;
   
   /// unmanaged resource
   std::vector<attachSystem::ExternalCut*> firstItemVec;
@@ -69,6 +69,9 @@ class TDCsegment :
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
 
+
+  /// has object been created:
+  bool isBuilt() const { return !(joinItems.empty()); }
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
 
   /// set the current inner zone [allows joining of segments]
@@ -94,7 +97,7 @@ class TDCsegment :
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
 
-  void registerSideSegment(const TDCsegment* SPtr){  sideSegment=SPtr; }
+  void registerSideSegment(const TDCsegment*);
 
   virtual void initCellMap();
   virtual void captureCellMap();

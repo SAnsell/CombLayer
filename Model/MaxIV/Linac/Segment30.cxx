@@ -126,37 +126,59 @@ Segment30::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment27","createSplitInnerZone");
 
-  if (sideSegment)
-    {
+  *IZThin = *buildZone;
 
-      *IZThin = *buildZone;
-      
+  const double orgFrac(2.3);
+  const double axisFrac(4.0);
+  if (!sideVec.empty())
+    {
+      const TDCsegment* sideSegment=sideVec.front();
+
       const Geometry::Vec3D sideOrg(sideSegment->getCentre());
-      const Geometry::Vec3D sideY((sideSegment->getY()+Y).unit());
+      const Geometry::Vec3D sideY((sideSegment->getY()+Y*axisFrac).unit());
       
       const Geometry::Vec3D midX=(sideY*Z);
             
-      ModelSupport::buildPlane(SMap,buildIndex+5005,(sideOrg+Origin)/2.0,midX);
-      
-      for(const int CN : sideSegment->getCells("BuildVoid"))
-	{
-	  MonteCarlo::Object* OPtr=System.findObject(CN);
-	  HeadRule HA=OPtr->getHeadRule();   // copy
-	  HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
-	  HA.addIntersection(SMap.realSurf(buildIndex+5005));
-	  OPtr->procHeadRule(HA);
-	}
+      ModelSupport::buildPlane(SMap,buildIndex+5005,
+			       (sideOrg+Origin*orgFrac)/(orgFrac+1.0),midX);
 
+      int SNremoved(0);
+      for(const TDCsegment* sidePtr : sideVec)
+	{
+	  for(const int CN : sidePtr->getCells("BuildVoid"))
+	    {
+	      MonteCarlo::Object* OPtr=System.findObject(CN);
+	      HeadRule HA=OPtr->getHeadRule();   // copy
+	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+	      HA.addIntersection(SMap.realSurf(buildIndex+5005));
+	      OPtr->procHeadRule(HA);
+	    }
+	}
+      if (sideVec.size()>=2)
+	{
+	  HeadRule TriCut=buildZone->getSurround();
+	  TriCut.removeOuterPlane(Origin,X,0.9);
+	  TriCut.removeOuterPlane(Origin,-X,0.9);
+	  TriCut*=sideVec[1]->getFullRule(-2);
+	  TriCut.addIntersection(-SNremoved);
+	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
+	  for(const int CN : buildZone->getInsertCell())
+	    {
+	      MonteCarlo::Object* outerObj=System.findObject(CN);
+	      if (outerObj)
+		outerObj->addIntersection(TriCut.complement());
+	    }
+	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin,X,0.9);
       HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
       IZThin->setSurround(HSurroundB);
+      IZThin->setInsertCells(buildZone->getInsertCell());
       IZThin->constructMasterCell(System);
     }
   return;
 }
-  
-
+ 
 void
 Segment30::buildObjects(Simulation& System)
   /*!
@@ -167,7 +189,7 @@ Segment30::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","buildObjects");
 
-  return;
+
   int outerCell;
   MonteCarlo::Object* masterCell=IZThin->getMaster();
   if (!masterCell)
@@ -181,29 +203,26 @@ Segment30::buildObjects(Simulation& System)
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
+  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*gauge,2);
   gauge->insertAllInCell(System,outerCell);
 
-  buildZone->removeLastMaster(System);
-  return;
+  constructSystem::constructUnit
+    (System,*IZThin,masterCell,*gauge,"back",*pipeA);
   
-
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gauge,"back",*pipeA);
+    (System,*IZThin,masterCell,*pipeA,"back",*bellow);
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellow);
-  buildZone->removeLastMaster(System);
-  return;
 
   const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellow,"back",*ionPump);
+    buildIonPump2Port(System,*IZThin,masterCell,*bellow,"back",*ionPump);
+
 
   pipeB->createAll(System,ionPumpBackPort,"OuterPlate");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
-  pipeTerminate(System,*buildZone,pipeB);
+  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagV);
+  pipeTerminate(System,*IZThin,pipeB);
 
-  buildZone->removeLastMaster(System);
+  IZThin->removeLastMaster(System);
+  return;
 
   return;
 }
