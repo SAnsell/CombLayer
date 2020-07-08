@@ -95,6 +95,7 @@
 #include "Segment23.h"
 #include "Segment24.h"
 #include "Segment25.h"
+#include "Segment26.h"
 #include "Segment27.h"
 #include "Segment28.h"
 #include "Segment30.h"
@@ -143,6 +144,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment23",std::make_shared<Segment23>("TDC23") },
     { "Segment24",std::make_shared<Segment24>("TDC24") },
     { "Segment25",std::make_shared<Segment25>("TDC25") },
+    { "Segment26",std::make_shared<Segment26>("TDC26") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
     { "Segment28",std::make_shared<Segment28>("TDC28") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
@@ -310,7 +312,7 @@ TDC::createAll(Simulation& System,
       "Segment17","Segment18","Segment19",
       "Segment20","Segment21","Segment22",
       "Segment23","Segment24","Segment25",
-      "Segment27","Segment28",
+      "Segment26","Segment27","Segment28",
       "Segment29","Segment30","Segment31"
       "Segment32","Segment33","Segment34",
       "Segment35","Segment36","Segment37",
@@ -347,6 +349,7 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
       {"Segment25",{"spfMid","Segment24",1}},
+      {"Segment26",{"spfLong","Segment26",1}},
       {"Segment27",{"spfLong","Segment25",1}},
       {"Segment28",{"spfLong","Segment27",1}},
       {"Segment30",{"tdcMain","Segment12",2}},
@@ -367,8 +370,7 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  // special case of Segment10 : Segment27
-
+  // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
 	  
@@ -420,7 +422,8 @@ TDC::createAll(Simulation& System,
 	    }
 	  segPtr->setInnerZone(buildZone.get());
 	  
-	  if (BL!="Segment27" && BL!="Segment28" && BL!="Segment30")
+	  if (BL!="Segment26" && BL!="Segment27" &&
+	      BL!="Segment28" && BL!="Segment30")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
@@ -433,7 +436,7 @@ TDC::createAll(Simulation& System,
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
 	  segPtr->captureCellMap();
-	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	    
 	}
     }

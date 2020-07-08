@@ -207,7 +207,7 @@ Segment27::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment27","buildObjects");
 
   int outerCellA,outerCellB,outerCellC;
-
+  ELog::EM<<"Center ="<<this->getLinkPt(0)<<ELog::endDiag;
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);

@@ -108,6 +108,7 @@ namespace linacVar
   void Segment23(FuncDataBase&,const std::string&);
   void Segment24(FuncDataBase&,const std::string&);
   void Segment25(FuncDataBase&,const std::string&);
+  void Segment26(FuncDataBase&,const std::string&);
   void Segment27(FuncDataBase&,const std::string&);
   void Segment28(FuncDataBase&,const std::string&);
   void Segment30(FuncDataBase&,const std::string&);
@@ -1697,30 +1698,28 @@ Segment25(FuncDataBase& Control,
  
   const Geometry::Vec3D startPt(-637.608,7406.261,0.0);
 
-  const Geometry::Vec3D endPtA(-637.608,8173.261,0.0);
-  const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
-  const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
 
-  // const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
-  // const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
-  // const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
-  // const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
+  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
+  const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetC",startPt+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffsetA",endPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffsetB",endPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"BackLink","Flat");
-  Control.addVariable(lKey+"BackLinkA","Mid");
-  Control.addVariable(lKey+"BackLinkB","Lower");
+
+  Control.addVariable(lKey+"BackLinkA","backFlat");
+  Control.addVariable(lKey+"BackLinkB","backMid");
+  Control.addVariable(lKey+"BackLinkC","backLower");
 
   BellowGen.setCF<setVariable::CF40>();
-
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  Control.addVariable(lKey+"BellowAOffset","backFlat");
 
   const double dipoleAngle(0.8);
   const double magAngle(0.8);
@@ -1733,7 +1732,7 @@ Segment25(FuncDataBase& Control,
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,lKey+"TriPipeA");
   Control.addVariable(lKey+"TriPipeAYAngle",90);
-  Control.addVariable(lKey+"TriPipeAXAngle",-dipoleAngle);
+  Control.addVariable(lKey+"TriPipeAXAngle",-multiAngle);
 
   DIBGen.generate(Control,lKey+"DipoleA");
 
@@ -1742,29 +1741,95 @@ Segment25(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeB",16.15);
   Control.addVariable(lKey+"PipeBPreYAngle",-90);
-  Control.addVariable(lKey+"PipeBXAngle",-magAngle);
+  Control.addVariable(lKey+"PipeBXAngle",0.0);
+
   SPortGen.setCF<CF150>();
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
-
+  Control.addVariable(lKey+"SixPortAXAngle",multiAngle);
+  Control.addVariable(lKey+"SixPortAZStep",-2.316);
+  
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0,multiAngle);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0, 0.0, -3.03406+multiAngle);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0, 0.0, -5.82659+multiAngle);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0+12.0752, 0.0,0.0);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0+10.1957, 0.0, -3.06406);
+  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0+9.4620, 0.0, -6.12812);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
   BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowBA",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowCA",7.5);
 
+
+  return;
+}
+
+
+void
+Segment26(FuncDataBase& Control,
+	  const std::string& lKey)
+  /*!
+    Set the variables for segment 26
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment26");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+
+  // const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
+  const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D startPtB(-637.608,7612.436,-8.214);
+  const Geometry::Vec3D startPtC(-637.608,7607.463,-15.805);
+  
+  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or 
+  // const Geometry::Vec3D startPtB(-637.608,7602.24,-37.887);
+  // const Geometry::Vec3D startPtC(-637.608,7598.08,-73.976);
+
+  const Geometry::Vec3D endPtA(-637.608,8173.261,0.0);
+  const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
+  const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
+
+  Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
+      
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"FrontLinkA","frontFlat");
+  Control.addVariable(lKey+"BackLinkA","backFlat");
+  Control.addVariable(lKey+"FrontLinkB","frontMid");
+  Control.addVariable(lKey+"BackLinkB","backMid");
+  Control.addVariable(lKey+"FrontLinkC","frontLower");
+  Control.addVariable(lKey+"BackLinkC","backLower");
+
+
   PGen.setCF<CF40>();
   PGen.generatePipe(Control,lKey+"PipeAA",300.0);
   PGen.generatePipe(Control,lKey+"PipeBA",321.5);
   PGen.generatePipe(Control,lKey+"PipeCA",326.5);
 
+  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
+  
+  Control.addVariable(lKey+"PipeAAXAngle",
+		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
+  Control.addVariable(lKey+"PipeBAXAngle",
+		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
+  Control.addVariable(lKey+"PipeCAXAngle",
+		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
+
   BellowGen.generateBellow(Control,lKey+"BellowAB",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
+
+    
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -1775,13 +1840,13 @@ Segment25(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
   PGen.setCF<CF40>();
-  PGen.generatePipe(Control,lKey+"PipeAB",216.5);
-  PGen.generatePipe(Control,lKey+"PipeBB",209.2);
-  PGen.generatePipe(Control,lKey+"PipeCB",221.0);
+  PGen.generatePipe(Control,lKey+"PipeAB",227.2);
+  PGen.generatePipe(Control,lKey+"PipeBB",219.4);
+  PGen.generatePipe(Control,lKey+"PipeCB",231.2);
 
   return;
 }
-  
+
 void
 Segment27(FuncDataBase& Control,
 	  const std::string& lKey)
@@ -2704,6 +2769,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment23(Control,"TDC23");
   linacVar::Segment24(Control,"TDC24");
   linacVar::Segment25(Control,"TDC25");
+  linacVar::Segment26(Control,"TDC26");
 
   linacVar::Segment27(Control,"TDC27");
   linacVar::Segment28(Control,"TDC28");
