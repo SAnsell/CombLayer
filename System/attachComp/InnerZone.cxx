@@ -147,6 +147,10 @@ InnerZone::operator=(const InnerZone& A)
   if (this!=&A)
     {
       FCName=A.FCName;
+
+      FCPtr=A.FCPtr;
+      CellPtr=A.CellPtr;
+      insertCN=A.insertCN;
       
       insertCells=A.insertCells;
       extraHR=A.extraHR;
@@ -825,5 +829,6 @@ InnerZone::removeLastMaster(Simulation& System)
   
   return;
 }
+
 
 }  // NAMESPACE attachSystem

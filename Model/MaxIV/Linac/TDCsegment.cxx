@@ -299,7 +299,8 @@ TDCsegment::captureCellMap()
   ELog::RegMethod RegA("TDCsegment","captureCellMap");
   
   const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
-  const size_t NCells=(CPtr) ?CPtr->getNCells("OuterVoid") : 0;
+  const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
+    CPtr->getNCells("OuterVoid") : 0;
 
   for(size_t i=NCellInit;i<NCells;i++)
     CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));

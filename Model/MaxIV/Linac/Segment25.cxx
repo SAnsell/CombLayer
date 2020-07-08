@@ -191,11 +191,13 @@ Segment25::createSplitInnerZone(Simulation& System)
   ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
   
   const Geometry::Vec3D ZEffective(FA.getZ());
+
+
   HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
   HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
   HSurroundB.removeMatchedPlanes(-ZEffective); 
   HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
- 
+
   HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
   HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
@@ -204,6 +206,10 @@ Segment25::createSplitInnerZone(Simulation& System)
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
+
+  IZTop->setFront(bellowAA->getFullRule(2));
+  IZMid->setFront(bellowAA->getFullRule(2));
+  IZLower->setFront(bellowAA->getFullRule(2));
 
   IZTop->constructMasterCell(System);
   IZMid->constructMasterCell(System);
@@ -266,9 +272,8 @@ Segment25::buildObjects(Simulation& System)
 
   buildZone->removeLastMaster(System);
 
-
   createSplitInnerZone(System);
-  
+
   // PIPE:
   pipeBA->addInsertCell(outerCellBellow);
   pipeCA->addInsertCell(outerCellBellow);
@@ -315,15 +320,15 @@ Segment25::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZLower,masterCellC,*bellowCB,"back",*pipeCB);
 
-
-
   //  buildZone->refrontMasterCell(masterCell,IZMid->getDivider());
   //  System.removeCell(masterCell->getName());
 
-  //  buildZone->removeLastMaster(System);
-  IZTop->removeLastMaster(System);
-  IZMid->removeLastMaster(System);
-  IZLower->removeLastMaster(System);  
+  System.removeCell(masterCellA->getName());
+  System.removeCell(masterCellB->getName());
+  System.removeCell(masterCellC->getName());
+  // IZTop->removeLastMaster(System);
+  // IZMid->removeLastMaster(System);
+  // IZMid->removeLastMaster(System);  
   
   return;
 }

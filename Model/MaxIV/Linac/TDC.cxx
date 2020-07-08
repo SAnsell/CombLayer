@@ -350,7 +350,6 @@ TDC::createAll(Simulation& System,
       {"Segment27",{"spfLong","Segment25",1}},
       {"Segment28",{"spfLong","Segment27",1}},
       {"Segment30",{"tdcMain","Segment12",2}},
-      //      {"Segment30",{"spfAngle","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -419,7 +418,6 @@ TDC::createAll(Simulation& System,
 	      if (sidePtrB->isBuilt())
 		segPtr->registerSideSegment(sidePtrB);
 	    }
-
 	  segPtr->setInnerZone(buildZone.get());
 	  
 	  if (BL!="Segment27" && BL!="Segment28" && BL!="Segment30")
