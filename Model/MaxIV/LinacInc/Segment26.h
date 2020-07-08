@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment25.h
+ * File:   LinacInc/6.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -93,7 +93,8 @@ class Segment26 :
   Segment26& operator=(const Segment26&);
   ~Segment26();
 
-
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

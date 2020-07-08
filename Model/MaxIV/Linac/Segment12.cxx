@@ -263,7 +263,7 @@ Segment12::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment12","build");
+  ELog::RegMethod RControl("Segment12","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

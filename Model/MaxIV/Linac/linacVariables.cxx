@@ -1780,6 +1780,8 @@ Segment26(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
+  BellowGen.setCF<setVariable::CF40>();
+
   // const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
   const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
   const Geometry::Vec3D startPtB(-637.608,7612.436,-8.214);
@@ -1810,6 +1812,8 @@ Segment26(FuncDataBase& Control,
 
 
   PGen.setCF<CF40>();
+  PGen.setNoWindow();
+
   PGen.generatePipe(Control,lKey+"PipeAA",300.0);
   PGen.generatePipe(Control,lKey+"PipeBA",321.5);
   PGen.generatePipe(Control,lKey+"PipeCA",326.5);

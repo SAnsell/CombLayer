@@ -243,10 +243,6 @@ Segment13::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-
-  ELog::EM<<"Cells = "<<ELog::endDiag;
-  for(const std::string& N : this->getNames())
-    ELog::EM<<"Cell = "<<N<<ELog::endDiag;
     
   return;
 }

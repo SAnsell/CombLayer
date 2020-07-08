@@ -137,6 +137,8 @@ Segment26::Segment26(const std::string& Key) :
   OR.addObject(pipeCB);
 
   setFirstItems(pipeAA);
+  setFirstItems(pipeBA);
+  setFirstItems(pipeCA);
 }
 
 Segment26::~Segment26()
@@ -145,6 +147,28 @@ Segment26::~Segment26()
    */
 {}
 
+void
+Segment26::insertPrevSegment(Simulation& System,
+			     const TDCsegment* prevSegPtr) const
+  /*!
+    Insert components that need to be in previous
+    objects
+    \param System :: Simulation
+    \param prevSegPtr :: Previous segment points
+   */
+{
+  ELog::RegMethod RegA("Segment26","insertPrevSegment");
+
+  if (prevSegPtr && prevSegPtr->hasCell("BellowCell"))
+    {
+      pipeAA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
+      pipeBA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
+      pipeCA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
+      if (prevSegPtr->hasCell("MultiCell"))
+	pipeCA->insertInCell(System,prevSegPtr->getCell("MultiCell"));
+    }
+  return;
+}
 
 void
 Segment26::createSplitInnerZone(Simulation& System)
@@ -173,7 +197,6 @@ Segment26::createSplitInnerZone(Simulation& System)
   
   const Geometry::Vec3D ZEffective(FA.getZ());
 
-
   HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
   HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
   HSurroundB.removeMatchedPlanes(-ZEffective); 
@@ -185,8 +208,8 @@ Segment26::createSplitInnerZone(Simulation& System)
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
   IZTop->setFront(pipeAA->getFullRule(-1));
-  IZMid->setFront(pipeBA->getFullRule(-1));
-  IZLower->setFront(pipeCA->getFullRule(-1));
+  IZMid->setFront(pipeAA->getFullRule(-1));
+  IZLower->setFront(pipeAA->getFullRule(-1));
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
@@ -256,10 +279,6 @@ Segment26::buildObjects(Simulation& System)
   IZTop->removeLastMaster(System);
   IZMid->removeLastMaster(System);
   IZLower->removeLastMaster(System);  
-
-  // System.removeCell(masterCellA->getName());
-  // System.removeCell(masterCellB->getName());
-  // System.removeCell(masterCellC->getName());
   
   return;
 }
@@ -292,8 +311,8 @@ Segment26::createLinks()
     Create a front/back link
    */
 {
-
-
+  ELog::RegMethod RegA("Segment26","createLinks");
+  
   setLinkSignedCopy(0,*pipeAA,1);
   setLinkSignedCopy(1,*pipeAB,2);
 
@@ -310,11 +329,11 @@ Segment26::createLinks()
   FixedComp::nameSideIndex(4,"frontLower");
   FixedComp::nameSideIndex(5,"backLower");
 
-  
-  joinItems.push_back(FixedComp::getFullRule(2));
+  // push back all the joing items:
+  joinItems.push_back(FixedComp::getFullRule("backFlat"));
+  joinItems.push_back(FixedComp::getFullRule("backMid"));
+  joinItems.push_back(FixedComp::getFullRule("backLower"));
 
-  
-  
   return;
 }
 
@@ -330,13 +349,14 @@ Segment26::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment26","build");
+  ELog::RegMethod RControl("Segment26","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
   constructVoid(System,FC);
+
   return;
 }
 

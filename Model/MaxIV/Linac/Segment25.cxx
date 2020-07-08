@@ -216,6 +216,8 @@ Segment25::buildObjects(Simulation& System)
   bellowAA->insertInCell(System,outerCellBellow);
   bellowBA->insertInCell(System,outerCellBellow);
 
+  CellMap::addCell("MultiCell",outerCellMulti);
+  CellMap::addCell("BellowCell",outerCellBellow);
   buildZone->removeLastMaster(System);
   return;
 
@@ -258,12 +260,7 @@ Segment25::createLinks()
   FixedComp::nameSideIndex(1,"backFlat");
   FixedComp::nameSideIndex(2,"backMid");
   FixedComp::nameSideIndex(3,"backLower");
-  joinItems.push_back(FixedComp::getFullRule(2));
-
-  ELog::EM<<"Ling point == "<<bellowAA->getLinkPt(2)<<ELog::endDiag;
-  ELog::EM<<"Ling point == "<<bellowBA->getLinkPt(2)<<ELog::endDiag;
-  ELog::EM<<"Ling point == "<<bellowCA->getLinkPt(2)<<ELog::endDiag;
-  
+  joinItems.push_back(FixedComp::getFullRule(2));  
   
   return;
 }

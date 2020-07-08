@@ -124,7 +124,7 @@ Segment30::createSplitInnerZone(Simulation& System)
     \param System :: Simulatio to use
    */
 {
-  ELog::RegMethod RegA("Segment27","createSplitInnerZone");
+  ELog::RegMethod RegA("Segment30","createSplitInnerZone");
 
   *IZThin = *buildZone;
 

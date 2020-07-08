@@ -349,8 +349,8 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
       {"Segment25",{"spfMid","Segment24",1}},
-      {"Segment26",{"spfLong","Segment26",1}},
-      {"Segment27",{"spfLong","Segment25",1}},
+      {"Segment26",{"spfLong","Segment25",1}},
+      {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
       {"Segment30",{"tdcMain","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
@@ -393,13 +393,18 @@ TDC::createAll(Simulation& System,
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
+	  // this segment is register in previous segment by: joinItems
+	  // it is set in createLinks. Manditory to set at least 1.
+	  // It is captured in the next segment by
+	  // TDCsegment::setFrontSurfaces -- it used firstItemVec
+	  // which is set in segment constructor.
 	  if (prevSegPtr)
 	    {
 	      const std::vector<HeadRule>& prevJoinItems=
 		prevSegPtr->getJoinItems();
-	      if (!prevJoinItems.empty())
+	      if (prevJoinItems.size()>=prevIndex)
 		{
-		  buildZone->setFront(prevJoinItems.front());
+		  buildZone->setFront(prevJoinItems[prevIndex-1]);
 		  segPtr->setFrontSurfs(prevJoinItems);
 		}
 	    }
