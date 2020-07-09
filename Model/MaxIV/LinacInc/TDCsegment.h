@@ -63,6 +63,11 @@ class TDCsegment :
   /// unmanaged resource
   std::vector<attachSystem::ExternalCut*> firstItemVec;
 
+  /// resource for previous object:
+  const TDCsegment* prevSegPtr;
+
+  void processPrevSeg();
+  
  public:
 
   TDCsegment(const std::string&,const size_t);
@@ -98,11 +103,12 @@ class TDCsegment :
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
 
-  void registerSideSegment(const TDCsegment*);
+  virtual void registerPrevSeg(const TDCsegment*);
+  virtual void registerSideSegment(const TDCsegment*);
 
   virtual void initCellMap();
   virtual void captureCellMap();
-  
+
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

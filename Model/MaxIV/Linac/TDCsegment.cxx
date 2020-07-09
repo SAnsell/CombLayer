@@ -80,7 +80,8 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  buildZone(nullptr),NCellInit(0)
+  buildZone(nullptr),NCellInit(0),
+  prevSegPtr(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -157,6 +158,36 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   return;
 }
 
+
+void
+TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
+  /*!
+   Process previous segments [default version]
+   This segment is register in previous segment by: joinItems
+   It is set in createLinks. Manditory to set at least 1.
+   It is captured in the next segment by
+   TDCsegment::setFrontSurfaces -- it used firstItemVec
+   which is set in segment constructor.
+   \param PSPtr :: previous segment
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+
+  prevSegPtr=PSPtr;
+  if (prevSegPtr)
+    {
+      const std::vector<HeadRule>& prevJoinItems=
+	prevSegPtr->getJoinItems();
+      if (!prevJoinItems.empty())
+	{
+	  if (buildZone)
+	    buildZone->setFront(prevJoinItems.front());
+	  this->setFrontSurfs(prevJoinItems);
+	}
+    }
+  return;
+}
+  
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
 			      attachSystem::InnerZone& buildZone,

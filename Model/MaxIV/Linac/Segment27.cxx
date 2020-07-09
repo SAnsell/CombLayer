@@ -164,37 +164,49 @@ Segment27::createSplitInnerZone(Simulation& System)
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
 
-  // create surfaces
   attachSystem::FixedUnit FA("FA");
   attachSystem::FixedUnit FB("FB");
   FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
   FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
-  ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
-  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+
+  if (!prevSegPtr)
+    {
+      // create surfaces
+      ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
+      ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+      SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
+      SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
+    }
+  else
+    {
+      SurfMap::addSurf("TopDivider",prevSegPtr->getSurf("TopDivider"));
+      SurfMap::addSurf("LowDivider",prevSegPtr->getSurf("LowDivider"));
+    }
+
   
-  const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
- 
-  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
-  HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
-
-  IZTop->setFront(bellowAA->getFullRule(-1));
-  IZFlat->setFront(bellowBA->getFullRule(-1));
-  IZLower->setFront(bellowCA->getFullRule(-1));
-
-  IZTop->setSurround(HSurroundA);
-  IZFlat->setSurround(HSurroundB);
-  IZLower->setSurround(HSurroundC);
-
-  IZTop->constructMasterCell(System);
-  IZFlat->constructMasterCell(System);
-  IZLower->constructMasterCell(System);
-
+      const Geometry::Vec3D ZEffective(FA.getZ());
+      HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
+      HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
+      HSurroundB.removeMatchedPlanes(-ZEffective); 
+      HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+      
+      HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
+      HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
+      HSurroundB.addIntersection(SurfMap::getSurf("LowDivider"));
+      HSurroundC.addIntersection(-SurfMap::getSurf("LowDivider"));
+      
+      IZTop->setFront(bellowAA->getFullRule(-1));
+      IZFlat->setFront(bellowBA->getFullRule(-1));
+      IZLower->setFront(bellowCA->getFullRule(-1));
+      
+      IZTop->setSurround(HSurroundA);
+      IZFlat->setSurround(HSurroundB);
+      IZLower->setSurround(HSurroundC);
+      
+      IZTop->constructMasterCell(System);
+      IZFlat->constructMasterCell(System);
+      IZLower->constructMasterCell(System);
+      
 
   return;
 }

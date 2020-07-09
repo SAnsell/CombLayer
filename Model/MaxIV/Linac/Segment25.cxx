@@ -260,8 +260,11 @@ Segment25::createLinks()
   FixedComp::nameSideIndex(1,"backFlat");
   FixedComp::nameSideIndex(2,"backMid");
   FixedComp::nameSideIndex(3,"backLower");
-  joinItems.push_back(FixedComp::getFullRule(2));  
-  
+
+  joinItems.push_back(FixedComp::getFullRule("backFlat"));
+  joinItems.push_back(FixedComp::getFullRule("backMid"));
+  joinItems.push_back(FixedComp::getFullRule("backLower"));
+ 
   return;
 }
 

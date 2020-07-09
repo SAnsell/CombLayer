@@ -393,21 +393,8 @@ TDC::createAll(Simulation& System,
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
-	  // this segment is register in previous segment by: joinItems
-	  // it is set in createLinks. Manditory to set at least 1.
-	  // It is captured in the next segment by
-	  // TDCsegment::setFrontSurfaces -- it used firstItemVec
-	  // which is set in segment constructor.
-	  if (prevSegPtr)
-	    {
-	      const std::vector<HeadRule>& prevJoinItems=
-		prevSegPtr->getJoinItems();
-	      if (prevJoinItems.size()>=prevIndex)
-		{
-		  buildZone->setFront(prevJoinItems[prevIndex-1]);
-		  segPtr->setFrontSurfs(prevJoinItems);
-		}
-	    }
+
+	  segPtr->registerPrevSeg(prevSegPtr);
 	  
 	  if (BL=="Segment10")
 	    {

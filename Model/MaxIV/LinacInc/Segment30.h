@@ -50,7 +50,7 @@ class Segment30 :
   void createLinks();
 
   void createSplitInnerZone(Simulation&);
-  
+
  public:
 
   Segment30(const std::string&);
@@ -58,6 +58,8 @@ class Segment30 :
   Segment30& operator=(const Segment30&);
   ~Segment30();
 
+  virtual void regiseterPrevSeg(const TDCsegment*);
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

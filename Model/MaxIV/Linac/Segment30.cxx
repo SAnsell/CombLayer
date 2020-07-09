@@ -247,6 +247,35 @@ Segment30::createLinks()
 }
 
 void
+Segment30::regiseterPrevSeg(const TDCsegment* PSPtr)
+  /*!
+   Process previous segments [Used second join Item]
+   This segment is register in previous segment by: joinItems
+   It is set in createLinks. Manditory to set at least 1.
+   It is captured in the next segment by
+   TDCsegment::setFrontSurfaces -- it used firstItemVec
+   which is set in segment constructor.
+   \param PSPtr :: previous segment
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+
+  prevSegPtr=PSPtr;
+  if (prevSegPtr)
+    {
+      const std::vector<HeadRule>& prevJoinItems=
+	prevSegPtr->getJoinItems();
+      if (prevJoinItems.size()>1)
+	{
+	  if (buildZone)
+	    buildZone->setFront(prevJoinItems[1]);
+	  this->setFrontSurfs(prevJoinItems);
+	}
+    }
+  return;
+}
+
+void
 Segment30::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)

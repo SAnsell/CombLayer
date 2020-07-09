@@ -147,6 +147,7 @@ Segment26::~Segment26()
    */
 {}
 
+  
 void
 Segment26::insertPrevSegment(Simulation& System,
 			     const TDCsegment* prevSegPtr) const
@@ -161,6 +162,7 @@ Segment26::insertPrevSegment(Simulation& System,
 
   if (prevSegPtr && prevSegPtr->hasCell("BellowCell"))
     {
+
       pipeAA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
       pipeBA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
       pipeCA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
@@ -194,6 +196,8 @@ Segment26::createSplitInnerZone(Simulation& System)
 
   ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
   ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+  SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
+  SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
   
   const Geometry::Vec3D ZEffective(FA.getZ());
 
