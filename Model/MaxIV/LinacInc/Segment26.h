@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment25.h
+ * File:   LinacInc/6.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment25_h
-#define tdcSystem_Segment25_h
+#ifndef tdcSystem_Segment26_h
+#define tdcSystem_Segment26_h
 
 namespace constructSystem
 {
@@ -40,14 +40,14 @@ namespace tdcSystem
   
 
   /*!
-    \class Segment25
+    \class Segment26
     \version 1.0
     \author S. Ansell
     \date June 2020
     \brief Dividing segment in the TDC from the linac
   */
 
-class Segment25 :
+class Segment26 :
   public TDCsegment
 {
  private:
@@ -55,39 +55,16 @@ class Segment25 :
   std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Flat inner zone
   std::unique_ptr<attachSystem::InnerZone> IZMid;        ///< Mid inner zone
   std::unique_ptr<attachSystem::InnerZone> IZLower;      ///< Lower inner zone
-  
-  /// first pipe
-  std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// first pipe
-  std::shared_ptr<tdcSystem::TriPipe> triPipeA;
-
-  /// first  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
-
-  /// Join pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-
-  /// multi-way
-  std::shared_ptr<tdcSystem::SixPortTube> sixPortA;
-
-  /// MultiPipe
-  std::shared_ptr<tdcSystem::MultiPipe> multiPipe;
-  
-  /// Exit bellows
-  std::shared_ptr<constructSystem::Bellows> bellowAA;
-  std::shared_ptr<constructSystem::Bellows> bellowBA;
-  std::shared_ptr<constructSystem::Bellows> bellowCA;
-
-  
+    
   /// Join pipe 
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
 
   /// Connect bellows
-  std::shared_ptr<constructSystem::Bellows> bellowAB;
-  std::shared_ptr<constructSystem::Bellows> bellowBB;
-  std::shared_ptr<constructSystem::Bellows> bellowCB;
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  std::shared_ptr<constructSystem::Bellows> bellowCA;
 
 
   /// Double yag screen
@@ -111,12 +88,13 @@ class Segment25 :
   
  public:
 
-  Segment25(const std::string&);
-  Segment25(const Segment25&);
-  Segment25& operator=(const Segment25&);
-  ~Segment25();
+  Segment26(const std::string&);
+  Segment26(const Segment26&);
+  Segment26& operator=(const Segment26&);
+  ~Segment26();
 
-
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

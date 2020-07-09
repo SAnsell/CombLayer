@@ -79,7 +79,9 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(nullptr)
+  attachSystem::SurfMap(),
+  buildZone(nullptr),NCellInit(0),
+  prevSegPtr(nullptr)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -127,7 +129,17 @@ TDCsegment::setFirstItems(attachSystem::FixedComp* FCptr)
   return;
 }
 
+void
+TDCsegment::registerSideSegment(const TDCsegment* SPtr)
+  /*!
+    Register a sideward segment
+   */
+{
+  sideVec.push_back(SPtr);
+  return;
+}
 
+  
 void
 TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   /*!
@@ -146,6 +158,36 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   return;
 }
 
+
+void
+TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
+  /*!
+   Process previous segments [default version]
+   This segment is register in previous segment by: joinItems
+   It is set in createLinks. Manditory to set at least 1.
+   It is captured in the next segment by
+   TDCsegment::setFrontSurfaces -- it used firstItemVec
+   which is set in segment constructor.
+   \param PSPtr :: previous segment
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+
+  prevSegPtr=PSPtr;
+  if (prevSegPtr)
+    {
+      const std::vector<HeadRule>& prevJoinItems=
+	prevSegPtr->getJoinItems();
+      if (!prevJoinItems.empty())
+	{
+	  if (buildZone)
+	    buildZone->setFront(prevJoinItems.front());
+	  this->setFrontSurfs(prevJoinItems);
+	}
+    }
+  return;
+}
+  
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
 			      attachSystem::InnerZone& buildZone,
@@ -196,7 +238,6 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       // link point FrontALink / BackALink
       const std::string AKey=keyName+"Offset"+Letters[i];
       const std::string BKey=keyName+"EndOffset"+Letters[i];
-
 
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
@@ -264,5 +305,41 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   return retFlag;
 }
 
+void
+TDCsegment::initCellMap()
+  /*!
+    Set inital value
+   */
+{
+  ELog::RegMethod RegA("TDCsegment","initCellMap");
+  
+  const attachSystem::CellMap* CPtr=
+    (buildZone) ? buildZone->getCellMap() :  0;
+
+  NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
+    ? CPtr->getNCells("OuterVoid") : 0;
+  
+  return;
+}
+
+void
+TDCsegment::captureCellMap()
+  /*!
+    Set inital value
+   */
+{
+  ELog::RegMethod RegA("TDCsegment","captureCellMap");
+  
+  const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
+  const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
+    CPtr->getNCells("OuterVoid") : 0;
+
+  for(size_t i=NCellInit;i<NCells;i++)
+    CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
+
+  NCellInit=NCells;
+		     
+  return;
+}
 
 }   // NAMESPACE tdcSystem

@@ -85,9 +85,11 @@ namespace tdcSystem
 
 Segment27::Segment27(const std::string& Key) :
   TDCsegment(Key,6),
+
   IZTop(new attachSystem::InnerZone(*this,cellIndex)),
   IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
   IZLower(new attachSystem::InnerZone(*this,cellIndex)),
+  
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
   bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
@@ -134,6 +136,8 @@ Segment27::Segment27(const std::string& Key) :
   OR.addObject(bellowBC);
 
   setFirstItems(bellowAA);
+  setFirstItems(bellowBA);
+  setFirstItems(bellowCA);
 }
 
 Segment27::~Segment27()
@@ -155,43 +159,54 @@ Segment27::createSplitInnerZone(Simulation& System)
   *IZTop = *buildZone;
   *IZFlat = *buildZone;
   *IZLower = *buildZone;
-
   
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
 
-  // create surfaces
   attachSystem::FixedUnit FA("FA");
   attachSystem::FixedUnit FB("FB");
   FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
   FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
-  ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
-  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+
+  if (!prevSegPtr)
+    {
+      // create surfaces
+      ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
+      ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
+      SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
+      SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
+    }
+  else
+    {
+      SurfMap::addSurf("TopDivider",prevSegPtr->getSurf("TopDivider"));
+      SurfMap::addSurf("LowDivider",prevSegPtr->getSurf("LowDivider"));
+    }
+
   
-  const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
- 
-  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
-  HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
-
-  IZTop->setFront(bellowAA->getFullRule(-1));
-  IZFlat->setFront(bellowBA->getFullRule(-1));
-  IZLower->setFront(bellowCA->getFullRule(-1));
-
-  IZTop->setSurround(HSurroundA);
-  IZFlat->setSurround(HSurroundB);
-  IZLower->setSurround(HSurroundC);
-
-  IZTop->constructMasterCell(System);
-  IZFlat->constructMasterCell(System);
-  IZLower->constructMasterCell(System);
-
+      const Geometry::Vec3D ZEffective(FA.getZ());
+      HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
+      HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
+      HSurroundB.removeMatchedPlanes(-ZEffective); 
+      HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+      
+      HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
+      HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
+      HSurroundB.addIntersection(SurfMap::getSurf("LowDivider"));
+      HSurroundC.addIntersection(-SurfMap::getSurf("LowDivider"));
+      
+      IZTop->setFront(bellowAA->getFullRule(-1));
+      IZFlat->setFront(bellowBA->getFullRule(-1));
+      IZLower->setFront(bellowCA->getFullRule(-1));
+      
+      IZTop->setSurround(HSurroundA);
+      IZFlat->setSurround(HSurroundB);
+      IZLower->setSurround(HSurroundC);
+      
+      IZTop->constructMasterCell(System);
+      IZFlat->constructMasterCell(System);
+      IZLower->constructMasterCell(System);
+      
 
   return;
 }
@@ -207,6 +222,7 @@ Segment27::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment27","buildObjects");
 
   int outerCellA,outerCellB,outerCellC;
+
 
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);

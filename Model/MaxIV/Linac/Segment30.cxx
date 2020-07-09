@@ -64,6 +64,7 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
+#include "generateSurf.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -85,6 +86,7 @@ namespace tdcSystem
 
 Segment30::Segment30(const std::string& Key) :
   TDCsegment(Key,2),
+  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
   gauge(new constructSystem::PipeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
@@ -116,6 +118,68 @@ Segment30::~Segment30()
 {}
 
 void
+Segment30::createSplitInnerZone(Simulation& System)
+  /*!
+    Split the innerZone into two parts (assuming segment13 built)
+    \param System :: Simulatio to use
+   */
+{
+  ELog::RegMethod RegA("Segment30","createSplitInnerZone");
+
+  *IZThin = *buildZone;
+
+  const double orgFrac(2.3);
+  const double axisFrac(4.0);
+  if (!sideVec.empty())
+    {
+      const TDCsegment* sideSegment=sideVec.front();
+
+      const Geometry::Vec3D sideOrg(sideSegment->getCentre());
+      const Geometry::Vec3D sideY((sideSegment->getY()+Y*axisFrac).unit());
+      
+      const Geometry::Vec3D midX=(sideY*Z);
+            
+      ModelSupport::buildPlane(SMap,buildIndex+5005,
+			       (sideOrg+Origin*orgFrac)/(orgFrac+1.0),midX);
+
+      int SNremoved(0);
+      for(const TDCsegment* sidePtr : sideVec)
+	{
+	  for(const int CN : sidePtr->getCells("BuildVoid"))
+	    {
+	      MonteCarlo::Object* OPtr=System.findObject(CN);
+	      HeadRule HA=OPtr->getHeadRule();   // copy
+	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+	      HA.addIntersection(SMap.realSurf(buildIndex+5005));
+	      OPtr->procHeadRule(HA);
+	    }
+	}
+      if (sideVec.size()>=2)
+	{
+	  HeadRule TriCut=buildZone->getSurround();
+	  TriCut.removeOuterPlane(Origin,X,0.9);
+	  TriCut.removeOuterPlane(Origin,-X,0.9);
+	  TriCut*=sideVec[1]->getFullRule(-2);
+	  TriCut.addIntersection(-SNremoved);
+	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
+	  for(const int CN : buildZone->getInsertCell())
+	    {
+	      MonteCarlo::Object* outerObj=System.findObject(CN);
+	      if (outerObj)
+		outerObj->addIntersection(TriCut.complement());
+	    }
+	}
+      HeadRule HSurroundB=buildZone->getSurround();
+      HSurroundB.removeOuterPlane(Origin,X,0.9);
+      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+      IZThin->setSurround(HSurroundB);
+      IZThin->setInsertCells(buildZone->getInsertCell());
+      IZThin->constructMasterCell(System);
+    }
+  return;
+}
+ 
+void
 Segment30::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -125,38 +189,40 @@ Segment30::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","buildObjects");
 
-  int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  // Gauge
+  int outerCell;
+  MonteCarlo::Object* masterCell=IZThin->getMaster();
+  if (!masterCell)
+    {
+      ELog::EM<<"Building master cell"<<ELog::endDiag;
+      masterCell=IZThin->constructMasterCell(System);
+    }
+
   gauge->addAllInsertCell(masterCell->getName());
+  // Gauge
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
-
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*gauge,-1);
-
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
+  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*gauge,2);
   gauge->insertAllInCell(System,outerCell);
 
-
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gauge,"back",*pipeA);
-
+    (System,*IZThin,masterCell,*gauge,"back",*pipeA);
+  
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellow);
-  buildZone->removeLastMaster(System);
-  return;
+    (System,*IZThin,masterCell,*pipeA,"back",*bellow);
+
 
   const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellow,"back",*ionPump);
+    buildIonPump2Port(System,*IZThin,masterCell,*bellow,"back",*ionPump);
+
 
   pipeB->createAll(System,ionPumpBackPort,"OuterPlate");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
-  pipeTerminate(System,*buildZone,pipeB);
+  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagV);
+  pipeTerminate(System,*IZThin,pipeB);
 
-  buildZone->removeLastMaster(System);
+  IZThin->removeLastMaster(System);
+  return;
 
   return;
 }
@@ -170,11 +236,42 @@ Segment30::createLinks()
   ELog::RegMethod RegA("Segment30","createLinks");
 
   setLinkSignedCopy(0,*gauge,1);
+
   //  setLinkSignedCopy(1,*pipeB,2);
 
-  setLinkSignedCopy(0,*gauge,2);
+  setLinkSignedCopy(1,*gauge,2);
+
   joinItems.push_back(FixedComp::getFullRule(2));
 
+  return;
+}
+
+void
+Segment30::regiseterPrevSeg(const TDCsegment* PSPtr)
+  /*!
+   Process previous segments [Used second join Item]
+   This segment is register in previous segment by: joinItems
+   It is set in createLinks. Manditory to set at least 1.
+   It is captured in the next segment by
+   TDCsegment::setFrontSurfaces -- it used firstItemVec
+   which is set in segment constructor.
+   \param PSPtr :: previous segment
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+
+  prevSegPtr=PSPtr;
+  if (prevSegPtr)
+    {
+      const std::vector<HeadRule>& prevJoinItems=
+	prevSegPtr->getJoinItems();
+      if (prevJoinItems.size()>1)
+	{
+	  if (buildZone)
+	    buildZone->setFront(prevJoinItems[1]);
+	  this->setFrontSurfs(prevJoinItems);
+	}
+    }
   return;
 }
 
@@ -194,7 +291,7 @@ Segment30::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  createSplitInnerZone(System);
   buildObjects(System);
   createLinks();
   return;

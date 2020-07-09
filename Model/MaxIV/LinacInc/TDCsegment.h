@@ -42,21 +42,32 @@ class TDCsegment :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  protected:
 
   /// System for building a divided inner
   attachSystem::InnerZone* buildZone;
 
+  size_t NCellInit;        ///< Cells at start of buildZone:
+
   /// System for next building a divided inner
   attachSystem::InnerZone* nextZone;
   
   std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
+  /// side by side segment (if share buildZone)
+  std::vector<const TDCsegment*> sideVec;
+  
   /// unmanaged resource
   std::vector<attachSystem::ExternalCut*> firstItemVec;
 
+  /// resource for previous object:
+  const TDCsegment* prevSegPtr;
+
+  void processPrevSeg();
+  
  public:
 
   TDCsegment(const std::string&,const size_t);
@@ -64,6 +75,9 @@ class TDCsegment :
   TDCsegment& operator=(const TDCsegment&);
   virtual ~TDCsegment();
 
+
+  /// has object been created:
+  bool isBuilt() const { return !(joinItems.empty()); }
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
 
   /// set the current inner zone [allows joining of segments]
@@ -88,6 +102,12 @@ class TDCsegment :
   void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
+
+  virtual void registerPrevSeg(const TDCsegment*);
+  virtual void registerSideSegment(const TDCsegment*);
+
+  virtual void initCellMap();
+  virtual void captureCellMap();
 
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
   

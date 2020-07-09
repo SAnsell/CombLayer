@@ -182,8 +182,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	 "Segment16", "Segment17", "Segment18",
 	 "Segment19", "Segment20", "Segment21",
 	 "Segment22", "Segment23", "Segment24",
-	 "Segment25", "Segment27", "Segment28"
-
+	 "Segment25", "Segment26", "Segment27",
+	 "Segment28", "Segment30"
 	} },
        {"L2SPF",
 	{"Segment1","Segment2","Segment3",

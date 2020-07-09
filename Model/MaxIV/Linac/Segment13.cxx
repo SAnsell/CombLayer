@@ -152,6 +152,8 @@ Segment13::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment13","buildObjects");
 
+  const attachSystem::CellMap* buildCM=buildZone->getCellMap();
+
   int outerCell;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -168,6 +170,7 @@ Segment13::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bpm);
 
+    
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
@@ -234,13 +237,13 @@ Segment13::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment13","build");
+  ELog::RegMethod RControl("Segment13","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+    
   return;
 }
 

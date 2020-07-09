@@ -37,6 +37,8 @@ class Segment30 :
 {
  private:
 
+  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+
   std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
@@ -47,6 +49,8 @@ class Segment30 :
   void buildObjects(Simulation&);
   void createLinks();
 
+  void createSplitInnerZone(Simulation&);
+
  public:
 
   Segment30(const std::string&);
@@ -54,6 +58,8 @@ class Segment30 :
   Segment30& operator=(const Segment30&);
   ~Segment30();
 
+  virtual void regiseterPrevSeg(const TDCsegment*);
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

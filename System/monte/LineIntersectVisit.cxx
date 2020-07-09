@@ -276,6 +276,8 @@ void
 LineIntersectVisit::Accept(const HeadRule& HR)
   /*!
     Process an intersect track
+    Assumes that the point must be valid and either
+    an incoming or outgoing intersection
     \param HR :: HeadRules to Interesect
   */
 {

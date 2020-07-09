@@ -95,6 +95,7 @@
 #include "Segment23.h"
 #include "Segment24.h"
 #include "Segment25.h"
+#include "Segment26.h"
 #include "Segment27.h"
 #include "Segment28.h"
 #include "Segment30.h"
@@ -145,6 +146,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment23",std::make_shared<Segment23>("TDC23") },
     { "Segment24",std::make_shared<Segment24>("TDC24") },
     { "Segment25",std::make_shared<Segment25>("TDC25") },
+    { "Segment26",std::make_shared<Segment26>("TDC26") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
     { "Segment28",std::make_shared<Segment28>("TDC28") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
@@ -251,6 +253,7 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfLong"  ,{"TDCLong","#Back","",""}},
@@ -313,7 +316,7 @@ TDC::createAll(Simulation& System,
       "Segment17","Segment18","Segment19",
       "Segment20","Segment21","Segment22",
       "Segment23","Segment24","Segment25",
-      "Segment27","Segment28",
+      "Segment26","Segment27","Segment28",
       "Segment29","Segment30","Segment31"
       "Segment32","Segment33","Segment34",
       "Segment35","Segment36","Segment37",
@@ -337,7 +340,7 @@ TDC::createAll(Simulation& System,
       {"Segment10",{"l2spfAngle","Segment9",1}},
       {"Segment11",{"tdcFront","Segment10",1}},
       {"Segment12",{"tdcFront","Segment11",1}},
-      {"Segment13",{"tdcFront","Segment12",1}},
+      {"Segment13",{"tdcMain","Segment12",1}},
       {"Segment14",{"tdc","Segment13",1}},
       {"Segment15",{"tdc","Segment14",1}},
       {"Segment16",{"tdc","Segment15",1}},
@@ -350,9 +353,10 @@ TDC::createAll(Simulation& System,
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
       {"Segment25",{"spfMid","Segment24",1}},
-      {"Segment27",{"spfLong","Segment25",1}},
+      {"Segment26",{"spfLong","Segment25",1}},
+      {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
-      {"Segment30",{"spfAngle","Segment12",2}},
+      {"Segment30",{"tdcMain","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -374,8 +378,7 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  // special case of Segment10 : Segment27
-
+  // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
 
@@ -398,34 +401,42 @@ TDC::createAll(Simulation& System,
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
-	  if (prevSegPtr)
-	    {
-	      const std::vector<HeadRule>& prevJoinItems=
-		prevSegPtr->getJoinItems();
-	      if (!prevJoinItems.empty())
-		{
-		  buildZone->setFront(prevJoinItems.front());
-		  segPtr->setFrontSurfs(prevJoinItems);
-		}
-	    }
+
+	  segPtr->registerPrevSeg(prevSegPtr);
 
 	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-
+	  if (BL=="Segment30")
+	    {
+	      const TDCsegment* sidePtrA=
+		SegMap.find("Segment13")->second.get();
+	      const TDCsegment* sidePtrB=
+		SegMap.find("Segment14")->second.get();
+	      if (sidePtrA->isBuilt())
+		segPtr->registerSideSegment(sidePtrA);
+	      if (sidePtrB->isBuilt())
+		segPtr->registerSideSegment(sidePtrB);
+	    }
 	  segPtr->setInnerZone(buildZone.get());
-	  if (BL!="Segment27" && BL!="Segment28")
+
+	  if (BL!="Segment26" && BL!="Segment27" &&
+	      BL!="Segment28" && BL!="Segment30")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
 
+	  segPtr->initCellMap();
+
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
-	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+
+	  segPtr->captureCellMap();
+	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 
 	}
     }

@@ -164,54 +164,6 @@ Segment25::~Segment25()
    */
 {}
 
-
-void
-Segment25::createSplitInnerZone(Simulation& System)
-  /*!
-    Spilit the innerZone into three parts.
-    \param System :: Simulatio to use
-   */
-{
-  ELog::RegMethod RegA("Segment25","createSplitInnerZone");
-  
-  *IZTop = *buildZone;
-  *IZMid = *buildZone;
-  *IZLower = *buildZone;
-
-  HeadRule HSurroundA=buildZone->getSurround();
-  HeadRule HSurroundB=buildZone->getSurround();
-  HeadRule HSurroundC=buildZone->getSurround();
-  // create surfaces
-  attachSystem::FixedUnit FA("FA");
-  attachSystem::FixedUnit FB("FB");
-  FA.createPairVector(*bellowAA,2,*bellowBA,2);
-  FB.createPairVector(*bellowBA,2,*bellowCA,2);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
-  ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
-  
-  const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
- 
-  HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
-  HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
-
-  IZTop->setSurround(HSurroundA);
-  IZMid->setSurround(HSurroundB);
-  IZLower->setSurround(HSurroundC);
-
-  IZTop->constructMasterCell(System);
-  IZMid->constructMasterCell(System);
-  IZLower->constructMasterCell(System);
-
-  return;
-}
-
 void
 Segment25::buildObjects(Simulation& System)
   /*!
@@ -222,7 +174,7 @@ Segment25::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment25","buildObjects");
 
-  int outerCell,outerCellA,outerCellB,outerCellC;
+  int outerCell;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
@@ -264,67 +216,11 @@ Segment25::buildObjects(Simulation& System)
   bellowAA->insertInCell(System,outerCellBellow);
   bellowBA->insertInCell(System,outerCellBellow);
 
+  CellMap::addCell("MultiCell",outerCellMulti);
+  CellMap::addCell("BellowCell",outerCellBellow);
   buildZone->removeLastMaster(System);
+  return;
 
-
-  createSplitInnerZone(System);
-  
-  // PIPE:
-  pipeBA->addInsertCell(outerCellBellow);
-  pipeCA->addInsertCell(outerCellBellow);
-  pipeCA->addInsertCell(outerCellMulti);
-  pipeAA->createAll(System,*bellowAA,"back");
-  pipeBA->createAll(System,*bellowBA,"back");
-  pipeCA->createAll(System,*bellowCA,"back");
-
-  
-  MonteCarlo::Object* masterCellA=IZTop->getMaster();
-  MonteCarlo::Object* masterCellB=IZMid->getMaster();
-  MonteCarlo::Object* masterCellC=IZLower->getMaster();
-
-  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeAA,2);
-  outerCellB=IZMid->createOuterVoidUnit(System,masterCellB,*pipeBA,2);
-  outerCellC=IZLower->createOuterVoidUnit(System,masterCellC,*pipeCA,2);
-
-  pipeAA->insertInCell(System,outerCellA);
-  pipeBA->insertInCell(System,outerCellB);
-  pipeCA->insertInCell(System,outerCellC);
-
-  // BELLOWS B:
-  constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*pipeAA,"back",*bellowAB);
-  constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*pipeBA,"back",*bellowBB);
-  constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCB);
-
-  // YAG SCREENS:
-  constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*bellowAB,"back",*yagUnitA);
-
-  constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*bellowBB,"back",*yagUnitB);
-
-
-
-  // BELLOWS B:
-  constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*yagUnitA,"back",*pipeAB);
-  constructSystem::constructUnit
-    (System,*IZMid,masterCellB,*yagUnitB,"back",*pipeBB);
-  constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*bellowCB,"back",*pipeCB);
-
-
-
-  //  buildZone->refrontMasterCell(masterCell,IZMid->getDivider());
-  //  System.removeCell(masterCell->getName());
-
-  //  buildZone->removeLastMaster(System);
-  IZTop->removeLastMaster(System);
-  IZMid->removeLastMaster(System);
-  IZLower->removeLastMaster(System);  
-  
   return;
 }
 
@@ -357,17 +253,18 @@ Segment25::createLinks()
    */
 {
   setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeAB,2);
-  setLinkSignedCopy(2,*pipeBB,2);
-  setLinkSignedCopy(3,*pipeCB,2);
+  setLinkSignedCopy(1,*bellowAA,2);
+  setLinkSignedCopy(2,*bellowBA,2);
+  setLinkSignedCopy(3,*bellowCA,2);
 
-  FixedComp::nameSideIndex(1,"Flat");
-  FixedComp::nameSideIndex(2,"Mid");
-  FixedComp::nameSideIndex(3,"Lower");
-  joinItems.push_back(FixedComp::getFullRule(2));
+  FixedComp::nameSideIndex(1,"backFlat");
+  FixedComp::nameSideIndex(2,"backMid");
+  FixedComp::nameSideIndex(3,"backLower");
 
-  
-  
+  joinItems.push_back(FixedComp::getFullRule("backFlat"));
+  joinItems.push_back(FixedComp::getFullRule("backMid"));
+  joinItems.push_back(FixedComp::getFullRule("backLower"));
+ 
   return;
 }
 

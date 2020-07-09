@@ -206,6 +206,8 @@ class InnerZone
   
   /// accessor to local master cell
   MonteCarlo::Object* getMaster() const { return masterCell; }
+  /// accessor to local master cell
+  const attachSystem::CellMap* getCellMap() const { return CellPtr; }
   
 };
 
