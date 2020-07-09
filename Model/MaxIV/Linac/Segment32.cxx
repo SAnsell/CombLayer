@@ -124,7 +124,7 @@ Segment32::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dmA);
   pipeTerminate(System,*buildZone,pipeA);
-
+  ELog::EM<<"Pipe == "<<pipeA->getLinkPt(0)<<ELog::endDiag;
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
 
@@ -150,6 +150,7 @@ Segment32::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*bellow,2);
+  
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;

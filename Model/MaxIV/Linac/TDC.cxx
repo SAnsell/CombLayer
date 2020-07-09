@@ -315,7 +315,7 @@ TDC::createAll(Simulation& System,
       "Segment20","Segment21","Segment22",
       "Segment23","Segment24","Segment25",
       "Segment26","Segment27","Segment28",
-      "Segment29","Segment30","Segment31"
+      "Segment29","Segment30","Segment31",
       "Segment32","Segment33","Segment34",
       "Segment35","Segment36","Segment37",
       "Segment38","Segment39"
@@ -376,7 +376,6 @@ TDC::createAll(Simulation& System,
   // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
-	  
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
 	  SegTYPE::const_iterator mc=SegMap.find(BL);

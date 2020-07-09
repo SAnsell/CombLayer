@@ -178,6 +178,7 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
     {
       const std::vector<HeadRule>& prevJoinItems=
 	prevSegPtr->getJoinItems();
+
       if (!prevJoinItems.empty())
 	{
 	  if (buildZone)
