@@ -98,6 +98,7 @@
 #include "Segment26.h"
 #include "Segment27.h"
 #include "Segment28.h"
+#include "Segment29.h"
 #include "Segment30.h"
 #include "Segment31.h"
 #include "Segment32.h"
@@ -147,6 +148,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment26",std::make_shared<Segment26>("TDC26") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
     { "Segment28",std::make_shared<Segment28>("TDC28") },
+    { "Segment29",std::make_shared<Segment29>("TDC29") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
     { "Segment31",std::make_shared<Segment31>("SPF31") },
     { "Segment32",std::make_shared<Segment32>("SPF32") },
@@ -352,6 +354,7 @@ TDC::createAll(Simulation& System,
       {"Segment26",{"spfLong","Segment25",1}},
       {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
+      {"Segment29",{"spfLong","Segment28",1}},
       {"Segment30",{"tdcMain","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
@@ -415,7 +418,8 @@ TDC::createAll(Simulation& System,
 
 	  
 	  if (BL!="Segment26" && BL!="Segment27" &&
-	      BL!="Segment28" && BL!="Segment30")
+	      BL!="Segment28" && BL!="Segment29" &&
+	      BL!="Segment30")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());

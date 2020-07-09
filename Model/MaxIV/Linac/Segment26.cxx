@@ -147,7 +147,6 @@ Segment26::~Segment26()
    */
 {}
 
-  
 void
 Segment26::insertPrevSegment(Simulation& System,
 			     const TDCsegment* prevSegPtr) const
@@ -188,6 +187,7 @@ Segment26::createSplitInnerZone(Simulation& System)
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
+
   // create surfaces
   attachSystem::FixedUnit FA("FA");
   attachSystem::FixedUnit FB("FB");
