@@ -738,7 +738,6 @@ linac2SPFsegment9(FuncDataBase& Control,
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
   const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
 
-
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
@@ -750,15 +749,15 @@ linac2SPFsegment9(FuncDataBase& Control,
   CSGen.generateCeramicSep(Control,lKey+"CeramicBellowA");
   setIonPump2Port(Control, lKey+"PumpA");
 
-  PGen.generatePipe(Control,lKey+"PipeA",56.6);
+  PGen.generatePipe(Control,lKey+"PipeA",54.6);
 
   CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",48.50,0);
+  CMGen.generateMag(Control,lKey+"CMagHorA",44.50,0);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",34.0);
+  PGen.generatePipe(Control,lKey+"PipeB",36.0);
   LQGen.generateQuad(Control,lKey+"QuadA",17.50);
 
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5);

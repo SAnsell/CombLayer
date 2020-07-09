@@ -393,7 +393,7 @@ TDC::createAll(Simulation& System,
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
-
+	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr);
 	  
 	  if (BL=="Segment10")
@@ -412,7 +412,7 @@ TDC::createAll(Simulation& System,
 	      if (sidePtrB->isBuilt())
 		segPtr->registerSideSegment(sidePtrB);
 	    }
-	  segPtr->setInnerZone(buildZone.get());
+
 	  
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment30")
@@ -429,7 +429,6 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->captureCellMap();
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
-	    
 	}
     }
   return;

@@ -181,7 +181,9 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
       if (!prevJoinItems.empty())
 	{
 	  if (buildZone)
-	    buildZone->setFront(prevJoinItems.front());
+	    {
+	      buildZone->setFront(prevJoinItems.front());
+	    }
 	  this->setFrontSurfs(prevJoinItems);
 	}
     }
