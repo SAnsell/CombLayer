@@ -79,6 +79,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   buildZone(nullptr),NCellInit(0)
   /*!
     Constructor
