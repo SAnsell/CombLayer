@@ -60,6 +60,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Quaternion.h"
+#include "Exception.h"
 
 #include "ButtonBPM.h"
 
@@ -87,6 +88,7 @@ ButtonBPM::ButtonBPM(const ButtonBPM& A) :
   length(A.length),
   innerRadius(A.innerRadius),
   outerRadius(A.outerRadius),
+  nButtons(A.nButtons),
   flangeInnerRadius(A.flangeInnerRadius),
   flangeALength(A.flangeALength),
   flangeARadius(A.flangeARadius),
@@ -137,6 +139,7 @@ ButtonBPM::operator=(const ButtonBPM& A)
       length=A.length;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
+      nButtons=A.nButtons;
       flangeInnerRadius=A.flangeInnerRadius;
       flangeARadius=A.flangeARadius;
       flangeBLength=A.flangeBLength;
@@ -198,6 +201,9 @@ ButtonBPM::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  nButtons=Control.EvalDefVar<size_t>(keyName+"NButtons",2);
+  if ((nButtons!=2) and (nButtons!=4))
+    throw ColErr::ExitAbort(keyName+"NButtons can be either 2 or 4");
 
   flangeInnerRadius=Control.EvalVar<double>(keyName+"FlangeInnerRadius");
   flangeARadius=Control.EvalHead<double>(keyName,"FlangeARadius","FlangeRadius");
@@ -311,7 +317,7 @@ ButtonBPM::createSurfaces()
 
   int SI(buildIndex);
 
-  for (size_t i=0; i<4; ++i)
+  for (size_t i=0; i<nButtons; ++i)
     {
       ModelSupport::buildCylinder(SMap,SI+407,Origin,MX[i],buttonFlangeRadius);
       ModelSupport::buildCylinder(SMap,SI+408,Origin,MX[i],buttonCaseRadius);
@@ -367,17 +373,23 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 132 -7 ")+backStr;
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 7 -27 121 -222 407 407M ");
+  if (nButtons==4)
+    Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 7 -27 121 -222 407 407M ");
+  else
+    Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 121 -222 407 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 111 -121 ");
   makeCell("WallA",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 222 -212 ");
   makeCell("WallB",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 101 -121 ");
-  makeCell("GapA",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 222 -202 ");
-  makeCell("GapB",System,cellIndex++,voidMat,0.0,Out);
+  if (flangeGap>0)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 101 -121 ");
+      makeCell("GapA",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 222 -202 ");
+      makeCell("GapB",System,cellIndex++,voidMat,0.0,Out);
+    }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -107 -101 ")+frontStr;
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out);
@@ -393,7 +405,10 @@ ButtonBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 212 ")+backStr;
   makeCell("FlangeBVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 27 -307 101 -202 407 407M ");
+  if (nButtons==4)
+    Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000," 27 -307 101 -202 407 407M ");
+  else
+    Out=ModelSupport::getComposite(SMap,buildIndex," 27 -307 101 -202 407 ");
   makeCell("VoidBWFlanges",System,cellIndex++,voidMat,0.0,Out);
 
   if (flangeBRadius+Geometry::zeroTol<flangeARadius)
@@ -408,18 +423,24 @@ ButtonBPM::createObjects(Simulation& System)
     }
 
   // buttons
-  Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
-  				 " 131 -132 -7 (407:-405 -405M) (407N:-405N -3405) ");
+  if (nButtons==4)
+    Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
+				   " 131 -132 -7 (407:-405 -405M) (407N:-405N -3405) ");
+  else
+    Out=ModelSupport::getComposite(SMap,SI,SI+1000,SI+2000,
+				   " 131 -132 -7 (407:-405 -405M) ");
   makeCell("ButtonHolderCenter",System,cellIndex++,voidMat,0.0,Out);
 
   // corners
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,SI+1000," 7 -407M -405M -405N ");
   makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000,SI+3000," 7 -407M -405M -405N ");
-  makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
+  if (nButtons==4)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI+2000,SI+3000," 7 -407M -405M -405N ");
+      makeCell("Corner",System,cellIndex++,voidMat,0.0,Out);
+    }
 
-
-  for (size_t i=0; i<4; ++i)
+  for (size_t i=0; i<nButtons; ++i)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,SI," -107 -407M 426M ");
       makeCell("ButtonHolder",System,cellIndex++,voidMat,0.0,Out);

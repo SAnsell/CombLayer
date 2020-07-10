@@ -53,6 +53,7 @@ namespace setVariable
 ButtonBPMGenerator::ButtonBPMGenerator() :
   length(5.0),innerRadius(0.95),
   outerRadius(2.5),
+  nButtons(4),
   flangeInnerRadius(2.0),
   flangeALength(1.3),flangeARadius(3.5),
   flangeBLength(1.3),flangeBRadius(3.5),
@@ -139,6 +140,7 @@ ButtonBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"OuterRadius",outerRadius);
+  Control.addVariable(keyName+"NButtons",nButtons);
   Control.addVariable(keyName+"FlangeInnerRadius",flangeInnerRadius);
   Control.addVariable(keyName+"FlangeALength",flangeALength);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);

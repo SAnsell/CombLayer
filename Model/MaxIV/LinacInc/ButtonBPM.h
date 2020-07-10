@@ -47,6 +47,7 @@ class ButtonBPM :
   double length;                ///< Total length including void
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Outer radius
+  size_t nButtons;              ///< Number of buttons [2 or 4]
 
   double flangeInnerRadius;     ///< Flange inner radius
   double flangeALength;         ///< Flange A length
