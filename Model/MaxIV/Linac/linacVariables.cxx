@@ -2541,14 +2541,8 @@ Segment39(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment39");
 
-  ELog::EM << "SPH39: start/end of SPF38 are used to avoid geometry error" << ELog::endWarn;
-  // SPF39
-  // const Geometry::Vec3D startPt(-1010.0,7355.379,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,7449.099,0.0);
-
-  // SPF38
-  const Geometry::Vec3D startPt(-1010.0,6825.849,0.0);
-  const Geometry::Vec3D endPt(-1010.0,7355.379,0.0);
+  const Geometry::Vec3D startPt(-1010.0,7355.379,0.0);
+  const Geometry::Vec3D endPt(-1010.0,7449.099,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
