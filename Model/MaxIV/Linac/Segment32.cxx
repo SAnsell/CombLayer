@@ -124,7 +124,7 @@ Segment32::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dmA);
   pipeTerminate(System,*buildZone,pipeA);
-  ELog::EM<<"Pipe == "<<pipeA->getLinkPt(0)<<ELog::endDiag;
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
 
