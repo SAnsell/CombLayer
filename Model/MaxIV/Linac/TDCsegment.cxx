@@ -109,7 +109,7 @@ TDCsegment::setFirstItems
     throw ColErr::DynamicConv("ExternalCut","FixedComp","FCPtr");
 
   firstItemVec.push_back(EPtr);
-  
+
   return;
 }
 
@@ -125,7 +125,7 @@ TDCsegment::setFirstItems(attachSystem::FixedComp* FCptr)
 
   // This can be Null
   firstItemVec.push_back(EPtr);
-  
+
   return;
 }
 
@@ -139,7 +139,7 @@ TDCsegment::registerSideSegment(const TDCsegment* SPtr)
   return;
 }
 
-  
+
 void
 TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   /*!
@@ -178,19 +178,16 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
     {
       const std::vector<HeadRule>& prevJoinItems=
 	prevSegPtr->getJoinItems();
-
       if (!prevJoinItems.empty())
 	{
 	  if (buildZone)
-	    {
-	      buildZone->setFront(prevJoinItems.front());
-	    }
+	    buildZone->setFront(prevJoinItems.front());
 	  this->setFrontSurfs(prevJoinItems);
 	}
     }
   return;
 }
-  
+
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
 			      attachSystem::InnerZone& buildZone,
@@ -239,8 +236,15 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
     {
       // main OffsetA / EndAOffset
       // link point FrontALink / BackALink
-      const std::string AKey=keyName+"Offset"+Letters[i];
-      const std::string BKey=keyName+"EndOffset"+Letters[i];
+      std::string AKey=keyName+"Offset"+Letters[i];
+      std::string BKey=keyName+"EndOffset"+Letters[i];
+
+      // right trim
+      if (Letters[i] == ' ')
+	{
+	  AKey.erase(AKey.find_last_not_of(" ")+1);
+	  BKey.erase(BKey.find_last_not_of(" ")+1);
+	}
 
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
 	{
@@ -263,9 +267,9 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  const Geometry::Vec3D modelStart=FixedComp::getLinkPt(startLink);
 	  const Geometry::Vec3D modelEnd=FixedComp::getLinkPt(endLink);
 	  const Geometry::Vec3D vEnd(modelEnd-(modelStart-cadStart));
-	  
+
 	  const double D=vEnd.Distance(cadEnd);
-	  
+
 	  if (D>tolDist)
 	    {
 	      ELog::EM<<"WARNING Segment:: "<<keyName<<" has wrong track \n\n";
@@ -287,23 +291,23 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 		  const Geometry::Vec3D YY(0,1,0);
 		  const double angModel=180.0*acos(modelDVec.dotProd(YY))/M_PI;
 		  const double angCAD=180.0*acos(cadDVec.dotProd(YY))/M_PI;
-		  
+
 		  ELog::EM<<"Model Angle   ==    "<<angModel<<"\n";
 		  ELog::EM<<"CAD Angle     ==    "<<angCAD<<"\n";
 		  ELog::EM<<"Angle error    ==    "<<angleError<<"\n\n";
 		}
-	      
+
 	      ELog::EM<<"model Start     "<<modelStart<<"\n";
 	      ELog::EM<<"model End       "<<modelEnd<<"\n";
 	      ELog::EM<<"model length == "<<modelEnd.Distance(modelStart)<<"\n\n";
-	      
+
 	      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
-	      
+
 	      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
 	      retFlag=1;
 	    }
 	}
-  
+
     }
   return retFlag;
 }
@@ -315,13 +319,13 @@ TDCsegment::initCellMap()
    */
 {
   ELog::RegMethod RegA("TDCsegment","initCellMap");
-  
+
   const attachSystem::CellMap* CPtr=
     (buildZone) ? buildZone->getCellMap() :  0;
 
   NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
     ? CPtr->getNCells("OuterVoid") : 0;
-  
+
   return;
 }
 
@@ -332,7 +336,7 @@ TDCsegment::captureCellMap()
    */
 {
   ELog::RegMethod RegA("TDCsegment","captureCellMap");
-  
+
   const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
   const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
     CPtr->getNCells("OuterVoid") : 0;
@@ -341,7 +345,7 @@ TDCsegment::captureCellMap()
     CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
 
   NCellInit=NCells;
-		     
+
   return;
 }
 
