@@ -2693,7 +2693,7 @@ Segment43(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",40.0);
+  PGen.generatePipe(Control,lKey+"Pipe",39.896); // measured 40, but adjusted to match start/end
 
   setVariable::CorrectorMagGenerator CMGen;
   CMGen.generateMag(Control,lKey+"CMagH",10.3,0);
