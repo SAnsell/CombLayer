@@ -1749,7 +1749,7 @@ Segment25(FuncDataBase& Control,
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
   Control.addVariable(lKey+"SixPortAXAngle",multiAngle);
   Control.addVariable(lKey+"SixPortAZStep",-2.316);
-  
+
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0+12.0752, 0.0,0.0);
@@ -1788,8 +1788,8 @@ Segment26(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
   const Geometry::Vec3D startPtB(-637.608,7612.436,-8.214);
   const Geometry::Vec3D startPtC(-637.608,7607.463,-15.805);
-  
-  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or 
+
+  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or
   // const Geometry::Vec3D startPtB(-637.608,7602.24,-37.887);
   // const Geometry::Vec3D startPtC(-637.608,7598.08,-73.976);
 
@@ -1800,7 +1800,7 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
-      
+
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -1823,7 +1823,7 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
-  
+
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"PipeBAXAngle",
@@ -1835,7 +1835,7 @@ Segment26(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
 
-    
+
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -2701,12 +2701,18 @@ Segment43(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"Pipe",40.0);
 
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,lKey+"CMagH",25.0,0);
+  CMGen.generateMag(Control,lKey+"CMagH",10.3,0);
 
   // Button pickup PBM
   setVariable::ButtonBPMGenerator BPMBGen;
   BPMBGen.setCF<setVariable::CF40_22>();
   BPMBGen.generate(Control,lKey+"BPMB");
+  Control.addVariable(lKey+"BPMBLength",3.0); // measured
+  Control.addVariable(lKey+"BPMBNButtons",2);
+  Control.addVariable(lKey+"BPMBButtonYAngle",0.0);
+  Control.addVariable(lKey+"BPMBFlangeGap",0.0);
+  Control.addVariable(lKey+"BPMBFlangeALength",0.5); // approx
+  Control.addVariable(lKey+"BPMBFlangeBLength",0.5); // approx
 
   // Bellows
   setVariable::BellowGenerator BellowGen;
