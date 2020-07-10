@@ -2486,7 +2486,7 @@ Segment37(FuncDataBase& Control,
   PGen.setNoWindow();
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"Pipe",20.26);
+  PGen.generatePipe(Control,lKey+"Pipe",18.46);
 
   return;
 }
