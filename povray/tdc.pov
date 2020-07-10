@@ -197,6 +197,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 90;
   #break
+  #case(strcmp(ITEM,"Segment45")) // SPF segment 45
+    #declare cameraLocation = <-750, 9350, 50>;
+    #declare cameraLookAt   = <-860, 9530, -120>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
   #case(strcmp(ITEM,"Segment1000")) // beamline view
     #declare cameraLocation = <200, 160, 40>;
     #declare cameraLookAt   = <125, 160, 0>;

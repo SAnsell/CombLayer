@@ -37,15 +37,11 @@ class Segment45 :
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA; // #1
-  std::shared_ptr<tdcSystem::BPM> bpmA;              // #2
-  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;    // #3
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;   // #3
-  std::shared_ptr<xraySystem::CylGateValve> gate;    // #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipe; // #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;    // #6
-  std::shared_ptr<tdcSystem::ButtonBPM> bpmB;        // #7
-  std::shared_ptr<constructSystem::Bellows> bellowB; // #1
+  std::shared_ptr<tdcSystem::CeramicSep> ceramic;     // #1 ceramic gap
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
+  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;     // #3
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;    // #3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
 
   void buildObjects(Simulation&);
   void createLinks();

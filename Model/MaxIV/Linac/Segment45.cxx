@@ -65,16 +65,10 @@
 #include "InnerZone.h"
 #include "generalConstruct.h"
 
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
 #include "VacuumPipe.h"
-#include "BPM.h"
 #include "YagUnitBig.h"
 #include "YagScreen.h"
-#include "CylGateValve.h"
-#include "ButtonBPM.h"
-#include "CorrectorMag.h"
-#include "LObjectSupport.h"
+#include "CeramicSep.h"
 
 #include "TDCsegment.h"
 #include "Segment45.h"
@@ -86,15 +80,11 @@ namespace tdcSystem
 
 Segment45::Segment45(const std::string& Key) :
   TDCsegment(Key,2),
-  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  ceramic(new tdcSystem::CeramicSep(keyName+"Ceramic")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  gate(new xraySystem::CylGateValve(keyName+"Gate")),
-  pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  bpmB(new tdcSystem::ButtonBPM(keyName+"BPMB")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -103,17 +93,13 @@ Segment45::Segment45(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
-  OR.addObject(bpmA);
+  OR.addObject(ceramic);
+  OR.addObject(pipeA);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
-  OR.addObject(gate);
-  OR.addObject(pipe);
-  OR.addObject(cMagH);
-  OR.addObject(bpmB);
-  OR.addObject(bellowB);
+  OR.addObject(pipeB);
 
-  setFirstItems(bellowA);
+  setFirstItems(ceramic);
 }
 
 Segment45::~Segment45()
@@ -135,17 +121,17 @@ Segment45::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  bellowA->createAll(System,*this,0);
+  ceramic->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System,*ceramic,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
+  ceramic->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpmA);
+    (System,*buildZone,masterCell,*ceramic,"back",*pipeA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*yagUnit);
+    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);
@@ -155,17 +141,7 @@ Segment45::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*gate);
-
-  pipe->createAll(System,*gate,"back");
-  pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagH);
-  pipeTerminate(System,*buildZone,pipe);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bpmB);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmB,"back",*bellowB);
+    (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
 
   buildZone->removeLastMaster(System);
 
@@ -180,8 +156,8 @@ Segment45::createLinks()
 {
   ELog::RegMethod RegA("Segment45","createLinks");
 
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowB,2);
+  setLinkSignedCopy(0,*ceramic,1);
+  setLinkSignedCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
