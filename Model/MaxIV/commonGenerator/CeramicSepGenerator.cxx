@@ -68,7 +68,7 @@ CeramicSepGenerator::CeramicSepGenerator() :
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
   voidMat("Void"),pipeMat("Stainless304L"),
-  ceramicMat("Boron"),bellowMat("Stainless304L%Void%10.0"),
+  ceramicMat("Al2O3"),bellowMat("Stainless304L%Void%10.0"),
   flangeMat("Stainless304L"),outerMat("Void")
   /*!
     Constructor and defaults
