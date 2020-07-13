@@ -32,19 +32,14 @@
     #declare cameraLookAt   = <0.0, 0.0, 0.0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"CeramicSep"))
+    #declare cameraLocation = <-15, 20.0, 17.0>;
+    #declare cameraLookAt   = <3.0, 5, -4.0>;
+    #declare cameraAngle = 40;
+  #break
   #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;
     #declare cameraLookAt   = <0, -3, 0.0>;
-    #declare cameraAngle = 50;
-  #break
-  #case (strcmp(ITEM,"YagUnit"))
-    #declare cameraLocation = <-30, -30.0, 40.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
-    #declare cameraAngle = 50;
-  #break
-  #case (strcmp(ITEM,"YagUnitBig"))
-    #declare cameraLocation = <-30, -30.0, 40.0>;
-    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
     #declare cameraAngle = 50;
   #break
   #case (strcmp(ITEM,"LSexupole"))
@@ -56,6 +51,16 @@
     #declare cameraLocation = <-30, 70.0, 30.0>;
     #declare cameraLookAt   = <10.0, 5.0, -11.0>;
     #declare cameraAngle = 25;
+  #break
+  #case (strcmp(ITEM,"YagUnit"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case (strcmp(ITEM,"YagUnitBig"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
   #break
 #else
     #declare cameraLocation = <100, 100, 100>;
