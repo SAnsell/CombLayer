@@ -124,6 +124,7 @@ namespace linacVar
   void Segment41(FuncDataBase&,const std::string&);
   void Segment43(FuncDataBase&,const std::string&);
   void Segment45(FuncDataBase&,const std::string&);
+  void Segment49(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2761,6 +2762,50 @@ Segment45(FuncDataBase& Control,
 }
 
 void
+Segment49(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 49
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment49");
+
+  const Geometry::Vec3D startPt(-1010.0,9495.745,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9791.435,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"GateA",0);
+  Control.addVariable(lKey+"GateAWallThick",0.3);
+  Control.addVariable(lKey+"GateAPortThick",0.1);
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
+
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBYAngle",180.0);
+  Control.addVariable(lKey+"GateBWallThick",0.3);
+  Control.addVariable(lKey+"GateBPortThick",0.1);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+
+  // Pipes
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeB",230.0);
+
+  return;
+}
+
+void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
   /*!
@@ -2956,6 +3001,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment41(Control,"SPF41");
   linacVar::Segment43(Control,"SPF43");
   linacVar::Segment45(Control,"SPF45");
+  linacVar::Segment49(Control,"SPF49");
 
   return;
 }
