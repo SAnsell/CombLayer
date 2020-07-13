@@ -33,37 +33,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -120,6 +100,7 @@ CeramicSep::populate(const FuncDataBase& Control)
 
   ceramicALen=Control.EvalVar<double>(keyName+"CeramicALen");
   ceramicWideLen=Control.EvalVar<double>(keyName+"CeramicWideLen");
+  ceramicGapLen=Control.EvalVar<double>(keyName+"ceramicGapLength");
   ceramicBLen=Control.EvalVar<double>(keyName+"CeramicBLen");
   ceramicThick=Control.EvalVar<double>(keyName+"CeramicThick");
   ceramicWideThick=Control.EvalVar<double>(keyName+"CeramicWideThick");
@@ -146,7 +127,7 @@ CeramicSep::populate(const FuncDataBase& Control)
   bellowMat=ModelSupport::EvalMat<int>(Control,keyName+"BellowMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
-  
+
   return;
 }
 
@@ -181,15 +162,21 @@ CeramicSep::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+201,bOrg-Y*flangeBLength,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
-  // ceramic 
+  // ceramic
   aOrg+=Y*(ceramicALen+flangeALength);
   ModelSupport::buildPlane(SMap,buildIndex+301,aOrg,Y);
 
   aOrg+=Y*ceramicWideLen;
   ModelSupport::buildPlane(SMap,buildIndex+311,aOrg,Y);
 
+  // ceramic gap
+  const Geometry::Vec3D vGap(aOrg-Y*ceramicWideLen/2.0);
+  ModelSupport::buildPlane(SMap,buildIndex+601,vGap-Y*(ceramicGapLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+602,vGap+Y*(ceramicGapLen/2.0),Y);
+
   aOrg+=Y*ceramicBLen;
   ModelSupport::buildPlane(SMap,buildIndex+321,aOrg,Y);
+
 
   // bellow
   aOrg+=Y*pipeLen;
@@ -241,10 +228,18 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -101 -107 ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
 
-  // Ceramic
+  // ceramicA
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 101 -321 -317 ((301 -311) : -307 ) ");
-  makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
+    (SMap,buildIndex," 7 -317 101 -601 ((301 -601) : -307 ) ");
+  makeCell("Ceramic",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 601 -602 ");
+  makeCell("CeramicGap",System,cellIndex++,ceramicMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 602 -321 ((602 -311) : -307 ) ");
+  makeCell("Ceramic",System,cellIndex++,pipeMat,0.0,Out);
 
   // pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 321 -501 -407 ");
@@ -258,15 +253,15 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 502 -201 -407 ");
   makeCell("OutPipe",System,cellIndex++,pipeMat,0.0,Out);
 
-  // back flange 
+  // back flange
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 201 -207 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
   // OUTER voids
   const int FIndex((flangeARadius>=flangeBRadius) ?
 		   buildIndex : buildIndex+100);
-	      
-  Out=ModelSupport::getComposite    
+
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,FIndex," 101 -321 -107M (317:((311:-301) 307))");
   makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
 
@@ -275,10 +270,10 @@ CeramicSep::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 501 -502 -107M 507");
   makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 502 -201 -107M 407");
   makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,FIndex," -107 ");
   addOuterSurf(Out+frontStr+backStr);
 

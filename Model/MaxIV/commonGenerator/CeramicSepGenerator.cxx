@@ -60,6 +60,7 @@ namespace setVariable
 CeramicSepGenerator::CeramicSepGenerator() :
   radius(CF40_22::innerRadius),length(14.0),
   ceramicALen(0.5),ceramicWideLen(4.0),
+  ceramicGapLen(2.0),
   ceramicBLen(1.2),ceramicThick(0.3),
   ceramicWideThick(0.8),
   pipeLen(2.0),pipeThick(0.15),
@@ -141,12 +142,13 @@ CeramicSepGenerator::generateCeramicSep(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("CeramicSepGenerator","generateCeramicSep");
 
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
 
   Control.addVariable(keyName+"CeramicALen",ceramicALen);
   Control.addVariable(keyName+"CeramicWideLen",ceramicWideLen);
+  Control.addVariable(keyName+"ceramicGapLength",ceramicGapLen);
   Control.addVariable(keyName+"CeramicBLen",ceramicBLen);
   Control.addVariable(keyName+"CeramicThick",ceramicThick);
   Control.addVariable(keyName+"CeramicWideThick",ceramicWideThick);

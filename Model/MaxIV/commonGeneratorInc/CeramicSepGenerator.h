@@ -44,6 +44,7 @@ class CeramicSepGenerator
 
   double ceramicALen;           ///< Length after flange
   double ceramicWideLen;        ///< Wide length
+  double ceramicGapLen;         ///< Length of ceramic insulation
   double ceramicBLen;           ///< Length before bellow
 
   double ceramicThick;          ///< Small wall thick
@@ -54,7 +55,7 @@ class CeramicSepGenerator
 
   double bellowLen;             ///< Bellow length
   double bellowThick;           ///< Bellow thickness
-  
+
   double flangeARadius;         ///< Joining Flange radius
   double flangeALength;         ///< Joining Flange length
 
