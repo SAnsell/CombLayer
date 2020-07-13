@@ -1,0 +1,145 @@
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder
+
+ * File:   commonGenerator/UndVacGenerator.cxx
+ *
+ * Copyright (c) 2004-2020 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <stack>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <numeric>
+#include <memory>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "CFFlanges.h"
+
+#include "UndVacGenerator.h"
+
+namespace setVariable
+{
+
+UndVacGenerator::UndVacGenerator() :
+  nSegment(3),
+  radius(12.25),segLength(),
+  wallThick(0.6),flangeRadius(15.0),flangeLength(2.7),
+  portOutLength(6.755),
+  accessRadius(CF150::innerRadius),accessFlangeRadius(CF150::flangeRadius),
+  accessFlangeLength(CF150::flangeLength),
+
+  smallRadius(CF100::innerRadius),smallFlangeRadius(CF100::flangeRadius),
+  smallFlangeLength(CF100::flangeLength),
+
+  magGap(3.0*CF63::innerRadius),magRadius(CF63::innerRadius),
+  magLength(2.5),magBellowLen(9.3), magFlangeRadius(CF63::flangeRadius),
+  magFlangeLength(CF63::flangeLength),
+
+  vacRadius(CF100::innerRadius),vacLength(8.0),vacHeight(8.0),
+  vacFlangeRadius(CF100::flangeRadius),
+  vacFlangeLength(CF100::flangeLength),
+
+  preLength(14.0),
+
+  voidMat("Void"),wallMat("Stainless304L")
+  /*!
+    Constructor and defaults
+  */
+{}
+
+UndVacGenerator::~UndVacGenerator()
+ /*!
+   Destructor
+ */
+{}
+
+
+void
+UndVacGenerator::generateUndVac(FuncDataBase& Control,
+				const std::string& keyName) const
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: head name for variable
+  */
+{
+  ELog::RegMethod RegA("UndVacGenerator","generateUndVac");
+
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"SegLength",segLength);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
+  Control.addVariable(keyName+"PortOutLength",portOutLength);
+  Control.addVariable(keyName+"AccessRadius",accessRadius);
+  Control.addVariable(keyName+"AccessFlangeRadius",accessFlangeRadius);
+  Control.addVariable(keyName+"AccessFlangeLength",accessFlangeLength);
+  Control.addVariable(keyName+"SmallRadius",smallRadius);
+  Control.addVariable(keyName+"SmallFlangeRadius",smallFlangeRadius);
+  Control.addVariable(keyName+"SmallFlangeLength",smallFlangeLength);
+  Control.addVariable(keyName+"MagGap",magGap);
+  Control.addVariable(keyName+"MagRadius",magRadius);
+  Control.addVariable(keyName+"MagLength",magLength);
+  Control.addVariable(keyName+"MagBellowLen",magBellowLen);
+  Control.addVariable(keyName+"MagFlangeRadius",magFlangeRadius);
+  Control.addVariable(keyName+"MagFlangeLength",magFlangeLength);
+  Control.addVariable(keyName+"VacRadius",vacRadius);
+  Control.addVariable(keyName+"VacLength",vacLength);
+  Control.addVariable(keyName+"VacHeight",vacHeight);
+  Control.addVariable(keyName+"VacFlangeRadius",vacFlangeRadius);
+  Control.addVariable(keyName+"VacFlangeLength",vacFlangeLength);
+
+  Control.addVariable(keyName+"PreLength",preLength);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+
+
+  return;
+
+}
+
+///\cond TEMPLATE
+
+
+
+///\endcond TEMPLATE
+
+}  // NAMESPACE setVariable

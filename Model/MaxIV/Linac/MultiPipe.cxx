@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/TwinPipe.cxx
+ * File:   Linac/MultiPipe.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -76,7 +76,6 @@
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "SurfMap.h"
 
 #include "subPipeUnit.h"
