@@ -51,7 +51,7 @@ class CeramicSep :
   double ceramicALen;           ///< Length after flange
   double ceramicWideLen;        ///< Wide length
   double ceramicGapLen;         ///< Length of ceramic insulation
-  double ceramicBLen;           ///< Length before bellow
+  double ceramicBLen;           ///< Length after the wide part
 
   double ceramicThick;          ///< Small wall thick
   double ceramicWideThick;      ///< Wide ceramic extra

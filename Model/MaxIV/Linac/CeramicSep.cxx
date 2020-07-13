@@ -228,18 +228,25 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -101 -107 ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
 
-  // ceramicA
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -317 101 -601 ((301 -601) : -307 ) ");
-  makeCell("Ceramic",System,cellIndex++,pipeMat,0.0,Out);
+    (SMap,buildIndex," 7 -307 101 -301 ");
+  makeCell("CeramicA",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 301 -601 ");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 7 -317 601 -602 ");
   makeCell("CeramicGap",System,cellIndex++,ceramicMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 -317 602 -321 ((602 -311) : -307 ) ");
-  makeCell("Ceramic",System,cellIndex++,pipeMat,0.0,Out);
+    (SMap,buildIndex," 7 -317 602 -311 ");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -307 311 -321 ");
+  makeCell("CeramicB",System,cellIndex++,pipeMat,0.0,Out);
 
   // pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 321 -501 -407 ");
@@ -261,18 +268,23 @@ CeramicSep::createObjects(Simulation& System)
   const int FIndex((flangeARadius>=flangeBRadius) ?
 		   buildIndex : buildIndex+100);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,FIndex," 101 -321 -107M (317:((311:-301) 307))");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 101 -301 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 301 -311 317 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 311 -321 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," -501 321 -107M 407");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("PipeVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 501 -502 -107M 507");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 502 -201 -107M 407");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,FIndex," -107 ");
   addOuterSurf(Out+frontStr+backStr);
