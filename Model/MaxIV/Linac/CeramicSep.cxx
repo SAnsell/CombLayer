@@ -286,6 +286,17 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 502 -201 -107M 407");
   makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
 
+  if (flangeARadius<flangeBRadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -207")+frontStr;
+      makeCell("FlangeAVoid",System,cellIndex++,outerMat,0.0,Out);
+    }
+  else if (flangeBRadius<flangeARadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 201 207 -107")+backStr;
+      makeCell("FlangeBVoid",System,cellIndex++,outerMat,0.0,Out);
+    }
+
   Out=ModelSupport::getComposite(SMap,FIndex," -107 ");
   addOuterSurf(Out+frontStr+backStr);
 
