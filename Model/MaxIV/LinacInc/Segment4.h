@@ -44,7 +44,7 @@ namespace tdcSystem
   class CorrectorMag;
   class LQuadF;
   class LSexupole;
-  class BPM;
+  class StriplineBPM;
 
   
   /*!
@@ -64,7 +64,7 @@ class Segment4 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 
   /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;
 
   // first pipe in dipole
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   

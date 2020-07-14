@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/BPMGenerator.h
+ * File:   LinacInc/StriplineBPM.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,23 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_BPMGenerator_h
-#define setVariable_BPMGenerator_h
+#ifndef tdcSystem_StriplineBPM_h
+#define tdcSystem_StriplineBPM_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+
+namespace tdcSystem
 {
-
 /*!
-  \class BPMGenerator
+  \class StriplineBPM
   \version 1.0
   \author S. Ansell
-  \date April 2020
-  \brief BPMGenerator for variables
+  \date January 2019
+
+  \brief StriplineBPM for Max-IV
 */
 
-class BPMGenerator
+class StriplineBPM :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
@@ -60,25 +66,27 @@ class BPMGenerator
   double striplineYStep;        ///< Stripline YStep
   double striplineEnd;          ///< Stripline end piece length
 
-  std::string voidMat;                  ///< void material
-  std::string striplineMat;             ///< stripline material
-  std::string flangeMat;                ///< flange material
-  std::string outerMat;                 ///< pipe material
+  int voidMat;                  ///< void material
+  int striplineMat;             ///< stripline material
+  int flangeMat;                ///< flange material
+  int outerMat;                 ///< pipe material
 
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
-  BPMGenerator();
-  BPMGenerator(const BPMGenerator&);
-  BPMGenerator& operator=(const BPMGenerator&);
-  virtual ~BPMGenerator();
+  StriplineBPM(const std::string&);
+  StriplineBPM(const std::string&,const std::string&);
+  StriplineBPM(const StriplineBPM&);
+  StriplineBPM& operator=(const StriplineBPM&);
+  virtual ~StriplineBPM();
 
-  template<typename T> void setCF();
-  template<typename T> void setAFlangeCF();
-  template<typename T> void setBFlangeCF();
-
-  virtual void generateBPM(FuncDataBase&,const std::string&,
-			   const double) const;
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

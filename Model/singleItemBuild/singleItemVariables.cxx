@@ -68,7 +68,7 @@
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
-#include "BPMGenerator.h"
+#include "StriplineBPMGenerator.h"
 #include "ButtonBPMGenerator.h"
 #include "CeramicSepGenerator.h"
 #include "BeamDividerGenerator.h"
@@ -83,6 +83,7 @@
 #include "YagUnitGenerator.h"
 #include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
+#include "UndVacGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -294,8 +295,11 @@ SingleItemVariables(FuncDataBase& Control)
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);
 
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
+
+  setVariable::UndVacGenerator UVGen;
+  UVGen.generateUndVac(Control,"UVac");
 
   setVariable::CeramicSepGenerator CSGen;
   CSGen.generateCeramicSep(Control,"CerSep");

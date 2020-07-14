@@ -88,7 +88,7 @@
 #include "VirtualTube.h"
 #include "BlankTube.h"
 #include "LQuadF.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
 #include "YagUnit.h"
@@ -108,7 +108,7 @@ Segment2::Segment2(const std::string& Key) :
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  bpmA(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
@@ -117,7 +117,7 @@ Segment2::Segment2(const std::string& Key) :
   beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
-  bpmB(new tdcSystem::BPM(keyName+"BPMB")),  
+  bpmB(new tdcSystem::StriplineBPM(keyName+"BPMB")),  
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuadF(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),

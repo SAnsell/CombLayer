@@ -51,7 +51,7 @@
 #include "LinacSexuGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "BPMGenerator.h"
+#include "StriplineBPMGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
@@ -384,7 +384,7 @@ Segment2(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
   setVariable::YagScreenGenerator YagScreenGen;
@@ -511,7 +511,7 @@ Segment4(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::LinacSexuGenerator LSGen;
   setVariable::CorrectorMagGenerator CMGen;
@@ -659,7 +659,7 @@ Segment7(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment7");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
 
@@ -732,7 +732,7 @@ Segment9(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CeramicSepGenerator CSGen;
@@ -829,7 +829,7 @@ Segment11(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::YagUnitGenerator YagUnitGen;
@@ -980,7 +980,7 @@ Segment13(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment13");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacSexuGenerator LSGen;
@@ -1154,7 +1154,7 @@ Segment16(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment16");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -1258,7 +1258,7 @@ Segment18(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment18");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
@@ -1423,7 +1423,7 @@ Segment21(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment21");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
@@ -1519,7 +1519,7 @@ Segment23(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment23");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
@@ -1612,7 +1612,7 @@ Segment24(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment24");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
@@ -2138,7 +2138,7 @@ Segment31(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::CylGateValveGenerator CGateGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
 
   const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
@@ -2279,7 +2279,7 @@ Segment33(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment33");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacSexuGenerator LSGen;
@@ -2437,7 +2437,7 @@ Segment36(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::BPMGenerator BPMGen;
+  setVariable::StriplineBPMGenerator BPMGen;
   setVariable::EArrivalMonGenerator EArrGen;
   setVariable::CylGateValveGenerator CGateGen;
 
@@ -2596,6 +2596,7 @@ Segment39(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment17");
+  setVariable::StriplineBPMGenerator BPMGen;
 
   // SPF39
   const Geometry::Vec3D startPt(-1010.0,7355.379,0.0);
@@ -2605,10 +2606,9 @@ Segment39(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  		      atan((startPt.X()-endPt.X())/
+			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  // Stripline BPM
-  setVariable::BPMGenerator BPMGen;
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 

@@ -24,7 +24,9 @@
 
 namespace tdcSystem
 {
+  class StriplineBPM;
   class LQuadH;
+  class CorrectorMag;
   /*!
     \class Segment16
     \version 1.0
@@ -39,7 +41,7 @@ class Segment16 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;                     ///< #2 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
   std::shared_ptr<tdcSystem::LQuadH> quad;                  ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Linac/BPM.cxx
+ * File:   Linac/StriplineBPM.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 
-#include "BPM.h"
+#include "StriplineBPM.h"
 
 namespace tdcSystem
 {
 
-BPM::BPM(const std::string& Key) :
+StriplineBPM::StriplineBPM(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -98,20 +98,20 @@ BPM::BPM(const std::string& Key) :
 {}
 
 
-BPM::~BPM()
+StriplineBPM::~StriplineBPM()
   /*!
     Destructor
   */
 {}
 
 void
-BPM::populate(const FuncDataBase& Control)
+StriplineBPM::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("BPM","populate");
+  ELog::RegMethod RegA("StriplineBPM","populate");
 
   FixedOffset::populate(Control);
 
@@ -150,12 +150,12 @@ BPM::populate(const FuncDataBase& Control)
 
 
 void
-BPM::createSurfaces()
+StriplineBPM::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("BPM","createSurfaces");
+  ELog::RegMethod RegA("StriplineBPM","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -225,13 +225,13 @@ BPM::createSurfaces()
 }
 
 void
-BPM::createObjects(Simulation& System)
+StriplineBPM::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("BPM","createObjects");
+  ELog::RegMethod RegA("StriplineBPM","createObjects");
 
   std::string Out;
 
@@ -308,12 +308,12 @@ BPM::createObjects(Simulation& System)
 }
 
 void
-BPM::createLinks()
+StriplineBPM::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("BPM","createLinks");
+  ELog::RegMethod RegA("StriplineBPM","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -322,7 +322,7 @@ BPM::createLinks()
 }
 
 void
-BPM::createAll(Simulation& System,
+StriplineBPM::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -332,7 +332,7 @@ BPM::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("BPM","createAll");
+  ELog::RegMethod RegA("StriplineBPM","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);

@@ -83,7 +83,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "CorrectorMag.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "LQuadF.h"
 #include "LSexupole.h"
 #include "CorrectorMag.h"
@@ -103,7 +103,7 @@ Segment4::Segment4(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  bpmA(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),

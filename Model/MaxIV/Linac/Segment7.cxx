@@ -81,7 +81,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 
@@ -102,7 +102,7 @@ Segment7::Segment7(const std::string& Key) :
   
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA"))
   /*!

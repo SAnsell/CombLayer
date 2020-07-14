@@ -85,7 +85,7 @@
 #include "PipeTube.h"
 #include "Bellows.h"
 #include "LQuadF.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
@@ -104,7 +104,7 @@ Segment11::Segment11(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),  
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),  
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),

@@ -67,7 +67,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
@@ -88,7 +88,7 @@ namespace tdcSystem
 Segment16::Segment16(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),

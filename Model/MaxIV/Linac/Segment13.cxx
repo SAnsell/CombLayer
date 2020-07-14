@@ -83,7 +83,7 @@
 #include "VirtualTube.h"
 #include "LQuadF.h"
 #include "LSexupole.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
@@ -103,7 +103,7 @@ Segment13::Segment13(const std::string& Key) :
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
-  bpm(new tdcSystem::BPM(keyName+"BPMA")),  
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),  
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),

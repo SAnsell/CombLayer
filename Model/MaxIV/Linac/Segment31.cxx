@@ -1,5 +1,5 @@
 /*********************************************************************
-  CombLayer : MCNP(X) Input builder
+  Comb-Layer : MCNP(X) Input builder
 
  * File: Linac/Segment31.cxx
  *
@@ -71,7 +71,7 @@
 #include "CorrectorMag.h"
 #include "LObjectSupport.h"
 #include "CylGateValve.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "LQuadF.h"
 
 #include "TDCsegment.h"
@@ -89,7 +89,7 @@ Segment31::Segment31(const std::string& Key) :
   ionPumpA(new constructSystem::BlankTube(keyName+"IonPumpA")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadF(keyName+"Quad")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),

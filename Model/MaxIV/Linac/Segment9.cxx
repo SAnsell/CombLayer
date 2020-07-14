@@ -1,4 +1,3 @@
-
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -86,7 +85,7 @@
 #include "BlankTube.h"
 #include "Bellows.h"
 #include "LQuadF.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "CorrectorMag.h"
 #include "CeramicSep.h"
 
@@ -110,7 +109,7 @@ Segment9::Segment9(const std::string& Key) :
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
 
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   

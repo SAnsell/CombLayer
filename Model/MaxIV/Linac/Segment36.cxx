@@ -71,7 +71,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "CylGateValve.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "EArrivalMon.h"
 
 #include "LObjectSupport.h"
@@ -92,12 +92,12 @@ Segment36::Segment36(const std::string& Key) :
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  bpmA(new tdcSystem::BPM(keyName+"BPMA")),
+  bpmA(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bpmB(new tdcSystem::BPM(keyName+"BPMB")),
+  bpmB(new tdcSystem::StriplineBPM(keyName+"BPMB")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE"))
 

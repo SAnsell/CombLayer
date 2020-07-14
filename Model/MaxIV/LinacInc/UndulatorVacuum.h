@@ -54,7 +54,7 @@ class UndulatorVacuum :
   double flangeRadius;          ///< flange radius
   double flangeLength;          ///< Flange length (half)
 
-  double portOutLength;
+  double portOutLength;         ///< horizontal port step
   
   // 3 access ports a segment
   double accessRadius;          ///< Large Access port radius

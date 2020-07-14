@@ -94,7 +94,7 @@ UndulatorVacuum::UndulatorVacuum(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{ }
 
 UndulatorVacuum::~UndulatorVacuum() 
   /*!
@@ -112,7 +112,7 @@ UndulatorVacuum::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("UndulatorVacuum","populate");
   
   FixedRotate::populate(Control);
-
+  
   nSegment=Control.EvalVar<size_t>(keyName+"NSegment");
   
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -159,13 +159,14 @@ UndulatorVacuum::createSurfaces()
   */
 {
   ELog::RegMethod RegA("UndulatorVacuum","createSurfaces");
-
+  
   const double length
     (segLength*static_cast<double>(nSegment)+preLength*2.0);
 
   // full height
-  const double height(2.0*(radius+wallThick+magLength+magBellowLen));
-  const double width(2.0*(radius+wallThick+portOutLength));
+  const double wallRadius(radius+wallThick);
+  const double height(2.0*(wallRadius+magLength+magBellowLen));
+  const double width(2.0*(wallRadius+portOutLength));
 
   // Inner void
   if (!ExternalCut::isActive("front"))
@@ -174,6 +175,10 @@ UndulatorVacuum::createSurfaces()
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   makeShiftedSurf(SMap,"front",buildIndex+11,Y,wallThick);
+
+  // mid plane divider
+  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+20,Origin,Z);
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -182,11 +187,39 @@ UndulatorVacuum::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
+  // ACCESS::
+  ModelSupport::buildPlane
+    (SMap,buildIndex+53,Origin-X*(wallRadius+portOutLength-accessFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+54,Origin+X*(wallRadius+portOutLength-accessFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+63,Origin-X*(wallRadius+portOutLength-2.0*accessFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+64,Origin+X*(wallRadius+portOutLength-2.0*accessFlangeLength),X);
+  // SMALL::
+  ModelSupport::buildPlane
+    (SMap,buildIndex+153,Origin-X*(wallRadius+portOutLength-smallFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+154,Origin+X*(wallRadius+portOutLength-smallFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+163,Origin-X*(wallRadius+portOutLength-2.0*smallFlangeLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+164,Origin+X*(wallRadius+portOutLength-2.0*smallFlangeLength),X);
+  // MagLift::
+  ModelSupport::buildPlane
+    (SMap,buildIndex+205,Origin-Z*(wallRadius+magLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+215,Origin-Z*(wallRadius+magLength-magFlangeLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+206,Origin+Z*(wallRadius+magLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+216,Origin+Z*(wallRadius+magLength-magFlangeLength),Z);
+
    
   if (!ExternalCut::isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);    
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+1));
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
   makeShiftedSurf(SMap,"back",buildIndex+12,Y,-wallThick);
 
@@ -197,15 +230,52 @@ UndulatorVacuum::createSurfaces()
   int BI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
     {
-      BI+=100;
+      // MAIN TUBE
+      BI+=2000;
       const Geometry::Vec3D segOrg
 	(Origin+Y*(static_cast<double>(i)*segLength+preLength));
       ModelSupport::buildPlane(SMap,BI+1,segOrg,Y);
       ModelSupport::buildPlane(SMap,BI+2,segOrg+Y*segLength,Y);    
       // flange
-      ModelSupport::buildPlane(SMap,BI+11,segOrg-Y*flangeLength,Y);
+      ModelSupport::buildPlane(SMap,BI+11,segOrg+Y*flangeLength,Y);
       ModelSupport::buildPlane(SMap,BI+12,segOrg+Y*(segLength-flangeLength),Y);
 
+      // HORIZONTAL PORTS (1/5 separation):
+      Geometry::Vec3D POrg(segOrg+Y*(segLength/6.0));
+
+      // Main view
+      int PI(BI+100);
+      for(size_t i=0;i<3;i++)
+	{
+	  ModelSupport::buildCylinder(SMap,PI+7,POrg,X,accessRadius);
+	  ModelSupport::buildCylinder(SMap,PI+17,POrg,X,accessRadius+wallThick);
+	  ModelSupport::buildCylinder(SMap,PI+27,POrg,X,accessFlangeRadius);
+	  POrg+=Y*(2.0*segLength/6.0);
+	  PI+=100;
+	}
+      // SMALL PIPES
+      POrg=segOrg+Y*(2.0*segLength/6.0);
+      for(size_t i=0;i<2;i++)
+	{
+	  ModelSupport::buildCylinder(SMap,PI+7,POrg,X,smallRadius);
+	  ModelSupport::buildCylinder(SMap,PI+17,POrg,X,smallRadius+wallThick);
+	  ModelSupport::buildCylinder(SMap,PI+27,POrg,X,smallFlangeRadius);
+	  POrg+=Y*(2.0*segLength/6.0);
+	  PI+=100;
+	}
+      // Up/Down [1/12 + 5 * 1/6]
+      POrg=segOrg+Y*(segLength/12.0);
+      for(size_t i=0;i<6;i++)
+	{
+	  ModelSupport::buildCylinder(SMap,PI+7,POrg-X*(magGap/2.0),Z,magRadius);
+	  ModelSupport::buildCylinder(SMap,PI+17,POrg-X*(magGap/2.0),Z,magRadius+wallThick);
+	  ModelSupport::buildCylinder(SMap,PI+27,POrg-X*(magGap/2.0),Z,magFlangeRadius);
+	  ModelSupport::buildCylinder(SMap,PI+8,POrg+X*(magGap/2.0),Z,magRadius);
+	  ModelSupport::buildCylinder(SMap,PI+18,POrg+X*(magGap/2.0),Z,magRadius+wallThick);
+	  ModelSupport::buildCylinder(SMap,PI+28,POrg+X*(magGap/2.0),Z,magFlangeRadius);
+	  POrg+=Y*(segLength/6.0);
+	  PI+=100;
+	}
     }
   
   return;
@@ -229,22 +299,23 @@ UndulatorVacuum::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 ");
-  makeCell("frontWall",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  makeCell("frontFace",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
-  makeCell("backWall",System,cellIndex++,wallMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 7 -17 -101");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 7 -17 -2001");
   makeCell("frontUnit",System,cellIndex++,wallMat,0.0,Out);
 
-  int BI(buildIndex);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2001 3 -4 5 -6 17 ");
+  makeCell("frontOuter",System,cellIndex++,0,0.0,Out+frontStr);
 
+  int BI(buildIndex);
+	
   for(size_t i=0;i<nSegment;i++)
     {
-      BI+=100;
+      BI+=2000;
       const std::string sNum(std::to_string(i));
-
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 1 -2 7M -17M ");
+      
+      // MAIN TUBE AND FLANGES:
+      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 1 -2 7M -17M 107 207 307 407 507");
       makeCell("Unit"+sNum,System,cellIndex++,wallMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,BI,buildIndex," 1 -11 17M -27M ");
@@ -253,26 +324,129 @@ UndulatorVacuum::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,BI,buildIndex," -2 12 17M -27M ");
       makeCell("BFlange"+sNum,System,cellIndex++,wallMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," -11 12 17M -27M ");
+      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 11 -12 17M -27M 127 227 327 427 527");
       makeCell("OuterVoid"+sNum,System,cellIndex++,0,0.0,Out);
 
+      HeadRule outerAcc;
+      int PI(BI+100);
+      for(size_t j=0;j<3;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 53M -54M -7 7M");
+	  makeCell("A"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -10M 53M 7 -17 17M");
+	  makeCell("AL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -63M 53M -27 17 ");
+	  makeCell("AL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 3M -27 -53M ");
+	  makeCell("AL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 63M 17 -27 -10M 17M");
+	  makeCell("AL"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 10M -54M 7 -17 17M");
+	  makeCell("AR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 64M -54M -27 17 ");
+	  makeCell("AR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -4M -27 54M ");
+	  makeCell("AR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -64M 17 -27 10M 17M");
+	  makeCell("AR"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  outerAcc.addIntersection(SMap.realSurf(PI+27));
+	  PI+=100;
+	}
+
+      // SMALL pipes:
+      for(size_t j=0;j<2;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 153M -154M -7 7M");
+	  makeCell("S"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -10M 153M 7 -17 17M");
+	  makeCell("SL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -163M 153M -27 17 ");
+	  makeCell("SL"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 3M -27 -153M ");
+	  makeCell("SL"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 163M 17 -27 -10M 17M");
+	  makeCell("SL"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 10M -154M 7 -17 17M");
+	  makeCell("SR"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 164M -154M -27 17 ");
+	  makeCell("SR"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -4M -27 154M ");
+	  makeCell("SR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -164M 17 -27 10M 17M");
+	  makeCell("SR"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  outerAcc.addIntersection(SMap.realSurf(PI+27));
+	  PI+=100;
+	}
+      HeadRule outerMag;
+      for(size_t j=0;j<6;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -7 7M");
+	  makeCell("LowLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -8 7M");
+	  makeCell("LowRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -17 7 17M");
+	  makeCell("LowLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -18 8 17M");
+	  makeCell("LowRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -7 7M");
+	  makeCell("TopLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -8 7M");
+	  makeCell("TopRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
+
+	  outerMag.addIntersection(SMap.realSurf(PI+7));
+	  outerMag.addIntersection(SMap.realSurf(PI+8));
+	  PI+=100;
+        }      
+
+      // OUTER:
       Out=ModelSupport::getComposite
-	(SMap,BI,buildIndex," 1 -2 3M -4M 5M -6M -27M ");
-      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out);
+	(SMap,BI,buildIndex," 1 -2 3M -4M 5M -6M 27M (-13M:14M)");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerAcc.display());
+
+      Out=ModelSupport::getComposite
+	(SMap,BI,buildIndex," 1 -2 13M -14M 5M -20M 27M ");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
+
+      Out=ModelSupport::getComposite
+	(SMap,BI,buildIndex," 1 -2 13M -14M -6M 20M 27M ");
+      makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
+
     }
 
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 7 -17 -12");
-  makeCell("frontUnit",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 7 -17 -101");
-  makeCell("frontUnit",System,cellIndex++,wallMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M  7 -17 -12 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
+  makeCell("backFace",System,cellIndex++,wallMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 7 -17 -12");
   makeCell("backUnit",System,cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 3 -4 5 -6 17 ");
+  makeCell("backOuter",System,cellIndex++,0,0.0,Out+backStr);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,BI," 3 -4 5 -6");
-  addOuterSurf(Out);
+  addOuterSurf(Out+frontStr+backStr);
   
   return;
 }

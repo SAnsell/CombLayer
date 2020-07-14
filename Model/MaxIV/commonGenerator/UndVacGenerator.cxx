@@ -58,12 +58,11 @@ namespace setVariable
 {
 
 UndVacGenerator::UndVacGenerator() :
-  nSegment(3),
-  radius(12.25),segLength(),
+  nSegment(3),radius(12.25),segLength(161.0),
   wallThick(0.6),flangeRadius(15.0),flangeLength(2.7),
   portOutLength(6.755),
-  accessRadius(CF150::innerRadius),accessFlangeRadius(CF150::flangeRadius),
-  accessFlangeLength(CF150::flangeLength),
+  accessRadius(CF120::innerRadius),accessFlangeRadius(CF120::flangeRadius),
+  accessFlangeLength(CF120::flangeLength),
 
   smallRadius(CF100::innerRadius),smallFlangeRadius(CF100::flangeRadius),
   smallFlangeLength(CF100::flangeLength),
@@ -102,6 +101,8 @@ UndVacGenerator::generateUndVac(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("UndVacGenerator","generateUndVac");
 
+  Control.addVariable(keyName+"NSegment",nSegment);
+  
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"SegLength",segLength);
   Control.addVariable(keyName+"WallThick",wallThick);

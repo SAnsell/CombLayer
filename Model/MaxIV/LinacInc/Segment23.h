@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class StriplineBPM;
   /*!
     \class Segment23
     \version 1.0
@@ -40,7 +41,7 @@ class Segment23 :
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #2 VC Ø10x1- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #3 Quadrupole type G (H)
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM - 304L
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #4 BPM - 304L
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5 VC- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #6 Horizontal corrector magnet
