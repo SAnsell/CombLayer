@@ -38,9 +38,9 @@ class Segment37 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicA;   // #1 ceramic gap
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicA;   // #1 ceramic gap
   std::shared_ptr<tdcSystem::EBeamStop> beamStop;    // #2 electron beam stop
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicB;   // #1 ceramic gap
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicB;   // #1 ceramic gap
   std::shared_ptr<constructSystem::VacuumPipe> pipe; // #3
 
   void buildObjects(Simulation&);

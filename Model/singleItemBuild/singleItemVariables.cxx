@@ -70,7 +70,7 @@
 #include "EArrivalMonGenerator.h"
 #include "BPMGenerator.h"
 #include "ButtonBPMGenerator.h"
-#include "CeramicSepGenerator.h"
+#include "CeramicGapGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "ScrapperGenerator.h"
@@ -297,8 +297,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
 
-  setVariable::CeramicSepGenerator CSGen;
-  CSGen.generateCeramicSep(Control,"CerSep");
+  setVariable::CeramicGapGenerator CSGen;
+  CSGen.generateCeramicGap(Control,"CerSep");
 
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);

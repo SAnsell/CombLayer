@@ -63,7 +63,7 @@
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 #include "EBeamStop.h"
 
 
@@ -77,9 +77,9 @@ namespace tdcSystem
 
 Segment37::Segment37(const std::string& Key) :
   TDCsegment(Key,2),
-  ceramicA(new tdcSystem::CeramicSep(keyName+"CeramicA")),
+  ceramicA(new tdcSystem::CeramicGap(keyName+"CeramicA")),
   beamStop(new tdcSystem::EBeamStop(keyName+"BeamStop")),
-  ceramicB(new tdcSystem::CeramicSep(keyName+"CeramicB")),
+  ceramicB(new tdcSystem::CeramicGap(keyName+"CeramicB")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe"))
   /*!
     Constructor

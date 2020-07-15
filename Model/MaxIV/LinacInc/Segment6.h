@@ -43,7 +43,7 @@ namespace tdcSystem
 {
   class Scrapper;
   class EBeamStop;
-  class CeramicSep;
+  class CeramicGap;
   
   /*!
     \class Segment6
@@ -72,13 +72,13 @@ class Segment6 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;   
 
   /// long bellow
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicA;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicA;   
 
   /// Electron beam stop
   std::shared_ptr<tdcSystem::EBeamStop> beamStop;   
   
   /// ceramicBellow [reversed]
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicB;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicB;   
 
   void buildObjects(Simulation&);
   void createLinks();

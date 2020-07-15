@@ -43,7 +43,7 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
-  class CeramicSep;
+  class CeramicGap;
 
   /*!
     \class Segment9
@@ -59,7 +59,7 @@ class Segment9 :
  private:
 
   /// first bellow [actually ceramic gap]
-  std::shared_ptr<tdcSystem::CeramicSep> ceramicBellowA;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicBellowA;   
   /// ion pump [rotated]
   std::shared_ptr<constructSystem::BlankTube> pumpA;   
   /// first pipe

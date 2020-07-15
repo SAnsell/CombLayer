@@ -88,7 +88,7 @@
 #include "LQuadF.h"
 #include "BPM.h"
 #include "CorrectorMag.h"
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -103,7 +103,7 @@ namespace tdcSystem
 Segment9::Segment9(const std::string& Key) :
   TDCsegment(Key,2),
 
-  ceramicBellowA(new tdcSystem::CeramicSep(keyName+"CeramicBellowA")),
+  ceramicBellowA(new tdcSystem::CeramicGap(keyName+"CeramicBellowA")),
   pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),

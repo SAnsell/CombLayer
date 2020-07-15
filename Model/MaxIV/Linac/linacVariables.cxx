@@ -64,7 +64,7 @@
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
 #include "SixPortGenerator.h"
-#include "CeramicSepGenerator.h"
+#include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TWCavityGenerator.h"
 #include "subPipeUnit.h"
@@ -614,7 +614,7 @@ linac2SPFsegment6(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::EBeamStopGenerator EBGen;
   setVariable::ScrapperGenerator SCGen;
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
 
   const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
   const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
@@ -638,11 +638,11 @@ linac2SPFsegment6(FuncDataBase& Control,
   PGen.setAFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeD",19.50);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicA");
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicB");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
 
   return;
@@ -736,7 +736,7 @@ linac2SPFsegment9(FuncDataBase& Control,
   setVariable::BPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
 
 
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
@@ -751,7 +751,7 @@ linac2SPFsegment9(FuncDataBase& Control,
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF40>();
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicBellowA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
   setIonPump2Port(Control, lKey+"PumpA");
 
   PGen.generatePipe(Control,lKey+"PipeA",56.6);
@@ -2463,7 +2463,7 @@ Segment37(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment37");
 
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
   setVariable::EBeamStopGenerator EBGen;
   setVariable::PipeGenerator PGen;
 
@@ -2474,8 +2474,8 @@ Segment37(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicA");
-  CSGen.generateCeramicSep(Control,lKey+"CeramicB");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
   EBGen.generateEBeamStop(Control,lKey+"BeamStop",0);
   Control.addVariable(lKey+"BeamStopWallThick",1.0); // measured
@@ -2736,8 +2736,8 @@ Segment45(FuncDataBase& Control,
   		      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Ceramic gap
-  setVariable::CeramicSepGenerator CSGen;
-  CSGen.generateCeramicSep(Control,lKey+"Ceramic");
+  setVariable::CeramicGapGenerator CSGen;
+  CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
   // Pipes
   setVariable::PipeGenerator PGen;

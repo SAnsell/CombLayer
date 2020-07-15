@@ -68,7 +68,7 @@
 #include "VacuumPipe.h"
 #include "YagUnitBig.h"
 #include "YagScreen.h"
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 
 #include "TDCsegment.h"
 #include "Segment45.h"
@@ -80,7 +80,7 @@ namespace tdcSystem
 
 Segment45::Segment45(const std::string& Key) :
   TDCsegment(Key,2),
-  ceramic(new tdcSystem::CeramicSep(keyName+"Ceramic")),
+  ceramic(new tdcSystem::CeramicGap(keyName+"Ceramic")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),

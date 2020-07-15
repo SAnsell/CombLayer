@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/CeramicSepGenerator.h
+ * File:   LinacInc/CeramicGap.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,23 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_CeramicSepGenerator_h
-#define setVariable_CeramicSepGenerator_h
+#ifndef tdcSystem_CeramicGap_h
+#define tdcSystem_CeramicGap_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+
+namespace tdcSystem
 {
-
 /*!
-  \class CeramicSepGenerator
+  \class CeramicGap
   \version 1.0
   \author S. Ansell
   \date June 2020
-  \brief CeramicSepGenerator for variables
+
+  \brief Ceramic Separator in a beamline
 */
 
-class CeramicSepGenerator
+class CeramicGap :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
@@ -45,7 +51,7 @@ class CeramicSepGenerator
   double ceramicALen;           ///< Length after flange
   double ceramicWideLen;        ///< Wide length
   double ceramicGapLen;         ///< Length of ceramic insulation
-  double ceramicBLen;           ///< Length before bellow
+  double ceramicBLen;           ///< Length after the wide part
 
   double ceramicThick;          ///< Small wall thick
   double ceramicWideThick;      ///< Wide ceramic extra
@@ -62,28 +68,29 @@ class CeramicSepGenerator
   double flangeBRadius;         ///< Joining Flange radius
   double flangeBLength;         ///< Joining Flange length
 
-  std::string voidMat;                  ///< void material
-  std::string pipeMat;                  ///< main pipe material
-  std::string ceramicMat;               ///< cermaic material
-  std::string bellowMat;                ///< Bellow material
-  std::string flangeMat;                ///< flange material
-  std::string outerMat;                 ///< pipe material
+  int voidMat;                  ///< void material
+  int pipeMat;                  ///< main pipe material
+  int ceramicMat;               ///< cermaic material
+  int bellowMat;                ///< bellow material
+  int flangeMat;                ///< flange material
+  int outerMat;                 ///< outer material
 
+  void populate(const FuncDataBase&);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
-  CeramicSepGenerator();
-  CeramicSepGenerator(const CeramicSepGenerator&);
-  CeramicSepGenerator& operator=(const CeramicSepGenerator&);
-  virtual ~CeramicSepGenerator();
+  CeramicGap(const std::string&);
+  CeramicGap(const std::string&,const std::string&);
+  CeramicGap(const CeramicGap&);
+  CeramicGap& operator=(const CeramicGap&);
+  virtual ~CeramicGap();
 
-  void setBellowMat(const std::string&,const double);
-  template<typename T> void setCF();
-  template<typename T> void setAFlangeCF();
-  template<typename T> void setBFlangeCF();
-
-  virtual void generateCeramicSep(FuncDataBase&,
-				  const std::string&) const;
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

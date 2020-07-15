@@ -43,7 +43,7 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
-  class CeramicSep;
+  class CeramicGap;
   class YagScreen;
 
   /*!

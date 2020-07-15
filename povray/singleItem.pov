@@ -32,7 +32,7 @@
     #declare cameraLookAt   = <0.0, 0.0, 0.0>;
     #declare cameraAngle = 40;
   #break
-  #case (strcmp(ITEM,"CeramicSep"))
+  #case (strcmp(ITEM,"CeramicGap"))
     #declare cameraLocation = <-15, 20.0, 17.0>;
     #declare cameraLookAt   = <3.0, 5, -4.0>;
     #declare cameraAngle = 40;

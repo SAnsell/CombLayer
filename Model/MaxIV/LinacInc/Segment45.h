@@ -37,7 +37,7 @@ class Segment45 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::CeramicSep> ceramic;     // #1 ceramic gap
+  std::shared_ptr<tdcSystem::CeramicGap> ceramic;     // #1 ceramic gap
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
   std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;     // #3
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;    // #3

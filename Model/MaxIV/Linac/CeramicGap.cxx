@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Linac/CeramicSep.cxx
+ * File:   Linac/CeramicGap.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -60,12 +60,12 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 
 namespace tdcSystem
 {
 
-CeramicSep::CeramicSep(const std::string& Key) :
+CeramicGap::CeramicGap(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -78,20 +78,20 @@ CeramicSep::CeramicSep(const std::string& Key) :
 {}
 
 
-CeramicSep::~CeramicSep()
+CeramicGap::~CeramicGap()
   /*!
     Destructor
   */
 {}
 
 void
-CeramicSep::populate(const FuncDataBase& Control)
+CeramicGap::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("CeramicSep","populate");
+  ELog::RegMethod RegA("CeramicGap","populate");
 
   FixedOffset::populate(Control);
 
@@ -133,12 +133,12 @@ CeramicSep::populate(const FuncDataBase& Control)
 
 
 void
-CeramicSep::createSurfaces()
+CeramicGap::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createSurfaces");
+  ELog::RegMethod RegA("CeramicGap","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -207,13 +207,13 @@ CeramicSep::createSurfaces()
 }
 
 void
-CeramicSep::createObjects(Simulation& System)
+CeramicGap::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createObjects");
+  ELog::RegMethod RegA("CeramicGap","createObjects");
 
   std::string Out;
 
@@ -304,12 +304,12 @@ CeramicSep::createObjects(Simulation& System)
 }
 
 void
-CeramicSep::createLinks()
+CeramicGap::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("CeramicSep","createLinks");
+  ELog::RegMethod RegA("CeramicGap","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -318,7 +318,7 @@ CeramicSep::createLinks()
 }
 
 void
-CeramicSep::createAll(Simulation& System,
+CeramicGap::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -328,7 +328,7 @@ CeramicSep::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createAll");
+  ELog::RegMethod RegA("CeramicGap","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);

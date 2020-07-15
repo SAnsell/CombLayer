@@ -81,7 +81,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
 
@@ -103,9 +103,9 @@ Segment6::Segment6(const std::string& Key) :
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   scrapper(new tdcSystem::Scrapper(keyName+"Scrapper")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  ceramicA(new tdcSystem::CeramicSep(keyName+"CeramicA")),
+  ceramicA(new tdcSystem::CeramicGap(keyName+"CeramicA")),
   beamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
-  ceramicB(new tdcSystem::CeramicSep(keyName+"CeramicB"))
+  ceramicB(new tdcSystem::CeramicGap(keyName+"CeramicB"))
   /*!
     Constructor
     \param Key :: Name of construction key
