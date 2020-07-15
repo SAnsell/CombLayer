@@ -110,6 +110,7 @@
 #include "Segment41.h"
 #include "Segment43.h"
 #include "Segment45.h"
+#include "Segment46.h"
 #include "Segment49.h"
 
 #include "TDC.h"
@@ -164,6 +165,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment41",std::make_shared<Segment41>("SPF41") },
     { "Segment43",std::make_shared<Segment43>("SPF43") },
     { "Segment45",std::make_shared<Segment45>("SPF45") },
+    { "Segment46",std::make_shared<Segment46>("SPF46") },
     { "Segment49",std::make_shared<Segment49>("SPF49") }
 
   } )
@@ -326,7 +328,7 @@ TDC::createAll(Simulation& System,
       "Segment35","Segment36","Segment37",
       "Segment38","Segment39","Segment40",
       "Segment41","Segment42","Segment43",
-      "Segment45","Segment49"
+      "Segment45","Segment46","Segment49"
     });
 
   // buildZone : previous : firstVecIndex
@@ -377,6 +379,7 @@ TDC::createAll(Simulation& System,
       {"Segment43",{"spf","Segment42",1}},
       {"Segment44",{"spf","Segment43",1}},
       {"Segment45",{"spf","Segment44",1}},
+      {"Segment46",{"spf","Segment44",1}}, // 44 is correct
       {"Segment49",{"spf","Segment49",1}}
     });
   const int voidCell(74123);

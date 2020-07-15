@@ -206,7 +206,7 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment36","Segment37","Segment38",
 	       "Segment39","Segment40","Segment41",
 	       "Segment42","Segment43","Segment44",
-	       "Segment45","Segment49"}},
+	       "Segment45","Segment46","Segment49"}},
 
        {"Segment1",{} },                             // first only
        {"Segment2",{} },                             // second only
@@ -249,6 +249,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment43",{} },                            // 43st only
        {"Segment44",{} },                            // 44th only
        {"Segment45",{} },                            // 45th only
+       {"Segment46",{} },                            // 46th only
        {"Segment49",{} }                             // 49th only
     });
 
