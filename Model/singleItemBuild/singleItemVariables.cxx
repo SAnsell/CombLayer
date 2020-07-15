@@ -84,6 +84,7 @@
 #include "YagUnitBigGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
+#include "FMUndulatorGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -300,6 +301,8 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::UndVacGenerator UVGen;
   UVGen.generateUndVac(Control,"UVac");
+  setVariable::FMUndulatorGenerator UUGen;
+  UUGen.generateUndulator(Control,"UVacUndulator",482.0);
 
   setVariable::CeramicSepGenerator CSGen;
   CSGen.generateCeramicSep(Control,"CerSep");

@@ -78,7 +78,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 
-#include "subPipeUnit.h"
+#include "FMUndulator.h"
 #include "UndulatorVacuum.h"
 
 namespace tdcSystem
@@ -89,12 +89,18 @@ UndulatorVacuum::UndulatorVacuum(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  undulator(new xraySystem::FMUndulator(keyName+"Undulator"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{ }
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(undulator);
+}
 
 UndulatorVacuum::~UndulatorVacuum() 
   /*!
@@ -159,8 +165,8 @@ UndulatorVacuum::createSurfaces()
   */
 {
   ELog::RegMethod RegA("UndulatorVacuum","createSurfaces");
-  
-  const double length
+ 
+   const double length
     (segLength*static_cast<double>(nSegment)+preLength*2.0);
 
   // full height
@@ -182,8 +188,8 @@ UndulatorVacuum::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(0.7*radius),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(0.7*radius),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(0.8*radius),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(0.8*radius),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
@@ -211,9 +217,13 @@ UndulatorVacuum::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+215,Origin-Z*(wallRadius+magLength-magFlangeLength),Z);
   ModelSupport::buildPlane
+    (SMap,buildIndex+225,Origin-Z*(wallRadius+magLength+magFlangeLength),Z);
+  ModelSupport::buildPlane
     (SMap,buildIndex+206,Origin+Z*(wallRadius+magLength),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+216,Origin+Z*(wallRadius+magLength-magFlangeLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+226,Origin+Z*(wallRadius+magLength+magFlangeLength),Z);
 
    
   if (!ExternalCut::isActive("back"))
@@ -324,7 +334,8 @@ UndulatorVacuum::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,BI,buildIndex," -2 12 17M -27M ");
       makeCell("BFlange"+sNum,System,cellIndex++,wallMat,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,BI,buildIndex," 11 -12 17M -27M 127 227 327 427 527");
+      Out=ModelSupport::getComposite(SMap,BI,buildIndex,
+				     " 11 -12 17M -27M 127 227 327 427 527");
       makeCell("OuterVoid"+sNum,System,cellIndex++,0,0.0,Out);
 
       HeadRule outerAcc;
@@ -368,7 +379,6 @@ UndulatorVacuum::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 153M -154M -7 7M");
 	  makeCell("S"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
 
-
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -10M 153M 7 -17 17M");
 	  makeCell("SL"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
 
@@ -389,14 +399,16 @@ UndulatorVacuum::createObjects(Simulation& System)
 	  
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -4M -27 154M ");
 	  makeCell("SR"+sNum+"Plate",System,cellIndex++,wallMat,0.0,Out);
-
+	  
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -164M 17 -27 10M 17M");
 	  makeCell("SR"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
 
 	  outerAcc.addIntersection(SMap.realSurf(PI+27));
 	  PI+=100;
 	}
       HeadRule outerMag;
+      HeadRule outerMagVoid;
       for(size_t j=0;j<6;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -7 7M");
@@ -409,16 +421,62 @@ UndulatorVacuum::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -18 8 17M");
 	  makeCell("LowRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
 
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 225M -215M  -27 17 ");
+	  makeCell("LowLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 225M -215M  -28 18 ");
+	  makeCell("LowRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 215M  -27 17 -20M 17M");
+	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 215M  -28 18 -20M 17M");
+	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -225M  -27 17 5M");
+	  makeCell("LowLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -225M  -28 18 5M");
+	  makeCell("LowRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -7 7M");
 	  makeCell("TopLM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -8 7M");
 	  makeCell("TopRM"+sNum+"Void",System,cellIndex++,voidMat,0.0,Out);
 
-	  outerMag.addIntersection(SMap.realSurf(PI+7));
-	  outerMag.addIntersection(SMap.realSurf(PI+8));
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -17 7 17M");
+	  makeCell("TopLM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -6M 20M  -18 8 17M");
+	  makeCell("TopRM"+sNum+"Wall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -226M 216M  -27 17 ");
+	  makeCell("TopLM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -226M 216M  -28 18 ");
+	  makeCell("TopRM"+sNum+"Flange",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -216M  -27 17 20M 17M");
+	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," -216M  -28 18 20M 17M");
+	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 226M  -27 17 -6M");
+	  makeCell("TopLM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 226M  -28 18 -6M");
+	  makeCell("TopRM"+sNum+"Outer",System,cellIndex++,0,0.0,Out);
+
+
+	  outerMag.addIntersection(SMap.realSurf(PI+27));
+	  outerMag.addIntersection(SMap.realSurf(PI+28));
+
+	  outerMagVoid.addIntersection(SMap.realSurf(PI+7));
+	  outerMagVoid.addIntersection(SMap.realSurf(PI+8));
 	  PI+=100;
         }      
+      // exclude magnet from outer
+      CellMap::insertComponent(System,"OuterVoid"+sNum,outerMag);
 
+      // exclude magnet from outer
+      CellMap::insertComponent(System,"Unit"+sNum,outerMagVoid);
+
+
+      
       // OUTER:
       Out=ModelSupport::getComposite
 	(SMap,BI,buildIndex," 1 -2 3M -4M 5M -6M 27M (-13M:14M)");
@@ -433,7 +491,6 @@ UndulatorVacuum::createObjects(Simulation& System)
       makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
 
     }
-
   
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
@@ -460,10 +517,15 @@ UndulatorVacuum::createLinks()
 {
   ELog::RegMethod RegA("UndulatorVacuum","createLinks");
 
+  const double length
+    (segLength*static_cast<double>(nSegment)+preLength*2.0);
+
   ExternalCut::createLink("front",*this,0,Origin,-Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
   // Note outer links done in 
 
+  FixedComp::setConnect(6,Origin+Y*(length/2.0),-Y);
+  FixedComp::nameSideIndex(6,"centre");
   return;
 }
     
@@ -481,12 +543,17 @@ UndulatorVacuum::createAll(Simulation& System,
   ELog::RegMethod RegA("UndulatorVacuum","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createUnitVector(FC,FIndex);  
   createSurfaces();    
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
+  // note undulator is a centre based system
+  undulator->addInsertCell(CellMap::getCell("Void"));
+  ELog::EM<<"undulator Centre = "<<CellMap::getCell("Void")<<ELog::endDiag;
+    
+  undulator->createAll(System,*this,"centre");
   return;
 }
   

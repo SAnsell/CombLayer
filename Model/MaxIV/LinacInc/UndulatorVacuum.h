@@ -24,6 +24,10 @@
 
 class Simulation;
 
+namespace xraySystem
+{
+  class FMUndulator;
+}
 
 namespace tdcSystem
 {
@@ -85,6 +89,8 @@ class UndulatorVacuum :
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
 
+  std::shared_ptr<xraySystem::FMUndulator> undulator;
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);

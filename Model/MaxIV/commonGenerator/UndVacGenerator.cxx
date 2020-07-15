@@ -67,9 +67,9 @@ UndVacGenerator::UndVacGenerator() :
   smallRadius(CF100::innerRadius),smallFlangeRadius(CF100::flangeRadius),
   smallFlangeLength(CF100::flangeLength),
 
-  magGap(3.0*CF63::innerRadius),magRadius(CF63::innerRadius),
-  magLength(2.5),magBellowLen(9.3), magFlangeRadius(CF63::flangeRadius),
-  magFlangeLength(CF63::flangeLength),
+  magGap(8.0),magRadius(CF40::innerRadius),
+  magLength(2.5),magBellowLen(9.3), magFlangeRadius(CF40::flangeRadius),
+  magFlangeLength(CF40::flangeLength),
 
   vacRadius(CF100::innerRadius),vacLength(8.0),vacHeight(8.0),
   vacFlangeRadius(CF100::flangeRadius),

@@ -78,7 +78,7 @@ class UndVacGenerator
 
   std::string voidMat;                  ///< void material
   std::string wallMat;                  ///< wall material
-
+  
  public:
 
   UndVacGenerator();
