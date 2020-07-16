@@ -37,10 +37,18 @@ class Segment46 :
 {
  private:
 
-  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #1
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #3
-  std::shared_ptr<xraySystem::CylGateValve> gateB;    // #4
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
+  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2
+  std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
+  std::shared_ptr<constructSystem::BlankTube> prismaChamber; ///< #4
+  std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
+  // cleaning magnet
+  // slit
+  std::shared_ptr<constructSystem::Bellows> bellowB; // #10
+  std::shared_ptr<constructSystem::PipeTube> mirrorChamberB; ///< #6
+  std::shared_ptr<constructSystem::Bellows> bellowC; // #10
+  std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
 
   void buildObjects(Simulation&);
   void createLinks();

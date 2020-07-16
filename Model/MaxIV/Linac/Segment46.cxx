@@ -35,19 +35,10 @@
 #include <memory>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -57,11 +48,25 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+#include "CylGateValve.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "objectRegister.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ContainedGroup.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
-
-#include "CylGateValve.h"
 #include "VacuumPipe.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
+#include "BlankTube.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -73,9 +78,15 @@ namespace tdcSystem
 
 Segment46::Segment46(const std::string& Key) :
   TDCsegment(Key,2),
-  gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  gateA(new xraySystem::CylGateValve(keyName+"GateA")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  prismaChamber(new constructSystem::BlankTube(keyName+"PrismaChamber")),
+  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB"))
   /*!
     Constructor
@@ -85,12 +96,18 @@ Segment46::Segment46(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(gateA);
   OR.addObject(pipeA);
+  OR.addObject(gateA);
+  OR.addObject(bellowA);
+  OR.addObject(prismaChamber);
+  OR.addObject(mirrorChamberA);
   OR.addObject(pipeB);
+  OR.addObject(bellowB);
+  OR.addObject(mirrorChamberB);
+  OR.addObject(bellowC);
   OR.addObject(gateB);
 
-  setFirstItems(gateA);
+  setFirstItems(pipeA);
 }
 
 Segment46::~Segment46()
@@ -112,20 +129,23 @@ Segment46::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  gateA->createAll(System,*this,0);
+  pipeA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*gateA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
-
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateA,"back",*pipeA);
-
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*gateB);
+    (System,*buildZone,masterCell,*pipeA,"back",*gateA);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gateA,"back",*bellowA);
+
+  const constructSystem::portItem& BP =
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*prismaChamber);
+
+  // constructSystem::constructUnit
+  //   (System,*buildZone,masterCell,BP,"OuterPlate",*bellowB);
 
   buildZone->removeLastMaster(System);
 
@@ -140,8 +160,8 @@ Segment46::createLinks()
 {
   ELog::RegMethod RegA("Segment46","createLinks");
 
-  setLinkSignedCopy(0,*gateA,1);
-  setLinkSignedCopy(1,*gateB,2);
+  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*pipeA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
