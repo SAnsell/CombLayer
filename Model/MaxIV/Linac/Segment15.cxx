@@ -48,13 +48,11 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -70,7 +68,6 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "BlankTube.h"
-#include "PipeTube.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
 
@@ -85,7 +82,7 @@ namespace tdcSystem
 Segment15::Segment15(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  mirrorChamber(new constructSystem::PipeTube(keyName+"MirrorChamber")),
+  mirrorChamber(new constructSystem::BlankTube(keyName+"MirrorChamber")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
@@ -138,9 +135,9 @@ Segment15::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,-3);
+  yagScreen->createAll(System,*yagUnit,4);
   yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
+  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
