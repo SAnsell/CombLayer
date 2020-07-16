@@ -205,9 +205,9 @@ TDCsegment::buildIonPump2Port(Simulation& System,
   ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump.createAll(System,linkUnit,sideName);
 
-  for (size_t i=2; i<=3; ++i)
-    for (size_t j=0; j<=1; ++j)
-      ionPump.intersectPorts(System,i,j);
+  // for (size_t i=2; i<=3; ++i)
+  //   for (size_t j=0; j<=1; ++j)
+  //     ionPump.intersectPorts(System,i,j);
 
   const constructSystem::portItem& port=ionPump.getPort(1);
   const int outerCell=
