@@ -60,7 +60,7 @@ namespace setVariable
 UndVacGenerator::UndVacGenerator() :
   nSegment(3),radius(12.25),segLength(161.0),
   wallThick(0.6),flangeRadius(15.0),flangeLength(2.7),
-  portOutLength(6.755),
+  portOutLength(6.755),portRadius(CF40::innerRadius),
   accessRadius(CF120::innerRadius),accessFlangeRadius(CF120::flangeRadius),
   accessFlangeLength(CF120::flangeLength),
 
@@ -69,7 +69,7 @@ UndVacGenerator::UndVacGenerator() :
 
   magGap(8.0),magRadius(CF40::innerRadius),
   magLength(2.5),magBellowLen(9.3), magFlangeRadius(CF40::flangeRadius),
-  magFlangeLength(CF40::flangeLength),
+  magFlangeLength(CF40::flangeLength),magSupportRadius(0.75),
 
   vacRadius(CF100::innerRadius),vacLength(8.0),vacHeight(8.0),
   vacFlangeRadius(CF100::flangeRadius),
@@ -77,7 +77,7 @@ UndVacGenerator::UndVacGenerator() :
 
   preLength(14.0),
 
-  voidMat("Void"),wallMat("Stainless304L")
+  voidMat("Void"),wallMat("Stainless304L"),supportMat("Nickel")
   /*!
     Constructor and defaults
   */
@@ -109,18 +109,24 @@ UndVacGenerator::generateUndVac(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"PortOutLength",portOutLength);
+  Control.addVariable(keyName+"PortRadius",portRadius);
+
   Control.addVariable(keyName+"AccessRadius",accessRadius);
   Control.addVariable(keyName+"AccessFlangeRadius",accessFlangeRadius);
   Control.addVariable(keyName+"AccessFlangeLength",accessFlangeLength);
+
   Control.addVariable(keyName+"SmallRadius",smallRadius);
   Control.addVariable(keyName+"SmallFlangeRadius",smallFlangeRadius);
   Control.addVariable(keyName+"SmallFlangeLength",smallFlangeLength);
+  
   Control.addVariable(keyName+"MagGap",magGap);
   Control.addVariable(keyName+"MagRadius",magRadius);
   Control.addVariable(keyName+"MagLength",magLength);
   Control.addVariable(keyName+"MagBellowLen",magBellowLen);
   Control.addVariable(keyName+"MagFlangeRadius",magFlangeRadius);
   Control.addVariable(keyName+"MagFlangeLength",magFlangeLength);
+  Control.addVariable(keyName+"MagSupportRadius",magSupportRadius);
+  
   Control.addVariable(keyName+"VacRadius",vacRadius);
   Control.addVariable(keyName+"VacLength",vacLength);
   Control.addVariable(keyName+"VacHeight",vacHeight);
@@ -131,6 +137,7 @@ UndVacGenerator::generateUndVac(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"SupportMat",supportMat);
 
 
   return;

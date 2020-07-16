@@ -48,7 +48,8 @@ class UndVacGenerator
   double flangeRadius;          ///< flange radius
   double flangeLength;          ///< Flange length (half)
 
-  double portOutLength;
+  double portOutLength;         ///< Front/back nose cone
+  double portRadius;            ///< Exit port radius
   
   // 3 access ports a segment
   double accessRadius;          ///< Large Access port radius
@@ -66,6 +67,7 @@ class UndVacGenerator
   double magBellowLen;          ///< Mag bellow length (full - real.bellow/2)
   double magFlangeRadius;       ///< Magnet Support port flange 
   double magFlangeLength;       ///< Magnet Support port flange length
+  double magSupportRadius;      ///< Magnet Support radius
 
   // one at 2/5 distacne
   double vacRadius;             ///< Vacuum/Ion port radius
@@ -78,6 +80,7 @@ class UndVacGenerator
 
   std::string voidMat;                  ///< void material
   std::string wallMat;                  ///< wall material
+  std::string supportMat;               ///< magnet support material
   
  public:
 

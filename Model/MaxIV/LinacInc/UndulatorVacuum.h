@@ -58,7 +58,8 @@ class UndulatorVacuum :
   double flangeRadius;          ///< flange radius
   double flangeLength;          ///< Flange length (half)
 
-  double portOutLength;         ///< horizontal port step
+  double portOutLength;         ///< horizontal port step (front/back)
+  double portRadius;            ///< Exit port radius
   
   // 3 access ports a segment
   double accessRadius;          ///< Large Access port radius
@@ -77,6 +78,8 @@ class UndulatorVacuum :
   double magFlangeRadius;       ///< Magnet Support port flange 
   double magFlangeLength;       ///< Magnet Support port flange length
 
+  double magSupportRadius;      ///< Magnet Support radius
+  
   // one at 2/5 distacne
   double vacRadius;             ///< Vacuum/Ion port radius
   double vacLength;             ///< Vacuum/Ion port length
@@ -88,12 +91,14 @@ class UndulatorVacuum :
 
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
+  int supportMat;               ///< support material
 
   std::shared_ptr<xraySystem::FMUndulator> undulator;
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
+  void createSupport(Simulation&);
   void createLinks();
 
  public:

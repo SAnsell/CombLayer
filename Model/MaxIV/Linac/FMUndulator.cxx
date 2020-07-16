@@ -151,7 +151,7 @@ FMUndulator::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  ELog::EM<<"Pole == "<<poleWidth<<" "<<magnetWidth<<ELog::endDiag;
+
   // 45 degree cut  [inward]
   ModelSupport::buildPlane(SMap,buildIndex+103,lowOrg-X*(poleWidth/2.0),X-Z);
   ModelSupport::buildPlane(SMap,buildIndex+104,lowOrg+X*(poleWidth/2.0),-X-Z);
@@ -174,7 +174,7 @@ FMUndulator::createSurfaces()
   // close support (base)
   lowOrg-=Z*magnetDepth;
   topOrg+=Z*magnetDepth;
-
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   ModelSupport::buildPlane
     (SMap,buildIndex+301,lowOrg-Y*(length/2.0+baseExtraLen),Y);
   ModelSupport::buildPlane
@@ -213,26 +213,26 @@ FMUndulator::createObjects(Simulation& System)
   std::string Out;
 
   // Main inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 203 -204 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 503 -504 5 -6");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
   
   // pole plate
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 103 104 -5 105");
   makeCell("lowPole",System,cellIndex++,magnetMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -103 203 -5 105");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -103 503 -5 105");
   makeCell("lowPoleLVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -104 -204 -5 105");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -104 -504 -5 105");
   makeCell("lowPoleRVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 113 114 6 -106");
   makeCell("topPole",System,cellIndex++,magnetMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -113 203 6 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -113 503 6 -106");
   makeCell("topPoleLVoid",System,cellIndex++,voidMat,0.0,Out);
 								
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -114 -204 6 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -114 -504 6 -106");
   makeCell("topPoleRVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // magnet
@@ -243,35 +243,63 @@ FMUndulator::createObjects(Simulation& System)
   makeCell("topMag",System,cellIndex++,magnetMat,0.0,Out);
 
   // Base support [EXTEND]
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 203 -204 -205 305");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 203 -204 -205 305");
   makeCell("lowBasePlate",System,cellIndex++,supportMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 203 -204 206 -306");
-  makeCell("topBasePlate",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 203 -204 206 -306");
+  makeCell("topBasePlate",System,cellIndex++,supportMat,0.0,Out);
 
-    // Mid support [EXTEND]
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -203 -105 305");
+  makeCell("lowBaseV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 403 -404 -305 405");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -504 204 -105 305");
+  makeCell("lowBaseV",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -203 106 -306");
+  makeCell("topBaseV",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -504 204 106 -306");
+  makeCell("topBaseV",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 503 -504  205 -206");
+  makeCell("frontV",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -302 503 -504  205 -206");
+  makeCell("backV",System,cellIndex++,voidMat,0.0,Out);
+
+  // Mid support [EXTEND]
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 403 -404 -305 405");
   makeCell("lowMid",System,cellIndex++,supportMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -403 203 -305 405");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -403 503 -305 405");
   makeCell("lowMidV",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 404 -204 -305 405");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 404 -504 -305 405");
   makeCell("lowMidV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 403 -404 306 -406");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 403 -404 306 -406");
   makeCell("topMid",System,cellIndex++,supportMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 203 -403 306 -406");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -403 306 -406");
   makeCell("topMidV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -204 404 306 -406");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -504 404 306 -406");
   makeCell("topMidV",System,cellIndex++,voidMat,0.0,Out);
 
 
+  //  Main [EXTEND]
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 203 -204 405 -406 ");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -504 -405 505");
+  makeCell("lowMain",System,cellIndex++,supportMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -504 406 -506");
+  makeCell("topMain",System,cellIndex++,supportMat,0.0,Out);
+
+  // EXTERNAL:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 301 -302 503 -504 505 -506 ");
   addOuterSurf(Out);      
 
   return;
@@ -292,6 +320,10 @@ FMUndulator::createLinks()
   setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
+  setLinkSurf(4,-SMap.realSurf(buildIndex+505));
+  setLinkSurf(5,SMap.realSurf(buildIndex+506));
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
   return;
 }
 

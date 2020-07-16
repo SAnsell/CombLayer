@@ -126,6 +126,7 @@ UndulatorVacuum::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
   portOutLength=Control.EvalVar<double>(keyName+"PortOutLength");
+  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
 
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
@@ -144,7 +145,8 @@ UndulatorVacuum::populate(const FuncDataBase& Control)
   magBellowLen=Control.EvalVar<double>(keyName+"MagBellowLen");
   magFlangeRadius=Control.EvalVar<double>(keyName+"MagFlangeRadius");
   magFlangeLength=Control.EvalVar<double>(keyName+"MagFlangeLength");
-
+  magSupportRadius=Control.EvalVar<double>(keyName+"MagSupportRadius");
+  
   vacRadius=Control.EvalVar<double>(keyName+"VacRadius");
   vacLength=Control.EvalVar<double>(keyName+"VacLength");
   vacHeight=Control.EvalVar<double>(keyName+"VacHeight");
@@ -152,8 +154,10 @@ UndulatorVacuum::populate(const FuncDataBase& Control)
   vacFlangeLength=Control.EvalVar<double>(keyName+"VacFlangeLength");
 
   preLength=Control.EvalVar<double>(keyName+"PreLength");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   
   return;
 }
@@ -237,6 +241,8 @@ UndulatorVacuum::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,portRadius);
+
   int BI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
     {
@@ -283,6 +289,10 @@ UndulatorVacuum::createSurfaces()
 	  ModelSupport::buildCylinder(SMap,PI+8,POrg+X*(magGap/2.0),Z,magRadius);
 	  ModelSupport::buildCylinder(SMap,PI+18,POrg+X*(magGap/2.0),Z,magRadius+wallThick);
 	  ModelSupport::buildCylinder(SMap,PI+28,POrg+X*(magGap/2.0),Z,magFlangeRadius);
+
+	  ModelSupport::buildCylinder(SMap,PI+57,POrg-X*(magGap/2.0),Z,magSupportRadius);
+	  ModelSupport::buildCylinder(SMap,PI+58,POrg+X*(magGap/2.0),Z,magSupportRadius);
+	  
 	  POrg+=Y*(segLength/6.0);
 	  PI+=100;
 	}
@@ -308,8 +318,11 @@ UndulatorVacuum::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 11 -12 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -17 37 ");
   makeCell("frontFace",System,cellIndex++,wallMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -37 ");
+  makeCell("frontPort",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 7 -17 -2001");
   makeCell("frontUnit",System,cellIndex++,wallMat,0.0,Out);
@@ -409,6 +422,7 @@ UndulatorVacuum::createObjects(Simulation& System)
 	}
       HeadRule outerMag;
       HeadRule outerMagVoid;
+      ELog::EM<<"MI == "<<PI<<ELog::endDiag;
       for(size_t j=0;j<6;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -7 7M");
@@ -474,8 +488,6 @@ UndulatorVacuum::createObjects(Simulation& System)
 
       // exclude magnet from outer
       CellMap::insertComponent(System,"Unit"+sNum,outerMagVoid);
-
-
       
       // OUTER:
       Out=ModelSupport::getComposite
@@ -490,11 +502,13 @@ UndulatorVacuum::createObjects(Simulation& System)
 	(SMap,BI,buildIndex," 1 -2 13M -14M -6M 20M 27M ");
       makeCell("BoxVoid"+sNum,System,cellIndex++,0,0.0,Out+outerMag.display());
 
-    }
+    }  
   
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -17 37 ");
   makeCell("backFace",System,cellIndex++,wallMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -37 ");
+  makeCell("backPort",System,cellIndex++,voidMat,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,BI," 2M 7 -17 -12");
   makeCell("backUnit",System,cellIndex++,wallMat,0.0,Out);
@@ -505,6 +519,50 @@ UndulatorVacuum::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,BI," 3 -4 5 -6");
   addOuterSurf(Out+frontStr+backStr);
   
+  return;
+}
+
+void
+UndulatorVacuum::createSupport(Simulation& System)
+  /*!
+    Create the support rods
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("UndulatorVacuum","createSupport");
+
+  std::string Out;
+  const HeadRule topHR=undulator->getFullRule("top");
+  const HeadRule baseHR=undulator->getFullRule("base");
+
+  for(size_t i=0;i<nSegment;i++)
+    {
+      const std::string sNum(std::to_string(i));
+      int PI(buildIndex+600+(i+1)*2000);
+      for(size_t j=0;j<6;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," 5 -57M ");
+	  makeCell("BTube",System,cellIndex++,supportMat,0.0,Out+baseHR.display());
+	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," -6 -57M ");
+	  makeCell("TTube",System,cellIndex++,supportMat,0.0,Out+topHR.display());
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," 5 -58M ");
+	  makeCell("BTube",System,cellIndex++,supportMat,0.0,Out+baseHR.display());
+	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," -6 -58M ");
+	  makeCell("TTube",System,cellIndex++,supportMat,0.0,Out+topHR.display());
+
+	  Out=ModelSupport::getComposite(SMap,PI," 57 ");
+	  CellMap::insertComponent(System,"LowLM"+sNum+"Void",j,Out);
+	  CellMap::insertComponent(System,"TopLM"+sNum+"Void",j,Out);
+	  CellMap::insertComponent(System,"Void",Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,PI," 58 ");
+	  CellMap::insertComponent(System,"LowRM"+sNum+"Void",j,Out);
+	  CellMap::insertComponent(System,"TopRM"+sNum+"Void",j,Out);
+	  CellMap::insertComponent(System,"Void",Out);
+	  PI+=100;
+	}
+    }
   return;
 }
 
@@ -524,7 +582,7 @@ UndulatorVacuum::createLinks()
   ExternalCut::createLink("back",*this,1,Origin,Y);
   // Note outer links done in 
 
-  FixedComp::setConnect(6,Origin+Y*(length/2.0),-Y);
+  FixedComp::setConnect(6,Origin+Y*(length/2.0),Y);
   FixedComp::nameSideIndex(6,"centre");
   return;
 }
@@ -552,8 +610,10 @@ UndulatorVacuum::createAll(Simulation& System,
   // note undulator is a centre based system
   undulator->addInsertCell(CellMap::getCell("Void"));
   ELog::EM<<"undulator Centre = "<<CellMap::getCell("Void")<<ELog::endDiag;
-    
+
   undulator->createAll(System,*this,"centre");
+  createSupport(System);
+  
   return;
 }
   
