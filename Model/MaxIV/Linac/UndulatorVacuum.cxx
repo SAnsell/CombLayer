@@ -422,7 +422,6 @@ UndulatorVacuum::createObjects(Simulation& System)
 	}
       HeadRule outerMag;
       HeadRule outerMagVoid;
-      ELog::EM<<"MI == "<<PI<<ELog::endDiag;
       for(size_t j=0;j<6;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,PI,buildIndex," 5M -20M  -7 7M");
@@ -538,7 +537,7 @@ UndulatorVacuum::createSupport(Simulation& System)
   for(size_t i=0;i<nSegment;i++)
     {
       const std::string sNum(std::to_string(i));
-      int PI(buildIndex+600+(i+1)*2000);
+      int PI(buildIndex+600+(static_cast<int>(i)+1)*2000);
       for(size_t j=0;j<6;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,PI," 5 -57M ");
@@ -609,7 +608,6 @@ UndulatorVacuum::createAll(Simulation& System,
 
   // note undulator is a centre based system
   undulator->addInsertCell(CellMap::getCell("Void"));
-  ELog::EM<<"undulator Centre = "<<CellMap::getCell("Void")<<ELog::endDiag;
 
   undulator->createAll(System,*this,"centre");
   createSupport(System);

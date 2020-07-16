@@ -174,7 +174,7 @@ FMUndulator::createSurfaces()
   // close support (base)
   lowOrg-=Z*magnetDepth;
   topOrg+=Z*magnetDepth;
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+
   ModelSupport::buildPlane
     (SMap,buildIndex+301,lowOrg-Y*(length/2.0+baseExtraLen),Y);
   ModelSupport::buildPlane
