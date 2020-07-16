@@ -64,6 +64,7 @@
 
 #include "VirtualTube.h"
 #include "BlankTube.h"
+#include "PipeTube.h"
 #include "portItem.h"
 
 
@@ -188,13 +189,14 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
   return;
 }
 
+template<typename PTYPE>
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
 			      attachSystem::InnerZone& buildZone,
 			      MonteCarlo::Object *masterCell,
 			      const attachSystem::FixedComp& linkUnit,
 			      const std::string& sideName,
-			      constructSystem::BlankTube& ionPump) const
+			      PTYPE& ionPump) const
 /*!
   Build 2 port ion pump
  */
@@ -202,6 +204,10 @@ TDCsegment::buildIonPump2Port(Simulation& System,
   ionPump.addAllInsertCell(masterCell->getName());
   ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump.createAll(System,linkUnit,sideName);
+
+  for (size_t i=2; i<=3; ++i)
+    for (size_t j=0; j<=1; ++j)
+      ionPump.intersectPorts(System,i,j);
 
   const constructSystem::portItem& port=ionPump.getPort(1);
   const int outerCell=
@@ -348,5 +354,25 @@ TDCsegment::captureCellMap()
 
   return;
 }
+
+///\cond TEMPLATE
+template
+const constructSystem::portItem&
+TDCsegment::buildIonPump2Port(Simulation&,
+		  attachSystem::InnerZone&,
+		  MonteCarlo::Object*,
+		  const attachSystem::FixedComp&,
+		  const std::string&,
+		  constructSystem::BlankTube&) const;
+template
+const constructSystem::portItem&
+TDCsegment::buildIonPump2Port(Simulation&,
+		  attachSystem::InnerZone&,
+		  MonteCarlo::Object*,
+		  const attachSystem::FixedComp&,
+		  const std::string&,
+		  constructSystem::PipeTube&) const;
+
+///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem

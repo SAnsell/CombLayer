@@ -131,24 +131,9 @@ Segment15::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
-  // Mirror chamber
-  mirrorChamber->addAllInsertCell(masterCell->getName());
-  mirrorChamber->setPortRotation(3, Geometry::Vec3D(1,0,0));
-  mirrorChamber->createAll(System,*pipeA,2);
-  for (size_t i=2; i<=3; ++i)
-    for (size_t j=0; j<=1; ++j)
-      mirrorChamber->intersectPorts(System,i,j);
+  const constructSystem::portItem& mirrorChamberPort1 =
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*mirrorChamber);
 
-  const constructSystem::portItem& mirrorChamberPort1=mirrorChamber->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,
-     masterCell,
-     mirrorChamberPort1,
-     mirrorChamberPort1.getSideIndex("OuterPlate"));
-
-  mirrorChamber->insertAllInCell(System,outerCell);
-
-  
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);
 
@@ -162,7 +147,6 @@ Segment15::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
 
-  
   buildZone->removeLastMaster(System);
 
   return;
