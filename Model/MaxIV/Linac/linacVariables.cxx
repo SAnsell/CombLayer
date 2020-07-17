@@ -79,7 +79,7 @@ namespace linacVar
   void wallVariables(FuncDataBase&,const std::string&);
   void setIonPump1Port(FuncDataBase&,const std::string&);
   void setIonPump2Port(FuncDataBase&,const std::string&);
-  void setIonPump3Port(FuncDataBase&,const std::string&);
+  //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
 
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
@@ -202,56 +202,56 @@ setIonPump2Port(FuncDataBase& Control,
   return;
 }
 
-void
-setIonPump3Port(FuncDataBase& Control,const std::string& name)
-/*!
-  Set the 3 port ion pump variables
-  \param Control :: DataBase to use
-  \param name :: name prefix
- */
-{
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump3Port");
+// void
+// setIonPump3Port(FuncDataBase& Control,const std::string& name)
+// /*!
+//   Set the 3 port ion pump variables
+//   \param Control :: DataBase to use
+//   \param name :: name prefix
+//  */
+// {
+//   ELog::RegMethod RegA("linacVariables[F]","setIonPump3Port");
 
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
+//   setVariable::PortItemGenerator PItemGen;
+//   setVariable::PipeTubeGenerator SimpleTubeGen;
 
-  const Geometry::Vec3D OPos(0.0,0.0,0.0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-  const Geometry::Vec3D XVec(1,0,0);
+//   const Geometry::Vec3D OPos(0.0,0.0,0.0);
+//   const Geometry::Vec3D ZVec(0,0,-1);
+//   const Geometry::Vec3D XVec(1,0,0);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<setVariable::CF63>();
+//   SimpleTubeGen.setMat("Stainless304");
+//   SimpleTubeGen.setCF<setVariable::CF63>();
 
-  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
-  PItemGen.setNoPlate();
+//   PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
+//   PItemGen.setNoPlate();
 
-  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
-  Control.addVariable(name+"NPorts",3);
-  Control.addVariable(name+"YAngle",180.0);
+//   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+//   Control.addVariable(name+"NPorts",3);
+//   Control.addVariable(name+"YAngle",180.0);
 
-  PItemGen.setCF<setVariable::CF50>(10.0);
-  PItemGen.setPlate(setVariable::CF50::flangeLength, "Stainless304");
-  PItemGen.generatePort(Control,name+"Port0",OPos,ZVec);
+//   PItemGen.setCF<setVariable::CF50>(10.0);
+//   PItemGen.setPlate(setVariable::CF50::flangeLength, "Stainless304");
+//   PItemGen.generatePort(Control,name+"Port0",OPos,ZVec);
 
-  // total ion pump length
-  const double totalLength(16.0); // measured
-  // length of ports 1 and 2
-  double L = totalLength -
-    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
-  L /= 2.0;
+//   // total ion pump length
+//   const double totalLength(16.0); // measured
+//   // length of ports 1 and 2
+//   double L = totalLength -
+//     (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
+//   L /= 2.0;
 
-  PItemGen.setCF<setVariable::CF40_22>(L);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
-  Control.addVariable(name+"Port1Radius",1.7); // measured
+//   PItemGen.setCF<setVariable::CF40_22>(L);
+//   PItemGen.setNoPlate();
+//   PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
+//   Control.addVariable(name+"Port1Radius",1.7); // measured
 
-  PItemGen.setCF<setVariable::CF40_22>(L);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
-  Control.addVariable(name+"Port2Radius",1.7); // measured
+//   PItemGen.setCF<setVariable::CF40_22>(L);
+//   PItemGen.setNoPlate();
+//   PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
+//   Control.addVariable(name+"Port2Radius",1.7); // measured
 
-  return;
-}
+//   return;
+// }
 void
 setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 /*!
