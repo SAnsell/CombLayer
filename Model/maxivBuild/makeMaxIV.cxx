@@ -249,7 +249,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment36",{} },                              // 36th only
        {"Segment37",{} },                              // 37th only
        {"Segment38",{} },                              // 38th only
-       {"Segment39",{} }                               // 39th only
+       {"Segment39",{} },                               // 39th only
+       {"Segment40",{} }                               // 40th only
     });
 
   bool activeLinac(0);

@@ -31,6 +31,7 @@ namespace constructSystem
 namespace tdcSystem
 {
   class UndulatorVacuum;
+  class FMUndulator;
   
 
   /*!

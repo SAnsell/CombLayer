@@ -67,6 +67,8 @@
 #include "CeramicSepGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TWCavityGenerator.h"
+#include "UndVacGenerator.h"
+#include "FMUndulatorGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
 #include "ButtonBPMGenerator.h"
@@ -122,6 +124,7 @@ namespace linacVar
   void Segment37(FuncDataBase&,const std::string&);
   void Segment38(FuncDataBase&,const std::string&);
   void Segment39(FuncDataBase&,const std::string&);
+  void Segment40(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -2555,7 +2558,7 @@ Segment38(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","Segment17");
+  ELog::RegMethod RegA("linacVariables[F]","Segment38");
   setVariable::PipeGenerator PGen;
   setVariable::BellowGenerator BellowGen;
 
@@ -2595,7 +2598,7 @@ Segment39(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","Segment17");
+  ELog::RegMethod RegA("linacVariables[F]","Segment39");
   setVariable::StriplineBPMGenerator BPMGen;
 
   // SPF39
@@ -2643,6 +2646,36 @@ Segment39(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
+
+  return;
+}
+
+void
+Segment40(FuncDataBase& Control,const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 40
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment40");
+  setVariable::StriplineBPMGenerator BPMGen;
+
+  // SPF39
+  const Geometry::Vec3D startPt(-1010.0,7449.099,0.0);
+  const Geometry::Vec3D endPt(-1010.0,7971.099,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/
+			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  setVariable::UndVacGenerator UVGen;
+  UVGen.generateUndVac(Control,lKey+"UVac");
+  setVariable::FMUndulatorGenerator UUGen;
+  UUGen.generateUndulator(Control,lKey+"UVacUndulator",482.0);
 
   return;
 }
@@ -2841,6 +2874,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment37(Control,"SPF37");
   linacVar::Segment38(Control,"SPF38");
   linacVar::Segment39(Control,"SPF39");
+  linacVar::Segment40(Control,"SPF40");
 
   return;
 }

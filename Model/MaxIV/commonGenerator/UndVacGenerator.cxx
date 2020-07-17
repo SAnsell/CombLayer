@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 UndVacGenerator::UndVacGenerator() :
-  nSegment(3),radius(12.25),segLength(161.0),
+  nSegment(3),radius(12.25),segLength(163.0),
   wallThick(0.6),flangeRadius(15.0),flangeLength(2.7),
   portOutLength(6.755),portRadius(CF40::innerRadius),
   accessRadius(CF120::innerRadius),accessFlangeRadius(CF120::flangeRadius),
@@ -75,7 +75,7 @@ UndVacGenerator::UndVacGenerator() :
   vacFlangeRadius(CF100::flangeRadius),
   vacFlangeLength(CF100::flangeLength),
 
-  preLength(14.0),
+  preLength(16.5),
 
   voidMat("Void"),wallMat("Stainless304L"),supportMat("Nickel")
   /*!

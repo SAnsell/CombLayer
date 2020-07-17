@@ -80,7 +80,7 @@ namespace tdcSystem
 
 Segment40::Segment40(const std::string& Key) :
   TDCsegment(Key,2),
-  uVac(new tdcSystem::UndulatorVacuum(keyName+"UndVac"))
+  uVac(new tdcSystem::UndulatorVacuum(keyName+"UVac"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -112,7 +112,13 @@ Segment40::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
+  uVac->createAll(System,*this,0);
+  if (!masterCell)
+    masterCell=buildZone->constructMasterCell(System,*uVac,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*uVac,2);
+  uVac->insertInCell(System,outerCell);
 
+  buildZone->removeLastMaster(System);
 
   return;
 }
@@ -149,7 +155,7 @@ Segment40::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  
   buildObjects(System);
   createLinks();
   return;
