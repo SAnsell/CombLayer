@@ -81,6 +81,7 @@ namespace linacVar
   void setIonPump2Port(FuncDataBase&,const std::string&);
   //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
+  void setPrismaChamber(FuncDataBase&,const std::string&);
 
   void linac2SPFsegment1(FuncDataBase&,const std::string&);
   void linac2SPFsegment2(FuncDataBase&,const std::string&);
@@ -300,6 +301,56 @@ setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
   const Geometry::Vec3D CPos(0,0,0);
   PItemGen.setCF<setVariable::CF50>(L2);
   PItemGen.generatePort(Control,name+"Port2",CPos,XVec);
+
+  return;
+}
+
+void
+setPrismaChamber(FuncDataBase& Control,
+		const std::string& name)
+/*!
+  Set the Prisma Chamber (4 port pipe) variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+
+  const Geometry::Vec3D OPos(0.0, 0.0, 0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+
+  Control.addVariable(name+"NPorts",4);
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+
+  // Outer radius of the chamber
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+
+  const double L0(8.5 - outerR);
+  const double L1(7.5 - outerR);
+  const double L2(7.5 - outerR);
+  const double L3(7.5 - outerR);
+
+  setVariable::PortItemGenerator PItemGen;
+
+  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  PItemGen.setLength(L1);
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  PItemGen.setCF<setVariable::CF100>(L2);
+  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
+
+  PItemGen.setLength(L3);
+  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
 
   return;
 }
@@ -2785,13 +2836,13 @@ Segment46(FuncDataBase& Control,
   // Gate valves
   setVariable::CylGateValveGenerator CGateGen;
   CGateGen.generateGate(Control,lKey+"GateA",0);
+  Control.addVariable(lKey+"GateAYAngle",180.0);
   Control.addVariable(lKey+"GateAWallThick",0.3);
   Control.addVariable(lKey+"GateAPortThick",0.1);
   Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
   Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
-  //  Control.addVariable(lKey+"GateBYAngle",180.0);
   Control.addVariable(lKey+"GateBWallThick",0.3);
   Control.addVariable(lKey+"GateBPortThick",0.1);
   Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
@@ -2806,16 +2857,27 @@ Segment46(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
 
   // Prisma Chamber
-  setIonPump2Port(Control, lKey+"PrismaChamber");
-  Control.addVariable(lKey+"PrismaChamberYAngle", 180.0);
-  Control.addVariable(lKey+"PrismaChamberLength", 16.0);
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(lKey+"PrismaChamberPort0Length", 5.9-outerR);
-  Control.addVariable(lKey+"PrismaChamberPort1Length", 8.1-outerR);
-  const Geometry::Vec3D pPos(0.0,3.0+2.6,0.0);
+  setPrismaChamber(Control, lKey+"PrismaChamber");
+  Control.addVariable(lKey+"PrismaChamberRadius",15.0); // measured
+  Control.addVariable(lKey+"PrismaChamberWallThick",0.2); // measured
+  Control.addVariable(lKey+"PrismaChamberBlankThick",0.8);  // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeRadius",17.8); // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeLength",2.7); // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeCapThick",setVariable::CF63::flangeLength); // guess
+
+  Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
+  Control.addVariable(lKey+"PrismaChamberLength", 33.2); // measured
+  Control.addVariable(lKey+"PrismaChamberPort0Length", 6.4);
+  Control.addVariable(lKey+"PrismaChamberPort1Length", 4.5);
+  const double portZStep = 0.5; // measured
+  const Geometry::Vec3D pPos(0.0,portZStep,7.0);
   Control.addVariable(lKey+"PrismaChamberPort0Centre", pPos);
   Control.addVariable(lKey+"PrismaChamberPort1Centre", pPos);
+  const Geometry::Vec3D pPos1(0.0,portZStep,0.0);
+  Control.addVariable(lKey+"PrismaChamberPort2Centre", pPos1);
+  Control.addVariable(lKey+"PrismaChamberPort2CapMat", "Stainless304L");
+  Control.addVariable(lKey+"PrismaChamberPort3Centre", pPos1);
+  Control.addVariable(lKey+"PrismaChamberPort3CapMat", "Stainless304L");
 
 
   return;
