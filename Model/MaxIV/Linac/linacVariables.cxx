@@ -64,7 +64,7 @@
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
 #include "SixPortGenerator.h"
-#include "CeramicSepGenerator.h"
+#include "CeramicGapGenerator.h"
 #include "EBeamStopGenerator.h"
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
@@ -81,8 +81,9 @@ namespace linacVar
   void wallVariables(FuncDataBase&,const std::string&);
   void setIonPump1Port(FuncDataBase&,const std::string&);
   void setIonPump2Port(FuncDataBase&,const std::string&);
-  void setIonPump3Port(FuncDataBase&,const std::string&);
+  //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
+  void setPrismaChamber(FuncDataBase&,const std::string&);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -91,7 +92,7 @@ namespace linacVar
   void Segment5(FuncDataBase&,const std::string&);
   void Segment6(FuncDataBase&,const std::string&);
   void Segment7(FuncDataBase&,const std::string&);
-  void Segment8(FuncDataBase&,const std::string&);
+  void segment8(FuncDataBase&,const std::string&);
   void Segment9(FuncDataBase&,const std::string&);
   void Segment10(FuncDataBase&,const std::string&);
   void Segment11(FuncDataBase&,const std::string&);
@@ -125,6 +126,11 @@ namespace linacVar
   void Segment38(FuncDataBase&,const std::string&);
   void Segment39(FuncDataBase&,const std::string&);
   void Segment40(FuncDataBase&,const std::string&);
+  void Segment41(FuncDataBase&,const std::string&);
+  void Segment43(FuncDataBase&,const std::string&);
+  void Segment45(FuncDataBase&,const std::string&);
+  void Segment46(FuncDataBase&,const std::string&);
+  void Segment49(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
@@ -202,56 +208,6 @@ setIonPump2Port(FuncDataBase& Control,
 }
 
 void
-setIonPump3Port(FuncDataBase& Control,const std::string& name)
-/*!
-  Set the 3 port ion pump variables
-  \param Control :: DataBase to use
-  \param name :: name prefix
- */
-{
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump3Port");
-
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-
-  const Geometry::Vec3D OPos(0.0,0.0,0.0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<setVariable::CF63>();
-
-  PItemGen.setCF<setVariable::CF40_22>(6.6); // Port0 length
-  PItemGen.setNoPlate();
-
-  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
-  Control.addVariable(name+"NPorts",3);
-  Control.addVariable(name+"YAngle",180.0);
-
-  PItemGen.setCF<setVariable::CF50>(10.0);
-  PItemGen.setPlate(setVariable::CF50::flangeLength, "Stainless304");
-  PItemGen.generatePort(Control,name+"Port0",OPos,ZVec);
-
-  // total ion pump length
-  const double totalLength(16.0); // measured
-  // length of ports 1 and 2
-  double L = totalLength -
-    (setVariable::CF63::innerRadius+setVariable::CF63::wallThick)*2.0;
-  L /= 2.0;
-
-  PItemGen.setCF<setVariable::CF40_22>(L);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port1",OPos,-XVec);
-  Control.addVariable(name+"Port1Radius",1.7); // measured
-
-  PItemGen.setCF<setVariable::CF40_22>(L);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port2",OPos,XVec);
-  Control.addVariable(name+"Port2Radius",1.7); // measured
-
-  return;
-}
-void
 setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 /*!
   Set the 3 port ion pump variables (with screen etc)
@@ -302,6 +258,57 @@ setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 
   return;
 }
+
+void
+setPrismaChamber(FuncDataBase& Control,
+		const std::string& name)
+/*!
+  Set the Prisma Chamber (4 port pipe) variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+
+  const Geometry::Vec3D OPos(0.0, 0.0, 0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+
+  Control.addVariable(name+"NPorts",4);
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+
+  // Outer radius of the chamber
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+
+  const double L0(8.5 - outerR);
+  const double L1(7.5 - outerR);
+  const double L2(7.5 - outerR);
+  const double L3(7.5 - outerR);
+
+  setVariable::PortItemGenerator PItemGen;
+
+  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  PItemGen.setLength(L1);
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  PItemGen.setCF<setVariable::CF100>(L2);
+  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
+
+  PItemGen.setLength(L3);
+  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
+
+  return;
+}
+
 
 void
 Segment1(FuncDataBase& Control,
@@ -616,7 +623,7 @@ Segment6(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::EBeamStopGenerator EBGen;
   setVariable::ScrapperGenerator SCGen;
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
 
   const Geometry::Vec3D startPt(-90.011,1683.523,0.0);
   const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
@@ -640,11 +647,11 @@ Segment6(FuncDataBase& Control,
   PGen.setAFlangeCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeD",19.50);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicA");
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicB");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
 
   return;
@@ -738,7 +745,7 @@ Segment9(FuncDataBase& Control,
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
 
 
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
@@ -752,7 +759,7 @@ Segment9(FuncDataBase& Control,
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF40>();
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicBellowA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
   setIonPump2Port(Control, lKey+"PumpA");
 
   PGen.generatePipe(Control,lKey+"PipeA",54.6);
@@ -1074,7 +1081,6 @@ Segment14(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.50); // measured
 
-
   return;
 }
 
@@ -1109,38 +1115,25 @@ Segment15(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",22.0); // measured
 
   // Mirror chamber
-  std::string name=lKey+"MirrorChamber";
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40_22>(10.0); // 10 is dummy since we set up all port lenght later
-  PItemGen.setNoPlate();
-
-  SimpleTubeGen.setFlangeCap
-    (setVariable::CF63::flangeLength,setVariable::CF63::flangeLength);
-  SimpleTubeGen.generateTube(Control,name,0.0,22.4); // measured but wrong - it's top/bottom asymmetric and the lower part does not have flange
-  Control.addVariable(name+"NPorts",4);
-
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  PItemGen.setLength(2.2); // measured
-  PItemGen.generatePort(Control,name+"Port0",OPos,-ZVec);
-  PItemGen.setLength(4.4); // measured
-  PItemGen.generatePort(Control,name+"Port1",OPos,ZVec);
-  PItemGen.setLength(2.25); // measured
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304");
-  PItemGen.generatePort(Control,name+"Port2",OPos,-XVec);
-  PItemGen.setLength(2.25); // measured
-  PItemGen.generatePort(Control,name+"Port3",OPos,XVec);
+  setIonPump2Port(Control, lKey+"MirrorChamber");
+  Control.addVariable(lKey+"MirrorChamberYAngle", -90.0);
+  Control.addVariable(lKey+"MirrorChamberLength", 16.0);
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+  Control.addVariable(lKey+"MirrorChamberPort0Length", 5.9-outerR);
+  Control.addVariable(lKey+"MirrorChamberPort1Length", 8.1-outerR);
+  const Geometry::Vec3D pPos(0.0,3.0+2.6,0.0);
+  Control.addVariable(lKey+"MirrorChamberPort0Centre", pPos);
+  Control.addVariable(lKey+"MirrorChamberPort1Centre", pPos);
 
   YagUnitGen.setCF<CF63>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",180.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0); // 1=closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",167.0);
+  PGen.generatePipe(Control,lKey+"PipeB",166.8); // measured 167, adjusted to match total length
 
   return;
 }
@@ -1232,18 +1225,23 @@ Segment17(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
+  ELog::EM << "### TDCsegmen17 cad file is missing => dimensions are dummy"
+	   << ELog::endWarn;
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",386.75); // guess
 
   BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); 
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // guess
 
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
-  
+  // Control.addVariable(pumpName+"Port1Length",9.5); // guess
+  //  Control.addVariable(pumpName+"Port2Length",3.2); // guess
+
   PGen.generatePipe(Control,lKey+"PipeB",386.75); // guess
 
   return;
@@ -1694,7 +1692,7 @@ Segment25(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
- 
+
   const Geometry::Vec3D startPt(-637.608,7406.261,0.0);
 
 
@@ -1723,7 +1721,7 @@ Segment25(FuncDataBase& Control,
   const double dipoleAngle(0.8);
   const double magAngle(0.8);
   const double multiAngle(magAngle+dipoleAngle);
-  
+
 
   const double startWidth(2.33/2.0);
   const double endWidth(6.70/2.0);
@@ -1746,7 +1744,7 @@ Segment25(FuncDataBase& Control,
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
   Control.addVariable(lKey+"SixPortAXAngle",multiAngle);
   Control.addVariable(lKey+"SixPortAZStep",-2.316);
-  
+
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0+12.0752, 0.0,0.0);
@@ -1785,8 +1783,8 @@ Segment26(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
   const Geometry::Vec3D startPtB(-637.608,7612.436,-8.214);
   const Geometry::Vec3D startPtC(-637.608,7607.463,-15.805);
-  
-  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or 
+
+  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or
   // const Geometry::Vec3D startPtB(-637.608,7602.24,-37.887);
   // const Geometry::Vec3D startPtC(-637.608,7598.08,-73.976);
 
@@ -1797,7 +1795,7 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
-      
+
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -1820,7 +1818,7 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
-  
+
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"PipeBAXAngle",
@@ -1832,7 +1830,7 @@ Segment26(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
   BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
 
-    
+
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -1878,7 +1876,7 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
-      
+
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -1895,11 +1893,11 @@ Segment27(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
-      
+
   BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowCA",16.0);
-  
+
   Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
@@ -1910,11 +1908,11 @@ Segment27(FuncDataBase& Control,
 		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"BellowCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
-  
+
   PGen.generatePipe(Control,lKey+"PipeAA",216.95);
-  PGen.generatePipe(Control,lKey+"PipeBA",210.3);
+  PGen.generatePipe(Control,lKey+"PipeBA",210.4);
   PGen.generatePipe(Control,lKey+"PipeCA",222.0);
-  
+
   BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowCB",16.0);
@@ -1930,12 +1928,12 @@ Segment27(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitC");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
-  
+
   BellowGen.generateBellow(Control,lKey+"BellowAC",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBC",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowCC",16.0);
 
-  
+
   return;
 }
 
@@ -1957,12 +1955,13 @@ Segment28(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
   const Geometry::Vec3D startPtB(-637.608,8458.379,-52.649);
 
+
   const Geometry::Vec3D endPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D endPtB(-637.608,9073.535,-84.888);
 
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
-      
+
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 
@@ -1974,7 +1973,7 @@ Segment28(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
-      
+
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",291.6);
 
@@ -1985,7 +1984,7 @@ Segment28(FuncDataBase& Control,
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
-  
+
   BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
 
@@ -1995,7 +1994,7 @@ Segment28(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
 
-  
+
   return;
 }
 
@@ -2056,8 +2055,6 @@ Segment29(FuncDataBase& Control,
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
-
-
   
   return;
 }
@@ -2150,14 +2147,13 @@ Segment31(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
-		      atan((startPt.X()-endPt.X())/
-			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
+		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // BellowA
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); 
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
 
   // IonPumpA
   setIonPump2Port(Control,lKey+"IonPumpA"); // length 16 cm checked
@@ -2175,7 +2171,7 @@ Segment31(FuncDataBase& Control,
   Control.addVariable(lKey+"GatePortThick",0.1);
   Control.addVariable(lKey+"GateYAngle",-90.0);
   // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); 
+  Control.addVariable(lKey+"GateWallMat","Stainless316L");
   Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
@@ -2202,7 +2198,8 @@ Segment31(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5); // OK
 
   // CMagH
-  PGen.generatePipe(Control,lKey+"PipeB",236.7);
+  const double pipeBLength(232.7); // OK
+  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
   CMGen.generateMag(Control,lKey+"CMagH",25.0,0); // 25 is approx
 
   // IonPumpB
@@ -2520,7 +2517,7 @@ Segment37(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment37");
 
-  setVariable::CeramicSepGenerator CSGen;
+  setVariable::CeramicGapGenerator CSGen;
   setVariable::EBeamStopGenerator EBGen;
   setVariable::PipeGenerator PGen;
 
@@ -2531,8 +2528,8 @@ Segment37(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  CSGen.generateCeramicSep(Control,lKey+"CeramicA");
-  CSGen.generateCeramicSep(Control,lKey+"CeramicB");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicA");
+  CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
   EBGen.generateEBeamStop(Control,lKey+"BeamStop",0);
   Control.addVariable(lKey+"BeamStopWallThick",1.0); // measured
@@ -2569,7 +2566,6 @@ Segment38(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.setNoWindow();
@@ -2599,19 +2595,17 @@ Segment39(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment39");
-  setVariable::StriplineBPMGenerator BPMGen;
 
-  // SPF39
   const Geometry::Vec3D startPt(-1010.0,7355.379,0.0);
   const Geometry::Vec3D endPt(-1010.0,7449.099,0.0);
-
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/
-			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  // Stripline BPM
+  setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -2659,7 +2653,9 @@ Segment40(FuncDataBase& Control,const std::string& lKey)
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment40");
-  setVariable::StriplineBPMGenerator BPMGen;
+
+  setVariable::UndVacGenerator UVGen;
+  setVariable::FMUndulatorGenerator UUGen;
 
   // SPF39
   const Geometry::Vec3D startPt(-1010.0,7449.099,0.0);
@@ -2672,14 +2668,311 @@ Segment40(FuncDataBase& Control,const std::string& lKey)
   		      atan((startPt.X()-endPt.X())/
 			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  setVariable::UndVacGenerator UVGen;
+
   UVGen.generateUndVac(Control,lKey+"UVac");
-  setVariable::FMUndulatorGenerator UUGen;
   UUGen.generateUndulator(Control,lKey+"UVacUndulator",482.0);
 
   return;
 }
 
+void
+Segment41(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 41
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment41");
+
+  const Geometry::Vec3D startPt(-1010.0,7971.099,0.0);
+  const Geometry::Vec3D endPt(-1010.0,8053.349,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+
+  // Stripline BPM
+  setVariable::StriplineBPMGenerator BPMGen;
+  BPMGen.setCF<setVariable::CF40_22>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  // Gate
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",-90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  // Pipe
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"Pipe",38.0);
+
+  return;
+}
+
+void
+Segment43(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 43
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment43");
+
+  const Geometry::Vec3D startPt(-1010.0,8575.349,0.0);
+  const Geometry::Vec3D endPt(-1010.0,8682.445,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Stripline BPM
+  setVariable::StriplineBPMGenerator BPMAGen;
+  BPMAGen.setCF<setVariable::CF40_22>();
+  BPMAGen.generateBPM(Control,lKey+"BPMA",0.0);
+
+  // Yag screen and its unit
+  setVariable::YagUnitBigGenerator YagUnitGen;
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  setVariable::YagScreenGenerator YagScreenGen;
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+  Control.addVariable(lKey+"YagScreenZStep",-3.3);
+
+  // Gate
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
+  Control.addVariable(lKey+"GateWallThick",0.3);
+  Control.addVariable(lKey+"GatePortThick",0.1);
+  Control.addVariable(lKey+"GateYAngle",90.0);
+  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+
+  // Pipe
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"Pipe",39.896); // measured 40, but adjusted to match start/end
+
+  setVariable::CorrectorMagGenerator CMGen;
+  CMGen.generateMag(Control,lKey+"CMagH",10.3,0);
+
+  // Button pickup PBM
+  setVariable::ButtonBPMGenerator BPMBGen;
+  BPMBGen.setCF<setVariable::CF40_22>();
+  BPMBGen.generate(Control,lKey+"BPMB");
+  Control.addVariable(lKey+"BPMBLength",3.0); // measured
+  Control.addVariable(lKey+"BPMBNButtons",2);
+  Control.addVariable(lKey+"BPMBButtonYAngle",0.0);
+  Control.addVariable(lKey+"BPMBFlangeGap",0.0);
+  Control.addVariable(lKey+"BPMBFlangeALength",0.5); // approx
+  Control.addVariable(lKey+"BPMBFlangeBLength",0.5); // approx
+
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+
+  return;
+}
+
+void
+Segment45(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 45
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment45");
+
+  const Geometry::Vec3D startPt(-1010.0,8949.717,-60.951);
+  const Geometry::Vec3D endPt(-1010.0,9227.315,-190.289);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable(lKey+"XAngle",
+  		      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Ceramic gap
+  setVariable::CeramicGapGenerator CSGen;
+  CSGen.generateCeramicGap(Control,lKey+"Ceramic");
+
+  // Pipes
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",110.5);
+  PGen.setCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeB",161.75);
+
+  // Yag screen and its unit
+  setVariable::YagUnitBigGenerator YagUnitGen;
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+
+  setVariable::YagScreenGenerator YagScreenGen;
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+  Control.addVariable(lKey+"YagScreenZStep",-3.3);
+
+  return;
+}
+
+void
+Segment46(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 49
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment46");
+
+  // SPF46
+  // const Geometry::Vec3D startPt(-1010.0,8825.445,0.0);
+  // const Geometry::Vec3D endPt(-1010.0,9105.245,0.0);
+
+  ELog::EM << "SPF46 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
+  // SPF35
+  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Pipes
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeB",230.0);
+
+  // Gate valves
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"GateA",0);
+  Control.addVariable(lKey+"GateAYAngle",180.0);
+  Control.addVariable(lKey+"GateAWallThick",0.3);
+  Control.addVariable(lKey+"GateAPortThick",0.1);
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
+
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBWallThick",0.3);
+  Control.addVariable(lKey+"GateBPortThick",0.1);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+  BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
+
+  // Prisma Chamber
+  setPrismaChamber(Control, lKey+"PrismaChamber");
+  Control.addVariable(lKey+"PrismaChamberRadius",15.0); // measured
+  Control.addVariable(lKey+"PrismaChamberWallThick",0.2); // measured
+  Control.addVariable(lKey+"PrismaChamberBlankThick",0.8);  // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeRadius",17.8); // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeLength",2.7); // measured
+  Control.addVariable(lKey+"PrismaChamberFlangeCapThick",setVariable::CF63::flangeLength); // guess
+
+  Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
+  Control.addVariable(lKey+"PrismaChamberLength", 33.2); // measured
+  Control.addVariable(lKey+"PrismaChamberPort0Length", 6.4);
+  Control.addVariable(lKey+"PrismaChamberPort1Length", 4.5);
+  const double portZStep = 0.5; // measured
+  const Geometry::Vec3D pPos(0.0,portZStep,7.0);
+  Control.addVariable(lKey+"PrismaChamberPort0Centre", pPos);
+  Control.addVariable(lKey+"PrismaChamberPort1Centre", pPos);
+  const Geometry::Vec3D pPos1(0.0,portZStep,0.0);
+  Control.addVariable(lKey+"PrismaChamberPort2Centre", pPos1);
+  Control.addVariable(lKey+"PrismaChamberPort2CapMat", "Stainless304L");
+  Control.addVariable(lKey+"PrismaChamberPort3Centre", pPos1);
+  Control.addVariable(lKey+"PrismaChamberPort3CapMat", "Stainless304L");
+
+
+  return;
+}
+
+void
+Segment49(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 49
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment49");
+
+  const Geometry::Vec3D startPt(-1010.0,9495.745,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9791.435,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"GateA",0);
+  Control.addVariable(lKey+"GateAWallThick",0.3);
+  Control.addVariable(lKey+"GateAPortThick",0.1);
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
+
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBYAngle",180.0);
+  Control.addVariable(lKey+"GateBWallThick",0.3);
+  Control.addVariable(lKey+"GateBPortThick",0.1);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+
+  // Pipes
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeB",230.0);
+
+  return;
+}
 
 void
 wallVariables(FuncDataBase& Control,
@@ -2694,7 +2987,7 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",9880.0+100.0); 
+  Control.addVariable(wallKey+"MainLength",9880.0);
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
@@ -2811,7 +3104,7 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfMidOuterRight",50.0);
   Control.addVariable("spfMidOuterTop",100.0);
 
-  
+
   // start/endPt of Segment30
   Control.addVariable("spfAngleXStep",-609.286+linacVar::zeroX);
   Control.addVariable("spfAngleYStep",3969.122+linacVar::zeroY);
@@ -2861,6 +3154,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment24(Control,"TDC24");
   linacVar::Segment25(Control,"TDC25");
   linacVar::Segment26(Control,"TDC26");
+
   linacVar::Segment27(Control,"TDC27");
   linacVar::Segment28(Control,"TDC28");
   linacVar::Segment29(Control,"TDC29");
@@ -2875,6 +3169,11 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment38(Control,"SPF38");
   linacVar::Segment39(Control,"SPF39");
   linacVar::Segment40(Control,"SPF40");
+  linacVar::Segment41(Control,"SPF41");
+  linacVar::Segment43(Control,"SPF43");
+  linacVar::Segment45(Control,"SPF45");
+  linacVar::Segment46(Control,"SPF46");
+  linacVar::Segment49(Control,"SPF49");
 
   return;
 }

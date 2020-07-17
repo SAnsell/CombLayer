@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/CeramicSepGenerator.cxx
+ * File:   commonGenerator/CeramicGapGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,14 +52,15 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "CeramicSepGenerator.h"
+#include "CeramicGapGenerator.h"
 
 namespace setVariable
 {
 
-CeramicSepGenerator::CeramicSepGenerator() :
+CeramicGapGenerator::CeramicGapGenerator() :
   radius(CF40_22::innerRadius),length(14.0),
   ceramicALen(0.5),ceramicWideLen(4.0),
+  ceramicGapLen(2.0),
   ceramicBLen(1.2),ceramicThick(0.3),
   ceramicWideThick(0.8),
   pipeLen(2.0),pipeThick(0.15),
@@ -67,7 +68,7 @@ CeramicSepGenerator::CeramicSepGenerator() :
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
   voidMat("Void"),pipeMat("Stainless304L"),
-  ceramicMat("Boron"),bellowMat("Stainless304L%Void%10.0"),
+  ceramicMat("Al2O3"),bellowMat("Stainless304L%Void%10.0"),
   flangeMat("Stainless304L"),outerMat("Void")
   /*!
     Constructor and defaults
@@ -75,7 +76,7 @@ CeramicSepGenerator::CeramicSepGenerator() :
 {
 }
 
-CeramicSepGenerator::~CeramicSepGenerator()
+CeramicGapGenerator::~CeramicGapGenerator()
  /*!
    Destructor
  */
@@ -83,7 +84,7 @@ CeramicSepGenerator::~CeramicSepGenerator()
 
 template<typename CF>
 void
-CeramicSepGenerator::setCF()
+CeramicGapGenerator::setCF()
   /*!
     Setter for flange A
    */
@@ -95,7 +96,7 @@ CeramicSepGenerator::setCF()
 
 template<typename CF>
 void
-CeramicSepGenerator::setAFlangeCF()
+CeramicGapGenerator::setAFlangeCF()
   /*!
     Setter for flange A
    */
@@ -107,7 +108,7 @@ CeramicSepGenerator::setAFlangeCF()
 
 template<typename CF>
 void
-CeramicSepGenerator::setBFlangeCF()
+CeramicGapGenerator::setBFlangeCF()
   /*!
     Setter for flange A
    */
@@ -118,7 +119,7 @@ CeramicSepGenerator::setBFlangeCF()
 }
 
 void
-CeramicSepGenerator::setBellowMat(const std::string& M,const double T)
+CeramicGapGenerator::setBellowMat(const std::string& M,const double T)
   /*!
     Set teh material and the bellow material as a fractional
     void material
@@ -131,7 +132,7 @@ CeramicSepGenerator::setBellowMat(const std::string& M,const double T)
 }
 
 void
-CeramicSepGenerator::generateCeramicSep(FuncDataBase& Control,
+CeramicGapGenerator::generateCeramicGap(FuncDataBase& Control,
 					const std::string& keyName)  const
   /*!
     Primary function for setting the variables
@@ -139,14 +140,15 @@ CeramicSepGenerator::generateCeramicSep(FuncDataBase& Control,
     \param keyName :: head name for variable
   */
 {
-  ELog::RegMethod RegA("CeramicSepGenerator","generateCeramicSep");
+  ELog::RegMethod RegA("CeramicGapGenerator","generateCeramicGap");
 
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
 
   Control.addVariable(keyName+"CeramicALen",ceramicALen);
   Control.addVariable(keyName+"CeramicWideLen",ceramicWideLen);
+  Control.addVariable(keyName+"ceramicGapLength",ceramicGapLen);
   Control.addVariable(keyName+"CeramicBLen",ceramicBLen);
   Control.addVariable(keyName+"CeramicThick",ceramicThick);
   Control.addVariable(keyName+"CeramicWideThick",ceramicWideThick);
@@ -175,14 +177,14 @@ CeramicSepGenerator::generateCeramicSep(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void CeramicSepGenerator::setCF<CF40_22>();
-template void CeramicSepGenerator::setCF<CF40>();
+template void CeramicGapGenerator::setCF<CF40_22>();
+template void CeramicGapGenerator::setCF<CF40>();
 
-template void CeramicSepGenerator::setAFlangeCF<CF40_22>();
-template void CeramicSepGenerator::setAFlangeCF<CF40>();
+template void CeramicGapGenerator::setAFlangeCF<CF40_22>();
+template void CeramicGapGenerator::setAFlangeCF<CF40>();
 
-template void CeramicSepGenerator::setBFlangeCF<CF40_22>();
-template void CeramicSepGenerator::setBFlangeCF<CF40>();
+template void CeramicGapGenerator::setBFlangeCF<CF40_22>();
+template void CeramicGapGenerator::setBFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
 

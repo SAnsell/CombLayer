@@ -42,6 +42,7 @@ class ButtonBPMGenerator
   double length;                ///< Total length including void
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Outer radius
+  int nButtons;                 ///< Number of buttons [2 or 4]
 
   double flangeInnerRadius;     ///< Flange inner radius
   double flangeALength;         ///< Flange A length

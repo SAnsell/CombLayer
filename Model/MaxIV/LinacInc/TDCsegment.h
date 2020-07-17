@@ -26,6 +26,7 @@ namespace constructSystem
 {
   class portItem;
   class BlankTube;
+  class PipeTube;
 }
 
 namespace tdcSystem
@@ -54,12 +55,12 @@ class TDCsegment :
 
   /// System for next building a divided inner
   attachSystem::InnerZone* nextZone;
-  
+
   std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
   /// side by side segment (if share buildZone)
   std::vector<const TDCsegment*> sideVec;
-  
+
   /// unmanaged resource
   std::vector<attachSystem::ExternalCut*> firstItemVec;
 
@@ -67,7 +68,7 @@ class TDCsegment :
   const TDCsegment* prevSegPtr;
 
   void processPrevSeg();
-  
+
  public:
 
   TDCsegment(const std::string&,const size_t);
@@ -90,14 +91,15 @@ class TDCsegment :
   /// accessor to join items
   const std::vector<HeadRule>& getJoinItems() const
     { return joinItems; }
-  
+
+  template<typename PTYPE>
   const constructSystem::portItem&
   buildIonPump2Port(Simulation&,
 		    attachSystem::InnerZone&,
 		    MonteCarlo::Object*,
 		    const attachSystem::FixedComp&,
 		    const std::string&,
-		    constructSystem::BlankTube&) const;
+		    PTYPE&) const;
 
   void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
@@ -110,7 +112,7 @@ class TDCsegment :
   virtual void captureCellMap();
 
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
-  
+
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
 

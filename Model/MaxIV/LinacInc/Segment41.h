@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment37.h
+ * File:   LinacInc/Segment41.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,43 +19,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment37_h
-#define tdcSystem_Segment37_h
+#ifndef tdcSystem_Segment41_h
+#define tdcSystem_Segment41_h
 
 namespace tdcSystem
 {
-
   /*!
-    \class Segment37
+    \class Segment41
     \version 1.0
     \author K. Batkov
     \date July 2020
-    \brief SPF segment 37
+    \brief SPF segment 41
   */
 
-class Segment37 :
+class Segment41 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<tdcSystem::CeramicGap> ceramicA;   // #1 ceramic gap
-  std::shared_ptr<tdcSystem::EBeamStop> beamStop;    // #2 electron beam stop
-  std::shared_ptr<tdcSystem::CeramicGap> ceramicB;   // #1 ceramic gap
-  std::shared_ptr<constructSystem::VacuumPipe> pipe; // #3
+  std::shared_ptr<constructSystem::Bellows> bellowA; // #1
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;               // #2
+  std::shared_ptr<xraySystem::CylGateValve> gate;    // #3
+  std::shared_ptr<constructSystem::VacuumPipe> pipe; // #4
+  std::shared_ptr<constructSystem::Bellows> bellowB; // #1
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Segment37(const std::string&);
-  Segment37(const Segment37&);
-  Segment37& operator=(const Segment37&);
-  ~Segment37();
-
+  Segment41(const std::string&);
+  Segment41(const Segment41&);
+  Segment41& operator=(const Segment41&);
+  ~Segment41();
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

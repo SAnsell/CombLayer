@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Linac/CeramicSep.cxx
+ * File:   Linac/CeramicGap.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -33,37 +33,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -80,12 +60,12 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 
 namespace tdcSystem
 {
 
-CeramicSep::CeramicSep(const std::string& Key) :
+CeramicGap::CeramicGap(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -98,20 +78,20 @@ CeramicSep::CeramicSep(const std::string& Key) :
 {}
 
 
-CeramicSep::~CeramicSep()
+CeramicGap::~CeramicGap()
   /*!
     Destructor
   */
 {}
 
 void
-CeramicSep::populate(const FuncDataBase& Control)
+CeramicGap::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("CeramicSep","populate");
+  ELog::RegMethod RegA("CeramicGap","populate");
 
   FixedOffset::populate(Control);
 
@@ -120,6 +100,7 @@ CeramicSep::populate(const FuncDataBase& Control)
 
   ceramicALen=Control.EvalVar<double>(keyName+"CeramicALen");
   ceramicWideLen=Control.EvalVar<double>(keyName+"CeramicWideLen");
+  ceramicGapLen=Control.EvalVar<double>(keyName+"ceramicGapLength");
   ceramicBLen=Control.EvalVar<double>(keyName+"CeramicBLen");
   ceramicThick=Control.EvalVar<double>(keyName+"CeramicThick");
   ceramicWideThick=Control.EvalVar<double>(keyName+"CeramicWideThick");
@@ -146,18 +127,18 @@ CeramicSep::populate(const FuncDataBase& Control)
   bellowMat=ModelSupport::EvalMat<int>(Control,keyName+"BellowMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
-  
+
   return;
 }
 
 
 void
-CeramicSep::createSurfaces()
+CeramicGap::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createSurfaces");
+  ELog::RegMethod RegA("CeramicGap","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -181,15 +162,21 @@ CeramicSep::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+201,bOrg-Y*flangeBLength,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
-  // ceramic 
+  // ceramic
   aOrg+=Y*(ceramicALen+flangeALength);
   ModelSupport::buildPlane(SMap,buildIndex+301,aOrg,Y);
 
   aOrg+=Y*ceramicWideLen;
   ModelSupport::buildPlane(SMap,buildIndex+311,aOrg,Y);
 
+  // ceramic gap
+  const Geometry::Vec3D vGap(aOrg-Y*ceramicWideLen/2.0);
+  ModelSupport::buildPlane(SMap,buildIndex+601,vGap-Y*(ceramicGapLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+602,vGap+Y*(ceramicGapLen/2.0),Y);
+
   aOrg+=Y*ceramicBLen;
   ModelSupport::buildPlane(SMap,buildIndex+321,aOrg,Y);
+
 
   // bellow
   aOrg+=Y*pipeLen;
@@ -220,13 +207,13 @@ CeramicSep::createSurfaces()
 }
 
 void
-CeramicSep::createObjects(Simulation& System)
+CeramicGap::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createObjects");
+  ELog::RegMethod RegA("CeramicGap","createObjects");
 
   std::string Out;
 
@@ -241,10 +228,25 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -101 -107 ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
 
-  // Ceramic
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7 101 -321 -317 ((301 -311) : -307 ) ");
-  makeCell("Ceramic",System,cellIndex++,ceramicMat,0.0,Out);
+    (SMap,buildIndex," 7 -307 101 -301 ");
+  makeCell("CeramicA",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 301 -601 ");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 601 -602 ");
+  makeCell("CeramicGap",System,cellIndex++,ceramicMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -317 602 -311 ");
+  makeCell("CeramicWide",System,cellIndex++,pipeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7 -307 311 -321 ");
+  makeCell("CeramicB",System,cellIndex++,pipeMat,0.0,Out);
 
   // pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 321 -501 -407 ");
@@ -258,27 +260,43 @@ CeramicSep::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 502 -201 -407 ");
   makeCell("OutPipe",System,cellIndex++,pipeMat,0.0,Out);
 
-  // back flange 
+  // back flange
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 201 -207 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
   // OUTER voids
   const int FIndex((flangeARadius>=flangeBRadius) ?
 		   buildIndex : buildIndex+100);
-	      
-  Out=ModelSupport::getComposite    
-    (SMap,buildIndex,FIndex," 101 -321 -107M (317:((311:-301) 307))");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 101 -301 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 301 -311 317 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 311 -321 307 -107M ");
+  makeCell("CeramicVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," -501 321 -107M 407");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("PipeVoid",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 501 -502 -107M 507");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
-  
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,FIndex," 502 -201 -107M 407");
-  makeCell("OuterFlange",System,cellIndex++,outerMat,0.0,Out);
-  
+  makeCell("BellowVoid",System,cellIndex++,outerMat,0.0,Out);
+
+  if (flangeARadius<flangeBRadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -207")+frontStr;
+      makeCell("FlangeAVoid",System,cellIndex++,outerMat,0.0,Out);
+    }
+  else if (flangeBRadius<flangeARadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 201 207 -107")+backStr;
+      makeCell("FlangeBVoid",System,cellIndex++,outerMat,0.0,Out);
+    }
+
   Out=ModelSupport::getComposite(SMap,FIndex," -107 ");
   addOuterSurf(Out+frontStr+backStr);
 
@@ -286,12 +304,12 @@ CeramicSep::createObjects(Simulation& System)
 }
 
 void
-CeramicSep::createLinks()
+CeramicGap::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("CeramicSep","createLinks");
+  ELog::RegMethod RegA("CeramicGap","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -300,7 +318,7 @@ CeramicSep::createLinks()
 }
 
 void
-CeramicSep::createAll(Simulation& System,
+CeramicGap::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -310,7 +328,7 @@ CeramicSep::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("CeramicSep","createAll");
+  ELog::RegMethod RegA("CeramicGap","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);

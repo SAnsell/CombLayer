@@ -64,6 +64,7 @@
 
 #include "VirtualTube.h"
 #include "BlankTube.h"
+#include "PipeTube.h"
 #include "portItem.h"
 
 
@@ -188,20 +189,27 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
   return;
 }
 
+template<typename PTYPE>
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
 			      attachSystem::InnerZone& buildZone,
 			      MonteCarlo::Object *masterCell,
 			      const attachSystem::FixedComp& linkUnit,
 			      const std::string& sideName,
-			      constructSystem::BlankTube& ionPump) const
-/*!
-  Build 2 port ion pump
- */
+			      PTYPE& ionPump) const
+  /*!
+    Build 2 port ion pump
+    \todo REMOVE from HERE 
+    \todo REMOVE template -- better by virtual
+  */
 {
   ionPump.addAllInsertCell(masterCell->getName());
   ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump.createAll(System,linkUnit,sideName);
+
+  // for (size_t i=2; i<=3; ++i)
+  //   for (size_t j=0; j<=1; ++j)
+  //     ionPump.intersectPorts(System,i,j);
 
   const constructSystem::portItem& port=ionPump.getPort(1);
   const int outerCell=
@@ -315,7 +323,9 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 void
 TDCsegment::initCellMap()
   /*!
-    Set inital value
+    Setup the Segment to capture the CellMap from a buildZone.
+    This call needs to be done BEFORE the segment is inserted into the 
+    buildZone.
    */
 {
   ELog::RegMethod RegA("TDCsegment","initCellMap");
@@ -332,7 +342,14 @@ TDCsegment::initCellMap()
 void
 TDCsegment::captureCellMap()
   /*!
-    Set inital value
+    Recovers CellMap transfer from a buildZone to the CellMap 
+    of the object that is within the buildZone. This allows
+    inserts to be done after the buildObject call. 
+
+    This call needs to be done AFTER the object has been inserted
+    in the buildZone. 
+
+    An initCellMap call needs to have been done first.
    */
 {
   ELog::RegMethod RegA("TDCsegment","captureCellMap");
@@ -348,5 +365,25 @@ TDCsegment::captureCellMap()
 
   return;
 }
+
+///\cond TEMPLATE
+template
+const constructSystem::portItem&
+TDCsegment::buildIonPump2Port(Simulation&,
+		  attachSystem::InnerZone&,
+		  MonteCarlo::Object*,
+		  const attachSystem::FixedComp&,
+		  const std::string&,
+		  constructSystem::BlankTube&) const;
+template
+const constructSystem::portItem&
+TDCsegment::buildIonPump2Port(Simulation&,
+		  attachSystem::InnerZone&,
+		  MonteCarlo::Object*,
+		  const attachSystem::FixedComp&,
+		  const std::string&,
+		  constructSystem::PipeTube&) const;
+
+///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem

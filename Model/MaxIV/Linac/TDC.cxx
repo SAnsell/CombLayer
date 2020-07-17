@@ -109,6 +109,11 @@
 #include "Segment38.h"
 #include "Segment39.h"
 #include "Segment40.h"
+#include "Segment41.h"
+#include "Segment43.h"
+#include "Segment45.h"
+#include "Segment46.h"
+#include "Segment49.h"
 
 #include "TDC.h"
 
@@ -160,7 +165,12 @@ TDC::TDC(const std::string& KN) :
     { "Segment37",std::make_shared<Segment37>("SPF37") },
     { "Segment38",std::make_shared<Segment38>("SPF38") },
     { "Segment39",std::make_shared<Segment39>("SPF39") },
-    { "Segment40",std::make_shared<Segment40>("SPF40") }
+    { "Segment40",std::make_shared<Segment40>("SPF40") },
+    { "Segment41",std::make_shared<Segment41>("SPF41") },
+    { "Segment43",std::make_shared<Segment43>("SPF43") },
+    { "Segment45",std::make_shared<Segment45>("SPF45") },
+    { "Segment46",std::make_shared<Segment46>("SPF46") },
+    { "Segment49",std::make_shared<Segment49>("SPF49") }
 
   } )
   /*!
@@ -320,14 +330,16 @@ TDC::createAll(Simulation& System,
       "Segment29","Segment30","Segment31",
       "Segment32","Segment33","Segment34",
       "Segment35","Segment36","Segment37",
-      "Segment38","Segment39","Segment40"
+      "Segment38","Segment39","Segment40",
+      "Segment41","Segment42","Segment43",
+      "Segment45","Segment46","Segment49"
+
     });
 
   // buildZone : previous : firstVecIndex
   typedef std::tuple<std::string,std::string,size_t> LinkTYPE;
   static const std::map<std::string,LinkTYPE> segmentLinkMap
     ({
-
       {"Segment1",{"l2spf","",1}},
       {"Segment2",{"l2spf","Segment1",1}},
       {"Segment3",{"l2spf","Segment2",1}},
@@ -367,7 +379,14 @@ TDC::createAll(Simulation& System,
       {"Segment37",{"spf","Segment36",1}},
       {"Segment38",{"spf","Segment37",1}},
       {"Segment39",{"spf","Segment38",1}},
-      {"Segment40",{"spf","Segment39",1}}
+      {"Segment40",{"spf","Segment39",1}},
+      {"Segment41",{"spf","Segment40",1}},
+      {"Segment42",{"spf","Segment41",1}},
+      {"Segment43",{"spf","Segment42",1}},
+      {"Segment44",{"spf","Segment43",1}},
+      {"Segment45",{"spf","Segment44",1}},
+      {"Segment46",{"spf","Segment44",1}}, // 44 is correct
+      {"Segment49",{"spf","Segment49",1}}
     });
   const int voidCell(74123);
 
@@ -400,7 +419,7 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr);
-	  
+
 	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
@@ -418,7 +437,7 @@ TDC::createAll(Simulation& System,
 		segPtr->registerSideSegment(sidePtrB);
 	    }
 
-	  
+	  segPtr->setInnerZone(buildZone.get());
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment29" &&
 	      BL!="Segment30")
@@ -426,9 +445,9 @@ TDC::createAll(Simulation& System,
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
 	    }
-	  
+
 	  segPtr->initCellMap();
-	  
+
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/Segment15.cxx
+ * File: Linac/Segment41.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -53,9 +50,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -64,28 +61,27 @@
 #include "InnerZone.h"
 #include "generalConstruct.h"
 
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
 #include "VacuumPipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
+#include "StriplineBPM.h"
+#include "CylGateValve.h"
 
 #include "TDCsegment.h"
-#include "Segment15.h"
+#include "Segment41.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-Segment15::Segment15(const std::string& Key) :
+Segment41::Segment41(const std::string& Key) :
   TDCsegment(Key,2),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  mirrorChamber(new constructSystem::BlankTube(keyName+"MirrorChamber")),
-  yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
+  bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  gate(new xraySystem::CylGateValve(keyName+"Gate")),
+  pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
+  bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -94,55 +90,51 @@ Segment15::Segment15(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
-  OR.addObject(mirrorChamber);
-  OR.addObject(yagUnit);
-  OR.addObject(yagScreen);
-  OR.addObject(pipeB);
+  OR.addObject(bpm);
+  OR.addObject(bellowA);
+  OR.addObject(gate);
+  OR.addObject(pipe);
+  OR.addObject(bellowB);
 
-  setFirstItems(pipeA);
+  setFirstItems(bpm);
 }
 
-Segment15::~Segment15()
+Segment41::~Segment41()
   /*!
     Destructor
    */
 {}
 
 void
-Segment15::buildObjects(Simulation& System)
+Segment41::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment15","buildObjects");
+  ELog::RegMethod RegA("Segment41","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  pipeA->createAll(System,*this,0);
+  bellowA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  const constructSystem::portItem& mirrorChamberPort1 =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*mirrorChamber);
+    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);
-
-  yagScreen->setBeamAxis(*yagUnit,1);
-  yagScreen->createAll(System,*yagUnit,4);
-  yagScreen->insertInCell("Outer",System,outerCell);
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateB"));
-  yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
-  yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
+    (System,*buildZone,masterCell,*bpm,"back",*gate);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*gate,"back",*pipe);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipe,"back",*bellowB);
 
   buildZone->removeLastMaster(System);
 
@@ -150,22 +142,23 @@ Segment15::buildObjects(Simulation& System)
 }
 
 void
-Segment15::createLinks()
+Segment41::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("Segment15","createLinks");
+  ELog::RegMethod RegA("Segment41","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(0,*bellowA,1);
+  setLinkSignedCopy(1,*bellowB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
+
   return;
 }
 
 void
-Segment15::createAll(Simulation& System,
+Segment41::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -176,7 +169,7 @@ Segment15::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment15","build");
+  ELog::RegMethod RControl("Segment41","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -44,7 +44,7 @@ namespace tdcSystem
   class StriplineBPM;
   class LQuadF;
   class CorrectorMag;
-  class CeramicSep;
+  class CeramicGap;
   class YagScreen;
 
   /*!

@@ -79,6 +79,12 @@ global_settings {
   //   #declare cameraLookAt   = <130, 80, 0>;
   //   #declare cameraAngle = 90;
   // #break
+  #case(strcmp(ITEM,"Segment11")) // L2SPF segment 11
+    #declare cameraLocation = <-120, 4220, 40>;
+    #declare cameraLookAt   = <-360, 4030, 0>;
+    #declare cameraAngle = 70;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Segment15")) // TDC segment 15
     #declare cameraLocation = <-433, 4980, 40>;
     #declare cameraLookAt   = <-485, 5030, 10>;
@@ -184,6 +190,36 @@ global_settings {
     #declare cameraLookAt   = <-858, 7350, 0>;
     #declare projection = 0;
     #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment41")) // SPF segment 41
+    #declare cameraLocation = <-815, 8445, 60>;
+    #declare cameraLookAt   = <-860, 8485, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment43")) // SPF segment 43
+    #declare cameraLocation = <-815, 9150, 40>;
+    #declare cameraLookAt   = <-860, 9110, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 90;
+  #break
+  #case(strcmp(ITEM,"Segment45")) // SPF segment 45
+    #declare cameraLocation = <-750, 9350, 50>;
+    #declare cameraLookAt   = <-860, 9530, -120>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+  #case(strcmp(ITEM,"Segment46")) // SPF segment 46
+    #declare cameraLocation = <-750, 6725, 70>;
+    #declare cameraLookAt   = <-860, 6690, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 90;
+  #break
+  #case(strcmp(ITEM,"Segment49")) // SPF segment 49
+    #declare cameraLocation = <-700, 10000, 30>;
+    #declare cameraLookAt   = <-860, 10070, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 90;
   #break
   #case(strcmp(ITEM,"Segment1000")) // beamline view
     #declare cameraLocation = <200, 160, 40>;

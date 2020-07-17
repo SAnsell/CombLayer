@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/CeramicSep.h
+ * File:   LinacInc/CeramicGap.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_CeramicSep_h
-#define tdcSystem_CeramicSep_h
+#ifndef tdcSystem_CeramicGap_h
+#define tdcSystem_CeramicGap_h
 
 class Simulation;
 
@@ -28,7 +28,7 @@ class Simulation;
 namespace tdcSystem
 {
 /*!
-  \class CeramicSep
+  \class CeramicGap
   \version 1.0
   \author S. Ansell
   \date June 2020
@@ -36,7 +36,7 @@ namespace tdcSystem
   \brief Ceramic Separator in a beamline
 */
 
-class CeramicSep :
+class CeramicGap :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -50,7 +50,8 @@ class CeramicSep :
 
   double ceramicALen;           ///< Length after flange
   double ceramicWideLen;        ///< Wide length
-  double ceramicBLen;           ///< Length before bellow
+  double ceramicGapLen;         ///< Length of ceramic insulation
+  double ceramicBLen;           ///< Length after the wide part
 
   double ceramicThick;          ///< Small wall thick
   double ceramicWideThick;      ///< Wide ceramic extra
@@ -60,7 +61,7 @@ class CeramicSep :
 
   double bellowLen;             ///< Bellow length
   double bellowThick;           ///< Bellow thickness
-  
+
   double flangeARadius;         ///< Joining Flange radius
   double flangeALength;         ///< Joining Flange length
 
@@ -81,11 +82,11 @@ class CeramicSep :
 
  public:
 
-  CeramicSep(const std::string&);
-  CeramicSep(const std::string&,const std::string&);
-  CeramicSep(const CeramicSep&);
-  CeramicSep& operator=(const CeramicSep&);
-  virtual ~CeramicSep();
+  CeramicGap(const std::string&);
+  CeramicGap(const std::string&,const std::string&);
+  CeramicGap(const CeramicGap&);
+  CeramicGap& operator=(const CeramicGap&);
+  virtual ~CeramicGap();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

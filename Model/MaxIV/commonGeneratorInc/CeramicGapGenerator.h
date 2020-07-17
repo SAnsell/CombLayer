@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/CeramicSepGenerator.h
+ * File:   commonGeneratorInc/CeramicGapGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_CeramicSepGenerator_h
-#define setVariable_CeramicSepGenerator_h
+#ifndef setVariable_CeramicGapGenerator_h
+#define setVariable_CeramicGapGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class CeramicSepGenerator
+  \class CeramicGapGenerator
   \version 1.0
   \author S. Ansell
   \date June 2020
-  \brief CeramicSepGenerator for variables
+  \brief CeramicGapGenerator for variables
 */
 
-class CeramicSepGenerator
+class CeramicGapGenerator
 {
  private:
 
@@ -44,6 +44,7 @@ class CeramicSepGenerator
 
   double ceramicALen;           ///< Length after flange
   double ceramicWideLen;        ///< Wide length
+  double ceramicGapLen;         ///< Length of ceramic insulation
   double ceramicBLen;           ///< Length before bellow
 
   double ceramicThick;          ///< Small wall thick
@@ -54,7 +55,7 @@ class CeramicSepGenerator
 
   double bellowLen;             ///< Bellow length
   double bellowThick;           ///< Bellow thickness
-  
+
   double flangeARadius;         ///< Joining Flange radius
   double flangeALength;         ///< Joining Flange length
 
@@ -71,17 +72,17 @@ class CeramicSepGenerator
 
  public:
 
-  CeramicSepGenerator();
-  CeramicSepGenerator(const CeramicSepGenerator&);
-  CeramicSepGenerator& operator=(const CeramicSepGenerator&);
-  virtual ~CeramicSepGenerator();
+  CeramicGapGenerator();
+  CeramicGapGenerator(const CeramicGapGenerator&);
+  CeramicGapGenerator& operator=(const CeramicGapGenerator&);
+  virtual ~CeramicGapGenerator();
 
   void setBellowMat(const std::string&,const double);
   template<typename T> void setCF();
   template<typename T> void setAFlangeCF();
   template<typename T> void setBFlangeCF();
 
-  virtual void generateCeramicSep(FuncDataBase&,
+  virtual void generateCeramicGap(FuncDataBase&,
 				  const std::string&) const;
 
 };

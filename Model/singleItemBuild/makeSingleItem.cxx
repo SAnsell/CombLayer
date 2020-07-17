@@ -84,7 +84,7 @@
 #include "CylGateValve.h"
 #include "StriplineBPM.h"
 #include "BeamDivider.h"
-#include "CeramicSep.h"
+#include "CeramicGap.h"
 #include "DipoleDIBMag.h"
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
@@ -139,7 +139,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default","CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicSep",
+      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","SixPort",
@@ -258,10 +258,10 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item == "CeramicSep")
+  if (item == "CeramicGap")
     {
-      std::shared_ptr<tdcSystem::CeramicSep>
-	cSep(new tdcSystem::CeramicSep("CerSep"));
+      std::shared_ptr<tdcSystem::CeramicGap>
+	cSep(new tdcSystem::CeramicGap("CerSep"));
       OR.addObject(cSep);
 
       cSep->addInsertCell(voidCell);

@@ -136,9 +136,9 @@ Segment30::createSplitInnerZone(Simulation& System)
 
       const Geometry::Vec3D sideOrg(sideSegment->getCentre());
       const Geometry::Vec3D sideY((sideSegment->getY()+Y*axisFrac).unit());
-      
+
       const Geometry::Vec3D midX=(sideY*Z);
-            
+
       ModelSupport::buildPlane(SMap,buildIndex+5005,
 			       (sideOrg+Origin*orgFrac)/(orgFrac+1.0),midX);
 
@@ -178,7 +178,7 @@ Segment30::createSplitInnerZone(Simulation& System)
     }
   return;
 }
- 
+
 void
 Segment30::buildObjects(Simulation& System)
   /*!
@@ -208,7 +208,7 @@ Segment30::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*gauge,"back",*pipeA);
-  
+
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*bellow);
 
