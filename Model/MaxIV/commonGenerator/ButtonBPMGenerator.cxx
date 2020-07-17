@@ -61,7 +61,7 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   buttonYAngle(45),
   buttonFlangeRadius(0.65),
   buttonFlangeLength(0.3),
-  buttonCaseLength(1.75),
+  buttonCaseLength(1.5), // approx. email from EM 2020-07-17
   buttonCaseRadius(0.4),
   buttonCaseMat("Stainless304"),
   buttonHandleRadius(0.27),
