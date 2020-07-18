@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment40.h
+ * File:   LinacInc/Segment42.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment40_h
-#define tdcSystem_Segment40_h
+#ifndef tdcSystem_Segment42_h
+#define tdcSystem_Segment42_h
 
 namespace constructSystem
 {
@@ -35,14 +35,14 @@ namespace tdcSystem
   
 
   /*!
-    \class Segment40
+    \class Segment42
     \version 1.0
     \author S. Ansell
     \date June 2020
     \brief Dividing segment in the TDC from the linac
   */
 
-class Segment40 :
+class Segment42 :
   public TDCsegment
 {
  private:
@@ -52,13 +52,16 @@ class Segment40 :
 
   void buildObjects(Simulation&);
   void createLinks();
+
+  void createSplitInnerZone(Simulation&);
+  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
   
  public:
 
-  Segment40(const std::string&);
-  Segment40(const Segment40&);
-  Segment40& operator=(const Segment40&);
-  ~Segment40();
+  Segment42(const std::string&);
+  Segment42(const Segment42&);
+  Segment42& operator=(const Segment42&);
+  ~Segment42();
 
 
   using FixedComp::createAll;

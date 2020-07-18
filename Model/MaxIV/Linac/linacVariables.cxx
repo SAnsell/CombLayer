@@ -127,6 +127,7 @@ namespace linacVar
   void Segment39(FuncDataBase&,const std::string&);
   void Segment40(FuncDataBase&,const std::string&);
   void Segment41(FuncDataBase&,const std::string&);
+  void Segment42(FuncDataBase&,const std::string&);
   void Segment43(FuncDataBase&,const std::string&);
   void Segment45(FuncDataBase&,const std::string&);
   void Segment46(FuncDataBase&,const std::string&);
@@ -1989,7 +1990,7 @@ Segment28(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
 
   PGen.generatePipe(Control,lKey+"PipeAB",291.6);
-  PGen.generatePipe(Control,lKey+"PipeBB",292.4);
+  PGen.generatePipe(Control,lKey+"PipeBB",292.5);
 
   BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
@@ -2037,7 +2038,7 @@ Segment29(FuncDataBase& Control,
   PGen.setNoWindow();
       
   PGen.generatePipe(Control,lKey+"PipeAA",291.35);
-  PGen.generatePipe(Control,lKey+"PipeBA",291.85);
+  PGen.generatePipe(Control,lKey+"PipeBA",291.95);
 
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
@@ -2123,7 +2124,7 @@ Segment30(FuncDataBase& Control,
 
 void
 Segment31(FuncDataBase& Control,
-		   const std::string& lKey)
+	  const std::string& lKey)
   /*!
     Set the variables for SPF segment 31
     \param Control :: DataBase to use
@@ -2198,7 +2199,7 @@ Segment31(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5); // OK
 
   // CMagH
-  const double pipeBLength(232.7); // OK
+  const double pipeBLength(234.8); // OK
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
   CMGen.generateMag(Control,lKey+"CMagH",25.0,0); // 25 is approx
 
@@ -2214,7 +2215,7 @@ Segment31(FuncDataBase& Control,
 
 
   // PipeC
-  PGen.generatePipe(Control,lKey+"PipeC",55.6); // OK
+  PGen.generatePipe(Control,lKey+"PipeC",57.6); // OK
 
   // BellowD
   BellowGen.generateBellow(Control,lKey+"BellowD",7.5);
@@ -2726,6 +2727,37 @@ Segment41(FuncDataBase& Control,
 }
 
 void
+Segment42(FuncDataBase& Control,const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 42
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment40");
+
+  setVariable::UndVacGenerator UVGen;
+  setVariable::FMUndulatorGenerator UUGen;
+
+  // SPF39
+  const Geometry::Vec3D startPt(-1010.0,8053.349,0.0);
+  const Geometry::Vec3D endPt(-1010.0,8575.349,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/
+			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+
+  UVGen.generateUndVac(Control,lKey+"UVac");
+  UUGen.generateUndulator(Control,lKey+"UVacUndulator",482.0);
+
+  return;
+}
+
+void
 Segment43(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -3170,6 +3202,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment39(Control,"SPF39");
   linacVar::Segment40(Control,"SPF40");
   linacVar::Segment41(Control,"SPF41");
+  linacVar::Segment42(Control,"SPF42");
   linacVar::Segment43(Control,"SPF43");
   linacVar::Segment45(Control,"SPF45");
   linacVar::Segment46(Control,"SPF46");

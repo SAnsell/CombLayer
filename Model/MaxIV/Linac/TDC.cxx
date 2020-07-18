@@ -110,6 +110,7 @@
 #include "Segment39.h"
 #include "Segment40.h"
 #include "Segment41.h"
+#include "Segment42.h"
 #include "Segment43.h"
 #include "Segment45.h"
 #include "Segment46.h"
@@ -167,6 +168,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment39",std::make_shared<Segment39>("SPF39") },
     { "Segment40",std::make_shared<Segment40>("SPF40") },
     { "Segment41",std::make_shared<Segment41>("SPF41") },
+    { "Segment42",std::make_shared<Segment42>("SPF42") },
     { "Segment43",std::make_shared<Segment43>("SPF43") },
     { "Segment45",std::make_shared<Segment45>("SPF45") },
     { "Segment46",std::make_shared<Segment46>("SPF46") },
