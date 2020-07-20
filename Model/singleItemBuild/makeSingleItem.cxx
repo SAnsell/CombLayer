@@ -103,7 +103,7 @@
 #include "PipeTube.h"
 #include "BlankTube.h"
 #include "ButtonBPM.h"
-
+#include "CleaningMagnet.h"
 
 #include "makeSingleItem.h"
 
@@ -137,7 +137,7 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
+      "default","CylGateValve","CleaningMagnet","CorrectorMag","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -275,6 +275,17 @@ makeSingleItem::build(Simulation& System,
 
       bd->addAllInsertCell(voidCell);
       bd->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "CleaningMagnet")
+    {
+      std::shared_ptr<tdcSystem::CleaningMagnet>
+	cm(new tdcSystem::CleaningMagnet("CleaningMagnet"));
+      OR.addObject(cm);
+
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
 
       return;
     }

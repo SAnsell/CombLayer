@@ -87,6 +87,7 @@
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "CleaningMagnetGenerator.h"
 
 namespace setVariable
 {
@@ -385,6 +386,9 @@ SingleItemVariables(FuncDataBase& Control)
   ButtonBPMGen.setCF<setVariable::CF40_22>();
   ButtonBPMGen.generate(Control,"ButtonBPM");
 
+  // Cleaning magnet
+  setVariable::CleaningMagnetGenerator ClMagGen;
+  ClMagGen.generate(Control,"CleaningMagnet");
 
   return;
 }
