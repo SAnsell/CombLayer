@@ -322,35 +322,37 @@ setPrismaChamber(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+  SimpleTubeGen.generateBlank(Control,name,0.0,33.2); // measured
+  Control.addVariable(name+"Radius",15.0); // measured
+  Control.addVariable(name+"WallThick",0.2); // measured
+  Control.addVariable(name+"BlankThick",0.8);  // measured
+  Control.addVariable(name+"FlangeRadius",17.8); // measured
+  Control.addVariable(name+"FlangeLength",2.7); // measured
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength); // guess
 
   Control.addVariable(name+"NPorts",4);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
   Control.addVariable(name+"FlangeCapMat","Stainless304L");
 
-  // Outer radius of the chamber
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-
-  const double L0(8.5 - outerR);
-  const double L1(7.5 - outerR);
-  const double L2(7.5 - outerR);
-  const double L3(7.5 - outerR);
-
   setVariable::PortItemGenerator PItemGen;
+  const double portZStep = 0.5; // measured
+  const Geometry::Vec3D pPos01(0.0,portZStep,7.0);
+  const Geometry::Vec3D pPos23(0.0,portZStep,0.0);
 
-  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setCF<setVariable::CF40_22>(6.4);
   PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+  PItemGen.generatePort(Control,name+"Port0",pPos01,-XVec);
 
-  PItemGen.setLength(L1);
-  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+  PItemGen.setLength(4.5);
+  PItemGen.generatePort(Control,name+"Port1",pPos01,XVec);
 
-  PItemGen.setCF<setVariable::CF100>(L2);
-  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
+  PItemGen.setCF<setVariable::CF100>(3.9);
+  PItemGen.generatePort(Control,name+"Port2",pPos23,ZVec);
+  Control.addVariable(name+"Port2CapMat", "Stainless304L");
 
-  PItemGen.setLength(L3);
-  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
+  PItemGen.setLength(3.9);
+  PItemGen.generatePort(Control,name+"Port3",pPos23,-ZVec);
+  Control.addVariable(name+"Port3CapMat", "Stainless304L");
 
   return;
 }
@@ -2911,26 +2913,7 @@ Segment46(FuncDataBase& Control,
 
   // Prisma Chamber
   setPrismaChamber(Control, lKey+"PrismaChamber");
-  Control.addVariable(lKey+"PrismaChamberRadius",15.0); // measured
-  Control.addVariable(lKey+"PrismaChamberWallThick",0.2); // measured
-  Control.addVariable(lKey+"PrismaChamberBlankThick",0.8);  // measured
-  Control.addVariable(lKey+"PrismaChamberFlangeRadius",17.8); // measured
-  Control.addVariable(lKey+"PrismaChamberFlangeLength",2.7); // measured
-  Control.addVariable(lKey+"PrismaChamberFlangeCapThick",setVariable::CF63::flangeLength); // guess
-
   Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
-  Control.addVariable(lKey+"PrismaChamberLength", 33.2); // measured
-  Control.addVariable(lKey+"PrismaChamberPort0Length", 6.4);
-  Control.addVariable(lKey+"PrismaChamberPort1Length", 4.5);
-  const double portZStep = 0.5; // measured
-  const Geometry::Vec3D pPos(0.0,portZStep,7.0);
-  Control.addVariable(lKey+"PrismaChamberPort0Centre", pPos);
-  Control.addVariable(lKey+"PrismaChamberPort1Centre", pPos);
-  const Geometry::Vec3D pPos1(0.0,portZStep,0.0);
-  Control.addVariable(lKey+"PrismaChamberPort2Centre", pPos1);
-  Control.addVariable(lKey+"PrismaChamberPort2CapMat", "Stainless304L");
-  Control.addVariable(lKey+"PrismaChamberPort3Centre", pPos1);
-  Control.addVariable(lKey+"PrismaChamberPort3CapMat", "Stainless304L");
 
   // Mirror Chamber
   setMirrorChamber(Control, lKey+"MirrorChamberA");
