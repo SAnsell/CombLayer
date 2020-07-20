@@ -40,7 +40,7 @@
   #case (strcmp(ITEM,"CleaningMagnet"))
     #declare cameraLocation = <50, 70, 50>;
     #declare cameraLookAt   = <0, 20, -5>;
-    #declare cameraAngle = 40;
+    #declare cameraAngle = 35;
   #break
   #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;

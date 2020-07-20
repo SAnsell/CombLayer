@@ -70,7 +70,7 @@ CleaningMagnet::CleaningMagnet(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::ExternalCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -82,7 +82,7 @@ CleaningMagnet::CleaningMagnet(const CleaningMagnet& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
+  attachSystem::ExternalCut(A),
   length(A.length),width(A.width),height(A.height),
   gap(A.gap),
   yokeLength(A.yokeLength),
@@ -110,7 +110,7 @@ CleaningMagnet::operator=(const CleaningMagnet& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       length=A.length;
       width=A.width;
       height=A.height;
@@ -168,23 +168,6 @@ CleaningMagnet::populate(const FuncDataBase& Control)
 }
 
 void
-CleaningMagnet::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("CleaningMagnet","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 CleaningMagnet::createSurfaces()
   /*!
     Create All the surfaces
@@ -192,16 +175,8 @@ CleaningMagnet::createSurfaces()
 {
   ELog::RegMethod RegA("CleaningMagnet","createSurfaces");
 
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-  if (!isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(gap/2.0+width),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin-X*(gap/2.0),X);
@@ -234,17 +209,16 @@ CleaningMagnet::createObjects(Simulation& System)
   ELog::RegMethod RegA("CleaningMagnet","createObjects");
 
   std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
 
   // Core
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ")+backStr+frontStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   makeCell("Core",System,cellIndex++,mat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 4 -13 5 -6 ")+backStr+frontStr;
-  makeCell("Gap",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -13 5 -6 ");
+  makeCell("Gap",System,cellIndex++,voidMat,0.0,Out+ICell);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 5 -6 ")+backStr+frontStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 5 -6 ");
   makeCell("Core",System,cellIndex++,mat,0.0,Out);
 
   // Yoke
@@ -254,25 +228,25 @@ CleaningMagnet::createObjects(Simulation& System)
   makeCell("Yoke",System,cellIndex++,yokeMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 101 -102 ");
   makeCell("Yoke",System,cellIndex++,yokeMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 106 -5 ")+backStr+frontStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -14 106 -5 ");
   makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 -101 ")+frontStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 1 -101 ");
   makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 -101 ")+frontStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 1 -101 ");
   makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 -101 ")+frontStr;
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 102 ")+backStr;
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 102 ")+backStr;
-  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 102 ")+backStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 1 -101 ");
   makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -6 ")+backStr+frontStr;
-  addOuterSurf(Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -3 105 -6 102 -2 ");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -104 105 -6 102 -2 ");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -14 105 -106 102 -2 ");
+  makeCell("YokeVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -6 1 -2 ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -286,8 +260,11 @@ CleaningMagnet::createLinks()
 {
   ELog::RegMethod RegA("CleaningMagnet","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back", *this,1,Origin,Y);
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }

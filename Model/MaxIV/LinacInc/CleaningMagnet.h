@@ -40,7 +40,7 @@ class CleaningMagnet :
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
-    public attachSystem::FrontBackCut
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -58,8 +58,6 @@ class CleaningMagnet :
   int voidMat;                  ///< Void material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

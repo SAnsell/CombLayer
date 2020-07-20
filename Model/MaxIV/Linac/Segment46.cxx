@@ -68,6 +68,8 @@
 #include "PipeTube.h"
 #include "portItem.h"
 #include "BlankTube.h"
+#include "CleaningMagnet.h"
+#include "LObjectSupport.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -85,6 +87,7 @@ Segment46::Segment46(const std::string& Key) :
   prismaChamber(new constructSystem::BlankTube(keyName+"PrismaChamber")),
   mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
@@ -103,6 +106,7 @@ Segment46::Segment46(const std::string& Key) :
   OR.addObject(prismaChamber);
   OR.addObject(mirrorChamberA);
   OR.addObject(pipeB);
+  OR.addObject(cleaningMag);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberB);
   OR.addObject(bellowC);
@@ -148,8 +152,12 @@ Segment46::buildObjects(Simulation& System)
   const constructSystem::portItem& MCA =
     buildIonPump2Port(System,*buildZone,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
 
+  pipeB->createAll(System,MCA,"OuterPlate");
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cleaningMag);
+  pipeTerminate(System,*buildZone,pipeB);
+
   // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,PC,"OuterPlate",*bellowB);
+  //   (System,*buildZone,masterCell,MCA,"OuterPlate",*pipeB);
 
   buildZone->removeLastMaster(System);
 

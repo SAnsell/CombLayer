@@ -24,6 +24,8 @@
 
 namespace tdcSystem
 {
+  class CleaningMagnet;
+
   /*!
     \class Segment46
     \version 1.0
@@ -43,6 +45,7 @@ class Segment46 :
   std::shared_ptr<constructSystem::BlankTube> prismaChamber; ///< #4
   std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
+  std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
   // cleaning magnet
   // slit
   std::shared_ptr<constructSystem::Bellows> bellowB; // #10

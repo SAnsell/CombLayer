@@ -70,6 +70,7 @@
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
 #include "ButtonBPMGenerator.h"
+#include "CleaningMagnetGenerator.h"
 
 namespace setVariable
 {
@@ -2918,6 +2919,10 @@ Segment46(FuncDataBase& Control,
   // Mirror Chamber
   setMirrorChamber(Control, lKey+"MirrorChamberA");
   Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
+
+  // Cleaning magnet
+  setVariable::CleaningMagnetGenerator ClMagGen;
+  ClMagGen.generate(Control,"CleaningMagnet");
 
   return;
 }
