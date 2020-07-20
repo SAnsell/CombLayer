@@ -27,6 +27,7 @@ namespace constructSystem
   class portItem;
   class BlankTube;
   class PipeTube;
+  class VirtualTube;
 }
 
 namespace tdcSystem
@@ -92,14 +93,14 @@ class TDCsegment :
   const std::vector<HeadRule>& getJoinItems() const
     { return joinItems; }
 
-  template<typename PTYPE>
   const constructSystem::portItem&
   buildIonPump2Port(Simulation&,
 		    attachSystem::InnerZone&,
 		    MonteCarlo::Object*,
 		    const attachSystem::FixedComp&,
 		    const std::string&,
-		    PTYPE&) const;
+		    constructSystem::VirtualTube&,
+		    const bool intersect=false) const;
 
   void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
