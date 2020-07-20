@@ -44,8 +44,13 @@ class CleaningMagnetGenerator
   double height;                ///< Height
   double gap;                   ///< Void gap between cores
 
+  double yokeLength;            ///< Yoke length
+  double yokeDepth;             ///< Yoke depth
+  double yokeThick;             ///< Yoke thick
+
   std::string mat;              ///< Core material
   std::string yokeMat;          ///< Yoke material
+  std::string voidMat;          ///< Void material
 
  public:
 

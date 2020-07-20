@@ -49,8 +49,13 @@ class CleaningMagnet :
   double height;             ///< Magnet core height
   double gap;                ///< Void gap between cores
 
+  double yokeLength;            ///< Yoke length
+  double yokeDepth;             ///< Yoke depth
+  double yokeThick;             ///< Yoke thick
+
   int mat;                   ///< Core aterial
   int yokeMat;               ///< Yoke material
+  int voidMat;                  ///< Void material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -50,10 +50,13 @@ namespace setVariable
 {
 
 CleaningMagnetGenerator::CleaningMagnetGenerator() :
-  length(31.5),width(3.0),height(10.0),
-  gap(3.0),
+  length(31.5),width(3.0),height(10.0),gap(3.0),
+  yokeLength(28.5),
+  yokeDepth(14.0),
+  yokeThick(5.0),
   mat("Niobium"),
-  yokeMat("Stainless304") // actually s235jr
+  yokeMat("Stainless304"), // actually s235jr,
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -80,8 +83,12 @@ CleaningMagnetGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Gap",gap);
+  Control.addVariable(keyName+"YokeLength",yokeLength);
+  Control.addVariable(keyName+"YokeDepth",yokeDepth);
+  Control.addVariable(keyName+"YokeThick",yokeThick);
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"YokeMat",yokeMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 
