@@ -82,6 +82,7 @@
 
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
+#include "CleaningMagnet.h"
 #include "FlatPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
@@ -309,7 +310,7 @@ pipeTerminateGroup(Simulation& System,
     (System,masterCell,*pipe,pipe->getSideIndex(linkName));
   attachSystem::ContainedGroup* CGPtr=
     dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
-  
+
   if (!CGPtr)
     throw ColErr::DynamicConv("FixedComp","ContainedGroup",
 			    "pipe:"+pipe->getKeyName());
@@ -387,6 +388,13 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::CorrectorMag>&);
 template
+int pipeMagUnit(Simulation&,
+		attachSystem::InnerZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<tdcSystem::CleaningMagnet>&);
+template
 int pipeMagGroup(Simulation&,
 		 attachSystem::InnerZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
@@ -413,7 +421,7 @@ int pipeMagGroup(Simulation&,
 		 const std::string&,
 		 const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
 
-  
+
 
 
 ///\endcond TEMPLATE
