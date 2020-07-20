@@ -283,7 +283,7 @@ CleaningMagnet::createAll(Simulation& System,
   ELog::RegMethod RegA("CleaningMagnet","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

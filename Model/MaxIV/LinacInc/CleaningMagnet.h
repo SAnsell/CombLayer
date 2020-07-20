@@ -71,6 +71,7 @@ class CleaningMagnet :
   virtual CleaningMagnet* clone() const;
   virtual ~CleaningMagnet();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

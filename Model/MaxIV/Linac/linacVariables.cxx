@@ -874,7 +874,7 @@ Segment10(FuncDataBase& Control,
   setIonPump2Port(Control, lKey+"PumpA");
 
   PGen.generatePipe(Control,lKey+"PipeB",152.00);
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);  
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeC",125.0);
 
@@ -970,13 +970,13 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"BackLinkB","magnetExit");
 
   Control.addVariable(lKey+"XYAngle",12.8);
-  
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setNoWindow();
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
-  
+
   FPGen.generateFlat(Control,lKey+"FlatA",85.4);
   Control.addVariable(lKey+"FlatAXYAngle",-1.6);
 
@@ -1020,7 +1020,7 @@ Segment12(FuncDataBase& Control,
 
   // -----------
   PGen.generatePipe(Control,lKey+"PipeLA",93.3);
-  BellowGen.generateBellow(Control,lKey+"BellowLB",7.5);  
+  BellowGen.generateBellow(Control,lKey+"BellowLB",7.5);
 
   // RIGHT SIDE
 
@@ -1028,7 +1028,7 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"FlatBXYAngle",1.6);
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
-  
+
   BellowGen.generateBellow(Control,lKey+"BellowRB",7.5);
 
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
@@ -2071,7 +2071,7 @@ Segment29(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-  
+
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
 
@@ -2080,7 +2080,7 @@ Segment29(FuncDataBase& Control,
 
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
-      
+
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 
@@ -2092,7 +2092,7 @@ Segment29(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
-      
+
   PGen.generatePipe(Control,lKey+"PipeAA",291.35);
   PGen.generatePipe(Control,lKey+"PipeBA",291.95);
 
@@ -2103,7 +2103,7 @@ Segment29(FuncDataBase& Control,
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
-  
+
   BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
   BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
 
@@ -2112,7 +2112,7 @@ Segment29(FuncDataBase& Control,
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
-  
+
   return;
 }
 
@@ -3001,7 +3001,8 @@ Segment46(FuncDataBase& Control,
 
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;
-  ClMagGen.generate(Control,"CleaningMagnet");
+  ClMagGen.generate(Control,lKey+"CleaningMagnet");
+  Control.addVariable(lKey+"CleaningMagnetYStep",20.0); /// ??? fix
 
   return;
 }
