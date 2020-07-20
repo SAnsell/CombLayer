@@ -66,6 +66,7 @@
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "portItem.h"
 #include "BlankTube.h"
 
 #include "TDCsegment.h"
@@ -141,11 +142,14 @@ Segment46::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateA,"back",*bellowA);
 
-  const constructSystem::portItem& BP =
+  const constructSystem::portItem& PC =
     buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*prismaChamber);
 
+  const constructSystem::portItem& MCA =
+    buildIonPump2Port(System,*buildZone,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
+
   // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,BP,"OuterPlate",*bellowB);
+  //   (System,*buildZone,masterCell,PC,"OuterPlate",*bellowB);
 
   buildZone->removeLastMaster(System);
 

@@ -356,6 +356,59 @@ setPrismaChamber(FuncDataBase& Control,
 }
 
 void
+setMirrorChamber(FuncDataBase& Control,
+		const std::string& name)
+/*!
+  Set the Mirror Chamber (4 port pipe) variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+
+  const Geometry::Vec3D OPos(0.0, 0.0, 0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  SimpleTubeGen.setCF<setVariable::CF63>();
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateTube(Control,name,0.0,20.8);
+
+  Control.addVariable(name+"NPorts",4);
+  Control.addVariable(name+"FlangeACapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeBCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+
+  // Outer radius of the chamber
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+
+  const double L0(8.5 - outerR);
+  const double L1(7.5 - outerR);
+  const double L2(7.5 - outerR);
+  const double L3(7.5 - outerR);
+
+  setVariable::PortItemGenerator PItemGen;
+
+  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  PItemGen.setLength(L1);
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength,"Stainless304L");
+  PItemGen.setCF<setVariable::CF40_22>(L2);
+  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
+
+  PItemGen.setLength(L3);
+  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
+
+  return;
+}
+
+void
 linac2SPFsegment1(FuncDataBase& Control,
 		  const std::string& lKey)
   /*!
@@ -2879,6 +2932,9 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"PrismaChamberPort3Centre", pPos1);
   Control.addVariable(lKey+"PrismaChamberPort3CapMat", "Stainless304L");
 
+  // Mirror Chamber
+  setMirrorChamber(Control, lKey+"MirrorChamberA");
+  Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
 
   return;
 }
