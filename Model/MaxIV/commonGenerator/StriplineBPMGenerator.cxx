@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/BPMGenerator.cxx
+ * File:   commonGenerator/StriplineBPMGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -52,12 +52,12 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "BPMGenerator.h"
+#include "StriplineBPMGenerator.h"
 
 namespace setVariable
 {
 
-BPMGenerator::BPMGenerator() :
+StriplineBPMGenerator::StriplineBPMGenerator() :
   radius(1.4),length(22.0),
   outerThick(0.2),innerRadius(1.03),innerThick(0.18),
   innerAngle(30.0),innerAngleOffset(45.0),
@@ -72,7 +72,7 @@ BPMGenerator::BPMGenerator() :
   */
 {}
 
-BPMGenerator::~BPMGenerator()
+StriplineBPMGenerator::~StriplineBPMGenerator()
  /*!
    Destructor
  */
@@ -80,7 +80,7 @@ BPMGenerator::~BPMGenerator()
 
 template<typename CF>
 void
-BPMGenerator::setCF()
+StriplineBPMGenerator::setCF()
   /*!
     Setter for flange A
    */
@@ -92,7 +92,7 @@ BPMGenerator::setCF()
 
 template<typename CF>
 void
-BPMGenerator::setAFlangeCF()
+StriplineBPMGenerator::setAFlangeCF()
   /*!
     Setter for flange A
    */
@@ -104,7 +104,7 @@ BPMGenerator::setAFlangeCF()
 
 template<typename CF>
 void
-BPMGenerator::setBFlangeCF()
+StriplineBPMGenerator::setBFlangeCF()
   /*!
     Setter for flange B
    */
@@ -116,9 +116,9 @@ BPMGenerator::setBFlangeCF()
 
 
 void
-BPMGenerator::generateBPM(FuncDataBase& Control,
-			  const std::string& keyName,
-			  const double yStep)  const
+StriplineBPMGenerator::generateBPM(FuncDataBase& Control,
+				   const std::string& keyName,
+				   const double yStep)  const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -126,7 +126,7 @@ BPMGenerator::generateBPM(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("BPMGenerator","generateBPM");
+  ELog::RegMethod RegA("StriplineBPMGenerator","generateBPM");
 
   Control.addVariable(keyName+"YStep",yStep);
 
@@ -161,14 +161,14 @@ BPMGenerator::generateBPM(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void BPMGenerator::setCF<CF40_22>();
-template void BPMGenerator::setCF<CF40>();
+template void StriplineBPMGenerator::setCF<CF40_22>();
+template void StriplineBPMGenerator::setCF<CF40>();
 
-template void BPMGenerator::setAFlangeCF<CF40_22>();
-template void BPMGenerator::setAFlangeCF<CF40>();
+template void StriplineBPMGenerator::setAFlangeCF<CF40_22>();
+template void StriplineBPMGenerator::setAFlangeCF<CF40>();
 
-template void BPMGenerator::setBFlangeCF<CF40_22>();
-template void BPMGenerator::setBFlangeCF<CF40>();
+template void StriplineBPMGenerator::setBFlangeCF<CF40_22>();
+template void StriplineBPMGenerator::setBFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
 

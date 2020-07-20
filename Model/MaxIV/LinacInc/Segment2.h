@@ -41,7 +41,7 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
-  class BPM;
+  class StriplineBPM;
   class EArrivalMon;
   class YagUnit;
   class YagScreen;
@@ -65,7 +65,7 @@ class Segment2 :
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// Beam position monitor
-  std::shared_ptr<tdcSystem::BPM> bpmA;   
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;   
 
   /// Bellows from BPM
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -91,7 +91,7 @@ class Segment2 :
   std::shared_ptr<constructSystem::Bellows> bellowB;
 
   /// Beam pos mon 2
-  std::shared_ptr<tdcSystem::BPM> bpmB;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmB;
 
   // quad pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; 

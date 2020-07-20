@@ -37,7 +37,7 @@ class Segment39 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::BPM> bpm;               // #1
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;      // #1
   std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;    // #2
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;   // #2
   std::shared_ptr<xraySystem::CylGateValve> gate;    // #3

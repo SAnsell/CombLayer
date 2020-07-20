@@ -41,6 +41,7 @@ namespace constructSystem
 
 namespace tdcSystem
 {
+  class StriplineBPM;
   class LQuadF;
   class CorrectorMag;
   class CeramicGap;
@@ -63,7 +64,7 @@ class Segment11 :
   std::shared_ptr<constructSystem::Bellows> bellowA;   
 
   /// Beam postion monitor
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 

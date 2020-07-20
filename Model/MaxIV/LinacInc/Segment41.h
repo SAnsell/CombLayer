@@ -38,7 +38,7 @@ class Segment41 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA; // #1
-  std::shared_ptr<tdcSystem::BPM> bpm;               // #2
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;               // #2
   std::shared_ptr<xraySystem::CylGateValve> gate;    // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipe; // #4
   std::shared_ptr<constructSystem::Bellows> bellowB; // #1

@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class StriplineBPM;
   /*!
     \class Segment24
     \version 1.0
@@ -43,7 +44,7 @@ class Segment24 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;         ///< #6 Horizontal corrector magnet
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;         ///< #6 Vertical corrector magnet
-  std::shared_ptr<tdcSystem::BPM> bpm;                    ///< #7 BPM - 304L
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;           ///< #7 BPM - 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;     ///< #8 VC Ø10x1- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::LQuadH> quad;                ///< #9 type G
 

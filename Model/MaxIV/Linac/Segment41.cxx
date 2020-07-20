@@ -64,7 +64,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "CylGateValve.h"
 
 #include "TDCsegment.h"
@@ -77,7 +77,7 @@ namespace tdcSystem
 
 Segment41::Segment41(const std::string& Key) :
   TDCsegment(Key,2),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),

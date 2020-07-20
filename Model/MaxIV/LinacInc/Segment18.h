@@ -40,7 +40,7 @@ class Segment18 :
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
   std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #4 BPM
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #4 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7

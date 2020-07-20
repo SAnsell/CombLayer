@@ -67,7 +67,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
@@ -90,7 +90,7 @@ Segment18::Segment18(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),

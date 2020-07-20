@@ -82,7 +82,7 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
@@ -104,6 +104,7 @@
 #include "BlankTube.h"
 #include "ButtonBPM.h"
 #include "CleaningMagnet.h"
+#include "UndulatorVacuum.h"
 
 #include "makeSingleItem.h"
 
@@ -143,8 +144,9 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","YagUnitBig","BPM","BeamDivider","Scrapper","TWCavity",
+      "YagUnit","YagUnitBig","StriplineBPM","BeamDivider","Scrapper","TWCavity",
       "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube","ButtonBPM",
+      "uVac", "UndVac","UndulatorVacuum",
       "Help","help"
     });
 
@@ -234,10 +236,10 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item == "BPM")
+  if (item == "StriplineBPM")
     {
-      std::shared_ptr<tdcSystem::BPM>
-	bpm(new tdcSystem::BPM("BPM"));
+      std::shared_ptr<tdcSystem::StriplineBPM>
+	bpm(new tdcSystem::StriplineBPM("BPM"));
       OR.addObject(bpm);
 
       bpm->addInsertCell(voidCell);
@@ -560,6 +562,19 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+  if (item == "UndVac" || item=="UndulatorVacuum" || item=="uVac")
+    {
+      std::shared_ptr<tdcSystem::UndulatorVacuum>
+	uVac(new tdcSystem::UndulatorVacuum("UVac"));
+      OR.addObject(uVac);
+
+      uVac->addInsertCell(voidCell);
+      uVac->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "MultiPipe")
     {
       std::shared_ptr<tdcSystem::MultiPipe>

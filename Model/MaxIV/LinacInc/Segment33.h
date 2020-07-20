@@ -24,7 +24,7 @@
 
 namespace tdcSystem
 {
-
+  class StriplineBPM;
   /*!
     \class Segment33
     \version 1.0
@@ -45,7 +45,7 @@ class Segment33 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;
 
   /// BPM
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;
 
   // main magnetic pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;

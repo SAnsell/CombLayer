@@ -322,7 +322,9 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 void
 TDCsegment::initCellMap()
   /*!
-    Set inital value
+    Setup the Segment to capture the CellMap from a buildZone.
+    This call needs to be done BEFORE the segment is inserted into the
+    buildZone.
    */
 {
   ELog::RegMethod RegA("TDCsegment","initCellMap");
@@ -339,7 +341,14 @@ TDCsegment::initCellMap()
 void
 TDCsegment::captureCellMap()
   /*!
-    Set inital value
+    Recovers CellMap transfer from a buildZone to the CellMap
+    of the object that is within the buildZone. This allows
+    inserts to be done after the buildObject call.
+
+    This call needs to be done AFTER the object has been inserted
+    in the buildZone.
+
+    An initCellMap call needs to have been done first.
    */
 {
   ELog::RegMethod RegA("TDCsegment","captureCellMap");

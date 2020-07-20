@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Undulator.h
+ * File:   LinacInc/FMUndulator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Undulator_h
-#define xraySystem_Undulator_h
+#ifndef xraySystem_FMUndulator_h
+#define xraySystem_FMUndulator_h
 
 class Simulation;
 
@@ -28,17 +28,17 @@ namespace xraySystem
 {
   
 /*!
-  \class Undulator
+  \class FMUndulator
   \version 1.0
   \author S. Ansell
   \date February 2018
-  \brief Undulator magnetic chicane
+  \brief FMUndulator magnetic chicane
 
   Built around the central beam axis
 */
 
-class Undulator :
-  public attachSystem::FixedOffset,
+class FMUndulator :
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
@@ -46,24 +46,26 @@ class Undulator :
  private:
 
   double vGap;                     ///< Vertical gap
-  
+ 
   double length;                   ///< Main length
-  double magnetWidth;              ///< Block [quad unit] width
+  double poleWidth;                ///< Block [close] width
+  double poleDepth;                ///< Depth of unit
+
+  double magnetWidth;              ///< Block [main] width
   double magnetDepth;              ///< Depth of unit
 
-  double sVOffset;                 ///< suppor offset in z
-  double supportThick;             ///< support thick [z axis]
-  double supportWidth;             ///< support width [x axis]
-  double supportLength;            ///< Support length [y axis]
+  double baseDepth;                ///< support thick [z axis]
+  double baseExtraLen;             ///< support extra [y axis + length]
 
-  double standHeight;              ///< stand depth [z] 
-  double standWidth;               ///< support thick [z axis]
+  double midWidth;                 ///< Width of mid support 
+  double midDepth;                 ///< Depth of mid support
+  
+  double mainWidth;               ///< stand depth [x]
+  double mainDepth;               ///< stand depth [z]
 
   int voidMat;                     ///< Void material
   int magnetMat;                   ///< Block material
   int supportMat;                  ///< support material
-  int standMat;                    ///< stand material
-  
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -72,12 +74,12 @@ class Undulator :
 
  public:
 
-  Undulator(const std::string&);
-  Undulator(const Undulator&);
-  Undulator& operator=(const Undulator&);
-  virtual ~Undulator();
+  FMUndulator(const std::string&);
+  FMUndulator(const FMUndulator&);
+  FMUndulator& operator=(const FMUndulator&);
+  virtual ~FMUndulator();
 
-  using FixedComp::createAll;
+  using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

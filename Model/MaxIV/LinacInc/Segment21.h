@@ -38,7 +38,7 @@ class Segment21 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                     ///< #2 BPM
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #2 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #3
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #4 Quadrupole type G (H)
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen unit

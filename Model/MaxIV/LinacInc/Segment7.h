@@ -43,6 +43,7 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
+  class StriplineBPM;
 
   /*!
     \class Segment7
@@ -65,7 +66,7 @@ class Segment7 :
   /// first quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
   /// bpm
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;
 
   /// second pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   

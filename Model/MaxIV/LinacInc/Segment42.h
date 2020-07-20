@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment43.h
+ * File:   LinacInc/Segment42.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,46 +19,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment43_h
-#define tdcSystem_Segment43_h
+#ifndef tdcSystem_Segment42_h
+#define tdcSystem_Segment42_h
+
+namespace constructSystem
+{
+ class Bellows;
+ class VacuumPipe;
+}
 
 namespace tdcSystem
 {
+  class UndulatorVacuum;
+  class FMUndulator;
+  
+
   /*!
-    \class Segment43
+    \class Segment42
     \version 1.0
-    \author K. Batkov
-    \date July 2020
-    \brief SPF segment 43
+    \author S. Ansell
+    \date June 2020
+    \brief Dividing segment in the TDC from the linac
   */
 
-class Segment43 :
+class Segment42 :
   public TDCsegment
 {
  private:
 
-  std::shared_ptr<constructSystem::Bellows> bellowA; // #1
-  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;     // #2
-  std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;    // #3
-  std::shared_ptr<tdcSystem::YagScreen> yagScreen;   // #3
-  std::shared_ptr<xraySystem::CylGateValve> gate;    // #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipe; // #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;    // #6
-  std::shared_ptr<tdcSystem::ButtonBPM> bpmB;        // #7
-  std::shared_ptr<constructSystem::Bellows> bellowB; // #1
+  /// init bellows
+  std::shared_ptr<tdcSystem::UndulatorVacuum> uVac;
 
   void buildObjects(Simulation&);
   void createLinks();
 
+  void createSplitInnerZone(Simulation&);
+  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
+  
  public:
 
-  Segment43(const std::string&);
-  Segment43(const Segment43&);
-  Segment43& operator=(const Segment43&);
-  ~Segment43();
+  Segment42(const std::string&);
+  Segment42(const Segment42&);
+  Segment42& operator=(const Segment42&);
+  ~Segment42();
+
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

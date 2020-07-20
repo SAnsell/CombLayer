@@ -41,7 +41,7 @@ class Segment31 :
   std::shared_ptr<constructSystem::BlankTube> ionPumpA; ///< #3
   std::shared_ptr<xraySystem::CylGateValve> gate;       ///< #4 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows – 304L
-  std::shared_ptr<tdcSystem::BPM> bpm;                  ///< #5 BPM – 304L
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;         ///< #5 BPM – 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::LQuadF> quad;              ///< #7 Quadropole magnet type F
   std::shared_ptr<constructSystem::Bellows> bellowC;    ///< #1 Bellows – 304L

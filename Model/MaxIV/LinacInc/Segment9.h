@@ -43,7 +43,9 @@ namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
+  class StriplineBPM;
   class CeramicGap;
+
 
   /*!
     \class Segment9
@@ -72,7 +74,7 @@ class Segment9 :
   std::shared_ptr<constructSystem::Bellows> bellowB;   
 
   /// bpm
-  std::shared_ptr<tdcSystem::BPM> bpm;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;
   
   /// quad pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   

@@ -63,7 +63,7 @@
 #include "generalConstruct.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
@@ -92,7 +92,7 @@ Segment24::Segment24(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   quad(new tdcSystem::LQuadH(keyName+"Quad"))
   /*!

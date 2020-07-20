@@ -24,7 +24,7 @@
 
 namespace tdcSystem
 {
-  class BPM;
+  class StriplineBPM;
   /*!
     \class Segment36
     \version 1.0
@@ -43,12 +43,12 @@ class Segment36 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;     // #6
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;     // #6
   std::shared_ptr<tdcSystem::LQuadF> quadB;           // #5
-  std::shared_ptr<tdcSystem::BPM> bpmA;                // #9 - stripline BPM
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;      // #9 - stripline BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #8
   std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon; // #9
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #10
   std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #11
-  std::shared_ptr<tdcSystem::BPM> bpmB;               // #12
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmB;      // #12
   std::shared_ptr<xraySystem::CylGateValve> gate;     // #13
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #11
 

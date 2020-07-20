@@ -169,7 +169,7 @@ Segment27::createSplitInnerZone(Simulation& System)
   FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
   FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
 
-  if (!prevSegPtr)
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
       // create surfaces
       ModelSupport::buildPlane(SMap,buildIndex+5005,FA.getCentre(),FA.getZ());
@@ -184,30 +184,29 @@ Segment27::createSplitInnerZone(Simulation& System)
     }
 
   
-      const Geometry::Vec3D ZEffective(FA.getZ());
-      HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-      HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-      HSurroundB.removeMatchedPlanes(-ZEffective); 
-      HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
-      
-      HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
-      HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
-      HSurroundB.addIntersection(SurfMap::getSurf("LowDivider"));
-      HSurroundC.addIntersection(-SurfMap::getSurf("LowDivider"));
-      
-      IZTop->setFront(bellowAA->getFullRule(-1));
-      IZFlat->setFront(bellowBA->getFullRule(-1));
-      IZLower->setFront(bellowCA->getFullRule(-1));
-      
-      IZTop->setSurround(HSurroundA);
-      IZFlat->setSurround(HSurroundB);
-      IZLower->setSurround(HSurroundC);
-      
-      IZTop->constructMasterCell(System);
-      IZFlat->constructMasterCell(System);
-      IZLower->constructMasterCell(System);
-      
-
+  const Geometry::Vec3D ZEffective(FA.getZ());
+  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
+  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
+  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+  
+  HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
+  HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
+  HSurroundB.addIntersection(SurfMap::getSurf("LowDivider"));
+  HSurroundC.addIntersection(-SurfMap::getSurf("LowDivider"));
+  
+  IZTop->setFront(bellowAA->getFullRule(-1));
+  IZFlat->setFront(bellowBA->getFullRule(-1));
+  IZLower->setFront(bellowCA->getFullRule(-1));
+  
+  IZTop->setSurround(HSurroundA);
+  IZFlat->setSurround(HSurroundB);
+  IZLower->setSurround(HSurroundC);
+  
+  IZTop->constructMasterCell(System);
+  IZFlat->constructMasterCell(System);
+  IZLower->constructMasterCell(System);
+  
   return;
 }
 
@@ -300,8 +299,11 @@ Segment27::createLinks()
   FixedComp::nameSideIndex(4,"frontLower");
   FixedComp::nameSideIndex(5,"backLower");
 
-  joinItems.push_back(FixedComp::getFullRule(2));
-    
+  // push back all the joing items:
+  joinItems.push_back(FixedComp::getFullRule("backFlat"));
+  joinItems.push_back(FixedComp::getFullRule("backMid"));
+  joinItems.push_back(FixedComp::getFullRule("backLower"));
+
   return;
 }
 

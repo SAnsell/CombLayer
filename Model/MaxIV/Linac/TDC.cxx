@@ -98,6 +98,7 @@
 #include "Segment26.h"
 #include "Segment27.h"
 #include "Segment28.h"
+#include "Segment29.h"
 #include "Segment30.h"
 #include "Segment31.h"
 #include "Segment32.h"
@@ -107,7 +108,9 @@
 #include "Segment37.h"
 #include "Segment38.h"
 #include "Segment39.h"
+#include "Segment40.h"
 #include "Segment41.h"
+#include "Segment42.h"
 #include "Segment43.h"
 #include "Segment45.h"
 #include "Segment46.h"
@@ -152,6 +155,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment26",std::make_shared<Segment26>("TDC26") },
     { "Segment27",std::make_shared<Segment27>("TDC27") },
     { "Segment28",std::make_shared<Segment28>("TDC28") },
+    { "Segment29",std::make_shared<Segment29>("TDC29") },
     { "Segment30",std::make_shared<Segment30>("SPF30") },
     { "Segment31",std::make_shared<Segment31>("SPF31") },
     { "Segment32",std::make_shared<Segment32>("SPF32") },
@@ -162,7 +166,9 @@ TDC::TDC(const std::string& KN) :
     { "Segment37",std::make_shared<Segment37>("SPF37") },
     { "Segment38",std::make_shared<Segment38>("SPF38") },
     { "Segment39",std::make_shared<Segment39>("SPF39") },
+    { "Segment40",std::make_shared<Segment40>("SPF40") },
     { "Segment41",std::make_shared<Segment41>("SPF41") },
+    { "Segment42",std::make_shared<Segment42>("SPF42") },
     { "Segment43",std::make_shared<Segment43>("SPF43") },
     { "Segment45",std::make_shared<Segment45>("SPF45") },
     { "Segment46",std::make_shared<Segment46>("SPF46") },
@@ -323,12 +329,13 @@ TDC::createAll(Simulation& System,
       "Segment20","Segment21","Segment22",
       "Segment23","Segment24","Segment25",
       "Segment26","Segment27","Segment28",
-      "Segment29","Segment30","Segment31"
+      "Segment29","Segment30","Segment31",
       "Segment32","Segment33","Segment34",
       "Segment35","Segment36","Segment37",
       "Segment38","Segment39","Segment40",
       "Segment41","Segment42","Segment43",
       "Segment45","Segment46","Segment49"
+
     });
 
   // buildZone : previous : firstVecIndex
@@ -363,6 +370,7 @@ TDC::createAll(Simulation& System,
       {"Segment26",{"spfLong","Segment25",1}},
       {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
+      {"Segment29",{"spfLong","Segment28",1}},
       {"Segment30",{"tdcMain","Segment12",2}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
@@ -392,7 +400,6 @@ TDC::createAll(Simulation& System,
   // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
-
       if (activeINJ.find(BL)!=activeINJ.end())
 	{
 	  SegTYPE::const_iterator mc=SegMap.find(BL);
@@ -412,7 +419,7 @@ TDC::createAll(Simulation& System,
 	    buildInnerZone(System.getDataBase(),bzName);
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
-
+	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr);
 
 	  if (BL=="Segment10")
@@ -431,10 +438,11 @@ TDC::createAll(Simulation& System,
 	      if (sidePtrB->isBuilt())
 		segPtr->registerSideSegment(sidePtrB);
 	    }
-	  segPtr->setInnerZone(buildZone.get());
 
+	  segPtr->setInnerZone(buildZone.get());
 	  if (BL!="Segment26" && BL!="Segment27" &&
-	      BL!="Segment28" && BL!="Segment30")
+	      BL!="Segment28" && BL!="Segment29" &&
+	      BL!="Segment30")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
@@ -448,7 +456,6 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->captureCellMap();
 	  segPtr->totalPathCheck(System.getDataBase(),0.1);
-
 	}
     }
   return;

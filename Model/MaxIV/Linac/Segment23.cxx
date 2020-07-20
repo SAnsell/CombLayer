@@ -61,7 +61,7 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "BPM.h"
+#include "StriplineBPM.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
@@ -92,7 +92,7 @@ Segment23::Segment23(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
-  bpm(new tdcSystem::BPM(keyName+"BPM")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),

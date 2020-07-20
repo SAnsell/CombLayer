@@ -183,7 +183,13 @@ makeMaxIV::buildInjection(Simulation& System,
 	 "Segment19", "Segment20", "Segment21",
 	 "Segment22", "Segment23", "Segment24",
 	 "Segment25", "Segment26", "Segment27",
-	 "Segment28", "Segment30"
+	 "Segment28", "Segment29", "Segment30",
+	 "Segment31", "Segment32", "Segment33",
+	 "Segment34", "Segment35", "Segment36",
+	 "Segment37", "Segment38", "Segment39",
+	 "Segment40", "Segment41", "Segment42",
+	 "Segment43"
+	 
 	} },
        {"L2SPF",
 	{"Segment1","Segment2","Segment3",
@@ -197,7 +203,7 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment20","Segment21","Segment22",
 
 	       "Segment23","Segment24","Segment25",
-	       "Segment27","Segment28",
+	       "Segment27","Segment28","Segment29",
 	       "Segment30",
 	       "Segment31","Segment32","Segment33",
 	       "Segment34"}},
@@ -251,6 +257,7 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment45",{} },                            // 45th only
        {"Segment46",{} },                            // 46th only
        {"Segment49",{} }                             // 49th only
+
     });
 
   bool activeLinac(0);
@@ -270,26 +277,26 @@ makeMaxIV::buildInjection(Simulation& System,
 	  else
 	    {
 	      ITYPE::const_iterator mc=injectNAMES.find(BL);
-	    if (mc != injectNAMES.end())
-	      {
-		if (mc->second.empty())
-		  {
-		    activeLinac=1;
-		    activeINJ.emplace(BL);
-		  }
-		else
-		  {
-		    for(const std::string& item : mc->second)
-		      activeINJ.emplace(item);
-		  }
-	      }
+	      if (mc != injectNAMES.end())
+		{
+		  if (mc->second.empty())
+		    {
+		      activeLinac=1;
+		      activeINJ.emplace(BL);
+		    }
+		  else
+		    {
+		      for(const std::string& item : mc->second)
+			activeINJ.emplace(item);
+		    }
+		}
 	    }
 	  index++;
 	}
     }
   if (!activeLinac) return 0;
 
-  // BUILD HALL:
+
   tdc->setActive(activeINJ);
   tdc->createAll(System,World::masterOrigin(),0);
 
