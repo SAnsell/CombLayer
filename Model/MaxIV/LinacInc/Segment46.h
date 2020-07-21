@@ -22,6 +22,12 @@
 #ifndef tdcSystem_Segment46_h
 #define tdcSystem_Segment46_h
 
+namespace constructSystem
+{
+  class PortTube;
+  class JawFlange;
+}
+
 namespace tdcSystem
 {
   class CleaningMagnet;
@@ -46,8 +52,8 @@ class Segment46 :
   std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
   std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
-  // cleaning magnet
-  // slit
+  std::shared_ptr<constructSystem::PortTube> slitTube; // #9
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #9
   std::shared_ptr<constructSystem::Bellows> bellowB; // #10
   std::shared_ptr<constructSystem::PipeTube> mirrorChamberB; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC; // #10

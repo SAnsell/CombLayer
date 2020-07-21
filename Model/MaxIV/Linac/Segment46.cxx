@@ -70,6 +70,14 @@
 #include "BlankTube.h"
 #include "CleaningMagnet.h"
 #include "LObjectSupport.h"
+#include "PortTube.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "JawFlange.h"
+#include "portItem.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Object.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -88,6 +96,11 @@ Segment46::Segment46(const std::string& Key) :
   mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
+  slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
+  jaws({
+	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
+	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
+    }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
@@ -107,6 +120,7 @@ Segment46::Segment46(const std::string& Key) :
   OR.addObject(mirrorChamberA);
   OR.addObject(pipeB);
   OR.addObject(cleaningMag);
+  OR.addObject(slitTube);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberB);
   OR.addObject(bellowC);
@@ -156,8 +170,42 @@ Segment46::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*buildZone,pipeB);
 
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,MCA,"OuterPlate",*pipeB);
+  // Slit tube and jaws
+  slitTube->addAllInsertCell(masterCell->getName());
+  slitTube->setFront(*pipeB,"back");
+  slitTube->createAll(System,*pipeB,"back");
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*slitTube,2);
+  slitTube->insertAllInCell(System,outerCell);
+
+  for(size_t index=0;index<2;index++)
+    {
+      const constructSystem::portItem& DPI=slitTube->getPort(index);
+      jaws[index]->setFillRadius
+	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+
+      jaws[index]->addInsertCell(slitTube->getCell("Void"));
+      if (index)
+	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
+      jaws[index]->createAll
+	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
+    }
+
+  // simplify the DiagnosticBox inner cell
+  slitTube->splitVoidPorts(System,"SplitOuter",2001,
+			  slitTube->getCell("Void"),{0,2});
+  //////////////////////////////////////////////////////////////////////
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*slitTube,"back",*bellowB);
+
+  const constructSystem::portItem& MCB =
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*mirrorChamberB,true);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,MCB,"OuterPlate",*bellowC);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowC,"back",*gateB);
 
   buildZone->removeLastMaster(System);
 
@@ -173,7 +221,7 @@ Segment46::createLinks()
   ELog::RegMethod RegA("Segment46","createLinks");
 
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeA,2);
+  setLinkSignedCopy(1,*gateB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

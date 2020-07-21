@@ -49,6 +49,8 @@
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
+#include "PortTubeGenerator.h"
+#include "JawFlangeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "StriplineBPMGenerator.h"
@@ -85,6 +87,7 @@ namespace linacVar
   //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
   void setPrismaChamber(FuncDataBase&,const std::string&);
+  void setSlitTube(FuncDataBase&,const std::string&);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -311,6 +314,68 @@ setPrismaChamber(FuncDataBase& Control,
   Control.addVariable(name+"Port3CapMat", "Stainless304L");
 
   return;
+}
+
+void
+setSlitTube(FuncDataBase& Control,
+	    const std::string& name)
+/*!
+  Set the slit tibe variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setSlitTube");
+
+  const double DLength(16.0); // slit tube length
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  PTubeGen.setMat("Stainless304");
+
+  const double Radius(7.5);
+  const double WallThick(0.5);
+  const double PortRadius(Radius+WallThick+0.5);
+  PTubeGen.setPipe(Radius,WallThick);
+  PTubeGen.setPortCF<setVariable::CF40>();
+  const double sideWallThick(1.0);
+  PTubeGen.setPortLength(-sideWallThick,sideWallThick);
+  PTubeGen.setAFlange(PortRadius,sideWallThick);
+  PTubeGen.setBFlange(PortRadius,sideWallThick);
+  PTubeGen.generateTube(Control,name,0.0,DLength);
+  Control.addVariable(name+"NPorts",4);
+
+  const std::string portName=name+"Port";
+  const Geometry::Vec3D MidPt(0,1.5,0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D PPos(0.0,DLength/8.0,0);
+
+  // first 2 ports are with jaws, others - without jaws
+  PItemGen.setOuterVoid(1);  // create boundary round flange
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
+
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"2",-PPos,-ZVec);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.generatePort(Control,portName+"3",MidPt,-XVec);
+
+  // PItemGen.setCF<setVariable::CF63>(10.0);
+  // PItemGen.generatePort(Control,portName+"4",MidPt,
+  // 			Geometry::Vec3D(1,0,1));
+
+  JawFlangeGenerator JFlanGen;
+  JFlanGen.setSlits(2.5, 2.5, 0.4, "Tantalum"); // W,H,T,mat
+  JFlanGen.generateFlange(Control,name+"JawUnit0");
+  JFlanGen.generateFlange(Control,name+"JawUnit1");
+
+  Control.addVariable(name+"JawUnit0JOpen",1.7);
+  Control.addVariable(name+"JawUnit1JOpen",1.7);
+
 }
 
 void
@@ -641,7 +706,7 @@ Segment5(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
 
   const double angleDipole(1.6-0.12);
-  const double bendDipole(1.6);
+  //  const double bendDipole(1.6);
   const Geometry::Vec3D startPt(-45.073,1420.334,0);
   const Geometry::Vec3D endPt(-90.011,1683.523,0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
@@ -2995,14 +3060,19 @@ Segment46(FuncDataBase& Control,
   setPrismaChamber(Control, lKey+"PrismaChamber");
   Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
 
-  // Mirror Chamber
+  // Mirror Chambers
   setMirrorChamber(Control, lKey+"MirrorChamberA");
   Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
+  setMirrorChamber(Control, lKey+"MirrorChamberB");
+  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
 
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;
   ClMagGen.generate(Control,lKey+"CleaningMagnet");
   Control.addVariable(lKey+"CleaningMagnetYStep",20.0); /// ??? fix
+
+  // Slit tube and jaws
+  setSlitTube(Control,lKey+"SlitTube");
 
   return;
 }
