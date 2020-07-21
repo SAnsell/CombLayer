@@ -48,9 +48,9 @@
     #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Jaws"))
-    #declare cameraLocation = <50, 50, 50>;
-    #declare cameraLookAt   = <0, 20, 0>;
-    #declare cameraAngle = 40;
+    #declare cameraLocation = <50, -30, 50>;
+    #declare cameraLookAt   = <0, 13, -3>;
+    #declare cameraAngle = 30;
   #break
   #case (strcmp(ITEM,"LSexupole"))
     #declare cameraLocation = <-30, 70.0, 30.0>;
