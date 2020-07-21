@@ -408,9 +408,15 @@ SingleItemVariables(FuncDataBase& Control)
 
   PTubeGen.setMat("Stainless304");
 
-  PTubeGen.setPipe(7.5,0.5);
-  PTubeGen.setPortCF<setVariable::CF63>();
-  PTubeGen.setPortLength(-5.0,-5.0);
+  const double Radius(7.5);
+  const double WallThick(0.5);
+  const double PortRadius(Radius+WallThick+0.5);
+  PTubeGen.setPipe(Radius,WallThick);
+  PTubeGen.setPortCF<setVariable::CF40>();
+  const double sideWallThick(1.0);
+  PTubeGen.setPortLength(-sideWallThick,sideWallThick);
+  PTubeGen.setAFlange(PortRadius,sideWallThick);
+  PTubeGen.setBFlange(PortRadius,sideWallThick);
   PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",4);
 
