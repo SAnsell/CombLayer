@@ -88,7 +88,9 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
+#include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
 
 namespace setVariable
@@ -397,6 +399,54 @@ SingleItemVariables(FuncDataBase& Control)
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;
   ClMagGen.generate(Control,"CleaningMagnet");
+
+  // Jaws
+  const std::string Name="DiagnosticBox";
+  const double DLength(40.0);         // diag length [checked+5cm]
+
+  setVariable::PortTubeGenerator PTubeGen;
+
+  PTubeGen.setMat("Stainless304");
+
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<setVariable::CF63>();
+  PTubeGen.setPortLength(-5.0,-5.0);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
+  Control.addVariable(Name+"NPorts",4);
+
+  const std::string portName=Name+"Port";
+  const Geometry::Vec3D MidPt(0,0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D PPos(0.0,DLength/6.0,0);
+
+  PItemGen.setOuterVoid(1);  // create boundary round flange
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
+  PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
+  // view port
+  PItemGen.setCF<setVariable::CF63>(8.0);
+  PItemGen.generatePort(Control,portName+"3",
+			Geometry::Vec3D(0,DLength/5.0,0),
+			Geometry::Vec3D(-1,-1,0));
+
+  // //  flange
+  // PItemGen.setCF<setVariable::CF40>(4.0);
+  // PItemGen.generatePort(Control,portName+"4",
+  // 			Geometry::Vec3D(0,0.3*DLength,0),XVec);
+  // PItemGen.generatePort(Control,portName+"5",
+  // 			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
+
+  // // another port
+  // PItemGen.setCF<setVariable::CF100>(7.5);
+  // PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
+
+  JawFlangeGenerator JFlanGen;
+  JFlanGen.generateFlange(Control,Name+"JawUnit0");
+  JFlanGen.generateFlange(Control,Name+"JawUnit1");
+
 
   return;
 }

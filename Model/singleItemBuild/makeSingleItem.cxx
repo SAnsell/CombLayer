@@ -105,6 +105,11 @@
 #include "ButtonBPM.h"
 #include "CleaningMagnet.h"
 #include "UndulatorVacuum.h"
+#include "PortTube.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "JawFlange.h"
+#include "portItem.h"
 
 #include "makeSingleItem.h"
 
@@ -138,7 +143,9 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CleaningMagnet","CorrectorMag","LQuadF","LQuadH","LSexupole",
+      "default","CylGateValve","CleaningMagnet","CorrectorMag",
+      "Jaws",
+      "LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -310,6 +317,40 @@ makeSingleItem::build(Simulation& System,
       CM->createAll(System,World::masterOrigin(),0);
 
       return;
+    }
+
+  if (item == "Jaws")
+    {
+      // diagnostic box
+      std::shared_ptr<constructSystem::PortTube>
+	diagBox(new constructSystem::PortTube("DiagnosticBox"));
+      // two pairs of jaws
+      std::array<std::shared_ptr<constructSystem::JawFlange>,2>
+	jawComp({
+		 std::make_shared<constructSystem::JawFlange>("DiagnosticBoxJawUnit0"),
+		 std::make_shared<constructSystem::JawFlange>("DiagnosticBoxJawUnit1")
+	  });
+      OR.addObject(diagBox);
+
+      diagBox->addAllInsertCell(voidCell);
+      diagBox->createAll(System,World::masterOrigin(),0);
+
+      for(size_t index=0;index<2;index++)
+	{
+	  const constructSystem::portItem& DPI=diagBox->getPort(index);
+	  jawComp[index]->setFillRadius
+	    (DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+
+	  jawComp[index]->addInsertCell(diagBox->getCell("Void"));
+	  if (index)
+	    jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
+	  jawComp[index]->createAll
+	    (System,DPI,DPI.getSideIndex("InnerPlate"),*diagBox,0);
+	}
+
+      // simplify the DiagnosticBox inner cell
+      diagBox->splitVoidPorts(System,"SplitOuter",2001,
+			      diagBox->getCell("Void"),{0,2});
     }
 
   if (item == "EArrivalMon" )
