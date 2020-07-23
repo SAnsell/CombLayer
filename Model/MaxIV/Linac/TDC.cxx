@@ -411,7 +411,7 @@ TDC::createAll(Simulation& System,
 	  const LinkTYPE seglink=segmentLinkMap.at(BL);
 	  const std::string& bzName=std::get<0>(seglink);
 	  const std::string& prevName=std::get<1>(seglink);
-	  const size_t& prevIndex=std::get<2>(seglink);
+	  //	  const size_t& prevIndex=std::get<2>(seglink);
 	  SegTYPE::const_iterator prevC=SegMap.find(prevName);
 	  const TDCsegment* prevSegPtr=
 	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
