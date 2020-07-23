@@ -62,6 +62,11 @@
     #declare cameraLookAt   = <10.0, 5.0, -11.0>;
     #declare cameraAngle = 25;
   #break
+  #case (strcmp(ITEM,"uVac")) // UndulatorVacuum
+    #declare cameraLocation = <-200, -50.0, 100.0>;
+    #declare cameraLookAt   = <0.0, 140.0, 0.0>;
+    #declare cameraAngle = 60;
+  #break
   #case (strcmp(ITEM,"YagUnit"))
     #declare cameraLocation = <-30, -30.0, 40.0>;
     #declare cameraLookAt   = <0.0, 0.0, 10.0>;
