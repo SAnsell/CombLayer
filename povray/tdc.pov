@@ -210,8 +210,8 @@ global_settings {
     #declare cameraAngle = 40;
   #break
   #case(strcmp(ITEM,"Segment46")) // SPF segment 46
-    #declare cameraLocation = <-750, 6725, 70>;
-    #declare cameraLookAt   = <-860, 6690, 0>;
+    #declare cameraLocation = <-700, 6750, 70>;
+    #declare cameraLookAt   = <-860, 6760, 0>;
     #declare projection = 0;
     #declare cameraAngle = 90;
   #break

@@ -3043,6 +3043,7 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBYAngle",180.0);
   Control.addVariable(lKey+"GateBWallThick",0.3);
   Control.addVariable(lKey+"GateBPortThick",0.1);
   Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
@@ -3064,7 +3065,7 @@ Segment46(FuncDataBase& Control,
   setMirrorChamber(Control, lKey+"MirrorChamberA");
   Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
   setMirrorChamber(Control, lKey+"MirrorChamberB");
-  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
+  //  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
 
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;

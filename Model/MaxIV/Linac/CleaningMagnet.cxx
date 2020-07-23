@@ -261,10 +261,19 @@ CleaningMagnet::createLinks()
   ELog::RegMethod RegA("CleaningMagnet","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(gap/2.0+width+yokeThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+103));
+  FixedComp::setConnect(3,Origin+X*(gap/2.0+width+yokeThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+104));
+
+  FixedComp::setConnect(4,Origin-Z*(yokeDepth),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+105));
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }
