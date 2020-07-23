@@ -3090,7 +3090,7 @@ Segment47(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment46");
 
-  // SPF47
+  //  // SPF47
   // const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
   // const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
 
@@ -3133,7 +3133,7 @@ Segment47(FuncDataBase& Control,
 
   // Prisma Chamber
   setPrismaChamber(Control, lKey+"PrismaChamberA");
-  Control.addVariable(lKey+"PrismaChamberAYAngle", 90.0);
+  Control.addVariable(lKey+"PrismaChamberAYAngle", -90.0);
 
   // Mirror Chambers
   setMirrorChamber(Control, lKey+"MirrorChamberA");
