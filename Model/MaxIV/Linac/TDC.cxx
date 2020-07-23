@@ -114,6 +114,7 @@
 #include "Segment43.h"
 #include "Segment45.h"
 #include "Segment46.h"
+#include "Segment47.h"
 #include "Segment49.h"
 
 #include "TDC.h"
@@ -172,6 +173,7 @@ TDC::TDC(const std::string& KN) :
     { "Segment43",std::make_shared<Segment43>("SPF43") },
     { "Segment45",std::make_shared<Segment45>("SPF45") },
     { "Segment46",std::make_shared<Segment46>("SPF46") },
+    { "Segment47",std::make_shared<Segment47>("SPF47") },
     { "Segment49",std::make_shared<Segment49>("SPF49") }
 
   } )
@@ -334,7 +336,7 @@ TDC::createAll(Simulation& System,
       "Segment35","Segment36","Segment37",
       "Segment38","Segment39","Segment40",
       "Segment41","Segment42","Segment43",
-      "Segment45","Segment46","Segment49"
+      "Segment45","Segment46","Segment47","Segment49"
 
     });
 
@@ -388,7 +390,8 @@ TDC::createAll(Simulation& System,
       {"Segment44",{"spf","Segment43",1}},
       {"Segment45",{"spf","Segment44",1}},
       {"Segment46",{"spf","Segment44",1}}, // 44 is correct
-      {"Segment49",{"spf","Segment49",1}}
+      {"Segment47",{"spf","Segment46",1}},
+      {"Segment49",{"spf","Segment48",1}}
     });
   const int voidCell(74123);
 

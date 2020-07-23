@@ -135,6 +135,7 @@ namespace linacVar
   void Segment43(FuncDataBase&,const std::string&);
   void Segment45(FuncDataBase&,const std::string&);
   void Segment46(FuncDataBase&,const std::string&);
+  void Segment47(FuncDataBase&,const std::string&);
   void Segment49(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -3079,6 +3080,86 @@ Segment46(FuncDataBase& Control,
 }
 
 void
+Segment47(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 49
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment46");
+
+  // SPF46
+  // const Geometry::Vec3D startPt(-1010.0,8825.445,0.0);
+  // const Geometry::Vec3D endPt(-1010.0,9105.245,0.0);
+
+  ELog::EM << "SPF46 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
+  // SPF35
+  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
+
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  // Pipes
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",96.8); // measured
+  const double pipeBLength(40.0);  // measured
+  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
+
+  // Gate valves
+  setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.generateGate(Control,lKey+"GateA",0);
+  Control.addVariable(lKey+"GateAYAngle",180.0);
+  Control.addVariable(lKey+"GateAWallThick",0.3);
+  Control.addVariable(lKey+"GateAPortThick",0.1);
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
+
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBYAngle",180.0);
+  Control.addVariable(lKey+"GateBWallThick",0.3);
+  Control.addVariable(lKey+"GateBPortThick",0.1);
+  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
+
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowB",9.9); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowC",9.9); // measured
+
+  // Prisma Chamber
+  setPrismaChamber(Control, lKey+"PrismaChamber");
+  Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
+
+  // Mirror Chambers
+  setMirrorChamber(Control, lKey+"MirrorChamberA");
+  Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
+  setMirrorChamber(Control, lKey+"MirrorChamberB");
+  //  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
+
+  // Cleaning magnet
+  setVariable::CleaningMagnetGenerator ClMagGen;
+  ClMagGen.generate(Control,lKey+"CleaningMagnet");
+  Control.addVariable(lKey+"CleaningMagnetYStep",pipeBLength/2.0);
+
+  // Slit tube and jaws
+  setSlitTube(Control,lKey+"SlitTube");
+
+  return;
+}
+
+void
 Segment49(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -3322,6 +3403,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment43(Control,"SPF43");
   linacVar::Segment45(Control,"SPF45");
   linacVar::Segment46(Control,"SPF46");
+  linacVar::Segment47(Control,"SPF47");
   linacVar::Segment49(Control,"SPF49");
 
   return;
