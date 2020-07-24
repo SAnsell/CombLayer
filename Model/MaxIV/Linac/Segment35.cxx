@@ -175,7 +175,7 @@ Segment35::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   const constructSystem::portItem& ionPumpABackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeB,"back",*mirrorChamber);
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeB,"back",*mirrorChamber,true);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,ionPumpABackPort,"OuterPlate",*pipeC);

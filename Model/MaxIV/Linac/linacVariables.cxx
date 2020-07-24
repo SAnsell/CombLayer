@@ -432,6 +432,58 @@ setMirrorChamber(FuncDataBase& Control,
   return;
 }
 
+void
+setMirrorChamberBlank(FuncDataBase& Control,
+		const std::string& name)
+/*!
+  Set the blank Mirror Chamber (4 port pipe) variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+
+  const Geometry::Vec3D OPos(0.0, 5.6, 0.0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  SimpleTubeGen.setCF<setVariable::CF63>();
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateBlank(Control,name,0.0,16.0); // measured seg 15
+
+  Control.addVariable(name+"NPorts",4);
+  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
+  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+
+  // Outer radius of the chamber
+  const double outerR =
+    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+
+  const double L0(5.9-outerR); // measured seg 15
+  const double L1(8.1-outerR); // measured seg 15
+  const double L2(12.5/2 - outerR);
+  const double L3(L2);
+
+  setVariable::PortItemGenerator PItemGen;
+
+  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+
+  PItemGen.setLength(L1);
+  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
+
+  PItemGen.setPlate(setVariable::CF40_22::flangeLength,"Stainless304L");
+  PItemGen.setCF<setVariable::CF40_22>(L2);
+  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
+
+  PItemGen.setLength(L3);
+  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
+
+  return;
+}
+
 
 void
 Segment1(FuncDataBase& Control,
@@ -1238,16 +1290,8 @@ Segment15(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",22.0); // measured
 
   // Mirror chamber
-  setIonPump2Port(Control, lKey+"MirrorChamber");
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber");
   Control.addVariable(lKey+"MirrorChamberYAngle", -90.0);
-  Control.addVariable(lKey+"MirrorChamberLength", 16.0);
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(lKey+"MirrorChamberPort0Length", 5.9-outerR);
-  Control.addVariable(lKey+"MirrorChamberPort1Length", 8.1-outerR);
-  const Geometry::Vec3D pPos(0.0,3.0+2.6,0.0);
-  Control.addVariable(lKey+"MirrorChamberPort0Centre", pPos);
-  Control.addVariable(lKey+"MirrorChamberPort1Centre", pPos);
 
   YagUnitGen.setCF<CF63>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -2523,16 +2567,8 @@ Segment35(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",45.0,1);
   CMGen.generateMag(Control,lKey+"CMagV",65.0,0);
 
-  setIonPump2Port(Control, lKey+"MirrorChamber");
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber");
   Control.addVariable(lKey+"MirrorChamberYAngle", 180.0);
-  Control.addVariable(lKey+"MirrorChamberLength", 16.0);
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(lKey+"MirrorChamberPort0Length", 5.9-outerR);
-  Control.addVariable(lKey+"MirrorChamberPort1Length", 8.1-outerR);
-  const Geometry::Vec3D pPos(0.0,3.0+2.6,0.0);
-  Control.addVariable(lKey+"MirrorChamberPort0Centre", pPos);
-  Control.addVariable(lKey+"MirrorChamberPort1Centre", pPos);
 
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
   Control.addVariable(lKey+"PipeCFeMat", "Stainless304L"); // PDF
