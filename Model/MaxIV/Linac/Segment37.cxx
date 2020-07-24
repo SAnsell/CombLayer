@@ -61,11 +61,9 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
-
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "EBeamStop.h"
-
 
 #include "TDCsegment.h"
 #include "Segment37.h"

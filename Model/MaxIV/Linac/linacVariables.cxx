@@ -136,6 +136,7 @@ namespace linacVar
   void Segment45(FuncDataBase&,const std::string&);
   void Segment46(FuncDataBase&,const std::string&);
   void Segment47(FuncDataBase&,const std::string&);
+  void Segment48(FuncDataBase&,const std::string&);
   void Segment49(FuncDataBase&,const std::string&);
 
   const double zeroX(152.0);   // coordiated offset to master
@@ -3146,6 +3147,59 @@ Segment47(FuncDataBase& Control,
 }
 
 void
+Segment48(FuncDataBase& Control,
+		   const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 49
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment48");
+
+  // SPF48
+  // const Geometry::Vec3D startPt(-1010.0,9327.140,0.0);
+  // const Geometry::Vec3D endPt(-1010.0,9495.745,0.0);
+
+  ELog::EM << "SPF48 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
+  // SPF35
+  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
+  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  setVariable::EBeamStopGenerator EBGen;
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
+  EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
+
+  // Bellows
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
+
+  // Pipe
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.generatePipe(Control,lKey+"PipeA",12.5); // measured
+
+  // Slit tube and jaws
+  setSlitTube(Control,lKey+"SlitTube");
+
+  // Mirror Chamber
+  setMirrorChamber(Control, lKey+"MirrorChamberA");
+
+  return;
+}
+
+void
 Segment49(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -3390,6 +3444,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment45(Control,"SPF45");
   linacVar::Segment46(Control,"SPF46");
   linacVar::Segment47(Control,"SPF47");
+  linacVar::Segment48(Control,"SPF48");
   linacVar::Segment49(Control,"SPF49");
 
   return;
