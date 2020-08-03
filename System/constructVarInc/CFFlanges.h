@@ -27,6 +27,28 @@ namespace setVariable
 {
 
 /*!
+  \struct CF8
+  \version 1.0
+  \author S. Ansell
+  \date August 2020
+  \brief CFFlanges for CF8
+*/
+
+struct CF8
+{
+  static constexpr double innerRadius=0.4;
+  static constexpr double wallThick=0.05;
+  static constexpr double flangeRadius=1.7;
+  static constexpr double flangeLength=0.65;
+  static constexpr double bellowStep=0.5;
+  static constexpr double bellowThick=0.5;
+  static constexpr double gasketRadius=0.5;
+  static constexpr double gasketThick=0.7;
+  static constexpr double boltRadius=0.4;
+  static constexpr size_t nBolts=6;
+};
+
+/*!
   \struct CF16
   \version 1.0
   \author S. Ansell

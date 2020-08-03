@@ -92,6 +92,7 @@
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
+#include "TriGroup.h"
 #include "MultiPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
@@ -138,14 +139,16 @@ makeSingleItem::build(Simulation& System,
 
   std::set<std::string> validItems
     ({
-      "default","CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
+      "default",
+      "CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
-      "FlatPipe","TriPipe","SixPort",
+      "FlatPipe","TriPipe","TriGroup","SixPort",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
-      "YagUnit","YagUnitBig","StriplineBPM","BeamDivider","Scrapper","TWCavity",
-      "Bellow", "VacuumPipe","MultiPipe","PipeTube","BlankTube","ButtonBPM",
+      "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
+      "Scrapper","TWCavity","Bellow", "VacuumPipe",
+      "MultiPipe","PipeTube","BlankTube","ButtonBPM",
       "uVac", "UndVac","UndulatorVacuum",
       "Help","help"
     });

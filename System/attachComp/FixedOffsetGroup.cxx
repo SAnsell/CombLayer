@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffsetGroup.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfEqual.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
@@ -212,7 +211,7 @@ FixedOffsetGroup::populateOffset(const FuncDataBase& Control,
     \param GO :: offset parameter
    */
 {
-  ELog::RegMethod RegA("FixedOffsetGroup","populate");
+  ELog::RegMethod RegA("FixedOffsetGroup","populateOffset");
 
   GO.preXYAngle=Control.EvalDefVar<double>(keyItem+"PreXYAngle",0.0);
   GO.preZAngle=Control.EvalDefVar<double>(keyItem+"PreZAngle",0.0);
