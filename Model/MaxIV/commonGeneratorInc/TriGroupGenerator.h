@@ -65,12 +65,12 @@ class TriGroupGenerator
   double midFlangeLength;          ///< Joining Flange length
 
   double bendArcRadius;            ///< Radius of bend section
-  double bendArcLength;             ///< bend arc length after main
-  double bendHeight;                ///< bend void height [full] 
-  double bendWidth;                 ///< bend void width
-  double bendThick;                 ///< bend wall thick
-  double bendFlangeRadius;          ///< Joining Flange radius 
-  double bendFlangeLength;          ///< Joining Flange length
+  double bendArcLength;            ///< bend arc length after main
+  double bendHeight;               ///< bend void height [full] 
+  double bendWidth;                ///< bend void width
+  double bendThick;                ///< bend wall thick
+  double bendFlangeRadius;         ///< Joining Flange radius 
+  double bendFlangeLength;         ///< Joining Flange length
 
   std::string voidMat;           ///< Void material
   std::string wallMat;           ///< Pipe material
@@ -83,6 +83,7 @@ class TriGroupGenerator
   TriGroupGenerator& operator=(const TriGroupGenerator&);
   virtual ~TriGroupGenerator();
   
+  template<typename CF> void setFlangeCF();
   template<typename CF> void setTopFlangeCF();
   template<typename CF> void setMidFlangeCF();
   template<typename CF> void setBendFlangeCF();

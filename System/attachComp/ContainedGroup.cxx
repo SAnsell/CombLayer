@@ -734,10 +734,8 @@ ContainedGroup::insertObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ContainedGroup","insertObjects");
   
-  CTYPE::iterator mc;
-
-  for(mc=CMap.begin();mc!=CMap.end();mc++)
-    mc->second.insertObjects(System);
+  for(auto [keyUnit,CC] : CMap)
+    CC.insertObjects(System);
 
   return;
 }

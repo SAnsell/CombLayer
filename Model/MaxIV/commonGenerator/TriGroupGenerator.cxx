@@ -58,37 +58,22 @@ namespace setVariable
 {
 
 TriGroupGenerator::TriGroupGenerator() :
+  mainWidth(0.86), mainHeight(1.8), mainLength(107.0),
+  mainSideAngle(4.7),wallThick(0.10),flangeRadius(CF40::flangeRadius),
+  flangeLength(CF40::flangeLength),
 
-  mainWidth(0.86),
-  mainHeight(1.8),
-  mainLength(107.0),
-  mainSideAngle(4.7),
-  wallThick(0.10),
-  flangeRadius(CF40::flangeRadius),
-  flangeThick(CF40::flangeThick),
+  topRadius(CF8::innerRadius),topLength(34.8),
+  topWallThick(CF8::wallThick),topFlangeRadius(CF40::flangeRadius),
+  topFlangeLength(CF40::flangeLength),
 
-  topRadius(CF8:innerRadius),
-  topLength(34.8),
-  topWallThick(CF8:wallThick),
-  topFlangeRadius(CF40::flangeRadius),
-  topFlangeThick(CF40::flangeThick),
-
-  midRadius(CF8:innerRadius),
-  midLength(66.52),
-  midHeight(41.7),
-  midWidth(0.68),
-  midThick(0.1),
-  midFlangeRadius(CF63::flangeRadius),
-  midFlangeThick(CF63::flangeThick),
-
+  midZAngle(4.7/2.0),midLength(66.52),midHeight(41.7),
+  midWidth(0.68),midThick(0.1),midFlangeRadius(CF63::flangeRadius),
+  midFlangeLength(CF63::flangeLength),
   
-  bendArcRadius(),
-  bendArcLength(167.7),
-  bendHeight(41.7),
-  bendWidth(0.68),
-  bendThick(0.1),
+  bendArcRadius(267.75),bendArcLength(168.0),
+  bendHeight(41.7),bendWidth(0.68),bendThick(0.1),
   bendFlangeRadius(CF63::flangeRadius),
-  bendFlangeThick(CF63::flangeThick),
+  bendFlangeLength(CF63::flangeLength),
 
   voidMat("Void"),wallMat("Stainless304L"),
   flangeMat("Stainless304L")
@@ -105,7 +90,7 @@ TriGroupGenerator::~TriGroupGenerator()
 
 template<typename CF>
 void
-TriGroupGenerator::setFFlangeCF()
+TriGroupGenerator::setFlangeCF()
   /*!
     Set the front flange
   */
@@ -152,28 +137,6 @@ TriGroupGenerator::setBendFlangeCF()
 }
 
   
-void
-TriGroupGenerator::setXYWindow(const double LWA,const double RWA,
-			      const double LWB,const double RWB)
-  /*!
-    Sets the width window based on +/- values of the width
-    \param LWA :: left width front
-    \param RWA :: right width front
-    \param LWB :: left width back
-    \param RWB :: right width back
-  */
-{
-  ELog::RegMethod RegA("TriGroupGenerator","setXYWindow");
-
-  frontWidth=LWA+RWA;
-  backWidth=LWB+RWB;
-  axisXStep=(RWA-LWA)/2.0;    // offset
-  
-  const double tanA=((RWB-RWA)/2.0-axisXStep)/length;
-  axisXYAngle=atan(tanA);
-  
-  return;
-}
 
 void
 TriGroupGenerator::generateTri(FuncDataBase& Control,
@@ -187,23 +150,36 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TriGroupGenerator","generateFlat");
 
-  Control.addVariable(keyName+"AxisXStep",axisXStep);
-  Control.addVariable(keyName+"AxisZStep",axisZStep);   
-  Control.addVariable(keyName+"AxisXYAngle",axisXYAngle);
-  Control.addVariable(keyName+"AxisZAngle",axisZAngle);   
-
-  Control.addVariable(keyName+"Length",length);   
-  Control.addVariable(keyName+"FrontWidth",frontWidth);
-  Control.addVariable(keyName+"FrontHeight",frontHeight);
-  Control.addVariable(keyName+"BackWidth",backWidth);
-  Control.addVariable(keyName+"BackHeight",backHeight);
-
+  Control.addVariable(keyName+"MainWidth",mainWidth);
+  Control.addVariable(keyName+"MainHeight",mainHeight);
+  Control.addVariable(keyName+"MainLength",mainLength);
+  Control.addVariable(keyName+"MainSideAngle",mainSideAngle);
   Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
-  Control.addVariable(keyName+"FlangeALength",flangeALength);
-  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
-  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
 
+  Control.addVariable(keyName+"TopRadius",topRadius);
+  Control.addVariable(keyName+"TopLength",topLength);
+  Control.addVariable(keyName+"TopWallThick",topWallThick);
+  Control.addVariable(keyName+"TopFlangeRadius",topFlangeRadius);
+  Control.addVariable(keyName+"TopFlangeLength",topFlangeLength);
+
+  Control.addVariable(keyName+"MidZAngle",midZAngle);
+  Control.addVariable(keyName+"MidLength",midLength);
+  Control.addVariable(keyName+"MidHeight",midHeight);
+  Control.addVariable(keyName+"MidWidth",midWidth);
+  Control.addVariable(keyName+"MidThick",midThick);
+  Control.addVariable(keyName+"MidFlangeRadius",midFlangeRadius);
+  Control.addVariable(keyName+"MidFlangeLength",midFlangeLength);
+
+  Control.addVariable(keyName+"BendArcRadius",bendArcRadius);
+  Control.addVariable(keyName+"BendArcLength",bendArcLength);
+  Control.addVariable(keyName+"BendHeight",bendHeight);
+  Control.addVariable(keyName+"BendWidth",bendWidth);
+  Control.addVariable(keyName+"BendThick",bendThick);
+  Control.addVariable(keyName+"BendFlangeRadius",bendFlangeRadius);
+  Control.addVariable(keyName+"BendFlangeLength",bendFlangeLength);
+ 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
@@ -214,7 +190,7 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void TriGroupGenerator::setBFlangeCF<CF100>();
+template void TriGroupGenerator::setFlangeCF<CF100>();
   
 ///\endcond TEMPLATE
   

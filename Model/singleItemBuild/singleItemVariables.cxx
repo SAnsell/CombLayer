@@ -77,6 +77,7 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "TriPipeGenerator.h"
+#include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
 #include "YagScreenGenerator.h"
@@ -237,6 +238,10 @@ SingleItemVariables(FuncDataBase& Control)
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,"TriPipe");
+
+  setVariable::TriGroupGenerator TGGen;
+  //  TPGen.setBFlangeCF<CF100>();
+  TGGen.generateTri(Control,"TriGroup");
 
   setVariable::FlatPipeGenerator FPGen;
   FPGen.generateFlat(Control,"FlatPipe",80.0);

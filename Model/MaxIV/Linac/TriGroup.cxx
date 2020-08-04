@@ -84,7 +84,8 @@ namespace tdcSystem
 
 TriGroup::TriGroup(const std::string& Key) : 
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedGroup("Main","Top","Mid","Bend","FFlange"),
+  attachSystem::ContainedGroup("Main","Top","Mid","Bend",
+			       "FFlange"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -92,7 +93,10 @@ TriGroup::TriGroup(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  ContainedGroup::addCC("TFlange");
+
+}
 
 
 TriGroup::~TriGroup() 
@@ -177,7 +181,7 @@ TriGroup::createSurfaces()
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5,
 				  Origin-Z*(mainHeight/2.0),
-				  Z,X,mainSideAngle);
+				  Z,X,-mainSideAngle);
 
   // main pipe walls
   ModelSupport::buildPlane(SMap,buildIndex+12,
@@ -191,7 +195,7 @@ TriGroup::createSurfaces()
   
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+15,
 				  Origin-Z*(wallThick+mainHeight/2.0),
-				  Z,X,mainSideAngle);
+				  Z,X,-mainSideAngle);
 
   
   
@@ -199,6 +203,83 @@ TriGroup::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
 
 
+  // top pipe:
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,topRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,Origin,Y,topRadius+topWallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+127,Origin,Y,topFlangeRadius);
+
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+102,Origin+Y*(topLength+mainLength),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+112,Origin+Y*(topLength+mainLength-topFlangeLength),Y);
+
+
+  // Mid section:
+  const Geometry::Quaternion QV =
+    Geometry::Quaternion::calcQRotDeg(-midZAngle,X);
+  const Geometry::Vec3D mY=QV.makeRotate(Y);
+  const Geometry::Vec3D mZ=QV.makeRotate(Z);
+  const Geometry::Vec3D mOrg=
+    Origin+mY*(mainLength/cos(M_PI*midZAngle/180.0));
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+202,mOrg+mY*(midLength),mY);
+  ModelSupport::buildPlane(SMap,buildIndex+203,mOrg-X*(midWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,mOrg+X*(midWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,mOrg-mZ*(midHeight/2.0),mZ);
+  ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mZ*(midHeight/2.0),mZ);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+212,mOrg+mY*(midLength+midThick),mY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+213,mOrg-X*(midThick+midWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+214,mOrg+X*(midThick+midWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+215,mOrg-mZ*(midThick+midHeight/2.0),mZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+216,mOrg+mZ*(midThick+midHeight/2.0),mZ);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+222,mOrg+mY*(midLength+midThick-midFlangeLength),mY);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+227,mOrg,mY,midFlangeRadius);
+  
+  // Bend:
+
+  // impact point of bend (virtual curve)
+  // --> zlen= r +/- sqrt(r^2-L^2) [use neg only]
+  // r (radius of bend) / L length of straight (mainLength) / zlen drop in Z
+
+  const double fullLen(arcLength+mainLength);
+  
+  const double zLen=bendArcRadius-
+    sqrt(bendArcRadius*bendArcRadius-mainLength*mainLength);
+
+  const double zExit=bendArcRadius-
+    sqrt(bendArcRadius*bendArcRadius-fullLength*fullLength);
+  
+  
+  const Geometry::Vec3D bOrg=Origin+Y*mainLength-Z*zLen;
+  const Geometry::Vec3D bExit=Origin+Y*fullLength-Z*zExit;
+
+  const double phi(atan(zExit)
+  const Geometry::Vec3D bY=Y*fullLength-Z*zExit;  // ???
+  
+  ModelSupport::buildPlane(SMap,buildIndex+302,bExit,bY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+313,mOrg-X*(midThick+midWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+314,mOrg+X*(midThick+midWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+215,mOrg-mZ*(midThick+midHeight/2.0),mZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+216,mOrg+mZ*(midThick+midHeight/2.0),mZ);
+
+  
   return;
 }
 
@@ -220,21 +301,38 @@ TriGroup::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"13 -14  15 -16 -12 (2:-3:4:-5:6)");
+    (SMap,buildIndex,"13 -14  15 -16 -12 (2:-3:4:-5:6) 107 ");
   makeCell("Walls",System,cellIndex++,wallMat,0.0,Out+frontStr);
-  
+
   // FLANGE Front: 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -11 -107 (-13 : 14 : -15 : 16) ");
+				 " -11 -7 (-13 : 14 : -15 : 16) ");
   makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+
+  // TOP Pipe
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 -107 ");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -102 -117 107");
+  makeCell("TopPipe",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"112 -102 -127 117");
+  makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
+
 
   // outer boundary [flange front/back]
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 13 -14 15 -16 -12");
   addOuterSurf("Main",Out+frontStr);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -7");
   addOuterSurf("FFlange",Out+frontStr);
 
+  // outer boundary [flange front/back]
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"12 -112 -117");
+  addOuterSurf("Top",Out);
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 112 -102 -127");
+  addOuterSurf("TFlange",Out); 
+ 
   return;
 }
   

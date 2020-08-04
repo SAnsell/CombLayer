@@ -555,6 +555,18 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item == "TriGroup")
+    {
+      std::shared_ptr<tdcSystem::TriGroup>
+	tp(new tdcSystem::TriGroup("TriGroup"));
+      OR.addObject(tp);
+
+      tp->addAllInsertCell(voidCell);
+      tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "UndVac" || item=="UndulatorVacuum" || item=="uVac")
     {
       std::shared_ptr<tdcSystem::UndulatorVacuum>
