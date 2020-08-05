@@ -66,12 +66,13 @@ TriGroupGenerator::TriGroupGenerator() :
   topWallThick(CF8::wallThick),topFlangeRadius(CF40::flangeRadius),
   topFlangeLength(CF40::flangeLength),
 
-  midZAngle(4.7/2.0),midLength(66.52),midHeight(41.7),
+  midZAngle(4.7/2.0),midLength(66.52),midHeight(4.0),
   midWidth(0.68),midThick(0.1),midFlangeRadius(CF63::flangeRadius),
   midFlangeLength(CF63::flangeLength),
-  
+
+  bendZAngle(4.7),bendZDrop(8.2),
   bendArcRadius(267.75),bendArcLength(168.0),
-  bendHeight(41.7),bendWidth(0.68),bendThick(0.1),
+  bendHeight(2.0),bendWidth(0.68),bendThick(0.1),
   bendFlangeRadius(CF63::flangeRadius),
   bendFlangeLength(CF63::flangeLength),
 
@@ -172,6 +173,8 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
   Control.addVariable(keyName+"MidFlangeRadius",midFlangeRadius);
   Control.addVariable(keyName+"MidFlangeLength",midFlangeLength);
 
+  Control.addVariable(keyName+"BendZAngle",bendZAngle);
+  Control.addVariable(keyName+"BendZDrop",bendZDrop);
   Control.addVariable(keyName+"BendArcRadius",bendArcRadius);
   Control.addVariable(keyName+"BendArcLength",bendArcLength);
   Control.addVariable(keyName+"BendHeight",bendHeight);

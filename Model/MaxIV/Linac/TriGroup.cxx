@@ -95,6 +95,7 @@ TriGroup::TriGroup(const std::string& Key) :
   */
 {
   ContainedGroup::addCC("TFlange");
+  ContainedGroup::addCC("MFlange");
 
 }
 
@@ -139,6 +140,8 @@ TriGroup::populate(const FuncDataBase& Control)
   midFlangeRadius=Control.EvalVar<double>(keyName+"MidFlangeRadius");
   midFlangeLength=Control.EvalVar<double>(keyName+"MidFlangeLength");
 
+  bendZAngle=Control.EvalVar<double>(keyName+"BendZAngle");
+  bendZDrop=Control.EvalVar<double>(keyName+"BendZDrop");
   bendArcRadius=Control.EvalVar<double>(keyName+"BendArcRadius");
   bendArcLength=Control.EvalVar<double>(keyName+"BendArcLength");
   bendHeight=Control.EvalVar<double>(keyName+"BendHeight");
@@ -233,8 +236,6 @@ TriGroup::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mZ*(midHeight/2.0),mZ);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+212,mOrg+mY*(midLength+midThick),mY);
-  ModelSupport::buildPlane
     (SMap,buildIndex+213,mOrg-X*(midThick+midWidth/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+214,mOrg+X*(midThick+midWidth/2.0),X);
@@ -254,32 +255,57 @@ TriGroup::createSurfaces()
   // --> zlen= r +/- sqrt(r^2-L^2) [use neg only]
   // r (radius of bend) / L length of straight (mainLength) / zlen drop in Z
 
-  const double fullLen(arcLength+mainLength);
-  
-  const double zLen=bendArcRadius-
-    sqrt(bendArcRadius*bendArcRadius-mainLength*mainLength);
-
   const double zExit=bendArcRadius-
-    sqrt(bendArcRadius*bendArcRadius-fullLength*fullLength);
-  
-  
-  const Geometry::Vec3D bOrg=Origin+Y*mainLength-Z*zLen;
-  const Geometry::Vec3D bExit=Origin+Y*fullLength-Z*zExit;
+    sqrt(bendArcRadius*bendArcRadius-bendArcLength*bendArcLength);
+  const double yExit=sqrt(bendArcLength*bendArcLength-zExit*zExit);
 
-  const double phi(atan(zExit)
-  const Geometry::Vec3D bY=Y*fullLength-Z*zExit;  // ???
+  // Two steps : angle to Orgin->bOrg and angle bOrg->bExit
+  const double phiA(2.0*180.0*asin(0.5*bendArcLength/bendArcRadius)/M_PI);
+
+  const Geometry::Quaternion QWA =
+    Geometry::Quaternion::calcQRotDeg(-bendZAngle,X);
+  const Geometry::Quaternion QWB =
+    Geometry::Quaternion::calcQRotDeg(-(phiA+bendZAngle),X);
   
+  const Geometry::Vec3D aY=QWA.makeRotate(Y);
+  const Geometry::Vec3D aZ=QWA.makeRotate(Z);
+
+  const Geometry::Vec3D bY=QWB.makeRotate(Y);
+  const Geometry::Vec3D bZ=QWB.makeRotate(Z);
+
+  const Geometry::Vec3D bOrg=Origin+Y*mainLength-Z*bendZDrop;
+  const Geometry::Vec3D bExit=bOrg+aY*yExit-aZ*zExit;
+
+  const Geometry::Vec3D bendCent(bOrg-aZ*bendArcRadius);
+
   ModelSupport::buildPlane(SMap,buildIndex+302,bExit,bY);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+313,mOrg-X*(midThick+midWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+314,mOrg+X*(midThick+midWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+215,mOrg-mZ*(midThick+midHeight/2.0),mZ);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+216,mOrg+mZ*(midThick+midHeight/2.0),mZ);
+  ModelSupport::buildPlane(SMap,buildIndex+303,bOrg-X*(bendWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,bOrg+X*(bendWidth/2.0),X);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+305,bendCent-Z*(bendHeight/2.0),X,bendArcRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+306,bendCent+Z*(bendHeight/2.0),X,bendArcRadius);
 
-  
+  ELog::EM<<"BL == "<<bendArcLength<<ELog::endDiag;
+  ELog::EM<<"BY == "<<yExit<<" "<<zExit<<ELog::endDiag;
+  ELog::EM<<"BExit == "<<*SMap.realSurfPtr(buildIndex+302)<<ELog::endDiag;
+  ELog::EM<<"BExit == "<<*SMap.realSurfPtr(buildIndex+12)<<ELog::endDiag;
+  ELog::EM<<"BExit == "<<bOrg<<" :: "<<bExit<<ELog::endDiag;
+  ELog::EM<<"Diust == "<<bOrg.Distance(bExit)<<ELog::endDiag;
+
+    
+  ModelSupport::buildPlane(SMap,buildIndex+313,
+			   bOrg-X*(bendThick+bendWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+314,
+			   bOrg+X*(bendThick+bendWidth/2.0),X);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+315,bendCent-Z*(bendThick+bendHeight/2.0),X,bendArcRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+316,bendCent+Z*(bendThick+bendHeight/2.0),X,bendArcRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+322,bExit-bY*bendFlangeLength,bY);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,bExit,bY,bendFlangeRadius);
+
   return;
 }
 
@@ -301,8 +327,12 @@ TriGroup::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"13 -14  15 -16 -12 (2:-3:4:-5:6) 107 ");
+    (SMap,buildIndex,"13 -14  15 -16 -2 (-3:4:-5:6) ");
   makeCell("Walls",System,cellIndex++,wallMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+	"2 13 -14  15 -16 -12 107 (-203:204:-205:206) (-303:304:-305:306)" );
+  makeCell("EndWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FLANGE Front: 
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -320,19 +350,58 @@ TriGroup::createObjects(Simulation& System)
   makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
 
 
+  // Mid Pipe
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 203 -204 205 -206 -202 ");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"12 -202 213 -214 215 -216 (-203:204:-205:206)");
+    makeCell("MidPipe",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-202 222 -227 (-213:214:-215:216)");
+   makeCell("MidFlange",System,cellIndex++,wallMat,0.0,Out);
+
+   // Bend Pipe
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 303 -304 305 -306 -302 ");
+  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"12 -302 313 -314 315 -316 (-303:304:-305:306)");
+  makeCell("BendPipe",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-302 322 -327 (-313:314:-315:316)");
+  makeCell("BendFlange",System,cellIndex++,wallMat,0.0,Out);
+
+
   // outer boundary [flange front/back]
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 13 -14 15 -16 -12");
   addOuterSurf("Main",Out+frontStr);
-
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -7");
   addOuterSurf("FFlange",Out+frontStr);
+
 
   // outer boundary [flange front/back]
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"12 -112 -117");
   addOuterSurf("Top",Out);
+  
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 112 -102 -127");
   addOuterSurf("TFlange",Out); 
- 
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"12 213 -214 215 -216 -202");
+  addOuterSurf("Mid",Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"222 -227 -202");
+  addOuterSurf("MFlange",Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"12 313 -314 315 -316 -302");
+  addOuterSurf("Bend",Out);
+  
+
   return;
 }
   

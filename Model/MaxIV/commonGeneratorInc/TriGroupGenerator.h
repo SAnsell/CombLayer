@@ -64,6 +64,8 @@ class TriGroupGenerator
   double midFlangeRadius;          ///< Joining Flange radius 
   double midFlangeLength;          ///< Joining Flange length
 
+  double bendZAngle;               ///< Drop angle of electron path in magnet
+  double bendZDrop;                ///< Drop of electron path in magnet
   double bendArcRadius;            ///< Radius of bend section
   double bendArcLength;            ///< bend arc length after main
   double bendHeight;               ///< bend void height [full] 
