@@ -96,6 +96,7 @@ TriGroup::TriGroup(const std::string& Key) :
 {
   ContainedGroup::addCC("TFlange");
   ContainedGroup::addCC("MFlange");
+  ContainedGroup::addCC("BFlange");
 
 }
 
@@ -252,20 +253,16 @@ TriGroup::createSurfaces()
   // Bend:
 
   // impact point of bend (virtual curve)
-  // --> zlen= r +/- sqrt(r^2-L^2) [use neg only]
-  // r (radius of bend) / L length of straight (mainLength) / zlen drop in Z
-
-  const double zExit=bendArcRadius-
-    sqrt(bendArcRadius*bendArcRadius-bendArcLength*bendArcLength);
+  const double zExit=bendArcLength*bendArcLength/(2.0*bendArcRadius);
   const double yExit=sqrt(bendArcLength*bendArcLength-zExit*zExit);
 
   // Two steps : angle to Orgin->bOrg and angle bOrg->bExit
-  const double phiA(2.0*180.0*asin(0.5*bendArcLength/bendArcRadius)/M_PI);
-
+  const double thetaA(2.0*180.0*asin(0.5*bendArcLength/bendArcRadius)/M_PI);
+  
   const Geometry::Quaternion QWA =
     Geometry::Quaternion::calcQRotDeg(-bendZAngle,X);
   const Geometry::Quaternion QWB =
-    Geometry::Quaternion::calcQRotDeg(-(phiA+bendZAngle),X);
+    Geometry::Quaternion::calcQRotDeg(-(thetaA+bendZAngle),X);
   
   const Geometry::Vec3D aY=QWA.makeRotate(Y);
   const Geometry::Vec3D aZ=QWA.makeRotate(Z);
@@ -285,14 +282,6 @@ TriGroup::createSurfaces()
     (SMap,buildIndex+305,bendCent-Z*(bendHeight/2.0),X,bendArcRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+306,bendCent+Z*(bendHeight/2.0),X,bendArcRadius);
-
-  ELog::EM<<"BL == "<<bendArcLength<<ELog::endDiag;
-  ELog::EM<<"BY == "<<yExit<<" "<<zExit<<ELog::endDiag;
-  ELog::EM<<"BExit == "<<*SMap.realSurfPtr(buildIndex+302)<<ELog::endDiag;
-  ELog::EM<<"BExit == "<<*SMap.realSurfPtr(buildIndex+12)<<ELog::endDiag;
-  ELog::EM<<"BExit == "<<bOrg<<" :: "<<bExit<<ELog::endDiag;
-  ELog::EM<<"Diust == "<<bOrg.Distance(bExit)<<ELog::endDiag;
-
     
   ModelSupport::buildPlane(SMap,buildIndex+313,
 			   bOrg-X*(bendThick+bendWidth/2.0),X);
@@ -376,31 +365,33 @@ TriGroup::createObjects(Simulation& System)
 
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 13 -14 15 -16 -12");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 -12");
   addOuterSurf("Main",Out+frontStr);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7");
   addOuterSurf("FFlange",Out+frontStr);
 
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"12 -112 -117");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -112 -117");
   addOuterSurf("Top",Out);
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 112 -102 -127");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -102 -127");
   addOuterSurf("TFlange",Out); 
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 213 -214 215 -216 -202");
   addOuterSurf("Mid",Out);
 
-  Out=ModelSupport::getSetComposite
-    (SMap,buildIndex,"222 -227 -202");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"222 -227 -202");
   addOuterSurf("MFlange",Out);
 
-  Out=ModelSupport::getSetComposite
+  Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 313 -314 315 -316 -302");
   addOuterSurf("Bend",Out);
   
+  Out=ModelSupport::getComposite(SMap,buildIndex,"322 -327 -302");
+  addOuterSurf("BFlange",Out);
+
 
   return;
 }
