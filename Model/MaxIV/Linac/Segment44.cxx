@@ -86,7 +86,7 @@
 #include "BlankTube.h"
 #include "Bellows.h"
 #include "TriGroup.h"
-#include "DipoleDIBMag.h"
+#include "CurveMagnet.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -100,8 +100,8 @@ namespace tdcSystem
   
 Segment44::Segment44(const std::string& Key) :
   TDCsegment(Key,6),
-
-  triBend(new tdcSystem::TriGroup(keyName+"TriBend"))
+  triBend(new tdcSystem::TriGroup(keyName+"TriBend")),
+  cMag(new tdcSystem::CurveMagnet(keyName+"CMag"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -111,6 +111,7 @@ Segment44::Segment44(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(triBend);
+  OR.addObject(cMag);
 
   setFirstItems(triBend);
 }
@@ -131,7 +132,7 @@ Segment44::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment44","buildObjects");
 
-  int outerCell;
+  int outerCell,outerCellB;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
@@ -142,8 +143,16 @@ Segment44::buildObjects(Simulation& System)
 
   triBend->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
-  triBend->insertAllInCell(System,outerCell);
+  // extra for bending curver
+  outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,5);
 
+  cMag->addInsertCell(outerCell);
+  cMag->addInsertCell(outerCellB);
+  cMag->createAll(System,*this,0);
+  triBend->insertAllInCell(System,outerCell);
+  triBend->insertAllInCell(System,outerCellB);
+  triBend->insertAllInCell(System,cMag->getCell("Void"));
+  
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
   buildZone->removeLastMaster(System);  

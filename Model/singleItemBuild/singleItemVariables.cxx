@@ -65,6 +65,7 @@
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
+#include "CurveMagGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
@@ -300,6 +301,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);
+
+  setVariable::CurveMagGenerator CMagGen;
+  CMagGen.generateMag(Control,"CMag");  
 
   setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);

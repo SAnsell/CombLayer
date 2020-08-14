@@ -358,7 +358,6 @@ buildCone(surfRegister& SMap,const int N,
   // distance to move centre [half angle]
   const double D=radius/tan(M_PI*angleDeg/(180.0));
 
-  ELog::EM<<"Cone == "<<circleCent-Axis.unit()*D<<ELog::endDiag;
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(circleCent-Axis.unit()*D,Axis,angleDeg);
   const int NFound=SMap.registerSurf(N,CX);

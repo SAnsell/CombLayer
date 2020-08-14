@@ -25,6 +25,7 @@
 namespace tdcSystem
 {
   class TriGroup;
+  class CurveMagnet;
   /*!
     \class Segment44
     \version 1.0
@@ -38,7 +39,8 @@ class Segment44 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::TriGroup> triBend;     // inner of bending mag
+  std::shared_ptr<tdcSystem::TriGroup> triBend;  ///< vacuum part of bending mag
+  std::shared_ptr<tdcSystem::CurveMagnet> cMag;  ///< Magnet unit
 
   void buildObjects(Simulation&);
   void createLinks();

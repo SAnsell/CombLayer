@@ -61,6 +61,7 @@
 #include "YagUnitBigGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "TriPipeGenerator.h"
+#include "TriGroupGenerator.h"
 #include "BeamDividerGenerator.h"
 #include "ScrapperGenerator.h"
 #include "SixPortGenerator.h"
@@ -72,6 +73,7 @@
 #include "subPipeUnit.h"
 #include "MultiPipeGenerator.h"
 #include "ButtonBPMGenerator.h"
+#include "CurveMagGenerator.h"
 
 namespace setVariable
 {
@@ -129,6 +131,7 @@ namespace linacVar
   void Segment41(FuncDataBase&,const std::string&);
   void Segment42(FuncDataBase&,const std::string&);
   void Segment43(FuncDataBase&,const std::string&);
+  void Segment44(FuncDataBase&,const std::string&);
   void Segment45(FuncDataBase&,const std::string&);
   void Segment46(FuncDataBase&,const std::string&);
   void Segment49(FuncDataBase&,const std::string&);
@@ -2832,6 +2835,39 @@ Segment43(FuncDataBase& Control,
 }
 
 void
+Segment44(FuncDataBase& Control,const std::string& lKey)
+  /*!
+    Set the variables for SPF segment 44.
+    \param Control :: DataBase to use
+    \param lKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment44");
+
+  // Note that the viewport branch is not an end point and nothing
+  // currently connects.
+
+  const Geometry::Vec3D startPt(-1010.0,8682.445,0.0);
+  const Geometry::Vec3D endPtA(-1010.0,8825.445,0.0);
+  const Geometry::Vec3D endPtB(-1010.0,8949.717,-60.951);
+
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPtA.X())/(endPtA.Y()-startPt.Y()))*180.0/M_PI);
+
+    
+  setVariable::TriGroupGenerator TGGen;
+  setVariable::CurveMagGenerator CMagGen;
+  
+
+  TGGen.generateTri(Control,lKey+"TriBend");
+  CMagGen.generateMag(Control,lKey+"CMag");  
+
+  return;
+}
+
+void
 Segment45(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
@@ -3204,6 +3240,7 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment41(Control,"SPF41");
   linacVar::Segment42(Control,"SPF42");
   linacVar::Segment43(Control,"SPF43");
+  linacVar::Segment44(Control,"SPF44");
   linacVar::Segment45(Control,"SPF45");
   linacVar::Segment46(Control,"SPF46");
   linacVar::Segment49(Control,"SPF49");

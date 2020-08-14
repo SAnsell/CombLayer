@@ -93,6 +93,7 @@
 #include "FlatPipe.h"
 #include "TriPipe.h"
 #include "TriGroup.h"
+#include "CurveMagnet.h"
 #include "MultiPipe.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
@@ -140,7 +141,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","CorrectorMag","LQuadF","LQuadH","LSexupole",
+      "CylGateValve","CorrectorMag","CurveMag","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -563,6 +564,18 @@ makeSingleItem::build(Simulation& System,
 
       tp->addAllInsertCell(voidCell);
       tp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "CurveMag")
+    {
+      std::shared_ptr<tdcSystem::CurveMagnet>
+	cm(new tdcSystem::CurveMagnet("CMag"));
+      OR.addObject(cm);
+
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
 
       return;
     }
