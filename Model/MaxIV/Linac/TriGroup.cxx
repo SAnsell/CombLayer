@@ -228,7 +228,7 @@ TriGroup::createSurfaces()
   const Geometry::Vec3D mZ=QV.makeRotate(Z);
   const Geometry::Vec3D mOrg=
     Origin+mY*(mainLength/cos(M_PI*midZAngle/180.0));
-  FixedComp::setConnect(3,mOrg+mY*midLength,mY);
+  FixedComp::setConnect(2,mOrg+mY*midLength,mY);
   
   ModelSupport::buildPlane
     (SMap,buildIndex+202,mOrg+mY*midLength,mY);
@@ -296,7 +296,7 @@ TriGroup::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+322,bExit-bY*bendFlangeLength,bY);
   ModelSupport::buildCylinder(SMap,buildIndex+327,bExit,bY,bendFlangeRadius);
 
-  FixedComp::setConnect(4,bExit,bY);
+  FixedComp::setConnect(3,bExit,bY);
   return;
 }
 
@@ -410,15 +410,16 @@ TriGroup::createLinks()
   //stuff for intersection
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front 
 
-  FixedComp::setConnect(2,Origin+Y*(topLength+mainLength),Y);
-  FixedComp::setConnect(3,Origin+Y*(wallThick+mainLength),Y);
-  FixedComp::setConnect(4,Origin+Y*(wallThick+mainLength),Y);
- 
+  FixedComp::setConnect(1,Origin+Y*(topLength+mainLength),Y); 
+  // connect 3 + 4 set in createSurfaces
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+102));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+302));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+302));
 
+  FixedComp::nameSideIndex(1,"straightExit");
+  FixedComp::nameSideIndex(2,"viewExit");
+  FixedComp::nameSideIndex(3,"magnetExit");
 
   // top lift point : Out is an complemnt of the volume
   std::string Out;

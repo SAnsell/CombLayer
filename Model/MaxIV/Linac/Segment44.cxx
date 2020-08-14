@@ -168,12 +168,12 @@ Segment44::createLinks()
   setLinkSignedCopy(0,*triBend,1);
 
   setLinkSignedCopy(1,*triBend,2);  // straight exit
-  setLinkSignedCopy(1,*triBend,3);  // mid exit
-  setLinkSignedCopy(1,*triBend,4);  // bend exit
+  setLinkSignedCopy(2,*triBend,3);  // mid exit
+  setLinkSignedCopy(3,*triBend,4);  // bend exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"midExit");
-  FixedComp::nameSideIndex(3,"bendExit");
+  FixedComp::nameSideIndex(3,"magnetExit");
   
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));

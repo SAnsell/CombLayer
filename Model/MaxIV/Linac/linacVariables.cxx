@@ -2854,16 +2854,28 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPtA.X())/(endPtA.Y()-startPt.Y()))*180.0/M_PI);
+  		      atan((startPt.X()-endPtA.X())/
+			   (endPtA.Y()-startPt.Y()))*180.0/M_PI);
 
-    
+  Control.addVariable(lKey+"OffsetA",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetB",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"FrontLinkA","front");
+  Control.addVariable(lKey+"BackLinkA","straightExit");
+  Control.addVariable(lKey+"FrontLinkB","front");
+  Control.addVariable(lKey+"BackLinkB","magnetExit");
+
   setVariable::TriGroupGenerator TGGen;
   setVariable::CurveMagGenerator CMagGen;
   
 
   TGGen.generateTri(Control,lKey+"TriBend");
-  CMagGen.generateMag(Control,lKey+"CMag");  
 
+  CMagGen.generateMag(Control,lKey+"CMag");  
+  Control.addVariable(lKey+"CMagYStep",9.0);
+  
   return;
 }
 

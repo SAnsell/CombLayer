@@ -309,7 +309,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	      ELog::EM<<"model End       "<<modelEnd<<"\n";
 	      ELog::EM<<"model length == "<<modelEnd.Distance(modelStart)<<"\n\n";
 
-	      ELog::EM<<"corrected Start End   "<<vEnd<<"\n\n";
+	      ELog::EM<<"corrected End   "<<vEnd<<"\n\n";
 
 	      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
 	      retFlag=1;

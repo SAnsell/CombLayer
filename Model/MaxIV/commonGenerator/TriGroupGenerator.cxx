@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 TriGroupGenerator::TriGroupGenerator() :
-  mainWidth(0.86), mainHeight(1.8), mainLength(107.0),
+  mainWidth(0.86), mainHeight(1.8), mainLength(108.2),
   mainSideAngle(4.7),wallThick(0.10),flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
 
