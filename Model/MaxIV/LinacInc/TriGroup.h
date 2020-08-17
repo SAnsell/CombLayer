@@ -73,6 +73,7 @@ class TriGroup :
   double bendZDrop;                 ///< Drop of electron path in magnet
   double bendArcRadius;             ///< Radius of bend section
   double bendArcLength;             ///< bend arc length after main
+  double bendStrLength;             ///< bend straing length after arc
   double bendHeight;                ///< bend void height [full] 
   double bendWidth;                 ///< bend void width
   double bendThick;                 ///< bend wall thick

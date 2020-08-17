@@ -72,6 +72,7 @@ TriGroupGenerator::TriGroupGenerator() :
 
   bendZAngle(4.7),bendZDrop(8.2),
   bendArcRadius(267.75),bendArcLength(168.0),
+  bendStrLength(26.75),
   bendHeight(2.0),bendWidth(0.68),bendThick(0.1),
   bendFlangeRadius(CF63::flangeRadius),
   bendFlangeLength(CF63::flangeLength),
@@ -177,6 +178,7 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
   Control.addVariable(keyName+"BendZDrop",bendZDrop);
   Control.addVariable(keyName+"BendArcRadius",bendArcRadius);
   Control.addVariable(keyName+"BendArcLength",bendArcLength);
+  Control.addVariable(keyName+"BendStrLength",bendStrLength);
   Control.addVariable(keyName+"BendHeight",bendHeight);
   Control.addVariable(keyName+"BendWidth",bendWidth);
   Control.addVariable(keyName+"BendThick",bendThick);

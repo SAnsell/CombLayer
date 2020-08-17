@@ -58,7 +58,7 @@ class Segment30 :
   Segment30& operator=(const Segment30&);
   ~Segment30();
 
-  virtual void regiseterPrevSeg(const TDCsegment*);
+  virtual void registerPrevSeg(const TDCsegment*,const size_t);
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

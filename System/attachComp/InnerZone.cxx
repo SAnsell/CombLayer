@@ -823,7 +823,6 @@ InnerZone::removeLastMaster(Simulation& System)
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
     }
-  	
   System.removeCell(masterCell->getName());
   masterCell=0;
   

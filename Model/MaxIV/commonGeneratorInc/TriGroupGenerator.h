@@ -68,6 +68,7 @@ class TriGroupGenerator
   double bendZDrop;                ///< Drop of electron path in magnet
   double bendArcRadius;            ///< Radius of bend section
   double bendArcLength;            ///< bend arc length after main
+  double bendStrLength;            ///< straign length after arc
   double bendHeight;               ///< bend void height [full] 
   double bendWidth;                ///< bend void width
   double bendThick;                ///< bend wall thick
@@ -89,6 +90,10 @@ class TriGroupGenerator
   template<typename CF> void setTopFlangeCF();
   template<typename CF> void setMidFlangeCF();
   template<typename CF> void setBendFlangeCF();
+
+  /// accessor to Radius and drop
+  void setBend(const double R,const double L,const double SL)
+  {  bendArcRadius=R; bendArcLength=L; bendStrLength=SL;}
   
   void generateTri(FuncDataBase&,const std::string&) const;
 

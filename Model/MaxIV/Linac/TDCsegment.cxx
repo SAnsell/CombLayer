@@ -154,14 +154,18 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
     {
       attachSystem::ExternalCut* FPtr=firstItemVec[i];
       if (FPtr)
-	FPtr->setCutSurf("front",HRvec[i]);
+	{
+	  ELog::EM<<"Setting front == "<<HRvec[i]<<ELog::endDiag;
+	  FPtr->setCutSurf("front",HRvec[i]);
+	}
     }
   return;
 }
 
 
 void
-TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
+TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
+			    const size_t indexPoint)
   /*!
    Process previous segments [default version]
    This segment is register in previous segment by: joinItems
@@ -170,9 +174,10 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
    TDCsegment::setFrontSurfaces -- it used firstItemVec
    which is set in segment constructor.
    \param PSPtr :: previous segment
+   \param indexPoint :: Index point to use for HeadRule
   */
 {
-  ELog::RegMethod RegA("TDCsegment","processPrevSeg");
+  ELog::RegMethod RegA("TDCsegment","registerPrevSeg");
 
   prevSegPtr=PSPtr;
   if (prevSegPtr)
@@ -181,8 +186,12 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr)
 	prevSegPtr->getJoinItems();
       if (!prevJoinItems.empty())
 	{
-	  if (buildZone)
-	    buildZone->setFront(prevJoinItems.front());
+	  if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
+	    {
+	      ELog::EM<<"Join items == "
+		      <<prevJoinItems[indexPoint-1]<<ELog::endDiag;
+	      buildZone->setFront(prevJoinItems[indexPoint-1]);
+	    }
 	  this->setFrontSurfs(prevJoinItems);
 	}
     }

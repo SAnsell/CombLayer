@@ -85,7 +85,7 @@ namespace tdcSystem
 TriGroup::TriGroup(const std::string& Key) : 
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Main","Top","Mid","Bend",
-			       "FFlange"),
+			       "BendStr"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -94,6 +94,7 @@ TriGroup::TriGroup(const std::string& Key) :
     \param Key :: KeyName
   */
 {
+  ContainedGroup::addCC("FFlange");
   ContainedGroup::addCC("TFlange");
   ContainedGroup::addCC("MFlange");
   ContainedGroup::addCC("BFlange");
@@ -145,6 +146,7 @@ TriGroup::populate(const FuncDataBase& Control)
   bendZDrop=Control.EvalVar<double>(keyName+"BendZDrop");
   bendArcRadius=Control.EvalVar<double>(keyName+"BendArcRadius");
   bendArcLength=Control.EvalVar<double>(keyName+"BendArcLength");
+  bendStrLength=Control.EvalVar<double>(keyName+"BendStrLength");
   bendHeight=Control.EvalVar<double>(keyName+"BendHeight");
   bendWidth=Control.EvalVar<double>(keyName+"BendWidth");
   bendThick=Control.EvalVar<double>(keyName+"BendThick");
@@ -271,8 +273,10 @@ TriGroup::createSurfaces()
   const Geometry::Vec3D bY=QWB.makeRotate(Y);
   const Geometry::Vec3D bZ=QWB.makeRotate(Z);
 
+  // origin / bend exit / str exit
   const Geometry::Vec3D bOrg=Origin+Y*mainLength-Z*bendZDrop;
   const Geometry::Vec3D bExit=bOrg+aY*yExit-aZ*zExit;
+  const Geometry::Vec3D cExit=bExit+bY*bendStrLength;
 
   const Geometry::Vec3D bendCent(bOrg-aZ*bendArcRadius);
 
@@ -280,23 +284,36 @@ TriGroup::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+303,bOrg-X*(bendWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,bOrg+X*(bendWidth/2.0),X);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+305,bendCent-Z*(bendHeight/2.0),X,bendArcRadius);
+    (SMap,buildIndex+305,bendCent,X,bendArcRadius-bendHeight/2.0);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+306,bendCent+Z*(bendHeight/2.0),X,bendArcRadius);
+    (SMap,buildIndex+306,bendCent,X,bendArcRadius+bendHeight/2.0);
     
   ModelSupport::buildPlane(SMap,buildIndex+313,
 			   bOrg-X*(bendThick+bendWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+314,
 			   bOrg+X*(bendThick+bendWidth/2.0),X);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+315,bendCent-Z*(bendThick+bendHeight/2.0),X,bendArcRadius);
+    (SMap,buildIndex+315,bendCent,X,bendArcRadius-(bendThick+bendHeight/2.0));
   ModelSupport::buildCylinder
-    (SMap,buildIndex+316,bendCent+Z*(bendThick+bendHeight/2.0),X,bendArcRadius);
+    (SMap,buildIndex+316,bendCent,X,bendArcRadius+(bendThick+bendHeight/2.0));
 
-  ModelSupport::buildPlane(SMap,buildIndex+322,bExit-bY*bendFlangeLength,bY);
-  ModelSupport::buildCylinder(SMap,buildIndex+327,bExit,bY,bendFlangeRadius);
+  // section after bend:
+  ModelSupport::buildPlane(SMap,buildIndex+402,cExit,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+405,bExit-bZ*(bendHeight/2.0),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+406,bExit+bZ*(bendHeight/2.0),bZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+415,bExit-bZ*(bendThick+bendHeight/2.0),bZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+416,bExit+bZ*(bendThick+bendHeight/2.0),bZ);
+  
+  // Flange
 
-  FixedComp::setConnect(3,bExit,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+422,cExit-bY*bendFlangeLength,bY);
+  ModelSupport::buildCylinder(SMap,buildIndex+427,cExit,bY,bendFlangeRadius);
+
+  FixedComp::setConnect(3,cExit,bY);
+  ELog::EM<<"Exit Point == "<<cExit<<ELog::endDiag;
+  ELog::EM<<"Exit angle == "<<180.0*atan(bY[2]/bY[1])/M_PI<<ELog::endDiag;
   return;
 }
 
@@ -357,12 +374,19 @@ TriGroup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 303 -304 305 -306 -302 ");
   makeCell("BendVoid",System,cellIndex++,voidMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"302 303 -304 405 -406 -402 ");
+  makeCell("BendVoid",System,cellIndex++,voidMat,0.0,Out);
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 -302 313 -314 315 -316 (-303:304:-305:306)");
   makeCell("BendPipe",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-302 322 -327 (-313:314:-315:316)");
+    (SMap,buildIndex,"302 -402 313 -314 415 -416 (-303:304:-405:406)");
+  makeCell("BendStr",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-402 422 -427 (-313:314:-415:416)");
   makeCell("BendFlange",System,cellIndex++,wallMat,0.0,Out);
 
 
@@ -387,11 +411,13 @@ TriGroup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"222 -227 -202");
   addOuterSurf("MFlange",Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"12 313 -314 315 -316 -302");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 313 -314 315 -316 -302");
   addOuterSurf("Bend",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"302 313 -314 415 -416 -402");
+  addOuterSurf("BendStr",Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"322 -327 -302");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"422 -427 -402");
   addOuterSurf("BFlange",Out);
 
 
@@ -415,7 +441,7 @@ TriGroup::createLinks()
 
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+302));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+402));
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"viewExit");
@@ -435,8 +461,8 @@ TriGroup::createLinks()
   
 void
 TriGroup::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int FIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int FIndex)
  /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -453,7 +479,7 @@ TriGroup::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
-  
+
   return;
 }
   

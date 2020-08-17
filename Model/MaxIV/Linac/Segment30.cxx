@@ -244,7 +244,8 @@ Segment30::createLinks()
 }
 
 void
-Segment30::regiseterPrevSeg(const TDCsegment* PSPtr)
+Segment30::registerPrevSeg(const TDCsegment* PSPtr,
+			   const size_t indexPoint)
   /*!
    Process previous segments [Used second join Item]
    This segment is register in previous segment by: joinItems
@@ -262,12 +263,9 @@ Segment30::regiseterPrevSeg(const TDCsegment* PSPtr)
     {
       const std::vector<HeadRule>& prevJoinItems=
 	prevSegPtr->getJoinItems();
-      if (prevJoinItems.size()>1)
-	{
-	  if (buildZone)
-	    buildZone->setFront(prevJoinItems[1]);
-	  this->setFrontSurfs(prevJoinItems);
-	}
+      if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
+	buildZone->setFront(prevJoinItems[indexPoint-1]);
+      this->setFrontSurfs(prevJoinItems);
     }
   return;
 }

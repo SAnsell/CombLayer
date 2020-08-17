@@ -139,12 +139,15 @@ Segment44::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    triBend->copyCutSurf("front",*this,"front");
+    {
+      ELog::EM<<"Front active "<<ELog::endDiag;
+      triBend->copyCutSurf("front",*this,"front");
+    }
 
   triBend->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,3);
   // extra for bending curver
-  outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,5);
+   outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
 
   cMag->addInsertCell(outerCell);
   cMag->addInsertCell(outerCellB);
@@ -153,7 +156,7 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertAllInCell(System,outerCellB);
   triBend->insertAllInCell(System,cMag->getCell("Void"));
   
-  // transfer to segment 13
+  // transfer to segment 45 and 46
   CellMap::addCell("LastCell",outerCell);
   buildZone->removeLastMaster(System);  
   return;
@@ -178,6 +181,8 @@ Segment44::createLinks()
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
+
+  ELog::EM<<"Exit point == "<<this->getLinkPt(4)<<ELog::endDiag;
   return;
 }
 

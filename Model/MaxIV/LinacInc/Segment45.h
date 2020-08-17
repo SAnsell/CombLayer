@@ -43,15 +43,17 @@ class Segment45 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;    // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
 
+  virtual void setFrontSurfs(const std::vector<HeadRule>&);
   void buildObjects(Simulation&);
   void createLinks();
 
+  
  public:
 
   Segment45(const std::string&);
   Segment45(const Segment45&);
   Segment45& operator=(const Segment45&);
-  ~Segment45();
+  virtual ~Segment45();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

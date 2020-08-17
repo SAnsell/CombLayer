@@ -101,11 +101,11 @@ class TDCsegment :
 		    const std::string&,
 		    PTYPE&) const;
 
-  void setFrontSurfs(const std::vector<HeadRule>&);
+  virtual void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
 
-  virtual void registerPrevSeg(const TDCsegment*);
+  virtual void registerPrevSeg(const TDCsegment*,const size_t);
   virtual void registerSideSegment(const TDCsegment*);
 
   virtual void initCellMap();

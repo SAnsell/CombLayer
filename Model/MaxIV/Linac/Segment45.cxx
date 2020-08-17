@@ -70,6 +70,7 @@
 #include "YagScreen.h"
 #include "CeramicGap.h"
 
+#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment45.h"
 
@@ -109,6 +110,28 @@ Segment45::~Segment45()
 {}
 
 void
+Segment45::setFrontSurfs(const std::vector<HeadRule>& HRvec)
+  /*!
+    Set the front surface if need to join
+    \param HR :: Front head rule
+  */
+{
+  ELog::RegMethod RegA("Segment45","setFrontSurfs");
+
+  if (!HRvec.empty())
+    {
+      for(size_t i=0;i<firstItemVec.size();i++)
+	{
+	  attachSystem::ExternalCut* FPtr=firstItemVec[i];
+	  if (FPtr)
+	    FPtr->setCutSurf("front",HRvec.back());
+	}
+    }
+  return;
+}
+
+  
+void
 Segment45::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -119,14 +142,28 @@ Segment45::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment45","buildObjects");
 
   int outerCell;
+
   MonteCarlo::Object* masterCell=buildZone->getMaster();
-
-  ceramic->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*ceramic,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
-  ceramic->insertInCell(System,outerCell);
+    masterCell=buildZone->constructMasterCell(System);
 
+  if (isActive("front"))
+    ceramic->copyCutSurf("front",*this,"front");
+
+  if (ceramic->isActive("front"))
+      ELog::EM<<"Front XX == "<<ELog::endDiag;
+
+  ELog::EM<<"Cent == "<<this->getLinkPt(0)<<ELog::endDiag;
+  ceramic->createAll(System,*this,0);
+  ELog::EM<<"Cent == "<<ceramic->getLinkPt(1)<<ELog::endDiag;
+  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
+  //  ceramic->insertInCell(System,outerCell);
+  pipeTerminate(System,*buildZone,ceramic);
+
+  buildZone->removeLastMaster(System);
+  return;
+
+  
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*ceramic,"back",*pipeA);
 
@@ -157,7 +194,8 @@ Segment45::createLinks()
   ELog::RegMethod RegA("Segment45","createLinks");
 
   setLinkSignedCopy(0,*ceramic,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(1,*ceramic,2);
+  //  setLinkSignedCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
@@ -180,7 +218,7 @@ Segment45::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  ELog::EM<<"Centre == "<<this->getLinkPt(0)<<ELog::endDiag;
   buildObjects(System);
   createLinks();
   return;

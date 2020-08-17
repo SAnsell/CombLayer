@@ -2869,8 +2869,9 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
 
   setVariable::TriGroupGenerator TGGen;
   setVariable::CurveMagGenerator CMagGen;
-  
 
+  // 267.75 / 168.0
+  TGGen.setBend(342.05,123.4,45.0);
   TGGen.generateTri(Control,lKey+"TriBend");
 
   CMagGen.generateMag(Control,lKey+"CMag");  
@@ -2893,6 +2894,9 @@ Segment45(FuncDataBase& Control,
   const Geometry::Vec3D startPt(-1010.0,8949.717,-60.951);
   const Geometry::Vec3D endPt(-1010.0,9227.315,-190.289);
 
+  Geometry::Vec3D AB=(endPt-startPt).unit();
+  ELog::EM<<"MA == "<<acos(AB[1])*180.0/M_PI<<ELog::endDiag;
+			     
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",

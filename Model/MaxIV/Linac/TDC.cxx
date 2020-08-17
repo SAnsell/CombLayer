@@ -389,7 +389,7 @@ TDC::createAll(Simulation& System,
       {"Segment42",{"spf","Segment41",1}},
       {"Segment43",{"spf","Segment42",1}},
       {"Segment44",{"spf","Segment43",1}},
-      {"Segment45",{"spf","Segment44",1}},
+      {"Segment45",{"spf","Segment44",3}},
       {"Segment46",{"spf","Segment44",1}}, // 44 is correct
       {"Segment49",{"spf","Segment49",1}}
     });
@@ -415,7 +415,6 @@ TDC::createAll(Simulation& System,
 	  SegTYPE::const_iterator prevC=SegMap.find(prevName);
 	  const TDCsegment* prevSegPtr=
 	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
-
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
 
 	  std::unique_ptr<attachSystem::InnerZone> buildZone=
@@ -423,7 +422,7 @@ TDC::createAll(Simulation& System,
 	  std::unique_ptr<attachSystem::InnerZone> secondZone;
 
 	  segPtr->setInnerZone(buildZone.get());
-	  segPtr->registerPrevSeg(prevSegPtr);
+	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
 	  if (BL=="Segment10")
 	    {
@@ -445,7 +444,7 @@ TDC::createAll(Simulation& System,
 	  segPtr->setInnerZone(buildZone.get());
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment29" &&
-	      BL!="Segment30")
+	      BL!="Segment30" && BL!="Segment45")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
