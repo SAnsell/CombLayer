@@ -547,7 +547,7 @@ makeSingleItem::build(Simulation& System,
   if (item=="CrossWay")
     {
       std::shared_ptr<tdcSystem::CrossWayTube>
-	SP(new tdcSystem::CrossWayTube("CrossWayTube"));
+	SP(new tdcSystem::CrossWayTube("CrossWay"));
 
       OR.addObject(SP);
 

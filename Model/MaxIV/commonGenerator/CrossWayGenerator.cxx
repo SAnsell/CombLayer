@@ -52,7 +52,7 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "SixPortGenerator.h"
+#include "CrossWayGenerator.h"
 
 namespace setVariable
 {
@@ -64,7 +64,7 @@ CrossWayGenerator::CrossWayGenerator() :
   yRadius(CF40::innerRadius),
   wallThick(CF63::wallThick),
   height(12.5),depth(8.3),
-  frontLength(6.8),backLength(6.8),sideLength(6.8),
+  frontLength(6.8),backLength(16.8),sideLength(6.8),
   flangeXRadius(CF40::flangeRadius),
   flangeYRadius(CF40::flangeRadius),
   flangeZRadius(CF63::flangeRadius),
@@ -159,6 +159,7 @@ CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void CrossWayGenerator::setCF<CF63>();
 template void CrossWayGenerator::setCF<CF100>();
 template void CrossWayGenerator::setCF<CF120>();
 template void CrossWayGenerator::setCF<CF150>();

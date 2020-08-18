@@ -136,7 +136,7 @@ CrossWayTube::populate(const FuncDataBase& Control)
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
 
   return;
@@ -237,23 +237,23 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 407 307");
-  makeCell("MainTube",System,cellIndex++,mainMat,0.0,Out+frontStr+backStr);
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-101 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,mainMat,0.0,Out+frontStr);
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 202 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,mainMat,0.0,Out+backStr);
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -100 -307 303 7  ");
   makeCell("LeftVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -100 -317 307 303 17 407 ");
-  makeCell("LeftWall",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 303 -313 ");
-  makeCell("LeftFlange",System,cellIndex++,flangeMat,0.0,Out);
+  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -327 -303 323 ");
   makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,Out);
@@ -264,11 +264,11 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("RightVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 100 -317 307 -304 17 407 ");
-  makeCell("RightWall",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -327 -304 314 ");
-  makeCell("RightFlange",System,cellIndex++,flangeMat,0.0,Out);
+  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -327 304 -324");
   makeCell("RightPlate",System,cellIndex++,plateMat,0.0,Out);
@@ -278,10 +278,10 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("LowVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 317");
-  makeCell("LowWall",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
-  makeCell("LowFlange",System,cellIndex++,flangeMat,0.0,Out);
+  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -405");
   makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
@@ -291,10 +291,10 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 317");
-  makeCell("TopWall",System,cellIndex++,mainMat,0.0,Out);  
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out);  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 -406 416 ");
-  makeCell("TopFlange",System,cellIndex++,flangeMat,0.0,Out);
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -427 -426 406");
   makeCell("TopPlate",System,cellIndex++,plateMat,0.0,Out);
@@ -304,8 +304,10 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("HorOuter",System,cellIndex++,0,0.0,Out);
   // vert void
   Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417 327 ");
+  if (
   makeCell("VertOuter",System,cellIndex++,0,0.0,Out);
-
+  ELog::EM<<"Front void == "<<cellIndex<<ELog::endDiag;
+  
   // front void
   Out=ModelSupport::getComposite(SMap,buildIndex," -200 17 327 427 -107 101");
   makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
@@ -315,18 +317,9 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
 
   // outer void box:
-  if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
-      addOuterSurf(Out+frontStr+backStr);
-    }
-  else
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 -200");
-      addOuterSurf(Out+frontStr);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-207 200");
-      addOuterSurf(Out+backStr);
-    }
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
+  addOuterSurf(Out+frontStr+backStr);
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"(323 -327 -324) : (425 -426 -427)");
   addOuterUnionSurf(Out+frontStr+backStr);
