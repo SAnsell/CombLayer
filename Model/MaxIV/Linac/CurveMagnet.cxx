@@ -158,10 +158,13 @@ CurveMagnet::createSurfaces()
     (SMap,buildIndex+114,Origin+X*(coilGap/2.0+coilWidth),X);
 
   ModelSupport::buildCylinder
-   (SMap,buildIndex+105,centOrg-Z*(coilDepth/2.0),X,coilArcRadius);
+   (SMap,buildIndex+105,centOrg,X,coilArcRadius-coilDepth/2.0);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+106,centOrg+Z*(coilDepth/2.0),X,coilArcRadius);
+    (SMap,buildIndex+106,centOrg,X,coilArcRadius+coilDepth/2.0);
+
+  ELog::EM<<"Coil ARC == "<<coilArcRadius<<" "<<coilDepth/2.0<<" == "<<
+    centOrg<<ELog::endDiag;
 
   // end caps
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,X,coilDepth/2.0);
@@ -169,10 +172,10 @@ CurveMagnet::createSurfaces()
 
   // inner gap
   ModelSupport::buildCylinder
-   (SMap,buildIndex+115,centOrg-Z*(poleHeight/2.0),X,coilArcRadius);
+   (SMap,buildIndex+115,centOrg,X,coilArcRadius-poleHeight/2.0);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+116,centOrg+Z*(poleHeight/2.0),X,coilArcRadius);
+    (SMap,buildIndex+116,centOrg,X,coilArcRadius+poleHeight/2.0);
   
   ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,X,poleHeight/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+118,bOrg,X,poleHeight/2.0);

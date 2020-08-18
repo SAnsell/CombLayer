@@ -287,7 +287,8 @@ TriGroup::createSurfaces()
     (SMap,buildIndex+305,bendCent,X,bendArcRadius-bendHeight/2.0);
   ModelSupport::buildCylinder
     (SMap,buildIndex+306,bendCent,X,bendArcRadius+bendHeight/2.0);
-    
+  ELog::EM<<"Bend ARC == "<<bendArcRadius<<" "<<bendHeight/2.0<<" == "<<
+    bendCent<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+313,
 			   bOrg-X*(bendThick+bendWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+314,
@@ -312,8 +313,8 @@ TriGroup::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+427,cExit,bY,bendFlangeRadius);
 
   FixedComp::setConnect(3,cExit,bY);
-  ELog::EM<<"Exit Point == "<<cExit<<ELog::endDiag;
-  ELog::EM<<"Exit angle == "<<180.0*atan(bY[2]/bY[1])/M_PI<<ELog::endDiag;
+  //  ELog::EM<<"Exit Point == "<<cExit<<ELog::endDiag;
+  //  ELog::EM<<"Exit angle == "<<180.0*atan(bY[2]/bY[1])/M_PI<<ELog::endDiag;
   return;
 }
 

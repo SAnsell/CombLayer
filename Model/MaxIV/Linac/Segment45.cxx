@@ -150,25 +150,14 @@ Segment45::buildObjects(Simulation& System)
   if (isActive("front"))
     ceramic->copyCutSurf("front",*this,"front");
 
-  if (ceramic->isActive("front"))
-      ELog::EM<<"Front XX == "<<ELog::endDiag;
-
-  ELog::EM<<"Cent == "<<this->getLinkPt(0)<<ELog::endDiag;
   ceramic->createAll(System,*this,0);
-  ELog::EM<<"Cent == "<<ceramic->getLinkPt(1)<<ELog::endDiag;
-  //  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
-  //  ceramic->insertInCell(System,outerCell);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
+  ceramic->insertInCell(System,outerCell);
   pipeTerminate(System,*buildZone,ceramic);
-
-  buildZone->removeLastMaster(System);
-  return;
-
   
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*ceramic,"back",*pipeA);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);

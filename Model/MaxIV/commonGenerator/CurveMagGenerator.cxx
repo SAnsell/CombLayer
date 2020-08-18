@@ -53,11 +53,11 @@ CurveMagGenerator::CurveMagGenerator() :
 
   poleGap(1.1),poleHeight(2.4),poleAngle(30.0),
 
-  coilGap(3.65),coilArcRadius(555.127),
+  coilGap(3.65),coilArcRadius(313.40),
   coilArcLength(240.0),
   coilDepth(15.0),coilWidth(8.0),
   
-  supportGap(20.4),supportRadius(267.75),
+  supportGap(20.4),supportRadius(313.75),
   supportDepth(25.0),supportBase(12.0),
   
   poleMat("Iron"),coilMat("Copper"),supportMat("Stainless304L")

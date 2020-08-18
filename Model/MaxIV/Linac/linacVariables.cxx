@@ -2876,6 +2876,9 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
 
   CMagGen.generateMag(Control,lKey+"CMag");  
   Control.addVariable(lKey+"CMagYStep",9.0);
+  Control.addVariable(lKey+"CMagZStep",-22.8);
+  Control.addVariable(lKey+"CMagXAngle",16.0);
+  
   
   return;
 }
