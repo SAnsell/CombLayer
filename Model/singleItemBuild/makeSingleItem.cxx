@@ -89,6 +89,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
+#include "CrossWayTube.h"
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
@@ -145,7 +146,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
-      "FlatPipe","TriPipe","TriGroup","SixPort",
+      "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
@@ -535,6 +536,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::SixPortTube>
 	SP(new tdcSystem::SixPortTube("SixPort"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="CrossWay")
+    {
+      std::shared_ptr<tdcSystem::CrossWayTube>
+	SP(new tdcSystem::CrossWayTube("CrossWayTube"));
 
       OR.addObject(SP);
 

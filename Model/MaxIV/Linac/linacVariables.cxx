@@ -2661,7 +2661,7 @@ Segment40(FuncDataBase& Control,const std::string& lKey)
   setVariable::UndVacGenerator UVGen;
   setVariable::FMUndulatorGenerator UUGen;
 
-  // SPF39
+  // SPF40
   const Geometry::Vec3D startPt(-1010.0,7449.099,0.0);
   const Geometry::Vec3D endPt(-1010.0,7971.099,0.0);
 
@@ -2945,14 +2945,8 @@ Segment46(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment46");
 
   // SPF46
-  // const Geometry::Vec3D startPt(-1010.0,8825.445,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,9105.245,0.0);
-
-  ELog::EM << "SPF46 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
-  // SPF35
-  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
-  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
-
+  const Geometry::Vec3D startPt(-1010.0,8825.445,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9105.245,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -2964,7 +2958,7 @@ Segment46(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeA",96.2);
   PGen.generatePipe(Control,lKey+"PipeB",230.0);
 
   // Gate valves
@@ -2973,7 +2967,8 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"GateAYAngle",180.0);
   Control.addVariable(lKey+"GateAWallThick",0.3);
   Control.addVariable(lKey+"GateAPortThick",0.1);
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
+  // email from Karl Åhnberg, 2 Jun 2020
+  Control.addVariable(lKey+"GateAWallMat","Stainless316L");
   Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
@@ -3207,11 +3202,20 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfOuterRight",50.0);
   Control.addVariable("spfOuterTop",100.0);
 
+  
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
   Control.addVariable("spfLongOuterLeft",50.0);
   Control.addVariable("spfLongOuterRight",50.0);
   Control.addVariable("spfLongOuterTop",100.0);
+
+
+  // start/endPt of Segment40
+  Control.addVariable("spfFarXStep",-995.514+linacVar::zeroX);
+  Control.addVariable("spfFarYStep",7900.0+linacVar::zeroY);
+  Control.addVariable("spfFarOuterLeft",50.0);
+  Control.addVariable("spfFarOuterRight",50.0);
+  Control.addVariable("spfFarOuterTop",100.0);
 
 
   linacVar::Segment1(Control,"L2SPF1");

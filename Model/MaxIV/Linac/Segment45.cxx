@@ -158,6 +158,9 @@ Segment45::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*ceramic,"back",*pipeA);
 
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);

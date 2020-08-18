@@ -272,7 +272,8 @@ TDC::buildInnerZone(const FuncDataBase& Control,
       {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfLong"  ,{"TDCLong","#Back","",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}}
+      {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
     });
 
   RMAP::const_iterator rc=regZones.find(regionName);
@@ -384,14 +385,14 @@ TDC::createAll(Simulation& System,
       {"Segment37",{"spf","Segment36",1}},
       {"Segment38",{"spf","Segment37",1}},
       {"Segment39",{"spf","Segment38",1}},
-      {"Segment40",{"spf","Segment39",1}},
-      {"Segment41",{"spf","Segment40",1}},
-      {"Segment42",{"spf","Segment41",1}},
-      {"Segment43",{"spf","Segment42",1}},
-      {"Segment44",{"spf","Segment43",1}},
-      {"Segment45",{"spf","Segment44",3}},
-      {"Segment46",{"spf","Segment44",1}}, // 44 is correct
-      {"Segment49",{"spf","Segment49",1}}
+      {"Segment40",{"spfFar","Segment39",1}},
+      {"Segment41",{"spfFar","Segment40",1}},
+      {"Segment42",{"spfFar","Segment41",1}},
+      {"Segment43",{"spfFar","Segment42",1}},
+      {"Segment44",{"spfFar","Segment43",1}},
+      {"Segment45",{"spfFar","Segment44",3}},
+      {"Segment46",{"spfFar","Segment44",1}}, // 44 is correct
+      {"Segment49",{"spfFar","Segment49",1}}
     });
   const int voidCell(74123);
 
@@ -457,7 +458,7 @@ TDC::createAll(Simulation& System,
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
 	  segPtr->captureCellMap();
-	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
 	}
     }
   return;

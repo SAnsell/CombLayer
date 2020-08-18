@@ -77,6 +77,7 @@
 #include "ScrapperGenerator.h"
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
+#include "CrossWayGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
@@ -225,6 +226,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
+
+  setVariable::CrossWayGenerator MSPGen;
+  MSPGen.generateCrossWay(Control,"CrossWay");
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;

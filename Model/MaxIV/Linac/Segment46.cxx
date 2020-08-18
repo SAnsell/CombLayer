@@ -129,20 +129,39 @@ Segment46::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  pipeA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
 
+  if (!masterCell)
+    masterCell=buildZone->constructMasterCell(System);
+  if (isActive("front"))
+    pipeA->copyCutSurf("front",*this,"front");
+
+  pipeA->createAll(System,*this,0);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  
+  pipeA->insertInCell(System,outerCell);
+    
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*gateA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateA,"back",*bellowA);
 
+  
   const constructSystem::portItem& BP =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*prismaChamber);
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",
+		      *prismaChamber);
+
+
+
+  buildZone->removeLastMaster(System);
+  return;
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowA,"back",*pipeB);
+
+  // const constructSystem::portItem& BP =
+  //   buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*prismaChamber);
+
 
   // constructSystem::constructUnit
   //   (System,*buildZone,masterCell,BP,"OuterPlate",*bellowB);

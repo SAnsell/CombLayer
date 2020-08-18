@@ -73,7 +73,6 @@
 #include "VacuumPipe.h"
 #include "TriPipe.h"
 #include "DipoleDIBMag.h"
-#include "SixPortTube.h"
 #include "subPipeUnit.h"
 #include "MultiPipe.h"
 #include "YagUnit.h"
