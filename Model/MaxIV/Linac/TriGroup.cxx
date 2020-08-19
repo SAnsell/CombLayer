@@ -315,6 +315,10 @@ TriGroup::createSurfaces()
   FixedComp::setConnect(3,cExit,bY);
   //  ELog::EM<<"Exit Point == "<<cExit<<ELog::endDiag;
   //  ELog::EM<<"Exit angle == "<<180.0*atan(bY[2]/bY[1])/M_PI<<ELog::endDiag;
+
+  // Mid splitting point
+  FixedComp::setConnect(4,mOrg+mY*midLength-mZ*midFlangeRadius,(mY+bY).unit());
+			
   return;
 }
 
@@ -443,6 +447,7 @@ TriGroup::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+402));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+202));
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"viewExit");

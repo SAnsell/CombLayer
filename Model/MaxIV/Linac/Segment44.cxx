@@ -132,7 +132,7 @@ Segment44::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment44","buildObjects");
 
-  int outerCell,outerCellB;
+  int outerCell,outerCellB,outerCellC;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
@@ -145,19 +145,34 @@ Segment44::buildObjects(Simulation& System)
     }
 
   triBend->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,3);
-  // extra for bending curver
-   outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
+  // extra for bending curve and view port
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,2);
+  outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,3);
+  outerCellC=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
 
   cMag->addInsertCell(outerCell);
   cMag->addInsertCell(outerCellB);
+  cMag->addInsertCell(outerCellC);
   cMag->createAll(System,*this,0);
-  triBend->insertAllInCell(System,outerCell);
-  triBend->insertAllInCell(System,outerCellB);
+
+  triBend->insertInCell("Main",System,outerCell);
+  triBend->insertInCell("FFlange",System,outerCell);
+  triBend->insertInCell("TFlange",System,outerCell);
+  triBend->insertInCell("Top",System,outerCell);
+  triBend->insertInCell("Mid",System,outerCell);
+
+  triBend->insertInCell("MFlange",System,outerCellB);
+  triBend->insertInCell("Mid",System,outerCellB);
+
+
+  triBend->insertInCell("Bend",System,outerCellC);
+  triBend->insertInCell("BendStr",System,outerCellC);
+  triBend->insertInCell("BendStr",System,outerCellC);
+  triBend->insertInCell("BFlange",System,outerCellC);
   triBend->insertAllInCell(System,cMag->getCell("Void"));
   
   // transfer to segment 45 and 46
-  CellMap::addCell("LastCell",outerCell);
+  CellMap::addCell("LastCell",outerCellC);
   buildZone->removeLastMaster(System);  
   return;
 }
@@ -173,16 +188,18 @@ Segment44::createLinks()
   setLinkSignedCopy(1,*triBend,2);  // straight exit
   setLinkSignedCopy(2,*triBend,3);  // mid exit
   setLinkSignedCopy(3,*triBend,4);  // bend exit
+  setLinkSignedCopy(4,*triBend,5);  // bend exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"midExit");
   FixedComp::nameSideIndex(3,"magnetExit");
+  FixedComp::nameSideIndex(4,"splitPoint");
   
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
 
-  ELog::EM<<"Exit point == "<<this->getLinkPt(4)<<ELog::endDiag;
+  
   return;
 }
 

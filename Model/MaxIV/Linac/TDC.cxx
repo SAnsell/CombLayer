@@ -435,6 +435,13 @@ TDC::createAll(Simulation& System,
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
+	  if (BL=="Segment46")
+	    {
+	      const TDCsegment* sidePtrA=
+		SegMap.find("Segment44")->second.get();
+	      if (sidePtrA->isBuilt())
+		segPtr->registerSideSegment(sidePtrA);
+	    }
 	  if (BL=="Segment30")
 	    {
 	      const TDCsegment* sidePtrA=
@@ -450,7 +457,8 @@ TDC::createAll(Simulation& System,
 	  segPtr->setInnerZone(buildZone.get());
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment29" &&
-	      BL!="Segment30" && BL!="Segment45")
+	      BL!="Segment30" && BL!="Segment45" &&
+	      BL!="Segment46")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());

@@ -3116,7 +3116,8 @@ Segment46(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",96.8); // measured
+  ELog::EM<<"ADDED 80 for debug"<<ELog::endCrit;
+  PGen.generatePipe(Control,lKey+"PipeA",96.8+80.0); // measured
   const double pipeBLength(40.0);  // measured
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
 
