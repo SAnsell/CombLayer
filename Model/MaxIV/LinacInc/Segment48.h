@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   LinacInc/Segment46.h
+ * File:   LinacInc/Segment48.h
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -19,55 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_Segment46_h
-#define tdcSystem_Segment46_h
-
-namespace constructSystem
-{
-  class PortTube;
-  class JawFlange;
-}
+#ifndef tdcSystem_Segment48_h
+#define tdcSystem_Segment48_h
 
 namespace tdcSystem
 {
-  class CleaningMagnet;
-
   /*!
-    \class Segment46
+    \class Segment48
     \version 1.0
     \author K. Batkov
     \date July 2020
-    \brief SPF segment 46
+    \brief SPF segment 48
   */
 
-class Segment46 :
+class Segment48 :
   public TDCsegment
 {
  private:
 
+  std::shared_ptr<tdcSystem::EBeamStop> beamStopA;    // #1
+  std::shared_ptr<constructSystem::Bellows> bellowA;  // #2
+  std::shared_ptr<tdcSystem::EBeamStop> beamStopB;    // #1
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
-  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2
-  std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
-  std::shared_ptr<constructSystem::BlankTube> prismaChamber; ///< #4
+  std::shared_ptr<constructSystem::PortTube> slitTube; // #4
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #4
+  std::shared_ptr<constructSystem::Bellows> bellowB;  // #5
   std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
-  std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
-  std::shared_ptr<constructSystem::PortTube> slitTube; // #9
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #9
-  std::shared_ptr<constructSystem::Bellows> bellowB; // #10
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberB; ///< #6
-  std::shared_ptr<constructSystem::Bellows> bellowC; // #10
-  std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
+  std::shared_ptr<constructSystem::Bellows> bellowC;  // #5
 
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Segment46(const std::string&);
-  Segment46(const Segment46&);
-  Segment46& operator=(const Segment46&);
-  ~Segment46();
+  Segment48(const std::string&);
+  Segment48(const Segment48&);
+  Segment48& operator=(const Segment48&);
+  ~Segment48();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

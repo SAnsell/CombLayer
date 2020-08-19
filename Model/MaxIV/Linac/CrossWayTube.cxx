@@ -304,9 +304,17 @@ CrossWayTube::createObjects(Simulation& System)
   makeCell("HorOuter",System,cellIndex++,0,0.0,Out);
   // vert void
   Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417 327 ");
-  if (
+  if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
+    {
+      if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
+	Out+=ModelSupport::getComposite(SMap,buildIndex," ((101 -202):107) ");
+      else
+	Out+=ModelSupport::getComposite(SMap,buildIndex," (101:107) ");
+    }
+  else if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
+    Out+=ModelSupport::getComposite(SMap,buildIndex," (-202:107) ");
+
   makeCell("VertOuter",System,cellIndex++,0,0.0,Out);
-  ELog::EM<<"Front void == "<<cellIndex<<ELog::endDiag;
   
   // front void
   Out=ModelSupport::getComposite(SMap,buildIndex," -200 17 327 427 -107 101");
@@ -344,10 +352,10 @@ CrossWayTube::createLinks()
   FixedComp::setConnect(3,Origin+X*(sideLength+plateThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
 
-  FixedComp::setConnect(4,Origin-Z*(sideLength+plateThick),-Z);
+  FixedComp::setConnect(4,Origin-Z*(depth+plateThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+425));
 
-  FixedComp::setConnect(5,Origin+Z*(sideLength+plateThick),Z);
+  FixedComp::setConnect(5,Origin+Z*(height+plateThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
   
   return;

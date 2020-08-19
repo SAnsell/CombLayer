@@ -25,7 +25,7 @@
 
 namespace setVariable
 {
-
+    
 /*!
   \struct CF8
   \version 1.0

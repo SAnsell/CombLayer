@@ -189,7 +189,7 @@ makeMaxIV::buildInjection(Simulation& System,
 	 "Segment37", "Segment38", "Segment39",
 	 "Segment40", "Segment41", "Segment42",
 	 "Segment43"
-	 
+
 	} },
        {"L2SPF",
 	{"Segment1","Segment2","Segment3",
@@ -212,7 +212,8 @@ makeMaxIV::buildInjection(Simulation& System,
 	       "Segment36","Segment37","Segment38",
 	       "Segment39","Segment40","Segment41",
 	       "Segment42","Segment43","Segment44",
-	       "Segment45","Segment46","Segment49"}},
+	       "Segment45","Segment46","Segment47",
+	       "Segment48","Segment49"}},
 
        {"Segment1",{} },                             // first only
        {"Segment2",{} },                             // second only
@@ -256,6 +257,8 @@ makeMaxIV::buildInjection(Simulation& System,
        {"Segment44",{} },                            // 44th only
        {"Segment45",{} },                            // 45th only
        {"Segment46",{} },                            // 46th only
+       {"Segment47",{} },                            // 47th only
+       {"Segment48",{} },                            // 48th only
        {"Segment49",{} }                             // 49th only
 
     });

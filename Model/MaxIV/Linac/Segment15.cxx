@@ -129,7 +129,7 @@ Segment15::buildObjects(Simulation& System)
   pipeA->insertInCell(System,outerCell);
 
   const constructSystem::portItem& mirrorChamberPort1 =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*mirrorChamber);
+    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*mirrorChamber,true);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);

@@ -106,8 +106,13 @@
 #include "PipeTube.h"
 #include "BlankTube.h"
 #include "ButtonBPM.h"
+#include "CleaningMagnet.h"
 #include "UndulatorVacuum.h"
-
+#include "PortTube.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "JawFlange.h"
+#include "portItem.h"
 
 #include "makeSingleItem.h"
 
@@ -142,7 +147,8 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","CorrectorMag","CurveMag","LQuadF","LQuadH","LSexupole",
+      "CylGateValve","CleaningMagnet","CorrectorMag","Jaws",
+      "LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -285,6 +291,17 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "CleaningMagnet")
+    {
+      std::shared_ptr<tdcSystem::CleaningMagnet>
+	cm(new tdcSystem::CleaningMagnet("CleaningMagnet"));
+      OR.addObject(cm);
+
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
 
   if (item == "CorrectorMag" )
     {
@@ -304,6 +321,43 @@ makeSingleItem::build(Simulation& System,
       CM->createAll(System,World::masterOrigin(),0);
 
       return;
+    }
+
+  if (item == "Jaws")
+    {
+      // diagnostic box
+      std::shared_ptr<constructSystem::PortTube>
+	diagBox(new constructSystem::PortTube("DiagnosticBox"));
+      // two pairs of jaws
+      std::array<std::shared_ptr<constructSystem::JawFlange>,2>
+	jawComp
+	({
+	  std::make_shared<constructSystem::JawFlange>("DiagnosticBoxJawUnit0"),
+	  std::make_shared<constructSystem::JawFlange>("DiagnosticBoxJawUnit1")
+	});
+      OR.addObject(diagBox);
+      OR.addObject(jawComp[0]);
+      OR.addObject(jawComp[1]);
+
+      diagBox->addAllInsertCell(voidCell);
+      diagBox->createAll(System,World::masterOrigin(),0);
+
+      for(size_t index=0;index<2;index++)
+	{
+	  const constructSystem::portItem& DPI=diagBox->getPort(index);
+	  jawComp[index]->setFillRadius
+	    (DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+
+	  jawComp[index]->addInsertCell(diagBox->getCell("Void"));
+	  if (index)
+	    jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
+	  jawComp[index]->createAll
+	    (System,DPI,DPI.getSideIndex("InnerPlate"),*diagBox,0);
+	}
+
+      // simplify the DiagnosticBox inner cell
+      diagBox->splitVoidPorts(System,"SplitOuter",2001,
+			      diagBox->getCell("Void"),{0,2});
     }
 
   if (item == "EArrivalMon" )

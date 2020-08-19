@@ -21,4 +21,4 @@
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
     dents .5 scale .5 }}
 
-#declare matIron = texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.5 } };
+#declare matIron = texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.9 } };

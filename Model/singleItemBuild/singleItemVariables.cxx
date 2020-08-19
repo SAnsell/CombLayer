@@ -91,7 +91,10 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
+#include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "JawFlangeGenerator.h"
+#include "CleaningMagnetGenerator.h"
 
 namespace setVariable
 {
@@ -406,6 +409,59 @@ SingleItemVariables(FuncDataBase& Control)
   ButtonBPMGen.setCF<setVariable::CF40_22>();
   ButtonBPMGen.generate(Control,"ButtonBPM");
 
+  // Cleaning magnet
+  setVariable::CleaningMagnetGenerator ClMagGen;
+  ClMagGen.generate(Control,"CleaningMagnet");
+
+  // Jaws
+  const std::string Name="DiagnosticBox";
+  const double DLength(16.0);
+
+  setVariable::PortTubeGenerator PTubeGen;
+
+  PTubeGen.setMat("Stainless304");
+
+  const double Radius(7.5);
+  const double WallThick(0.5);
+  const double PortRadius(Radius+WallThick+0.5);
+  PTubeGen.setPipe(Radius,WallThick);
+  PTubeGen.setPortCF<setVariable::CF40>();
+  const double sideWallThick(1.0);
+  PTubeGen.setPortLength(-sideWallThick,sideWallThick);
+  PTubeGen.setAFlange(PortRadius,sideWallThick);
+  PTubeGen.setBFlange(PortRadius,sideWallThick);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
+  Control.addVariable(Name+"NPorts",4);
+
+  const std::string portName=Name+"Port";
+  const Geometry::Vec3D MidPt(0,1.5,0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D PPos(0.0,DLength/8.0,0);
+
+  // first 2 ports are with jaws, others - without jaws
+  PItemGen.setOuterVoid(1);  // create boundary round flange
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
+
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"2",-PPos,-ZVec);
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.generatePort(Control,portName+"3",MidPt,-XVec);
+
+  // PItemGen.setCF<setVariable::CF63>(10.0);
+  // PItemGen.generatePort(Control,portName+"4",MidPt,
+  // 			Geometry::Vec3D(1,0,1));
+
+  JawFlangeGenerator JFlanGen;
+  JFlanGen.setSlits(2.5, 2.5, 0.4, "Tantalum"); // W,H,T,mat
+  JFlanGen.generateFlange(Control,Name+"JawUnit0");
+  JFlanGen.generateFlange(Control,Name+"JawUnit1");
+
+  Control.addVariable(Name+"JawUnit0JOpen",1.7);
+  Control.addVariable(Name+"JawUnit1JOpen",1.7);
 
   return;
 }

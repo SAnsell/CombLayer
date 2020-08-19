@@ -37,10 +37,20 @@
     #declare cameraLookAt   = <3.0, 5, -4.0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"CleaningMagnet"))
+    #declare cameraLocation = <50, 70, 50>;
+    #declare cameraLookAt   = <0, 20, -5>;
+    #declare cameraAngle = 35;
+  #break
   #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;
     #declare cameraLookAt   = <0, -3, 0.0>;
     #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"Jaws"))
+    #declare cameraLocation = <50, -30, 50>;
+    #declare cameraLookAt   = <0, 13, -3>;
+    #declare cameraAngle = 30;
   #break
   #case (strcmp(ITEM,"LSexupole"))
     #declare cameraLocation = <-30, 70.0, 30.0>;
@@ -51,6 +61,11 @@
     #declare cameraLocation = <-30, 70.0, 30.0>;
     #declare cameraLookAt   = <10.0, 5.0, -11.0>;
     #declare cameraAngle = 25;
+  #break
+  #case (strcmp(ITEM,"uVac")) // UndulatorVacuum
+    #declare cameraLocation = <-200, -50.0, 100.0>;
+    #declare cameraLookAt   = <0.0, 140.0, 0.0>;
+    #declare cameraAngle = 60;
   #break
   #case (strcmp(ITEM,"YagUnit"))
     #declare cameraLocation = <-30, -30.0, 40.0>;

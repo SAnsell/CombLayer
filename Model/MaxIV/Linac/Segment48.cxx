@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: Linac/Segment46.cxx
+ * File: Linac/Segment48.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
@@ -40,6 +40,9 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Object.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -50,7 +53,6 @@
 #include "FrontBackCut.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "CylGateValve.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "objectRegister.h"
@@ -66,44 +68,36 @@
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-#include "BlankTube.h"
-#include "CleaningMagnet.h"
-#include "LObjectSupport.h"
 #include "PortTube.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
-#include "JawFlange.h"
 #include "portItem.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Object.h"
+#include "FixedOffset.h"
+#include "EBeamStop.h"
+#include "JawFlange.h"
 
 #include "TDCsegment.h"
-#include "Segment46.h"
+#include "Segment48.h"
 
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
-Segment46::Segment46(const std::string& Key) :
+Segment48::Segment48(const std::string& Key) :
   TDCsegment(Key,2),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  gateA(new xraySystem::CylGateValve(keyName+"GateA")),
+  beamStopA(new tdcSystem::EBeamStop(keyName+"BeamStopA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  prismaChamber(new constructSystem::BlankTube(keyName+"PrismaChamber")),
-  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
+  beamStopB(new tdcSystem::EBeamStop(keyName+"BeamStopB")),
+  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
   jaws({
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
     }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
-  bellowC(new constructSystem::Bellows(keyName+"BellowC")),
-  gateB(new xraySystem::CylGateValve(keyName+"GateB"))
+  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -112,72 +106,56 @@ Segment46::Segment46(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
-  OR.addObject(gateA);
+  OR.addObject(beamStopA);
   OR.addObject(bellowA);
-  OR.addObject(prismaChamber);
-  OR.addObject(mirrorChamberA);
-  OR.addObject(pipeB);
-  OR.addObject(cleaningMag);
+  OR.addObject(beamStopB);
+  OR.addObject(pipeA);
   OR.addObject(slitTube);
   OR.addObject(bellowB);
-  OR.addObject(mirrorChamberB);
+  OR.addObject(mirrorChamberA);
   OR.addObject(bellowC);
-  OR.addObject(gateB);
 
-  setFirstItems(pipeA);
+  setFirstItems(beamStopA);
 }
 
-Segment46::~Segment46()
+Segment48::~Segment48()
   /*!
     Destructor
    */
 {}
 
 void
-Segment46::buildObjects(Simulation& System)
+Segment48::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("Segment46","buildObjects");
+  ELog::RegMethod RegA("Segment48","buildObjects");
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-
+  beamStopA->createAll(System,*this,0);
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-  if (isActive("front"))
-    pipeA->copyCutSurf("front",*this,"front");
-
-  pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  
-  pipeA->insertInCell(System,outerCell);
-    
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*gateA);
+    masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
+  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
+  beamStopA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateA,"back",*bellowA);
+    (System,*buildZone,masterCell,*beamStopA,"back",*bellowA);
 
-  const constructSystem::portItem& PC =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*prismaChamber);
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*bellowA,"back",*beamStopB);
 
-  const constructSystem::portItem& MCA =
-    buildIonPump2Port(System,*buildZone,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
-
-  pipeB->createAll(System,MCA,"OuterPlate");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cleaningMag);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*beamStopB,"back",*pipeA);
 
   // Slit tube and jaws
   slitTube->addAllInsertCell(masterCell->getName());
-  slitTube->setFront(*pipeB,"back");
-  slitTube->createAll(System,*pipeB,"back");
+  slitTube->setFront(*pipeA,"back");
+  slitTube->createAll(System,*pipeA,"back");
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*slitTube,2);
   slitTube->insertAllInCell(System,outerCell);
 
@@ -185,31 +163,28 @@ Segment46::buildObjects(Simulation& System)
     {
       const constructSystem::portItem& DPI=slitTube->getPort(index);
       jaws[index]->setFillRadius
-	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+  	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
 
       jaws[index]->addInsertCell(slitTube->getCell("Void"));
       if (index)
-	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
+  	jaws[index]->addInsertCell(jaws[index-1]->getCell("Void"));
       jaws[index]->createAll
-	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
+  	(System,DPI,DPI.getSideIndex("InnerPlate"),*slitTube,0);
     }
 
   // simplify the DiagnosticBox inner cell
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
-			  slitTube->getCell("Void"),{0,2});
+  			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*slitTube,"back",*bellowB);
 
-  const constructSystem::portItem& MCB =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*mirrorChamberB,true);
+  const constructSystem::portItem& MCA =
+    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*mirrorChamberA,true);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,MCB,"OuterPlate",*bellowC);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowC,"back",*gateB);
+    (System,*buildZone,masterCell,MCA,"OuterPlate",*bellowC);
 
   buildZone->removeLastMaster(System);
 
@@ -217,15 +192,15 @@ Segment46::buildObjects(Simulation& System)
 }
 
 void
-Segment46::createLinks()
+Segment48::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("Segment46","createLinks");
+  ELog::RegMethod RegA("Segment48","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*gateB,2);
+  setLinkSignedCopy(0,*beamStopA,1);
+  setLinkSignedCopy(1,*bellowC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
@@ -233,7 +208,7 @@ Segment46::createLinks()
 }
 
 void
-Segment46::createAll(Simulation& System,
+Segment48::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -244,7 +219,7 @@ Segment46::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment46","build");
+  ELog::RegMethod RControl("Segment48","build");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
