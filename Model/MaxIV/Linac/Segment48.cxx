@@ -143,9 +143,11 @@ Segment48::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*beamStopA,"back",*bellowA);
 
+  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*bellowA,"back",*beamStopB);
 
@@ -176,7 +178,7 @@ Segment48::buildObjects(Simulation& System)
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
   			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
-
+  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*slitTube,"back",*bellowB);
 
@@ -200,7 +202,9 @@ Segment48::createLinks()
   ELog::RegMethod RegA("Segment48","createLinks");
 
   setLinkSignedCopy(0,*beamStopA,1);
-  setLinkSignedCopy(1,*bellowC,2);
+  setLinkSignedCopy(1,*beamStopA,2);
+
+  //  setLinkSignedCopy(1,*bellowC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

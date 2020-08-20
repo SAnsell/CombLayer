@@ -3176,12 +3176,11 @@ Segment47(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","Segment46");
+  ELog::RegMethod RegA("linacVariables[F]","Segment47");
 
-  //  // SPF47
+  // SPF47
   const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
-  const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
-  
+  const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);  
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3193,6 +3192,7 @@ Segment47(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
+
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
   PGen.generatePipe(Control,lKey+"PipeB",12.6); // measured
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
@@ -3240,13 +3240,9 @@ Segment48(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment48");
 
   // SPF48
-  // const Geometry::Vec3D startPt(-1010.0,9327.140,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,9495.745,0.0);
+  const Geometry::Vec3D startPt(-1010.0,9327.140,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9495.745,0.0);
 
-  ELog::EM << "SPF48 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
-  // SPF35
-  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
-  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3338,7 +3334,7 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",9880.0);
+  Control.addVariable(wallKey+"MainLength",10080.0);
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);

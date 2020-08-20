@@ -108,7 +108,6 @@ class R3FrontEnd :
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeInsert> chokeInsert;
 
-
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// electron cut cell
