@@ -278,9 +278,8 @@ Segment46::createLinks()
   ELog::RegMethod RegA("Segment46","createLinks");
 
   setLinkSignedCopy(0,*pipeA,1);
-  
-  //  setLinkSignedCopy(1,*gateB,2);
-  setLinkSignedCopy(1,*pipeA,2);
+  setLinkSignedCopy(1,*gateB,2);
+
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

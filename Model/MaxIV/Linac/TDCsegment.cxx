@@ -154,10 +154,7 @@ TDCsegment::setFrontSurfs(const std::vector<HeadRule>& HRvec)
     {
       attachSystem::ExternalCut* FPtr=firstItemVec[i];
       if (FPtr)
-	{
-	  ELog::EM<<"Setting front == "<<HRvec[i]<<ELog::endDiag;
-	  FPtr->setCutSurf("front",HRvec[i]);
-	}
+	FPtr->setCutSurf("front",HRvec[i]);
     }
   return;
 }
@@ -187,11 +184,8 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
       if (!prevJoinItems.empty())
 	{
 	  if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
-	    {
-	      ELog::EM<<"Join items == "
-		      <<prevJoinItems[indexPoint-1]<<ELog::endDiag;
-	      buildZone->setFront(prevJoinItems[indexPoint-1]);
-	    }
+	    buildZone->setFront(prevJoinItems[indexPoint-1]);
+
 	  this->setFrontSurfs(prevJoinItems);
 	}
     }

@@ -97,7 +97,7 @@ CurveMagnet::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("CurveMagnet","populate");
 
   FixedRotate::populate(Control);
-  ELog::EM<<"YStep == "<<yStep<<ELog::endDiag;
+
   poleGap=Control.EvalVar<double>(keyName+"PoleGap");
   poleHeight=Control.EvalVar<double>(keyName+"PoleHeight");
   poleAngle=Control.EvalVar<double>(keyName+"PoleAngle");

@@ -3179,14 +3179,9 @@ Segment47(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment46");
 
   //  // SPF47
-  // const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
-
-  ELog::EM << "SPF47 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
-  // SPF35
-  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
-  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
-
+  const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
+  
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);

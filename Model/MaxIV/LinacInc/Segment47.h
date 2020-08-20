@@ -49,6 +49,7 @@ class Segment47 :
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
 
+  void createSplitInnerZone(Simulation&);
   void buildObjects(Simulation&);
   void createLinks();
 
