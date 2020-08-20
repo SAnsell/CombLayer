@@ -504,6 +504,7 @@ Segment1(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::StriplineBPMGenerator BPMGen;
 
   // exactly 1m from wall.
   const Geometry::Vec3D startPt(0,0,0);
@@ -511,11 +512,11 @@ Segment1(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",16.15);
   // note larger unit
-  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   //  corrector mag and pie
@@ -523,7 +524,9 @@ Segment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
   CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
 
+  PGen.setCF<setVariable::CF16_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",33.85);
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeD",114.3);
 
   CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
@@ -531,8 +534,9 @@ Segment1(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadA",94.0);
 
-
-  PGen.generatePipe(Control,lKey+"PipeE",21.30);
+  BPMGen.setCF<setVariable::CF27_TDC>();
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeF",130.0);
 
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
@@ -542,16 +546,18 @@ Segment1(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,-1);
 
   SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  PItemGen.setCF<setVariable::CF40>(6.5);
-  PItemGen.setNoPlate();
+  SimpleTubeGen.setCF<CF66_TDC>();
 
+  SimpleTubeGen.setFlangeCap(setVariable::CF66_TDC::flangeLength, 0.0);  // No_1_00.pdf
   SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
+  Control.addVariable(lKey+"PumpABlankThick",0.4); // No_1_00.pdf
+
   Control.addVariable(lKey+"PumpANPorts",2);
 
-  PItemGen.setLength(6.5);
+  PItemGen.setCF<setVariable::CF35_TDC>(5.0);
+  PItemGen.setNoPlate();
   PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
-  PItemGen.setLength(2.5);
+  PItemGen.setLength(4.0);
   PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
 
 
@@ -3032,12 +3038,12 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
   TGGen.setBend(313.40,110.4,58.0);
   TGGen.generateTri(Control,lKey+"TriBend");
 
-  CMagGen.generateMag(Control,lKey+"CMag");  
+  CMagGen.generateMag(Control,lKey+"CMag");
   Control.addVariable(lKey+"CMagYStep",9.0);
   Control.addVariable(lKey+"CMagZStep",-22.8);
   Control.addVariable(lKey+"CMagXAngle",16.0);
-  
-  
+
+
   return;
 }
 
@@ -3057,7 +3063,7 @@ Segment45(FuncDataBase& Control,
 
   Geometry::Vec3D AB=(endPt-startPt).unit();
   ELog::EM<<"MA == "<<acos(AB[1])*180.0/M_PI<<ELog::endDiag;
-			     
+
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",
@@ -3181,7 +3187,7 @@ Segment47(FuncDataBase& Control,
   //  // SPF47
   const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
   const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
-  
+
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3471,7 +3477,7 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfOuterRight",50.0);
   Control.addVariable("spfOuterTop",100.0);
 
-  
+
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
   Control.addVariable("spfLongOuterLeft",50.0);

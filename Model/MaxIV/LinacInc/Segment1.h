@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment1.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment1_h
@@ -26,15 +26,13 @@ namespace constructSystem
 {
   class VacuumPipe;
   class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
 }
 
 namespace tdcSystem
 {
   class LQuadF;
   class CorrectorMag;
+  class StriplineBPM;
   /*!
     \class Segment1
     \version 1.0
@@ -63,25 +61,25 @@ class Segment1 :
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// THIS is the double pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;         ///< #7 BPM
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;   ///< corrector mag pipe
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrC;   ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;   
-  
+  std::shared_ptr<constructSystem::BlankTube> pumpA;
+
   void buildObjects(Simulation&);
   void createLinks();
 
  public:
-  
+
   Segment1(const std::string&);
   Segment1(const Segment1&);
   Segment1& operator=(const Segment1&);
   ~Segment1();
 
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
