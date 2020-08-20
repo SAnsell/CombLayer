@@ -394,7 +394,7 @@ TDC::createAll(Simulation& System,
       {"Segment43",{"spfFar","Segment42",1}},
       {"Segment44",{"spfFar","Segment43",1}},
       {"Segment45",{"spfFar","Segment44",3}},
-      {"Segment46",{"spfFar","Segment44",1}}, // 44 is correct
+      {"Segment46",{"spfFar","Segment44",2}}, // 44 is correct
       {"Segment47",{"spfFar","Segment46",1}},
       {"Segment48",{"spfFar","Segment47",1}},
       {"Segment49",{"spfFar","Segment49",1}}

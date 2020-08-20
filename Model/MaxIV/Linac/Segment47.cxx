@@ -119,52 +119,6 @@ Segment47::~Segment47()
    */
 {}
 
-void
-Segment47::createSplitInnerZone(Simulation& System)
-  /*!
-    Split the innerZone into two parts (assuming segment44 built)
-    \param System :: Simulatio to use
-   */
-{
-  ELog::RegMethod RegA("Segment47","createSplitInnerZone");
-
-  /*
-  *IZThin = *buildZone;
-
-  const double orgFrac(2.3);
-  const double axisFrac(4.0);
-  if (!sideVec.empty())
-    {
-      const TDCsegment* sideSegment=sideVec.front();
-
-      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5);
-      const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
-
-      const Geometry::Vec3D zAxis=X*cutAxis;
-      ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
-
-      int SNremoved(0);
-      for(const TDCsegment* sidePtr : sideVec)
-	{
-	  // need last cell only:
-	  const int CN=sidePtr->getCells("BuildVoid").back();
-	  MonteCarlo::Object* OPtr=System.findObject(CN);
-	  // remove surface that tracks close to a beam going in the +Z
-	  // direction
-	  HeadRule HA=OPtr->getHeadRule();   // copy
-	  SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
-	  HA.addIntersection(-SMap.realSurf(buildIndex+5005));
-	  OPtr->procHeadRule(HA);
-	}
-      HeadRule HSurroundB=buildZone->getSurround();
-      HSurroundB.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
-      HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
-      IZThin->setSurround(HSurroundB);
-      IZThin->setInsertCells(buildZone->getInsertCell());
-    }
-  */
-  return;
-}
   
 void
 Segment47::buildObjects(Simulation& System)

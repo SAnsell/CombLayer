@@ -142,17 +142,37 @@ Segment46::~Segment46()
    */
 {}
 
+void
+Segment46::insertPrevSegment(Simulation& System,
+			     const TDCsegment* prevSegPtr) const
+  /*!
+    Insert components that need to be in previous
+    objects
+   */
+{
+  ELog::RegMethod RegA("Segment46","insertPrevSegment");
+
+  if (prevSegPtr && prevSegPtr->hasCell("LastCell",0))
+    {
+      ELog::EM<<"ASDFSDF "<<prevSegPtr->getCell("LastCell",0)<<ELog::endDiag;
+
+      pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
+    }
+  return;
+}
+  
   
 void
 Segment46::createSplitInnerZone(Simulation& System)
   /*!
     Split the innerZone into two parts (assuming segment44 built)
-    \param System :: Simulatio to use
+    \param System :: Simulation to use
    */
 {
   ELog::RegMethod RegA("Segment30","createSplitInnerZone");
 
   *IZThin = *buildZone;
+
 
   const double orgFrac(2.3);
   const double axisFrac(4.0);
@@ -182,6 +202,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
+      
       IZThin->setSurround(HSurroundB);
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
@@ -279,7 +300,6 @@ Segment46::createLinks()
 
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*gateB,2);
-
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

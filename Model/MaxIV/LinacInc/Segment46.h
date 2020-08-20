@@ -72,6 +72,8 @@ class Segment46 :
   Segment46& operator=(const Segment46&);
   ~Segment46();
 
+  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -172,7 +172,10 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertAllInCell(System,cMag->getCell("Void"));
   
   // transfer to segment 45 and 46
+  ELog::EM<<"B== "<<outerCellB<<ELog::endDiag;
+  CellMap::addCell("LastCell",outerCellB);
   CellMap::addCell("LastCell",outerCellC);
+
   buildZone->removeLastMaster(System);  
   return;
 }
