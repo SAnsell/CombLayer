@@ -59,7 +59,7 @@ namespace setVariable
 
 StriplineBPMGenerator::StriplineBPMGenerator() :
   radius(1.4),length(22.0),
-  outerThick(0.2),innerRadius(1.03),innerThick(0.18),
+  outerThick(0.2),innerRadius(1.035),innerThick(0.18),
   innerAngle(30.0),innerAngleOffset(45.0),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
@@ -85,6 +85,8 @@ StriplineBPMGenerator::setCF()
     Setter for flange A
    */
 {
+  radius = CF::innerRadius;
+  outerThick = CF::wallThick;
   setAFlangeCF<CF>();
   setBFlangeCF<CF>();
   return;
@@ -161,6 +163,7 @@ StriplineBPMGenerator::generateBPM(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void StriplineBPMGenerator::setCF<CF27_TDC>();
 template void StriplineBPMGenerator::setCF<CF40_22>();
 template void StriplineBPMGenerator::setCF<CF40>();
 
