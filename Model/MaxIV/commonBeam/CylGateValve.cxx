@@ -333,9 +333,9 @@ CylGateValve::createLinks()
   
 void
 CylGateValve::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
- /*!
+			const attachSystem::FixedComp& FC,
+			const long int FIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

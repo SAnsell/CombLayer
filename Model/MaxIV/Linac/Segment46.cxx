@@ -236,9 +236,6 @@ Segment46::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
-
-  IZThin->removeLastMaster(System);
-  return;
   
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*gateA);
@@ -310,6 +307,8 @@ Segment46::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*gateB,2);
 
+  ELog::EM<<"Get link == "<<getLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"Get link == "<<getLinkPt(2)<<ELog::endDiag;
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
