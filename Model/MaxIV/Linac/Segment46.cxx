@@ -208,31 +208,20 @@ Segment46::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  
   pipeA->insertInCell(System,outerCell);
 
-  IZThin->removeLastMaster(System);
-  ELog::EM<<"Early return"<<ELog::endDiag;
-  return;
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*gateA);
 
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*gateA,"back",*bellowA);
 
-  
   const constructSystem::portItem& PC =
     buildIonPump2Port(System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
 
-  //  System.removeCell(5300001);
-  ELog::EM<<"BIOD = "<<IZThin->getMaster()->getName()<<ELog::endDiag;
-	
-  IZThin->removeLastMaster(System);
-  ELog::EM<<"Early return"<<ELog::endDiag;
-  return;
-
   const constructSystem::portItem& MCA =
     buildIonPump2Port(System,*IZThin,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
+
 
   pipeB->createAll(System,MCA,"OuterPlate");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
