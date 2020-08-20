@@ -63,6 +63,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "generateSurf.h"
+#include "ModelSupport.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -72,6 +74,7 @@
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
+#include "InjectionHall.h"
 #include "Segment45.h"
 
 namespace tdcSystem
@@ -110,6 +113,22 @@ Segment45::~Segment45()
 {}
 
 void
+Segment45::populate(const FuncDataBase& Control)
+  /*!
+    Get required variable
+    \param Control :: DatatBase
+   */
+{
+  ELog::RegMethod RegA("Segment45","populate");
+
+  FixedRotate::populate(Control);
+
+  cutRadius=Control.EvalVar<double>(keyName+"CutRadius");
+  return;
+}
+
+
+void
 Segment45::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   /*!
     Set the front surface if need to join
@@ -130,12 +149,24 @@ Segment45::setFrontSurfs(const std::vector<HeadRule>& HRvec)
   return;
 }
 
+void
+Segment45::createSurfaces()
+  /*!
+    Build the surfaces for the injection floor cut volume
+   */
+{
+  ELog::RegMethod RegA("Segment45","createSurfaces");
+
+ 
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cutRadius);
+    
+  return;
+}
   
 void
 Segment45::buildObjects(Simulation& System)
   /*!
-    Build all the objects relative to the main FC
-    point.
+    Build all the objects relative to the main FC point.
     \param System :: Simulation to use
   */
 {
@@ -178,6 +209,30 @@ Segment45::buildObjects(Simulation& System)
 }
 
 void
+Segment45::constructHole(Simulation& System)
+  /*!
+    Construct the hole in the wall
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("Segment45","constructHole");
+  
+  if (IHall)
+    {
+      std::string Out;
+      const HeadRule fbHR=IHall->combine("#Floor SubFloor");
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
+      makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+      pipeB->insertInCell(System,this->getCell("FloorVoid"));
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
+      IHall->insertComponent(System,"Floor",Out);
+    }
+  return;
+}
+
+void
 Segment45::createLinks()
   /*!
     Create a front/back link
@@ -186,8 +241,7 @@ Segment45::createLinks()
   ELog::RegMethod RegA("Segment45","createLinks");
 
   setLinkSignedCopy(0,*ceramic,1);
-  setLinkSignedCopy(1,*ceramic,2);
-  //  setLinkSignedCopy(1,*pipeB,2);
+  setLinkSignedCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
@@ -196,8 +250,8 @@ Segment45::createLinks()
 
 void
 Segment45::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -208,10 +262,14 @@ Segment45::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("Segment45","build");
 
-  FixedRotate::populate(System.getDataBase());
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
+  
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  ELog::EM<<"Centre == "<<this->getLinkPt(0)<<ELog::endDiag;
+
+  createSurfaces();
   buildObjects(System);
+  constructHole(System);
   createLinks();
   return;
 }

@@ -3056,15 +3056,18 @@ Segment45(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-1010.0,9227.315,-190.289);
 
   Geometry::Vec3D AB=(endPt-startPt).unit();
-  ELog::EM<<"MA == "<<acos(AB[1])*180.0/M_PI<<ELog::endDiag;
 			     
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
-  Control.addVariable(lKey+"XAngle",
-  		      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable
+    (lKey+"XYAngle",
+     atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);  
+  Control.addVariable
+    (lKey+"XAngle",
+     atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  // floor gap
+  Control.addVariable(lKey+"CutRadius",20.0);
   // Ceramic gap
   setVariable::CeramicGapGenerator CSGen;
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
@@ -3334,7 +3337,7 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",10080.0);
+  Control.addVariable(wallKey+"MainLength",12080.0);
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
@@ -3349,7 +3352,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"RoofHeight",140.0);  // GUESS
 
   Control.addVariable(wallKey+"RoofThick",90.0);
-  Control.addVariable(wallKey+"FloorThick",50.0);
+  Control.addVariable(wallKey+"FloorThick",150.0);
 
   // Extra for boundary
   Control.addVariable(wallKey+"BoundaryWidth",200.0);

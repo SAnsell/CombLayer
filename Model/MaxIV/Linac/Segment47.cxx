@@ -136,10 +136,7 @@ Segment47::buildObjects(Simulation& System)
   if (!masterCell)
       masterCell=buildZone->constructMasterCell(System);
   if (isActive("front"))
-    {
-      pipeA->copyCutSurf("front",*this,"front");
-      ELog::EM<<"Front == "<<pipeA->getRuleStr("front")<<ELog::endDiag;
-    }
+    pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);

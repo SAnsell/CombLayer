@@ -189,15 +189,21 @@ Segment46::createSplitInnerZone(Simulation& System)
       int SNremoved(0);
       for(const TDCsegment* sidePtr : sideVec)
 	{
-	  // need last cell only:
-	  const int CN=sidePtr->getCells("BuildVoid").back();
-	  MonteCarlo::Object* OPtr=System.findObject(CN);
-	  // remove surface that tracks close to a beam going in the +Z
-	  // direction
-	  HeadRule HA=OPtr->getHeadRule();   // copy
-	  SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
-	  HA.addIntersection(-SMap.realSurf(buildIndex+5005));
-	  OPtr->procHeadRule(HA);
+	  std::vector<int> CNvec=sidePtr->getCells("BuildVoid");
+	  // need only the last cell for SPF44
+	  if (sidePtr->getKeyName()=="SPF44")
+	    CNvec.erase(CNvec.begin(),CNvec.end()-1);
+
+	  for(const int CN : CNvec)
+	    {
+	      MonteCarlo::Object* OPtr=System.findObject(CN);
+	      // remove surface that tracks close to a beam going in the +Z
+	      // direction
+	      HeadRule HA=OPtr->getHeadRule();   // copy
+	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	      HA.addIntersection(-SMap.realSurf(buildIndex+5005));
+	      OPtr->procHeadRule(HA);
+	    }
 	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
@@ -231,6 +237,9 @@ Segment46::buildObjects(Simulation& System)
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
+  IZThin->removeLastMaster(System);
+  return;
+  
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*gateA);
 
