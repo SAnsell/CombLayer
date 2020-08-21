@@ -58,11 +58,11 @@ namespace setVariable
 {
 
 StriplineBPMGenerator::StriplineBPMGenerator() :
-  radius(1.4),length(22.0),
-  outerThick(0.2),innerRadius(1.035),innerThick(0.18),
+  radius(CF27_TDC::innerRadius),length(22.0),
+  outerThick(CF27_TDC::wallThick),innerRadius(1.035),innerThick(0.18),
   innerAngle(30.0),innerAngleOffset(45.0),
-  flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
-  flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
+  flangeARadius(CF27_TDC::flangeRadius),flangeALength(CF27_TDC::flangeLength),
+  flangeBRadius(CF27_TDC::flangeRadius),flangeBLength(CF27_TDC::flangeLength),
   striplineRadius(3.2),striplineThick(2.4),
   striplineYStep(3.1),striplineEnd(4.0),
   voidMat("Void"),striplineMat("Stainless304L"),

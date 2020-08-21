@@ -534,8 +534,8 @@ Segment1(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadA",94.0);
 
-  BPMGen.setCF<setVariable::CF27_TDC>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeF",130.0);
 
