@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/YagUnitGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,15 +71,15 @@ YagUnitGenerator::YagUnitGenerator() :
   portRadius(CF40::innerRadius),portThick(CF40::wallThick),
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
-  frontLength(9.0),backLength(11.2),
+  frontLength(7.0),backLength(13.0),
   outerRadius(CF63::flangeRadius*1.2),
   voidMat("Void"),mainMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
-  
-YagUnitGenerator::~YagUnitGenerator() 
+
+YagUnitGenerator::~YagUnitGenerator()
  /*!
    Destructor
  */
@@ -113,12 +113,12 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary function for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
   */
 {
   ELog::RegMethod RegA("YagUnitGenerator","generateYagUnit");
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
@@ -146,7 +146,7 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MainMat",mainMat);
-  
+
   return;
 
 }
@@ -165,5 +165,5 @@ template void YagUnitGenerator::setFlangeCF<CF63>();
 
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable
