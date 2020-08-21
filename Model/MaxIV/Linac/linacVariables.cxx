@@ -589,51 +589,47 @@ Segment2(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
 
-  // lengthened to fit quad +2cm
-  PGen.generatePipe(Control,lKey+"PipeA",35.0);
-
-  LQGen.generateQuad(Control,lKey+"QuadA",35.0/2.0);
-
-  BPMGen.setCF<setVariable::CF40>();
+  PGen.generatePipe(Control,lKey+"PipeA",34.0); // No_2_00.pdf
+  LQGen.generateQuad(Control,lKey+"QuadA",17.16); // No_2_00.pdf
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
   // note larger unit
-  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  PGen.generatePipe(Control,lKey+"PipeB",114.0);
-
-  LQGen.generateQuad(Control,lKey+"QuadB",72.0);
+  PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
+  LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
 
   CGateGen.setRotate(1);
   CGateGen.generateGate(Control,lKey+"GateTube",0);
+  Control.addVariable(lKey+"GateTubeWallThick",0.3); // No_2_00.pdf
+  Control.addVariable(lKey+"GateTubePortThick",0.1); // No_2_00.pdf
 
-  PGen.generatePipe(Control,lKey+"PipeC",31.0);
+  PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
   EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeD",75.0);
+  PGen.generatePipe(Control,lKey+"PipeD",75.8); // No_2_00.pdf
 
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
 
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeE",133.34);
+  PGen.generatePipe(Control,lKey+"PipeE",133.4); // No_2_00.pdf
 
-  LQGen.generateQuad(Control,lKey+"QuadC",23.54);
-  LQGen.generateQuad(Control,lKey+"QuadD",73.0);
-  LQGen.generateQuad(Control,lKey+"QuadE",113.2);
+  LQGen.generateQuad(Control,lKey+"QuadC",24.7); // No_2_00.pdf
+  LQGen.generateQuad(Control,lKey+"QuadD",74.7); // No_2_00.pdf
+  LQGen.generateQuad(Control,lKey+"QuadE",114.7); // No_2_00.pdf
 
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
+  BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
 
   return;
 }
