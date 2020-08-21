@@ -514,30 +514,29 @@ Segment1(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",16.15);
+  PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
   // note larger unit
   BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   //  corrector mag and pie
-  PGen.generatePipe(Control,lKey+"PipeB",55.90);
-  CMGen.generateMag(Control,lKey+"CMagHorrA",30.80,0);
-  CMGen.generateMag(Control,lKey+"CMagVertA",46.3,1);
+  PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagHorrA",31.85,0); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagVertA",46.85,1); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF16_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeC",33.85);
+  PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
   PGen.setCF<setVariable::CF18_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeD",114.3);
+  PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
-  CMGen.generateMag(Control,lKey+"CMagHorrB",51.50,0);
-  CMGen.generateMag(Control,lKey+"CMagVertB",68.50,1);
-
-  LQGen.generateQuad(Control,lKey+"QuadA",94.0);
+  CMGen.generateMag(Control,lKey+"CMagHorrB",51.86, 0);
+  CMGen.generateMag(Control,lKey+"CMagVertB",69.36, 1);
+  LQGen.generateQuad(Control,lKey+"QuadA",96.86);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.setCF<setVariable::CF18_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeF",130.0);
+  PGen.generatePipe(Control,lKey+"PipeF",128.0);
 
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
