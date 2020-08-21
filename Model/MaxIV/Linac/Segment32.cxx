@@ -1,11 +1,11 @@
 /*********************************************************************
-  CombLayer : MCNP(X) Input builder
+  Comb-Layer : MCNP(X) Input builder
 
  * File: Linac/Segment32.cxx
  *
  * Copyright (c) 2004-2020 by Konstantin Batkov
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software: you can redstribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -53,6 +53,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -64,6 +65,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "FlatPipe.h"
 #include "DipoleDIBMag.h"
 
 #include "TDCsegment.h"
@@ -77,11 +79,11 @@ namespace tdcSystem
 Segment32::Segment32(const std::string& Key) :
   TDCsegment(Key,2),
 
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DMA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  dmA(new tdcSystem::DipoleDIBMag(keyName+"DMA")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  dmB(new tdcSystem::DipoleDIBMag(keyName+"DMB")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DMB")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
@@ -91,14 +93,14 @@ Segment32::Segment32(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(flatA);
+  OR.addObject(dipoleA);
   OR.addObject(pipeA);
-  OR.addObject(dmA);
-  OR.addObject(pipeB);
-  OR.addObject(pipeC);
-  OR.addObject(dmB);
+  OR.addObject(flatB);
+  OR.addObject(dipoleB);
   OR.addObject(bellow);
 
-  setFirstItems(pipeA);
+  setFirstItems(flatA);
 }
 
 Segment32::~Segment32()
@@ -106,7 +108,6 @@ Segment32::~Segment32()
     Destructor
    */
 {}
-
 
 
 void
@@ -119,21 +120,31 @@ Segment32::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment32","buildObjects");
 
+  int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dmA);
-  pipeTerminate(System,*buildZone,pipeA);
+  if (!masterCell)
+    masterCell=buildZone->constructMasterCell(System);
+  if (isActive("front"))
+    flatA->copyCutSurf("front",*this,"front");
+
+  flatA->createAll(System,*this,0);
+  pipeMagGroup(System,*buildZone,flatA,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+
+  pipeA->setFront(*flatA,"back");
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatA,"back",*pipeA);
+
+  flatB->setFront(*pipeA,"back");
+  flatB->createAll(System,*pipeA,"back");
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
-
-  pipeC->createAll(System,*pipeB,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"Origin","outerPipe",dmB);
-  pipeTerminate(System,*buildZone,pipeC);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*bellow);
+    (System,*buildZone,masterCell,*flatB,"back",*bellow);
 
   buildZone->removeLastMaster(System);
 
@@ -148,7 +159,7 @@ Segment32::createLinks()
 {
   ELog::RegMethod RegA("Segment32","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(0,*flatA,1);
   setLinkSignedCopy(1,*bellow,2);
   
   joinItems.push_back(FixedComp::getFullRule(2));

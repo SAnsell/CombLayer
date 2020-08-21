@@ -199,7 +199,6 @@ Segment30::buildObjects(Simulation& System)
     }
 
   gauge->addAllInsertCell(masterCell->getName());
-  // Gauge
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
