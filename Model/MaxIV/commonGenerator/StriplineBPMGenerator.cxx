@@ -63,7 +63,7 @@ StriplineBPMGenerator::StriplineBPMGenerator() :
   innerAngle(30.0),innerAngleOffset(45.0),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
-  striplineRadius(3.7),striplineThick(2.4),
+  striplineRadius(3.2),striplineThick(2.4),
   striplineYStep(3.1),striplineEnd(4.0),
   voidMat("Void"),striplineMat("Stainless304L"),
   flangeMat("Stainless304L"),outerMat("Stainless304L")

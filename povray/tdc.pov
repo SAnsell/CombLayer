@@ -20,7 +20,7 @@
 #declare projection = 0;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -79,6 +79,12 @@ global_settings {
   //   #declare cameraLookAt   = <130, 80, 0>;
   //   #declare cameraAngle = 90;
   // #break
+  #case(strcmp(ITEM,"Segment1")) // L2SPF segment 1
+    #declare cameraLocation = <500, 630, 100>;
+    #declare cameraLookAt   = <152, 670, 0>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Segment11")) // L2SPF segment 11
     #declare cameraLocation = <-120, 4220, 40>;
     #declare cameraLookAt   = <-360, 4030, 0>;
