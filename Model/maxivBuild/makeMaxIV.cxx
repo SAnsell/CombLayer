@@ -302,6 +302,8 @@ makeMaxIV::buildInjection(Simulation& System,
   if (!activeLinac) return 0;
 
 
+  if (IParam.flag("noLengthCheck"))
+    tdc->setNoLengthCheck();
   tdc->setActive(activeINJ);
   tdc->createAll(System,World::masterOrigin(),0);
 

@@ -126,13 +126,11 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     \param KN :: KeyName
     \param NL :: Number of links
     \param O :: Origin Point
-v    \param xV :: X direction
+    \param xV :: X direction
     \param yV :: Y direction
     \param zV :: Z direction
   */
-{
-  ELog::EM<<"Copy constructory"<<ELog::endDiag;
-}
+{}
 
 FixedComp::FixedComp(const FixedComp& A) : 
   keyName(A.keyName),SMap(A.SMap),
@@ -1366,7 +1364,7 @@ FixedComp::nameSideIndex(const size_t lP,
 
   if (keyMap.find(linkName)!=keyMap.end())
     ColErr::InContainerError<std::string>(linkName,"linkName exists");
-
+      
   keyMap.emplace(linkName,lP);
   return;
 }

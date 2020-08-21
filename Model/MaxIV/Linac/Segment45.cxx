@@ -77,13 +77,15 @@
 #include "InjectionHall.h"
 #include "Segment45.h"
 
+#include "Surface.h"
+
 namespace tdcSystem
 {
 
 // Note currently uncopied:
 
 Segment45::Segment45(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,4),
   ceramic(new tdcSystem::CeramicGap(keyName+"Ceramic")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
@@ -156,7 +158,6 @@ Segment45::createSurfaces()
    */
 {
   ELog::RegMethod RegA("Segment45","createSurfaces");
-
  
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cutRadius);
     
@@ -243,8 +244,8 @@ Segment45::createLinks()
   setLinkSignedCopy(0,*ceramic,1);
   setLinkSignedCopy(1,*pipeB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
-
+  nameSideIndex(1,"buildZoneCut");
+  joinItems.push_back(FixedComp::getFullRule(2));  
   return;
 }
 

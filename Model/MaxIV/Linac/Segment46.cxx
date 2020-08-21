@@ -93,7 +93,7 @@ namespace tdcSystem
 // Note currently uncopied:
 
 Segment46::Segment46(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,4),
   IZThin(new attachSystem::InnerZone(*this,cellIndex)),
   
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
@@ -153,11 +153,8 @@ Segment46::insertPrevSegment(Simulation& System,
   ELog::RegMethod RegA("Segment46","insertPrevSegment");
 
   if (prevSegPtr && prevSegPtr->hasCell("LastCell",0))
-    {
-      ELog::EM<<"ASDFSDF "<<prevSegPtr->getCell("LastCell",0)<<ELog::endDiag;
+    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
 
-      pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
-    }
   return;
 }
   
@@ -169,13 +166,10 @@ Segment46::createSplitInnerZone(Simulation& System)
     \param System :: Simulation to use
    */
 {
-  ELog::RegMethod RegA("Segment30","createSplitInnerZone");
+  ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
   *IZThin = *buildZone;
 
-
-  const double orgFrac(2.3);
-  const double axisFrac(4.0);
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -307,8 +301,10 @@ Segment46::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*gateB,2);
 
-  ELog::EM<<"Get link == "<<getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"Get link == "<<getLinkPt(2)<<ELog::endDiag;
+  FixedComp::setConnect(2,Origin,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));
+  FixedComp::nameSideIndex(2,"buildZoneCut");
+
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;

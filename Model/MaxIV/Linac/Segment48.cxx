@@ -137,17 +137,18 @@ Segment48::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  beamStopA->createAll(System,*this,0);
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
+  if (isActive("front"))
+    beamStopA->copyCutSurf("front",*this,"front");
+
+  beamStopA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
-
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*beamStopA,"back",*bellowA);
 
-  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*bellowA,"back",*beamStopB);
 
@@ -202,9 +203,7 @@ Segment48::createLinks()
   ELog::RegMethod RegA("Segment48","createLinks");
 
   setLinkSignedCopy(0,*beamStopA,1);
-  setLinkSignedCopy(1,*beamStopA,2);
-
-  //  setLinkSignedCopy(1,*bellowC,2);
+  setLinkSignedCopy(1,*bellowC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
