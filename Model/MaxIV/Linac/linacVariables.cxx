@@ -655,34 +655,45 @@ Segment3(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.3);
+  BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  FPGen.generateFlat(Control,lKey+"FlatA",83.0);
-  Control.addVariable(lKey+"FlatAXYAngle",1.6);
+  const double flatAXYAngle = 1.6; // No_3_00.pdf
+  FPGen.generateFlat(Control,lKey+"FlatA",82.549/cos(flatAXYAngle*M_PI/180.0)); // No_3_00.pdf
+  Control.addVariable(lKey+"FlatAXYAngle",flatAXYAngle);
+  Control.addVariable(lKey+"FlatAWallThick",0.15); // No_3_00.pdf
+  Control.addVariable(lKey+"FlatAFrontWidth",3.656-1.344); // No_3_00.pdf
+  Control.addVariable(lKey+"FlatABackWidth",3.656-1.344); // No_3_00.pdf
+
   DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAYStep",0.0065); // this centers DipoleA at 48.781 [No_3_00.pdf]
 
-  PGen.generatePipe(Control,lKey+"PipeA",92.40); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",1.6);
+  const double pipeAXYAngle = 1.6;
+  const double pipeAcos = cos((flatAXYAngle+pipeAXYAngle)*M_PI/180.0);
+  PGen.generatePipe(Control,lKey+"PipeA",94.253/pipeAcos); // No_3_00.pdf
+  Control.addVariable(lKey+"PipeAXYAngle",pipeAXYAngle);
   // Control.addVariable(lKey+"PipeAXStep",-1.2);
   // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",64.0,0);
-  CMGen.generateMag(Control,lKey+"CMagVertA",80.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHorA",15.176/pipeAcos,0);  // No_3_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagVertA",31.151/pipeAcos,1); // No_3_00.pdf
 
-  FPGen.generateFlat(Control,lKey+"FlatB",84.2);
-  Control.addVariable(lKey+"FlatBXYAngle",1.6);
+  const double flatBXYAngle = 1.6;  // No_3_00.pdf
+  const double flatBcos = cos((flatAXYAngle+pipeAXYAngle+flatBXYAngle)*M_PI/180.0);  // No_3_00.pdf
+  FPGen.generateFlat(Control,lKey+"FlatB",82.292/flatBcos);  // No_3_00.pdf
+  Control.addVariable(lKey+"FlatBXYAngle",flatBXYAngle);
+  Control.addVariable(lKey+"FlatBWallThick",0.15); // No_3_00.pdf
+  Control.addVariable(lKey+"FlatBFrontWidth",3.656-1.344); // No_3_00.pdf
+  Control.addVariable(lKey+"FlatBBackWidth",3.656-1.344); // No_3_00.pdf
 
   DIBGen.generate(Control,lKey+"DipoleB");
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.6);
+  Control.addVariable(lKey+"DipoleBYStep",0.02); // this centers DipoleB at 225.468 [No_3_00.pdf]
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
   Control.addVariable(lKey+"BellowBXYAngle",1.6);
   return;
 }
