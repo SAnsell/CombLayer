@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment2.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -83,7 +83,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 Segment2::Segment2(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -97,14 +97,15 @@ Segment2::Segment2(const std::string& Key) :
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  bellowB(new constructSystem::Bellows(keyName+"BellowB")),  
-  bpmB(new tdcSystem::StriplineBPM(keyName+"BPMB")),  
+  bellowB(new constructSystem::Bellows(keyName+"BellowB")),
+  bpmB(new tdcSystem::StriplineBPM(keyName+"BPMB")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   QuadC(new tdcSystem::LQuadF(keyName+"QuadC")),
   QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),
   QuadE(new tdcSystem::LQuadF(keyName+"QuadE")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen"))
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -131,10 +132,11 @@ Segment2::Segment2(const std::string& Key) :
   OR.addObject(QuadE);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
+  OR.addObject(bellowC);
 
   setFirstItems(pipeA);
 }
-  
+
 Segment2::~Segment2()
   /*!
     Destructor
@@ -204,8 +206,10 @@ Segment2::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
-  
-  buildZone->removeLastMaster(System);  
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*yagUnit,"back",*bellowC);
+
+  buildZone->removeLastMaster(System);
   return;
 }
 
@@ -216,13 +220,13 @@ Segment2::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*yagUnit,2);
+  setLinkSignedCopy(1,*bellowC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
-void 
+void
 Segment2::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -238,7 +242,7 @@ Segment2::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
+
   buildObjects(System);
   createLinks();
 
@@ -247,4 +251,3 @@ Segment2::createAll(Simulation& System,
 
 
 }   // NAMESPACE tdcSystem
-
