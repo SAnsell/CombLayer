@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 LinacQuadGenerator::LinacQuadGenerator() :
-  length(25.0),yokeRadius(7.5),yokeOuter(18.8),
+  length(18.7),yokeRadius(7.5),yokeOuter(18.8),
   poleYAngle(45.0),poleGap(1.25),
   poleRadius(1.55),poleWidth(2.6),     // pole radius 7mm above flat line
   coilRadius(2.31),coilWidth(7.0),   // full gpa

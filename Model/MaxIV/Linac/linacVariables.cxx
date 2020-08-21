@@ -1361,7 +1361,6 @@ Segment16(FuncDataBase& Control,
   LQGen.setRadius(0.56, 2.31); // 0.56 - measured
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
 
-  Control.addVariable(lKey+"QuadLength",18.7); // measured - inner box lengh
   // measured - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -1472,7 +1471,6 @@ Segment18(FuncDataBase& Control,
   LQGen.setRadius(0.56, 2.31); // 0.56 -> measured (QH)
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
 
-  Control.addVariable(lKey+"QuadLength",18.7); //  - inner box lengh
   //  - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -1637,7 +1635,6 @@ Segment21(FuncDataBase& Control,
   LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
 
-  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -1729,7 +1726,6 @@ Segment23(FuncDataBase& Control,
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -1839,7 +1835,6 @@ Segment24(FuncDataBase& Control,
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
   LQGen.generateQuad(Control,lKey+"Quad",pipeCLength/2.0);
-  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -2366,7 +2361,6 @@ Segment31(FuncDataBase& Control,
 
   // QF type quadrupole magnet
   LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-  Control.addVariable(lKey+"QuadLength",18.7); // inner box lengh OK
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
@@ -2643,9 +2637,7 @@ Segment36(FuncDataBase& Control,
   // magnet locations based on front surfaces of yokes
   // Quadrupole magnets
   LQGen.generateQuad(Control,lKey+"QuadA",18.55); // measured
-  Control.addVariable(lKey+"QuadALength",18.7); // measured
   LQGen.generateQuad(Control,lKey+"QuadB",128.55); // measured
-  Control.addVariable(lKey+"QuadBLength",18.7); // measured
 
   // Corrector magnets
   CMGen.generateMag(Control,lKey+"CMagH",42.35+1.3,0); // measured with wrong CMagH length
