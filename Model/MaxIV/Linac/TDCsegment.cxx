@@ -248,12 +248,14 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
       // link point FrontALink / BackALink
       std::string AKey=keyName+"Offset"+Letters[i];
       std::string BKey=keyName+"EndOffset"+Letters[i];
+      std::string CKey=keyName+"EndAngle"+Letters[i];
 
       // right trim
       if (Letters[i] == ' ')
 	{
 	  AKey.erase(AKey.find_last_not_of(" ")+1);
 	  BKey.erase(BKey.find_last_not_of(" ")+1);
+	  CKey.erase(CKey.find_last_not_of(" ")+1);
 	}
 
       if (Control.hasVariable(AKey) && Control.hasVariable(BKey))
@@ -276,6 +278,8 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	  //
 	  const Geometry::Vec3D modelStart=FixedComp::getLinkPt(startLink);
 	  const Geometry::Vec3D modelEnd=FixedComp::getLinkPt(endLink);
+	  const Geometry::Vec3D modelAY=FixedComp::getLinkAxis(startLink);
+	  const Geometry::Vec3D modelBY=FixedComp::getLinkAxis(endLink);
 	  const Geometry::Vec3D vEnd(modelEnd-(modelStart-cadStart));
 
 	  const double D=vEnd.Distance(cadEnd);
@@ -312,12 +316,19 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 	      ELog::EM<<"model length == "<<modelEnd.Distance(modelStart)<<"\n\n";
 
 	      ELog::EM<<"corrected End   "<<vEnd<<"\n\n";
-
-	      const Geometry::Vec3D aY=this->getLinkAxis(1);
-	      const Geometry::Vec3D bY=this->getLinkAxis(2);
-	      ELog::EM<<"AY == "<<acos(std::abs(aY.Y()))*180/M_PI<<ELog::endDiag;
-	      ELog::EM<<"BY == "<<acos(std::abs(bY.Y()))*180/M_PI<<ELog::endDiag;
 	      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
+
+	      if (Control.hasVariable(CKey))
+		{
+		  const double aAngle=acos(std::abs(modelAY.Y()))*180/M_PI;
+		  const double bAngle=acos(std::abs(modelBY.Y()))*180/M_PI;
+		  const double cadEndAngle=Control.EvalVar<double>(CKey);
+		  ELog::EM<<"A   = "<<aAngle<<ELog::endDiag;
+		  ELog::EM<<"B   = "<<bAngle<<ELog::endDiag;
+		  ELog::EM<<"CAD = "<<cadEndAngle<<ELog::endDiag;
+		}
+		  
+
 	      retFlag=1;
 	    }
 	}

@@ -2414,12 +2414,12 @@ Segment32(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.694);  // from drawing coord (seg31)
-
+  Control.addVariable(lKey+"EndAngle",6.40);  // from drawing coord (seg33)
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
   Control.addVariable(lKey+"FlatAXYAngle",0.0);
   
-  DIBGen.generate(Control,lKey+"DMA");
+  DIBGen.generate(Control,lKey+"DMA"); 
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
