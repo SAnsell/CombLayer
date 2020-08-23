@@ -2413,30 +2413,30 @@ Segment32(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable
-    (lKey+"XYAngle",
-     atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable(lKey+"XYAngle",12.694);  // from drawing coord (seg31)
 
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
-  Control.addVariable(lKey+"FlatAXYAngle",0.8);
+  Control.addVariable(lKey+"FlatAXYAngle",0.0);
   
   DIBGen.generate(Control,lKey+"DMA");
 
   PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.setCF<CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeA",94.4); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",0.8);
+  Control.addVariable(lKey+"PipeAXYAngle",-1.6);
 
 
   FPGen.generateFlat(Control,lKey+"FlatB",82.5); // measured
-  Control.addVariable(lKey+"FlatBXYAngle",0.8);
+  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
 
   DIBGen.generate(Control,lKey+"DMB");
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
-  Control.addVariable(lKey+"BellowXYAngle",0.8);
+  Control.addVariable(lKey+"BellowXYAngle",0.0);
   
   return;
 }
@@ -2521,30 +2521,29 @@ Segment34(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable
-    (lKey+"XYAngle",
-     atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
-
+  Control.addVariable(lKey+"XYAngle",6.4);  // Seg 33 angle (measured)
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
-  Control.addVariable(lKey+"FlatAXYAngle",-0.8);
+  Control.addVariable(lKey+"FlatAXYAngle",0.0);
   
   DIBGen.generate(Control,lKey+"DMA");
 
   PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.setCF<CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeA",94.4); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",-0.8);
+  Control.addVariable(lKey+"PipeAXYAngle",-1.6);
 
 
   FPGen.generateFlat(Control,lKey+"FlatB",82.5); // measured
-  Control.addVariable(lKey+"FlatBXYAngle",-0.8);
+  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
 
   DIBGen.generate(Control,lKey+"DMB");
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
-  Control.addVariable(lKey+"BellowXYAngle",-0.8);
+  Control.addVariable(lKey+"BellowXYAngle",-0.0);
   
   return;
 }

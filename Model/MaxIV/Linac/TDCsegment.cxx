@@ -313,6 +313,10 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
 
 	      ELog::EM<<"corrected End   "<<vEnd<<"\n\n";
 
+	      const Geometry::Vec3D aY=this->getLinkAxis(1);
+	      const Geometry::Vec3D bY=this->getLinkAxis(2);
+	      ELog::EM<<"AY == "<<acos(std::abs(aY.Y()))*180/M_PI<<ELog::endDiag;
+	      ELog::EM<<"BY == "<<acos(std::abs(bY.Y()))*180/M_PI<<ELog::endDiag;
 	      ELog::EM<<"ERROR dist   "<<D<<ELog::endWarn;
 	      retFlag=1;
 	    }
