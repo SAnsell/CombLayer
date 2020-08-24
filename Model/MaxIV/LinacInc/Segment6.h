@@ -24,11 +24,6 @@
 
 namespace constructSystem
 {
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
 }
 
 /*!
