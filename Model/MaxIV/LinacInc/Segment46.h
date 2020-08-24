@@ -31,6 +31,7 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CleaningMagnet;
+  class CrossWayTube;
 
   /*!
     \class Segment46
@@ -57,7 +58,7 @@ class Segment46 :
   std::shared_ptr<constructSystem::PortTube> slitTube; // #9
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #9
   std::shared_ptr<constructSystem::Bellows> bellowB; // #10
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberB; ///< #6
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberB; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC; // #10
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
 

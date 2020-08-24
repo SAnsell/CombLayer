@@ -78,6 +78,7 @@
 #include "ButtonBPMGenerator.h"
 #include "CurveMagGenerator.h"
 #include "CleaningMagnetGenerator.h"
+#include "CrossWayGenerator.h"
 
 namespace setVariable
 {
@@ -603,7 +604,7 @@ Segment2(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadB",72.0);
 
-  CGateGen.setRotate(1);
+  CGateGen.setYRotate(90.0);
   CGateGen.generateGate(Control,lKey+"GateTube",0);
 
   PGen.generatePipe(Control,lKey+"PipeC",31.0);
@@ -3181,9 +3182,11 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
 
   // Mirror Chambers
-  setMirrorChamber(Control, lKey+"MirrorChamberA");
-  Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
-  setMirrorChamber(Control, lKey+"MirrorChamberB");
+  setVariable::CrossWayGenerator MSPGen;
+  MSPGen.generateCrossWay(Control,lKey+"MirrorChamberA");
+  MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
+
+  //  setMirrorChamber(Control, lKey+"MirrorChamberB");
   //  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
 
   // Cleaning magnet

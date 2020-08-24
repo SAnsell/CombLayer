@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 CylGateValveGenerator::CylGateValveGenerator() :
-  horRotateFlag(0),
+  horRotate(0.0),
   radius(CF63::innerRadius),depth(7.8),height(10.0),
   wallThick(CF63::wallThick),portRadius(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),

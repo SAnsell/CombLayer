@@ -79,6 +79,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "CylGateValve.h"
+#include "CrossWayTube.h"
 
 
 
@@ -109,7 +110,7 @@ Segment46::Segment46(const std::string& Key) :
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
     }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
+  mirrorChamberB(new tdcSystem::CrossWayTube(keyName+"MirrorChamberB")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB"))
   /*!
@@ -240,11 +241,12 @@ Segment46::buildObjects(Simulation& System)
   const constructSystem::portItem& PC =
     buildIonPump2Port(System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
 
-  const constructSystem::portItem& MCA =
-    buildIonPump2Port(System,*IZThin,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
+  constructSystem::constructUnit
+    (System,*IZThin,masterCell,PC,"OuterPlate",*mirrorChamberA);
+  
 
 
-  pipeB->createAll(System,MCA,"OuterPlate");
+  pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*IZThin,pipeB);
 
@@ -276,11 +278,11 @@ Segment46::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*slitTube,"back",*bellowB);
 
-  const constructSystem::portItem& MCB =
-    buildIonPump2Port(System,*IZThin,masterCell,*bellowB,"back",*mirrorChamberB,true);
+  constructSystem::constructUnit
+    (System,*IZThin,masterCell,*bellowB,"back",*mirrorChamberB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,MCB,"OuterPlate",*bellowC);
+    (System,*IZThin,masterCell,*mirrorChamberB,"back",*bellowC);
 
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*bellowC,"back",*gateB);
