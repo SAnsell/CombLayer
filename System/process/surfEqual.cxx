@@ -137,6 +137,7 @@ struct EqualSurface
 	    ObjectType*,const ObjectType*>::type TX;
 	  
 	  TX ObjPtr=dynamic_cast<TX>(SPtr);
+
 	  return EqualSurf<TX,RetType>(ObjPtr,SMap);
 	}
       else
@@ -219,7 +220,7 @@ EqualSurf(SurfType surf,const SMAP& SurMap)
         {
 	  SurfType sndObj=dynamic_cast<SurfType>(mc->second);
           if (sndObj && sndObj->operator==(*surf))
-	    return static_cast<RetType>(sndObj); 
+	    return static_cast<RetType>(sndObj);
 	}
     }
   return static_cast<RetType>(surf);
@@ -244,6 +245,7 @@ equalSurfNum(const Geometry::Surface* SPtr)
     EqualSurface<boost::mpl::_1 , boost::mpl::_2,const Geometry::Surface*> >::type FTYPE;
   
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
   const Geometry::Surface* OutPtr=FTYPE::dispatch(Index,SPtr,SurI.surMap());
   return OutPtr->getName();
 }
@@ -269,6 +271,7 @@ cmpSurfaces(const Geometry::Surface* SPtr,
     {
       const Geometry::Quadratic* SQ=dynamic_cast<const Geometry::Quadratic*>(SPtr);
       const Geometry::Quadratic* TQ=dynamic_cast<const Geometry::Quadratic*>(TPtr);
+
       if (!SQ || !TQ) return 0;
       return (*SQ==(*TQ));
     }

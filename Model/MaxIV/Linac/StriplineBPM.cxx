@@ -172,7 +172,9 @@ StriplineBPM::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+outerThick);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  Geometry::Cylinder* Cptr=
+    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,
@@ -241,7 +243,6 @@ StriplineBPM::createObjects(Simulation& System)
   // inner void
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
-
 
   // front void
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 307 -401 ");

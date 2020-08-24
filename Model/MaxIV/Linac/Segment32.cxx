@@ -169,6 +169,9 @@ Segment32::createLinks()
 
 void
 Segment32::writePoints() const
+  /*!
+    Writes out points to allow tracking through magnets
+  */
 {
   ELog::RegMethod RegA("Segment32","writePoints");
 
@@ -214,7 +217,7 @@ Segment32::createAll(Simulation& System,
 
   buildObjects(System);
   createLinks();
-  writePoints();
+  //  writePoints();
   return;
 }
 
