@@ -133,7 +133,7 @@ ScrapperGenerator::generateScrapper (FuncDataBase& Control,
 
   Control.addVariable(keyName+"DriveRadius",driveRadius);
   Control.addVariable(keyName+"DriveFlangeRadius",driveFlangeRadius);
-  Control.addVariable(keyName+"DriveFlangeLength",driveFlangeLength);  
+  Control.addVariable(keyName+"DriveFlangeLength",driveFlangeLength);
 
   Control.addVariable(keyName+"SupportRadius",supportRadius);
   Control.addVariable(keyName+"SupportThick",supportThick);
@@ -156,7 +156,7 @@ ScrapperGenerator::generateScrapper (FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void ScrapperGenerator::setCF<CF40_22>();
+template void ScrapperGenerator::setCF<CF66_TDC>();
 template void ScrapperGenerator::setCF<CF40>();
 
 

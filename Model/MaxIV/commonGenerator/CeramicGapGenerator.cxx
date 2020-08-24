@@ -58,13 +58,13 @@ namespace setVariable
 {
 
 CeramicGapGenerator::CeramicGapGenerator() :
-  radius(CF40_22::innerRadius),length(14.0),
+  radius(1.05),length(14.0),
   ceramicALen(0.5),ceramicWideLen(4.0),
   ceramicGapLen(2.0),
   ceramicBLen(1.2),ceramicThick(0.3),
   ceramicWideThick(0.8),
   pipeLen(2.0),pipeThick(0.15),
-  bellowLen(3.5),bellowThick(CF40::bellowThick),
+  bellowLen(3.5),bellowThick(0.85),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
   voidMat("Void"),pipeMat("Stainless304L"),

@@ -545,7 +545,7 @@ Segment1(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,-1);
 
   SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF66_TDC>();
+  SimpleTubeGen.setCF<setVariable::CF66_TDC>();
 
   SimpleTubeGen.setFlangeCap(setVariable::CF66_TDC::flangeLength, 0.0);  // No_1_00.pdf
   SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
@@ -829,23 +829,26 @@ Segment6(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-147.547,1936.770,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",12.8);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
-  PGen.generatePipe(Control,lKey+"PipeA",61.75);
+  PGen.generatePipe(Control,lKey+"PipeA",61.7);
 
-  PGen.generatePipe(Control,lKey+"PipeB",20.5);
+  PGen.generatePipe(Control,lKey+"PipeB",20.0);
 
-  PGen.setBFlangeCF<setVariable::CF63>();
+  PGen.setBFlangeCF<setVariable::CF66_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",55.0);
 
+  SCGen.setCF<setVariable::CF66_TDC>();
   SCGen.generateScrapper(Control,lKey+"Scrapper",1.0);   // z lift
 
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setAFlangeCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeD",19.50);
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setAFlangeCF<setVariable::CF66_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeD",20.0);
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicA");
 
