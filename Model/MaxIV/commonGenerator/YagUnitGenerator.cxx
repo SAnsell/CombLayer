@@ -68,7 +68,7 @@ YagUnitGenerator::YagUnitGenerator() :
   viewFlangeRadius(CF63::flangeRadius),
   viewFlangeLength(CF63::flangeLength),
   viewPlateThick(CF63::flangeLength),
-  portRadius(CF40::innerRadius),portThick(CF40::wallThick),
+  portRadius(1.7),portThick(0.2),
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
   frontLength(7.0),backLength(13.0),
