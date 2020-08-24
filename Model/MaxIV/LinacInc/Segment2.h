@@ -90,7 +90,6 @@ class Segment2 :
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
   /// yag screen
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-  std::shared_ptr<constructSystem::Bellows> bellowC;
 
   void buildObjects(Simulation&);
   void createLinks();

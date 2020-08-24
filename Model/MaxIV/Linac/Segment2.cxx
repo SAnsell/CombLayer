@@ -104,8 +104,7 @@ Segment2::Segment2(const std::string& Key) :
   QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),
   QuadE(new tdcSystem::LQuadF(keyName+"QuadE")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
-  bellowC(new constructSystem::Bellows(keyName+"BellowC"))
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -132,7 +131,6 @@ Segment2::Segment2(const std::string& Key) :
   OR.addObject(QuadE);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
-  OR.addObject(bellowC);
 
   setFirstItems(pipeA);
 }
@@ -206,9 +204,6 @@ Segment2::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*bellowC);
-
   buildZone->removeLastMaster(System);
   return;
 }
@@ -220,7 +215,7 @@ Segment2::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*bellowC,2);
+  setLinkSignedCopy(1,*yagUnit,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

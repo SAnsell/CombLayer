@@ -628,8 +628,6 @@ Segment2(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
-
   return;
 }
 
