@@ -315,6 +315,7 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+  SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
   SurfMap::setSurf("MidAngleWall",SMap.realSurf(buildIndex+1111));
   SurfMap::setSurf("KlystronWall",SMap.realSurf(buildIndex+3002));

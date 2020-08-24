@@ -152,10 +152,13 @@ FORMAX::build(Simulation& System,
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 

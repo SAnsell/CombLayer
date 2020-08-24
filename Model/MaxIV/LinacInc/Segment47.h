@@ -37,6 +37,8 @@ class Segment47 :
 {
  private:
 
+  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+  
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<constructSystem::BlankTube> prismaChamberA; ///< #2 and #3
   std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #4
@@ -50,6 +52,7 @@ class Segment47 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
 
   void createSplitInnerZone(Simulation&);
+  
   void buildObjects(Simulation&);
   void createLinks();
 

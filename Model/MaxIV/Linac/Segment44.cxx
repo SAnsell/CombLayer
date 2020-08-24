@@ -172,7 +172,9 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertAllInCell(System,cMag->getCell("Void"));
   
   // transfer to segment 45 and 46
+  CellMap::addCell("LastCell",outerCellB);
   CellMap::addCell("LastCell",outerCellC);
+
   buildZone->removeLastMaster(System);  
   return;
 }
@@ -194,6 +196,7 @@ Segment44::createLinks()
   FixedComp::nameSideIndex(2,"midExit");
   FixedComp::nameSideIndex(3,"magnetExit");
   FixedComp::nameSideIndex(4,"splitPoint");
+
   
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));

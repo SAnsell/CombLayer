@@ -47,6 +47,9 @@ class TDC :
 
   // storage of segments
   typedef std::map<std::string,std::shared_ptr<TDCsegment>> SegTYPE;
+
+  /// to stop end-build check (length etc) 
+  bool noCheck;
   
   std::set<std::string> activeINJ;   ///< active components
 
@@ -69,6 +72,8 @@ class TDC :
   TDC& operator=(const TDC&);
   virtual ~TDC();
 
+  /// Do not carry out end point checks:
+  void setNoLengthCheck() { noCheck=1; }
   /// set active range
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
 

@@ -137,9 +137,12 @@ Segment48::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  beamStopA->createAll(System,*this,0);
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
+  if (isActive("front"))
+    beamStopA->copyCutSurf("front",*this,"front");
+
+  beamStopA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 
@@ -176,7 +179,7 @@ Segment48::buildObjects(Simulation& System)
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
   			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
-
+  
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*slitTube,"back",*bellowB);
 

@@ -60,6 +60,7 @@ createXrayInputs(inputParam& IParam)
   ELog::RegMethod RegA("XrayInputs[F]","createXrayInputs");
 
   createInputs(IParam);
+  IParam.regFlag("noLengthCheck","noLengthCheck");
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regMulti("stopPoint","stopPoint",1000);
 

@@ -93,7 +93,7 @@ namespace tdcSystem
 // Note currently uncopied:
 
 Segment46::Segment46(const std::string& Key) :
-  TDCsegment(Key,2),
+  TDCsegment(Key,4),
   IZThin(new attachSystem::InnerZone(*this,cellIndex)),
   
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
@@ -142,20 +142,34 @@ Segment46::~Segment46()
    */
 {}
 
+void
+Segment46::insertPrevSegment(Simulation& System,
+			     const TDCsegment* prevSegPtr) const
+  /*!
+    Insert components that need to be in previous
+    objects
+   */
+{
+  ELog::RegMethod RegA("Segment46","insertPrevSegment");
+
+  if (prevSegPtr && prevSegPtr->hasCell("LastCell",0))
+    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
+
+  return;
+}
+  
   
 void
 Segment46::createSplitInnerZone(Simulation& System)
   /*!
     Split the innerZone into two parts (assuming segment44 built)
-    \param System :: Simulatio to use
+    \param System :: Simulation to use
    */
 {
-  ELog::RegMethod RegA("Segment30","createSplitInnerZone");
+  ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
   *IZThin = *buildZone;
 
-  const double orgFrac(2.3);
-  const double axisFrac(4.0);
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -169,19 +183,26 @@ Segment46::createSplitInnerZone(Simulation& System)
       int SNremoved(0);
       for(const TDCsegment* sidePtr : sideVec)
 	{
-	  // need last cell only:
-	  const int CN=sidePtr->getCells("BuildVoid").back();
-	  MonteCarlo::Object* OPtr=System.findObject(CN);
-	  // remove surface that tracks close to a beam going in the +Z
-	  // direction
-	  HeadRule HA=OPtr->getHeadRule();   // copy
-	  SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
-	  HA.addIntersection(-SMap.realSurf(buildIndex+5005));
-	  OPtr->procHeadRule(HA);
+	  std::vector<int> CNvec=sidePtr->getCells("BuildVoid");
+	  // need only the last cell for SPF44
+	  if (sidePtr->getKeyName()=="SPF44")
+	    CNvec.erase(CNvec.begin(),CNvec.end()-1);
+
+	  for(const int CN : CNvec)
+	    {
+	      MonteCarlo::Object* OPtr=System.findObject(CN);
+	      // remove surface that tracks close to a beam going in the +Z
+	      // direction
+	      HeadRule HA=OPtr->getHeadRule();   // copy
+	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	      HA.addIntersection(-SMap.realSurf(buildIndex+5005));
+	      OPtr->procHeadRule(HA);
+	    }
 	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
+      
       IZThin->setSurround(HSurroundB);
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
@@ -209,7 +230,7 @@ Segment46::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
-
+  
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*gateA);
 
@@ -280,6 +301,9 @@ Segment46::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*gateB,2);
 
+  FixedComp::setConnect(2,Origin,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));
+  FixedComp::nameSideIndex(2,"buildZoneCut");
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

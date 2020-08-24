@@ -127,6 +127,7 @@ namespace tdcSystem
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   attachSystem::CellMap(),
+  noCheck(0),
   injectionHall(new InjectionHall("InjectionHall")),
   SegMap
   ({
@@ -378,7 +379,7 @@ TDC::createAll(Simulation& System,
       {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
       {"Segment29",{"spfLong","Segment28",1}},
-      {"Segment30",{"tdcMain","Segment12",2}},
+      {"Segment30",{"tdcMain","Segment12",1}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -394,10 +395,10 @@ TDC::createAll(Simulation& System,
       {"Segment43",{"spfFar","Segment42",1}},
       {"Segment44",{"spfFar","Segment43",1}},
       {"Segment45",{"spfFar","Segment44",3}},
-      {"Segment46",{"spfFar","Segment44",1}}, // 44 is correct
+      {"Segment46",{"spfFar","Segment44",2}}, // 44 is correct
       {"Segment47",{"spfFar","Segment46",1}},
       {"Segment48",{"spfFar","Segment47",1}},
-      {"Segment49",{"spfFar","Segment49",1}}
+      {"Segment49",{"spfFar","Segment48",1}}
     });
   const int voidCell(74123);
 
@@ -430,35 +431,35 @@ TDC::createAll(Simulation& System,
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
+	  std::vector<std::string> sideSegNames;
 	  if (BL=="Segment10")
 	    {
 	      secondZone=buildInnerZone(System.getDataBase(),"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
-	  if (BL=="Segment46")
-	    {
-	      const TDCsegment* sidePtrA=
-		SegMap.find("Segment44")->second.get();
-	      if (sidePtrA->isBuilt())
-		segPtr->registerSideSegment(sidePtrA);
-	    }
 	  if (BL=="Segment30")
-	    {
-	      const TDCsegment* sidePtrA=
-		SegMap.find("Segment13")->second.get();
-	      const TDCsegment* sidePtrB=
-		SegMap.find("Segment14")->second.get();
-	      if (sidePtrA->isBuilt())
-		segPtr->registerSideSegment(sidePtrA);
-	      if (sidePtrB->isBuilt())
-		segPtr->registerSideSegment(sidePtrB);
-	    }
+	    sideSegNames={"Segment13","Segment14"};
 
+	  if (BL=="Segment46")
+	    sideSegNames={"Segment44","Segment45"};
+
+	  if (BL=="Segment47")
+	    sideSegNames={"Segment45","Segment46"};
+
+	  // Add side segments:
+	  for(const std::string& sideItem : sideSegNames)
+	    {
+	      const TDCsegment* sidePtr=
+		SegMap.find(sideItem)->second.get();
+	      if (sidePtr->isBuilt())
+		segPtr->registerSideSegment(sidePtr);
+	    }
+	  
 	  segPtr->setInnerZone(buildZone.get());
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment29" &&
 	      BL!="Segment30" && BL!="Segment45" &&
-	      BL!="Segment46")
+	      BL!="Segment46" && BL!="Segment47")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
@@ -471,7 +472,8 @@ TDC::createAll(Simulation& System,
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
 	  segPtr->captureCellMap();
-	  //	  segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  if (!noCheck)
+	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	}
     }
   return;

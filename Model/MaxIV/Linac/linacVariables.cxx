@@ -1087,8 +1087,8 @@ Segment12(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
 
   const Geometry::Vec3D startPtA(-547.597,3697.597,0.0);
-  const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 13
-  const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 30
+  const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 30
+  const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 13
 
   Control.addVariable(lKey+"Tolerance",0.3);
   Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
@@ -2319,7 +2319,7 @@ Segment31(FuncDataBase& Control,
   setVariable::LinacQuadGenerator LQGen;
 
   const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
-  const Geometry::Vec3D endPt(-921.651, 5344.0, 0.0);
+  const Geometry::Vec3D endPt  (-921.651, 5344.0, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -2410,35 +2410,39 @@ Segment32(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment32");
 
   setVariable::PipeGenerator PGen;
+  setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::BellowGenerator BellowGen;
 
-  const Geometry::Vec3D startPt(-921.651,5344.0,0.0);
-  const Geometry::Vec3D endPt(-965.763,5607.319,0.0);
+  const Geometry::Vec3D startPt(-921.651, 5344.000, 0.0);
+  const Geometry::Vec3D endPt  (-965.763, 5607.319, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable(lKey+"XYAngle",12.694);  // from drawing coord (seg31)
+  Control.addVariable(lKey+"EndAngle",6.40);  // from drawing coord (seg33)
 
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setMat("Stainless316L");
-  PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",82.5); // measured
+  FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
+  Control.addVariable(lKey+"FlatAXYAngle",0.0);
 
   DIBGen.generate(Control,lKey+"DMA");
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",94.4); // measured
+  PGen.setNoWindow();
+  PGen.setCF<CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeA",94.4); // measured
+  Control.addVariable(lKey+"PipeAXYAngle",-1.6);
 
-  PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",82.5); // measured
+
+  FPGen.generateFlat(Control,lKey+"FlatB",82.5); // measured
+  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
 
   DIBGen.generate(Control,lKey+"DMB");
 
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  Control.addVariable(lKey+"BellowXYAngle",0.0);
 
   return;
 }
@@ -2501,10 +2505,9 @@ Segment33(FuncDataBase& Control,
   return;
 }
 
-
 void
 Segment34(FuncDataBase& Control,
-		   const std::string& lKey)
+	  const std::string& lKey)
   /*!
     Set the variables for SPF segment 34
     \param Control :: DataBase to use
@@ -2513,18 +2516,44 @@ Segment34(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment34");
 
-  Segment32(Control, lKey);
+  setVariable::PipeGenerator PGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BellowGenerator BellowGen;
 
   const Geometry::Vec3D startPt(-995.514,5872.556,0.0);
   const Geometry::Vec3D endPt(-1010.0,6139.149,0.0);
 
+
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable(lKey+"XYAngle",6.4);  // Seg 33 angle (measured)
+
+  FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
+  Control.addVariable(lKey+"FlatAXYAngle",0.0);
+
+  DIBGen.generate(Control,lKey+"DMA");
+
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setNoWindow();
+  PGen.setCF<CF40_22>();
+  PGen.generatePipe(Control,lKey+"PipeA",94.4); // measured
+  Control.addVariable(lKey+"PipeAXYAngle",-1.6);
+
+
+  FPGen.generateFlat(Control,lKey+"FlatB",82.5); // measured
+  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
+
+  DIBGen.generate(Control,lKey+"DMB");
+
+  BellowGen.setCF<setVariable::CF40_22>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  Control.addVariable(lKey+"BellowXYAngle",-0.0);
 
   return;
 }
+
 
 void
 Segment35(FuncDataBase& Control,
@@ -3060,15 +3089,18 @@ Segment45(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-1010.0,9227.315,-190.289);
 
   Geometry::Vec3D AB=(endPt-startPt).unit();
-  ELog::EM<<"MA == "<<acos(AB[1])*180.0/M_PI<<ELog::endDiag;
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
-  Control.addVariable(lKey+"XAngle",
-  		      atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable
+    (lKey+"XYAngle",
+     atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable
+    (lKey+"XAngle",
+     atan((endPt.Z()-startPt.Z())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  // floor gap
+  Control.addVariable(lKey+"CutRadius",20.0);
   // Ceramic gap
   setVariable::CeramicGapGenerator CSGen;
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
@@ -3180,12 +3212,11 @@ Segment47(FuncDataBase& Control,
     \param lKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","Segment46");
+  ELog::RegMethod RegA("linacVariables[F]","Segment47");
 
-  //  // SPF47
+  // SPF47
   const Geometry::Vec3D startPt(-1010.0,9105.245,0.0);
   const Geometry::Vec3D endPt(-1010.0,9327.140,0.0);
-
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3197,6 +3228,7 @@ Segment47(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
+
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
   PGen.generatePipe(Control,lKey+"PipeB",12.6); // measured
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
@@ -3244,13 +3276,9 @@ Segment48(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment48");
 
   // SPF48
-  // const Geometry::Vec3D startPt(-1010.0,9327.140,0.0);
-  // const Geometry::Vec3D endPt(-1010.0,9495.745,0.0);
+  const Geometry::Vec3D startPt(-1010.0,9327.140,0.0);
+  const Geometry::Vec3D endPt(-1010.0,9495.745,0.0);
 
-  ELog::EM << "SPF48 uses SPF35 startPt/endPt - otherwise crashes" << ELog::endCrit;
-  // SPF35
-  const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
-  const Geometry::Vec3D endPt(-1010.0,6310.949,0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3342,7 +3370,7 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",9880.0);
+  Control.addVariable(wallKey+"MainLength",12080.0);
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
@@ -3357,7 +3385,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"RoofHeight",140.0);  // GUESS
 
   Control.addVariable(wallKey+"RoofThick",90.0);
-  Control.addVariable(wallKey+"FloorThick",50.0);
+  Control.addVariable(wallKey+"FloorThick",150.0);
 
   // Extra for boundary
   Control.addVariable(wallKey+"BoundaryWidth",200.0);

@@ -169,8 +169,11 @@ void
 Segment10::constructHole(Simulation& System)
   /*!
     Construct the hole in the wall
+    \param System :: Simulation
   */
 {
+  ELog::RegMethod RegA("Segment10","constructHole");
+  
   if (IHall)
     {
       std::string Out;

@@ -333,7 +333,7 @@ CeramicGap::createAll(Simulation& System,
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length);
   const std::string frontStr=getRuleStr("front");
-  ELog::EM<<"Front == "<<frontStr<<ELog::endDiag;
+
   createSurfaces();
   createObjects(System);
   createLinks();

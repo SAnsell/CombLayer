@@ -38,12 +38,16 @@ class Segment32 :
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dmA
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dmA;        ///< First dipole magnet
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dmB
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dmB;        ///< Second dipole magnet
-  std::shared_ptr<constructSystem::Bellows> bellow;    ///< Bellow
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;      ///< Pipe through dmA  
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;  ///< First dipole magnet
+
+  /// Pipe between first two dipole magnets
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  
+
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;     ///< Pipe through dmB
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   ///< Second dipole magnet
+
+  std::shared_ptr<constructSystem::Bellows> bellow; ///< Bellow
 
   void buildObjects(Simulation&);
   void createLinks();
