@@ -51,7 +51,7 @@ class Segment46 :
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
   std::shared_ptr<constructSystem::BlankTube> prismaChamber; ///< #4
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
   std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
   std::shared_ptr<constructSystem::PortTube> slitTube; // #9

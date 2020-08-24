@@ -100,7 +100,7 @@ Segment46::Segment46(const std::string& Key) :
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   prismaChamber(new constructSystem::BlankTube(keyName+"PrismaChamber")),
-  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
+  mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),

@@ -3145,8 +3145,9 @@ Segment46(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable
+    (lKey+"XYAngle",atan((startPt.X()-endPt.X())/
+			 (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Pipes
   setVariable::PipeGenerator PGen;
@@ -3160,20 +3161,12 @@ Segment46(FuncDataBase& Control,
 
   // Gate valves
   setVariable::CylGateValveGenerator CGateGen;
+  CGateGen.setYRotate(180.0);
+  CGateGen.setWallThick(0.3);
+  CGateGen.setPortThick(0.3);
   CGateGen.generateGate(Control,lKey+"GateA",0);
-  Control.addVariable(lKey+"GateAYAngle",180.0);
-  Control.addVariable(lKey+"GateAWallThick",0.3);
-  Control.addVariable(lKey+"GateAPortThick",0.1);
-  // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L");
-  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
-  Control.addVariable(lKey+"GateBYAngle",180.0);
-  Control.addVariable(lKey+"GateBWallThick",0.3);
-  Control.addVariable(lKey+"GateBPortThick",0.1);
-  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
 
   // Bellows
   setVariable::BellowGenerator BellowGen;

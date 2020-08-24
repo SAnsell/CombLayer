@@ -67,10 +67,11 @@ CylGateValveGenerator::CylGateValveGenerator() :
   topThick(CF63::flangeLength),liftHeight(7.8),
   liftRadius(2.3),liftThick(0.2),liftPlate(1.2),
   driveRadius(0.6),bladeLift(7.0),bladeThick(0.4),
-  bladeRadius(2.2),voidMat("Void"),bladeMat("Copper"),
-  driveMat("Nickel"),wallMat("Stainless304")
+  bladeRadius(2.2),voidMat("Void"),bladeMat("Stainless316L"),
+  driveMat("Nickel"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
+    // wall mat from : email from Karl Åhnberg, 2 Jun 2020
   */
 {}
 
@@ -116,11 +117,9 @@ CylGateValveGenerator::generateGate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("CylGateValveGenerator","generateGate");
 
-  if (horRotateFlag)
-    {
-      const double ang((horRotateFlag>0) ? 90.0 : -90);
-      Control.addVariable(keyName+"YAngle",ang);
-    }
+  if (std::abs<double>(horRotate)>1e-3)
+    Control.addVariable(keyName+"YAngle",horRotate);
+
   
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);

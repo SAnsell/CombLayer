@@ -39,7 +39,7 @@ class CylGateValveGenerator
 {
  private:
 
-  int horRotateFlag;            ///< horizontal rotate flag [+/-]
+  double horRotate;            ///< horizontal rotate angle
   
   double radius;                ///< Radius
   double depth;                 ///< Void down depth
@@ -50,7 +50,7 @@ class CylGateValveGenerator
   double portRadius;            ///< Port inner radius (opening)
   double portFlangeRadius;      ///< Port inner radius (opening)
   double portInner;             ///< Port inner step
-  double portThick;             ///< Port outer step
+  double portThick;             ///< Port outer thickness
 
   double topRadius;             ///< Top outer radius
   double topHoleRadius;         ///< Top hole radius
@@ -79,8 +79,10 @@ class CylGateValveGenerator
   CylGateValveGenerator& operator=(const CylGateValveGenerator&);
   ~CylGateValveGenerator();
 
+  void setWallThick(const double T) { wallThick=T; }
+  void setPortThick(const double T) { portThick=T; }
   /// set rotate flag
-  void setRotate(const int F) { horRotateFlag=F; }
+  void setYRotate(const double F) { horRotate=F; }
   void generateFlat(FuncDataBase&,const std::string&,
 		    const bool,const bool) const;
   void generateGate(FuncDataBase&,const std::string&,
