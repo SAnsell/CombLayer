@@ -40,6 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "magnetVar.h"
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
@@ -2403,11 +2404,6 @@ Segment32(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment32");
 
-  setVariable::PipeGenerator PGen;
-  setVariable::FlatPipeGenerator FPGen;
-  setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BellowGenerator BellowGen;
-
   const Geometry::Vec3D startPt(-921.651, 5344.000, 0.0);
   const Geometry::Vec3D endPt  (-965.763, 5607.319, 0.0);
 
@@ -2415,6 +2411,11 @@ Segment32(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.694);  // from drawing coord (seg31)
   Control.addVariable(lKey+"EndAngle",6.40);  // from drawing coord (seg33)
+  /*
+  setVariable::PipeGenerator PGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BellowGenerator BellowGen;
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
   Control.addVariable(lKey+"FlatAXYAngle",0.0);
@@ -2437,7 +2438,8 @@ Segment32(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
   Control.addVariable(lKey+"BellowXYAngle",0.0);
-  
+  */
+  Segment32Magnet(Control,lKey);
   return;
 }
 
@@ -2510,11 +2512,6 @@ Segment34(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment34");
 
-  setVariable::PipeGenerator PGen;
-  setVariable::FlatPipeGenerator FPGen;
-  setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BellowGenerator BellowGen;
-
   const Geometry::Vec3D startPt(-995.514,5872.556,0.0);
   const Geometry::Vec3D endPt(-1010.0,6139.149,0.0);
 
@@ -2522,6 +2519,12 @@ Segment34(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);  // Seg 33 angle (measured)
+
+  /*
+  setVariable::PipeGenerator PGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BellowGenerator BellowGen;
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
   Control.addVariable(lKey+"FlatAXYAngle",0.0);
@@ -2544,7 +2547,9 @@ Segment34(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
   Control.addVariable(lKey+"BellowXYAngle",-0.0);
-  
+  */
+
+  Segment34Magnet(Control,lKey);
   return;
 }
 

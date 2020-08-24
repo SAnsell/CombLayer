@@ -51,6 +51,7 @@ class Segment32 :
 
   void buildObjects(Simulation&);
   void createLinks();
+  void writePoints() const;
 
  public:
 

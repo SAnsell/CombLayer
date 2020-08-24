@@ -168,6 +168,34 @@ Segment32::createLinks()
 }
 
 void
+Segment32::writePoints() const
+{
+  ELog::RegMethod RegA("Segment32","writePoints");
+
+
+  const Geometry::Vec3D Org(flatA->getLinkPt(1)*10.0);
+  const Geometry::Vec3D ptFlatA(flatA->getLinkPt(2)*10.0);
+  const Geometry::Vec3D ptPipeA(pipeA->getLinkPt(2)*10.0);
+  const Geometry::Vec3D ptFlatB(flatB->getLinkPt(2)*10.0);
+  const Geometry::Vec3D ptBellow(bellow->getLinkPt(2)*10.0);
+
+  ELog::EM<<"Orig == "<<Org<<ELog::endDiag;
+  ELog::EM<<"Flat A= "<<ptFlatA-Org<<ELog::endDiag;
+  ELog::EM<<"Pipe A= "<<ptPipeA-Org<<ELog::endDiag;
+  ELog::EM<<"Flat B= "<<ptFlatB-Org<<ELog::endDiag;
+  ELog::EM<<"Bellow= "<<ptBellow-Org<<ELog::endDiag;
+
+
+  ELog::EM<<"Length A == "<<ptFlatA.Distance(Org)<<ELog::endDiag;
+  ELog::EM<<"Length C == "<<ptPipeA.Distance(ptFlatA)<<ELog::endDiag;
+  ELog::EM<<"Length B == "<<ptFlatB.Distance(ptPipeA)<<ELog::endDiag;
+  ELog::EM<<"Length D == "<<ptBellow.Distance(ptFlatB)<<ELog::endDiag;
+  
+  return;
+}
+  
+  
+void
 Segment32::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -186,6 +214,7 @@ Segment32::createAll(Simulation& System,
 
   buildObjects(System);
   createLinks();
+  writePoints();
   return;
 }
 
