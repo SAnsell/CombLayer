@@ -725,33 +725,31 @@ Segment4(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",67.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",67.0); // No_4_00.pdf
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",80.1); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",80.2); // No_4_00.pdf
 
-  LQGen.generateQuad(Control,lKey+"QuadA",17.2);
-  LSGen.generateSexu(Control,lKey+"SexuA",39.1);
-  LQGen.generateQuad(Control,lKey+"QuadB",62.15);
+  LQGen.generateQuad(Control,lKey+"QuadA",19.7); // No_4_00.pdf
+  LSGen.generateSexu(Control,lKey+"SexuA",40.7); // No_4_00.pdf
+  LQGen.generateQuad(Control,lKey+"QuadB",61.7); // No_4_00.pdf
 
-  YagUnitGen.setCF<CF50>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  PGen.generatePipe(Control,lKey+"PipeC",70.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",70.2); // No_4_00.pdf
 
-  CMGen.generateMag(Control,lKey+"CMagHorC",13.1,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",33.21,1);
+  CMGen.generateMag(Control,lKey+"CMagHorC",14,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",34,1);
 
   return;
 }
