@@ -296,7 +296,7 @@ struct CF66_TDC
 {
   static constexpr double innerRadius=3.3;
   static constexpr double wallThick=0.2;
-  static constexpr double flangeRadius=5.5;
+  static constexpr double flangeRadius=5.6;
   static constexpr double flangeLength=1.7;
   /* static constexpr double bellowStep=0.5; */
   /* static constexpr double bellowThick=0.5; */
