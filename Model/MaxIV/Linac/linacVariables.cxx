@@ -737,6 +737,7 @@ Segment4(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadB",61.7); // No_4_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
@@ -746,8 +747,8 @@ Segment4(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeC",70.2); // No_4_00.pdf
 
-  CMGen.generateMag(Control,lKey+"CMagHorC",14,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",34,1);
+  CMGen.generateMag(Control,lKey+"CMagHorC",14,1);
+  CMGen.generateMag(Control,lKey+"CMagVertC",34,0);
 
   return;
 }
@@ -771,24 +772,37 @@ Segment5(FuncDataBase& Control,
 
   const double angleDipole(1.6-0.12);
   //  const double bendDipole(1.6);
-  const Geometry::Vec3D startPt(-45.073,1420.334,0);
+  const Geometry::Vec3D startPt(-45.073,1420.344,0);
   const Geometry::Vec3D endPt(-90.011,1683.523,0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
+  // Control.addVariable(lKey+"XYAngle",
+  // 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  FPGen.generateFlat(Control,lKey+"FlatA",82.0);
+  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
+  //  ELog::EM << angleDipole << " " << flatAXYAngle << ELog::endDiag;
+
+  FPGen.generateFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0));
   Control.addVariable(lKey+"FlatAXYAngle",angleDipole);
+  Control.addVariable(lKey+"FlatAWallThick",0.15); // No_4_00.pdf
+  Control.addVariable(lKey+"FlatAFrontWidth",3.656-1.344); // No_5_00.pdf
+  Control.addVariable(lKey+"FlatABackWidth",3.656-1.344); // No_5_00.pdf
+
   DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAYStep",-0.0091); // this centers DipoleA at 40.895 [No_5_00.pdf]
 
   BDGen.generateDivider(Control,lKey+"BeamA",angleDipole);
+  Control.addVariable(lKey+"BeamAExitLength", 15);
+  Control.addVariable(lKey+"BeamAMainLength", 34.4);
 
-  FPGen.generateFlat(Control,lKey+"FlatB",82.0);
+  FPGen.generateFlat(Control,lKey+"FlatB",
+		     81.009/cos((flatAXYAngle+angleDipole*2)*M_PI/180.0)); // No_5_00.pdf
   Control.addVariable(lKey+"FlatBXYAngle",angleDipole);
   DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
 
-  // again not larger size
-  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
   Control.addVariable(lKey+"BellowAXYAngle",angleDipole);
 

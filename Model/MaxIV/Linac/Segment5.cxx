@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -121,8 +120,6 @@ Segment5::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment5","buildObjects");
 
-  int outerCell;
-
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
@@ -149,7 +146,7 @@ Segment5::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*flatB,"back",*bellowA);
 
-  buildZone->removeLastMaster(System);  
+  buildZone->removeLastMaster(System);
 
   return;
 }
