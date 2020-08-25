@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment8.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment8_h
 #define tdcSystem_Segment8_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
 
 /*!
   \namespace xraySystem
@@ -41,8 +32,6 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
 
   /*!
     \class Segment8
@@ -58,19 +47,19 @@ class Segment8 :
  private:
 
   /// first bellow
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
+  std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Beam stop
-  std::shared_ptr<tdcSystem::EBeamStop> eBeamStop;   
+  std::shared_ptr<tdcSystem::EBeamStop> eBeamStop;
   /// second bellow
-  std::shared_ptr<constructSystem::Bellows> bellowB;   
+  std::shared_ptr<constructSystem::Bellows> bellowB;
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
-  
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment8(const std::string&);
   Segment8(const Segment8&);
   Segment8& operator=(const Segment8&);
