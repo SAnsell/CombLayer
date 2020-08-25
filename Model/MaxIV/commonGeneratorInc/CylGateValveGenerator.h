@@ -48,7 +48,7 @@ class CylGateValveGenerator
   double wallThick;             ///< Wall thickness
 
   double portRadius;            ///< Port inner radius (opening)
-  double portFlangeRadius;      ///< Port inner radius (opening)
+  double portFlangeRadius;      ///< Port flange radius 
   double portInner;             ///< Port inner step
   double portThick;             ///< Port outer thickness
 

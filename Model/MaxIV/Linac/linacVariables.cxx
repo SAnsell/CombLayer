@@ -79,6 +79,7 @@
 #include "CurveMagGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "CrossWayGenerator.h"
+#include "PrismaChamberGenerator.h"
 
 namespace setVariable
 {
@@ -3133,7 +3134,7 @@ void
 Segment46(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!
-    Set the variables for SPF segment 49
+    Set the variables for SPF segment 46
     \param Control :: DataBase to use
     \param lKey :: name before part names
   */
@@ -3141,8 +3142,8 @@ Segment46(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment46");
 
   // SPF46
-  const Geometry::Vec3D startPt(-1010.0,8825.445,0.0);
-  const Geometry::Vec3D endPt(-1010.0,9105.245,0.0);
+  const Geometry::Vec3D startPt(-1010.0, 8825.445, 0.0);
+  const Geometry::Vec3D   endPt(-1010.0, 9105.245, 0.0);
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
@@ -3152,10 +3153,15 @@ Segment46(FuncDataBase& Control,
 
   // Pipes
   setVariable::PipeGenerator PGen;
+  setVariable::CrossWayGenerator MSPGen;
+
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
+  MSPGen.setMainLength(6.3,6.3);
+    
   PGen.generatePipe(Control,lKey+"PipeA",96.8); // measured
   const double pipeBLength(40.0);  // measured
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
@@ -3164,30 +3170,23 @@ Segment46(FuncDataBase& Control,
   setVariable::CylGateValveGenerator CGateGen;
   CGateGen.setYRotate(180.0);
   CGateGen.setWallThick(0.3);
-  CGateGen.setPortThick(0.3);
+  CGateGen.setPortThick(0.10);
   CGateGen.generateGate(Control,lKey+"GateA",0);
-
-  CGateGen.generateGate(Control,lKey+"GateB",0);
 
   // Bellows
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
 
   // Prisma Chamber
-  setPrismaChamber(Control, lKey+"PrismaChamber");
-  Control.addVariable(lKey+"PrismaChamberYAngle", 90.0);
+  setVariable::PrismaChamberGenerator PCGen;
+  PCGen.generateChamber(Control, lKey+"PrismaChamber");
+  Control.addVariable(lKey+"PrismaChamberYAngle",180.0);
 
   // Mirror Chambers
-  setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberA");
-  MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
 
-  //  setMirrorChamber(Control, lKey+"MirrorChamberB");
-  //  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
 
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;
@@ -3196,6 +3195,19 @@ Segment46(FuncDataBase& Control,
 
   // Slit tube and jaws
   setSlitTube(Control,lKey+"SlitTube");
+
+  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
+
+  MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
+
+  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
+  
+  CGateGen.generateGate(Control,lKey+"GateB",0);
+
+  // Bellow D added: it is not on the drawing BUT the
+  // error in lengths is 160mm and there should be a bellow
+  // here.
+  BellowGen.generateBellow(Control,lKey+"BellowD",16.0); 
 
   return;
 }

@@ -75,7 +75,8 @@ class CrossWayGenerator
 
   template<typename T> void setCF();
   template<typename T> void setFlangeCF();
-
+  void setMainLength(const double,const double);
+  
   void generateCrossWay(FuncDataBase&,
 		       const std::string&) const;
 

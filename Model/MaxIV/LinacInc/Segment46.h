@@ -28,10 +28,16 @@ namespace constructSystem
   class JawFlange;
 }
 
+namespace xraySystem
+{
+  class CylGateValve;
+}
+
 namespace tdcSystem
 {
   class CleaningMagnet;
   class CrossWayTube;
+  class PrismaChamber;
 
   /*!
     \class Segment46
@@ -51,7 +57,7 @@ class Segment46 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
-  std::shared_ptr<constructSystem::BlankTube> prismaChamber; ///< #4
+  std::shared_ptr<tdcSystem::PrismaChamber> prismaChamber; ///< #4
   std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
   std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
@@ -61,7 +67,8 @@ class Segment46 :
   std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberB; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC; // #10
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
-
+  std::shared_ptr<constructSystem::Bellows> bellowD; ///< Additional bellow
+  
   void createSplitInnerZone(Simulation&);
   void buildObjects(Simulation&);
   void createLinks();

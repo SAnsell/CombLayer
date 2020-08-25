@@ -118,6 +118,19 @@ CrossWayGenerator::setFlangeCF()
 }
 
 void
+CrossWayGenerator::setMainLength(const double F,const double B)
+  /*!
+    Setter for front / back port length
+    \param F :: Front length
+    \param B :: Back length
+  */
+{
+  frontLength=F;
+  backLength=B;
+  return;
+}
+  
+void
 CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!

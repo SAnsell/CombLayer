@@ -80,10 +80,7 @@
 #include "Bellows.h"
 #include "CylGateValve.h"
 #include "CrossWayTube.h"
-
-
-
-#include "Surface.h"
+#include "PrismaChamber.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -100,7 +97,7 @@ Segment46::Segment46(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  prismaChamber(new constructSystem::BlankTube(keyName+"PrismaChamber")),
+  prismaChamber(new tdcSystem::PrismaChamber(keyName+"PrismaChamber")),
   mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
@@ -112,7 +109,8 @@ Segment46::Segment46(const std::string& Key) :
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   mirrorChamberB(new tdcSystem::CrossWayTube(keyName+"MirrorChamberB")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
-  gateB(new xraySystem::CylGateValve(keyName+"GateB"))
+  gateB(new xraySystem::CylGateValve(keyName+"GateB")),
+  bellowD(new constructSystem::Bellows(keyName+"BellowD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -133,6 +131,7 @@ Segment46::Segment46(const std::string& Key) :
   OR.addObject(mirrorChamberB);
   OR.addObject(bellowC);
   OR.addObject(gateB);
+  OR.addObject(bellowD);
 
   setFirstItems(pipeA);
 }
@@ -238,14 +237,12 @@ Segment46::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*gateA,"back",*bellowA);
 
-  const constructSystem::portItem& PC =
-    buildIonPump2Port(System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
+  constructSystem::constructUnit
+    (System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,PC,"OuterPlate",*mirrorChamberA);
+    (System,*IZThin,masterCell,*prismaChamber,"back",*mirrorChamberA);
   
-
-
   pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*IZThin,pipeB);
@@ -287,6 +284,9 @@ Segment46::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*bellowC,"back",*gateB);
 
+  constructSystem::constructUnit
+    (System,*IZThin,masterCell,*gateB,"back",*bellowD);
+
   IZThin->removeLastMaster(System);
 
   return;
@@ -301,7 +301,7 @@ Segment46::createLinks()
   ELog::RegMethod RegA("Segment46","createLinks");
 
   setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*gateB,2);
+  setLinkSignedCopy(1,*bellowD,2);
 
   FixedComp::setConnect(2,Origin,Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));
@@ -324,9 +324,11 @@ Segment46::writePoints() const
   const Geometry::Vec3D Org(pipeA->getLinkPt(1)*10.0);
   const Geometry::Vec3D ptPipeA(pipeA->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptGateA(gateA->getLinkPt(2)*10.0);
+  const Geometry::Vec3D ptPrismaA(prismaChamber->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptMirrorChamberA(mirrorChamberA->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptPipeB(pipeB->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptSlitTube(slitTube->getLinkPt(2)*10.0);
+  const Geometry::Vec3D ptBellowB(bellowB->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptMirrorChamberB(mirrorChamberB->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptBellowC(bellowC->getLinkPt(2)*10.0);
   const Geometry::Vec3D ptGateB(gateB->getLinkPt(2)*10.0);
@@ -334,9 +336,11 @@ Segment46::writePoints() const
   ELog::EM<<"Orig           = "<<Org<<ELog::endDiag;
   ELog::EM<<"Pipe A         = "<<ptPipeA-Org<<ELog::endDiag;
   ELog::EM<<"Gate A         = "<<ptGateA-Org<<ELog::endDiag;
+  ELog::EM<<"PrismaA        = "<<ptPrismaA-Org<<ELog::endDiag;
   ELog::EM<<"MirrorChamberA = "<<ptMirrorChamberA-Org<<ELog::endDiag;
   ELog::EM<<"Pipe B         = "<<ptPipeB-Org<<ELog::endDiag;
   ELog::EM<<"slittube       = "<<ptSlitTube-Org<<ELog::endDiag;
+  ELog::EM<<"BellowB        = "<<ptBellowB-Org<<ELog::endDiag;
   ELog::EM<<"MirrorChamberB = "<<ptMirrorChamberB-Org<<ELog::endDiag;
   ELog::EM<<"BellowC        = "<<ptBellowC-Org<<ELog::endDiag;
   ELog::EM<<"Gate B         = "<<ptGateB-Org<<ELog::endDiag;
@@ -363,7 +367,7 @@ Segment46::createAll(Simulation& System,
   createSplitInnerZone(System);
   buildObjects(System);
   createLinks();
-  writePoints();
+  //  writePoints();
   return;
 }
 

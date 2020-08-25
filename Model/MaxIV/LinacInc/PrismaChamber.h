@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_PrismaChamberTube_h
+#ifndef tdcSystem_PrismaChamber_h
 #define tdcSystem_PrismaChamber_h
 
 class Simulation;
