@@ -65,7 +65,8 @@ class Segment46 :
   void createSplitInnerZone(Simulation&);
   void buildObjects(Simulation&);
   void createLinks();
-
+  void writePoints() const; 
+  
  public:
 
   Segment46(const std::string&);

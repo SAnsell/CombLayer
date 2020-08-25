@@ -108,6 +108,7 @@
 #include "ButtonBPM.h"
 #include "CleaningMagnet.h"
 #include "UndulatorVacuum.h"
+#include "PrismaChamber.h"
 #include "PortTube.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -157,7 +158,7 @@ makeSingleItem::build(Simulation& System,
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","BlankTube","ButtonBPM",
-      "uVac", "UndVac","UndulatorVacuum",
+      "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "Help","help"
     });
 
@@ -538,6 +539,17 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(EPSep);
       EPSep->addInsertCell(voidCell);
       EPSep->createAll(System,*PDipole,2);
+      return;
+    }
+  if (item == "PrismaChamber")
+    {
+      std::shared_ptr<tdcSystem::PrismaChamber>
+	sc(new tdcSystem::PrismaChamber("PrismaChamber"));
+      OR.addObject(sc);
+
+      sc->addInsertCell(voidCell);
+      sc->createAll(System,World::masterOrigin(),0);
+
       return;
     }
 

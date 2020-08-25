@@ -310,6 +310,26 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
   
+void
+FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
+				     const long int sideIndex,
+				     const Geometry::Vec3D& offsetVec)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+    \param offset :: offset position
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(Vec)");
+
+  FixedComp::createUnitVector(FC,sideIndex);
+
+  applyOffset();
+  Origin+=X*offsetVec.X()+Y*offsetVec.Y()+Z*offsetVec.Z();
+  return;
+}
+  
 
 void
 FixedRotate::applyOffset()

@@ -78,6 +78,7 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
+#include "PrismaChamberGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
 #include "subPipeUnit.h"
@@ -166,6 +167,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CryoGenerator CryGen;
   CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
+
+  setVariable::PrismaChamberGenerator PCGen;
+  PCGen.generateChamber(Control,"PrismaChamber");
 
   setVariable::TwinGenerator TGen;
   TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);

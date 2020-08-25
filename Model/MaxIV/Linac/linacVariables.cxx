@@ -3174,8 +3174,8 @@ Segment46(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40_22>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowB",9.9); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowC",9.9); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
 
   // Prisma Chamber
   setPrismaChamber(Control, lKey+"PrismaChamber");
