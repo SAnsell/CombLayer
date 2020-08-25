@@ -517,6 +517,7 @@ Segment1(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
   // note larger unit
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   //  corrector mag and pie
@@ -597,6 +598,7 @@ Segment2(FuncDataBase& Control,
 
   // note larger unit
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
@@ -658,6 +660,7 @@ Segment3(FuncDataBase& Control,
   PGen.setNoWindow();
 
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   const double flatAXYAngle = 1.6; // No_3_00.pdf
@@ -743,6 +746,7 @@ Segment4(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeC",70.2); // No_4_00.pdf
@@ -803,6 +807,7 @@ Segment5(FuncDataBase& Control,
   Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
 
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
   Control.addVariable(lKey+"BellowAXYAngle",angleDipole);
 
@@ -919,13 +924,18 @@ Segment8(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L", "Stainless304L");
   PGen.setNoWindow();
 
-  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+
   PGen.generatePipe(Control,lKey+"PipeA",308.5);
 
 
