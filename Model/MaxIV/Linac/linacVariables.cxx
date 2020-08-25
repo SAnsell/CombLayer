@@ -381,6 +381,7 @@ setSlitTube(FuncDataBase& Control,
   Control.addVariable(name+"JawUnit1JOpen",1.7);
 
 }
+
 void
 setRecGateValve(FuncDataBase& Control,
 		const std::string& name,
@@ -389,6 +390,7 @@ setRecGateValve(FuncDataBase& Control,
   Set the rectangular gate valve variables
   \param Control :: DataBase to use
   \param name :: name prefix
+  \param closedFlag :: closed flag {true,false}
  */
 {
   ELog::RegMethod RegA("linacVariables[F]","setRecGateValve");
@@ -396,15 +398,45 @@ setRecGateValve(FuncDataBase& Control,
   setVariable::GateValveGenerator RGateGen;
 
   RGateGen.setCubeCF<setVariable::CF40_22>();
-  RGateGen.setPort(0.95,1.15,2.55); // Rinner, Length, T=Rout-Rin
+  RGateGen.setPort(0.95,1.15,2.55); // Rin, Length, T=Rout-Rin
   RGateGen.setLength(1.2); // length of inner void
   RGateGen.setWallThick(0.2); // measured in segment 10
   RGateGen.generateValve(Control,name,0.0, static_cast<int>(closedFlag));
+  Control.addVariable(name+"WallMat","Stainless304"); // email from KÅ, 2020-06-02
   // BladeMat is guess as VAT (the manufacturer) does not want to give more details
   // (email from Marek 2020-06-17)
   Control.addVariable(name+"BladeMat","Stainless304");
   Control.addVariable(name+"BladeThick",0.5); // guess (based on the gap measured)
-  Control.addVariable(name+"WallMat","Stainless304"); // email from Karl Åhnberg, 2 Jun 2020
+
+  return;
+}
+
+void
+setCylGateValve(FuncDataBase& Control,
+		const std::string& name,
+		const int rotateFlag,
+		const bool closedFlag)
+/*!
+  Set the cylindrical gate valve variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+  \param rotateFlag :: rotate direction {-1,0,1}
+  \param closedFlag :: closed flag {true,false}
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setCylGateValve");
+
+  setVariable::CylGateValveGenerator CGateGen;
+
+  CGateGen.setRotate(rotateFlag);
+
+  CGateGen.generateGate(Control,name,closedFlag);  // length 7.3 cm checked
+  Control.addVariable(name+"WallThick",0.3);
+  Control.addVariable(name+"PortThick",0.1);
+  Control.addVariable(name+"WallMat","Stainless316L");// email from KÅ 2020-06-02
+  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
+  // (email from Marek 2020-06-17)
+  Control.addVariable(name+"BladeMat","Stainless316L"); // guess
 
   return;
 }
@@ -606,7 +638,6 @@ Segment2(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::StriplineBPMGenerator BPMGen;
-  setVariable::CylGateValveGenerator CGateGen;
   setVariable::EArrivalMonGenerator EArrGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
@@ -631,10 +662,7 @@ Segment2(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
 
-  CGateGen.setRotate(1);
-  CGateGen.generateGate(Control,lKey+"GateTube",0);
-  Control.addVariable(lKey+"GateTubeWallThick",0.3); // No_2_00.pdf
-  Control.addVariable(lKey+"GateTubePortThick",0.1); // No_2_00.pdf
+  setCylGateValve(Control,lKey+"GateTube", 1, false);
 
   PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
@@ -1298,7 +1326,6 @@ Segment14(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-622.286,4226.013,0.0);
   const Geometry::Vec3D endPt(-637.608,4507.2590,0.0);
@@ -1325,13 +1352,7 @@ Segment14(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DM2");
 
-  CGateGen.generateGate(Control,lKey+"GateA",0);  // length 7.3 cm checked
-  Control.addVariable(lKey+"GateAWallThick",0.3);
-  Control.addVariable(lKey+"GateAPortThick",0.1);
-  Control.addVariable(lKey+"GateAYAngle",-90.0);
-  // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L");
-  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"GateA",-1,false);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.50); // measured
 
@@ -1568,7 +1589,6 @@ Segment19(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-637.608,5994.561,0.0);
   const Geometry::Vec3D endPt(-637.608,6045.428,0.0);
@@ -1598,14 +1618,8 @@ Segment19(FuncDataBase& Control,
 
   setIonPump1Port(Control,lKey+"IonPump");
 
-  CGateGen.generateGate(Control,lKey+"GateB",0);
-  Control.addVariable(lKey+"GateBWallThick",0.3);
-  Control.addVariable(lKey+"GateBPortThick",0.1);
+  setCylGateValve(Control,lKey+"GateB",0,false);
   Control.addVariable(lKey+"GateBYAngle",180.0);
-  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
-  // (email from Marek 2020-06-17)
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L");
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
 
@@ -1763,7 +1777,6 @@ Segment23(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagGen;
-  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-637.608, 6808.791, 0.0);
   const Geometry::Vec3D endPt(-637.608, 6960.961, 0.0);
@@ -1822,12 +1835,7 @@ Segment23(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",6.5); // OK
 
   // gate length is 7.2
-  CGateGen.generateGate(Control,lKey+"Gate",0);
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",-90.0);
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"Gate",-1,false);
 
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
 
@@ -1855,7 +1863,6 @@ Segment24(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagGen;
-  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-637.608, 6960.961, 0.0);
   const Geometry::Vec3D endPt(-637.608, 7406.261, 0.0);
@@ -2369,7 +2376,6 @@ Segment31(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::CorrectorMagGenerator CMGen;
-  setVariable::CylGateValveGenerator CGateGen;
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
 
@@ -2398,13 +2404,7 @@ Segment31(FuncDataBase& Control,
 		      Geometry::Vec3D(0, portOffset, 0));
   Control.addVariable(lKey+"IonPumpAYAngle",90.0);
 
-  CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",-90.0);
-  // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateWallMat","Stainless316L");
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"Gate",-1,false);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
 
@@ -2691,7 +2691,6 @@ Segment36(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::EArrivalMonGenerator EArrGen;
-  setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-1010.0,6310.949,0.0);
   const Geometry::Vec3D endPt(-1010.0,6729.589,0.0);
@@ -2746,12 +2745,8 @@ Segment36(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
 
   // Gate
-  CGateGen.generateGate(Control,lKey+"Gate",0);  // length 7.3 cm checked
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
+  setCylGateValve(Control,lKey+"Gate",0,false);  // length 7.3 cm checked
   Control.addVariable(lKey+"GateYAngle",180.0);
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
 
   return;
 }
@@ -2870,13 +2865,7 @@ Segment39(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   // Gate
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",90.0);
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"Gate",1,false);
 
   // Pipe
   setVariable::PipeGenerator PGen;
@@ -2957,13 +2946,7 @@ Segment41(FuncDataBase& Control,
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   // Gate
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",-90.0);
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"Gate",-1,false);
 
   // Pipe
   setVariable::PipeGenerator PGen;
@@ -3041,13 +3024,7 @@ Segment43(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   // Gate
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"Gate",0);  //7.3?
-  Control.addVariable(lKey+"GateWallThick",0.3);
-  Control.addVariable(lKey+"GatePortThick",0.1);
-  Control.addVariable(lKey+"GateYAngle",90.0);
-  Control.addVariable(lKey+"GateWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBladeMat","Stainless316L"); // guess
+  setCylGateValve(Control,lKey+"Gate",1,false);
 
   // Pipe
   setVariable::PipeGenerator PGen;
@@ -3213,21 +3190,11 @@ Segment46(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
 
   // Gate valves
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"GateA",0);
+  setCylGateValve(Control,lKey+"GateA",0,false);
   Control.addVariable(lKey+"GateAYAngle",180.0);
-  Control.addVariable(lKey+"GateAWallThick",0.3);
-  Control.addVariable(lKey+"GateAPortThick",0.1);
-  // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L");
-  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
-  CGateGen.generateGate(Control,lKey+"GateB",0);
+  setCylGateValve(Control,lKey+"GateB",0,false);
   Control.addVariable(lKey+"GateBYAngle",180.0);
-  Control.addVariable(lKey+"GateBWallThick",0.3);
-  Control.addVariable(lKey+"GateBPortThick",0.1);
-  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
 
   // Bellows
   setVariable::BellowGenerator BellowGen;
@@ -3291,13 +3258,8 @@ Segment47(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
   // Gate valves
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"GateA",0);
+  setCylGateValve(Control,lKey+"GateA",0,false);
   Control.addVariable(lKey+"GateAYAngle",180.0);
-  Control.addVariable(lKey+"GateAWallThick",0.3);
-  Control.addVariable(lKey+"GateAPortThick",0.1);
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
 
   // Bellows
   setVariable::BellowGenerator BellowGen;
@@ -3387,19 +3349,9 @@ Segment49(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  setVariable::CylGateValveGenerator CGateGen;
-  CGateGen.generateGate(Control,lKey+"GateA",0);
-  Control.addVariable(lKey+"GateAWallThick",0.3);
-  Control.addVariable(lKey+"GateAPortThick",0.1);
-  Control.addVariable(lKey+"GateAWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateABladeMat","Stainless316L"); // guess
-
-  CGateGen.generateGate(Control,lKey+"GateB",0);
+  setCylGateValve(Control,lKey+"GateA",0,false);
+  setCylGateValve(Control,lKey+"GateB",0,false);
   Control.addVariable(lKey+"GateBYAngle",180.0);
-  Control.addVariable(lKey+"GateBWallThick",0.3);
-  Control.addVariable(lKey+"GateBPortThick",0.1);
-  Control.addVariable(lKey+"GateBWallMat","Stainless316L"); // email from Karl Åhnberg, 2 Jun 2020
-  Control.addVariable(lKey+"GateBBladeMat","Stainless316L"); // guess
 
   // Pipes
   setVariable::PipeGenerator PGen;
