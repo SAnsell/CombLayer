@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment9.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -62,7 +54,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,10 +63,6 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -98,7 +85,7 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment9::Segment9(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -112,7 +99,7 @@ Segment9::Segment9(const std::string& Key) :
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  
+
   bellowC(new constructSystem::Bellows(keyName+"BellowC"))
 
   /*!
@@ -136,7 +123,7 @@ Segment9::Segment9(const std::string& Key) :
 
   setFirstItems(ceramicBellowA);
 }
-  
+
 Segment9::~Segment9()
   /*!
     Destructor
@@ -180,13 +167,13 @@ Segment9::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVertA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeA);
-  
+
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*bellowB);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*bellowB,"back",*bpm);
-  
+
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeB);
@@ -195,7 +182,7 @@ Segment9::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*pipeB,"back",*bellowC);
 
 
-  buildZone->removeLastMaster(System);  
+  buildZone->removeLastMaster(System);
   return;
 }
 
@@ -212,7 +199,7 @@ Segment9::createLinks()
   return;
 }
 
-void 
+void
 Segment9::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -230,10 +217,9 @@ Segment9::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

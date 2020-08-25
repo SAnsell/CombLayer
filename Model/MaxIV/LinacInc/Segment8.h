@@ -22,14 +22,6 @@
 #ifndef tdcSystem_Segment8_h
 #define tdcSystem_Segment8_h
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
 
@@ -38,7 +30,7 @@ namespace tdcSystem
     \version 1.0
     \author S. Ansell
     \date May 2020
-    \brief Seventh segment
+    \brief 8th segment
   */
 
 class Segment8 :
