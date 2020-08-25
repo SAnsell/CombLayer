@@ -384,7 +384,7 @@ setSlitTube(FuncDataBase& Control,
 void
 setRecGateValve(FuncDataBase& Control,
 		const std::string& name,
-		const int closedFlag)
+		const bool closedFlag)
 /*!
   Set the rectangular gate valve variables
   \param Control :: DataBase to use
@@ -393,13 +393,15 @@ setRecGateValve(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","setRecGateValve");
 
-  setVariable::GateValveGenerator GateGen;
+  setVariable::GateValveGenerator RGateGen;
 
-  GateGen.setCubeCF<setVariable::CF40_22>();
-  GateGen.setPort(0.95,1.15,2.55); // Rinner, Length, T=Rout-Rin
-  GateGen.setLength(1.2); // length of inner void
-  GateGen.setWallThick(0.2); // measured in segment 10
-  GateGen.generateValve(Control,name,0.0, closedFlag);
+  RGateGen.setCubeCF<setVariable::CF40_22>();
+  RGateGen.setPort(0.95,1.15,2.55); // Rinner, Length, T=Rout-Rin
+  RGateGen.setLength(1.2); // length of inner void
+  RGateGen.setWallThick(0.2); // measured in segment 10
+  RGateGen.generateValve(Control,name,0.0, static_cast<int>(closedFlag));
+  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
+  // (email from Marek 2020-06-17)
   Control.addVariable(name+"BladeMat","Stainless304");
   Control.addVariable(name+"BladeThick",0.5); // guess (based on the gap measured)
   Control.addVariable(name+"WallMat","Stainless304"); // email from Karl Åhnberg, 2 Jun 2020
@@ -1043,7 +1045,6 @@ Segment10(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
-  setVariable::GateValveGenerator GateGen;
 
   const Geometry::Vec3D startPt(-323.368,2710.648,0.0);
   const Geometry::Vec3D endPt(-492.992,3457.251,0.0);
@@ -1061,13 +1062,10 @@ Segment10(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
 
-  GateGen.setLength(3.0);
-  GateGen.setCubeCF<setVariable::CF40>();
-
   PGen.generatePipe(Control,lKey+"PipeA",453.0);
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  setRecGateValve(Control, lKey+"GateValve", 0);
+  setRecGateValve(Control, lKey+"GateValve", false);
 
   setIonPump2Port(Control, lKey+"PumpA");
 
@@ -1406,7 +1404,6 @@ Segment16(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::YagScreenGenerator YagGen;
 
   const Geometry::Vec3D startPt(-637.608,4730.259,0.0);
@@ -1571,7 +1568,6 @@ Segment19(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator RGateGen;
   setVariable::CylGateValveGenerator CGateGen;
 
   const Geometry::Vec3D startPt(-637.608,5994.561,0.0);
@@ -1598,14 +1594,7 @@ Segment19(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
   // Fast closing valve
-  RGateGen.setLength(3.5-2.0*setVariable::CF40_22::flangeLength);
-  RGateGen.setCubeCF<setVariable::CF40_22>();
-  RGateGen.generateValve(Control,lKey+"GateA",0.0,0);
-  // BladeMat is guess as VAT (the manufacturer) does not want to give more details
-  // (email from Marek 2020-06-17)
-  Control.addVariable(lKey+"GateABladeMat","Stainless304");
-  Control.addVariable(lKey+"GateABladeThick",0.5); // guess (based on the gap measured)
-  Control.addVariable(lKey+"GateAWallMat","Stainless304"); // email from Karl Åhnberg, 2 Jun 2020
+  setRecGateValve(Control,lKey+"GateA",false);
 
   setIonPump1Port(Control,lKey+"IonPump");
 
