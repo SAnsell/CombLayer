@@ -207,7 +207,7 @@ setIonPump2Port(FuncDataBase& Control,
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
-  PItemGen.setCF<setVariable::CF40_22>(L0); // Port0 length
+  PItemGen.setCF<setVariable::CF35_TDC>(L0); // No_10_00.pdf
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
@@ -278,7 +278,7 @@ setPrismaChamber(FuncDataBase& Control,
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+  ELog::RegMethod RegA("linacVariables[F]","setPrismaChamber");
 
   const Geometry::Vec3D OPos(0.0, 0.0, 0.0);
   const Geometry::Vec3D XVec(1,0,0);
@@ -381,6 +381,31 @@ setSlitTube(FuncDataBase& Control,
   Control.addVariable(name+"JawUnit1JOpen",1.7);
 
 }
+void
+setRecGateValve(FuncDataBase& Control,
+		const std::string& name,
+		const int closedFlag)
+/*!
+  Set the rectangular gate valve variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setRecGateValve");
+
+  setVariable::GateValveGenerator GateGen;
+
+  GateGen.setCubeCF<setVariable::CF40_22>();
+  GateGen.setPort(0.95,1.15,2.55); // Rinner, Length, T=Rout-Rin
+  GateGen.setLength(1.2); // length of inner void
+  GateGen.setWallThick(0.2); // measured in segment 10
+  GateGen.generateValve(Control,name,0.0, closedFlag);
+  Control.addVariable(name+"BladeMat","Stainless304");
+  Control.addVariable(name+"BladeThick",0.5); // guess (based on the gap measured)
+  Control.addVariable(name+"WallMat","Stainless304"); // email from Karl Åhnberg, 2 Jun 2020
+
+  return;
+}
 
 void
 setMirrorChamber(FuncDataBase& Control,
@@ -391,7 +416,7 @@ setMirrorChamber(FuncDataBase& Control,
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+  ELog::RegMethod RegA("linacVariables[F]","setMirrorChamber");
 
   const Geometry::Vec3D OPos(0.0, 3.0, 0.0);
   const Geometry::Vec3D XVec(1,0,0);
@@ -444,7 +469,7 @@ setMirrorChamberBlank(FuncDataBase& Control,
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
+  ELog::RegMethod RegA("linacVariables[F]","setMirrorChamberBlank");
 
   const Geometry::Vec3D OPos(0.0, 5.6, 0.0);
   const Geometry::Vec3D XVec(1,0,0);
@@ -972,6 +997,7 @@ Segment9(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
+
   BellowGen.setCF<setVariable::CF26_TDC>();
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
@@ -1028,25 +1054,31 @@ Segment10(FuncDataBase& Control,
 
   Control.addVariable(lKey+"WallRadius",4.0);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
+
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+
   GateGen.setLength(3.0);
   GateGen.setCubeCF<setVariable::CF40>();
 
-  PGen.generatePipe(Control,lKey+"PipeA",452.0);
+  PGen.generatePipe(Control,lKey+"PipeA",453.0);
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  GateGen.generateValve(Control,lKey+"GateValve",0.0,0);
+  setRecGateValve(Control, lKey+"GateValve", 0);
+
   setIonPump2Port(Control, lKey+"PumpA");
 
-  PGen.generatePipe(Control,lKey+"PipeB",152.00);
+  PGen.generatePipe(Control,lKey+"PipeB",152.1);
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
 
-  PGen.generatePipe(Control,lKey+"PipeC",125.0);
+  PGen.generatePipe(Control,lKey+"PipeC",126.03);
 
-  LQGen.generateQuad(Control,lKey+"QuadA",33.5);
-  CMGen.generateMag(Control,lKey+"CMagVertA",115.0,1);
+  LQGen.generateQuad(Control,lKey+"QuadA",33.8);
+  CMGen.generateMag(Control,lKey+"CMagVertA",115.23,1);
+
   return;
 }
 

@@ -121,10 +121,16 @@ global_settings {
     #declare cameraAngle = 50;
     #declare projection = 0;
   #break
-  #case(strcmp(ITEM,"Segment9")) // L2SPF segment 8
+  #case(strcmp(ITEM,"Segment9")) // L2SPF segment 9
     #declare cameraLocation = <0, 3140, 100>;
     #declare cameraLookAt   = <-152, 3115, 0>;
     #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment10")) // L2SPF segment 10
+    #declare cameraLocation = <0, 4400, 200>;
+    #declare cameraLookAt   = <-150, 4000, 70>;
+    #declare cameraAngle = 40;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Segment11")) // L2SPF segment 11
