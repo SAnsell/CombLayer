@@ -966,27 +966,37 @@ Segment9(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",12.8);
+  Control.addVariable(lKey+"XYAngle",
+  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI); // 12.8
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless316L", "Stainless316L%Void%3.0");
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
   setIonPump2Port(Control, lKey+"PumpA");
 
-  PGen.generatePipe(Control,lKey+"PipeA",54.6);
+  PGen.generatePipe(Control,lKey+"PipeA",57.8); // No_9_00.pdf
 
-  CMGen.generateMag(Control,lKey+"CMagVertA",20.50,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",44.50,0);
+  CMGen.generateMag(Control,lKey+"CMagVertA",22.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHorA",42.0,0);
 
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",36.0);
-  LQGen.generateQuad(Control,lKey+"QuadA",17.50);
+  PGen.setBFlange(setVariable::CF18_TDC::innerRadius+setVariable::CF18_TDC::wallThick,
+		  setVariable::CF18_TDC::flangeLength);
+  PGen.generatePipe(Control,lKey+"PipeB",32.8);
+  LQGen.generateQuad(Control,lKey+"QuadA",19.7-1.0); // -1 cm to avoit cutting the PipeB flangeB
 
+  BellowGen.setCF<setVariable::CF18_TDC>();
+  BellowGen.setMat("Stainless316L", "Stainless316L%Void%3.0");
+  BellowGen.setFlangePair(setVariable::CF18_TDC::innerRadius+setVariable::CF18_TDC::wallThick,
+			  setVariable::CF18_TDC::flangeLength,
+			  setVariable::CF18_TDC::flangeRadius,
+			  setVariable::CF18_TDC::flangeLength);
   BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
 
   return;
