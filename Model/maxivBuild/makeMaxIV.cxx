@@ -304,6 +304,8 @@ makeMaxIV::buildInjection(Simulation& System,
 
   if (IParam.flag("noLengthCheck"))
     tdc->setNoLengthCheck();
+  if (IParam.flag("pointCheck"))
+    tdc->setPointCheck();
   tdc->setActive(activeINJ);
   tdc->createAll(System,World::masterOrigin(),0);
 
@@ -325,7 +327,6 @@ makeMaxIV::buildR1Ring(Simulation& System,
     ({ {"FLEXPES","OpticCentre5"},
 	{"MAXPEEM","OpticCentre7"},
 	{"SPECIES","OpticCentre8"}
-
     });
 
 

@@ -206,6 +206,23 @@ Segment44::createLinks()
   return;
 }
 
+void
+Segment44::writePoints() const
+  /*!
+    Writes out points to allow tracking through magnets
+  */
+{
+  ELog::RegMethod RegA("Segment44","writePoints");
+  
+  const std::vector<std::shared_ptr<attachSystem::FixedComp>> Items
+    (
+     {triBend}
+     );
+  TDCsegment::writeBasicItems(Items);
+  
+  return;
+}
+
 void 
 Segment44::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,

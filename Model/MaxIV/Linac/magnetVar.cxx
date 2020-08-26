@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   linac/linacVariables.cxx
+ * File:   linac/magVariables.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *

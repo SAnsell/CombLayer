@@ -50,6 +50,8 @@ class TDC :
 
   /// to stop end-build check (length etc) 
   bool noCheck;
+  /// stop producing a full list of objects/datum points
+  bool pointCheck;
   
   std::set<std::string> activeINJ;   ///< active components
 
@@ -74,6 +76,8 @@ class TDC :
 
   /// Do not carry out end point checks:
   void setNoLengthCheck() { noCheck=1; }
+  /// Write out all the end points of internal objects
+  void setPointCheck() { pointCheck=1; }
   /// set active range
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
 

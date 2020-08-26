@@ -53,7 +53,6 @@ class Segment34 :
 
   void buildObjects(Simulation&);
   void createLinks();
-  void writePoints() const;
 
  public:
 
@@ -61,6 +60,8 @@ class Segment34 :
   Segment34(const Segment34&);
   Segment34& operator=(const Segment34&);
   ~Segment34();
+
+  void writePoints() const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

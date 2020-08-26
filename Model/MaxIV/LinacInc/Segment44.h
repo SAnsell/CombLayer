@@ -52,6 +52,7 @@ class Segment44 :
   Segment44& operator=(const Segment44&);
   ~Segment44();
 
+  void writePoints() const override;
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

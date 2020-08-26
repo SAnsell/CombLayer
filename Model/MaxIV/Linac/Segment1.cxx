@@ -120,6 +120,8 @@ Segment1::Segment1(const std::string& Key) :
   OR.addObject(QuadA);
   OR.addObject(bpm);
   OR.addObject(pumpA);
+
+  setFirstItems(pipeA);
 }
 
 Segment1::~Segment1()

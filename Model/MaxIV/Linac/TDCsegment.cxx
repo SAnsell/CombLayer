@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -183,12 +184,14 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
 	prevSegPtr->getJoinItems();
       if (!prevJoinItems.empty())
 	{
+
 	  if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
 	    buildZone->setFront(prevJoinItems[indexPoint-1]);
-
+	  
 	  this->setFrontSurfs(prevJoinItems);
 	}
     }
+  
   return;
 }
 
@@ -382,5 +385,35 @@ TDCsegment::captureCellMap()
 
   return;
 }
+
+void
+TDCsegment::writeBasicItems
+(const std::vector<std::shared_ptr<attachSystem::FixedComp>>& Items) const
+ /*!
+   Write out basic items to a list for debug
+   \param :: Items :: Ordered list of items in the model
+ */
+{
+  
+  // NO ELog so the calling function segment name is used:
+
+  boost::format iFMT("%1$-20s%|30t| == %2$=12.6g %|60t| Len == %3$12.6g \n");
+
+  if (!Items.empty())
+    {
+      ELog::EM<<"\n";
+      const Geometry::Vec3D Org(Items[0]->getLinkPt(1)*10.0);
+      for(const std::shared_ptr<attachSystem::FixedComp>& FCptr : Items)
+	{
+	  const Geometry::Vec3D endPt(FCptr->getLinkPt(2)*10.0);
+	  const Geometry::Vec3D DV=endPt-Org;
+	  ELog::EM<<(iFMT % FCptr->getKeyName() % DV % DV.abs());
+	}
+      ELog::EM<<ELog::endDiag;
+    }	  
+  return;
+   
+}
+
 
 }   // NAMESPACE tdcSystem

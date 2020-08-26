@@ -147,9 +147,12 @@ Segment3::buildObjects(Simulation& System)
   int outerCell;
 
   MonteCarlo::Object* masterCell=buildZone->getMaster();
+
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
-
+  if (isActive("front"))
+    bellowA->copyCutSurf("front",*this,"front");
+  
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);

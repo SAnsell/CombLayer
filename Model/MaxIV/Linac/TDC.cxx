@@ -128,7 +128,7 @@ namespace tdcSystem
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   attachSystem::CellMap(),
-  noCheck(0),
+  noCheck(0),pointCheck(0),
   injectionHall(new InjectionHall("InjectionHall")),
   SegMap
   ({
@@ -432,6 +432,9 @@ TDC::createAll(Simulation& System,
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
+	  if (prevSegPtr)
+	    ELog::EM<<"Prev == "<<prevSegPtr->getKeyName()<<ELog::endDiag;
+
 	  std::vector<std::string> sideSegNames;
 	  if (BL=="Segment10")
 	    {
@@ -475,6 +478,8 @@ TDC::createAll(Simulation& System,
 	  segPtr->captureCellMap();
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
+	  if (pointCheck)
+	    segPtr->writePoints();
 	}
     }
   return;

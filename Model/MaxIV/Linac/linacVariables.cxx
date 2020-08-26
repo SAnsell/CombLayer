@@ -93,8 +93,11 @@ namespace linacVar
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
   void setPrismaChamber(FuncDataBase&,const std::string&);
   void setSlitTube(FuncDataBase&,const std::string&);
-  void setCylGateValve(FuncDataBase&,const std::string&,const double,const bool);
+  void setCylGateValve(FuncDataBase&,const std::string&,
+		       const double,const bool);
+  void setRecGateValve(FuncDataBase&,const std::string&,const bool);
 
+  
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
   void Segment3(FuncDataBase&,const std::string&);
@@ -1143,7 +1146,6 @@ Segment11(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF26_TDC>();
 
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
-  BPMGen.setCF<setVariable::CF40>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeA",43.50);
@@ -1297,7 +1299,6 @@ Segment13(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
 
@@ -1441,7 +1442,6 @@ Segment16(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   const double pipeALength(34.0);
@@ -1550,7 +1550,6 @@ Segment18(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // measured
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   /// Quad and PipeA
@@ -1699,7 +1698,6 @@ Segment21(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
 
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3);
 
@@ -1809,7 +1807,6 @@ Segment23(FuncDataBase& Control,
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3);
 
@@ -1896,7 +1893,6 @@ Segment24(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
   CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3);
 
@@ -2412,7 +2408,6 @@ Segment31(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3);
 
@@ -2543,7 +2538,6 @@ Segment33(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
   Control.addVariable(lKey+"BPMRadius", 1.3); // ????
 
@@ -2662,7 +2656,6 @@ Segment35(FuncDataBase& Control,
 
   LQGen.generateQuad(Control,lKey+"QuadA",pipeALength/2.0); // approx
 
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generate(Control,lKey+"BPM");
 
   PGen.generatePipe(Control,lKey+"PipeB",75.2); // measured
@@ -2745,7 +2738,6 @@ Segment36(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagV",61.05+1.1,1); // measured with wrong CMagV length
 
   // Beam position monitors
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
@@ -2861,7 +2853,6 @@ Segment39(FuncDataBase& Control,
 
   // Stripline BPM
   setVariable::StriplineBPMGenerator BPMGen;
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   // Yag screen and its unit
@@ -2952,7 +2943,6 @@ Segment41(FuncDataBase& Control,
 
   // Stripline BPM
   setVariable::StriplineBPMGenerator BPMGen;
-  BPMGen.setCF<setVariable::CF40_22>();
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   // Gate

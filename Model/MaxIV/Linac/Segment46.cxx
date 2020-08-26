@@ -320,30 +320,13 @@ Segment46::writePoints() const
 {
   ELog::RegMethod RegA("Segment46","writePoints");
 
-
-  const Geometry::Vec3D Org(pipeA->getLinkPt(1)*10.0);
-  const Geometry::Vec3D ptPipeA(pipeA->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptGateA(gateA->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptPrismaA(prismaChamber->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptMirrorChamberA(mirrorChamberA->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptPipeB(pipeB->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptSlitTube(slitTube->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptBellowB(bellowB->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptMirrorChamberB(mirrorChamberB->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptBellowC(bellowC->getLinkPt(2)*10.0);
-  const Geometry::Vec3D ptGateB(gateB->getLinkPt(2)*10.0);
-
-  ELog::EM<<"Orig           = "<<Org<<ELog::endDiag;
-  ELog::EM<<"Pipe A         = "<<ptPipeA-Org<<ELog::endDiag;
-  ELog::EM<<"Gate A         = "<<ptGateA-Org<<ELog::endDiag;
-  ELog::EM<<"PrismaA        = "<<ptPrismaA-Org<<ELog::endDiag;
-  ELog::EM<<"MirrorChamberA = "<<ptMirrorChamberA-Org<<ELog::endDiag;
-  ELog::EM<<"Pipe B         = "<<ptPipeB-Org<<ELog::endDiag;
-  ELog::EM<<"slittube       = "<<ptSlitTube-Org<<ELog::endDiag;
-  ELog::EM<<"BellowB        = "<<ptBellowB-Org<<ELog::endDiag;
-  ELog::EM<<"MirrorChamberB = "<<ptMirrorChamberB-Org<<ELog::endDiag;
-  ELog::EM<<"BellowC        = "<<ptBellowC-Org<<ELog::endDiag;
-  ELog::EM<<"Gate B         = "<<ptGateB-Org<<ELog::endDiag;
+  const std::vector<std::shared_ptr<attachSystem::FixedComp>> Items
+    (
+     {pipeA,gateA,prismaChamber,mirrorChamberA,pipeB,slitTube,bellowB,
+      mirrorChamberB,bellowC,gateB}
+     );
+  
+  TDCsegment::writeBasicItems(Items);
   
   return;
 }

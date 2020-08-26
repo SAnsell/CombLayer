@@ -119,8 +119,9 @@ Segment4::Segment4(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeC);
   OR.addObject(cMagHorC);
-  OR.addObject(cMagVertC);  
+  OR.addObject(cMagVertC);
 
+  setFirstItems(pipeA);
 }
   
 Segment4::~Segment4()
@@ -146,7 +147,10 @@ Segment4::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
-    pipeA->copyCutSurf("front",*this,"front");
+    {
+      ELog::EM<<"Front == "<<ELog::endDiag;
+      pipeA->copyCutSurf("front",*this,"front");
+    }
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);

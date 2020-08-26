@@ -51,7 +51,6 @@ class Segment32 :
 
   void buildObjects(Simulation&);
   void createLinks();
-  void writePoints() const;
 
  public:
 
@@ -60,6 +59,8 @@ class Segment32 :
   Segment32& operator=(const Segment32&);
   ~Segment32();
 
+  virtual void writePoints() const override;
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
