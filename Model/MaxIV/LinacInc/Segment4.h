@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment4.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment4_h
 #define tdcSystem_Segment4_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
 
 /*!
   \namespace xraySystem
@@ -41,12 +32,8 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-  class CorrectorMag;
-  class LQuadF;
   class LSexupole;
-  class StriplineBPM;
 
-  
   /*!
     \class Segment4
     \version 1.0
@@ -60,24 +47,24 @@ class Segment4 :
 {
  private:
 
-  /// first pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  /// first pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
   /// Beam position monitor
   std::shared_ptr<tdcSystem::StriplineBPM> bpmA;
 
   // first pipe in dipole
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-  
-  /// Quad begining QSQ 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// Quad begining QSQ
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// sexupole
   std::shared_ptr<tdcSystem::LSexupole> SexuA;
 
-  /// Quad endng QSQ 
+  /// Quad endng QSQ
   std::shared_ptr<tdcSystem::LQuadF> QuadB;
-  
+
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
 
@@ -85,20 +72,20 @@ class Segment4 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
   /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   /// exit pipe for corrector mags
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
-  
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorC;    ///< corrector mag
-  
+
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment4(const std::string&);
   Segment4(const Segment4&);
   Segment4& operator=(const Segment4&);

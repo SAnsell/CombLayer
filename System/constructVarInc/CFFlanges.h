@@ -25,7 +25,7 @@
 
 namespace setVariable
 {
-    
+
 /*!
   \struct CF8
   \version 1.0
@@ -70,6 +70,49 @@ struct CF16
   static constexpr size_t nBolts=6;
 };
 
+/*!
+  \struct CF16_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF16 (TDC geometry)
+*/
+
+struct CF16_TDC
+{
+  static constexpr double innerRadius=0.8;
+  static constexpr double wallThick=0.1;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
+
+/*!
+  \struct CF18_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF18 (TDC geometry)
+*/
+
+struct CF18_TDC
+{
+  static constexpr double innerRadius=0.9;
+  static constexpr double wallThick=0.2;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  static constexpr double bellowStep=0.5; // dummy
+  static constexpr double bellowThick=0.5; // dummy
+  static constexpr double gasketRadius=0.5; // dummy
+  static constexpr double gasketThick=0.7; // dummy
+  static constexpr double boltRadius=0.4; // dummy
+  static constexpr size_t nBolts=6; // dummy
+};
 
 /*!
   \struct CF25
@@ -93,6 +136,70 @@ struct CF25
   static constexpr size_t nBolts=4;
 };
 
+/*!
+  \struct CF26_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF26 (TDC geometry)
+*/
+struct CF26_TDC
+{
+  static constexpr double innerRadius=1.3;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  static constexpr double bellowStep=0.9; // dummy
+  static constexpr double bellowThick=0.8; // dummy
+  /* static constexpr double gasketRadius=1.65; // dummy */
+  /* static constexpr double gasketThick=0.7; // dummy */
+  /* static constexpr double boltRadius=0.3; // dummy */
+  /* static constexpr size_t nBolts=4; // dummy */
+};
+
+/*!
+  \struct CF27_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF27 (TDC geometry)
+*/
+
+struct CF27_TDC
+{
+  static constexpr double innerRadius=1.35;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
+
+/*!
+  \struct CF35_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF35 (TDC geometry)
+*/
+
+struct CF35_TDC
+{
+  static constexpr double innerRadius=1.75;
+  static constexpr double wallThick=0.15;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
 
 
 /*!
@@ -138,7 +245,7 @@ struct CF40_22
   static constexpr double boltRadius=0.3;
   static constexpr size_t nBolts=6;
 };
- 
+
 /*!
   \struct CF50
   \version 1.0
@@ -176,6 +283,29 @@ struct CF63
   static constexpr double bellowThick=1.0;
   static constexpr size_t nBolts=8;
 };
+
+/*!
+  \struct CF66_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF66 (TDC geometry)
+*/
+
+struct CF66_TDC
+{
+  static constexpr double innerRadius=3.3;
+  static constexpr double wallThick=0.2;
+  static constexpr double flangeRadius=5.6;
+  static constexpr double flangeLength=1.7;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
+
 
 /*!
   \struct CF100
@@ -300,6 +430,6 @@ struct CF40
 };
 
 }  // NAMESPACE Linac
- 
+
 }  // NAMESPACE CFFlanges
 #endif

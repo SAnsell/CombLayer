@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment2.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,20 +16,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment2_h
 #define tdcSystem_Segment2_h
-
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
 
 namespace xraySystem
 {
@@ -39,14 +30,10 @@ namespace xraySystem
 
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
-  class StriplineBPM;
   class EArrivalMon;
   class YagUnit;
   class YagScreen;
-  class LQuadF;
-  
+
   /*!
     \class Segment2
     \version 1.0
@@ -65,27 +52,27 @@ class Segment2 :
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// Beam position monitor
-  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;   
+  std::shared_ptr<tdcSystem::StriplineBPM> bpmA;
 
   /// Bellows from BPM
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
   /// Long connecter pipe to gate valve
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; 
-  
-  std::shared_ptr<tdcSystem::LQuadF> QuadB;    /// quad B 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  std::shared_ptr<tdcSystem::LQuadF> QuadB;    /// quad B
 
   /// Gate valve holder
-  std::shared_ptr<xraySystem::CylGateValve> gateTube;   
+  std::shared_ptr<xraySystem::CylGateValve> gateTube;
 
   /// gateValve - Beam Arriva lMonitor
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC; 
-  
-  /// Beam arrival monitor 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
+  /// Beam arrival monitor
   std::shared_ptr<tdcSystem::EArrivalMon> beamArrivalMon;
 
   /// gateValve - Beam Arriva lMonitor
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD; 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
 
   /// Bellows
   std::shared_ptr<constructSystem::Bellows> bellowB;
@@ -94,10 +81,10 @@ class Segment2 :
   std::shared_ptr<tdcSystem::StriplineBPM> bpmB;
 
   // quad pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE; 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
   std::shared_ptr<tdcSystem::LQuadF> QuadC;    /// quad C
   std::shared_ptr<tdcSystem::LQuadF> QuadD;    /// quad D
-  std::shared_ptr<tdcSystem::LQuadF> QuadE;    /// quad E 
+  std::shared_ptr<tdcSystem::LQuadF> QuadE;    /// quad E
 
   /// yag station
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
@@ -106,15 +93,15 @@ class Segment2 :
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment2(const std::string&);
   Segment2(const Segment2&);
   Segment2& operator=(const Segment2&);
   ~Segment2();
 
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

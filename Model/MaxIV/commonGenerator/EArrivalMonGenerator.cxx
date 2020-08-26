@@ -58,12 +58,13 @@ namespace setVariable
 {
 
 EArrivalMonGenerator::EArrivalMonGenerator() :
-  radius(CF63::innerRadius),length(3.67),
+  radius(3.167), // No_2_00.pdf
+  length(3.67),
   thick(1.0),faceThick(1.0),
-  frontPipeILen(1.0),frontPipeLen(2.75),
-  frontPipeRadius(CF40_22::innerRadius),
-  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.5),
-  backPipeRadius(CF40_22::innerRadius),backPipeThick(0.8),
+  frontPipeILen(1.0),frontPipeLen(3.7),
+  frontPipeRadius(1.0), // No_2_00.pdf
+  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.63),
+  backPipeRadius(1.0),backPipeThick(0.8),
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
   windowThick(0.7),voidMat("Void"),mainMat("Copper"),

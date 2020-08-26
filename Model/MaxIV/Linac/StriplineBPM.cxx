@@ -273,9 +273,18 @@ StriplineBPM::createObjects(Simulation& System)
     (SMap,buildIndex," -202 17 402 -411 -412 -413 -414 -415 -416 -417 -418 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  if (striplineRadius>flangeARadius)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," -101 107 -411 -412 -413 -414 -415 -416 -417 -418 ");
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -202 -107 (411:412:413:414:415:416:417:418) ");
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+    }
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 202 207 -411 -412 -413 -414 -415 -416 -417 -418 ");
@@ -301,8 +310,12 @@ StriplineBPM::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 302  307 -7");
   makeCell("StriplineEnd",System,cellIndex++,striplineMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite
+  if (striplineRadius>flangeARadius)
+    Out=ModelSupport::getComposite
       (SMap,buildIndex," -411 -412 -413 -414 -415 -416 -417 -418 ");
+  else
+    Out=ModelSupport::getComposite
+      (SMap,buildIndex," -107 ");
   addOuterSurf(Out+frontStr+backStr);
 
   return;

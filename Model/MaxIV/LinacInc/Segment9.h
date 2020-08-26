@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment9.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,43 +16,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment9_h
 #define tdcSystem_Segment9_h
 
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
-  class StriplineBPM;
-  class CeramicGap;
-
-
   /*!
     \class Segment9
     \version 1.0
     \author S. Ansell
     \date May 2020
-    \brief Seventh segment
+    \brief 9th segment
   */
 
 class Segment9 :
@@ -61,34 +38,34 @@ class Segment9 :
  private:
 
   /// first bellow [actually ceramic gap]
-  std::shared_ptr<tdcSystem::CeramicGap> ceramicBellowA;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicBellowA;
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;   
+  std::shared_ptr<constructSystem::BlankTube> pumpA;
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   ///< corrector mag
 
   /// second bellow
-  std::shared_ptr<constructSystem::Bellows> bellowB;   
+  std::shared_ptr<constructSystem::Bellows> bellowB;
 
   /// bpm
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;
-  
+
   /// quad pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   /// Quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// exit bellows
-  std::shared_ptr<constructSystem::Bellows> bellowC;   
+  std::shared_ptr<constructSystem::Bellows> bellowC;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment9(const std::string&);
   Segment9(const Segment9&);
   Segment9& operator=(const Segment9&);

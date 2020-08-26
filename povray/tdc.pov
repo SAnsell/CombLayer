@@ -20,7 +20,7 @@
 #declare projection = 0;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -79,6 +79,60 @@ global_settings {
   //   #declare cameraLookAt   = <130, 80, 0>;
   //   #declare cameraAngle = 90;
   // #break
+  #case(strcmp(ITEM,"Segment1")) // L2SPF segment 1
+    #declare cameraLocation = <500, 630, 100>;
+    #declare cameraLookAt   = <152, 670, 0>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment2")) // L2SPF segment 2
+    #declare cameraLocation = <500, 1000, 100>;
+    #declare cameraLookAt   = <152, 1100, 0>;
+    #declare cameraAngle = 70;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment3")) // L2SPF segment 3
+    #declare cameraLocation = <500, 1470, 100>;
+    #declare cameraLookAt   = <152, 1510, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment4")) // L2SPF segment 4
+    #declare cameraLocation = <500, 1814, 100>;
+    #declare cameraLookAt   = <152, 1800, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment5")) // L2SPF segment 5
+    #declare cameraLocation = <300, 2040, 200>;
+    #declare cameraLookAt   = <90, 2030, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment6")) // L2SPF segment 6
+    #declare cameraLocation = <300, 2300, 200>;
+    #declare cameraLookAt   = <90, 2305, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment8")) // L2SPF segment 8
+    #declare cameraLocation = <300, 2770, 200>;
+    #declare cameraLookAt   = <0, 2830, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment9")) // L2SPF segment 9
+    #declare cameraLocation = <0, 3140, 100>;
+    #declare cameraLookAt   = <-152, 3115, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Segment10")) // L2SPF segment 10
+    #declare cameraLocation = <0, 4400, 200>;
+    #declare cameraLookAt   = <-150, 4000, 70>;
+    #declare cameraAngle = 40;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Segment11")) // L2SPF segment 11
     #declare cameraLocation = <-120, 4220, 40>;
     #declare cameraLookAt   = <-360, 4030, 0>;

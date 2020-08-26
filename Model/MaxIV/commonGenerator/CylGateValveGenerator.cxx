@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/CylGateValveGenertor.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -75,7 +75,7 @@ CylGateValveGenerator::CylGateValveGenerator() :
   */
 {}
 
-CylGateValveGenerator::~CylGateValveGenerator() 
+CylGateValveGenerator::~CylGateValveGenerator()
  /*!
    Destructor
  */
@@ -87,7 +87,7 @@ CylGateValveGenerator::generateFlat(FuncDataBase& Control,
 				    const bool leftSide,
 				    const bool closedFlag) const
   /*!
-    Build the get in the horrizontal direction
+    Build the get in the horizontal direction
     \param Control :: DataBase
     \param leftSide :: flag to imply left [true] or right [false]
     \param closedFlag :: true if item closed and false forwithdrawn
@@ -103,23 +103,22 @@ CylGateValveGenerator::generateFlat(FuncDataBase& Control,
   generateGate(Control,keyName,closedFlag);
   return;
 }
-  
+
 void
 CylGateValveGenerator::generateGate(FuncDataBase& Control,
 				    const std::string& keyName,
 				    const bool closedFlag) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param closedFlag :: true if item closed and false forwithdrawn
+    \param closedFlag :: true if item closed and false for withdrawn
   */
 {
   ELog::RegMethod RegA("CylGateValveGenerator","generateGate");
 
   if (std::abs<double>(horRotate)>1e-3)
     Control.addVariable(keyName+"YAngle",horRotate);
-
   
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);
@@ -144,7 +143,7 @@ CylGateValveGenerator::generateGate(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeLift",bladeLift);
   Control.addVariable(keyName+"BladeThick",bladeThick);
   Control.addVariable(keyName+"BladeRadius",bladeRadius);
-  
+
   Control.addVariable(keyName+"Closed",static_cast<int>(closedFlag));
 
   Control.addVariable(keyName+"VoidMat",voidMat);
@@ -152,9 +151,9 @@ CylGateValveGenerator::generateGate(FuncDataBase& Control,
   Control.addVariable(keyName+"DriveMat",driveMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
-         
+
   return;
 }
 
-  
+
 }  // NAMESPACE setVariable

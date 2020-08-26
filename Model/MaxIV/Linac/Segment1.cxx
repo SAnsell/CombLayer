@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment1.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -62,8 +54,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,18 +62,13 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "StriplineBPM.h"
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "BlankTube.h"
@@ -98,7 +83,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 Segment1::Segment1(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
@@ -111,7 +96,7 @@ Segment1::Segment1(const std::string& Key) :
   cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
   cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
   cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
@@ -133,10 +118,10 @@ Segment1::Segment1(const std::string& Key) :
   OR.addObject(cMagHorrB);
   OR.addObject(cMagVertB);
   OR.addObject(QuadA);
-  OR.addObject(pipeE);
+  OR.addObject(bpm);
   OR.addObject(pumpA);
 }
-  
+
 Segment1::~Segment1()
   /*!
     Destructor
@@ -154,7 +139,7 @@ Segment1::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment1","buildObjects");
 
   int outerCell;
-  
+
   MonteCarlo::Object* masterCell=buildZone->getMaster();
   if (!masterCell)
     masterCell=buildZone->constructMasterCell(System);
@@ -172,7 +157,7 @@ Segment1::buildObjects(Simulation& System)
   //
   pipeB->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
-  
+
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
@@ -180,16 +165,16 @@ Segment1::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
 
-  pipeD->createAll(System,*pipeC,"back");  
+  pipeD->createAll(System,*pipeC,"back");
   correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
- 
+
   pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeD);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*pipeE);
+    (System,*buildZone,masterCell,*pipeD,"back",*bpm);
 
-  pipeF->createAll(System,*pipeE,"back");  
+  pipeF->createAll(System,*bpm,"back");
   correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
   pipeTerminate(System,*buildZone,pipeF);
 
@@ -203,7 +188,7 @@ Segment1::buildObjects(Simulation& System)
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   pumpA->insertAllInCell(System,outerCell);
 
-  buildZone->removeLastMaster(System);  
+  buildZone->removeLastMaster(System);
   return;
 }
 
@@ -215,7 +200,7 @@ Segment1::createLinks()
 {
   setLinkSignedCopy(0,*pipeA,1);
 
-  
+
   const constructSystem::portItem& VPB=pumpA->getPort(1);
   setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
 
@@ -223,7 +208,7 @@ Segment1::createLinks()
   return;
 }
 
-void 
+void
 Segment1::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -237,7 +222,7 @@ Segment1::createAll(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("Segment1","build");
 
-  FixedRotate::populate(System.getDataBase());	  
+  FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
   buildObjects(System);
@@ -247,4 +232,3 @@ Segment1::createAll(Simulation& System,
 
 
 }   // NAMESPACE tdcSystem
-
