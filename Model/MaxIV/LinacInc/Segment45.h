@@ -22,6 +22,12 @@
 #ifndef tdcSystem_Segment45_h
 #define tdcSystem_Segment45_h
 
+namespace constructSystem
+{
+  class VacuumPipe;
+  class FlangePlate;
+}
+
 namespace tdcSystem
 {
   class CeramicGap;
@@ -48,6 +54,7 @@ class Segment45 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
   std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;     // #3
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;    // #3
+  std::shared_ptr<constructSystem::FlangePlate> adaptor; // adaptor plate
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
 
   virtual void setFrontSurfs(const std::vector<HeadRule>&);

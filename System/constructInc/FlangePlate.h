@@ -3,7 +3,7 @@
  
  * File:   constructInc/FlangePlate.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,26 +36,22 @@ namespace constructSystem
 */
 
 class FlangePlate :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
-  
 
-  double radius;                ///< void radius [inner] 
-  double thick;                 ///< Flange thickness
- 
-  double innerRadius;           ///< Inner window if present
+  double innerRadius;           ///< Inner window (void) if present
+  double flangeRadius;          ///< void radius [inner] 
+  double flangeLength;          ///< Flange thickness
 
-  int plateMat;                    ///< Pipe material
-  int innerMat;                    ///< Pipe cladding material 
-  
+  int innerMat;                 ///< inner (Void) material
+  int flangeMat;                ///< Main material  
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

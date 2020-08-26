@@ -432,9 +432,6 @@ TDC::createAll(Simulation& System,
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
-	  if (prevSegPtr)
-	    ELog::EM<<"Prev == "<<prevSegPtr->getKeyName()<<ELog::endDiag;
-
 	  std::vector<std::string> sideSegNames;
 	  if (BL=="Segment10")
 	    {

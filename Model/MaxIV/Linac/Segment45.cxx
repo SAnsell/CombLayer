@@ -71,6 +71,7 @@
 #include "YagUnitBig.h"
 #include "YagScreen.h"
 #include "CeramicGap.h"
+#include "FlangePlate.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -90,6 +91,7 @@ Segment45::Segment45(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  adaptor(new constructSystem::FlangePlate(keyName+"Adaptor")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -103,6 +105,7 @@ Segment45::Segment45(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
+  OR.addObject(adaptor);
   OR.addObject(pipeB);
 
   setFirstItems(ceramic);
@@ -202,7 +205,10 @@ Segment45::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
+    (System,*buildZone,masterCell,*yagUnit,"back",*adaptor);
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*adaptor,"back",*pipeB);
 
   buildZone->removeLastMaster(System);
 

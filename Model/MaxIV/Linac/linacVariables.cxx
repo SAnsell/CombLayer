@@ -46,6 +46,8 @@
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "FlangePlateGenerator.h"
+
 #include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
@@ -3133,29 +3135,34 @@ Segment45(FuncDataBase& Control,
 
   // floor gap
   Control.addVariable(lKey+"CutRadius",20.0);
-  // Ceramic gap
-  setVariable::CeramicGapGenerator CSGen;
-  CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
-  // Pipes
+  setVariable::CeramicGapGenerator CSGen;
+  setVariable::YagUnitBigGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::FlangePlateGenerator FPGen;
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",110.5);
-  PGen.setCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeB",161.75);
 
-  // Yag screen and its unit
-  setVariable::YagUnitBigGenerator YagUnitGen;
+  
+  CSGen.generateCeramicGap(Control,lKey+"Ceramic");
+
+  PGen.setCF<setVariable::CF40_22>();  
+  PGen.generatePipe(Control,lKey+"PipeA",110.5);
+
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  setVariable::YagScreenGenerator YagScreenGen;
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
+  
+  PGen.setCF<setVariable::CF63>();
+  PGen.generatePipe(Control,lKey+"PipeB",161.75);
 
+  FPGen.setCF<setVariable::CF63>();
+  FPGen.setFlangeLen(1.75);
+  FPGen.generateFlangePlate(Control,lKey+"Adaptor");
   return;
 }
 
