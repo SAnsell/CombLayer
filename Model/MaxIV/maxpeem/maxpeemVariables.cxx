@@ -46,6 +46,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "variableSetup.h"
+#include "maxivVariables.h"
 
 #include "CFFlanges.h"
 
@@ -78,6 +79,7 @@
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
 
+
 namespace setVariable
 {
 
@@ -96,6 +98,34 @@ namespace maxpeemVar
   void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
+
+void
+frontMaskVariables(FuncDataBase& Control,
+		   const std::string& frontKey)
+  /*!
+    Variable for the front maste
+    \param Control :: Database
+    \param frontKey :: Beamline name
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","frontMaskVariables");
+  setVariable::SqrFMaskGenerator FMaskGen;
+
+  const double FMdist(456.0);
+
+  // collimator block
+  
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setFrontGap(3.99,1.97);  //1033.8
+  FMaskGen.setBackGap(0.71,0.71);
+  FMaskGen.setMinSize(10.2,0.71,0.71);
+  FMaskGen.generateColl(Control,frontKey+"CollA",FMdist,15.0);
+
+  return;
+}
+		   
+  
   
 void
 collimatorVariables(FuncDataBase& Control,
@@ -119,7 +149,6 @@ collimatorVariables(FuncDataBase& Control,
 
   return;
 }
-  
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -774,6 +803,7 @@ heatDumpTable(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"HeatPipe",113.0);
 
+  ELog::EM<<"XXXXXAAAAAVariable "<<ELog::endCrit;
   heatDumpVariables(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -1001,17 +1031,14 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","frontEndVariables");
 
-  const double FMdist(456.0);
   
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
-  setVariable::SqrFMaskGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
-  
   Control.addVariable(frontKey+"OuterRadius",50.0);
   
   PipeGen.setNoWindow();   // no window
@@ -1052,14 +1079,7 @@ frontEndVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",10.0);
 
-  // collimator block
-  CollGen.setCF<CF63>();
-  CollGen.setBFlangeCF<CF40>();
-  CollGen.setFrontGap(3.99,1.97);  //1033.8
-  CollGen.setBackGap(0.71,0.71);
-  CollGen.setMinSize(10.2,0.71,0.71);
-  CollGen.generateColl(Control,frontKey+"CollA",FMdist,15.0);
-  
+  frontMaskVariables(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",10.0);
@@ -1097,8 +1117,12 @@ MAXPEEMvariables(FuncDataBase& Control)
   // add ring door to our sector
   RGen.generateDoor(Control,"R1RingRingDoor",50.0);
   Control.addVariable("R1RingRingDoorWallID",9);
-  
-  maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
+
+  maxpeemVar::undulatorVariables(Control,"MaxPeemFrontBeam");
+  // ystep [0] / dipole pipe / exit pipe
+  setVariable::R1FrontEndVariables(Control,"MaxPeemFrontBeam",25.0);
+
+  maxpeemVar::frontMaskVariables(Control,"MaxPeemFrontBeam");  
   maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
   maxpeemVar::transferVariables(Control,"MaxPeem");
   maxpeemVar::opticsHutVariables(Control,"MaxPeemOpticsHut");

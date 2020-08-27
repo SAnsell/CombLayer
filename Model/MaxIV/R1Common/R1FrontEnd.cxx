@@ -87,6 +87,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValveCube.h"
+#include "CylGateValve.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "VirtualTube.h"
@@ -122,6 +123,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
+  elecGateA(new xraySystem::CylGateValve(newName+"ElecGateA")),
   quadUnit(new xraySystem::QuadUnit(newName+"QuadUnit")),
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
@@ -172,6 +174,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(elecGateA);
   OR.addObject(quadUnit);
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
@@ -246,6 +249,7 @@ R1FrontEnd::createSurfaces()
     {
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
       buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+
     }
   if (!frontActive())
     {
@@ -540,7 +544,6 @@ R1FrontEnd::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R1FrontEnd","buildObjects");
 
-
   int outerCell;
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
@@ -573,7 +576,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutWallDisk->createAll(System,*dipoleChamber,
 			 dipoleChamber->getSideIndex("dipoleExit"));
 
-
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
   eCutDisk->createAll(System,*dipoleChamber,-2);
@@ -589,7 +591,6 @@ R1FrontEnd::buildObjects(Simulation& System)
       lastComp=dipolePipe;
       return;
     }
-
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);

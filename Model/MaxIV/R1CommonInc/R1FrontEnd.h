@@ -56,6 +56,7 @@ namespace xraySystem
 {
   class BremBlock;
   class BeamMount;
+  class CylGateValve;
   class DipoleChamber;
   class FlangeMount;
   class HeatDump;
@@ -92,6 +93,8 @@ class R1FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
+  /// Gate unit
+  std::shared_ptr<xraySystem::CylGateValve> elecGateA;
   /// Quad unit
   std::shared_ptr<xraySystem::QuadUnit> quadUnit;
   /// dipole connection pipe
