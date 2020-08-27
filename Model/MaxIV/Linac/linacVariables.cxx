@@ -99,7 +99,7 @@ namespace linacVar
 		       const double,const bool);
   void setRecGateValve(FuncDataBase&,const std::string&,const bool);
 
-  
+
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
   void Segment3(FuncDataBase&,const std::string&);
@@ -1144,23 +1144,27 @@ Segment11(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",12.8);
 
   PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
+
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
 
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.generatePipe(Control,lKey+"PipeA",43.50);
-  LQGen.generateQuad(Control,lKey+"QuadA",20.5);
+  PGen.generatePipe(Control,lKey+"PipeA",42.50);
+  LQGen.generateQuad(Control,lKey+"QuadA",24.7);
 
   setIonPump3OffsetPort(Control,lKey+"PumpA");
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",153.30);
+  PGen.generatePipe(Control,lKey+"PipeB",154.47);
 
   CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
   return;
@@ -3144,10 +3148,10 @@ Segment45(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-  
+
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
-  PGen.setCF<setVariable::CF40_22>();  
+  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeA",110.5);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -3156,7 +3160,7 @@ Segment45(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
-  
+
   PGen.setCF<setVariable::CF63>();
   PGen.generatePipe(Control,lKey+"PipeB",161.75);
 
@@ -3197,7 +3201,7 @@ Segment46(FuncDataBase& Control,
   PGen.setNoWindow();
 
   MSPGen.setMainLength(6.3,6.3);
-    
+
   PGen.generatePipe(Control,lKey+"PipeA",96.8); // measured
   const double pipeBLength(40.0);  // measured
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
@@ -3237,13 +3241,13 @@ Segment46(FuncDataBase& Control,
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
 
   BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
-  
+
   CGateGen.generateGate(Control,lKey+"GateB",0);
 
   // Bellow D added: it is not on the drawing BUT the
   // error in lengths is 160mm and there should be a bellow
   // here.
-  BellowGen.generateBellow(Control,lKey+"BellowD",16.0); 
+  BellowGen.generateBellow(Control,lKey+"BellowD",16.0);
 
   return;
 }
