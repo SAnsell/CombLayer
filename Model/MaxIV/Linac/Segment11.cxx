@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment11.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,35 +34,26 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Line.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,17 +63,10 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 #include "Bellows.h"
 #include "LQuadF.h"
 #include "StriplineBPM.h"
@@ -99,12 +83,12 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment11::Segment11(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),  
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
@@ -129,7 +113,7 @@ Segment11::Segment11(const std::string& Key) :
 
   setFirstItems(bellowA);
 }
-  
+
 Segment11::~Segment11()
   /*!
     Destructor
@@ -168,19 +152,19 @@ Segment11::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
 
-  
+
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
   yagScreen->insertInCell("Outer",System,outerCell);
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-    
+
   pipeB->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);
-  
-  buildZone->removeLastMaster(System);  
+
+  buildZone->removeLastMaster(System);
   return;
 }
 
@@ -197,7 +181,7 @@ Segment11::createLinks()
   return;
 }
 
-void 
+void
 Segment11::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -215,10 +199,9 @@ Segment11::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-
