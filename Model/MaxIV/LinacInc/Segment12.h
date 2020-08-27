@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment12.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment12_h
@@ -24,33 +24,17 @@
 
 namespace constructSystem
 {
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
 }
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
 
 namespace tdcSystem
 {
-  class LQuadF;
-  class CorrectorMag;
-  class CeramicGap;
 
   /*!
     \class Segment12
     \version 1.0
     \author S. Ansell
     \date May 2020
-    \brief Seventh segment
+    \brief 12th segment
   */
 
 class Segment12 :
@@ -77,7 +61,7 @@ class Segment12 :
 
   /// Ion pump
   std::shared_ptr<constructSystem::BlankTube> ionPumpLA;
-  
+
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeLA;
 
@@ -85,7 +69,7 @@ class Segment12 :
   std::shared_ptr<constructSystem::Bellows> bellowLB;
 
   // RIGHT DIVIDER:
-  
+
   /// first pipe
   std::shared_ptr<tdcSystem::FlatPipe> flatB;
 
@@ -94,13 +78,13 @@ class Segment12 :
 
     /// second  dipole
   std::shared_ptr<constructSystem::Bellows> bellowRB;
-  
+
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment12(const std::string&);
   Segment12(const Segment12&);
   Segment12& operator=(const Segment12&);
