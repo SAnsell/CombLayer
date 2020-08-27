@@ -95,10 +95,12 @@ namespace linacVar
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
   void setPrismaChamber(FuncDataBase&,const std::string&);
   void setSlitTube(FuncDataBase&,const std::string&);
+  void setRecGateValve(FuncDataBase&,const std::string&,
+		       const bool);
   void setCylGateValve(FuncDataBase&,const std::string&,
 		       const double,const bool);
-  void setRecGateValve(FuncDataBase&,const std::string&,const bool);
-
+  void setFlat(FuncDataBase&,const std::string&,
+	       const double,const double);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -451,6 +453,33 @@ setCylGateValve(FuncDataBase& Control,
 }
 
 void
+setFlat(FuncDataBase& Control,
+	const std::string& name,
+	const double length,
+	const double rotateAngle)
+/*!
+  Set the Flat pipe variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+  \param length :: length [cm]
+  \param rotateAngle :: XY angle [deg]
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setFlat");
+
+  setVariable::FlatPipeGenerator FPGen;
+
+  FPGen.generateFlat(Control,name,length);
+  Control.addVariable(name+"XYAngle",rotateAngle);
+  Control.addVariable(name+"WallThick",0.15); // No_3_00.pdf
+  Control.addVariable(name+"FrontWidth",3.656-1.344); // No_3_00.pdf
+  Control.addVariable(name+"BackWidth",3.656-1.344); // No_3_00.pdf
+
+  return;
+}
+
+
+void
 setMirrorChamber(FuncDataBase& Control,
 		const std::string& name)
 /*!
@@ -727,12 +756,8 @@ Segment3(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  const double flatAXYAngle = 1.6; // No_3_00.pdf
-  FPGen.generateFlat(Control,lKey+"FlatA",82.549/cos(flatAXYAngle*M_PI/180.0)); // No_3_00.pdf
-  Control.addVariable(lKey+"FlatAXYAngle",flatAXYAngle);
-  Control.addVariable(lKey+"FlatAWallThick",0.15); // No_3_00.pdf
-  Control.addVariable(lKey+"FlatAFrontWidth",3.656-1.344); // No_3_00.pdf
-  Control.addVariable(lKey+"FlatABackWidth",3.656-1.344); // No_3_00.pdf
+  const double flatAXYAngle=1.6;
+  setFlat(Control,lKey+"FlatA",82.549/cos(flatAXYAngle*M_PI/180.0),flatAXYAngle); // No_3_00.pdf
 
   DIBGen.generate(Control,lKey+"DipoleA");
   Control.addVariable(lKey+"DipoleAYStep",0.0065); // this centers DipoleA at 48.781 [No_3_00.pdf]
@@ -749,11 +774,7 @@ Segment3(FuncDataBase& Control,
 
   const double flatBXYAngle = 1.6;  // No_3_00.pdf
   const double flatBcos = cos((flatAXYAngle+pipeAXYAngle+flatBXYAngle)*M_PI/180.0);  // No_3_00.pdf
-  FPGen.generateFlat(Control,lKey+"FlatB",82.292/flatBcos);  // No_3_00.pdf
-  Control.addVariable(lKey+"FlatBXYAngle",flatBXYAngle);
-  Control.addVariable(lKey+"FlatBWallThick",0.15); // No_3_00.pdf
-  Control.addVariable(lKey+"FlatBFrontWidth",3.656-1.344); // No_3_00.pdf
-  Control.addVariable(lKey+"FlatBBackWidth",3.656-1.344); // No_3_00.pdf
+  setFlat(Control,lKey+"FlatB",82.292/flatBcos,flatBXYAngle);  // No_3_00.pdf
 
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBYStep",0.02); // this centers DipoleB at 225.468 [No_3_00.pdf]
@@ -849,13 +870,8 @@ Segment5(FuncDataBase& Control,
   // 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
-  //  ELog::EM << angleDipole << " " << flatAXYAngle << ELog::endDiag;
 
-  FPGen.generateFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0));
-  Control.addVariable(lKey+"FlatAXYAngle",angleDipole);
-  Control.addVariable(lKey+"FlatAWallThick",0.15); // No_4_00.pdf
-  Control.addVariable(lKey+"FlatAFrontWidth",3.656-1.344); // No_5_00.pdf
-  Control.addVariable(lKey+"FlatABackWidth",3.656-1.344); // No_5_00.pdf
+  setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),angleDipole);
 
   DIBGen.generate(Control,lKey+"DipoleA");
   Control.addVariable(lKey+"DipoleAYStep",-0.0091); // this centers DipoleA at 40.895 [No_5_00.pdf]
@@ -864,9 +880,9 @@ Segment5(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamAExitLength", 15);
   Control.addVariable(lKey+"BeamAMainLength", 34.4);
 
-  FPGen.generateFlat(Control,lKey+"FlatB",
-		     81.009/cos((flatAXYAngle+angleDipole*2)*M_PI/180.0)); // No_5_00.pdf
-  Control.addVariable(lKey+"FlatBXYAngle",angleDipole);
+  setFlat(Control,lKey+"FlatB",81.009/cos((flatAXYAngle+angleDipole*2)*M_PI/180.0),
+	  angleDipole);// No_5_00.pdf
+
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
 
@@ -1206,16 +1222,30 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkB","front");
   Control.addVariable(lKey+"BackLinkB","magnetExit");
 
-  Control.addVariable(lKey+"XYAngle",12.8);
+  const double XYAngle(12.8);
+  Control.addVariable(lKey+"XYAngle",XYAngle);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
   BellowGen.setCF<setVariable::CF26_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  FPGen.generateFlat(Control,lKey+"FlatA",85.4);
-  Control.addVariable(lKey+"FlatAXYAngle",-1.6);
+  // No_12_00.pdf
+  const double flatAXYAngle = -1.6;
+  setFlat(Control,lKey+"FlatA",
+	  (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0),
+	  flatAXYAngle);
+  Control.addVariable(lKey+"FlatAFrontWidth",3.304-1.344); // outer width
+  Control.addVariable(lKey+"FlatABackWidth",5.445-1.344); // outer width
+  Control.addVariable(lKey+"FlatAWallMat","Stainless316L");
+
+  ELog::EM << (935.83-73.14)/10.0 << ELog::endDiag;
+  ELog::EM << XYAngle+flatAXYAngle << ELog::endDiag;
+  ELog::EM << (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0) << ELog::endDiag;
 
   DIBGen.generate(Control,lKey+"DipoleA");
 
@@ -1261,8 +1291,8 @@ Segment12(FuncDataBase& Control,
 
   // RIGHT SIDE
 
-  FPGen.generateFlat(Control,lKey+"FlatB",85.4);
-  Control.addVariable(lKey+"FlatBXYAngle",1.6);
+  setFlat(Control,lKey+"FlatB",85.4,1.6);
+
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
 
@@ -1627,8 +1657,7 @@ Segment19(FuncDataBase& Control,
 
   setIonPump1Port(Control,lKey+"IonPump");
 
-  setCylGateValve(Control,lKey+"GateB",0.0,false);
-  Control.addVariable(lKey+"GateBYAngle",180.0);
+  setCylGateValve(Control,lKey+"GateB",180.0,false);
 
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
 
@@ -2753,8 +2782,7 @@ Segment36(FuncDataBase& Control,
   Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
 
   // Gate
-  setCylGateValve(Control,lKey+"Gate",90.0,false);  // length 7.3 cm checked
-  Control.addVariable(lKey+"GateYAngle",180.0);
+  setCylGateValve(Control,lKey+"Gate",180.0,false);  // length 7.3 cm checked
 
   return;
 }
@@ -3285,8 +3313,7 @@ Segment47(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
   // Gate valves
-  setCylGateValve(Control,lKey+"GateA",0.0,false);
-  Control.addVariable(lKey+"GateAYAngle",180.0);
+  setCylGateValve(Control,lKey+"GateA",180.0,false);
 
   // Bellows
   setVariable::BellowGenerator BellowGen;
@@ -3377,8 +3404,7 @@ Segment49(FuncDataBase& Control,
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   setCylGateValve(Control,lKey+"GateA",0.0,false);
-  setCylGateValve(Control,lKey+"GateB",0.0,false);
-  Control.addVariable(lKey+"GateBYAngle",180.0);
+  setCylGateValve(Control,lKey+"GateB",180.0,false);
 
   // Pipes
   setVariable::PipeGenerator PGen;
