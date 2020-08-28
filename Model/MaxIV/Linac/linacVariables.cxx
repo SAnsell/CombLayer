@@ -1243,19 +1243,22 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"FlatABackWidth",5.445-1.344); // outer width
   Control.addVariable(lKey+"FlatAWallMat","Stainless316L");
 
-  ELog::EM << (935.83-73.14)/10.0 << ELog::endDiag;
-  ELog::EM << XYAngle+flatAXYAngle << ELog::endDiag;
-  ELog::EM << (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0) << ELog::endDiag;
-
   DIBGen.generate(Control,lKey+"DipoleA");
+  // this fixes the Y horizontal coordinate but X is still wrong
+  // => Wrong FlatA angle?
+  Control.addVariable(lKey+"DipoleAYStep",-2.8321);
 
   //  BDGen.setMainSize(60.0,3.2);
   BDGen.setAFlangeCF<setVariable::CF50>();
-  BDGen.setBFlangeCF<setVariable::CF40>();
-  BDGen.setEFlangeCF<setVariable::CF40>();
-  //Angle (1.6) / short on left /  -1: left side aligned
+  BDGen.setBFlangeCF<setVariable::CF18_TDC>();
+  BDGen.setEFlangeCF<setVariable::CF18_TDC>();
+  // Angle (1.6) / short on left /  -1: left side aligned
   // angle of 1.6 gets us to direct (12.8 against y for exitpipe)
   BDGen.generateDivider(Control,lKey+"BeamA",1.6,1,0);
+  Control.addVariable(lKey+"BeamAWallThick",0.2); // No_12_00.pdf
+  // + 0.313 in order to have correct coordinates of the [BE] flanges
+  // according to No_12_00.pdf
+  Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
 
   BellowGen.generateBellow(Control,lKey+"BellowLA",7.5);
 
@@ -1269,15 +1272,16 @@ Segment12(FuncDataBase& Control,
   const double L0(8.5 - outerR);
   const double L1(7.5 - outerR);
 
-  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setMat("Stainless304L");
   SimpleTubeGen.setCF<setVariable::CF63>();
 
   SimpleTubeGen.generateBlank(Control,lKey+"IonPumpLA",0.0,12.5);
   Control.addVariable(lKey+"IonPumpLANPorts",2);
   Control.addVariable(lKey+"IonPumpLAFlangeCapThick",
 		      setVariable::CF63::flangeLength);
+  Control.addVariable(lKey+"IonPumpLAFlangeCapMat","Stainless304L");
 
-  PItemGen.setCF<setVariable::CF40>(L0); // Port0 length
+  PItemGen.setCF<setVariable::CF35_TDC>(L0); // Port0 length
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,lKey+"IonPumpLAPort0",OPos,-XVec);
 
@@ -1285,13 +1289,13 @@ Segment12(FuncDataBase& Control,
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
 
-  // -----------
-  PGen.generatePipe(Control,lKey+"PipeLA",93.3);
+  PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
+
   BellowGen.generateBellow(Control,lKey+"BellowLB",7.5);
 
   // RIGHT SIDE
 
-  setFlat(Control,lKey+"FlatB",85.4,1.6);
+  setFlat(Control,lKey+"FlatB",85.4-2.87,1.6);
 
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
