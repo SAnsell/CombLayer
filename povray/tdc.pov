@@ -145,6 +145,12 @@ global_settings {
     #declare cameraAngle = 70;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"Segment13")) // L2SPF segment 13 [last]
+    #declare cameraLocation = <-310, 4650, 100>;
+    #declare cameraLookAt   = <-455, 4595, 0>;
+    #declare cameraAngle = 70;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Segment15")) // TDC segment 15
     #declare cameraLocation = <-433, 4980, 40>;
     #declare cameraLookAt   = <-485, 5030, 10>;
