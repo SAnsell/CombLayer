@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/DipoleChamber.h
+ * File:   R1CommonInc/DipoleChamber.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -42,7 +42,8 @@ class DipoleChamber :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -62,14 +63,12 @@ class DipoleChamber :
 
   double wallThick;             ///< Wall thickness
 
-
   double innerXFlat;            ///< First X flat inside
   double innerXOut;             ///< First X out side
 
   double elecXFlat;             ///< Flat cut
   double elecXCut;              ///< Curve on phon side
   double elecXFull;             ///< Curve on electron side
-  
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material

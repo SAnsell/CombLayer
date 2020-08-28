@@ -48,6 +48,7 @@
 #include "variableSetup.h"
 #include "maxivVariables.h"
 
+#include "CylGateValveGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "PipeGenerator.h"
@@ -92,12 +93,15 @@ R1FrontEndVariables(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::QuadUnitGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  
+  setVariable::CylGateValveGenerator CGateGen;
   
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
 
+  // CGateGen.setYRotate(rotateAngle);
   
+  CGateGen.generateGate(Control,frontKey+"ElecGateA",1);  // length 7.3 cm checked
+
   Control.addVariable(frontKey+"OuterRadius",50.0);
 
   PGen.generatePipe(Control,frontKey+"QuadUnit",0.0);
@@ -206,8 +210,6 @@ heatDumpTable(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("R1RingVariables[F]","heatDumpTable");
-
-  ELog::EM<<"AAAAAVariable "<<ELog::endCrit;
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;

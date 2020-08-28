@@ -58,8 +58,8 @@ namespace setVariable
 {
 
 MagnetBlockGenerator::MagnetBlockGenerator() :
-  blockYStep(10.0),aLength(54.0),bLength(179.6),
-  midLength(120.0),sectorAngle(30.0),
+  blockYStep(4.0),aLength(50.2),bLength(125.3),
+  midLength(116.0),sectorAngle(33.0),
   height(70.0),width(34.0),
   voidMat("Void"),outerMat("Stainless304")
   /*!

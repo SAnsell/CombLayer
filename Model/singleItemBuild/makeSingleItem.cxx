@@ -82,6 +82,7 @@
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
+#include "GateValveCube.h"
 #include "StriplineBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
@@ -148,8 +149,8 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","CleaningMagnet","CorrectorMag","Jaws",
-      "LQuadF","LQuadH","LSexupole",
+      "CylGateValve","GateValveCube","CleaningMagnet",
+      "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
@@ -178,6 +179,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::CylGateValve>
 	GV(new xraySystem::CylGateValve("GV"));
+
+      OR.addObject(GV);
+
+      GV->addInsertCell(voidCell);
+      GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "GateValveCube" )
+    {
+      std::shared_ptr<constructSystem::GateValveCube>
+	GV(new constructSystem::GateValveCube("GVCube"));
 
       OR.addObject(GV);
 

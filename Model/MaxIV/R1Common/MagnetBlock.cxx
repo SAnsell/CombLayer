@@ -207,14 +207,19 @@ MagnetBlock::createObjects(Simulation& System)
 
   std::string Out;
 
+  const HeadRule& aSegment=quadUnit->getFullRule(2);
+
   // Construct the outer sectoin [divide later]
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -11 3 -4 5 -6 ");
   makeCell("Front",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 3 13 23 33 43 -4 5 -6 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 3 13 -4 5 -6 ");
+  makeCell("OuterA",System,cellIndex++,outerMat,0.0,
+	   Out+aSegment.complement().display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 23 33 43 -4 5 -6 ");
+  makeCell("OuterB",System,cellIndex++,outerMat,0.0,Out+aSegment.display());
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -12 3 13 23 33 43 -4 5 -6 ");
@@ -227,24 +232,49 @@ void
 MagnetBlock::buildInner(Simulation& System)
   /*!
     Build the inner part of the magnet block
+    \param System :: Simulation to buse
   */
 {
   ELog::RegMethod RegA("MagnetBlock","buildInner");
   
   //  quadUnit->setCutSurf("front",undulatorFC,2);
-  quadUnit->createAll(System,*this,-1);
-  quadUnit->insertInCell(System,CellMap::getCell("Front"));
-  quadUnit->insertInCell(System,CellMap::getCell("Outer"));
+  
+  quadUnit->createAll(System,*this,0);
 
 
   dipoleChamber->setCutSurf("front",*quadUnit,2);
   dipoleChamber->createAll(System,*quadUnit,2);
-  dipoleChamber->insertInCell("Main",System,CellMap::getCell("Outer"));
-  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("Outer"));
  
   return;
-  
 }
+
+void
+MagnetBlock::insertInner(Simulation& System)
+  /*!
+    Insert inner components
+    \param System :: Simulation to buse
+   */
+{
+  ELog::RegMethod RegA("MagnetBlock","insertInner");
+  
+  dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
+  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+
+  dipoleChamber->insertInCell("Main",System,this->getInsertCells());
+  dipoleChamber->insertInCell("Exit",System,this->getInsertCells());
+
+  for(const int CN : this->getInsertCells())
+    ELog::EM<<"Get main cells = "<<CN<<ELog::endDiag;
+  
+  //  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+
+  quadUnit->insertInCell(System,CellMap::getCell("Front"));
+  quadUnit->insertInCell(System,CellMap::getCell("OuterA"));
+  
+  return;
+}
+
+
 void 
 MagnetBlock::createLinks()
   /*!
@@ -278,13 +308,16 @@ MagnetBlock::createAll(Simulation& System,
   
   populate(System.getDataBase());
 
+  buildInner(System);
   createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();
+  insertInner(System);
   insertObjects(System);
 
-  buildInner(System);
+
   
   return;
 }

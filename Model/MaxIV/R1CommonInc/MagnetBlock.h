@@ -77,6 +77,7 @@ class MagnetBlock :
   void createEndPieces();
 
   void buildInner(Simulation&);
+  void insertInner(Simulation&);
   
  public:
 

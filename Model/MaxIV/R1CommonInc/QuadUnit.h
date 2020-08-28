@@ -43,7 +43,8 @@ namespace xraySystem
 class QuadUnit : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -54,7 +55,7 @@ class QuadUnit : public attachSystem::FixedOffset,
   double height;                ///< Inner height [straight]
 
   double endGap;                ///< Inner width
-  double endLength;            ///< Inner height [straight]
+  double endLength;             ///< Inner height [straight]
 
   double wallThick;             ///< Wall thickness
     
@@ -85,6 +86,8 @@ class QuadUnit : public attachSystem::FixedOffset,
   virtual ~QuadUnit();
 
   void createQuads(Simulation&,const int);
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

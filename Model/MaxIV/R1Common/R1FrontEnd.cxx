@@ -78,6 +78,7 @@
 #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
+#include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "OffsetFlangePipe.h"
@@ -105,7 +106,6 @@
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "LCollimator.h"
-#include "Quadrupole.h"
 
 #include "R1FrontEnd.h"
 
@@ -555,8 +555,12 @@ R1FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 
-  quadUnit->setCutSurf("front",undulatorFC,2);
-  quadUnit->createAll(System,undulatorFC,2);
+  constructSystem::constructUnit
+    (System,buildZone,masterCell,undulatorFC,"back",*elecGateA);
+
+  
+  quadUnit->setCutSurf("front",*elecGateA,2);
+  quadUnit->createAll(System,*elecGateA,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
 
   quadUnit->insertInCell(System,outerCell);

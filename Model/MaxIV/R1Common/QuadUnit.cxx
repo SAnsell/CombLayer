@@ -91,6 +91,7 @@ QuadUnit::QuadUnit(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   quadX(new xraySystem::Quadrupole(Key+"QuadX")),
   quadZ(new xraySystem::Quadrupole(Key+"QuadZ"))
 
@@ -171,8 +172,6 @@ QuadUnit::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-
-
   
   // low/left counter clockwise points (starting from
   // outer point
@@ -227,7 +226,7 @@ QuadUnit::createObjects(Simulation& System)
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
   const std::string fbStr=frontStr+backStr;
-  //
+
   std::string Out;
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"  11 12 13 14 15 16 17 ");
@@ -235,19 +234,19 @@ QuadUnit::createObjects(Simulation& System)
 
   // not cutting at 14.
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 21 22 23 14 25 26 27 (-11:-12:-13:-15:-16:-17) ");
+    (SMap,buildIndex," 21 22 23 24 25 26 27 (-11:-12:-13:-14:-15:-16:-17) ");
   makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+fbStr);
 
   // Flanges
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -101 -107 (-21:-22:-23:-14:-25:-26:-27) ");
+				 " -101 -107 (-21:-22:-23:-24:-25:-26:-27) ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 102 -207 (-21:-22:-23:-14:-25:-26:-27) ");
+				 " 102 -207 (-21:-22:-23:-24:-25:-26:-27) ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  21 22 23 14 25 26 27 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  21 22 23 24 25 26 27 ");
   addOuterUnionSurf(Out+fbStr);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");

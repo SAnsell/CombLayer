@@ -67,6 +67,7 @@
 #include "QuadUnitGenerator.h"
 #include "CurveMagGenerator.h"
 #include "CylGateValveGenerator.h"
+#include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "StriplineBPMGenerator.h"
@@ -300,6 +301,11 @@ SingleItemVariables(FuncDataBase& Control)
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;
   GVGen.generateGate(Control,"GV",1);
+
+  // CylGateValve
+  setVariable::GateValveGenerator GVCGen;
+  GVCGen.generateValve(Control,"GVCube",0.0,1);
+
 
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
