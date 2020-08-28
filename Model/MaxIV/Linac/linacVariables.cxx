@@ -610,7 +610,9 @@ Segment1(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
   PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+
   PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
   // note larger unit
   BellowGen.setCF<setVariable::CF26_TDC>();
@@ -623,8 +625,11 @@ Segment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagVertA",46.85,1); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF16_TDC>();
+  PGen.setMat("Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
+
   PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
   PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
   CMGen.generateMag(Control,lKey+"CMagHorrB",51.86, 0);
@@ -642,12 +647,13 @@ Segment1(FuncDataBase& Control,
   const Geometry::Vec3D OPos(0,2.0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
 
-  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setMat("Stainless304L");
   SimpleTubeGen.setCF<setVariable::CF66_TDC>();
 
   SimpleTubeGen.setFlangeCap(setVariable::CF66_TDC::flangeLength, 0.0);  // No_1_00.pdf
   SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
   Control.addVariable(lKey+"PumpABlankThick",0.4); // No_1_00.pdf
+  Control.addVariable(lKey+"PumpAFlangeCapMat","Stainless304L");
 
   Control.addVariable(lKey+"PumpANPorts",2);
 
