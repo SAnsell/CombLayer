@@ -686,6 +686,7 @@ Segment2(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
   PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
   PGen.generatePipe(Control,lKey+"PipeA",34.0); // No_2_00.pdf
