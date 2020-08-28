@@ -1462,7 +1462,7 @@ Segment15(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0); // 1=closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",166.8); // measured 167, adjusted to match total length
+  PGen.generatePipe(Control,lKey+"PipeB",167.0);
 
   return;
 }
