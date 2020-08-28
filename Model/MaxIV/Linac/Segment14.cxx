@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -69,6 +68,9 @@
 #include "DipoleDIBMag.h"
 #include "CylGateValve.h"
 
+#include "ContainedGroup.h"
+#include "FlatPipe.h"
+
 #include "TDCsegment.h"
 #include "Segment14.h"
 
@@ -81,10 +83,10 @@ Segment14::Segment14(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
@@ -97,10 +99,10 @@ Segment14::Segment14(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bellowA);
-  OR.addObject(pipeA);
+  OR.addObject(flatA);
   OR.addObject(dm1);
   OR.addObject(pipeB);
-  OR.addObject(pipeC);
+  OR.addObject(flatB);
   OR.addObject(dm2);
   OR.addObject(gateA);
   OR.addObject(bellowB);
@@ -136,22 +138,23 @@ Segment14::buildObjects(Simulation& System)
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*bellowA,"back",*pipeA);
-
-  pipeA->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"Origin","outerPipe",dm1);
-  pipeTerminate(System,*buildZone,pipeA);
-
-  constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
-
-  pipeC->createAll(System,*pipeB,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"Origin","outerPipe",dm2);
-  pipeTerminate(System,*buildZone,pipeC);
+  flatA->setFront(*bellowA,"back");
+  flatA->createAll(System,*bellowA,"back");
+  pipeMagGroup(System,*buildZone,flatA,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dm1);
+  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*gateA);
+    (System,*buildZone,masterCell,*flatA,"back",*pipeB);
+
+  flatB->setFront(*pipeB,"back");
+  flatB->createAll(System,*pipeB,"back");
+  pipeMagGroup(System,*buildZone,flatB,
+     {"FlangeA","Pipe"},"Origin","outerPipe",dm2);
+  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+
+  constructSystem::constructUnit
+    (System,*buildZone,masterCell,*flatB,"back",*gateA);
 
   constructSystem::constructUnit
     (System,*buildZone,masterCell,*gateA,"back",*bellowB);

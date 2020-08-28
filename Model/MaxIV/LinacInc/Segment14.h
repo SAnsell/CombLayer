@@ -22,11 +22,6 @@
 #ifndef tdcSystem_Segment14_h
 #define tdcSystem_Segment14_h
 
-namespace constructSystem
-{
-  class GateValveCube;
-}
-
 namespace tdcSystem
 {
   class DipoleDIBMag;
@@ -44,10 +39,10 @@ class Segment14 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;   ///< First bellow
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  ///< Pipe through dm1
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;  ///< Pipe through dm1
   std::shared_ptr<tdcSystem::DipoleDIBMag> dm1;        ///< First dipole magnet
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;  ///< Pipe between first two dipole magnets
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  ///< Pipe through dm2
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;  ///< Pipe through dm2
   std::shared_ptr<tdcSystem::DipoleDIBMag> dm2;        ///< Second dipole magnet
   std::shared_ptr<xraySystem::CylGateValve> gateA;     ///< #5 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;   ///< Last bellow

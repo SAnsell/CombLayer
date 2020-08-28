@@ -1386,30 +1386,37 @@ Segment14(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-637.608,4507.2590,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",3.1183);
+  const double XYAngle = 6.4;
+  Control.addVariable(lKey+"XYAngle", XYAngle);
 
   BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.generateBellow(Control,lKey+"BellowA",7.50); // measured yStep, length
-  PGen.setCF<setVariable::CF40_22>();
+
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",82.5); // measured
+
+  // length and angle are obtained from start/end coordinates of flatA
+  const double flatAXYAngle=4.801-XYAngle; // 4.801 obtained from start/end coordinates of flatA
+  setFlat(Control,lKey+"FlatA",82.581,flatAXYAngle); // No_14_00.pdf
 
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,lKey+"DM1");
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",94.4); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",94.4); // No_14_00.pdf
+  Control.addVariable(lKey+"PipeBXYAngle",-1.6); // No_14_00.pdf
 
-  PGen.setMat("Stainless316L","Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeC",82.5); // measured
+  // length and angle are obtained from start/end coordinates of flatB
+  // -0.2 to shift the BellowB end at the correct place
+  setFlat(Control,lKey+"FlatB",82.581,-1.6-0.2);
 
   DIBGen.generate(Control,lKey+"DM2");
 
   setCylGateValve(Control,lKey+"GateA",-90,false);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.50); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // No_14_00.pdf
 
   return;
 }
