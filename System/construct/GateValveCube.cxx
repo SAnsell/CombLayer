@@ -361,15 +361,14 @@ GateValveCube::createObjects(Simulation& System)
 
   if (portAExtends || portBExtends)
     {
-      Out="";
       if (!portAExtends)
 	Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
       else if (!portBExtends)
 	Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
       else 
 	Out=ModelSupport::getComposite
-	  (SMap,buildIndex," (-11 -117): (12 -217) ");
-      
+	  (SMap,buildIndex," ((-11 -117) : (12 -217)) ");
+
       addOuterUnionSurf(Out+frontStr+backStr);
     }
       
