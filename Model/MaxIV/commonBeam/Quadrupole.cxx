@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Quadrupole.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -426,15 +426,16 @@ Quadrupole::createObjects(Simulation& System)
   makeCell("LEdge",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
   makeCell("REdge",System,cellIndex++,0,0.0,Out);
-
+  ELog::EM<<"Cell = "<<cellIndex<<ELog::endDiag;
   // Pole Pieces
   const std::string ICell=innerTube.display();
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 203 -204 (206:-207) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
   makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out+ICell);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -447,17 +448,21 @@ Quadrupole::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 403 -404 (406:-407) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
   
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
+  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 503 -504 (506:-507) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
+
+
+  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
+    
   if (poleLength<coilLength-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
@@ -467,6 +472,7 @@ Quadrupole::createObjects(Simulation& System)
 	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
       makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out+ICell);
     }
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
   addOuterSurf(Out);      
 

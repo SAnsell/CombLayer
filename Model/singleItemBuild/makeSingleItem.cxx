@@ -537,7 +537,7 @@ makeSingleItem::build(Simulation& System,
       std::shared_ptr<xraySystem::QuadUnit>
 	PDipole(new xraySystem::QuadUnit("PreDipole"));
       OR.addObject(PDipole);
-      PDipole->addInsertCell(voidCell);
+      PDipole->addAllInsertCell(voidCell);
       PDipole->createAll(System,World::masterOrigin(),0);
 
 

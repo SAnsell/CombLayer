@@ -241,7 +241,6 @@ MagnetBlock::buildInner(Simulation& System)
   
   quadUnit->createAll(System,*this,0);
 
-
   dipoleChamber->setCutSurf("front",*quadUnit,2);
   dipoleChamber->createAll(System,*quadUnit,2);
  
@@ -268,8 +267,11 @@ MagnetBlock::insertInner(Simulation& System)
   
   //  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
 
-  quadUnit->insertInCell(System,CellMap::getCell("Front"));
-  quadUnit->insertInCell(System,CellMap::getCell("OuterA"));
+  quadUnit->insertInCell("FlangeA",System,CellMap::getCell("Front"));
+  quadUnit->insertInCell("Main",System,CellMap::getCell("Front"));
+  quadUnit->insertInCell("Main",System,CellMap::getCell("OuterA"));
+  quadUnit->insertInCell("FlangeB",System,CellMap::getCell("OuterA"));
+  quadUnit->createQuads(System,CellMap::getCell("OuterA"));
   
   return;
 }
@@ -314,7 +316,9 @@ MagnetBlock::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+
   insertInner(System);
+  
   insertObjects(System);
 
 

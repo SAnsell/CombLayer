@@ -75,6 +75,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -88,7 +89,7 @@ namespace xraySystem
 
 QuadUnit::QuadUnit(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -246,13 +247,16 @@ QuadUnit::createObjects(Simulation& System)
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  21 22 23 24 25 26 27 ");
-  addOuterUnionSurf(Out+fbStr);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"101 -102  21 22 23 24 25 26 27 ");
+  addOuterSurf("Main",Out);
+
+
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  addOuterUnionSurf(Out+frontStr);
+  addOuterSurf("FlangeA",Out+frontStr);
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  addOuterUnionSurf(Out+backStr);
+  addOuterSurf("FlangeB",Out+backStr);
 
 
   return;
@@ -281,7 +285,7 @@ void
 QuadUnit::createQuads(Simulation& System,const int cellN)
   /*!
     Separate function [will be joined later as the full 
-    shell is completed.
+    shell is completed].
     \param System :: Simulation :: System to insert
     \param cellN :: Cell for insertion
    */
@@ -296,23 +300,23 @@ QuadUnit::createQuads(Simulation& System,const int cellN)
 
       // Insert Quad Cut into void space
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-26:-25:-14) "); 
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-26:-25:-24) "); 
       QItem->insertComponent(System,"VoidPoleA",Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," (-26 : -27) "); 
       QItem->insertComponent(System,"VoidPoleB",Out);
       
-      
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:-14) "); 
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:-24) "); 
       QItem->insertComponent(System,"VoidPoleC",Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22) "); 
       QItem->insertComponent(System,"VoidPoleD",Out);
+
       
       if (QItem->CellMap::hasItem("ExtraPoleVoidA"))
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,
-					 "(-21:-22:-23:-14:-25:-26:-27)");
+					 "(-21:-22:-23:-24:-25:-26:-27)");
 	  QItem->insertComponent(System,"ExtraPoleVoidA",Out);
 	  QItem->insertComponent(System,"ExtraPoleVoidB",Out);
 	}

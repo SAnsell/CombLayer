@@ -40,11 +40,12 @@ namespace xraySystem
   This is built relative to the proton channel
 */
 
-class QuadUnit : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class QuadUnit :
+    public attachSystem::FixedOffset,
+    public attachSystem::ContainedGroup,
+    public attachSystem::ExternalCut,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
   

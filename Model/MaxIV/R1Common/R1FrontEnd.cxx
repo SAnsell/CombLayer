@@ -563,7 +563,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   quadUnit->createAll(System,*elecGateA,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
 
-  quadUnit->insertInCell(System,outerCell);
+  quadUnit->insertAllInCell(System,outerCell);
   quadUnit->createQuads(System,outerCell);
 
 
