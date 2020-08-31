@@ -164,9 +164,10 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Segment16")) // TDC segment 16
-    #declare cameraLocation = <-400, 5320, 40>;
-    #declare cameraLookAt   = <-485, 5320, 0>;
-    #declare projection = 1;
+    #declare cameraLocation = <-200, 5200, 100>;
+    #declare cameraLookAt   = <-485, 5330, 0>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Segment16QuadA")) // TDC segment 16 - QuadA
     #declare cameraLocation = <-430, 4890, 40>;

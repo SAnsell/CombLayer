@@ -382,6 +382,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 }
 
 ///\cond TEMPLATE
+  template void PipeGenerator::setCF<CF8_TDC>();
   template void PipeGenerator::setCF<CF16_TDC>();
   template void PipeGenerator::setCF<CF16>();
   template void PipeGenerator::setCF<CF18_TDC>();

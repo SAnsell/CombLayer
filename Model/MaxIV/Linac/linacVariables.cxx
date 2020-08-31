@@ -1442,8 +1442,6 @@ Segment15(FuncDataBase& Control,
   const Geometry::Vec3D endPt(-637.608,4730.259,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  ELog::EM << "YStep increased by 10 cm to avoid cutting segment 14"
-  << ELog::endCrit;
   Control.addVariable(lKey+"XYAngle",0.0);
 
   PGen.setCF<setVariable::CF40_22>();
@@ -1483,7 +1481,6 @@ Segment16(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   setVariable::LinacQuadGenerator LQGen;
-  PGen.setNoWindow();
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -1501,23 +1498,20 @@ Segment16(FuncDataBase& Control,
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  const double pipeALength(34.0);
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF8_TDC>();
+  PGen.setNoWindow();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeA",34.0); // measured
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - measured
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick - measured
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31); // 0.56 - measured
-  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-
+  LQGen.generateQuad(Control,lKey+"Quad",19.0);
   // measured - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",40.0); // measured
 
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
@@ -1528,7 +1522,7 @@ Segment16(FuncDataBase& Control,
   setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeC",126.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeC",126.03); // measured
 
   return;
 }

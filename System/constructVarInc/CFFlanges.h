@@ -49,6 +49,28 @@ struct CF8
 };
 
 /*!
+  \struct CF8_TDC
+  \version 1.0
+  \author K. Batkov
+  \date August 2020
+  \brief CFFlanges for CF16 (TDC geometry)
+*/
+
+struct CF8_TDC
+{
+  static constexpr double innerRadius=0.4;
+  static constexpr double wallThick=0.1;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
+
+/*!
   \struct CF16
   \version 1.0
   \author S. Ansell
