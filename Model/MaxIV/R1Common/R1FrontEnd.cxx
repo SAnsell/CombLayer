@@ -106,6 +106,7 @@
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "LCollimator.h"
+#include "MagnetBlock.h"
 
 #include "R1FrontEnd.h"
 
@@ -124,9 +125,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   buildZone(*this,cellIndex),
 
   elecGateA(new xraySystem::CylGateValve(newName+"ElecGateA")),
-  quadUnit(new xraySystem::QuadUnit(newName+"QuadUnit")),
-  dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
-  dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
+  magnetBlock(new xraySystem::MagnetBlock(newName+"MagnetBlock")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
   eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
@@ -175,9 +174,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(elecGateA);
-  OR.addObject(quadUnit);
-  OR.addObject(dipoleChamber);
-  OR.addObject(dipolePipe);
+  OR.addObject(magnetBlock);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(eCutWallDisk);
@@ -548,7 +545,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
   buildZone.setInsertCells(this->getInsertCells());
-  
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System);
 
@@ -558,23 +554,22 @@ R1FrontEnd::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,masterCell,undulatorFC,"back",*elecGateA);
 
-  
-  quadUnit->setCutSurf("front",*elecGateA,2);
-  quadUnit->createAll(System,*elecGateA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
+  magnetBlock->createAll(System,*elecGateA,2);
+  // UGLY insert into main ring
+  magnetBlock->insertInCell("Magnet",System,this->getInsertCells()[0]);
 
-  quadUnit->insertAllInCell(System,outerCell);
-  quadUnit->createQuads(System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magnetBlock,2);
+
+  magnetBlock->insertInCell("Magnet",System,outerCell);
+  magnetBlock->insertInCell("Dipole",System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magnetBlock,3);
+
+  magnetBlock->insertInCell("Magnet",System,outerCell);
+  magnetBlock->insertInCell("Photon",System,outerCell);
 
 
-  dipoleChamber->setCutSurf("front",*quadUnit,2);
-  dipoleChamber->createAll(System,*quadUnit,2);
-  // two splits [main / exit]
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
-  dipoleChamber->insertInCell("Main",System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
-  dipoleChamber->insertInCell("Exit",System,outerCell);
 
+  /*  
   eCutWallDisk->setNoInsert();
   eCutWallDisk->addInsertCell(outerCell);
   eCutWallDisk->createAll(System,*dipoleChamber,
@@ -588,38 +583,34 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
-
+  */
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());
-      lastComp=dipolePipe;
+      lastComp=magnetBlock;
       return;
     }
+
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);
 
-  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
-  dipolePipe->setBack(*bellowA,2);
-
-  dipolePipe->createAll(System,*dipoleChamber,
-			dipoleChamber->getSideIndex("exit"));  
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
-
   // note : bellowA is reversed
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
+  magnetBlock->insertInCell("Magnet",System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
 
   if (stopPoint=="Dipole")
     {
-      lastComp=dipolePipe;
+      lastComp=magnetBlock;
       return;
     }
- 
+  setCell("MasterVoid",masterCell->getName());
+  lastComp=magnetBlock;
+  
 
   bellowB->createAll(System,*collA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);

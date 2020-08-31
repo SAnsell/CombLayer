@@ -90,7 +90,7 @@ namespace xraySystem
 
 MagnetBlock::MagnetBlock(const std::string& Key) : 
   attachSystem::FixedOffset(Key,8),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Magnet","Dipole","Photon"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
@@ -223,7 +223,7 @@ MagnetBlock::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -12 3 13 23 33 43 -4 5 -6 ");
-  addOuterSurf(Out);
+  addOuterSurf("Magnet",Out);
 
   return;
 }
@@ -238,12 +238,13 @@ MagnetBlock::buildInner(Simulation& System)
   ELog::RegMethod RegA("MagnetBlock","buildInner");
   
   //  quadUnit->setCutSurf("front",undulatorFC,2);
-  
+
   quadUnit->createAll(System,*this,0);
 
   dipoleChamber->setCutSurf("front",*quadUnit,2);
   dipoleChamber->createAll(System,*quadUnit,2);
- 
+  addOuterSurf("Dipole",dipoleChamber->getCC("Main"));
+  addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
   return;
 }
 
@@ -259,11 +260,11 @@ MagnetBlock::insertInner(Simulation& System)
   dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
   dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
 
-  dipoleChamber->insertInCell("Main",System,this->getInsertCells());
-  dipoleChamber->insertInCell("Exit",System,this->getInsertCells());
+  // dipoleChamber->insertInCell("Main",System,this->getInsertCells());
+  // dipoleChamber->insertInCell("Exit",System,this->getInsertCells());
 
-  for(const int CN : this->getInsertCells())
-    ELog::EM<<"Get main cells = "<<CN<<ELog::endDiag;
+  // for(const int CN : this->getInsertCells())
+  //   ELog::EM<<"Get main cells = "<<CN<<ELog::endDiag;
   
   //  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
 
@@ -288,6 +289,9 @@ MagnetBlock::createLinks()
   // link 0 / 1 from PreDipole / EPCombine
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
+  FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
+  FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
   
   return;
 }
@@ -309,9 +313,9 @@ MagnetBlock::createAll(Simulation& System,
   int outerCell;
   
   populate(System.getDataBase());
-
-  buildInner(System);
   createUnitVector(FC,sideIndex);
+  
+  buildInner(System);
 
   createSurfaces();
   createObjects(System);

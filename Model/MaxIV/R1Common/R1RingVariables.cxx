@@ -60,6 +60,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "GateValveGenerator.h"
+#include "MagnetBlockGenerator.h"
 
 #include "CFFlanges.h"
 
@@ -102,12 +103,17 @@ R1FrontEndVariables(FuncDataBase& Control,
   
   CGateGen.generateGate(Control,frontKey+"ElecGateA",1);  // length 7.3 cm checked
 
-  Control.addVariable(frontKey+"OuterRadius",50.0);
+  Control.addVariable(frontKey+"OuterRadius",35.0);
 
-  PGen.generatePipe(Control,frontKey+"QuadUnit",0.0);
+  // Block for new R1-M1
+  setVariable::MagnetBlockGenerator MBGen;
+  MBGen.generateBlock(Control,frontKey+"MagnetBlock",0.0);
+
+
+  PGen.generatePipe(Control,frontKey+"MagnetBlockQuadUnit",0.0);
 
   setVariable::DipoleChamberGenerator DCGen;
-  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
+  DCGen.generatePipe(Control,frontKey+"MagnetBlockDipoleChamber",0.0);
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();

@@ -455,7 +455,7 @@ makeSingleItem::build(Simulation& System,
 	MB(new xraySystem::MagnetBlock("M1"));
 
       OR.addObject(MB);
-      MB->addInsertCell(voidCell);
+      MB->addAllInsertCell(voidCell);
       MB->createAll(System,World::masterOrigin(),0);
 
       return;

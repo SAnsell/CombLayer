@@ -61,6 +61,7 @@ namespace xraySystem
   class FlangeMount;
   class HeatDump;
   class LCollimator;
+  class MagnetBlock;
   class QuadUnit;
   class Quadrupole;
   class SquareFMask;
@@ -95,12 +96,10 @@ class R1FrontEnd :
   
   /// Gate unit
   std::shared_ptr<xraySystem::CylGateValve> elecGateA;
+
   /// Quad unit
-  std::shared_ptr<xraySystem::QuadUnit> quadUnit;
-  /// dipole connection pipe
-  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
-  /// dipole connection pipe
-  std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
+
   /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]
