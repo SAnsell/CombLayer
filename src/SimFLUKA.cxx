@@ -762,7 +762,7 @@ SimFLUKA::write(const std::string& Fname) const
     Simulation::writeVariables(OX,'*');
   
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
-  StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
+  StrFunc::writeFLUKA("GEOBEGIN 1.0 - - - - - COMBNAME",OX);
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);
