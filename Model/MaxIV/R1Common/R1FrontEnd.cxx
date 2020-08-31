@@ -124,7 +124,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
-  elecGateA(new xraySystem::CylGateValve(newName+"ElecGateA")),
+  elecGateA(new constructSystem::GateValveCube(newName+"ElecGateA")),
   magnetBlock(new xraySystem::MagnetBlock(newName+"MagnetBlock")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
@@ -229,7 +229,11 @@ R1FrontEnd::populate(const FuncDataBase& Control)
    */
 {
   FixedOffset::populate(Control);
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+
   return;
 }
 
@@ -242,12 +246,17 @@ R1FrontEnd::createSurfaces()
 {
   ELog::RegMethod RegA("R1FrontEnd","createSurfaces");
 
-  if (outerRadius>Geometry::zeroTol)
+  if (outerLeft>Geometry::zeroTol &&  isActive("Floor"))
     {
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
-
+      std::string Out;
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("Floor"));
+      buildZone.setSurround(HR);
     }
+
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
@@ -667,8 +676,8 @@ R1FrontEnd::createAll(Simulation& System,
   buildObjects(System);
   createLinks();
 
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=frontRule()+backRule();
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6 ");
+  Out+=frontRule()+backRule()+getRuleStr("Floor");
 
   addOuterSurf(Out);
   insertObjects(System);

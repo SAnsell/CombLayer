@@ -95,7 +95,7 @@ class R1FrontEnd :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
   /// Gate unit
-  std::shared_ptr<xraySystem::CylGateValve> elecGateA;
+  std::shared_ptr<constructSystem::GateValveCube> elecGateA;
 
   /// Quad unit
   std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
@@ -176,7 +176,9 @@ class R1FrontEnd :
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  double outerRadius;   ///< radius of tube for divisions
+  double outerLeft;     ///< left size of tube for divisions
+  double outerRight;    ///< right of tube for divisions
+  double outerTop;      ///< up/donw of tube for divisions
     
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
 

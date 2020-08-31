@@ -88,7 +88,6 @@
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 
-
 #include "R1Beamline.h"
 #include "MAXPEEM.h"
 
@@ -131,9 +130,8 @@ MAXPEEM::build(Simulation& System,
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
-   */
+  */
 {
-  // For output stream
   ELog::RegMethod RControl("MAXPEEM","build");
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
@@ -141,6 +139,7 @@ MAXPEEM::build(Simulation& System,
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 

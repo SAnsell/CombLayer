@@ -426,7 +426,7 @@ Quadrupole::createObjects(Simulation& System)
   makeCell("LEdge",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
   makeCell("REdge",System,cellIndex++,0,0.0,Out);
-  ELog::EM<<"Cell = "<<cellIndex<<ELog::endDiag;
+
   // Pole Pieces
   const std::string ICell=innerTube.display();
   

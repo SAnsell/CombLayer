@@ -94,16 +94,24 @@ R1FrontEndVariables(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::QuadUnitGenerator PGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::CylGateValveGenerator CGateGen;
+  setVariable::GateValveGenerator CGateGen;
   
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
 
   // CGateGen.setYRotate(rotateAngle);
-  
-  CGateGen.generateGate(Control,frontKey+"ElecGateA",1);  // length 7.3 cm checked
 
-  Control.addVariable(frontKey+"OuterRadius",35.0);
+  // length / width / depth / height
+  CGateGen.setOuter(3.4,13.0,20.0,20.0);
+  CGateGen.setBladeMat("Stainless304L");
+  CGateGen.setBladeThick(0.8);
+  CGateGen.setPortPairCF<CF40,CF63>();
+  CGateGen.generateValve(Control,frontKey+"ElecGateA",0.0,1);
+
+  
+  Control.addVariable(frontKey+"OuterLeft",25.0);
+  Control.addVariable(frontKey+"OuterRight",25.0);
+  Control.addVariable(frontKey+"OuterTop",70.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
