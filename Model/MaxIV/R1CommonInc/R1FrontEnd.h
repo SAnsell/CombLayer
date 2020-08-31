@@ -22,12 +22,6 @@
 #ifndef xraySystem_R1FrontEnd_h
 #define xraySystem_R1FrontEnd_h
 
-namespace insertSystem
-{
-  class insertCylinder;
-  class insertPlate;
-}
-
 namespace constructSystem
 {
   class Bellows;
@@ -100,12 +94,6 @@ class R1FrontEnd :
   /// Quad unit
   std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
 
-  /// electron cut cell [straight line]
-  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1

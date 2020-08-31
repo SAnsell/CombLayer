@@ -126,9 +126,6 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   elecGateA(new constructSystem::GateValveCube(newName+"ElecGateA")),
   magnetBlock(new xraySystem::MagnetBlock(newName+"MagnetBlock")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
-  eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
-  eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -175,9 +172,6 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   OR.addObject(elecGateA);
   OR.addObject(magnetBlock);
-  OR.addObject(eCutDisk);
-  OR.addObject(eCutMagDisk);
-  OR.addObject(eCutWallDisk);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
@@ -576,23 +570,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   magnetBlock->insertInCell("Magnet",System,outerCell);
   magnetBlock->insertInCell("Photon",System,outerCell);
 
-
-
-  /*  
-  eCutWallDisk->setNoInsert();
-  eCutWallDisk->addInsertCell(outerCell);
-  eCutWallDisk->createAll(System,*dipoleChamber,
-			 dipoleChamber->getSideIndex("dipoleExit"));
-
-  eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
-  eCutDisk->createAll(System,*dipoleChamber,-2);
-
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
-  eCutMagDisk->createAll(System,*dipoleChamber,
-			 -dipoleChamber->getSideIndex("dipoleExit"));
-  */
   if (stopPoint=="Dipole")
     {
       setCell("MasterVoid",masterCell->getName());

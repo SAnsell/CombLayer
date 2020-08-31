@@ -132,7 +132,6 @@ R1FrontEndVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",10.0);
-
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",10.0);
@@ -148,7 +147,7 @@ R1FrontEndVariables(FuncDataBase& Control,
   R1Ring::heatDumpTable(Control,frontKey);
   R1Ring::moveApertureTable(Control,frontKey);
   R1Ring::shutterTable(Control,frontKey);
-  R1Ring::electronCutVariables(Control,frontKey);
+  R1Ring::electronCutVariables(Control,frontKey+"MagnetBlock");
 
   return;
 }

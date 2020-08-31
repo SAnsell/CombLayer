@@ -74,11 +74,16 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
+#include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "InnerZone.h"
+#include "insertObject.h"
+#include "insertCylinder.h"
+#include "insertPlate.h"
+
 #include "Quadrupole.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
@@ -94,7 +99,10 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
-  dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber"))
+  dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber")),
+  eCutDisk(new insertSystem::insertCylinder(keyName+"ECutDisk")),
+  eCutMagDisk(new insertSystem::insertPlate(keyName+"ECutMagDisk")),
+  eCutWallDisk(new insertSystem::insertPlate(keyName+"ECutWallDisk"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -109,6 +117,9 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   
   OR.addObject(quadUnit);
   OR.addObject(dipoleChamber);
+  OR.addObject(eCutDisk);
+  OR.addObject(eCutMagDisk);
+  OR.addObject(eCutWallDisk);
 
 }
 
@@ -292,10 +303,37 @@ MagnetBlock::createLinks()
 
   FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
   FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
-  
+
   return;
 }
 
+
+void
+MagnetBlock::buildElectronCut(Simulation& System)
+  /*!
+    Adds electron cuts to the model (if required)
+    \param System :: Simualtion
+  */
+{
+  ELog::RegMethod RegA("MagnetBlock","buildElectronCut");
+  
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  eCutMagDisk->createAll(System,*dipoleChamber,
+			 -dipoleChamber->getSideIndex("dipoleExit"));
+
+  /*  
+  eCutWallDisk->setNoInsert();
+  eCutWallDisk->addInsertCell(outerCell);
+  eCutWallDisk->createAll(System,*dipoleChamber,
+			 dipoleChamber->getSideIndex("dipoleExit"));
+
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
+  eCutDisk->createAll(System,*dipoleChamber,-2);
+  */
+  return;
+}
 
 void
 MagnetBlock::createAll(Simulation& System,
@@ -321,9 +359,9 @@ MagnetBlock::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
-  insertInner(System);
-  
+  insertInner(System);  
   insertObjects(System);
+  buildElectronCut(System);
 
 
   
