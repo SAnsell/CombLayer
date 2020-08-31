@@ -242,8 +242,8 @@ Quadrupole::createSurfaces()
   ELog::RegMethod RegA("Quadrupole","createSurface");
 
   // mid line
-  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,X);
-  ModelSupport::buildPlane(SMap,buildIndex+2000,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin+X*0.01,X);
+  ModelSupport::buildPlane(SMap,buildIndex+2000,Origin+Z*0.01,Z);
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -441,8 +441,8 @@ Quadrupole::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 303 -304 (306:-307) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
   makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out+ICell);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -459,7 +459,6 @@ Quadrupole::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-
 
   makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
     

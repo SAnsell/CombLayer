@@ -303,13 +303,13 @@ QuadUnit::createQuads(Simulation& System,const int cellN)
       Out=ModelSupport::getComposite(SMap,buildIndex," (-26:-25:-24) "); 
       QItem->insertComponent(System,"VoidPoleA",Out);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-26 : -27) "); 
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-26:-27) "); 
       QItem->insertComponent(System,"VoidPoleB",Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:-24) "); 
       QItem->insertComponent(System,"VoidPoleC",Out);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22) "); 
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22:-27) "); 
       QItem->insertComponent(System,"VoidPoleD",Out);
 
       
