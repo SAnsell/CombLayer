@@ -144,10 +144,8 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 
   for(const mTYPE::value_type& SP : stopUnits)
     {
-      ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
       if (beamNAMES.find(SP.first)==beamNAMES.end())
 	{
-	  ELog::EM<<"Sp == "<<SP.first<<ELog::endDiag;
 	  // make generic
 	  for(const std::string Item : beamNAMES)
 	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific

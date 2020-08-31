@@ -55,6 +55,8 @@ class MagnetBlock :
 {
  private:
 
+  std::string stopPoint;        ///< Stop point (option -> Quadrupole")
+  
   double blockYStep;            ///< Step forward of main block
   double aLength;               ///< first length  (x2)
   double bLength;               ///< second length (x2)
@@ -80,7 +82,6 @@ class MagnetBlock :
   std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
   /// electron cut cell [with magnetic field]
   std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
-
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -99,6 +100,10 @@ class MagnetBlock :
   MagnetBlock& operator=(const MagnetBlock&);
   virtual ~MagnetBlock();
 
+  /// setter for stop point
+  void setStopPoint(const std::string& S) { stopPoint=S; }
+  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

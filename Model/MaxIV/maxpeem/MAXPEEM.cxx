@@ -145,7 +145,7 @@ MAXPEEM::build(Simulation& System,
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -153,7 +153,9 @@ MAXPEEM::build(Simulation& System,
 
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  if (stopPoint=="frontEnd" ||
+      stopPoint=="Dipole" ||
+      stopPoint=="Quadrupole") return;
 
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));

@@ -94,6 +94,8 @@ class R1FrontEnd :
   /// Quad unit
   std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
 
+  /// dipole connection pipe
+  std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1

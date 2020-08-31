@@ -108,9 +108,9 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
+  nameSideIndex(0,"Flange");
+  nameSideIndex(1,"Photon");
+  nameSideIndex(2,"Electron");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -120,7 +120,6 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(eCutWallDisk);
-
 }
 
 
@@ -226,8 +225,16 @@ MagnetBlock::createObjects(Simulation& System)
   makeCell("Front",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 3 13 -4 5 -6 ");
-  makeCell("OuterA",System,cellIndex++,outerMat,0.0,
-	   Out+aSegment.complement().display());
+  Out+=aSegment.complement().display();
+  makeCell("OuterA",System,cellIndex++,outerMat,0.0,Out);
+
+  if (stopPoint=="Quadrupole")
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 3 13 -4 5 -6 ");
+      Out+=aSegment.complement().display();
+      addOuterSurf("Magnet",Out);
+      return;
+    }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 23 33 43 -4 5 -6 ");
   makeCell("OuterB",System,cellIndex++,outerMat,0.0,Out+aSegment.display());
@@ -252,10 +259,13 @@ MagnetBlock::buildInner(Simulation& System)
 
   quadUnit->createAll(System,*this,0);
 
-  dipoleChamber->setCutSurf("front",*quadUnit,2);
-  dipoleChamber->createAll(System,*quadUnit,2);
-  addOuterSurf("Dipole",dipoleChamber->getCC("Main"));
-  addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
+  if (stopPoint!="Quadrupole")
+    {
+      dipoleChamber->setCutSurf("front",*quadUnit,2);
+      dipoleChamber->createAll(System,*quadUnit,2);
+      addOuterSurf("Dipole",dipoleChamber->getCC("Main"));
+      addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
+    }
   return;
 }
 
@@ -267,17 +277,12 @@ MagnetBlock::insertInner(Simulation& System)
    */
 {
   ELog::RegMethod RegA("MagnetBlock","insertInner");
-  
-  dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
-  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
 
-  // dipoleChamber->insertInCell("Main",System,this->getInsertCells());
-  // dipoleChamber->insertInCell("Exit",System,this->getInsertCells());
-
-  // for(const int CN : this->getInsertCells())
-  //   ELog::EM<<"Get main cells = "<<CN<<ELog::endDiag;
-  
-  //  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+  if (CellMap::hasCell("OuterB"))
+    {
+      dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
+      dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+    }
 
   quadUnit->insertInCell("FlangeA",System,CellMap::getCell("Front"));
   quadUnit->insertInCell("Main",System,CellMap::getCell("Front"));
@@ -300,10 +305,17 @@ MagnetBlock::createLinks()
   // link 0 / 1 from PreDipole / EPCombine
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-
-  FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
-  FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
-
+      
+  if (stopPoint=="Quadrupole")
+    {
+      FixedComp::setLinkSignedCopy(1,*quadUnit,2);
+      FixedComp::setLinkSignedCopy(2,*quadUnit,2);
+    }
+  else
+    {
+      FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
+      FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
+    }
   return;
 }
 
@@ -316,7 +328,7 @@ MagnetBlock::buildElectronCut(Simulation& System)
   */
 {
   ELog::RegMethod RegA("MagnetBlock","buildElectronCut");
-  
+  /*
   eCutMagDisk->setNoInsert();
   eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
   eCutMagDisk->createAll(System,*dipoleChamber,
