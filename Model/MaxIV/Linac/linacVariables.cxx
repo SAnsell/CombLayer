@@ -101,6 +101,8 @@ namespace linacVar
 		       const double,const bool);
   void setFlat(FuncDataBase&,const std::string&,
 	       const double,const double);
+  void setGauge(FuncDataBase&,const std::string&,
+		const double);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -173,13 +175,13 @@ setIonPump1Port(FuncDataBase& Control,
   const Geometry::Vec3D OPos(0,0.0,0);
   const Geometry::Vec3D XVec(1,0,0);
 
-  SimpleTubeGen.setCF<CF40_22>();
+  SimpleTubeGen.setCF<CF37_TDC>();
   SimpleTubeGen.setMat("Stainless304L"); // mat checked
   SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
 
   Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(5.1); // measured
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L"); // mat checked
+  PItemGen.setCF<setVariable::CF37_TDC>(5.1); // measured
+  PItemGen.setPlate(setVariable::CF37_TDC::flangeLength, "Stainless304L"); // mat checked
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
 }
@@ -481,6 +483,36 @@ setFlat(FuncDataBase& Control,
 
   return;
 }
+
+void
+setGauge(FuncDataBase& Control,
+	 const std::string& name)
+/*!
+  Set the vacuum gauge variables
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setGauge");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  SimpleTubeGen.setCF<CF37_TDC>();
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // 12.596
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF37_TDC>(5.1); // measured in segment 19
+  PItemGen.setPlate(setVariable::CF37_TDC::flangeLength, "Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  return;
+}
+
 
 
 void
@@ -1641,31 +1673,18 @@ Segment19(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment19");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
 
   const Geometry::Vec3D startPt(-637.608,5994.561,0.0);
   const Geometry::Vec3D endPt(-637.608,6045.428,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
   // Bellow
   BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
-  // Vacuum gauge
-  std::string name=lKey+"Gauge";
-  SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(5.1); // measured
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+  setGauge(Control,lKey+"Gauge");
 
   // Fast closing valve
   setRecGateValve(Control,lKey+"GateA",false);
