@@ -201,20 +201,22 @@ setIonPump2Port(FuncDataBase& Control,
   const Geometry::Vec3D OPos(0.0,0.0,0.0);
   const Geometry::Vec3D XVec(1,0,0);
 
-  SimpleTubeGen.setMat("Stainless304L");
+  const double wallThick = 0.2;
+  const double innerRadius = 3.3;
+  const double outerR = innerRadius+wallThick; // main pipe outer radius
+
+  const std::string mat = "Stainless304L";
+  SimpleTubeGen.setMat(mat);
+
   SimpleTubeGen.setCF<setVariable::CF63>();
 
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
-  const double wallThick = 0.2;
+  Control.addVariable(name+"Radius",innerRadius); // No_17_00.pdf
   Control.addVariable(name+"WallThick",wallThick); // No_17_00.pdf
   Control.addVariable(name+"NPorts",2);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
-  Control.addVariable(name+"FlangeCapMat","Stainless304L");
+  Control.addVariable(name+"FlangeCapMat",mat);
 
-
-  // Outer radius of the vertical pipe
-  const double outerR =
-    setVariable::CF63::innerRadius+wallThick;
   // length of ports 0 and 1
   // measured at Segment18 from front/back to the centre
   const double L0(8.5 - outerR);
@@ -1594,6 +1596,7 @@ Segment18(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF26_TDC>();
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
 
   setIonPump2Port(Control, lKey+"IonPump");
@@ -1604,27 +1607,24 @@ Segment18(FuncDataBase& Control,
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   /// Quad and PipeA
-  const double pipeALength(34.0); // measured
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF8_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",34.0); //
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius -
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick -
+  PGen.generatePipe(Control,lKey+"PipeA",34.0);
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31); // 0.56 -> measured (QH)
-  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+  LQGen.generateQuad(Control,lKey+"Quad",19.0); // No_18_00.pdf
 
   //  - inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeB",127.3); //
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeB",127.3);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); //
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1); //
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
 
   return;
 }
