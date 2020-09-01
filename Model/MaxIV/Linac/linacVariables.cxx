@@ -1187,7 +1187,6 @@ Segment11(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment11");
 
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
@@ -1205,10 +1204,7 @@ Segment11(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeA",42.50);
@@ -1242,7 +1238,6 @@ Segment12(FuncDataBase& Control,
   setVariable::CF63 CF63unit;
   setVariable::PipeGenerator PGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::BeamDividerGenerator BDGen(CF63unit);
@@ -1271,10 +1266,7 @@ Segment12(FuncDataBase& Control,
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
 
   // No_12_00.pdf
   const double flatAXYAngle = -1.6;
@@ -1302,7 +1294,7 @@ Segment12(FuncDataBase& Control,
   // according to No_12_00.pdf
   Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
 
-  BellowGen.generateBellow(Control,lKey+"BellowLA",7.5);
+  setBellow(Control,lKey+"BellowLA");
 
   // small ion pump port:
   // -----------------------
@@ -1333,7 +1325,7 @@ Segment12(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
 
-  BellowGen.generateBellow(Control,lKey+"BellowLB",7.5);
+  setBellow(Control,lKey+"BellowLB");
 
   // RIGHT SIDE
 
@@ -1342,7 +1334,7 @@ Segment12(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowRB",7.5);
+  setBellow(Control,lKey+"BellowRB");
 
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
   return;
@@ -1413,7 +1405,6 @@ Segment14(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment14");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::PortItemGenerator PItemGen;
 
@@ -1424,9 +1415,7 @@ Segment14(FuncDataBase& Control,
   const double XYAngle = 6.4;
   Control.addVariable(lKey+"XYAngle", XYAngle);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.50); // measured yStep, length
+  setBellow(Control,lKey+"BellowA");
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
@@ -1451,7 +1440,7 @@ Segment14(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"GateA",-90,false);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // No_14_00.pdf
+  setBellow(Control,lKey+"BellowB"); // No_14_00.pdf
 
   return;
 }
@@ -1511,7 +1500,6 @@ Segment16(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment16");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
@@ -1527,9 +1515,7 @@ Segment16(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -1552,7 +1538,7 @@ Segment16(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
   CMGen.generateMag(Control,lKey+"CMagV",28.0,1); // measured
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // measured
+  setBellow(Control,lKey+"BellowB");
 
   setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
@@ -1573,7 +1559,6 @@ Segment17(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment17");
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
 
   const Geometry::Vec3D startPt(-637.608,4983.291,0.0);
   const Geometry::Vec3D endPt(-637.608,5780.261,0.0);
@@ -1586,10 +1571,7 @@ Segment17(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeA",391.23); // No_17_00.pdf
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
 
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
@@ -1611,7 +1593,6 @@ Segment18(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment18");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::StriplineBPMGenerator BPMGen;
 
   setVariable::PipeGenerator PGen;
@@ -1625,15 +1606,12 @@ Segment18(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  setBellow(Control,lKey+"BellowA");
 
   setIonPump2Port(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // measured
+  setBellow(Control,lKey+"BellowB");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -1671,17 +1649,12 @@ Segment19(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment19");
 
-  setVariable::BellowGenerator BellowGen;
-
   const Geometry::Vec3D startPt(-637.608,5994.561,0.0);
   const Geometry::Vec3D endPt(-637.608,6045.428,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  // Bellow
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
 
   setGauge(Control,lKey+"Gauge");
 
@@ -1692,7 +1665,7 @@ Segment19(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"GateB",180.0,false);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+  setBellow(Control,lKey+"BellowB");
 
   return;
 }
@@ -1764,7 +1737,6 @@ Segment21(FuncDataBase& Control,
   BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
   BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);  // measured
   BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
-
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   Control.addVariable(lKey+"BPMRadius", 1.3);
@@ -1991,7 +1963,6 @@ Segment25(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment25");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
@@ -2021,8 +1992,7 @@ Segment25(FuncDataBase& Control,
   Control.addVariable(lKey+"BackLinkB","backMid");
   Control.addVariable(lKey+"BackLinkC","backLower");
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
   Control.addVariable(lKey+"BellowAOffset","backFlat");
 
   const double dipoleAngle(0.8);
@@ -2059,9 +2029,9 @@ Segment25(FuncDataBase& Control,
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0+9.4620, 0.0, -6.12812);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
-  BellowGen.generateBellow(Control,lKey+"BellowAA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowCA",7.5);
+  setBellow(Control,lKey+"BellowAA");
+  setBellow(Control,lKey+"BellowBA");
+  setBellow(Control,lKey+"BellowCA");
 
 
   return;
@@ -2079,12 +2049,9 @@ Segment26(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment26");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
-
-  BellowGen.setCF<setVariable::CF26_TDC>();
 
   // const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
   const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
@@ -2133,11 +2100,9 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowBB",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowCB",7.5);
-
-
+  setBellow(Control,lKey+"BellowAB");
+  setBellow(Control,lKey+"BellowBB");
+  setBellow(Control,lKey+"BellowCB");
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -2167,7 +2132,6 @@ Segment27(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment27");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
@@ -2195,15 +2159,12 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkC","frontLower");
   Control.addVariable(lKey+"BackLinkC","backLower");
 
-
-
-  BellowGen.setCF<setVariable::CF26_TDC>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
 
-  BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowCA",16.0);
+  setBellow(Control,lKey+"BellowAA",16.0);
+  setBellow(Control,lKey+"BellowBA",16.0);
+  setBellow(Control,lKey+"BellowCA",16.0);
 
   Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
@@ -2220,9 +2181,9 @@ Segment27(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeBA",210.4);
   PGen.generatePipe(Control,lKey+"PipeCA",222.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowCB",16.0);
+  setBellow(Control,lKey+"BellowAB",16.0);
+  setBellow(Control,lKey+"BellowBB",16.0);
+  setBellow(Control,lKey+"BellowCB",16.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
@@ -2236,9 +2197,9 @@ Segment27(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAC",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBC",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowCC",16.0);
+  setBellow(Control,lKey+"BellowAC",16.0);
+  setBellow(Control,lKey+"BellowBC",16.0);
+  setBellow(Control,lKey+"BellowCC",16.0);
 
 
   return;
@@ -2256,7 +2217,6 @@ Segment28(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment28");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
 
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
@@ -2277,7 +2237,6 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkB","frontMid");
   Control.addVariable(lKey+"BackLinkB","backMid");
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
 
@@ -2292,14 +2251,14 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
+  setBellow(Control,lKey+"BellowAA",16.0);
+  setBellow(Control,lKey+"BellowBA",16.0);
 
   PGen.generatePipe(Control,lKey+"PipeAB",291.6);
   PGen.generatePipe(Control,lKey+"PipeBB",292.5);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAB",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBB",16.0);
+  setBellow(Control,lKey+"BellowAB",16.0);
+  setBellow(Control,lKey+"BellowBB",16.0);
 
 
   return;
@@ -2317,7 +2276,6 @@ Segment29(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment29");
 
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
@@ -2339,7 +2297,6 @@ Segment29(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkB","frontMid");
   Control.addVariable(lKey+"BackLinkB","backMid");
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
   PGen.setCF<CF40>();
   PGen.setNoWindow();
 
@@ -2354,8 +2311,8 @@ Segment29(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
 
-  BellowGen.generateBellow(Control,lKey+"BellowAA",16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",16.0);
+  setBellow(Control,lKey+"BellowAA",16.0);
+  setBellow(Control,lKey+"BellowBA",16.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
@@ -2377,7 +2334,6 @@ Segment30(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment30");
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::CorrectorMagGenerator CMGen;
@@ -2408,9 +2364,7 @@ Segment30(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",436.5-0.084514221); // measured
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  setBellow(Control,lKey+"Bellow");
 
   // IonPump
   const std::string pumpName=lKey+"IonPump";
@@ -2542,7 +2496,6 @@ Segment32(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BellowGenerator BellowGen;
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
   Control.addVariable(lKey+"FlatAXYAngle",0.0);
@@ -2561,9 +2514,7 @@ Segment32(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DMB");
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  setBellow(Control,lKey+"Bellow");
   Control.addVariable(lKey+"BellowXYAngle",0.0);
   */
   Segment32Magnet(Control,lKey);
@@ -2589,7 +2540,6 @@ Segment33(FuncDataBase& Control,
   setVariable::LinacSexuGenerator LSGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::BellowGenerator BellowGen;
 
   const Geometry::Vec3D startPt(-965.763,5607.319,0.0);
   const Geometry::Vec3D endPt(-995.514,5872.556,0.0);
@@ -2621,9 +2571,7 @@ Segment33(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
   CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  setBellow(Control,lKey+"Bellow");
 
   return;
 }
@@ -2651,7 +2599,6 @@ Segment34(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BellowGenerator BellowGen;
 
   FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
   Control.addVariable(lKey+"FlatAXYAngle",0.0);
@@ -2670,9 +2617,7 @@ Segment34(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DMB");
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
+  setBellow(Control,lKey+"Bellow");
   Control.addVariable(lKey+"BellowXYAngle",-0.0);
   */
 
@@ -2698,7 +2643,6 @@ Segment35(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::YagUnitBigGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::BellowGenerator BellowGen;
   setVariable::ButtonBPMGenerator BPMGen;
 
   const Geometry::Vec3D startPt(-1010.0,6139.149,0.0);
@@ -2737,9 +2681,7 @@ Segment35(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
   Control.addVariable(lKey+"PipeCFeMat", "Stainless304L"); // PDF
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
+  setBellow(Control,lKey+"Bellow");
 
   return;
 }
@@ -2871,7 +2813,6 @@ Segment38(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment38");
   setVariable::PipeGenerator PGen;
-  setVariable::BellowGenerator BellowGen;
 
   const Geometry::Vec3D startPt(-1010.0,6825.849,0.0);
   const Geometry::Vec3D endPt(-1010.0,7355.379,0.0);
@@ -2892,9 +2833,7 @@ Segment38(FuncDataBase& Control,
   setIonPump2Port(Control,pumpName);
   Control.addVariable(lKey+"IonPumpYAngle",180.0);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  setBellow(Control,lKey+"BellowA");
 
   return;
 }
@@ -2942,11 +2881,7 @@ Segment39(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"Pipe",37.0);
 
-  // Bellow
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
+  setBellow(Control,lKey+"Bellow");
 
   return;
 }
@@ -3002,11 +2937,8 @@ Segment41(FuncDataBase& Control,
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Bellows
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+  setBellow(Control,lKey+"BellowA");
+  setBellow(Control,lKey+"BellowB");
 
   // Stripline BPM
   setVariable::StriplineBPMGenerator BPMGen;
@@ -3114,12 +3046,8 @@ Segment43(FuncDataBase& Control,
   Control.addVariable(lKey+"BPMBFlangeALength",0.5); // approx
   Control.addVariable(lKey+"BPMBFlangeBLength",0.5); // approx
 
-  // Bellows
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+  setBellow(Control,lKey+"BellowA");
+  setBellow(Control,lKey+"BellowB");
 
   return;
 }
@@ -3274,11 +3202,7 @@ Segment46(FuncDataBase& Control,
   CGateGen.setPortThick(0.10);
   CGateGen.generateGate(Control,lKey+"GateA",0);
 
-  // Bellows
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
+  setBellow(Control,lKey+"BellowA");
 
   // Prisma Chamber
   setVariable::PrismaChamberGenerator PCGen;
@@ -3297,18 +3221,18 @@ Segment46(FuncDataBase& Control,
   // Slit tube and jaws
   setSlitTube(Control,lKey+"SlitTube");
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
+  setBellow(Control,lKey+"BellowB",10.0); // measured
 
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
 
-  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
+  setBellow(Control,lKey+"BellowC",10.0); // measured
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
 
   // Bellow D added: it is not on the drawing BUT the
   // error in lengths is 160mm and there should be a bellow
   // here.
-  BellowGen.generateBellow(Control,lKey+"BellowD",16.0);
+  setBellow(Control,lKey+"BellowD",16.0);
 
   return;
 }
@@ -3348,11 +3272,7 @@ Segment47(FuncDataBase& Control,
   // Gate valves
   setCylGateValve(Control,lKey+"GateA",180.0,false);
 
-  // Bellows
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
+  setBellow(Control,lKey+"BellowA");
 
   // Prisma Chamber
   setPrismaChamber(Control, lKey+"PrismaChamberA");
@@ -3393,13 +3313,9 @@ Segment48(FuncDataBase& Control,
   EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
   EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
 
-  // Bellows
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowB",10.0); // measured
-  BellowGen.generateBellow(Control,lKey+"BellowC",10.0); // measured
+  setBellow(Control,lKey+"BellowA");
+  setBellow(Control,lKey+"BellowB",10.0); // measured
+  setBellow(Control,lKey+"BellowC",10.0); // measured
 
   // Pipe
   setVariable::PipeGenerator PGen;
