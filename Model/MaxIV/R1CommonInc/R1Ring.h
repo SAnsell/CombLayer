@@ -72,6 +72,7 @@ class R1Ring :
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
+  int outerMat;              ///< outside material
 
   size_t doorActive      ;           ///< Flag/sector for door if modeled
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door

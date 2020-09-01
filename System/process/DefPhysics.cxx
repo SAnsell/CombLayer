@@ -650,6 +650,8 @@ setDefaultPhysics(SimFLUKA& System,
   // trick to allow 1e8 entries etc.
   System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
   System.setRND(IParam.getValue<long int>("random"));
+  if (IParam.flag("basicGeom"))
+    System.setBasicGeom();
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ class SimFLUKA : public Simulation
   const std::string alignment;    ///< the alignemnt string
 
   std::string defType;            ///< Default physics type
+  bool basicGeom;                 ///< Use basic geometry [DNF form only]  
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
@@ -129,6 +130,9 @@ class SimFLUKA : public Simulation
   /// set rndseed [move to physics]
   void setRND(const long int N) { rndSeed=N; }
 
+  /// set the basic geometry
+  void setBasicGeom() { basicGeom=1; }
+  
   virtual void prepareWrite();
   /// no write variable
   void setNoVariables() { writeVariable=0; }

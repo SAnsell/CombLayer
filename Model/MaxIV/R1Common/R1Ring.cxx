@@ -136,6 +136,7 @@ R1Ring::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
 
   NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
   for(size_t i=0;i<NPoints;i++)
@@ -189,6 +190,7 @@ R1Ring::populate(const FuncDataBase& Control)
     }
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
+  
   return;
 }
  
@@ -532,7 +534,7 @@ R1Ring::createObjects(Simulation& System)
 	  surfN+=20;
 	}
       prevN=surfN-20;
-      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullBase);
+      makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,Out+fullBase);
     }
 	  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -26");

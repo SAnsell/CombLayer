@@ -580,6 +580,7 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"WallMat","Concrete");  
   Control.addVariable(preName+"FloorMat","Concrete");
   Control.addVariable(preName+"RoofMat","Concrete");
+  Control.addVariable(preName+"OuterMat","Void");
   
   // construct points and inner
   Control.addVariable(preName+"NPoints",22);
