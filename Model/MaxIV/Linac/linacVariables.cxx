@@ -205,6 +205,8 @@ setIonPump2Port(FuncDataBase& Control,
   SimpleTubeGen.setCF<setVariable::CF63>();
 
   SimpleTubeGen.generateBlank(Control,name,0.0,25.8);
+  const double wallThick = 0.2;
+  Control.addVariable(name+"WallThick",wallThick); // No_17_00.pdf
   Control.addVariable(name+"NPorts",2);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
   Control.addVariable(name+"FlangeCapMat","Stainless304L");
@@ -212,7 +214,7 @@ setIonPump2Port(FuncDataBase& Control,
 
   // Outer radius of the vertical pipe
   const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+    setVariable::CF63::innerRadius+wallThick;
   // length of ports 0 and 1
   // measured at Segment18 from front/back to the centre
   const double L0(8.5 - outerR);
@@ -1545,24 +1547,22 @@ Segment17(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  ELog::EM << "### TDCsegmen17 cad file is missing => dimensions are dummy"
-	   << ELog::endWarn;
-
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",386.75); // guess
+
+  PGen.generatePipe(Control,lKey+"PipeA",391.23); // No_17_00.pdf
 
   BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // guess
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+
+  BellowGen.generateBellow(Control,lKey+"BellowA",7.5);
 
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
-  Control.addVariable(lKey+"IonPumpYAngle",90.0);
-  // Control.addVariable(pumpName+"Port1Length",9.5); // guess
-  //  Control.addVariable(pumpName+"Port2Length",3.2); // guess
+  Control.addVariable(pumpName+"YAngle",90.0);
 
-  PGen.generatePipe(Control,lKey+"PipeB",386.75); // guess
+  PGen.generatePipe(Control,lKey+"PipeB",382.23); // No_17_00.pdf
 
   return;
 }
