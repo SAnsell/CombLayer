@@ -1623,8 +1623,8 @@ Segment18(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",127.3);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
 
   return;
 }
