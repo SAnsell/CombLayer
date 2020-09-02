@@ -51,8 +51,9 @@ class TWCavity :
   double irisRadius;            ///< Iris inner radius
   double couplerLength;         ///< coupler cell length
   double couplerWidth;          ///< coupler cell width
-  double wallThick;             ///< Wall thickness
-  int    wallMat;               ///< Wall material
+  double wallThick;             ///< Side wall thickness
+  int    wallMat;               ///< Side wall material
+  int mat;                      ///< Iris/cell material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

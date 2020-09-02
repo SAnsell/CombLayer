@@ -88,7 +88,8 @@ TWCavity::TWCavity(const TWCavity& A) :
   couplerLength(A.couplerLength),
   couplerWidth(A.couplerWidth),
   wallThick(A.wallThick),
-  wallMat(A.wallMat)
+  wallMat(A.wallMat),
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: TWCavity to copy
@@ -119,6 +120,7 @@ TWCavity::operator=(const TWCavity& A)
       couplerWidth=A.couplerWidth;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
+      mat=A.mat;
     }
   return *this;
 }
@@ -159,6 +161,7 @@ TWCavity::populate(const FuncDataBase& Control)
   couplerWidth=Control.EvalVar<double>(keyName+"CouplerWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
@@ -236,10 +239,10 @@ TWCavity::createObjects(Simulation& System)
 
   // front coupler cell
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -101 103 -104 105 -106 ")+frontStr;
-  makeCell("FrontCouplerCell",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FrontCouplerCell",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 -11 ")+frontStr;
-  makeCell("FrontCouplerFrontWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FrontCouplerFrontWall",System,cellIndex++,mat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -17 -11 ")+frontStr;
   makeCell("FrontCouplerFrontWall",System,cellIndex++,0,0.0,Out);
 
@@ -247,7 +250,7 @@ TWCavity::createObjects(Simulation& System)
   makeCell("FrontCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7 -17 21 -101 ");
-  makeCell("FrontCouplerIrisWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FrontCouplerIrisWall",System,cellIndex++,mat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 21 -101 ");
   makeCell("FrontCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
 
@@ -261,10 +264,10 @@ TWCavity::createObjects(Simulation& System)
 
   // back coupler cell
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 102 103 -104 105 -106 ")+backStr;
-  makeCell("BackCouplerCell",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BackCouplerCell",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 12 ")+backStr;
-  makeCell("BackCouplerBackWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BackCouplerBackWall",System,cellIndex++,mat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -17 12 ")+backStr;
   makeCell("BackCouplerBackWall",System,cellIndex++,0,0.0,Out);
 
@@ -272,7 +275,7 @@ TWCavity::createObjects(Simulation& System)
   makeCell("BackCouplerInnerVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 102 -22 ");
-  makeCell("BackCouplerIrisWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BackCouplerIrisWall",System,cellIndex++,mat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 102 -22 ");
   makeCell("BackCouplerIrisVoid",System,cellIndex++,0,0.0,Out);
 
@@ -298,7 +301,7 @@ TWCavity::createObjects(Simulation& System)
       if (i!=nCells-1)
 	{
 	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M 7 -17 ");
-	  makeCell("IrisWall",System,cellIndex++,wallMat,0.0,Out1);
+	  makeCell("IrisWall",System,cellIndex++,mat,0.0,Out1);
 	  Out1=ModelSupport::getComposite(SMap,buildIndex,SI," 1M -2M -7 ");
 	  makeCell("IrisVoid",System,cellIndex++,0,0.0,Out1);
 	}
