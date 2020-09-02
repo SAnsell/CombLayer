@@ -1734,25 +1734,17 @@ Segment21(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);  // measured
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
+  setBellow(Control,lKey+"BellowA");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3);
 
-  const double pipeALength(34.0);
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF8_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",34.0); // OK
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius - OK
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick - measured
+  PGen.generatePipe(Control,lKey+"PipeA",34.0);
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
-  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
-
+  LQGen.generateQuad(Control,lKey+"Quad",18.0);
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
@@ -1760,20 +1752,20 @@ Segment21(FuncDataBase& Control,
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
-  Control.addVariable(lKey+"YagUnitPortRadius",1.7); // measured
-  Control.addVariable(lKey+"YagUnitPortThick",0.2);  // measured
+  Control.addVariable(lKey+"YagUnitBackLength",7);
+  Control.addVariable(lKey+"YagUnitFrontLength",13);
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  PGen.setCF<setVariable::CF40_22>();
-  // measured 45.7, adjusted to have correct length
-  PGen.generatePipe(Control,lKey+"PipeB",45.437);
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeB",45.7);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagH",10.3,1);
+  CMGen.generateMag(Control,lKey+"CMagV",28.3,0);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5);
+  setBellow(Control,lKey+"BellowB");
 
   return;
 }
