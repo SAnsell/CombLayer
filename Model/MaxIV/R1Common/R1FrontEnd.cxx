@@ -590,15 +590,16 @@ R1FrontEnd::buildObjects(Simulation& System)
   collA->createAll(System,*this,0);
   bellowA->createAll(System,*collA,1);
 
-  /*
   dipolePipe->setFront(*magnetBlock,"Photon");
   dipolePipe->setBack(*bellowA,2);
-
-  dipolePipe->createAll(System,*dipoleChamber,
-			dipoleChamber->getSideIndex("exit"));  
+  dipolePipe->createAll(System,*magnetBlock,"Photon");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  magnetBlock->insertInCell("Magnet",System,outerCell);  
   dipolePipe->insertInCell(System,outerCell);
-  */
+  //  setCell("MasterVoid",masterCell->getName());
+  //  lastComp=magnetBlock;
+  //  return;
+
   // note : bellowA is reversed
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);

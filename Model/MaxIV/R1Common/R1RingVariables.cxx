@@ -126,11 +126,10 @@ R1FrontEndVariables(FuncDataBase& Control,
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  //  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",88.0);
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",10.0);
   
   BellowGen.setCF<setVariable::CF40>();

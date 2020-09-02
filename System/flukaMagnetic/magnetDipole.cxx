@@ -172,7 +172,7 @@ magnetDipole::createAll(Simulation& System,
   ELog::RegMethod RegA("magnetDipole","createAll");
 
   this->populate(System.getDataBase());
-  ELog::EM<<"rorigin == "<<OG<<ELog::endDiag;
+  ELog::EM<<"Mag Dipole origin == "<<OG<<ELog::endDiag;
   magnetUnit::createUnitVector(OG,AY,AZ);
   setExtent(extent[0],extent[1],extent[2]);
   

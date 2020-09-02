@@ -77,8 +77,8 @@ flukaNum(const double D)
   static boost::format FMTnum("%1$10.5f");
   static boost::format FMTlnum("%1$10.5g");
   //  static boost::format FMTnegLnum("%1$10.4g");
-  static boost::format FMTnegNum("%1$10.5f");
-  static boost::format FMTnegLNum("%1$10.4g");  // allow for sign
+  static boost::format FMTnegNum("%1$10f");
+  static boost::format FMTnegLNum("%1$10g");  // allow for sign
 
   if (D < 1e5 && D > 1e-5)      // +ve low range
     {
@@ -94,11 +94,8 @@ flukaNum(const double D)
 	  <Geometry::zeroTol) 
 	return (FMTnegNum % D).str();
     }
-  if (D<0.0)
-    return (FMTnegLNum % D).str();
 
-  return (FMTlnum % D).str();
-  
+  return (FMTnegLNum % D).str();
 }
 
 void

@@ -293,7 +293,10 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
-      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,0.1);
+      // Joint Plane error cylinders:
+      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,1.0);
+      ModelSupport::buildCylinder(SMap,surfN+8,Origin+BP,Z,20.0);
+
 
       surfN+=10;
     } 
@@ -345,54 +348,27 @@ R1Ring::createRoof(Simulation& System)
 
   std::string Out;
   
-  int surfN(buildIndex);
-
-  // Create inner roof
-  std::string Unit;
-  surfN=5000;
-  for(size_t i=0;i<concaveNPoints;i++)
-    {
-      Unit+=std::to_string(surfN+9)+" ";
-      surfN+=10;
-    }
 
   const std::string TBase=
     ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
   const std::string EBase=
     ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,Unit+"(103:113:123:133:143:153)");
+    // Create inner voids
+  std::ostringstream unitCX;
+  int surfN=0;
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      unitCX<<surfN+5009<<" "<<surfN+3007<<" ";
+      surfN+=10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
+  Out+=ModelSupport::getComposite
+    (SMap,buildIndex,"(103:113:123:133:143:153)");
   makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,Out+TBase);
   makeCell("InnerExtra",System,cellIndex++,0,0.0,Out+EBase);  
-
-     // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
-    {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-	      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
-	      convexN+=10;
-	    }
-
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
-    }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-  makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
+  
   return;
 }
 
@@ -410,6 +386,8 @@ R1Ring::createObjects(Simulation& System)
   createRoof(System);
   createFloor(System);
 
+  const std::string roofBase=
+    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
   const std::string wallBase=
     ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
   const std::string extraBase=
@@ -430,42 +408,45 @@ R1Ring::createObjects(Simulation& System)
   makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
 
 
-
   // Create inner voids
-  std::string Unit;
+  std::ostringstream unitCX;
   int surfN=0;
   for(size_t i=0;i<concaveNPoints;i++)
     {
-      Unit+=std::to_string(surfN+5009)+" "
-	+std::to_string(surfN+3007)+" ";
+      unitCX<<surfN+5009<<" "<<surfN+3007<<" ";
       surfN+=10;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,Unit);
+  Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
   Out+=ModelSupport::getComposite
     (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);  
-
+  makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);
 
   // loop to make individual units:
   const std::vector<std::string> Voids
     ({
       "1013 1023 1033 -5009 3007 3017",
-	"1043 1053 -5019 3017 3027",
-	"1063 1073 -5029 3027 3037",
+	"1043 1053 -5019 3017 3017 3027",
+	"1063 1073 -5029 3027 3027 3037",
 	"1083 1093 1103 -5039 3037 3047",
-	"1113 1123 -5049 3037 3057",
-	"1133 1143 -5059 3047 3067",
-	"1153 1163 -5069 3057 3077",
-	"1173 1183 -5079 3067 3087",
-	"1193 1203 -5089 3077 3097",
-	"1213 1003 -5099 3087 3007"
+	"1113 1123 -5049 3037 3047 3057",
+	"1133 1143 -5059 3047 3057 3067",
+	"1153 1163 -5069 3057 3067 3077",
+	"1173 1183 -5079 3067 3077 3087",
+	"1193 1203 -5089 3077 3087 3097",
+	"1213 1003 -5099 3087 3097 3007"
 	});
   // cylinder exludes:
   int BI=buildIndex+3000;
   for(size_t i=0;i<concaveNPoints;i++)
     {
       Out=ModelSupport::getComposite(SMap,BI," -7 ");
+      std::string OutB=ModelSupport::getComposite(SMap,BI," -8 ");
       makeCell("VoidCyl",System,cellIndex++,0,0.0,Out+innerBase);
+      makeCell("RoofCyl",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      makeCell("SkyCyl",System,cellIndex++,0,0.0,Out+extraBase);
+      makeCell("VoidCylB",System,cellIndex++,0,0.0,OutB+innerBase);
+      makeCell("RoofCylB",System,cellIndex++,roofMat,0.0,OutB+roofBase);
+      makeCell("SkyCylB",System,cellIndex++,0,0.0,OutB+extraBase);
       BI+=10;
     }
     
@@ -473,35 +454,37 @@ R1Ring::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,item);
       makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
+      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
     }
 
 
   // WALLS:
   const std::vector<std::string> frontWalls
-    ({  " 2213 -1003 -1013  2003 3007",
-	"-1033  2023  2033 -3011 3017",
-	"-1053  2043  2053 -3021 3027",
-	" 2063 -1073 -1083  2073 3037",
-	"-1103  2093  2103 -3041 3047",
-	"-1123  2113  2123 -3051 3057",
-	"-1143  2133  2143 -3061 3067",
-	"-1163  2153  2163 -3071 3077",
-	"-1183  2173  2183 -3081 3087",
-	"-1203  2193  2203 -3091 3097"       
+    ({  " 2213 -1003 -1013  2003 3007 3008",
+	"-1033  2023  2033 -3011 3017 3018",
+	"-1053  2043  2053 -3021 3027 3028",
+	" 2063 -1073 -1083  2073 3037 3038",
+	"-1103  2093  2103 -3041 3047 3048",
+	"-1123  2113  2123 -3051 3057 3058",
+	"-1143  2133  2143 -3061 3067 3068",
+	"-1163  2153  2163 -3071 3077 3078",
+	"-1183  2173  2183 -3081 3087 3088",
+	"-1203  2193  2203 -3091 3097 3098"       
       });
 
   const std::vector<std::string> walls
     ({
-      "-2003 (-1013 : -1023) 1033 2013 2023 ",
-      "(3011 : -2033) -1043 1053 2043 3017",   
-      "(3021 : -2053) -1063 1073 2063 3027 ",  
-      "-2073 (-1083 : -1093) 1103 2083 2093",
-      "(3041 : -2103) -1113 1123 2113 3047",        
-      "(3051 : -2123) -1133 1143 2133 3057",        
-      "(3061 : -2143) -1153 1163 2153 3067",
-      "(3071 : -2163) -1173 1183 2173 3077",
-      "(3081 : -2183) -1193 1203 2193 3087",
-      "3091 -1213 1003 2213 3097"  
+      "-2003 (-1013 : -1023) 1033 2013 2023 3008 ",
+      "(3011 : -2033) -1043 1053 2043 3017 3018",   
+      "(3021 : -2053) -1063 1073 2063 3027 3028 ",  
+      "-2073 (-1083 : -1093) 1103 2083 2093 3038",
+      "(3041 : -2103) -1113 1123 2113 3047 3048",        
+      "(3051 : -2123) -1133 1143 2133 3057 3058",        
+      "(3061 : -2143) -1153 1163 2153 3067 3068",
+      "(3071 : -2163) -1173 1183 2173 3077 3078",
+      "(3081 : -2183) -1193 1203 2193 3087 3088",
+      "3091 -1213 1003 2213 3097 3098"  
     });
 
   // Front walls:
@@ -518,29 +501,29 @@ R1Ring::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex,item);
       makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
       makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
+      //      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      //      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
     }      
 
   // EXTERNAL void-triangles:
-  int prevN=buildIndex+2200;
-  surfN=buildIndex+2000;
-  
-  for(size_t i=0;i<12;i++)
-    {      
-      if (i==1 || i==5)
-	{
-	  // long segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M 13N ");
-	  surfN+=10;
-	}
-      else
-	{
-	  // short segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M -13M 13N ");
-	  surfN+=20;
-	}
-      prevN=surfN-20;
+  const std::vector<std::string> extTriangle
+    ({
+      "-9007 -2003 -2013 2213 3008",
+      "-9007 -2023 2013 ",        
+      "-9007 -2033 -2043 2023 3018",
+      "-9007 -2053 -2063 2043 3028",
+      "-9007 -2073 -2083 2063 3038",
+      "-9007 -2093 2083 ",         
+      "-9007 -2103 -2113 2093 3048",
+      "-9007 -2123 -2133 2113 3058",
+      "-9007 -2143 -2153 2133 3068",
+      "-9007 -2163 -2173 2153 3078",
+      "-9007 -2183 -2193 2173 3088",
+      "-9007 -2203 -2213 2193 3098" 
+    });
+  for(const std::string& item : extTriangle)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
       makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,Out+fullBase);
     }
 	  

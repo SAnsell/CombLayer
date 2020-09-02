@@ -56,7 +56,8 @@ class SimFLUKA : public Simulation
   const std::string alignment;    ///< the alignemnt string
 
   std::string defType;            ///< Default physics type
-  bool basicGeom;                 ///< Use basic geometry [DNF form only]  
+  bool basicGeom;                 ///< Use basic geometry [DNF form only]
+  bool geomPrecision;             ///< Precision (*1e-6) to use [def 0.0001]
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
@@ -132,6 +133,8 @@ class SimFLUKA : public Simulation
 
   /// set the basic geometry
   void setBasicGeom() { basicGeom=1; }
+  /// set the geomtry precision
+  void setGeomPrecision(const double D) { geomPrecision=D; }
   
   virtual void prepareWrite();
   /// no write variable

@@ -109,8 +109,8 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   */
 {
   nameSideIndex(0,"Flange");
-  nameSideIndex(1,"Photon");
-  nameSideIndex(2,"Electron");
+  nameSideIndex(2,"Photon");
+  nameSideIndex(3,"Electron");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

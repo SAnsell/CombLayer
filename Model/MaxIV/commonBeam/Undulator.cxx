@@ -203,7 +203,6 @@ Undulator::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"-101 103 -104 205 -206");
       makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+FStr);
-
     }
 
   if (ExternalCut::isActive("back"))
@@ -294,8 +293,8 @@ Undulator::createLinks()
   setConnect(0,Origin-Y*(supportLength/2.0),-Y);
   setConnect(1,Origin+Y*(supportLength/2.0),Y);
   
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+101));
+  setLinkSurf(1,SMap.realSurf(buildIndex+102));
 
   return;
 }

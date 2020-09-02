@@ -652,6 +652,8 @@ setDefaultPhysics(SimFLUKA& System,
   System.setRND(IParam.getValue<long int>("random"));
   if (IParam.flag("basicGeom"))
     System.setBasicGeom();
+  if (IParam.flag("geomPrecision"))
+    System.setGeomPrecision(IParam.getValue<double>("geomPrecision"));
   return;
 }
 

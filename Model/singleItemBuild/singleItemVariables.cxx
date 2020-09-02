@@ -90,6 +90,8 @@
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
+#include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -202,6 +204,16 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
 
+  // collimator block
+  setVariable::SqrFMaskGenerator FMaskGen;
+  FMaskGen.setCF<CF63>();
+  FMaskGen.setBFlangeCF<CF40>();
+  FMaskGen.setFrontGap(3.99,1.97);  //1033.8
+  FMaskGen.setBackGap(0.71,0.71);
+  FMaskGen.setMinSize(10.2,0.71,0.71);
+  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+
+  
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");
 

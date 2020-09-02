@@ -224,6 +224,10 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"USRICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
+  ELog::EM<<"USERCALL == "<<cx.str()<<ELog::endDiag;
+  ELog::EM<<"0123456789"<<ELog::endDiag;
+  ELog::EM<<StrFunc::flukaNum(Origin.X())<<ELog::endDiag;
+  ELog::EM<<Origin.X()<<ELog::endDiag;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
