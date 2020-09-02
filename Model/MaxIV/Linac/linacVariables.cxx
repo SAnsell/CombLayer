@@ -1807,6 +1807,7 @@ Segment23(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
+  PGen.setMat("Stainless316L","Stainless304L");
 
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
@@ -1820,37 +1821,28 @@ Segment23(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
+  setBellow(Control,lKey+"BellowA");
 
-  const double pipeALength(34.0); // OK
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",pipeALength);
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
+  PGen.setCF<setVariable::CF8_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeA",34);
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
-  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+  LQGen.generateQuad(Control,lKey+"Quad",18.0);
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
+  setBellow(Control,lKey+"BellowB");
 
-  const double pipeBLength(40.0); // OK
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // guess
+  CMGen.generateMag(Control,lKey+"CMagV",29.0,1); // No_23_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
@@ -1862,16 +1854,15 @@ Segment23(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitHeight",5.9); // measured
   Control.addVariable(lKey+"YagUnitViewZStep",-3.2); // guess
   Control.addVariable(lKey+"YagUnitYAngle",90);
+
   YagGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  PGen.setCF<setVariable::CF40_22>();
   PGen.generatePipe(Control,lKey+"PipeC",6.5); // OK
 
-  // gate length is 7.2
-  setCylGateValve(Control,lKey+"Gate",-90.0,false);
+  setCylGateValve(Control,lKey+"Gate",180.0,false);
 
-  BellowGen.generateBellow(Control,lKey+"BellowC",7.5);
+  setBellow(Control,lKey+"BellowC");
 
   return;
 }
@@ -1927,7 +1918,6 @@ Segment24(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3);
 
   const double pipeCLength(34.0);
   PGen.setCF<setVariable::CF40_22>();
@@ -2424,7 +2414,6 @@ Segment31(FuncDataBase& Control,
   BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  Control.addVariable(lKey+"BPMRadius", 1.3);
 
   // PipeA and Quadrupole
   const double pipeALength(42.5); // OK
@@ -2550,7 +2539,6 @@ Segment33(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
 
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
-  Control.addVariable(lKey+"BPMRadius", 1.3); // ????
 
   PGen.generatePipe(Control,lKey+"PipeB",81.5); // measured: 81.6, but adjusted to keep total length
   LQGen.generateQuad(Control,lKey+"QuadA",17.1);
