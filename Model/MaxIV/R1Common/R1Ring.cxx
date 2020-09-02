@@ -293,7 +293,7 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
-      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,1.0);
+      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,0.1);
 
       surfN+=10;
     } 
@@ -453,11 +453,11 @@ R1Ring::createObjects(Simulation& System)
 	"1043 1053 -5019 3017 3027",
 	"1063 1073 -5029 3027 3037",
 	"1083 1093 1103 -5039 3037 3047",
-	"1113 1123 -5049 3037 3047",
-	"1133 1143 -5059 3047 3057",
-	"1153 1163 -5069 3057 3067",
-	"1173 1183 -5079 3067 3077",
-	"1193 1203 -5089 3077 3087",
+	"1113 1123 -5049 3037 3057",
+	"1133 1143 -5059 3047 3067",
+	"1153 1163 -5069 3057 3077",
+	"1173 1183 -5079 3067 3087",
+	"1193 1203 -5089 3077 3097",
 	"1213 1003 -5099 3087 3007"
 	});
   // cylinder exludes:
@@ -477,53 +477,50 @@ R1Ring::createObjects(Simulation& System)
 
 
   // WALLS:
-  const std::vector<std::string> Walls=
-    ({ });
-    
-  int divN=buildIndex+3000;
-  surfN=buildIndex-10;
-  for(size_t index=0;index<10;index++)
+  const std::vector<std::string> frontWalls
+    ({  " 2213 -1003 -1013  2003 3007",
+	"-1033  2023  2033 -3011 3017",
+	"-1053  2043  2053 -3021 3027",
+	" 2063 -1073 -1083  2073 3037",
+	"-1103  2093  2103 -3041 3047",
+	"-1123  2113  2123 -3051 3057",
+	"-1143  2133  2143 -3061 3067",
+	"-1163  2153  2163 -3071 3077",
+	"-1183  2173  2183 -3081 3087",
+	"-1203  2193  2203 -3091 3097"       
+      });
+
+  const std::vector<std::string> walls
+    ({
+      "-2003 (-1013 : -1023) 1033 2013 2023 ",
+      "(3011 : -2033) -1043 1053 2043 3017",   
+      "(3021 : -2053) -1063 1073 2063 3027 ",  
+      "-2073 (-1083 : -1093) 1103 2083 2093",
+      "(3041 : -2103) -1113 1123 2113 3047",        
+      "(3051 : -2123) -1133 1143 2133 3057",        
+      "(3061 : -2143) -1153 1163 2153 3067",
+      "(3071 : -2163) -1173 1183 2173 3077",
+      "(3081 : -2183) -1193 1203 2193 3087",
+      "3091 -1213 1003 2213 3097"  
+    });
+
+  // Front walls:
+  for(const std::string& item : frontWalls)
     {
-      if (index==0 || index==3)
-	{
-	  const int prevN=(!index) ? buildIndex+210 : buildIndex+60;
-	  const int fwdN=(!index) ? buildIndex : buildIndex+70;
-	  // LONG SEGMENT 1:
-	  Out=ModelSupport::getComposite    // s=1000 
-	    (SMap,buildIndex,prevN,fwdN," 2003M -1003N -1013N 2003N ");
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
+      makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
+    }      
 
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex,fwdN," -2003M (-1013M:-1023M) 1033M 2013M 2023M ");
+  // Main walls:
+  for(const std::string& item : walls)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
+      makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
+    }      
 
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=30;
-	  divN+=10;
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,divN," -1013M 2003M 2013M -1N ");
-
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
-	  if (index!=9)
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN,"(1N:-2013M) -1023M 1033M 2023M ");
-	  else
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN," 1N -1023M 1003 2023M  ");
-
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=20;
-	  divN+=10;
-	}
-    }
-
-  // NOW DO external void-triangles:
+  // EXTERNAL void-triangles:
   int prevN=buildIndex+2200;
   surfN=buildIndex+2000;
   
