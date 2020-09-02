@@ -293,6 +293,8 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,1.0);
+
       surfN+=10;
     } 
 
@@ -431,10 +433,11 @@ R1Ring::createObjects(Simulation& System)
 
   // Create inner voids
   std::string Unit;
-  int surfN=5000;
+  int surfN=0;
   for(size_t i=0;i<concaveNPoints;i++)
     {
-      Unit+=std::to_string(surfN+9)+" ";
+      Unit+=std::to_string(surfN+5009)+" "
+	+std::to_string(surfN+3007)+" ";
       surfN+=10;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,Unit);
@@ -442,34 +445,41 @@ R1Ring::createObjects(Simulation& System)
     (SMap,buildIndex,"(103:113:123:133:143:153)");
   makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);  
 
-   // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
-    {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
-	      convexN+=10;
-	    }
 
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
+  // loop to make individual units:
+  const std::vector<std::string> Voids
+    ({
+      "1013 1023 1033 -5009 3007 3017",
+	"1043 1053 -5019 3017 3027",
+	"1063 1073 -5029 3027 3037",
+	"1083 1093 1103 -5039 3037 3047",
+	"1113 1123 -5049 3037 3047",
+	"1133 1143 -5059 3047 3057",
+	"1153 1163 -5069 3057 3067",
+	"1173 1183 -5079 3067 3077",
+	"1193 1203 -5089 3077 3087",
+	"1213 1003 -5099 3087 3007"
+	});
+  // cylinder exludes:
+  int BI=buildIndex+3000;
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,BI," -7 ");
+      makeCell("VoidCyl",System,cellIndex++,0,0.0,Out+innerBase);
+      BI+=10;
     }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
+    
+  for(const std::string& item : Voids)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
+    }
+
 
   // WALLS:
-
+  const std::vector<std::string> Walls=
+    ({ });
+    
   int divN=buildIndex+3000;
   surfN=buildIndex-10;
   for(size_t index=0;index<10;index++)
