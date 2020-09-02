@@ -1683,7 +1683,7 @@ Segment20(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   setVariable::TWCavityGenerator TDCGen;
 
@@ -1692,16 +1692,17 @@ Segment20(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  const double flangeLength(3.7);  // measured
+  const double flangeLength(3.652);  // No_20_00.pdf
   PGen.generatePipe(Control,lKey+"PipeA",flangeLength);
-  Control.addVariable(lKey+"PipeARadius",1.16); // inner radius -
-  Control.addVariable(lKey+"PipeAFeThick",0.2); // wall thick -
+  Control.addVariable(lKey+"PipeARadius",1.16); // inner radius
+  Control.addVariable(lKey+"PipeAFeThick",0.2); // wall thick
 
   TDCGen.generate(Control,lKey+"Cavity");
 
   PGen.generatePipe(Control,lKey+"PipeB",flangeLength);
   Control.addParse<double>(lKey+"PipeBRadius",lKey+"PipeARadius");
   Control.addParse<double>(lKey+"PipeBFeThick",lKey+"PipeAFeThick");
+
   return;
 }
 
