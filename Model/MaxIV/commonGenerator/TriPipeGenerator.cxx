@@ -67,7 +67,7 @@ TriPipeGenerator::TriPipeGenerator() :
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
   flangeBLength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
+  voidMat("Void"),wallMat("Stainless316L"),
   flangeMat("Stainless304L")
   /*!
     Constructor and defaults

@@ -1945,11 +1945,9 @@ Segment25(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
-
   const Geometry::Vec3D startPt(-637.608,7406.261,0.0);
 
-
-  const Geometry::Vec3D endPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D endPtA(-637.608,7618.484,0.0);
   const Geometry::Vec3D endPtB(-637.608,7612.436,-8.214);
   const Geometry::Vec3D endPtC(-637.608,7607.463,-15.805);
 
@@ -1974,7 +1972,6 @@ Segment25(FuncDataBase& Control,
   const double magAngle(0.8);
   const double multiAngle(magAngle+dipoleAngle);
 
-
   const double startWidth(2.33/2.0);
   const double endWidth(6.70/2.0);
   TPGen.setBFlangeCF<CF100>();
@@ -1988,6 +1985,7 @@ Segment25(FuncDataBase& Control,
   PGen.setCF<CF100>();
   PGen.setBFlangeCF<CF150>();
   PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",16.15);
   Control.addVariable(lKey+"PipeBPreYAngle",-90);
   Control.addVariable(lKey+"PipeBXAngle",0.0);

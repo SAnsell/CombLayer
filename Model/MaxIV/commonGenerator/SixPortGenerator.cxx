@@ -70,8 +70,8 @@ SixPortGenerator::SixPortGenerator() :
   flangeBLength(CF100::flangeLength),
   flangeSLength(CF100::flangeLength),
   plateThick(CF100::flangeLength),
-  voidMat("Void"),mainMat("Stainless304"),
-  flangeMat("Stainless304"),plateMat("Stainless304")
+  voidMat("Void"),mainMat("Stainless304L"),
+  flangeMat("Stainless304L"),plateMat("Stainless304L")
   /*!
     Constructor and defaults
   */
