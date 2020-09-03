@@ -287,7 +287,7 @@ SqrCollimator::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("SqrCollimator","createAllNoPopulate");
+  ELog::RegMethod RegA("SqrCollimator","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

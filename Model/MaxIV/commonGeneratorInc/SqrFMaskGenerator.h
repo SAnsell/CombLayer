@@ -70,6 +70,7 @@ class SqrFMaskGenerator :
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
 
+  void setPipeRadius(const double R) { pipeRadius=R; }
   void setFlangeMat(const std::string&);
   
   virtual void generateColl(FuncDataBase&,const std::string&,

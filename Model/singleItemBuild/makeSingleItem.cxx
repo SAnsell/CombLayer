@@ -115,6 +115,7 @@
 #include "FixedOffsetGroup.h"
 #include "JawFlange.h"
 #include "portItem.h"
+#include "SquareFMask.h"
 
 #include "makeSingleItem.h"
 
@@ -152,7 +153,7 @@ makeSingleItem::build(Simulation& System,
       "CylGateValve","GateValveCube","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
-      "EBeamStop","EPSeparator","R3ChokeChamber","QuadUnit",
+      "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
@@ -336,7 +337,30 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "CleaningMagnet")
+    {
+      std::shared_ptr<tdcSystem::CleaningMagnet>
+	cm(new tdcSystem::CleaningMagnet("CleaningMagnet"));
+      OR.addObject(cm);
 
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "FMask")
+    {
+      std::shared_ptr<xraySystem::SquareFMask>
+	fm(new xraySystem::SquareFMask("FMask"));
+      OR.addObject(fm);
+
+      fm->addInsertCell(voidCell);
+      fm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  
   if (item == "Jaws")
     {
       // diagnostic box

@@ -294,8 +294,8 @@ R1Ring::createSurfaces()
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
       // Joint Plane error cylinders:
-      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,1.0);
-      ModelSupport::buildCylinder(SMap,surfN+8,Origin+BP,Z,20.0);
+      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,0.1);
+      ModelSupport::buildCylinder(SMap,surfN+8,Origin+BP,Z,0.1);
 
 
       surfN+=10;
