@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -71,8 +68,6 @@
 #include "DipoleDIBMag.h"
 #include "SixPortTube.h"
 #include "MultiPipe.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
 
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
@@ -96,25 +91,7 @@ Segment25::Segment25(const std::string& Key) :
   multiPipe(new tdcSystem::MultiPipe(keyName+"MultiPipe")),
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
-  bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
-
-  pipeAA(new constructSystem::VacuumPipe(keyName+"PipeAA")),
-  pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
-  pipeCA(new constructSystem::VacuumPipe(keyName+"PipeCA")),
-
-  bellowAB(new constructSystem::Bellows(keyName+"BellowAB")),
-  bellowBB(new constructSystem::Bellows(keyName+"BellowBB")),
-  bellowCB(new constructSystem::Bellows(keyName+"BellowCB")),
-
-  yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
-  yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
-  yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
-  yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
-
-  pipeAB(new constructSystem::VacuumPipe(keyName+"PipeAB")),
-  pipeBB(new constructSystem::VacuumPipe(keyName+"PipeBB")),
-  pipeCB(new constructSystem::VacuumPipe(keyName+"PipeCB"))
-
+  bellowCA(new constructSystem::Bellows(keyName+"BellowCA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -132,23 +109,6 @@ Segment25::Segment25(const std::string& Key) :
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
   OR.addObject(bellowCA);
-
-  OR.addObject(pipeAA);
-  OR.addObject(pipeBA);
-  OR.addObject(pipeCA);
-
-  OR.addObject(bellowAB);
-  OR.addObject(bellowBB);
-  OR.addObject(bellowCB);
-
-  OR.addObject(yagUnitA);
-  OR.addObject(yagScreenA);
-  OR.addObject(yagUnitB);
-  OR.addObject(yagScreenB);
-
-  OR.addObject(pipeAB);
-  OR.addObject(pipeBB);
-  OR.addObject(pipeCB);
 
   setFirstItems(bellowA);
 }
