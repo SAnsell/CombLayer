@@ -170,6 +170,7 @@ Segment25::buildObjects(Simulation& System)
     buildZone->createOuterVoidUnit(System,masterCell,*bellowAA,2);
   bellowAA->insertInCell(System,outerCellBellow);
   bellowBA->insertInCell(System,outerCellBellow);
+  bellowCA->insertInCell(System,outerCellBellow);
 
   CellMap::addCell("MultiCell",outerCellMulti);
   CellMap::addCell("BellowCell",outerCellBellow);

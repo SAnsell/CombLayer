@@ -1942,8 +1942,7 @@ Segment25(FuncDataBase& Control,
   setVariable::TriPipeGenerator TPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::SixPortGenerator SPortGen;
-  setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::BellowGenerator BellowGen;
 
   const Geometry::Vec3D startPt(-637.608,7406.261,0.0);
 
@@ -1966,7 +1965,6 @@ Segment25(FuncDataBase& Control,
   Control.addVariable(lKey+"BackLinkC","backLower");
 
   setBellow(Control,lKey+"BellowA");
-  Control.addVariable(lKey+"BellowAOffset","backFlat");
 
   const double dipoleAngle(0.8);
   const double magAngle(0.8);
@@ -1977,35 +1975,49 @@ Segment25(FuncDataBase& Control,
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,lKey+"TriPipeA");
+  Control.addVariable(lKey+"TriPipeALength",80.828); // No_25_00
   Control.addVariable(lKey+"TriPipeAYAngle",90);
-  Control.addVariable(lKey+"TriPipeAXAngle",-multiAngle);
+  const double pipeAXAngle = -multiAngle;
+  Control.addVariable(lKey+"TriPipeAXAngle",pipeAXAngle);
 
   DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAYStep",-0.4804); // No_25_00
 
   PGen.setCF<CF100>();
   PGen.setBFlangeCF<CF150>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",16.15);
+  PGen.generatePipe(Control,lKey+"PipeB",23.499); // No_25_00
+  Control.addVariable(lKey+"PipeBRadius",5.0); // No_25_00
+  Control.addVariable(lKey+"PipeBFeThick",0.2); // No_25_00
   Control.addVariable(lKey+"PipeBPreYAngle",-90);
-  Control.addVariable(lKey+"PipeBXAngle",0.0);
+  const double pipeBXAngle = multiAngle-2.83059;  // No_25_00
+  Control.addVariable(lKey+"PipeBXAngle",pipeBXAngle);
 
   SPortGen.setCF<CF150>();
   SPortGen.generateSixPort(Control,lKey+"SixPortA");
-  Control.addVariable(lKey+"SixPortAXAngle",multiAngle);
-  Control.addVariable(lKey+"SixPortAZStep",-2.316);
+  //  Control.addVariable(lKey+"SixPortAXAngle",multiAngle);
+  Control.addVariable(lKey+"SixPortARadius",7.65); // No_25_00
+  Control.addVariable(lKey+"SixPortAWallThick",0.3); // No_25_00
+  Control.addVariable(lKey+"SixPortAFrontLength",16.7); // No_25_00
+  Control.addVariable(lKey+"SixPortABackLength",16.7); // No_25_00
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0+12.0752, 0.0,0.0);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,0.0),41.0+10.1957, 0.0, -3.06406);
-  MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,-5.0),37.0+9.4620, 0.0, -6.12812);
+  MPGen.setPipe<CF35_TDC>(Geometry::Vec3D(0,0,5.0), 50.820200, 0.0, -(pipeAXAngle+pipeBXAngle));
+  MPGen.setPipe<CF35_TDC>(Geometry::Vec3D(0,0,0.0), 45.0957, 0.0, -0.1);
+  MPGen.setPipe<CF35_TDC>(Geometry::Vec3D(0,0,-5.0), 40.662, 0.0, pipeAXAngle+pipeBXAngle-0.2);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
-  setBellow(Control,lKey+"BellowAA");
-  setBellow(Control,lKey+"BellowBA");
-  setBellow(Control,lKey+"BellowCA");
+  BellowGen.setCF<setVariable::CF37_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,lKey+"BellowAA", 16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowBA", 16.0);
+  BellowGen.generateBellow(Control,lKey+"BellowCA", 16.0);
 
+  Control.addVariable(lKey+"BellowAABellowStep",4.0); // approx according to No_25_00
+  Control.addVariable(lKey+"BellowBABellowStep",4.0); // approx according to No_25_00
+  Control.addVariable(lKey+"BellowCABellowStep",4.0); // approx according to No_25_00
 
   return;
 }
