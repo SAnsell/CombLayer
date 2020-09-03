@@ -50,12 +50,9 @@
 #include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Object.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -66,7 +63,6 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "generalConstruct.h"
-#include "generateSurf.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -74,7 +70,6 @@
 #include "TriPipe.h"
 #include "DipoleDIBMag.h"
 #include "SixPortTube.h"
-#include "subPipeUnit.h"
 #include "MultiPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
@@ -181,13 +176,13 @@ Segment25::buildObjects(Simulation& System)
     masterCell=buildZone->constructMasterCell(System);
 
   bellowA->createAll(System,*this,0);
-  
+
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   triPipeA->setFront(*bellowA,2);
   triPipeA->createAll(System,*bellowA,"back");
-  
+
   // insert-units : Origin : excludeSurf
   pipeMagGroup(System,*buildZone,triPipeA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
@@ -219,7 +214,6 @@ Segment25::buildObjects(Simulation& System)
   CellMap::addCell("MultiCell",outerCellMulti);
   CellMap::addCell("BellowCell",outerCellBellow);
   buildZone->removeLastMaster(System);
-  return;
 
   return;
 }
@@ -264,7 +258,7 @@ Segment25::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
   joinItems.push_back(FixedComp::getFullRule("backLower"));
- 
+
   return;
 }
 
