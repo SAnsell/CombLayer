@@ -62,7 +62,7 @@ TriPipeGenerator::TriPipeGenerator() :
   axisXYAngle(0.0),axisZAngle(0.0),
   frontWidth(2.7),frontHeight(1.0),
   backWidth(2.7),backHeight(1.0),
-  length(80.0),wallThick(0.75),
+  length(80.0),wallThick(0.1),
   flangeARadius(CF40::flangeRadius),
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
