@@ -1883,6 +1883,8 @@ Segment24(FuncDataBase& Control,
 
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L","Stainless304L");
 
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
@@ -1896,36 +1898,26 @@ Segment24(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",325.8); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",325.8);
 
   setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
-  Control.addVariable(lKey+"IonPumpPort0Length",5.0); // measured
-  Control.addVariable(lKey+"IonPumpPort1Length",3.8); // measured
 
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5);
+  setBellow(Control,lKey+"Bellow");
 
-  const double pipeBLength(40.0);
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
+  PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
   CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
   CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  const double pipeCLength(34.0);
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeC",pipeCLength);
+  PGen.setCF<setVariable::CF8_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeC",34);
 
   // QG (QH) type quadrupole magnet
   LQGen.setRadius(0.56, 2.31);
-  LQGen.generateQuad(Control,lKey+"Quad",pipeCLength/2.0);
+  LQGen.generateQuad(Control,lKey+"Quad",19.0);
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
   // adjusted so that nose is 1 cm thick as in the STEP file
