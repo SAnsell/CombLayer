@@ -64,7 +64,7 @@ YagUnitGenerator::YagUnitGenerator() :
   flangeLength(CF63::flangeLength),
   plateThick(CF63::flangeLength),
   viewZStep(3.2),viewRadius(CF63::innerRadius),
-  viewLength(9.27),viewThick(CF63::wallThick),
+  viewThick(CF63::wallThick),viewLength(9.27),
   viewFlangeRadius(CF63::flangeRadius),
   viewFlangeLength(CF63::flangeLength),
   viewPlateThick(CF63::flangeLength),
@@ -73,7 +73,7 @@ YagUnitGenerator::YagUnitGenerator() :
   portFlangeLength(CF40::flangeLength),
   frontLength(7.0),backLength(13.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304")
+  voidMat("Void"),mainMat("Stainless304L")
   /*!
     Constructor and defaults
   */
