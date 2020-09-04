@@ -110,14 +110,19 @@ YagUnitGenerator::setFlangeCF()
 
 void
 YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
-				  const std::string& keyName) const
+				  const std::string& keyName,
+				  const bool flip) const
 /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param flip    :: flag to flip front/back
   */
 {
   ELog::RegMethod RegA("YagUnitGenerator","generateYagUnit");
+
+  // if (flip)
+  //   std::swap(frontLength,backLength);
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
@@ -140,8 +145,17 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
   Control.addVariable(keyName+"PortFlangeRadius",portFlangeRadius);
   Control.addVariable(keyName+"PortFlangeLength",portFlangeLength);
 
-  Control.addVariable(keyName+"FrontLength",frontLength);
-  Control.addVariable(keyName+"BackLength",backLength);
+  if (flip)
+    {
+      Control.addVariable(keyName+"FrontLength",backLength);
+      Control.addVariable(keyName+"BackLength",frontLength);
+    }
+  else
+    {
+      Control.addVariable(keyName+"FrontLength",frontLength);
+      Control.addVariable(keyName+"BackLength",backLength);
+    }
+
   Control.addVariable(keyName+"OuterRadius",outerRadius);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
