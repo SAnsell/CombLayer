@@ -1380,9 +1380,7 @@ Segment13(FuncDataBase& Control,
   LSGen.generateSexu(Control,lKey+"SexuA",40.7);
   LQGen.generateQuad(Control,lKey+"QuadB",61.7);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitBackLength",7);
-  Control.addVariable(lKey+"YagUnitFrontLength",13);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit",true);
   Control.addVariable(lKey+"YagUnitYAngle",180);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0); // 1=closed
@@ -1750,10 +1748,7 @@ Segment21(FuncDataBase& Control,
   // adjusted so that nose is 1 cm thick as in the STEP file
   Control.addVariable(lKey+"QuadPolePitch",26.0);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
-  Control.addVariable(lKey+"YagUnitBackLength",7);
-  Control.addVariable(lKey+"YagUnitFrontLength",13);
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit",true);
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   YagGen.generateScreen(Control,lKey+"YagScreen",0);
@@ -1844,12 +1839,9 @@ Segment23(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // guess
   CMGen.generateMag(Control,lKey+"CMagV",29.0,1); // No_23_00.pdf
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitMainMat","Stainless304L");
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnit",true);
   Control.addVariable(lKey+"YagUnitPortRadius",1.7);
   Control.addVariable(lKey+"YagUnitPortThick",0.2);
-  Control.addVariable(lKey+"YagUnitFrontLength",13.0);
-  Control.addVariable(lKey+"YagUnitBackLength",7.0);
   Control.addVariable(lKey+"YagUnitDepth",13.0); // measured
   Control.addVariable(lKey+"YagUnitHeight",5.9); // measured
   Control.addVariable(lKey+"YagUnitViewZStep",-3.2); // guess
@@ -2034,7 +2026,6 @@ Segment26(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment26");
 
-  setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
@@ -2061,13 +2052,14 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkC","frontLower");
   Control.addVariable(lKey+"BackLinkC","backLower");
 
-
-  PGen.setCF<CF40>();
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
 
-  PGen.generatePipe(Control,lKey+"PipeAA",300.0);
-  PGen.generatePipe(Control,lKey+"PipeBA",321.5);
-  PGen.generatePipe(Control,lKey+"PipeCA",326.5);
+  PGen.generatePipe(Control,lKey+"PipeAA",301.6);
+  PGen.generatePipe(Control,lKey+"PipeBA",322.098);
+  PGen.generatePipe(Control,lKey+"PipeCA",326.897);
 
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
@@ -2080,22 +2072,27 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
-  setBellow(Control,lKey+"BellowAB");
-  setBellow(Control,lKey+"BellowBB");
-  setBellow(Control,lKey+"BellowCB");
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF37_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
+  BellowGen.generateBellow(Control,lKey+"BellowAA",16.007);
+  BellowGen.generateBellow(Control,lKey+"BellowBA",16.031);
+  BellowGen.generateBellow(Control,lKey+"BellowCA",16.108);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
+
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   Control.addVariable(lKey+"YagUnitAYAngle",90.0);
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
   PGen.setCF<CF40>();
-  PGen.generatePipe(Control,lKey+"PipeAB",227.2);
-  PGen.generatePipe(Control,lKey+"PipeBB",219.4);
-  PGen.generatePipe(Control,lKey+"PipeCB",231.2);
+  PGen.generatePipe(Control,lKey+"PipeAB",217.2);
+  PGen.generatePipe(Control,lKey+"PipeBB",210.473);
+  PGen.generatePipe(Control,lKey+"PipeCB",222.207);
 
   return;
 }

@@ -50,12 +50,10 @@
 #include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Object.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -71,14 +69,9 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
-#include "TriPipe.h"
-#include "DipoleDIBMag.h"
-#include "subPipeUnit.h"
-#include "MultiPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment26.h"
 
@@ -97,9 +90,9 @@ Segment26::Segment26(const std::string& Key) :
   pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
   pipeCA(new constructSystem::VacuumPipe(keyName+"PipeCA")),
 
-  bellowAA(new constructSystem::Bellows(keyName+"BellowAB")),
-  bellowBA(new constructSystem::Bellows(keyName+"BellowBB")),
-  bellowCA(new constructSystem::Bellows(keyName+"BellowCB")),
+  bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
+  bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
+  bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
 
   yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
   yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
@@ -178,7 +171,7 @@ Segment26::createSplitInnerZone(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment26","createSplitInnerZone");
-  
+
   *IZTop = *buildZone;
   *IZMid = *buildZone;
   *IZLower = *buildZone;
@@ -197,12 +190,12 @@ Segment26::createSplitInnerZone(Simulation& System)
   ModelSupport::buildPlane(SMap,buildIndex+5015,FB.getCentre(),FB.getZ());
   SurfMap::addSurf("TopDivider",SMap.realSurf(buildIndex+5005));
   SurfMap::addSurf("LowDivider",SMap.realSurf(buildIndex+5015));
-  
+
   const Geometry::Vec3D ZEffective(FA.getZ());
 
   HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
   HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundB.removeMatchedPlanes(-ZEffective);
   HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
 
   HSurroundA.addIntersection(SMap.realSurf(buildIndex+5005));
@@ -281,8 +274,8 @@ Segment26::buildObjects(Simulation& System)
 
   IZTop->removeLastMaster(System);
   IZMid->removeLastMaster(System);
-  IZLower->removeLastMaster(System);  
-  
+  IZLower->removeLastMaster(System);
+
   return;
 }
 
@@ -315,7 +308,7 @@ Segment26::createLinks()
    */
 {
   ELog::RegMethod RegA("Segment26","createLinks");
-  
+
   setLinkSignedCopy(0,*pipeAA,1);
   setLinkSignedCopy(1,*pipeAB,2);
 
