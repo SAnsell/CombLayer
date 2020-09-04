@@ -236,7 +236,7 @@ struct CF37_TDC
   static constexpr double wallThick=0.15;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
-  static constexpr double bellowStep=1.0; // guess
+  static constexpr double bellowStep=4.0; // guess
   static constexpr double bellowThick=1.0; // guess
   /* static constexpr double gasketRadius=1.0; */
   /* static constexpr double gasketThick=1.3; */
