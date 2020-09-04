@@ -2038,14 +2038,9 @@ Segment26(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
-  // const Geometry::Vec3D startPt(-637.608,7618.484,0.0);
-  const Geometry::Vec3D startPtA(-637.608,7618.384,0.0);
+  const Geometry::Vec3D startPtA(-637.608,7618.484,0.0);
   const Geometry::Vec3D startPtB(-637.608,7612.436,-8.214);
   const Geometry::Vec3D startPtC(-637.608,7607.463,-15.805);
-
-  // const Geometry::Vec3D startPtA(-637.608,7606.31,0.0);      // or
-  // const Geometry::Vec3D startPtB(-637.608,7602.24,-37.887);
-  // const Geometry::Vec3D startPtC(-637.608,7598.08,-73.976);
 
   const Geometry::Vec3D endPtA(-637.608,8173.261,0.0);
   const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
