@@ -2022,11 +2022,9 @@ Segment25(FuncDataBase& Control,
   MPGen.setPipe<CF35_TDC>(Geometry::Vec3D(0,0,-5.0), 40.662, 0.0, pipeAXAngle+pipeBXAngle-0.2);
   MPGen.generateMulti(Control,lKey+"MultiPipe");
 
-  BellowGen.setCF<setVariable::CF37_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"BellowAA", 16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowBA", 16.0);
-  BellowGen.generateBellow(Control,lKey+"BellowCA", 16.0);
+  setBellow37(Control,lKey+"BellowAA");
+  setBellow37(Control,lKey+"BellowBA");
+  setBellow37(Control,lKey+"BellowCA");
 
   Control.addVariable(lKey+"BellowAABellowStep",4.0); // approx according to No_25_00
   Control.addVariable(lKey+"BellowBABellowStep",4.0); // approx according to No_25_00
@@ -2093,13 +2091,9 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
-  setVariable::BellowGenerator BellowGen;
-  BellowGen.setCF<setVariable::CF37_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-
-  BellowGen.generateBellow(Control,lKey+"BellowAA",16.007);
-  BellowGen.generateBellow(Control,lKey+"BellowBA",16.031);
-  BellowGen.generateBellow(Control,lKey+"BellowCA",16.108);
+  setBellow37(Control,lKey+"BellowAA",16.007);
+  setBellow37(Control,lKey+"BellowBA",16.031);
+  setBellow37(Control,lKey+"BellowCA",16.108);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
 
