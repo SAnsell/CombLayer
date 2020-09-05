@@ -105,6 +105,8 @@ namespace linacVar
 		const double);
   void setBellow(FuncDataBase&,const std::string&,
 		 const double);
+  void setBellow37(FuncDataBase&,const std::string&,
+		 const double);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -521,7 +523,7 @@ setBellow(FuncDataBase& Control,
 	  const std::string& name,
 	  const double length=7.5)
 /*!
-  Set the Bellow variables
+  Set the Bellow variables with CF26_TDC flanges
   \param Control :: DataBase to use
   \param name :: name prefix
   \paral length :: length [cm]
@@ -537,7 +539,26 @@ setBellow(FuncDataBase& Control,
   return;
 }
 
+void
+setBellow37(FuncDataBase& Control,
+	  const std::string& name,
+	  const double length=16.0)
+/*!
+  Set the Bellow variables with CF37_TDC flanges
+  \param Control :: DataBase to use
+  \param name :: name prefix
+  \paral length :: length [cm]
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setBellow");
+  setVariable::BellowGenerator BellowGen;
 
+  BellowGen.setCF<setVariable::CF37_TDC>();
+  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
+  BellowGen.generateBellow(Control,name,length);
+
+  return;
+}
 
 void
 setMirrorChamber(FuncDataBase& Control,
@@ -2109,7 +2130,6 @@ Segment27(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment27");
 
-  setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
@@ -2136,12 +2156,14 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkC","frontLower");
   Control.addVariable(lKey+"BackLinkC","backLower");
 
-  PGen.setCF<CF40>();
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
 
-  setBellow(Control,lKey+"BellowAA",16.0);
-  setBellow(Control,lKey+"BellowBA",16.0);
-  setBellow(Control,lKey+"BellowCA",16.0);
+  setBellow37(Control,lKey+"BellowAA",16.0);
+  setBellow37(Control,lKey+"BellowBA",16.0);
+  setBellow37(Control,lKey+"BellowCA",16.0);
 
   Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
@@ -2154,30 +2176,34 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"BellowCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
-  PGen.generatePipe(Control,lKey+"PipeAA",216.95);
-  PGen.generatePipe(Control,lKey+"PipeBA",210.4);
-  PGen.generatePipe(Control,lKey+"PipeCA",222.0);
+  PGen.generatePipe(Control,lKey+"PipeAA",217.2);
+  PGen.generatePipe(Control,lKey+"PipeBA",210.5);
+  PGen.generatePipe(Control,lKey+"PipeCA",222.2);
 
-  setBellow(Control,lKey+"BellowAB",16.0);
-  setBellow(Control,lKey+"BellowBB",16.0);
-  setBellow(Control,lKey+"BellowCB",16.0);
+  setBellow37(Control,lKey+"BellowAB");
+  setBellow37(Control,lKey+"BellowBB",16.008);
+  setBellow37(Control,lKey+"BellowCB");
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
   Control.addVariable(lKey+"YagUnitAYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitAFrontLength",12.95); // No_27_00
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitBFrontLength",13.008); // No_27_00
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitC");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitC",true);
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitCFrontLength",12.993); // No_27_00
 
-  setBellow(Control,lKey+"BellowAC",16.0);
-  setBellow(Control,lKey+"BellowBC",16.0);
-  setBellow(Control,lKey+"BellowCC",16.0);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
 
+  setBellow37(Control,lKey+"BellowAC");
+  setBellow37(Control,lKey+"BellowBC");
 
   return;
 }
