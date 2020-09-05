@@ -65,6 +65,13 @@ class magnetUnit :
   void setExtent(const double,const double,const double);
   void addCell(const int);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,
+		 const std::vector<double>&);
+
   virtual void writeFLUKA(std::ostream&) const;
 };
 
