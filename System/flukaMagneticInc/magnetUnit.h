@@ -46,6 +46,7 @@ class magnetUnit :
   double width;           ///< width of magnetic unit
   double height;          ///< height of magnetic unit
 
+  std::array<double,4> KFactor;  ///< Magnet units
   /// active cells
   std::set<int> activeCells; 
 

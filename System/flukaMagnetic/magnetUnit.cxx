@@ -126,7 +126,8 @@ magnetUnit::populate(const FuncDataBase& Control)
   length=Control.EvalDefVar<double>(keyName+"Length",length);
   height=Control.EvalDefVar<double>(keyName+"Height",height);
   width=Control.EvalDefVar<double>(keyName+"Width",width);
-  
+
+  KFactor=Control.EvalDefVar<double>(keyName+"KFactor",KFactor);
   return;
 }
 
