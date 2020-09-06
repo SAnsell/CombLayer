@@ -88,7 +88,7 @@ namespace xraySystem
 {
 
 R1Ring::R1Ring(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key,24),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -269,6 +269,7 @@ R1Ring::createSurfaces()
 
 	  if (cIndex)
 	    {
+	      ELog::EM<<"AP["<<surfN-10+3<<"]["<<i<<"] == "<<AP<<ELog::endDiag;
 	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
 	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
 	    }
@@ -547,11 +548,11 @@ R1Ring::createLinks()
   
   const double beamStepOut(1510.55);  // from origin
   // Main beam start points DONT have a surface [yet]
-  
+
+  size_t index(0);
   for(size_t i=1;i<concaveNPoints+1;i++)
     {
-      const size_t index(i-1);
-
+      // InnerWall
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamInner",((i+1) % concaveNPoints)));
       if (!BInner)
@@ -564,7 +565,27 @@ R1Ring::createLinks()
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);
-      
+      index++;
+    }
+
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+
+      const Geometry::Plane* SOuter=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("SideOuter",i));
+      if (!SOuter)
+	throw ColErr::InContainerError<std::string>
+	  ("SideOuter"+std::to_string(index),"Surf map no found");
+
+      const Geometry::Vec3D Beam= -SOuter->getNormal();
+      FixedComp::nameSideIndex(index+2,"SideWall"+std::to_string(index));
+      FixedComp::setLinkSurf(index+2,-SOuter->getName());
+      FixedComp::setLineConnect(index+2,Origin,Beam);
+      ELog::EM<<"Outer == "<<this->getLinkSurf(index+3)<<" :: "
+	      <<this->getLinkPt(index+3)<<ELog::endDiag;
+
+
+      index++;
     }
   return;
 }
@@ -580,7 +601,6 @@ R1Ring::createDoor(Simulation& System)
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
 
   if (doorActive)
     {
