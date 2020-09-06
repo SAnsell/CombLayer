@@ -305,6 +305,14 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 	<<keyName;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
+
+  cx.str("");
+  cx<<"USRICALL 5 ";
+  for(size_t i=0;i<4;i++)
+    cx<<StrFunc::makeString(KFactor[i])<<" ";
+  cx<<" - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);  
+      
  
   return;
 }
