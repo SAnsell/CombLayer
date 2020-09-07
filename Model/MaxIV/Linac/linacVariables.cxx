@@ -2360,19 +2360,20 @@ Segment30(FuncDataBase& Control,
 
   // Gauge
   std::string name=lKey+"Gauge";
-  SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.setCF<CF37_TDC>();
+  SimpleTubeGen.generateTube(Control,name,0.0,12.585); // No_30_00
   Control.addVariable(name+"YAngle", 180.0);
 
   Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(5.1); //
+  PItemGen.setCF<setVariable::CF37_TDC>(5.1); //
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
   PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",436.5-0.084514221); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",436.5);
 
   setBellow26(Control,lKey+"Bellow");
 
@@ -2385,9 +2386,8 @@ Segment30(FuncDataBase& Control,
   Control.addVariable(pumpName+"Port1Centre", Geometry::Vec3D(0, portOffset, 0));
 
   // CMagV
-  const double pipeBLength(511.3); // measured
-  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
-  CMGen.generateMag(Control,lKey+"CMagV",pipeBLength-12.0,1);
+  PGen.generatePipe(Control,lKey+"PipeB",511.23);
+  CMGen.generateMag(Control,lKey+"CMagV",500.13,1);
 
   return;
 }
