@@ -53,6 +53,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "InnerZone.h"
 #include "World.h"
 

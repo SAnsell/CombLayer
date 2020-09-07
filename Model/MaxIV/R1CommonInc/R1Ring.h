@@ -47,7 +47,8 @@ class R1Ring :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::PointMap
 {
  private:
 
@@ -79,6 +80,9 @@ class R1Ring :
 
   /// free standing plate shields :: Wall ID / FreeShield
   std::map<size_t,std::shared_ptr<insertSystem::insertPlate>> plateShields;
+
+  /// free standing plate shields :: Wall ID / outerShield
+  std::map<size_t,std::shared_ptr<insertSystem::insertPlate>> outShields;
 
   ///  Side shields :: Wall ID  / SideShield
   std::map<size_t,std::shared_ptr<SideShield>> sideShields;

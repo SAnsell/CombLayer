@@ -68,6 +68,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"

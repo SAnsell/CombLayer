@@ -77,6 +77,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "insertObject.h"
 #include "insertPlate.h"
 
@@ -92,6 +93,7 @@ R1Ring::R1Ring(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
+  attachSystem::PointMap(),
   NPoints(0),concaveNPoints(0),
   doorActive(0)
   /*!
@@ -189,6 +191,19 @@ R1Ring::populate(const FuncDataBase& Control)
       plateShields.emplace(ID,platePtr);
     }
 
+  const size_t nOuter=Control.EvalVar<size_t>(keyName+"NOutShield");
+  for(size_t i=0;i<nOuter;i++)
+    {
+      const std::string outerKey=
+	Control.EvalVar<std::string>(keyName+"OutShieldName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(outerKey+"ID");
+      std::shared_ptr<insertSystem::insertPlate>
+	shieldPtr(new insertSystem::insertPlate(keyName+"OutShield",outerKey));
+      OR.addObject(shieldPtr);
+      outShields.emplace(ID,shieldPtr);
+    }
+
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   
   return;
@@ -266,12 +281,12 @@ R1Ring::createSurfaces()
 	{
 	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
 	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
-
+	  PointMap::addPoint("OutCorner",AP);
 	  if (cIndex)
 	    {
-	      ELog::EM<<"AP["<<surfN-10+3<<"]["<<i<<"] == "<<AP<<ELog::endDiag;
 	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
 	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
+
 	    }
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
@@ -289,6 +304,7 @@ R1Ring::createSurfaces()
       const size_t aI=concavePts[i];
       const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
       const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
+      PointMap::addPoint("OutSideWall",BP);
       // going round ring clockwize 
       const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
       ModelSupport::buildPlane(SMap,surfN+1,
@@ -577,14 +593,14 @@ R1Ring::createLinks()
 	throw ColErr::InContainerError<std::string>
 	  ("SideOuter"+std::to_string(index),"Surf map no found");
 
+      const Geometry::Vec3D& APt=
+	PointMap::getPoint("OutCorner",(i+1) % concaveNPoints);
+      const Geometry::Vec3D& BPt(PointMap::getPoint("OutSideWall",i));
       const Geometry::Vec3D Beam= -SOuter->getNormal();
-      FixedComp::nameSideIndex(index+2,"SideWall"+std::to_string(index));
+
+      FixedComp::nameSideIndex(index+2,"SideWall"+std::to_string(i));
       FixedComp::setLinkSurf(index+2,-SOuter->getName());
-      FixedComp::setLineConnect(index+2,Origin,Beam);
-      ELog::EM<<"Outer == "<<this->getLinkSurf(index+3)<<" :: "
-	      <<this->getLinkPt(index+3)<<ELog::endDiag;
-
-
+      FixedComp::setConnect(index+2,(APt+BPt)/2.0,Beam);
       index++;
     }
   return;
@@ -654,6 +670,12 @@ R1Ring::createFreeShields(Simulation& System)
       PWPtr->setNoInsert();
       PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
       PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+    }
+  for(auto& [ id , PWPtr ] : outShields)
+    {
+      //      PWPtr->setNoInsert();
+      //      PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      PWPtr->createAll(System,*this,"SideWall"+std::to_string(id));      
     }
   return;
 }

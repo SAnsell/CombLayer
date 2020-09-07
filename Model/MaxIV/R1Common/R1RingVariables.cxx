@@ -80,7 +80,7 @@ namespace R1Ring
 void
 R1FrontEndVariables(FuncDataBase& Control,
 		    const std::string& frontKey,
-		    const double exitLen) 
+		    const double) 
   /*!
     Set the variables for the front end
     \param Control :: DataBase to use
@@ -496,6 +496,11 @@ createR1Shielding(FuncDataBase& Control,
   ELog::RegMethod RegA("R1RingVariables[F]","createR1Shielding");
     // Construct SideWall
 
+  typedef std::tuple<std::string,size_t,double> OSTYPE;
+  const std::vector<OSTYPE> outUnits=
+    {
+     OSTYPE("MaxPeem",8,30.0)
+    };
 
   // name : opticsSector : nearOuter/farOuter
   typedef std::tuple<std::string,size_t,bool> STYPE;
@@ -526,8 +531,27 @@ createR1Shielding(FuncDataBase& Control,
   Control.addVariable(sWall+"Mat","Lead");
 
 
+  // Outer standing Shield block:
+  Control.addVariable(preName+"NOutShield",wallUnits.size());
+  index=0;
+  for(const OSTYPE& tc : outUnits)
+    {
+      const std::string outName=preName+std::get<0>(tc)+"OutShield";
+      Control.addVariable
+	(preName+"OutShieldName"+std::to_string(index),outName);
+      Control.addVariable(outName+"ID",std::get<1>(tc));
+      Control.addVariable(outName+"XStep",std::get<2>(tc));
+      index++;
+    }
+  const std::string outBaseKey=preName+"OutShield";
+  Control.addVariable(outBaseKey+"YStep",10.0);
+  Control.addVariable(outBaseKey+"ZStep",0.0);
+  Control.addVariable(outBaseKey+"Width",6.0);
+  Control.addVariable(outBaseKey+"Depth",340.0);
+  Control.addVariable(outBaseKey+"Height",24.0);
+  Control.addVariable(outBaseKey+"DefMat","Stainless304");
+  
   // Free standing Shield block:
-
   Control.addVariable(preName+"NFreeShield",wallUnits.size());
   index=0;
   for(const STYPE& tc : wallUnits)

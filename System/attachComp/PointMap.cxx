@@ -309,7 +309,7 @@ PointMap::getAllPoints() const
 
 Geometry::Vec3D
 PointMap::removePoint(const std::string& Key,
-		     const size_t Index) 
+		      const size_t Index) 
  /*!
     Remove a cell number a cell
     \param Key :: KeyName for cell

@@ -142,14 +142,15 @@ objectAddition(Simulation& System,
 {
   ELog::RegMethod RegA("ObjectAddtion[F]","objectAddition");
 
-const size_t nP=IParam.setCnt("OAdd");
+  const size_t nP=IParam.setCnt("OAdd");
+
   for(size_t index=0;index<nP;index++)
     {
       const std::string eMess
 	("Insufficient item for OAdd["+std::to_string(index)+"]");
       const std::string key=
 	IParam.getValueError<std::string>("OAdd",index,0,eMess);
-      
+
       if(key=="help")
 	{
 	  ELog::EM<<"OAdd Help "<<ELog::endBasic;
