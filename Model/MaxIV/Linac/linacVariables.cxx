@@ -2096,13 +2096,16 @@ Segment26(FuncDataBase& Control,
   setBellow37(Control,lKey+"BellowCA",16.108);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
-
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
   Control.addVariable(lKey+"YagUnitAYAngle",90.0);
 
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
+
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
+
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   PGen.setCF<CF40>();
   PGen.generatePipe(Control,lKey+"PipeAB",217.2);

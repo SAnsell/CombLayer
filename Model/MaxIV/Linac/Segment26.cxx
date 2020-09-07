@@ -228,7 +228,7 @@ Segment26::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment26","buildObjects");
 
-  int outerCell,outerCellA,outerCellB,outerCellC;
+  int outerCellA,outerCellB,outerCellC;
 
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
@@ -257,13 +257,26 @@ Segment26::buildObjects(Simulation& System)
     (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCA);
 
   // YAG SCREENS:
-  constructSystem::constructUnit
+  outerCellA = constructSystem::constructUnit
     (System,*IZTop,masterCellA,*bellowAA,"back",*yagUnitA);
 
-  constructSystem::constructUnit
+  yagScreenA->setBeamAxis(*yagUnitA,1);
+  yagScreenA->createAll(System,*yagUnitA,-3);
+  yagScreenA->insertInCell("Outer",System,outerCellA);
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("PlateA"));
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("Void"));
+  yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
+
+  outerCellB = constructSystem::constructUnit
     (System,*IZMid,masterCellB,*bellowBA,"back",*yagUnitB);
 
-  // YAG Screen
+  yagScreenB->setBeamAxis(*yagUnitB,1);
+  yagScreenB->createAll(System,*yagUnitB,-3);
+  yagScreenB->insertInCell("Outer",System,outerCellB);
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("PlateA"));
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("Void"));
+  yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
+
   constructSystem::constructUnit
     (System,*IZTop,masterCellA,*yagUnitA,"back",*pipeAB);
   constructSystem::constructUnit
