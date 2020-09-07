@@ -94,7 +94,7 @@ Segment29::Segment29(const std::string& Key) :
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
 
-  
+
   yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
   yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
 
@@ -141,10 +141,10 @@ Segment29::createSplitInnerZone(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment29","createSplitInnerZone");
-  
+
   *IZTop = *buildZone;
   *IZMid = *buildZone;
-  
+
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
 
@@ -162,10 +162,10 @@ Segment29::createSplitInnerZone(Simulation& System)
     {
       SurfMap::addSurf("TopDivider",prevSegPtr->getSurf("TopDivider"));
     }
- 
+
   const Geometry::Vec3D ZEffective(FA.getZ());
   HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundB.removeMatchedPlanes(-ZEffective);
 
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
@@ -196,12 +196,12 @@ Segment29::buildObjects(Simulation& System)
 
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
-  
+
   createSplitInnerZone(System);
 
   MonteCarlo::Object* masterCellA=IZTop->getMaster();
   MonteCarlo::Object* masterCellB=IZMid->getMaster();
-  
+
   outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeAA,2);
   outerCellB=IZMid->createOuterVoidUnit(System,masterCellB,*pipeBA,2);
 
@@ -213,12 +213,26 @@ Segment29::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZMid,masterCellB,*pipeBA,"back",*bellowBA);
 
-  constructSystem::constructUnit
+  outerCellA = constructSystem::constructUnit
     (System,*IZTop,masterCellA,*bellowAA,"back",*yagUnitA);
-  constructSystem::constructUnit
+
+  yagScreenA->setBeamAxis(*yagUnitA,1);
+  yagScreenA->createAll(System,*yagUnitA,-3);
+  yagScreenA->insertInCell("Outer",System,outerCellA);
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("PlateA"));
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("Void"));
+  yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
+
+  outerCellB = constructSystem::constructUnit
     (System,*IZMid,masterCellB,*bellowBA,"back",*yagUnitB);
 
-  
+  yagScreenB->setBeamAxis(*yagUnitA,1);
+  yagScreenB->createAll(System,*yagUnitB,-3);
+  yagScreenB->insertInCell("Outer",System,outerCellB);
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("PlateA"));
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("Void"));
+  yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
+
   IZTop->removeLastMaster(System);
   IZMid->removeLastMaster(System);
 
@@ -245,7 +259,7 @@ Segment29::createLinks()
   //    setLinkSignedCopy(1,*triPipeA,2);
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
-  
+
   return;
 }
 

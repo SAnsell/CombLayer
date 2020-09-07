@@ -2273,7 +2273,6 @@ Segment29(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment29");
 
-  setVariable::PipeGenerator PGen;
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
 
@@ -2294,11 +2293,13 @@ Segment29(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkB","frontMid");
   Control.addVariable(lKey+"BackLinkB","backMid");
 
-  PGen.setCF<CF40>();
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
 
-  PGen.generatePipe(Control,lKey+"PipeAA",291.35);
-  PGen.generatePipe(Control,lKey+"PipeBA",291.95);
+  PGen.generatePipe(Control,lKey+"PipeAA",291.6);
+  PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
@@ -2308,14 +2309,20 @@ Segment29(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
 
-  setBellow26(Control,lKey+"BellowAA",16.0);
-  setBellow26(Control,lKey+"BellowBA",16.0);
+  setBellow37(Control,lKey+"BellowAA");
+  setBellow37(Control,lKey+"BellowBA", 16.066); // No_29_00
 
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
+  Control.addVariable(lKey+"YagUnitAYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitAFrontLength", 12.95);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
+  Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   return;
 }
@@ -3510,7 +3517,7 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",50.0);
+  Control.addVariable("spfLongOuterLeft",60.0);
   Control.addVariable("spfLongOuterRight",50.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
