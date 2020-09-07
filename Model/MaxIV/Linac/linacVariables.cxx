@@ -103,7 +103,7 @@ namespace linacVar
 	       const double,const double);
   void setGauge(FuncDataBase&,const std::string&,
 		const double);
-  void setBellow(FuncDataBase&,const std::string&,
+  void setBellow26(FuncDataBase&,const std::string&,
 		 const double);
   void setBellow37(FuncDataBase&,const std::string&,
 		 const double);
@@ -519,7 +519,7 @@ setGauge(FuncDataBase& Control,
 }
 
 void
-setBellow(FuncDataBase& Control,
+setBellow26(FuncDataBase& Control,
 	  const std::string& name,
 	  const double length=7.5)
 /*!
@@ -695,7 +695,7 @@ Segment1(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   //  corrector mag and pie
   PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
@@ -776,7 +776,7 @@ Segment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadA",17.16); // No_2_00.pdf
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
@@ -789,7 +789,7 @@ Segment2(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeD",75.8); // No_2_00.pdf
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
@@ -832,7 +832,7 @@ Segment3(FuncDataBase& Control,
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   const double flatAXYAngle=1.6;
   setFlat(Control,lKey+"FlatA",82.549/cos(flatAXYAngle*M_PI/180.0),flatAXYAngle); // No_3_00.pdf
@@ -857,7 +857,7 @@ Segment3(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBYStep",0.02); // this centers DipoleB at 225.468 [No_3_00.pdf]
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
   Control.addVariable(lKey+"BellowBXYAngle",1.6);
 
   return;
@@ -908,7 +908,7 @@ Segment4(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   PGen.generatePipe(Control,lKey+"PipeC",70.2); // No_4_00.pdf
 
@@ -961,7 +961,7 @@ Segment5(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
   Control.addVariable(lKey+"BellowAXYAngle",angleDipole);
 
   return;
@@ -1080,11 +1080,11 @@ Segment8(FuncDataBase& Control,
   PGen.setMat("Stainless316L", "Stainless304L");
   PGen.setNoWindow();
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   PGen.generatePipe(Control,lKey+"PipeA",308.5);
 
@@ -1130,7 +1130,7 @@ Segment9(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagVertA",22.0,1);
   CMGen.generateMag(Control,lKey+"CMagHorA",42.0,0);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.setBFlange(setVariable::CF18_TDC::innerRadius+setVariable::CF18_TDC::wallThick,
@@ -1179,14 +1179,14 @@ Segment10(FuncDataBase& Control,
   PGen.setNoWindow();
 
   PGen.generatePipe(Control,lKey+"PipeA",453.0);
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   setRecGateValve(Control, lKey+"GateValve", false);
 
   setIonPump2Port(Control, lKey+"PumpA");
 
   PGen.generatePipe(Control,lKey+"PipeB",152.1);
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   PGen.generatePipe(Control,lKey+"PipeC",126.03);
 
@@ -1225,7 +1225,7 @@ Segment11(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeA",42.50);
@@ -1287,7 +1287,7 @@ Segment12(FuncDataBase& Control,
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   // No_12_00.pdf
   const double flatAXYAngle = -1.6;
@@ -1315,7 +1315,7 @@ Segment12(FuncDataBase& Control,
   // according to No_12_00.pdf
   Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
 
-  setBellow(Control,lKey+"BellowLA");
+  setBellow26(Control,lKey+"BellowLA");
 
   // small ion pump port:
   // -----------------------
@@ -1346,7 +1346,7 @@ Segment12(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
 
-  setBellow(Control,lKey+"BellowLB");
+  setBellow26(Control,lKey+"BellowLB");
 
   // RIGHT SIDE
 
@@ -1355,7 +1355,7 @@ Segment12(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
 
-  setBellow(Control,lKey+"BellowRB");
+  setBellow26(Control,lKey+"BellowRB");
 
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
   return;
@@ -1434,7 +1434,7 @@ Segment14(FuncDataBase& Control,
   const double XYAngle = 6.4;
   Control.addVariable(lKey+"XYAngle", XYAngle);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
@@ -1459,7 +1459,7 @@ Segment14(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"GateA",-90,false);
 
-  setBellow(Control,lKey+"BellowB"); // No_14_00.pdf
+  setBellow26(Control,lKey+"BellowB"); // No_14_00.pdf
 
   return;
 }
@@ -1534,7 +1534,7 @@ Segment16(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -1557,7 +1557,7 @@ Segment16(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
   CMGen.generateMag(Control,lKey+"CMagV",28.0,1); // measured
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
@@ -1590,7 +1590,7 @@ Segment17(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeA",391.23); // No_17_00.pdf
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   const std::string pumpName=lKey+"IonPump";
   setIonPump2Port(Control,pumpName);
@@ -1625,12 +1625,12 @@ Segment18(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   setIonPump2Port(Control, lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -1673,7 +1673,7 @@ Segment19(FuncDataBase& Control,
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   setGauge(Control,lKey+"Gauge");
 
@@ -1684,7 +1684,7 @@ Segment19(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"GateB",180.0,false);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   return;
 }
@@ -1753,7 +1753,7 @@ Segment21(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -1781,7 +1781,7 @@ Segment21(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",10.3,1);
   CMGen.generateMag(Control,lKey+"CMagV",28.3,0);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   return;
 }
@@ -1837,7 +1837,7 @@ Segment23(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   PGen.setCF<setVariable::CF8_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",34);
@@ -1852,7 +1852,7 @@ Segment23(FuncDataBase& Control,
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowB");
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
@@ -1875,7 +1875,7 @@ Segment23(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"Gate",180.0,false);
 
-  setBellow(Control,lKey+"BellowC");
+  setBellow26(Control,lKey+"BellowC");
 
   return;
 }
@@ -1916,7 +1916,7 @@ Segment24(FuncDataBase& Control,
   setIonPump2Port(Control,lKey+"IonPump");
   Control.addVariable(lKey+"IonPumpYAngle",90.0);
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
 
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
@@ -1977,7 +1977,7 @@ Segment25(FuncDataBase& Control,
   Control.addVariable(lKey+"BackLinkB","backMid");
   Control.addVariable(lKey+"BackLinkC","backLower");
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   const double dipoleAngle(0.8);
   const double magAngle(0.8);
@@ -2308,8 +2308,8 @@ Segment29(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
 
-  setBellow(Control,lKey+"BellowAA",16.0);
-  setBellow(Control,lKey+"BellowBA",16.0);
+  setBellow26(Control,lKey+"BellowAA",16.0);
+  setBellow26(Control,lKey+"BellowBA",16.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA");
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB");
@@ -2361,7 +2361,7 @@ Segment30(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",436.5-0.084514221); // measured
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
 
   // IonPump
   const std::string pumpName=lKey+"IonPump";
@@ -2510,7 +2510,7 @@ Segment32(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DMB");
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
   Control.addVariable(lKey+"BellowXYAngle",0.0);
   */
   Segment32Magnet(Control,lKey);
@@ -2566,7 +2566,7 @@ Segment33(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
   CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
 
   return;
 }
@@ -2612,7 +2612,7 @@ Segment34(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DMB");
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
   Control.addVariable(lKey+"BellowXYAngle",-0.0);
   */
 
@@ -2676,7 +2676,7 @@ Segment35(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
   Control.addVariable(lKey+"PipeCFeMat", "Stainless304L"); // PDF
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
 
   return;
 }
@@ -2828,7 +2828,7 @@ Segment38(FuncDataBase& Control,
   setIonPump2Port(Control,pumpName);
   Control.addVariable(lKey+"IonPumpYAngle",180.0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   return;
 }
@@ -2876,7 +2876,7 @@ Segment39(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"Pipe",37.0);
 
-  setBellow(Control,lKey+"Bellow");
+  setBellow26(Control,lKey+"Bellow");
 
   return;
 }
@@ -2932,8 +2932,8 @@ Segment41(FuncDataBase& Control,
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // Bellows
-  setBellow(Control,lKey+"BellowA");
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowB");
 
   // Stripline BPM
   setVariable::StriplineBPMGenerator BPMGen;
@@ -3041,8 +3041,8 @@ Segment43(FuncDataBase& Control,
   Control.addVariable(lKey+"BPMBFlangeALength",0.5); // approx
   Control.addVariable(lKey+"BPMBFlangeBLength",0.5); // approx
 
-  setBellow(Control,lKey+"BellowA");
-  setBellow(Control,lKey+"BellowB");
+  setBellow26(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowB");
 
   return;
 }
@@ -3197,7 +3197,7 @@ Segment46(FuncDataBase& Control,
   CGateGen.setPortThick(0.10);
   CGateGen.generateGate(Control,lKey+"GateA",0);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   // Prisma Chamber
   setVariable::PrismaChamberGenerator PCGen;
@@ -3216,18 +3216,18 @@ Segment46(FuncDataBase& Control,
   // Slit tube and jaws
   setSlitTube(Control,lKey+"SlitTube");
 
-  setBellow(Control,lKey+"BellowB",10.0); // measured
+  setBellow26(Control,lKey+"BellowB",10.0); // measured
 
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
 
-  setBellow(Control,lKey+"BellowC",10.0); // measured
+  setBellow26(Control,lKey+"BellowC",10.0); // measured
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
 
   // Bellow D added: it is not on the drawing BUT the
   // error in lengths is 160mm and there should be a bellow
   // here.
-  setBellow(Control,lKey+"BellowD",16.0);
+  setBellow26(Control,lKey+"BellowD",16.0);
 
   return;
 }
@@ -3267,7 +3267,7 @@ Segment47(FuncDataBase& Control,
   // Gate valves
   setCylGateValve(Control,lKey+"GateA",180.0,false);
 
-  setBellow(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowA");
 
   // Prisma Chamber
   setPrismaChamber(Control, lKey+"PrismaChamberA");
@@ -3308,9 +3308,9 @@ Segment48(FuncDataBase& Control,
   EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
   EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
 
-  setBellow(Control,lKey+"BellowA");
-  setBellow(Control,lKey+"BellowB",10.0); // measured
-  setBellow(Control,lKey+"BellowC",10.0); // measured
+  setBellow26(Control,lKey+"BellowA");
+  setBellow26(Control,lKey+"BellowB",10.0); // measured
+  setBellow26(Control,lKey+"BellowC",10.0); // measured
 
   // Pipe
   setVariable::PipeGenerator PGen;
