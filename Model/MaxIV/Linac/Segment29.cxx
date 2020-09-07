@@ -50,12 +50,10 @@
 #include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Object.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -74,7 +72,6 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment29.h"
 
