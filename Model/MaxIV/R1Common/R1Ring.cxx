@@ -191,6 +191,7 @@ R1Ring::populate(const FuncDataBase& Control)
       plateShields.emplace(ID,platePtr);
     }
 
+  // OUTER SHIELD
   const size_t nOuter=Control.EvalVar<size_t>(keyName+"NOutShield");
   for(size_t i=0;i<nOuter;i++)
     {

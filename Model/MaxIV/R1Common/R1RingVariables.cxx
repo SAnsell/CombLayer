@@ -499,7 +499,7 @@ createR1Shielding(FuncDataBase& Control,
   typedef std::tuple<std::string,size_t,double> OSTYPE;
   const std::vector<OSTYPE> outUnits=
     {
-     OSTYPE("MaxPeem",8,30.0)
+     OSTYPE("MaxPeem",8,-230.0)
     };
 
   // name : opticsSector : nearOuter/farOuter
@@ -532,7 +532,7 @@ createR1Shielding(FuncDataBase& Control,
 
 
   // Outer standing Shield block:
-  Control.addVariable(preName+"NOutShield",wallUnits.size());
+  Control.addVariable(preName+"NOutShield",outUnits.size());
   index=0;
   for(const OSTYPE& tc : outUnits)
     {
@@ -546,9 +546,9 @@ createR1Shielding(FuncDataBase& Control,
   const std::string outBaseKey=preName+"OutShield";
   Control.addVariable(outBaseKey+"YStep",10.0);
   Control.addVariable(outBaseKey+"ZStep",0.0);
-  Control.addVariable(outBaseKey+"Width",6.0);
-  Control.addVariable(outBaseKey+"Depth",340.0);
-  Control.addVariable(outBaseKey+"Height",24.0);
+  Control.addVariable(outBaseKey+"Width",340.0);
+  Control.addVariable(outBaseKey+"Depth",5.0);
+  Control.addVariable(outBaseKey+"Height",50.0);
   Control.addVariable(outBaseKey+"DefMat","Stainless304");
   
   // Free standing Shield block:
