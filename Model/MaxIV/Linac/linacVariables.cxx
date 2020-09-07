@@ -2183,18 +2183,21 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitAFrontLength",12.95); // No_27_00
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
   Control.addVariable(lKey+"YagUnitBFrontLength",13.008); // No_27_00
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitC",true);
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
   Control.addVariable(lKey+"YagUnitCFrontLength",12.993); // No_27_00
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
+  Control.addVariable(lKey+"YagScreenCYAngle",-90.0);
 
   setBellow37(Control,lKey+"BellowAC");
   setBellow37(Control,lKey+"BellowBC");

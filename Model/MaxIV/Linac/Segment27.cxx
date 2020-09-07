@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -66,6 +67,10 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
+
+#include "Line.h"
+#include "ContainedGroup.h"
+#include "YagScreen.h"
 #include "YagUnit.h"
 
 #include "TDCsegment.h"
@@ -82,7 +87,7 @@ Segment27::Segment27(const std::string& Key) :
   IZTop(new attachSystem::InnerZone(*this,cellIndex)),
   IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
   IZLower(new attachSystem::InnerZone(*this,cellIndex)),
-  
+
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
   bellowCA(new constructSystem::Bellows(keyName+"BellowCA")),
@@ -94,10 +99,14 @@ Segment27::Segment27(const std::string& Key) :
   bellowAB(new constructSystem::Bellows(keyName+"BellowAB")),
   bellowBB(new constructSystem::Bellows(keyName+"BellowBB")),
   bellowCB(new constructSystem::Bellows(keyName+"BellowCB")),
-  
+
   yagUnitA(new tdcSystem::YagUnit(keyName+"YagUnitA")),
   yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
   yagUnitC(new tdcSystem::YagUnit(keyName+"YagUnitC")),
+
+  yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
+  yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
+  yagScreenC(new tdcSystem::YagScreen(keyName+"YagScreenC")),
 
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
   bellowBC(new constructSystem::Bellows(keyName+"BellowBC"))
@@ -125,6 +134,10 @@ Segment27::Segment27(const std::string& Key) :
   OR.addObject(yagUnitB);
   OR.addObject(yagUnitC);
 
+  OR.addObject(yagScreenA);
+  OR.addObject(yagScreenB);
+  OR.addObject(yagScreenC);
+
   OR.addObject(bellowAC);
   OR.addObject(bellowBC);
 
@@ -148,11 +161,11 @@ Segment27::createSplitInnerZone(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment27","createSplitInnerZone");
-  
+
   *IZTop = *buildZone;
   *IZFlat = *buildZone;
   *IZLower = *buildZone;
-  
+
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
@@ -176,30 +189,30 @@ Segment27::createSplitInnerZone(Simulation& System)
       SurfMap::addSurf("LowDivider",prevSegPtr->getSurf("LowDivider"));
     }
 
-  
+
   const Geometry::Vec3D ZEffective(FA.getZ());
   HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
   HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundB.removeMatchedPlanes(-ZEffective);
   HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
-  
+
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(SurfMap::getSurf("LowDivider"));
   HSurroundC.addIntersection(-SurfMap::getSurf("LowDivider"));
-  
+
   IZTop->setFront(bellowAA->getFullRule(-1));
   IZFlat->setFront(bellowBA->getFullRule(-1));
   IZLower->setFront(bellowCA->getFullRule(-1));
-  
+
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
-  
+
   IZTop->constructMasterCell(System);
   IZFlat->constructMasterCell(System);
   IZLower->constructMasterCell(System);
-  
+
   return;
 }
 
@@ -248,22 +261,45 @@ Segment27::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCB);
 
-  constructSystem::constructUnit
+  outerCellA = constructSystem::constructUnit
     (System,*IZTop,masterCellA,*bellowAB,"back",*yagUnitA);
-  constructSystem::constructUnit
+
+  yagScreenA->setBeamAxis(*yagUnitA,1);
+  yagScreenA->createAll(System,*yagUnitA,-3);
+  yagScreenA->insertInCell("Outer",System,outerCellA);
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("PlateA"));
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("Void"));
+  yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
+
+  outerCellB = constructSystem::constructUnit
     (System,*IZFlat,masterCellB,*bellowBB,"back",*yagUnitB);
-  constructSystem::constructUnit
+
+  yagScreenB->setBeamAxis(*yagUnitB,1);
+  yagScreenB->createAll(System,*yagUnitB,-3);
+  yagScreenB->insertInCell("Outer",System,outerCellB);
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("PlateA"));
+  yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("Void"));
+  yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
+
+  outerCellC = constructSystem::constructUnit
     (System,*IZLower,masterCellC,*bellowCB,"back",*yagUnitC);
 
-  
+  yagScreenC->setBeamAxis(*yagUnitC,1);
+  yagScreenC->createAll(System,*yagUnitC,-3);
+  yagScreenC->insertInCell("Outer",System,outerCellB);
+  yagScreenC->insertInCell("Connect",System,yagUnitC->getCell("PlateA"));
+  yagScreenC->insertInCell("Connect",System,yagUnitC->getCell("Void"));
+  yagScreenC->insertInCell("Payload",System,yagUnitC->getCell("Void"));
+
+
   constructSystem::constructUnit
     (System,*IZTop,masterCellA,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
     (System,*IZFlat,masterCellB,*yagUnitB,"back",*bellowBC);
-  
+
   IZTop->removeLastMaster(System);
   IZFlat->removeLastMaster(System);
-  IZLower->removeLastMaster(System);  
+  IZLower->removeLastMaster(System);
 
   return;
 }
@@ -275,7 +311,7 @@ Segment27::createLinks()
    */
 {
   ELog::RegMethod RegA("Segment27","createLinks");
-  
+
   setLinkSignedCopy(0,*bellowAA,1);
   setLinkSignedCopy(1,*bellowAC,2);
 
@@ -337,7 +373,7 @@ Segment27::createAll(Simulation& System,
   ELog::RegMethod RControl("Segment27","build");
 
   FixedRotate::populate(System.getDataBase());
-  
+
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
