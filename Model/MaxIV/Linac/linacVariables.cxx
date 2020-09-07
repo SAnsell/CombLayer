@@ -2420,10 +2420,7 @@ Segment31(FuncDataBase& Control,
 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   // BellowA
-  BellowGen.setCF<setVariable::CF26_TDC>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.setPipe(1.3, 0.2, 1.0, 1.0);
-  BellowGen.generateBellow(Control,lKey+"BellowA",7.5); // OK
+  setBellow26(Control,lKey+"BellowA");
 
   // IonPumpA
   setIonPump2Port(Control,lKey+"IonPumpA"); // length 16 cm checked
@@ -2438,47 +2435,37 @@ Segment31(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"Gate",-90.0,false);
 
-  BellowGen.generateBellow(Control,lKey+"BellowB",7.5); // OK
+  setBellow26(Control,lKey+"BellowB");
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   // PipeA and Quadrupole
-  const double pipeALength(42.5); // OK
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeA",pipeALength);
-  Control.addVariable(lKey+"PipeARadius",0.4); // inner radius
-  Control.addVariable(lKey+"PipeAFeThick",0.1); // wall thick
+  PGen.generatePipe(Control,lKey+"PipeA",42.5);
 
   // QF type quadrupole magnet
-  LQGen.generateQuad(Control,lKey+"Quad",pipeALength/2.0);
+  LQGen.generateQuad(Control,lKey+"Quad",19.7);
   // inner box half width/height
   Control.addVariable(lKey+"QuadYokeOuter",9.5);
 
-  // BellowC
-  BellowGen.generateBellow(Control,lKey+"BellowC",7.5); // OK
+  setBellow26(Control,lKey+"BellowC");
 
-  // CMagH
-  const double pipeBLength(234.8); // OK
-  PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
-  CMGen.generateMag(Control,lKey+"CMagH",25.0,0); // 25 is approx
+  PGen.generatePipe(Control,lKey+"PipeB",232.7);
+  CMGen.generateMag(Control,lKey+"CMagH",24.7,0);
 
   // IonPumpB
   setIonPump2Port(Control,lKey+"IonPumpB");
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  Control.addVariable(lKey+"Port0Length",10.0-outerR); // OK
-  Control.addVariable(lKey+"Port1Length",10.0-outerR); // OK
+  const double outerR = 3.5; // same as in setIonPump2Port
+  Control.addVariable(lKey+"IonPumpBPort0Length",10.0-outerR);
+  Control.addVariable(lKey+"IonPumpBPort1Length",10.0-outerR);
   Control.addVariable(lKey+"IonPumpBLength",11.4+setVariable::CF63::flangeLength); // approx
   Control.addVariable(lKey+"IonPumpBPort0Centre", Geometry::Vec3D(0, portOffset, 0));
   Control.addVariable(lKey+"IonPumpBPort1Centre", Geometry::Vec3D(0, portOffset, 0));
 
+  PGen.generatePipe(Control,lKey+"PipeC",55.7);
 
-  // PipeC
-  PGen.generatePipe(Control,lKey+"PipeC",57.6); // OK
-
-  // BellowD
-  BellowGen.generateBellow(Control,lKey+"BellowD",7.5);
+  setBellow26(Control,lKey+"BellowD");
 
   return;
 }
