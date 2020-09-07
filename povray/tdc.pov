@@ -233,6 +233,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
+  #case(strcmp(ITEM,"Segment28")) // TDC segment 28
+    #declare cameraLocation = <0, 9280, 100>;
+    #declare cameraLookAt   = <-485, 9270, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
   #case(strcmp(ITEM,"Segment30")) // SPF segment 30
     #declare cameraLocation = <-400, 4520, 30>;
     #declare cameraLookAt   = <-485, 4520, 0>;

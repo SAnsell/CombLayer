@@ -2214,8 +2214,6 @@ Segment28(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment28");
 
-  setVariable::PipeGenerator PGen;
-
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
   const Geometry::Vec3D startPtB(-637.608,8458.379,-52.649);
 
@@ -2234,11 +2232,13 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"FrontLinkB","frontMid");
   Control.addVariable(lKey+"BackLinkB","backMid");
 
-  PGen.setCF<CF40>();
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
 
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
-  PGen.generatePipe(Control,lKey+"PipeBA",291.6);
+  PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
   Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
@@ -2248,14 +2248,14 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"PipeBAXAngle",
 		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
 
-  setBellow(Control,lKey+"BellowAA",16.0);
-  setBellow(Control,lKey+"BellowBA",16.0);
+  setBellow37(Control,lKey+"BellowAA");
+  setBellow37(Control,lKey+"BellowBA");
 
   PGen.generatePipe(Control,lKey+"PipeAB",291.6);
-  PGen.generatePipe(Control,lKey+"PipeBB",292.5);
+  PGen.generatePipe(Control,lKey+"PipeBB",292.0);
 
-  setBellow(Control,lKey+"BellowAB",16.0);
-  setBellow(Control,lKey+"BellowBB",16.0);
+  setBellow37(Control,lKey+"BellowAB");
+  setBellow37(Control,lKey+"BellowBB");
 
 
   return;
