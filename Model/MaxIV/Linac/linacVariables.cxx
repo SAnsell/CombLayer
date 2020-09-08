@@ -2524,23 +2524,23 @@ Segment33(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",67.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",67.0);
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",56.0,0);
+  CMGen.generateMag(Control,lKey+"CMagHorA",56.7,0);
 
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
 
-  PGen.generatePipe(Control,lKey+"PipeB",81.5); // measured: 81.6, but adjusted to keep total length
-  LQGen.generateQuad(Control,lKey+"QuadA",17.1);
-  LSGen.generateSexu(Control,lKey+"SexuA",39.0);
-  LQGen.generateQuad(Control,lKey+"QuadB",60.9);
+  PGen.generatePipe(Control,lKey+"PipeB",81.7);
+  LQGen.generateQuad(Control,lKey+"QuadA",19.7);
+  LSGen.generateSexu(Control,lKey+"SexuA",40.7);
+  LQGen.generateQuad(Control,lKey+"QuadB",61.7);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
-  CMGen.generateMag(Control,lKey+"CMagVerC",12.5,0);
+  CMGen.generateMag(Control,lKey+"CMagVerC",11.0,0);
 
   setBellow26(Control,lKey+"Bellow");
 
