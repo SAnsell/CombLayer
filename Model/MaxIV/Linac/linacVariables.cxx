@@ -2486,33 +2486,9 @@ Segment32(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",12.694);  // from drawing coord (seg31)
+  Control.addVariable(lKey+"XYAngle",11.2);  // from SPF32FlatA coordinates @ No_32_34_00.pdf
   Control.addVariable(lKey+"EndAngle",6.40);  // from drawing coord (seg33)
-  /*
-  setVariable::PipeGenerator PGen;
-  setVariable::FlatPipeGenerator FPGen;
-  setVariable::DipoleDIBMagGenerator DIBGen;
 
-  FPGen.generateFlat(Control,lKey+"FlatA",82.5); // measured
-  Control.addVariable(lKey+"FlatAXYAngle",0.0);
-
-  DIBGen.generate(Control,lKey+"DMA");
-
-  PGen.setMat("Stainless316L","Stainless304L");
-  PGen.setNoWindow();
-  PGen.setCF<CF40_22>();
-  PGen.generatePipe(Control,lKey+"PipeA",94.4); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",-1.6);
-
-
-  FPGen.generateFlat(Control,lKey+"FlatB",82.5); // measured
-  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
-
-  DIBGen.generate(Control,lKey+"DMB");
-
-  setBellow26(Control,lKey+"Bellow");
-  Control.addVariable(lKey+"BellowXYAngle",0.0);
-  */
   Segment32Magnet(Control,lKey);
 
   return;
