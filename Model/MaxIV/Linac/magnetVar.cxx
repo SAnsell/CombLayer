@@ -128,52 +128,6 @@ Segment32Magnet(FuncDataBase& Control,
   return;
 }
 
-void
-Segment34Magnet(FuncDataBase& Control,
-		const std::string& lKey)
-  /*!
-    This should be for the magnet unit but currently doing segment34
-    to make fast compiles
-    \param Control :: Variable Database
-    \param lKey :: key name
-  */
-{
-  ELog::RegMethod RegA("linacVariables[F]","Segment34");
-
-  setVariable::PipeGenerator PGen;
-  setVariable::FlatPipeGenerator FPGen;
-  setVariable::DipoleDIBMagGenerator DIBGen;
-  setVariable::BellowGenerator BellowGen;
-
-
-  FPGen.generateFlat(Control,lKey+"FlatA",82.64); // measured
-  Control.addVariable(lKey+"FlatAXYAngle",-1.29);
-
-  DIBGen.generate(Control,lKey+"DMA");
-
-  PGen.setMat("Stainless316L","Stainless304L");
-  PGen.setNoWindow();
-  PGen.setCF<CF40_22>();
-
-  PGen.generatePipe(Control,lKey+"PipeA",94.351); // measured
-  Control.addVariable(lKey+"PipeAXYAngle",-1.985);
-
-
-  FPGen.generateFlat(Control,lKey+"FlatB",82.582); // measured
-  Control.addVariable(lKey+"FlatBXYAngle",-1.6);
-
-  DIBGen.generate(Control,lKey+"DMB");
-
-  BellowGen.setCF<setVariable::CF40_22>();
-  BellowGen.setMat("Stainless304L", "Stainless304L%Void%3.0");
-  BellowGen.generateBellow(Control,lKey+"Bellow",7.5); // measured
-  Control.addVariable(lKey+"BellowXYAngle",-1.525);
-
-  return;
-}
-
-
-
 }  // NAMESPACE linacVAR
 
 }   // NAMESPACE setVariable
