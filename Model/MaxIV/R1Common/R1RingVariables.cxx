@@ -511,7 +511,8 @@ createR1Shielding(FuncDataBase& Control,
      STYPE("FlexPes",6,1)
     };
   
-  Control.addVariable(preName+"NSideWall",wallUnits.size());
+  //  Control.addVariable(preName+"NSideWall",wallUnits.size());
+  Control.addVariable(preName+"NSideWall",1);
   size_t index(0);
   for(const STYPE& tc : wallUnits)
     {
@@ -524,10 +525,11 @@ createR1Shielding(FuncDataBase& Control,
 
   // Base units:
   const std::string sWall(preName+"SideWall");
-  Control.addVariable(sWall+"XStep",-270.0);
-  Control.addVariable(sWall+"Length",350.0);
-  Control.addVariable(sWall+"Depth",7.5);
-  Control.addVariable(sWall+"Height",60.0);
+  Control.addVariable(sWall+"XStep",506.0);
+  Control.addVariable(sWall+"Length",175.0);
+  Control.addVariable(sWall+"Depth",4.0);
+  Control.addVariable(sWall+"Height",40.0);
+  Control.addVariable(sWall+"OutStep",4.0);
   Control.addVariable(sWall+"Mat","Lead");
 
 

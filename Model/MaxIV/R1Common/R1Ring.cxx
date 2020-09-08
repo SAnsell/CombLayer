@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -332,6 +333,7 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+9,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+      SurfMap::addSurf("InnerCut",SMap.realSurf(surfN+9));
       surfN+=10;
     }
 
@@ -649,8 +651,11 @@ R1Ring::createSideShields(Simulation& System)
   // int : shared_ptr<SideShield>
   for(auto& [ id , SWPtr ] : sideShields)
     {
-      SWPtr->addInsertCell(CellMap::getCell("Wall",id+1));
-      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id));
+      SWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      ELog::EM<<"Insert == "
+	      <<CellMap::getCell("VoidTriangle",id)<<ELog::endDiag;
+      SWPtr->setCutSurf("Wall",-SurfMap::getSurf("SideInner",id));
+      SWPtr->setCutSurf("Clip",-SurfMap::getSurf("InnerCut",id));
       SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      
     }
   return;
@@ -672,6 +677,7 @@ R1Ring::createFreeShields(Simulation& System)
       PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
       PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
     }
+
   for(auto& [ id , PWPtr ] : outShields)
     {
       //      PWPtr->setNoInsert();
