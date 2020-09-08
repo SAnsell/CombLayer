@@ -51,7 +51,7 @@ namespace setVariable
 {
 
 ButtonBPMGenerator::ButtonBPMGenerator() :
-  length(5.0),innerRadius(0.95),
+  length(5.05),innerRadius(0.95),
   outerRadius(2.5),
   nButtons(4),
   flangeInnerRadius(2.0),

@@ -633,13 +633,16 @@ setMirrorChamberBlank(FuncDataBase& Control,
   SimpleTubeGen.setMat("Stainless304L");
   SimpleTubeGen.generateBlank(Control,name,0.0,16.0); // measured seg 15
 
+  const double wallThick(0.2);
+  Control.addVariable(name+"WallThick",wallThick);
+
   Control.addVariable(name+"NPorts",4);
   Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
   Control.addVariable(name+"FlangeCapMat","Stainless304L");
 
   // Outer radius of the chamber
   const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
+    setVariable::CF63::innerRadius+wallThick;
 
   const double L0(5.9-outerR); // measured seg 15
   const double L1(8.1-outerR); // measured seg 15
@@ -648,15 +651,15 @@ setMirrorChamberBlank(FuncDataBase& Control,
 
   setVariable::PortItemGenerator PItemGen;
 
-  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setCF<setVariable::CF35_TDC>(L0);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
   PItemGen.setLength(L1);
   PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
 
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength,"Stainless304L");
-  PItemGen.setCF<setVariable::CF40_22>(L2);
+  PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304L");
+  PItemGen.setCF<setVariable::CF35_TDC>(L2);
   PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
 
   PItemGen.setLength(L3);
@@ -2605,26 +2608,26 @@ Segment35(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
-  const double pipeALength(37.5); // measured
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",pipeALength);
+  PGen.generatePipe(Control,lKey+"PipeA",37.5);
 
-  LQGen.generateQuad(Control,lKey+"QuadA",pipeALength/2.0); // approx
+  LQGen.generateQuad(Control,lKey+"QuadA",18.7);
 
   BPMGen.generate(Control,lKey+"BPM");
 
-  PGen.generatePipe(Control,lKey+"PipeB",75.2); // measured
-  LQGen.generateQuad(Control,lKey+"QuadB",19.0); // approx
-  CMGen.generateMag(Control,lKey+"CMagH",45.0,1);
-  CMGen.generateMag(Control,lKey+"CMagV",65.0,0);
+  PGen.generatePipe(Control,lKey+"PipeB",75.15);
+  LQGen.generateQuad(Control,lKey+"QuadB",16.15);
+  CMGen.generateMag(Control,lKey+"CMagH",41.65,1);
+  CMGen.generateMag(Control,lKey+"CMagV",60.15,0);
 
   setMirrorChamberBlank(Control, lKey+"MirrorChamber");
   Control.addVariable(lKey+"MirrorChamberYAngle", 180.0);
 
-  PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
-  Control.addVariable(lKey+"PipeCFeMat", "Stainless304L"); // PDF
+  PGen.setCF<setVariable::CF37_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeC",12.6);
+  Control.addVariable(lKey+"PipeCFeMat", "Stainless304L");
 
   setBellow26(Control,lKey+"Bellow");
 

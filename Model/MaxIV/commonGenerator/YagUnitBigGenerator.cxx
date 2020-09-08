@@ -66,9 +66,9 @@ YagUnitBigGenerator::YagUnitBigGenerator() :
   viewBFlangeRadius(5.6),
   viewBFlangeLength(CF63::flangeLength),
   viewBPlateThick(CF63::flangeLength),
-  portRadius(CF40::innerRadius),portThick(CF40::wallThick),
-  portFlangeRadius(CF40::flangeRadius),
-  portFlangeLength(CF40::flangeLength),
+  portRadius(CF35_TDC::innerRadius),portThick(CF35_TDC::wallThick),
+  portFlangeRadius(CF35_TDC::flangeRadius),
+  portFlangeLength(CF35_TDC::flangeLength),
   frontLength(10.0),backLength(10.0),
   outerRadius(CF63::flangeRadius*1.2),
   voidMat("Void"),mainMat("Stainless304L")
@@ -159,10 +159,12 @@ YagUnitBigGenerator::generateYagUnit(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void YagUnitBigGenerator::setCF<CF35_TDC>();
 template void YagUnitBigGenerator::setCF<CF40_22>();
 template void YagUnitBigGenerator::setCF<CF40>();
 template void YagUnitBigGenerator::setCF<CF63>();
 
+template void YagUnitBigGenerator::setFlangeCF<CF35_TDC>();
 template void YagUnitBigGenerator::setFlangeCF<CF40_22>();
 template void YagUnitBigGenerator::setFlangeCF<CF40>();
 template void YagUnitBigGenerator::setFlangeCF<CF63>();
