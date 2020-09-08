@@ -68,6 +68,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
@@ -87,7 +88,6 @@
 #include "maxpeemOpticsBeamline.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
-
 
 #include "R1Beamline.h"
 #include "MAXPEEM.h"
@@ -131,9 +131,8 @@ MAXPEEM::build(Simulation& System,
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
-   */
+  */
 {
-  // For output stream
   ELog::RegMethod RControl("MAXPEEM","build");
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
@@ -141,12 +140,13 @@ MAXPEEM::build(Simulation& System,
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -154,7 +154,9 @@ MAXPEEM::build(Simulation& System,
 
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  if (stopPoint=="frontEnd" ||
+      stopPoint=="Dipole" ||
+      stopPoint=="Quadrupole") return;
 
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));

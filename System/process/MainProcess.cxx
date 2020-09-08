@@ -678,6 +678,8 @@ buildFullSimulation(Simulation* SimPtr,
   static int count(0);
   count++;
 
+  ModelSupport::objectAddition(*SimPtr,IParam);
+  
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
   

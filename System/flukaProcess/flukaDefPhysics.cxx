@@ -192,52 +192,22 @@ setMagneticExternal(SimFLUKA& System,
 	  Geometry::Vec3D AZ;
 	  
 	  // General form is ::  Type : location : Param
-	  size_t index(1);
-	  const std::string typeName=IParam.getValueError<std::string>
-	    ("MagUnit",setIndex,0,"typeName");
-	  ModelSupport::getObjectAxis(System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
-	  const Geometry::Vec3D Extent=IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
-	  const double KV=
-	    IParam.getValueError<double> ("MagUnit",setIndex,index,"K Value");
+	  size_t index(0);
+	  ModelSupport::getObjectAxis
+	    (System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
+	  const Geometry::Vec3D Extent=
+	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
 
+	  std::vector<double> KV(4);
+	  KV[0]=IParam.getValueError<double>
+	    ("MagUnit",setIndex,index,"K Value");
+	  for(size_t i=1;i<4;i++)
+	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index);
 
-	  if (typeName=="Octopole")
-	    {
-	      std::shared_ptr<flukaSystem::magnetOctopole>
-		OPtr(new magnetOctopole("Octo",setIndex));
-	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(OPtr);
-	    }
-	  else if (typeName=="Hexapole")
-	    {
-	      std::shared_ptr<flukaSystem::magnetHexapole>
-		OPtr(new magnetHexapole("Hexa",setIndex));
-	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(OPtr);
-	    }
-
-	  else if (typeName=="Quad")
-	    {
-	      std::shared_ptr<flukaSystem::magnetQuad>
-		QPtr(new magnetQuad("Quad",setIndex));
-	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(QPtr);
-	    }
-
-	  else if (typeName=="Dipole")
-	    {
-	      const double Radius=IParam.getValueError<double>
-		("MagUnit",setIndex,index,"Radius");
-	      std::shared_ptr<flukaSystem::magnetDipole>
-		QPtr(new magnetDipole("Dipl",setIndex));
-	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV,Radius);
-	      System.addMagnetObject(QPtr);
-	    }
-	  else
-	    {
-	      throw ColErr::InContainerError<std::string>
-		(typeName,"Magnet type not known");
-	    }
+	  std::shared_ptr<flukaSystem::magnetUnit>
+	    OPtr(new magnetUnit("MagUnit",setIndex));
+	  OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
+	  System.addMagnetObject(OPtr);
 	}
     }
   return;

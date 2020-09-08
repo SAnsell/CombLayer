@@ -218,7 +218,6 @@ CrossPipe::createSurfaces()
   
   // Inner void
   if (frontActive())
-    // create surface 101:
     FrontBackCut::getShiftedFront(SMap,buildIndex+101,Y,flangeLength);
   else
     {
@@ -250,6 +249,7 @@ CrossPipe::createSurfaces()
     ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
 
   // Secondary SURFACES:
+
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Z,vertRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Z,vertRadius+feThick);
 

@@ -176,7 +176,7 @@ SimValid::diagnostics(const Simulation& System,
 int
 SimValid::runPoint(const Simulation& System,
 		   const Geometry::Vec3D& CP,
-		   const size_t  nAngle) const
+		   const size_t nAngle) const
   /*!
     Calculate the tracking
     \param System :: Simulation to use
@@ -203,8 +203,11 @@ SimValid::runPoint(const Simulation& System,
   const int initSurfNum=InitObj->isOnSide(CP);
 
   // check surfaces
+  ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
   for(size_t i=0;i<nAngle;i++)
     {
+      if (nAngle>10000 && i*10==nAngle)
+	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
       phi=RNG.rand()*M_PI;

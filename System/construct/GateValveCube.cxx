@@ -3,7 +3,7 @@
  
  * File:   construct/GateValveCube.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -361,15 +361,14 @@ GateValveCube::createObjects(Simulation& System)
 
   if (portAExtends || portBExtends)
     {
-      Out="";
       if (!portAExtends)
 	Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
       else if (!portBExtends)
 	Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
       else 
 	Out=ModelSupport::getComposite
-	  (SMap,buildIndex," (-11 -117): (12 -217) ");
-      
+	  (SMap,buildIndex," ((-11 -117) : (12 -217)) ");
+
       addOuterUnionSurf(Out+frontStr+backStr);
     }
       

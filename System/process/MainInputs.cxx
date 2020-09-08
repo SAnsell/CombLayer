@@ -81,10 +81,12 @@ createInputs(inputParam& IParam)
 
   IParam.regFlag("a","axis");
   IParam.regMulti("angle","angle",10000,1,8);
+  IParam.regFlag("basicGeom","basicGeom");
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
+  IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");
   IParam.regMulti("Mag","MAG",1000,0);
   IParam.regMulti("MagStep","MagStep",1000,0);
@@ -224,6 +226,8 @@ createInputs(inputParam& IParam)
 
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
+  IParam.setDesc("basicGeom","Use basic fluka geometry system");
+  IParam.setDesc("geomPrecision","Set geometry accuracy  : 1e-6cm * value");
   IParam.setDesc("c","Cells to protect");
   IParam.setDesc("cutWeight","Set the cut weights (wc1/wc2)" );
   IParam.setDesc("ECut","Cut energy");

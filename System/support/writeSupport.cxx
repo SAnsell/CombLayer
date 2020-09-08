@@ -78,27 +78,37 @@ flukaNum(const double D)
   static boost::format FMTlnum("%1$10.5g");
   //  static boost::format FMTnegLnum("%1$10.4g");
   static boost::format FMTnegNum("%1$10.5f");
-  static boost::format FMTnegLNum("%1$10.5g");
+  static boost::format FMTcutNum("%1$10.4f");
+  static boost::format FMTnegLNum("%1$10.5g");  // allow for sign
+  static boost::format FMTcutLNum("%1$10.4g");  // allow for sign
 
   if (D < 1e5 && D > 1e-5)      // +ve low range
     {
       // test if 1 dp sufficiently accurate
       if (std::abs(std::round(D*10000.0)-D*10000.0)
-	  <Geometry::zeroTol) 
+	  <Geometry::zeroTol)
 	return (FMTnum % D).str();
     }
   if (D> -1e5 && D< -1e-5)        // -ve low range
     {
       // test if 1 dp sufficiently accurate
-      if (std::abs(std::round(D*10000.0)-D*10000.0)
-	  <Geometry::zeroTol) 
-	return (FMTnegNum % D).str();
-    }
-  if (D<0.0)
-    return (FMTnegLNum % D).str();
 
-  return (FMTlnum % D).str();
-  
+      if (std::abs(std::round(D*10000.0)-D*10000.0)
+	  <Geometry::zeroTol)
+	{
+	  std::string out= (FMTnegNum % D).str();
+	  if (out.size()>10)
+	    out= (FMTcutNum % D).str();
+	  return out;
+	}
+    }
+  std::string out=(FMTnegLNum % D).str();
+  if (out.size()>10)
+    out=(FMTcutLNum % D).str();
+
+  if (out.size()>10)
+    std::cerr<<"ERROR With number"<<out<<std::endl;
+  return out;
 }
 
 void

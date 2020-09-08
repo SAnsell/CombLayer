@@ -394,16 +394,14 @@ void
 R3FrontEndVariables(FuncDataBase& Control,
 		    const std::string& frontKey,
 		    const double exitLen) 
-/*!
+  /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
-    \param yStep :: offset step
-    \param transLen :: Length of dipole
     \param exitLeng :: last exit pipe length
   */
 {
-  ELog::RegMethod RegA("R3FrontEndVariables[F]","R3FrontEndVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndVariables");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;

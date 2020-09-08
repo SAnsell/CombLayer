@@ -67,6 +67,7 @@
 #include "QuadUnitGenerator.h"
 #include "CurveMagGenerator.h"
 #include "CylGateValveGenerator.h"
+#include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "StriplineBPMGenerator.h"
@@ -89,6 +90,8 @@
 #include "TWCavityGenerator.h"
 #include "UndVacGenerator.h"
 #include "FMUndulatorGenerator.h"
+#include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -201,6 +204,17 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
 
+  // collimator block
+  setVariable::SqrFMaskGenerator FMaskGen;
+  FMaskGen.setPipeRadius(-10.0);
+  // FMaskGen.setCF<CF63>();
+  // FMaskGen.setBFlangeCF<CF40>();
+  // FMaskGen.setFrontGap(3.99,1.97);  //1033.8
+  // FMaskGen.setBackGap(0.71,0.71);
+  // FMaskGen.setMinSize(10.2,0.71,0.71);
+  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+
+  
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");
 
@@ -300,6 +314,11 @@ SingleItemVariables(FuncDataBase& Control)
   // CylGateValve
   setVariable::CylGateValveGenerator GVGen;
   GVGen.generateGate(Control,"GV",1);
+
+  // CylGateValve
+  setVariable::GateValveGenerator GVCGen;
+  GVCGen.generateValve(Control,"GVCube",0.0,1);
+
 
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;

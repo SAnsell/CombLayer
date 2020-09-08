@@ -74,11 +74,16 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
+#include "FrontBackCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "InnerZone.h"
+#include "insertObject.h"
+#include "insertCylinder.h"
+#include "insertPlate.h"
+
 #include "Quadrupole.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
@@ -90,17 +95,20 @@ namespace xraySystem
 
 MagnetBlock::MagnetBlock(const std::string& Key) : 
   attachSystem::FixedOffset(Key,8),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Magnet","Dipole","Photon"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
-  dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber"))
+  dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber")),
+  eCutDisk(new insertSystem::insertCylinder(keyName+"ECutDisk")),
+  eCutMagDisk(new insertSystem::insertPlate(keyName+"ECutMagDisk")),
+  eCutWallDisk(new insertSystem::insertPlate(keyName+"ECutWallDisk"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {
-  nameSideIndex(1,"Flange");
+  nameSideIndex(0,"Flange");
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
 
@@ -109,7 +117,9 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   
   OR.addObject(quadUnit);
   OR.addObject(dipoleChamber);
-
+  OR.addObject(eCutDisk);
+  OR.addObject(eCutMagDisk);
+  OR.addObject(eCutWallDisk);
 }
 
 
@@ -207,18 +217,31 @@ MagnetBlock::createObjects(Simulation& System)
 
   std::string Out;
 
+  const HeadRule& aSegment=quadUnit->getFullRule(2);
+
   // Construct the outer sectoin [divide later]
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -11 3 -4 5 -6 ");
   makeCell("Front",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 3 13 23 33 43 -4 5 -6 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 3 13 -4 5 -6 ");
+  Out+=aSegment.complement().display();
+  makeCell("OuterA",System,cellIndex++,outerMat,0.0,Out);
+
+  if (stopPoint=="Quadrupole")
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 3 13 -4 5 -6 ");
+      Out+=aSegment.complement().display();
+      addOuterSurf("Magnet",Out);
+      return;
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 23 33 43 -4 5 -6 ");
+  makeCell("OuterB",System,cellIndex++,outerMat,0.0,Out+aSegment.display());
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -12 3 13 23 33 43 -4 5 -6 ");
-  addOuterSurf(Out);
+  addOuterSurf("Magnet",Out);
 
   return;
 }
@@ -227,24 +250,50 @@ void
 MagnetBlock::buildInner(Simulation& System)
   /*!
     Build the inner part of the magnet block
+    \param System :: Simulation to buse
   */
 {
   ELog::RegMethod RegA("MagnetBlock","buildInner");
   
   //  quadUnit->setCutSurf("front",undulatorFC,2);
-  quadUnit->createAll(System,*this,-1);
-  quadUnit->insertInCell(System,CellMap::getCell("Front"));
-  quadUnit->insertInCell(System,CellMap::getCell("Outer"));
 
+  quadUnit->createAll(System,*this,0);
 
-  dipoleChamber->setCutSurf("front",*quadUnit,2);
-  dipoleChamber->createAll(System,*quadUnit,2);
-  dipoleChamber->insertInCell("Main",System,CellMap::getCell("Outer"));
-  dipoleChamber->insertInCell("Exit",System,CellMap::getCell("Outer"));
- 
+  if (stopPoint!="Quadrupole")
+    {
+      dipoleChamber->setCutSurf("front",*quadUnit,2);
+      dipoleChamber->createAll(System,*quadUnit,2);
+      addOuterSurf("Dipole",dipoleChamber->getCC("Main"));
+      addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
+    }
   return;
-  
 }
+
+void
+MagnetBlock::insertInner(Simulation& System)
+  /*!
+    Insert inner components
+    \param System :: Simulation to buse
+   */
+{
+  ELog::RegMethod RegA("MagnetBlock","insertInner");
+
+  if (CellMap::hasCell("OuterB"))
+    {
+      dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
+      dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+    }
+
+  quadUnit->insertInCell("FlangeA",System,CellMap::getCell("Front"));
+  quadUnit->insertInCell("Main",System,CellMap::getCell("Front"));
+  quadUnit->insertInCell("Main",System,CellMap::getCell("OuterA"));
+  quadUnit->insertInCell("FlangeB",System,CellMap::getCell("OuterA"));
+  quadUnit->createQuads(System,CellMap::getCell("OuterA"));
+  
+  return;
+}
+
+
 void 
 MagnetBlock::createLinks()
   /*!
@@ -256,10 +305,47 @@ MagnetBlock::createLinks()
   // link 0 / 1 from PreDipole / EPCombine
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  
+      
+  if (stopPoint=="Quadrupole")
+    {
+      FixedComp::setLinkSignedCopy(1,*quadUnit,2);
+      FixedComp::setLinkSignedCopy(2,*quadUnit,2);
+    }
+  else
+    {
+      FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
+      FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
+    }
   return;
 }
 
+
+void
+MagnetBlock::buildElectronCut(Simulation& System)
+  /*!
+    Adds electron cuts to the model (if required)
+    \param System :: Simualtion
+  */
+{
+  ELog::RegMethod RegA("MagnetBlock","buildElectronCut");
+  /*
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  eCutMagDisk->createAll(System,*dipoleChamber,
+			 -dipoleChamber->getSideIndex("dipoleExit"));
+
+  /*  
+  eCutWallDisk->setNoInsert();
+  eCutWallDisk->addInsertCell(outerCell);
+  eCutWallDisk->createAll(System,*dipoleChamber,
+			 dipoleChamber->getSideIndex("dipoleExit"));
+
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
+  eCutDisk->createAll(System,*dipoleChamber,-2);
+  */
+  return;
+}
 
 void
 MagnetBlock::createAll(Simulation& System,
@@ -277,14 +363,19 @@ MagnetBlock::createAll(Simulation& System,
   int outerCell;
   
   populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
+  
+  buildInner(System);
+
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);
 
-  buildInner(System);
+  insertInner(System);  
+  insertObjects(System);
+  buildElectronCut(System);
+
+
   
   return;
 }

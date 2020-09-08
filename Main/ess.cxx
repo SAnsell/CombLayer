@@ -121,7 +121,6 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      ELog::EM<<"ASDFASF "<<ELog::endDiag;
       essSystem::makeESS ESSObj;
 
       ESSObj.build(*SimPtr,IParam);

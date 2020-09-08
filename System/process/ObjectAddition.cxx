@@ -3,7 +3,7 @@
  
  * File:   process/ObjectAddition.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,14 +142,15 @@ objectAddition(Simulation& System,
 {
   ELog::RegMethod RegA("ObjectAddtion[F]","objectAddition");
 
-const size_t nP=IParam.setCnt("OAdd");
+  const size_t nP=IParam.setCnt("OAdd");
+
   for(size_t index=0;index<nP;index++)
     {
       const std::string eMess
 	("Insufficient item for OAdd["+std::to_string(index)+"]");
       const std::string key=
 	IParam.getValueError<std::string>("OAdd",index,0,eMess);
-      
+
       if(key=="help")
 	{
 	  ELog::EM<<"OAdd Help "<<ELog::endBasic;

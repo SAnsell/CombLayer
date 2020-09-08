@@ -22,12 +22,6 @@
 #ifndef xraySystem_R1FrontEnd_h
 #define xraySystem_R1FrontEnd_h
 
-namespace insertSystem
-{
-  class insertCylinder;
-  class insertPlate;
-}
-
 namespace constructSystem
 {
   class Bellows;
@@ -56,10 +50,12 @@ namespace xraySystem
 {
   class BremBlock;
   class BeamMount;
+  class CylGateValve;
   class DipoleChamber;
   class FlangeMount;
   class HeatDump;
   class LCollimator;
+  class MagnetBlock;
   class QuadUnit;
   class Quadrupole;
   class SquareFMask;
@@ -92,18 +88,14 @@ class R1FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
+  /// Gate unit
+  std::shared_ptr<constructSystem::GateValveCube> elecGateA;
+
   /// Quad unit
-  std::shared_ptr<xraySystem::QuadUnit> quadUnit;
-  /// dipole connection pipe
-  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+  std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
+
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
-  /// electron cut cell [straight line]
-  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1
@@ -174,7 +166,9 @@ class R1FrontEnd :
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  double outerRadius;   ///< radius of tube for divisions
+  double outerLeft;     ///< left size of tube for divisions
+  double outerRight;    ///< right of tube for divisions
+  double outerTop;      ///< up/donw of tube for divisions
     
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
 

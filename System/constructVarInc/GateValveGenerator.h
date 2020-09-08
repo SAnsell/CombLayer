@@ -78,6 +78,8 @@ class GateValveGenerator
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
 
+  template<typename innerCF,typename outerCF> void setPortPairCF();
+
   
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }

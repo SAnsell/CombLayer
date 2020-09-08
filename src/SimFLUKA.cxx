@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,8 +97,8 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
-  defType("PRECISION"),writeVariable(1),
-  lowEnergyNeutron(1),
+  defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
+  writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),BVec(0,0,0),
   PhysPtr(new flukaSystem::flukaPhysics()),
   RadDecayPtr(new flukaSystem::radDecay())
@@ -110,6 +110,7 @@ SimFLUKA::SimFLUKA() :
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
   alignment(A.alignment),defType(A.defType),
+  basicGeom(A.basicGeom),geomPrecision(A.geomPrecision),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
   nps(A.nps),rndSeed(A.rndSeed),BVec(A.BVec),
@@ -134,6 +135,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
     {
       Simulation::operator=(A);
       defType=A.defType;
+      basicGeom=A.basicGeom;
       writeVariable=A.writeVariable;
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
@@ -760,9 +762,15 @@ SimFLUKA::write(const std::string& Fname) const
   
   if (writeVariable)
     Simulation::writeVariables(OX,'*');
+
   
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
-  StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
+  std::ostringstream cx;
+  cx<<"GEOBEGIN";
+  cx<<((basicGeom) ? " - " : " 1.0 ");
+  cx<<geomPrecision<<" - - - - COMBNAME";
+  StrFunc::writeFLUKA(cx.str(),OX);
+
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);

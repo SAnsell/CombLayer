@@ -88,7 +88,7 @@ class Quadrupole : public attachSystem::FixedRotate,
   virtual ~Quadrupole();
 
   /// set innner tube
-  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
+  void setInnerTube(const HeadRule& HR) { innerTube=HR;  }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -439,7 +439,7 @@ insertPlate::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
-  
+
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);

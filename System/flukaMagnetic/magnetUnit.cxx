@@ -3,7 +3,7 @@
  
  * File:   flukaMagnetic/magnetUnit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,9 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 #include "LinkUnit.h" 
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -126,7 +129,9 @@ magnetUnit::populate(const FuncDataBase& Control)
   length=Control.EvalDefVar<double>(keyName+"Length",length);
   height=Control.EvalDefVar<double>(keyName+"Height",height);
   width=Control.EvalDefVar<double>(keyName+"Width",width);
-  
+
+  for(size_t i=0;i<4;i++)
+    KFactor[i]=Control.EvalDefVar<double>(keyName+"KFactor",KFactor[i]);
   return;
 }
 
@@ -206,6 +211,56 @@ magnetUnit::addCell(const int CN)
 }
 
 void
+magnetUnit::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
+  /*!
+    If the object is created as a normal object populate
+    variables
+    \param System :: Simulation system
+    \param FC :: FixedComp for origin / axis
+    \param sideIndex :: link point
+  */
+{
+  ELog::RegMethod RegA("magnetUnit","createAll");
+  
+  populate(System.getDataBase());
+  magnetUnit::createUnitVector(FC,sideIndex);
+
+  return;
+}
+
+void
+magnetUnit::createAll(Simulation& System,
+		      const Geometry::Vec3D& OG,
+		      const Geometry::Vec3D& AY,
+		      const Geometry::Vec3D& AZ,
+		      const Geometry::Vec3D& extent,
+		      const std::vector<double>& kValue)
+  /*!
+    If the object is created as a normal object populate
+    variables
+    \param System :: Simulation system
+    \param OG :: New origin
+    \param AY :: Y Axis
+    \param AZ :: Z Axis [reothorgalizd]
+    \param extent :: XYZ Extent distance [0 in an dimestion for all space]
+    \param kValue :: K Value of dipole/quad/hex ...
+  */
+{
+  ELog::RegMethod RegA("magnetUnit","createAll");
+
+  this->populate(System.getDataBase());
+  magnetUnit::createUnitVector(OG,AY,AZ);
+  setExtent(extent[0],extent[1],extent[2]);
+
+  for(size_t i=0;i<4;i++)
+    KFactor[i]=(kValue.size()>i) ? kValue[i] : 0.0;
+  
+  return;
+}
+  
+void
 magnetUnit::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the magnetic unit
@@ -224,6 +279,7 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"USRICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
+
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
@@ -249,6 +305,14 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 	<<keyName;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
+
+  cx.str("");
+  cx<<"USRICALL 5 ";
+  for(size_t i=0;i<4;i++)
+    cx<<StrFunc::makeString(KFactor[i])<<" ";
+  cx<<" - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);  
+      
  
   return;
 }

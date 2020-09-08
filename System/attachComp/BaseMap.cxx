@@ -313,7 +313,7 @@ BaseMap::getLastItem(const std::string& Key) const
     \return cell number
   */
 {
-  ELog::RegMethod RegA("BaseMap","getItem(s,index)");
+  ELog::RegMethod RegA("BaseMap","getLastItem");
 
   LCTYPE::const_iterator mc=Items.find(Key);
   if (mc==Items.end() || mc->second.empty())
@@ -346,7 +346,7 @@ BaseMap::getNItems(const std::string& Key) const
     \return size of items
    */
 {
-  ELog::RegMethod RegA("BaseMap","getItems(Key)");
+  ELog::RegMethod RegA("BaseMap","getNItems");
 
   if (Key=="All" || Key=="all")
     return getItems().size();
@@ -370,7 +370,7 @@ BaseMap::getItems(const std::string& Key) const
   ELog::RegMethod RegA("BaseMap","getItems(Key)");
 
   if (Key=="All" || Key=="all") return getItems(); 
-  std::vector<int> Out;  
+
   LCTYPE::const_iterator mc=Items.find(Key);
   if (mc==Items.end())
     throw ColErr::InContainerError<std::string>(Key,"Key");
