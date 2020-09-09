@@ -2547,7 +2547,7 @@ Segment33(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",67.0);
@@ -2564,6 +2564,7 @@ Segment33(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
+  Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
   CMGen.generateMag(Control,lKey+"CMagVerC",11.0,0);
