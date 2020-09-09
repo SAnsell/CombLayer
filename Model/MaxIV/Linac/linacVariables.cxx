@@ -2916,10 +2916,10 @@ Segment41(FuncDataBase& Control,
 
   // Pipe
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",38.0);
+  PGen.generatePipe(Control,lKey+"Pipe",38.05);
 
   return;
 }
