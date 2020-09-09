@@ -2845,7 +2845,7 @@ Segment39(FuncDataBase& Control,
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",37.0);
+  PGen.generatePipe(Control,lKey+"Pipe",37.05);
 
   setBellow26(Control,lKey+"Bellow");
 
