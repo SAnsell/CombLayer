@@ -2876,9 +2876,10 @@ Segment40(FuncDataBase& Control,const std::string& lKey)
   		      atan((startPt.X()-endPt.X())/
 			   (endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-
   UVGen.generateUndVac(Control,lKey+"UVac");
   UUGen.generateUndulator(Control,lKey+"UVacUndulator",482.0);
+  Control.addVariable(lKey+"UVacRadius",12.3);
+  Control.addVariable(lKey+"UVacWallThick",0.4);
 
   return;
 }
