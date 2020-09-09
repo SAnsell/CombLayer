@@ -59,11 +59,11 @@ namespace setVariable
 
 EArrivalMonGenerator::EArrivalMonGenerator() :
   radius(3.167), // No_2_00.pdf
-  length(3.67),
+  length(4.75),
   thick(1.0),faceThick(1.0),
-  frontPipeILen(1.0),frontPipeLen(3.7),
+  frontPipeILen(1.0),frontPipeLen(3.13),
   frontPipeRadius(1.0), // No_2_00.pdf
-  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.63),
+  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.13),
   backPipeRadius(1.0),backPipeThick(0.8),
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
@@ -88,6 +88,8 @@ EArrivalMonGenerator::setCF()
   */
 {
   radius=CF63::innerRadius;
+  frontPipeRadius=CF::innerRadius;
+  backPipeRadius=CF::innerRadius;
   setFlangeCF<CF>();
   return;
 }
@@ -153,9 +155,11 @@ EArrivalMonGenerator::generateMon(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void EArrivalMonGenerator::setCF<CF18_TDC>();
 template void EArrivalMonGenerator::setCF<CF40_22>();
 template void EArrivalMonGenerator::setCF<CF40>();
 
+template void EArrivalMonGenerator::setFlangeCF<CF18_TDC>();
 template void EArrivalMonGenerator::setFlangeCF<CF40_22>();
 template void EArrivalMonGenerator::setFlangeCF<CF40>();
 

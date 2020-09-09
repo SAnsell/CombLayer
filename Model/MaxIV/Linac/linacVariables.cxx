@@ -101,7 +101,9 @@ namespace linacVar
 		       const double,const bool);
   void setFlat(FuncDataBase&,const std::string&,
 	       const double,const double);
-  void setGauge(FuncDataBase&,const std::string&,
+  void setGauge34(FuncDataBase&,const std::string&,
+		const double);
+  void setGauge37(FuncDataBase&,const std::string&,
 		const double);
   void setBellow26(FuncDataBase&,const std::string&,
 		 const double);
@@ -490,10 +492,39 @@ setFlat(FuncDataBase& Control,
 }
 
 void
-setGauge(FuncDataBase& Control,
+setGauge34(FuncDataBase& Control,
 	 const std::string& name)
 /*!
-  Set the vacuum gauge variables
+  Set the vacuum gauge variables with CF34_TDC flanges
+  \param Control :: DataBase to use
+  \param name :: name prefix
+ */
+{
+  ELog::RegMethod RegA("linacVariables[F]","setGauge");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  const Geometry::Vec3D OPos(0,0.0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+
+  SimpleTubeGen.setCF<CF34_TDC>();
+  SimpleTubeGen.setMat("Stainless304L");
+  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // 12.596
+
+  Control.addVariable(name+"NPorts",1);
+  PItemGen.setCF<setVariable::CF34_TDC>(5.1); // measured in segment 19
+  PItemGen.setPlate(setVariable::CF34_TDC::flangeLength, "Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+
+  return;
+}
+
+void
+setGauge37(FuncDataBase& Control,
+	 const std::string& name)
+/*!
+  Set the vacuum gauge variables with CF37_TDC flanges
   \param Control :: DataBase to use
   \param name :: name prefix
  */
@@ -1678,7 +1709,7 @@ Segment19(FuncDataBase& Control,
 
   setBellow26(Control,lKey+"BellowA");
 
-  setGauge(Control,lKey+"Gauge");
+  setGauge37(Control,lKey+"Gauge");
 
   // Fast closing valve
   setRecGateValve(Control,lKey+"GateA",false);
@@ -2362,16 +2393,8 @@ Segment30(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
 
   // Gauge
-  std::string name=lKey+"Gauge";
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.setCF<CF37_TDC>();
-  SimpleTubeGen.generateTube(Control,name,0.0,12.585); // No_30_00
-  Control.addVariable(name+"YAngle", 180.0);
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF37_TDC>(5.1); //
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
+  setGauge37(Control,lKey+"Gauge");
+  Control.addVariable(lKey+"GaugeYAngle",180.0);
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -2661,46 +2684,35 @@ Segment36(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  // Gauge
-  std::string name=lKey+"Gauge";
-  SimpleTubeGen.setCF<CF40_22>();
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF40_22>(5.1); //
-  PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(1,0,0));
+  setGauge34(Control,lKey+"Gauge");
 
   // Pipes
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  const double pipeALength(146.9); // measured
-  PGen.generatePipe(Control,lKey+"PipeA",pipeALength);
-  PGen.generatePipe(Control,lKey+"PipeB",98.7); // measured
-  PGen.generatePipe(Control,lKey+"PipeC",30.0); // measured
-  PGen.generatePipe(Control,lKey+"PipeD",33.3); // measured
-  PGen.generatePipe(Control,lKey+"PipeE",35.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",146.84);
+  PGen.generatePipe(Control,lKey+"PipeB",98.69);
+  PGen.generatePipe(Control,lKey+"PipeC",30.0);
+  PGen.generatePipe(Control,lKey+"PipeD",33.3);
+  PGen.generatePipe(Control,lKey+"PipeE",35.0);
 
   // magnet locations based on front surfaces of yokes
   // Quadrupole magnets
-  LQGen.generateQuad(Control,lKey+"QuadA",18.55); // measured
-  LQGen.generateQuad(Control,lKey+"QuadB",128.55); // measured
+  LQGen.generateQuad(Control,lKey+"QuadA",18.79);
+  LQGen.generateQuad(Control,lKey+"QuadB",128.54);
 
   // Corrector magnets
-  CMGen.generateMag(Control,lKey+"CMagH",42.35+1.3,0); // measured with wrong CMagH length
+  CMGen.generateMag(Control,lKey+"CMagH",43.04,0);
   // Control.addVariable(lKey+"CMagHMagInnerLength",10.3); // 11.5
   // Control.addVariable(lKey+"CMagHMagLength",14.2-1.2); //
-  CMGen.generateMag(Control,lKey+"CMagV",61.05+1.1,1); // measured with wrong CMagV length
+  CMGen.generateMag(Control,lKey+"CMagV",61.54,1);
 
   // Beam position monitors
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
   // Beam arrival monitor
-  EArrGen.setCF<setVariable::CF40_22>();
+  EArrGen.setCF<setVariable::CF18_TDC>();
   EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
   Control.addVariable(lKey+"BeamArrivalMonLength",4.75);
 
