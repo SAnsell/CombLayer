@@ -201,6 +201,28 @@ struct CF27_TDC
   /* static constexpr size_t nBolts=6; */
 };
 
+ /*!
+  \struct CF34_TDC
+  \version 1.0
+  \author K. Batkov
+  \date September 2020
+  \brief CFFlanges for CF34 (TDC geometry)
+*/
+
+struct CF34_TDC
+{
+  static constexpr double innerRadius=1.7;
+  static constexpr double wallThick=0.2;
+  static constexpr double flangeRadius=3.5;
+  static constexpr double flangeLength=1.3;
+  /* static constexpr double bellowStep=0.5; */
+  /* static constexpr double bellowThick=0.5; */
+  /* static constexpr double gasketRadius=0.5; */
+  /* static constexpr double gasketThick=0.7; */
+  /* static constexpr double boltRadius=0.4; */
+  /* static constexpr size_t nBolts=6; */
+};
+
 /*!
   \struct CF35_TDC
   \version 1.0
