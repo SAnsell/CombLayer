@@ -3465,7 +3465,7 @@ LINACvariables(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
-  ELog::RegMethod RegA("linacVariables[F]","LINACVariables");
+  ELog::RegMethod RegA("linacVariables[F]","LINACvariables");
 
   ELog::EM<<"LINAC VARIABLES"<<ELog::endDiag;
   linacVar::wallVariables(Control,"InjectionHall");

@@ -3,7 +3,7 @@
  
  * File:   process/SimImportance.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,53 @@ namespace SimProcess
 {
 
 void
-importanceSim(Simulation& System,
+importanceSim(SimFLUKA& System,
+	      const mainSystem::inputParam& IParam)
+/*!
+    Apply importances/renumber and weights
+    \param System :: Simuation object 
+    \param IParam :: Input parameters
+   */
+{
+  ELog::RegMethod RegA("SimImportance[F]","importanceSim(FLUKA)");
+
+  System.populateCells();
+  System.createObjSurfMap();
+  
+  WeightSystem::WCellControl WCell;
+  WeightSystem::WWGControl WWGC;
+  WCell.processWeights(System,IParam);
+  WWGC.processWeights(System,IParam);
+  
+  mainSystem::renumberCells(System,IParam);
+  flukaSystem::setModelPhysics(System,IParam);
+  return;
+}
+
+void
+importanceSim(SimPHITS& System,
+	      const mainSystem::inputParam& IParam)
+/*!
+    Apply importances/renumber and weights
+    \param System :: Simuation object 
+    \param IParam :: Input parameters
+   */
+{
+  ELog::RegMethod RegA("SimImportance[F]","importanceSim(PHITS)");
+
+  System.populateCells();
+  System.createObjSurfMap();
+
+  WeightSystem::WCellControl WCell;
+  WCell.processWeights(System,IParam);
+  
+  mainSystem::renumberCells(System,IParam);
+  phitsSystem::setModelPhysics(System,IParam);
+  return;
+}  
+
+void
+importanceSim(SimMCNP& System,
 	      const mainSystem::inputParam& IParam)
   /*!
     Apply importances/renumber and weights
@@ -90,56 +136,10 @@ importanceSim(Simulation& System,
     \param IParam :: Input parameters
    */
 {
-  ELog::RegMethod RegA("SimImportance[F]","importanceSim");
+  ELog::RegMethod RegA("SimImportance[F]","importanceSim(MCNP)");
 
   System.populateCells();
   System.createObjSurfMap();
-
-  SimMCNP* mcnpPtr=dynamic_cast<SimMCNP*>(&System);
-  if (mcnpPtr)
-    {
-      importanceSim(*mcnpPtr,IParam);
-      return;
-    }
-  
-  SimFLUKA* flukaPtr=dynamic_cast<SimFLUKA*>(&System);
-  if (flukaPtr)
-    {
-      WeightSystem::WCellControl WCell;
-      WeightSystem::WWGControl WWGC;
-      WCell.processWeights(System,IParam);
-      WWGC.processWeights(System,IParam);
-      
-      mainSystem::renumberCells(*flukaPtr,IParam);
-      flukaSystem::setModelPhysics(*flukaPtr,IParam);
-      return;
-    }
-  SimPHITS* phitsPtr=dynamic_cast<SimPHITS*>(&System);
-  if (phitsPtr)
-    {
-      WeightSystem::WCellControl WCell;
-      WCell.processWeights(System,IParam);
-      
-      mainSystem::renumberCells(*phitsPtr,IParam);
-      phitsSystem::setModelPhysics(*phitsPtr,IParam);
-      return;
-    }
-  
-  
-  ELog::EM<<"Unknown Sim for importance sampling"<<ELog::endDiag;
-  return;
-  
-}
-
-void
-importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
-  /*!
-    Apply importances/renumber and weights
-    \param System :: Simuation object 
-    \param IParam :: Input parameters
-   */
-{
-  ELog::RegMethod RegA("SimImportance[F]","importanceSim(MCNP)");
 
   physicsSystem::PhysicsCards& PC=System.getPC();      
   WeightSystem::simulationImp(System,IParam);

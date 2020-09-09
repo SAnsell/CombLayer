@@ -81,10 +81,6 @@
 #include "pairValueSet.h"
 #include "flukaPhysics.h"
 #include "magnetUnit.h"
-#include "magnetDipole.h"
-#include "magnetQuad.h"
-#include "magnetHexapole.h"
-#include "magnetOctopole.h"
 #include "flukaDefPhysics.h"
 
 

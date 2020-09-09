@@ -140,6 +140,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       if (!linacFlag && (Linac.find(beam)!=Linac.end()))
 	{
 	  LINACvariables(Control);
+	  LINACmagnetVariables(Control);
 	  linacFlag=1;
 	}
 	  

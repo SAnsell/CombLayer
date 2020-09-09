@@ -75,6 +75,7 @@
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
+#include "SimImportance.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
@@ -379,8 +380,6 @@ createSimulation(inputParam& IParam,
 {
   ELog::RegMethod RegA("MainProcess","createSimulation");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   // Get a copy of the command used to run the program
   std::stringstream cmdLine;
 
@@ -534,7 +533,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
 
-  //
+  // process 
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc

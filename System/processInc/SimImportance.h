@@ -37,8 +37,9 @@ class SimFLUKA;
 
 namespace SimProcess
 {
-  void importanceSim(Simulation&,const mainSystem::inputParam&);
   void importanceSim(SimMCNP&,const mainSystem::inputParam&);
+  void importanceSim(SimPHITS&,const mainSystem::inputParam&);
+  void importanceSim(SimFLUKA&,const mainSystem::inputParam&);
 
 }  // namespace SimImportance
 
