@@ -2745,19 +2745,22 @@ Segment37(FuncDataBase& Control,
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicA");
+  Control.addVariable(lKey+"CeramicARadius",0.9);
+  Control.addVariable(lKey+"CeramicAPipeThick",0.2);
+  Control.addVariable(lKey+"CeramicALength",13.97); // No_37_00
+
   CSGen.generateCeramicGap(Control,lKey+"CeramicB");
+  Control.addVariable(lKey+"CeramicBRadius",0.9);
+  Control.addVariable(lKey+"CeramicBPipeThick",0.2);
 
   EBGen.generateEBeamStop(Control,lKey+"BeamStop",0);
-  Control.addVariable(lKey+"BeamStopWallThick",1.0); // measured
-  Control.addVariable(lKey+"BeamStopLength",41.0); // measured
-  Control.addVariable(lKey+"BeamStopWidth",11.0); // measured
-  Control.addVariable(lKey+"BeamStopStopRadius",5.2); // measured
+  Control.addVariable(lKey+"BeamStopLength",39.2); // adjusted to have correct length according to No_37
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
 
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"Pipe",18.46);
+  PGen.generatePipe(Control,lKey+"Pipe",20.26);
 
   return;
 }
