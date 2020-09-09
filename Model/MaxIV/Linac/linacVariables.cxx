@@ -2784,12 +2784,14 @@ Segment38(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",285.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",285.0); // No_38_00
+  Control.addVariable(lKey+"PipeAFeThick",0.2);
+  PGen.setCF<setVariable::CF34_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeB",221.0); // measured
+  PGen.generatePipe(Control,lKey+"PipeB",221.0); // No_38_00
 
 
   const std::string pumpName=lKey+"IonPump";
