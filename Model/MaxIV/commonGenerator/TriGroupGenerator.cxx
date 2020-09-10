@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/TriGroupGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -58,33 +51,35 @@ namespace setVariable
 {
 
 TriGroupGenerator::TriGroupGenerator() :
-  mainWidth(0.86), mainHeight(1.8), mainLength(108.2),
+  mainWidth(0.86), mainHeight(1.8),
+  mainLength(107.5), // No_44_00
   mainSideAngle(4.7),wallThick(0.10),flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
 
-  topRadius(CF8::innerRadius),topLength(34.8),
+  topRadius(CF8::innerRadius),
+  topLength(35.5), // No_44_00
   topWallThick(CF8::wallThick),topFlangeRadius(CF40::flangeRadius),
   topFlangeLength(CF40::flangeLength),
 
-  midZAngle(4.7/2.0),midLength(66.52),midHeight(4.0),
+  midZAngle(2.8),midLength(69.287),midHeight(4.0),
   midWidth(0.68),midThick(0.1),midFlangeRadius(CF63::flangeRadius),
   midFlangeLength(CF63::flangeLength),
 
-  bendZAngle(4.7),bendZDrop(8.2),
+  bendZAngle(4.6),bendZDrop(8.2),
   bendArcRadius(267.75),bendArcLength(168.0),
   bendStrLength(26.75),
   bendHeight(2.0),bendWidth(0.68),bendThick(0.1),
   bendFlangeRadius(CF63::flangeRadius),
   bendFlangeLength(CF63::flangeLength),
 
-  voidMat("Void"),wallMat("Stainless304L"),
+  voidMat("Void"),wallMat("Stainless316L"),
   flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
 
-TriGroupGenerator::~TriGroupGenerator() 
+TriGroupGenerator::~TriGroupGenerator()
  /*!
    Destructor
  */
@@ -138,14 +133,14 @@ TriGroupGenerator::setBendFlangeCF()
   return;
 }
 
-  
+
 
 void
 TriGroupGenerator::generateTri(FuncDataBase& Control,
 			      const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
   */
@@ -184,11 +179,11 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
   Control.addVariable(keyName+"BendThick",bendThick);
   Control.addVariable(keyName+"BendFlangeRadius",bendFlangeRadius);
   Control.addVariable(keyName+"BendFlangeLength",bendFlangeLength);
- 
+
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-  
+
   return;
 
 }
@@ -196,7 +191,7 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void TriGroupGenerator::setFlangeCF<CF100>();
-  
+
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

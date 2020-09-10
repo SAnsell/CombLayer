@@ -3056,7 +3056,7 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
   setVariable::CurveMagGenerator CMagGen;
 
   // 267.75 / 168.0
-  TGGen.setBend(313.40,110.4,58.0);
+  TGGen.setBend(313.40,110.4,58.46);
   TGGen.generateTri(Control,lKey+"TriBend");
 
   CMagGen.generateMag(Control,lKey+"CMag");
