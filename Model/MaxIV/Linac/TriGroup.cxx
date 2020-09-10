@@ -120,6 +120,7 @@ TriGroup::populate(const FuncDataBase& Control)
   topFlangeLength=Control.EvalVar<double>(keyName+"TopFlangeLength");
 
   midZAngle=Control.EvalVar<double>(keyName+"MidZAngle");
+  midOpeningAngle=Control.EvalVar<double>(keyName+"MidOpeningAngle");
   midLength=Control.EvalVar<double>(keyName+"MidLength");
   midHeight=Control.EvalVar<double>(keyName+"MidHeight");
   midWidth=Control.EvalVar<double>(keyName+"MidWidth");
@@ -217,21 +218,28 @@ TriGroup::createSurfaces()
     Origin+mY*(mainLength/cos(M_PI*midZAngle/180.0));
   FixedComp::setConnect(2,mOrg+mY*midLength,mY);
 
+  const Geometry::Quaternion QVlow =
+    Geometry::Quaternion::calcQRotDeg(-midZAngle-midOpeningAngle,X);
+  const Geometry::Vec3D mZlow=QVlow.makeRotate(Z);
+  const Geometry::Quaternion QVup =
+    Geometry::Quaternion::calcQRotDeg(-midZAngle+midOpeningAngle,X);
+  const Geometry::Vec3D mZup=QVup.makeRotate(Z);
+
   ModelSupport::buildPlane
     (SMap,buildIndex+202,mOrg+mY*midLength,mY);
   ModelSupport::buildPlane(SMap,buildIndex+203,mOrg-X*(midWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+204,mOrg+X*(midWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+205,mOrg-mZ*(midHeight/2.0),mZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mZ*(midHeight/2.0),mZ);
+  ModelSupport::buildPlane(SMap,buildIndex+205,mOrg+mY*(midLength)-mZ*(midHeight/2.0),mZlow);
+  ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mY*(midLength)+mZ*(midHeight/2.0),mZup);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+213,mOrg-X*(midThick+midWidth/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+214,mOrg+X*(midThick+midWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+215,mOrg-mZ*(midThick+midHeight/2.0),mZ);
+    (SMap,buildIndex+215,mOrg+mY*(midLength)-mZ*(midThick+midHeight/2.0),mZlow);
   ModelSupport::buildPlane
-    (SMap,buildIndex+216,mOrg+mZ*(midThick+midHeight/2.0),mZ);
+    (SMap,buildIndex+216,mOrg+mY*(midLength)+mZ*(midThick+midHeight/2.0),mZup);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+222,mOrg+mY*(midLength+midThick-midFlangeLength),mY);

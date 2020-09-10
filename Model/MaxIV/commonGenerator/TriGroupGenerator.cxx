@@ -61,7 +61,8 @@ TriGroupGenerator::TriGroupGenerator() :
   topWallThick(CF8_TDC::wallThick),topFlangeRadius(CF40::flangeRadius),
   topFlangeLength(CF40::flangeLength),
 
-  midZAngle(2.8),midLength(69.287),midHeight(5.7),
+  midZAngle(2.8), midOpeningAngle(1.2),
+  midLength(69.287),midHeight(5.7),
   midWidth(0.68),midThick(0.15),midFlangeRadius(CF63::flangeRadius),
   midFlangeLength(CF63::flangeLength),
 
@@ -162,6 +163,7 @@ TriGroupGenerator::generateTri(FuncDataBase& Control,
   Control.addVariable(keyName+"TopFlangeLength",topFlangeLength);
 
   Control.addVariable(keyName+"MidZAngle",midZAngle);
+  Control.addVariable(keyName+"MidOpeningAngle",midOpeningAngle);
   Control.addVariable(keyName+"MidLength",midLength);
   Control.addVariable(keyName+"MidHeight",midHeight);
   Control.addVariable(keyName+"MidWidth",midWidth);
