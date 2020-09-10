@@ -65,6 +65,15 @@
 namespace flukaSystem
 {
 
+magnetUnit::magnetUnit(const std::string& Key) :
+  attachSystem::FixedRotate(Key,0),
+  index(0),length(0.0),width(0.0),height(0.0)
+  /*!
+    Constructor (without index)
+    \param Key :: Name of construction key
+  */
+{}
+
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
   attachSystem::FixedRotate(Key+std::to_string(I),0),

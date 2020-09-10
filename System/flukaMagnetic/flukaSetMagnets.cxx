@@ -1,7 +1,7 @@
-s/********************************************************************* 
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcess/flukaDefPhysics.cxx
+ * File:   flukaProcess/flukaSetMagnets.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -72,48 +72,74 @@ s/*********************************************************************
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "SimMCNP.h"
 #include "SimFLUKA.h"
 
-#include "flukaImpConstructor.h"
-#include "flukaProcess.h"
-#include "cellValueSet.h"
-#include "pairValueSet.h"
 #include "flukaPhysics.h"
-#include "flukaMagnets.h"
+#include "magnetUnit.h"
 #include "flukaDefPhysics.h"
 
 
 namespace flukaSystem
-{  
+{
+  
 
 void
-setUserFlags(SimFLUKA& System,
-	      const mainSystem::inputParam& IParam)
-   /*!
-    Currently very simple system to get additional flag
+setMagneticExternal(SimFLUKA& System,
+		    const mainSystem::inputParam& IParam)
+  /*!
+    Sets the external magnetic fields in object(s) 
     \param System :: Simulation
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod RegA("flukaDefPhysics[F]","setUserFlags");
+  ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
 
-
-  if (IParam.flag("userWeight"))  // only one
+  if (IParam.flag("MagStep"))
     {
-      //      const size_t NIndex=IParam.itemCnt("userWeight");
+      const size_t nSet=IParam.setCnt("MagStep");
+      for(size_t index=0;index<nSet;index++)
+	{
+	  const std::set<MonteCarlo::Object*> Cells=
+	    mainSystem::getNamedObjects
+	    (System,IParam,"MagStep",index,0,"MagStep");
+	  const double minV=IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
+	  const double maxV=IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
+	  for(MonteCarlo::Object* mc : Cells)
+	    mc->setMagStep(minV,maxV);
+	}
+    }
 
-      const std::string extra =
-	IParam.getDefValue<std::string>("3","userWeight");
+  if (IParam.flag("MagUnit"))
+    {
+      const size_t nSet=IParam.setCnt("MagUnit");
+      for(size_t setIndex=0;setIndex<nSet;setIndex++)
+	{
+	  Geometry::Vec3D AOrg;
+	  Geometry::Vec3D AY;
+	  Geometry::Vec3D AZ;
+	  
+	  // General form is ::  Type : location : Param
+	  size_t index(0);
+	  ModelSupport::getObjectAxis
+	    (System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
+	  const Geometry::Vec3D Extent=
+	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
 
-      System.addUserFlags("userWeight",extra);
+	  std::vector<double> KV(4);
+	  KV[0]=IParam.getValueError<double>
+	    ("MagUnit",setIndex,index,"K Value");
+	  for(size_t i=1;i<4;i++)
+	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index);
+
+	  std::shared_ptr<flukaSystem::magnetUnit>
+	    OPtr(new magnetUnit("MagUnit",setIndex));
+	  OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
+	  System.addMagnetObject(OPtr);
+	}
     }
   return;
 }
 
-
-  
-  
 void
 setModelPhysics(SimFLUKA& System,
 		const mainSystem::inputParam& IParam)
@@ -126,6 +152,7 @@ setModelPhysics(SimFLUKA& System,
   ELog::RegMethod RegA("flukaDefPhysics","setModelPhysics");
   
   setXrayPhysics(System,IParam);
+  setMagneticPhysics(System,IParam);
   setUserFlags(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
@@ -184,69 +211,8 @@ setModelPhysics(SimFLUKA& System,
 	A.processBIAS(System,IParam,index);
     }
 
-  setMagneticPhysics(System,IParam); // default:global:commandline 
-
   return; 
 }
 
   
-void 
-setXrayPhysics(SimFLUKA& System,
-	       const mainSystem::inputParam& IParam)
-  /*!
-    Set the neutron Physics for FLUKA run on a reactor
-    \param System :: Fluke sim
-    \param IParam :: Input stream
-  */
-{
-  ELog::RegMethod RegA("DefPhysics","setXrayPhysics");
-
-  flukaPhysics& PC= *System.getPhysics();
-  const std::string PModel=IParam.getValue<std::string>("physModel");
-  // typedef std::tuple<size_t,std::string,std::string,
-  // 		     std::string,std::string> unitTYPE;
-
-  // CELL emfs
-  const std::set<int> activeCell=getActiveUnit(System,0,"all");
-  const std::set<int> activeMat=getActiveUnit(System,1,"all");
-  for(const int MN : activeMat)
-    {
-      //Turn pair-bremstrauhlung on 
-      PC.setFlag("photonuc",MN);
-      // Muon photon
-      PC.setFlag("muphoton",MN);
-      // electronuclear
-      PC.setFlag("elecnucl",MN);
-      // muon pair
-      PC.setFlag("mupair",MN);
-      
-      // Compton PhotoElectic GammaPairProductuion      
-      PC.setTHR("photthr",MN,"1e-3","1e-3","1.0");
-	
-      // Interaction threshold : Brem-e+/e- moller scatter photonuclear"
-      PC.setTHR("elpothr",MN,"1e-2","1e-2","1.0");
-
-      // Turn off multiple scattering [not a good idea]
-      //      PC.setTHR("mulsopt",MN,"0","0","3");
-
-      // Production Cut for e/e+ and photon 
-      PC.setEMF("prodcut",MN,"1","1e-3");
-      // Rayleigh photonuc-iteratcion
-      PC.setEMF("pho2thr",MN,"1e-3","1");
-
-      // Pairbrem
-      PC.setEMF("pairbrem",MN,"0.0","0.1");
-    }
-  //  const std::set<int> activeMat=getActiveUnit(1,"all");
-
-  for(const int CN : activeCell)
-    { 
-      PC.setEMF("emfcut",CN,"0.035","0.005");
-    }
-  // SPECIAL:
-  PC.setIMP("partthr","neutron","1e-9");
-  return; 
 }
-
-
-} // NAMESPACE flukaSystem

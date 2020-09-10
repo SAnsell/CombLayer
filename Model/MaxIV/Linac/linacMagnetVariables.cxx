@@ -40,6 +40,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "MagnetGenerator.h"
 
 #include "maxivVariables.h"
 
@@ -57,6 +58,9 @@ LINACmagnetVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
 
+  MagnetGenerator MUdipole;
+
+  MU.generator(Control,"Seg3DipoleA","segment3","0",0.0);
   
   return;
 }

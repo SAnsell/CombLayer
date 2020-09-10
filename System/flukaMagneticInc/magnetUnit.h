@@ -57,6 +57,7 @@ class magnetUnit :
   
  public:
 
+  magnetUnit(const std::string&);
   magnetUnit(const std::string&,const size_t);
   magnetUnit(const magnetUnit&);
   magnetUnit& operator=(const magnetUnit&);
