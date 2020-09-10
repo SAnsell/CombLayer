@@ -56,13 +56,13 @@ TriGroupGenerator::TriGroupGenerator() :
   mainSideAngle(4.7),wallThick(0.10),flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
 
-  topRadius(CF8::innerRadius),
+  topRadius(CF8_TDC::innerRadius),
   topLength(35.5), // No_44_00
-  topWallThick(CF8::wallThick),topFlangeRadius(CF40::flangeRadius),
+  topWallThick(CF8_TDC::wallThick),topFlangeRadius(CF40::flangeRadius),
   topFlangeLength(CF40::flangeLength),
 
-  midZAngle(2.8),midLength(69.287),midHeight(4.0),
-  midWidth(0.68),midThick(0.1),midFlangeRadius(CF63::flangeRadius),
+  midZAngle(2.8),midLength(69.287),midHeight(5.7),
+  midWidth(0.68),midThick(0.15),midFlangeRadius(CF63::flangeRadius),
   midFlangeLength(CF63::flangeLength),
 
   bendZAngle(4.6),bendZDrop(8.2),
