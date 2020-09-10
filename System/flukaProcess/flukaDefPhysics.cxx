@@ -1,4 +1,4 @@
-s/********************************************************************* 
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   flukaProcess/flukaDefPhysics.cxx
@@ -80,7 +80,6 @@ s/*********************************************************************
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "flukaPhysics.h"
-#include "flukaMagnets.h"
 #include "flukaDefPhysics.h"
 
 
@@ -183,8 +182,6 @@ setModelPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processBIAS(System,IParam,index);
     }
-
-  setMagneticPhysics(System,IParam); // default:global:commandline 
 
   return; 
 }

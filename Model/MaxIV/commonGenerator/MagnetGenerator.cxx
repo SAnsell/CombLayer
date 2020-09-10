@@ -3,7 +3,7 @@
 
  * File:   commonBeam/MagnetGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ MagnetGenerator::generate(FuncDataBase& Control,
 
   const std::string keyName="MagUnit"+unitName;
 
-  Control.addVariable(keyName+"YAngle",angle);
+  Control.addVariable(keyName+"YAngle",yAngle);
   
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
@@ -95,13 +95,11 @@ MagnetGenerator::generate(FuncDataBase& Control,
     Control.addVariable(keyName+"KFactor"+std::to_string(i),KFactor[i]);
 
   Control.addVariable(keyName+"NActiveCell",activeCells.size());
-  size_t index(0);
+
+  std::ostringstream cx;
   for(const std::string& CN : activeCells)
-    {
-      Control.addVariable
-	(keyName+"ActiveCell"+std::to_string(index),KFactor[i]);
-      index++;
-    }
+    cx<<" "<<CN;
+  Control.addVariable(keyName+"ActiveCell",cx.str());
     
   return;
 

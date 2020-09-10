@@ -72,11 +72,12 @@
 #include "flukaProcess.h"
 #include "flukaDefPhysics.h"
 #include "phitsDefPhysics.h"
+#include "flukaSetMagnets.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
 #include "WWGControl.h"
-#include "flukaMagnets.h"
+
 #include "SimImportance.h"
 
 namespace SimProcess

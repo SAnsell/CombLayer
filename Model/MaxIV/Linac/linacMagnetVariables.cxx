@@ -60,7 +60,7 @@ LINACmagnetVariables(FuncDataBase& Control)
 
   MagnetGenerator MUdipole;
 
-  MU.generator(Control,"Seg3DipoleA","segment3","0",0.0);
+  MUdipole.generate(Control,"Seg3DipoleA","segment3","0",0.0);
   
   return;
 }

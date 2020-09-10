@@ -74,9 +74,8 @@
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-#include "flukaPhysics.h"
 #include "magnetUnit.h"
-#include "flukaDefPhysics.h"
+#include "flukaSetMagnets.h"
 
 
 namespace flukaSystem
@@ -140,79 +139,87 @@ setMagneticExternal(SimFLUKA& System,
   return;
 }
 
+  
 void
-setModelPhysics(SimFLUKA& System,
-		const mainSystem::inputParam& IParam)
+setDefMagnets(SimFLUKA& System)
   /*!
-    Set the physics that needs a model
-    \param System :: Simulation
-    \param IParam :: Input parameters
+    This sets the magnets from the main Control variables
+    assuming that a magnet region has been built.
+    \todo specialize to remove selected defaults
+    \param System :: Simulation [Fluka]
   */
 {
-  ELog::RegMethod RegA("flukaDefPhysics","setModelPhysics");
-  
-  setXrayPhysics(System,IParam);
-  setMagneticPhysics(System,IParam);
-  setUserFlags(System,IParam);
-  
-  size_t nSet=IParam.setCnt("wMAT");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processMAT(System,IParam,index);
-    }
+  ELog::RegMethod RegA("flukaSefMagnets[F]","setDefMagnets");
 
-  nSet=IParam.setCnt("wBIAS");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processBIAS(System,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wCUT");    
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processCUT(System,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wEMF");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processEMF(System,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wEXP");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processEXP(System,IParam,index);
-    }
+  const FuncDataBase& Control=System.getDataBase();
 
-  nSet=IParam.setCnt("wLAM");    
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processLAM(System,IParam,index);
-    }
+  std::string magNames=
+    Control.EvalDefVar<std::string>("MagUnitList","");
 
-  nSet=IParam.setCnt("wBIAS");
-  if (nSet)
+  std::string Item;
+  while(StrFunc::section(magNames,Item))
     {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processBIAS(System,IParam,index);
-    }
+      const std::string FCname=
+	Control.EvalVar<std::string>(Item+"FixedComp");
+      const std::string FClink=
+	Control.EvalVar<std::string>(Item+"LinkPt");
+      
+      if (System.hasObject(FCname))
+	{
+	  std::shared_ptr<attachSystem::FixedComp> FC=
+	    System.getSharedPtr(FCname);
 
+	  std::shared_ptr<magnetUnit> magA=
+	    std::make_shared<magnetUnit>(Item);
+
+	  magA->createAll(System,*FC,FClink);
+	  System.addMagnetObject(magA);
+	}
+    }
   return; 
 }
 
   
+void
+setMagneticPhysics(SimFLUKA& System,
+		   const mainSystem::inputParam& IParam)
+  /*!
+    Currently very simple but expect to get complex.
+    Sets only the global paramters
+    \param System :: Simulation
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
+
+  if (!IParam.flag("NoDefMagnetic"))
+    setDefMagnets(System);
+  
+  
+  if (IParam.flag("MAG"))
+    {
+      const Geometry::Vec3D MF=
+	IParam.getValue<Geometry::Vec3D>("MAG",0);  
+      System.setMagField(MF);
+    }
+
+  const size_t nSet=IParam.setCnt("MagField");
+  for(size_t setIndex=0;setIndex<nSet;setIndex++)
+    {
+      const size_t NIndex=IParam.itemCnt("MagField",setIndex);
+      
+      for(size_t index=0;index<NIndex;index++)
+	{	  
+	  const std::set<MonteCarlo::Object*> Cells=
+	    mainSystem::getNamedObjects
+	    (System,IParam,"MagField",0,0,"MagField Cells");
+
+	  for(MonteCarlo::Object* OPtr : Cells)
+	    OPtr->setMagFlag();
+	}
+    }
+  if (nSet) setMagneticExternal(System,IParam);
+  return;
+}
+
 }

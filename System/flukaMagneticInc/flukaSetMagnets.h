@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_flukaMagnets_h
-#define flukaSystem_flukaMagnets_h
+#ifndef flukaSystem_flukaSetMagnets_h
+#define flukaSystem_flukaSetMagnets_h
 
 class Simulation;
 class SimFLUKA;
@@ -34,7 +34,6 @@ namespace mainSystem
 namespace flukaSystem
 {
   
-
   void setDefMagnets(SimFLUKA&);
   void setMagneticPhysics(SimFLUKA&,const mainSystem::inputParam&);
   void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcess/flukaSetMagnets.cxx
+ * File:   flukaMagnetic/flukaSetMagnets.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -63,7 +63,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
@@ -74,145 +73,12 @@
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-#include "flukaPhysics.h"
+
 #include "magnetUnit.h"
 
 
 namespace flukaSystem
 {
   
-void
-setMagneticPhysics(SimFLUKA& System,
-		   const mainSystem::inputParam& IParam)
-  /*!
-    Currently very simple but expect to get complex.
-    Sets only the global paramters
-    \param System :: Simulation
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
 
-  if (!IParam.flag("NoDefMagnetic"))
-    setDefMagnets(System);
-  
-  
-  if (IParam.flag("MAG"))
-    {
-      const Geometry::Vec3D MF=
-	IParam.getValue<Geometry::Vec3D>("MAG",0);  
-      System.setMagField(MF);
-    }
-
-  const size_t nSet=IParam.setCnt("MagField");
-  for(size_t setIndex=0;setIndex<nSet;setIndex++)
-    {
-      const size_t NIndex=IParam.itemCnt("MagField",setIndex);
-      
-      for(size_t index=0;index<NIndex;index++)
-	{	  
-	  const std::set<MonteCarlo::Object*> Cells=
-	    mainSystem::getNamedObjects
-	    (System,IParam,"MagField",0,0,"MagField Cells");
-
-	  for(MonteCarlo::Object* OPtr : Cells)
-	    OPtr->setMagFlag();
-	}
-    }
-  if (nSet) setMagneticExternal(System,IParam);
-  return;
-}
-
-void
-setMagneticExternal(SimFLUKA& System,
-		    const mainSystem::inputParam& IParam)
-  /*!
-    Sets the external magnetic fields in object(s) 
-    \param System :: Simulation
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod Rega("flukaMagnets[F]","setMagneticExternal");
-
-  if (IParam.flag("MagStep"))
-    {
-      const size_t nSet=IParam.setCnt("MagStep");
-      for(size_t index=0;index<nSet;index++)
-	{
-	  const std::set<MonteCarlo::Object*> Cells=
-	    mainSystem::getNamedObjects
-	    (System,IParam,"MagStep",index,0,"MagStep");
-	  const double minV=IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
-	  const double maxV=IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
-	  for(MonteCarlo::Object* mc : Cells)
-	    mc->setMagStep(minV,maxV);
-	}
-    }
-
-  if (IParam.flag("MagUnit"))
-    {
-      const size_t nSet=IParam.setCnt("MagUnit");
-      for(size_t setIndex=0;setIndex<nSet;setIndex++)
-	{
-	  Geometry::Vec3D AOrg;
-	  Geometry::Vec3D AY;
-	  Geometry::Vec3D AZ;
-	  
-	  // General form is ::  Type : location : Param
-	  size_t index(0);
-	  ModelSupport::getObjectAxis
-	    (System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
-	  const Geometry::Vec3D Extent=
-	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
-
-	  std::vector<double> KV(4);
-	  KV[0]=IParam.getValueError<double>
-	    ("MagUnit",setIndex,index,"K Value");
-	  for(size_t i=1;i<4;i++)
-	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index);
-
-	  std::shared_ptr<flukaSystem::magnetUnit>
-	    OPtr(new magnetUnit("MagUnit",setIndex));
-	  OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	  System.addMagnetObject(OPtr);
-	}
-    }
-  return;
-}
-
-void
-setDefMagnets(SimFLUKA& System)
-  /*!
-    This sets the magnets from the main Control variables
-    assuming that a magnet region has been built.
-    \todo specialize to remove selected defaults
-    \param System :: Simulation [Fluka]
-  */
-{
-  ELog::RegMethod RegA("flukaMagnets[F]","setDefMagnets");
-
-  const FuncDataBase& Control=System.getDataBase();
-
-  std::string magNames=
-    Control.EvalDefVar<std::string>("MagUnitList");
-
-  std::string Item;
-  while(StrFunc::section(magNames,Item)
-    {
-      const std::string FCname=Control.EvalVar(Item+"FixedComp");
-      const std::string FClink=Control.EvalVar(Item+"LinkPt");
-      if (System.hasObject(FCname))
-	{
-	  std::shared_ptr<attachSystem::FixedComp> FC=
-	    System.getSharedPtr(FCname);
-	  std::shared_ptr<magnetUnit> magA=new magnetUnit(Item);
-
-	  magA->createAll(System,FC,FClink);
-	  System.addMagnetObject(magA);
-	}
-    }
-  return; 
-}
-
-  
 }
