@@ -2973,12 +2973,10 @@ Segment43(FuncDataBase& Control,
 
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"XYAngle",
-  		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+  Control.addVariable(lKey+"XYAngle", 0.0);
 
   // Stripline BPM
   setVariable::StriplineBPMGenerator BPMAGen;
-  BPMAGen.setCF<setVariable::CF40_22>();
   BPMAGen.generateBPM(Control,lKey+"BPMA",0.0);
 
   // Yag screen and its unit
@@ -2996,19 +2994,19 @@ Segment43(FuncDataBase& Control,
 
   // Pipe
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"Pipe",39.896); // measured 40, but adjusted to match start/end
+  PGen.generatePipe(Control,lKey+"Pipe",39.9);
 
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,lKey+"CMagH",10.3,0);
+  CMGen.generateMag(Control,lKey+"CMagH",9.74,0);
 
   // Button pickup PBM
   setVariable::ButtonBPMGenerator BPMBGen;
   BPMBGen.setCF<setVariable::CF40_22>();
   BPMBGen.generate(Control,lKey+"BPMB");
-  Control.addVariable(lKey+"BPMBLength",3.0); // measured
+  Control.addVariable(lKey+"BPMBLength",2.996); // No_43_00
   Control.addVariable(lKey+"BPMBNButtons",2);
   Control.addVariable(lKey+"BPMBButtonYAngle",0.0);
   Control.addVariable(lKey+"BPMBFlangeGap",0.0);
