@@ -913,6 +913,20 @@ FuncDataBase::removeVariable(const std::string& Name)
   return;
 }
 
+void
+FuncDataBase::pushStringVariable(const std::string& Name,
+				 const std::string& V)
+  /*!
+    Extends a string (space deliminated) 
+    \todo make a true list (?)
+    \param Name :: Name of the variable
+    \param V :: Variable to add
+  */
+{
+  VList.addVar<std::string>(Name,std::string(V));
+  return;
+}
+
 template<typename T>
 void
 FuncDataBase::addParse(const std::string& Name,const std::string& VParse)

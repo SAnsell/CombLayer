@@ -384,7 +384,6 @@ ConnectZone::buildObjects(Simulation& System,
   bellowC->createAll(System,*pipeD,2);
 
   JPipe->insertInCell(System,masterCell->getName());
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   return;
 }
 

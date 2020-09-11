@@ -534,7 +534,6 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
 
   // process
-  ELog::EM<<"ASDFASDF"<<ELog::endDiag;
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc

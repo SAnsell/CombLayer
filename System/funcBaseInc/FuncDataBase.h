@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FuncDataBase.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +129,8 @@ class FuncDataBase
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
 
+  void pushStringVariable(const std::string&,const std::string&);
+  
   void removeVariable(const std::string&);
   
   int hasVariable(const std::string&) const;
