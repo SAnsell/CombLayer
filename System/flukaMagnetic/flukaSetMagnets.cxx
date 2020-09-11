@@ -159,10 +159,12 @@ setDefMagnets(SimFLUKA& System)
   std::string Item;
   while(StrFunc::section(magNames,Item))
     {
+      const std::string MagKey("MagUnit"+Item);
+
       const std::string FCname=
-	Control.EvalVar<std::string>(Item+"FixedComp");
+	Control.EvalVar<std::string>(MagKey+"FixedComp");
       const std::string FClink=
-	Control.EvalVar<std::string>(Item+"LinkPt");
+	Control.EvalVar<std::string>(MagKey+"LinkPt");
       
       if (System.hasObject(FCname))
 	{
@@ -192,7 +194,7 @@ setMagneticPhysics(SimFLUKA& System,
 {
   ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
 
-  if (!IParam.flag("NoDefMagnetic"))
+  if (!IParam.flag("NoDefMagnet"))
     setDefMagnets(System);
   
   

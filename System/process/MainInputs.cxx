@@ -92,6 +92,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("MagStep","MagStep",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
+  IParam.regFlag("NoDefMagnet","NoDefMagnet");
   IParam.regMulti("userWeight","userWeight",1000,0);
   IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
@@ -268,6 +269,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");
   IParam.setDesc("MagUnit","Add a magnetic type");
   IParam.setDesc("MagField","Set the various units");
+  IParam.setDesc("NoDefMagnet","Do not use default magnet variables");
   IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");

@@ -58,6 +58,10 @@ LINACmagnetVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
 
+
+  Control.addVariable("MagUnitList","Seg3DipoleA");
+  
+  
   MagnetGenerator MUdipole;
 
   MUdipole.generate(Control,"Seg3DipoleA","segment3","0",0.0);

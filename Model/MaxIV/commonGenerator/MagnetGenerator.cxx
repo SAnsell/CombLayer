@@ -82,7 +82,11 @@ MagnetGenerator::generate(FuncDataBase& Control,
 
   const std::string keyName="MagUnit"+unitName;
 
+  ELog::EM<<"FC == "<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"YAngle",yAngle);
+  Control.addVariable(keyName+"FixedComp",fcUnit);
+  Control.addVariable(keyName+"LinkPt",linkPt);
+      
   
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);

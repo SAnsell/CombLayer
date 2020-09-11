@@ -533,7 +533,8 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
 
-  // process 
+  // process
+  ELog::EM<<"ASDFASDF"<<ELog::endDiag;
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
@@ -648,7 +649,7 @@ buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
     \param OName :: output file name
    */
 {
-  ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimPOVray");
   // Definitions section 
 
   // if (IParam.flag("noVariables"))

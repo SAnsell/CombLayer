@@ -811,7 +811,7 @@ BALDERvariables(FuncDataBase& Control)
 
   // note bellow skip
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",81.0);
-  Control.addVariable("BalerJoinPipeCYStep",9.0);
+  Control.addVariable("BalderJoinPipeCYStep",9.0);
 
   balderVar::exptHutVariables(Control,"BalderExpt");
 
