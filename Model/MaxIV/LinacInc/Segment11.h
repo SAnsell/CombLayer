@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment11.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,43 +16,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment11_h
 #define tdcSystem_Segment11_h
 
-namespace constructSystem
-{
-  class VacuumPipe;
-  class Bellows;
-  class portItem;
-  class BlankTube;
-  class PipeTube;
-}
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
-  class StriplineBPM;
-  class LQuadF;
-  class CorrectorMag;
-  class CeramicGap;
-  class YagScreen;
 
   /*!
     \class Segment11
     \version 1.0
     \author S. Ansell
     \date May 2020
-    \brief Seventh segment
+    \brief 11th segment
   */
 
 class Segment11 :
@@ -60,33 +38,33 @@ class Segment11 :
 {
  private:
 
-  /// first bellow 
-  std::shared_ptr<constructSystem::Bellows> bellowA;   
+  /// first bellow
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   /// Beam postion monitor
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
-  /// Quad 
+  /// Quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// ion pump [rotated]
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
   /// Yag screen for pump tube
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-  
+
   /// exit pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;  
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment11(const std::string&);
   Segment11(const Segment11&);
   Segment11& operator=(const Segment11&);

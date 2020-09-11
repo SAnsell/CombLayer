@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/BeamDividerGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -56,7 +56,7 @@
 
 namespace setVariable
 {
-  
+
 template<>
 BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
   boxLength(56.1),wallThick(0.4),
@@ -98,8 +98,8 @@ BeamDividerGenerator::BeamDividerGenerator(const CF40&) :
     Constructor and defaults
   */
 {}
-  
-BeamDividerGenerator::~BeamDividerGenerator() 
+
+BeamDividerGenerator::~BeamDividerGenerator()
  /*!
    Destructor
  */
@@ -152,19 +152,19 @@ BeamDividerGenerator::setMainSize(const double BL,const double BAng)
   exitAngle=BAng;
   return;
 }
-  
-  
-    
+
+
+
 void
 BeamDividerGenerator::generateDivider(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const double ZAngle,
-				      const bool reverseFlag, 
+				      const bool reverseFlag,
 				      int normalSide) const
 
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param ZAngle :: angle of Beamdivider
     \param normalSide :: -ver reversed / +ve normal [1 : left : 2 right]
@@ -186,7 +186,7 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
 
   Control.addVariable(keyName+"XStep",-1.1);
 
-  
+
   Control.addVariable(keyName+"BoxLength",boxLength);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"MainWidth",mainWidth);
@@ -221,17 +221,19 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
 }
 
 ///\cond TEMPLATE
-  
+
 template void BeamDividerGenerator::setAFlangeCF<CF63>();
 template void BeamDividerGenerator::setAFlangeCF<CF50>();
 template void BeamDividerGenerator::setAFlangeCF<CF40>();
 
+template void BeamDividerGenerator::setBFlangeCF<CF18_TDC>();
 template void BeamDividerGenerator::setBFlangeCF<CF40_22>();
 template void BeamDividerGenerator::setBFlangeCF<CF40>();
 
+template void BeamDividerGenerator::setEFlangeCF<CF18_TDC>();
 template void BeamDividerGenerator::setEFlangeCF<CF40_22>();
 template void BeamDividerGenerator::setEFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

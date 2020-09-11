@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/YagUnitGenerator.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_YagUnitGenerator_h
@@ -35,16 +35,16 @@ namespace setVariable
   \brief YagUnitGenerator for variables
 */
 
-class YagUnitGenerator 
+class YagUnitGenerator
 {
  private:
 
-  double radius;               ///< void radius   
+  double radius;               ///< void radius
   double height;               ///< void height [+z]
   double depth;                ///< void depth [-z]
   double wallThick;            ///< pipe thickness
 
-  double flangeRadius;         ///< Joining Flange radius 
+  double flangeRadius;         ///< Joining Flange radius
   double flangeLength;         ///< Joining Flange length
   double plateThick;           ///< flange plate thick
 
@@ -57,7 +57,7 @@ class YagUnitGenerator
   double viewFlangeLength;     ///< Joining Flange length
   double viewPlateThick;       ///< Cover plate thickness
 
-  // front/back port 
+  // front/back port
   double portRadius;         ///< port Radius
   double portThick;          ///< port wall thickness
   double portFlangeRadius;   ///< port flange Radius
@@ -71,7 +71,7 @@ class YagUnitGenerator
 
   std::string voidMat;               ///< void material
   std::string mainMat;               ///< wall material
-  
+
  public:
 
   YagUnitGenerator();
@@ -83,13 +83,13 @@ class YagUnitGenerator
   template<typename T> void setFlangeCF();
   template<typename T> void setPortCF();
   template<typename T> void setViewCF();
-  
+
   void generateYagUnit(FuncDataBase&,
-		       const std::string&) const;
+		       const std::string&,
+		       const bool flip=false) const;
 
 };
 
 }
 
 #endif
- 

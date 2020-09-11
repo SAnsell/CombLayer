@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/magnetVar.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,24 +16,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef linacVar_magnetVar_h
-#define linacVar_magnetVar_h 
+#define linacVar_magnetVar_h
 
 namespace setVariable
 {
 
 namespace linacVar
 {
+  // forward declaration - implemented in linacVariables
+  void setBellow26(FuncDataBase&,const std::string&,
+		   const double);
+  void setFlat(FuncDataBase&,const std::string&,
+	       const double,const double);
 
 void Segment32Magnet(FuncDataBase&,const std::string&);
-void Segment34Magnet(FuncDataBase&,const std::string&);
-
 
 }
 
 }
 #endif
-  

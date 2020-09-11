@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X)  Input builder
- 
+
  * File:   process/mergeMulti.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
-#include <map> 
-#include <list> 
+#include <map>
+#include <list>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -34,7 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
- 
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -81,7 +81,7 @@ mergeMulti<T,U>::mergeMulti() : surfDBase(),
 
 
 template<typename T,typename U>
-mergeMulti<T,U>::mergeMulti(const mergeMulti<T,U>& A) : 
+mergeMulti<T,U>::mergeMulti(const mergeMulti<T,U>& A) :
   surfDBase(A),InOutFlag(A.InOutFlag),
   signSurfReplace(A.signSurfReplace),
   InRule(A.InRule),OutRule(A.OutRule),
@@ -154,7 +154,7 @@ mergeMulti<T,U>::clearRules()
 
 template<typename T,typename U>
 void
-mergeMulti<T,U>::addRules() 
+mergeMulti<T,U>::addRules()
   /*!
     Adds the surface object to the rules in a simple way
   */
@@ -162,7 +162,7 @@ mergeMulti<T,U>::addRules()
   ELog::RegMethod RegA("mergeMulti","addRules");
 
   clearRules();
-  std::vector<Geometry::Surface*>::const_iterator ac;  
+  //  std::vector<Geometry::Surface*>::const_iterator ac;
   const Geometry::Surface* SPtr(0);
   for(size_t i=0;i<OSPtr.size();i++)
     {
@@ -187,9 +187,9 @@ mergeMulti<T,U>::getInner(std::vector<Token>& IVec) const
   ELog::RegMethod RegA("mergeMulti","getInner");
   if (InRule.getTopRule())
     {
-      IVec.push_back(Token('(')); 
+      IVec.push_back(Token('('));
       InRule.displayVec(IVec);
-      IVec.push_back(Token(')')); 
+      IVec.push_back(Token(')'));
     }
   return;
 }
@@ -198,16 +198,16 @@ template<typename T,typename U>
 void
 mergeMulti<T,U>::getOuter(std::vector<Token>& OVec) const
   /*!
-    Get the outerr rule token 
+    Get the outerr rule token
     \param OVec :: Inner tokens
   */
 {
   ELog::RegMethod RegA("mergeMulti","getOuter");
   if (OutRule.getTopRule())
     {
-      OVec.push_back(Token('(')); 
+      OVec.push_back(Token('('));
       OutRule.displayVec(OVec);
-      OVec.push_back(Token(')')); 
+      OVec.push_back(Token(')'));
     }
   return;
 }
@@ -270,7 +270,7 @@ mergeMulti<T,U>::processInnerOuterWithSign(const int outerFlag,
   getInner(inBoundary);
   getOuter(outBoundary);
 
-  SIndex=(outerFlag) ? getOuterRemove() : getInnerRemove(); 
+  SIndex=(outerFlag) ? getOuterRemove() : getInnerRemove();
 
   if (!SIndex.empty())
     {
@@ -291,11 +291,11 @@ mergeMulti<T,U>::processInnerOuterWithSign(const int outerFlag,
 }
 
 template<typename T,typename U>
-void 
+void
 mergeMulti<T,U>::setPrimarySurf(const int iDir,const int surfN)
   /*!
     Set the primary surface number / inner direction
-    
+
     \param iDir :: Set if outer->inner system is in use
     \param surfN :: Primary surface
    */
@@ -307,7 +307,7 @@ mergeMulti<T,U>::setPrimarySurf(const int iDir,const int surfN)
 
 
 template<typename T,typename U>
-void 
+void
 mergeMulti<T,U>::addSecondarySurf(const int SN)
   /*!
     Add a secondary surface
@@ -344,7 +344,7 @@ createSurf(const double fraction,int& newItem)
   /*!
     Divides two planes to the required fraction. Care is taken
     if the two planes have opposite signs.
-    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    - IMPORTANT: the inner surface is master ie if we have -IN ON
     then we get a normal that is opposite to ON.
     \param newItem :: Plane number to start with
     \param fraction :: Weight between the two surface
@@ -394,7 +394,7 @@ createSurf(const double fraction,int& newItem)
   /*!
     Divides two planes to the required fraction. Care is taken
     if the two planes have opposite.
-    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    - IMPORTANT: the inner surface is master ie if we have -IN ON
     then we get a normal that is opposite to ON.
     \param newItem :: Cylinder number to start with
     \param fraction :: Weight between the two surface
@@ -406,7 +406,7 @@ createSurf(const double fraction,int& newItem)
 
   const Geometry::Vec3D CentA=PB->getCentre();
   const Geometry::Vec3D NormA=PB->getNormal();
-  const double RA=PB->getRadius();  
+  const double RA=PB->getRadius();
   OSPtr.clear();  // No need to delete [not managed]
   std::vector<const Geometry::Cylinder*>::const_iterator vc;
   for(vc=PS.begin();vc!=PS.end();vc++)
@@ -440,7 +440,7 @@ createSurf(const double fraction,int& newItem)
   /*!
     Divides a cylinder -> plane :
     Note that the object is always a Cylinder in THIS implementaiton
-    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    - IMPORTANT: the inner surface is master ie if we have -IN ON
     then we get a normal that is opposite to ON.
     \param newItem :: Cylinder number to start with
     \param fraction :: Weight between the two surface
@@ -485,12 +485,12 @@ mergeMulti<T,U>::populate()
 {
   ELog::RegMethod RegA("mergeMulti","populate");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
+
   PB=dynamic_cast<const T*>(SurI.getSurf(abs(pSurf)));
   if (!PB)
     ELog::EM<<"Failed on primary surface "<<pSurf<<ELog::endErr;
   std::vector<int>::const_iterator vc;
- 
+
   PS.clear();
   for(vc=sSurf.begin();vc!=sSurf.end();vc++)
     {
@@ -507,14 +507,14 @@ void
 mergeMulti<T,U>::processInnerOuter(const int outerFlag,
 				   std::vector<Token>& Cell) const
   /*!
-    Process the cells 
+    Process the cells
     \param outerFlag :: Decide if outer/inner process.
     \param Cell :: Cell to process
    */
 {
   ELog::RegMethod RegA("mergeMulti","processInnerOuter");
 
-  if (signSurfReplace) 
+  if (signSurfReplace)
     {
       processInnerOuterWithSign(outerFlag,Cell);
       return;
@@ -528,7 +528,7 @@ mergeMulti<T,U>::processInnerOuter(const int outerFlag,
   else
     getInner(newBoundary);
 
-  SIndex=(outerFlag) ? getOuterRemove() : getInnerRemove(); 
+  SIndex=(outerFlag) ? getOuterRemove() : getInnerRemove();
 
   if (!SIndex.empty())
     {
@@ -570,4 +570,3 @@ template class mergeMulti<Geometry::Cylinder,Geometry::Plane>;
 
 
 } // NAMESPACE ModelSupport
-

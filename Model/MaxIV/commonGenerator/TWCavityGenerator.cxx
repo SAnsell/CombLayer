@@ -58,7 +58,8 @@ TWCavityGenerator::TWCavityGenerator() :
   couplerLength(4.9295),
   couplerWidth(21.2), // measured
   wallThick(1.489), // David Olsson 2020-06-05
-  wallMat("Copper") // actually OFHC
+  wallMat("Copper%Void%50.0"), // actually the side wall has lots of penetrations, but we model them by decreasing density
+  mat("Copper") // actually OFHC
   /*!
     Constructor and defaults
   */
@@ -90,6 +91,7 @@ TWCavityGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CouplerWidth",couplerWidth);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"Mat",mat);
 
   return;
 

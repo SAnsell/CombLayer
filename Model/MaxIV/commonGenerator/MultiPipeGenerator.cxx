@@ -61,7 +61,7 @@ MultiPipeGenerator::MultiPipeGenerator() :
   flangeRadius(CF150::flangeRadius),
   flangeLength(CF150::flangeLength),
   voidMat("Void"),pipeMat("Stainless304L"),
-  flangeMat("Stainless304")
+  flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -167,7 +167,7 @@ MultiPipeGenerator::generateMulti(FuncDataBase& Control,
 					 const double,const double,
 					 const double);
   template
-  void MultiPipeGenerator::setPipe<CF40_22>(const Geometry::Vec3D&,
+  void MultiPipeGenerator::setPipe<CF35_TDC>(const Geometry::Vec3D&,
 					    const double,const double,
 					    const double);
   

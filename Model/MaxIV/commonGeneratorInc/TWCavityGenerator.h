@@ -48,6 +48,7 @@ class TWCavityGenerator
   double couplerWidth;          ///< Coupler cell width
   double wallThick;             ///< Wall thickness
   std::string wallMat;          ///< Wall material
+  std::string mat;              ///< Iris/cell material
 
  public:
 

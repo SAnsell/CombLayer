@@ -212,6 +212,7 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 
   template void SplitPipeGenerator::setCF<CF18_TDC>();
   template void SplitPipeGenerator::setCF<CF26_TDC>();
+  template void SplitPipeGenerator::setCF<CF37_TDC>();
   template void SplitPipeGenerator::setCF<CF40_22>();
   template void SplitPipeGenerator::setCF<CF40>();
   template void SplitPipeGenerator::setCF<CF50>();

@@ -64,7 +64,7 @@ YagUnitGenerator::YagUnitGenerator() :
   flangeLength(CF63::flangeLength),
   plateThick(CF63::flangeLength),
   viewZStep(3.2),viewRadius(CF63::innerRadius),
-  viewLength(9.27),viewThick(CF63::wallThick),
+  viewThick(CF63::wallThick),viewLength(9.27),
   viewFlangeRadius(CF63::flangeRadius),
   viewFlangeLength(CF63::flangeLength),
   viewPlateThick(CF63::flangeLength),
@@ -73,7 +73,7 @@ YagUnitGenerator::YagUnitGenerator() :
   portFlangeLength(CF40::flangeLength),
   frontLength(7.0),backLength(13.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304")
+  voidMat("Void"),mainMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -110,14 +110,19 @@ YagUnitGenerator::setFlangeCF()
 
 void
 YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
-				  const std::string& keyName) const
+				  const std::string& keyName,
+				  const bool flip) const
 /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param flip    :: flag to flip front/back
   */
 {
   ELog::RegMethod RegA("YagUnitGenerator","generateYagUnit");
+
+  // if (flip)
+  //   std::swap(frontLength,backLength);
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
@@ -140,8 +145,17 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
   Control.addVariable(keyName+"PortFlangeRadius",portFlangeRadius);
   Control.addVariable(keyName+"PortFlangeLength",portFlangeLength);
 
-  Control.addVariable(keyName+"FrontLength",frontLength);
-  Control.addVariable(keyName+"BackLength",backLength);
+  if (flip)
+    {
+      Control.addVariable(keyName+"FrontLength",backLength);
+      Control.addVariable(keyName+"BackLength",frontLength);
+    }
+  else
+    {
+      Control.addVariable(keyName+"FrontLength",frontLength);
+      Control.addVariable(keyName+"BackLength",backLength);
+    }
+
   Control.addVariable(keyName+"OuterRadius",outerRadius);
 
   Control.addVariable(keyName+"VoidMat",voidMat);

@@ -37,7 +37,7 @@ namespace tdcSystem
   class DipoleDIBMag;
   class YagUnit;
   class YagScreen;
-  
+
 
   /*!
     \class Segment25
@@ -55,7 +55,7 @@ class Segment25 :
   std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Flat inner zone
   std::unique_ptr<attachSystem::InnerZone> IZMid;        ///< Mid inner zone
   std::unique_ptr<attachSystem::InnerZone> IZLower;      ///< Lower inner zone
-  
+
   /// first pipe
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// first pipe
@@ -72,43 +72,18 @@ class Segment25 :
 
   /// MultiPipe
   std::shared_ptr<tdcSystem::MultiPipe> multiPipe;
-  
+
   /// Exit bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::Bellows> bellowCA;
-
-  
-  /// Join pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
-
-  /// Connect bellows
-  std::shared_ptr<constructSystem::Bellows> bellowAB;
-  std::shared_ptr<constructSystem::Bellows> bellowBB;
-  std::shared_ptr<constructSystem::Bellows> bellowCB;
-
-
-  /// Double yag screen
-  std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
-  std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
-
-  std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
-  std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
-
-  /// Exit pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeAB;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeBB;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeCB;
-
 
   void buildObjects(Simulation&);
   void createLinks();
 
   void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
   void createSplitInnerZone(Simulation&);
-  
+
  public:
 
   Segment25(const std::string&);

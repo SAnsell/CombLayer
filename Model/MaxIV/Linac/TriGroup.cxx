@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/TriGroup.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,41 +34,26 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -82,7 +67,7 @@
 namespace tdcSystem
 {
 
-TriGroup::TriGroup(const std::string& Key) : 
+TriGroup::TriGroup(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Main","Top","Mid","Bend",
 			       "BendStr"),
@@ -102,7 +87,7 @@ TriGroup::TriGroup(const std::string& Key) :
 }
 
 
-TriGroup::~TriGroup() 
+TriGroup::~TriGroup()
   /*!
     Destructor
   */
@@ -116,7 +101,7 @@ TriGroup::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("TriGroup","populate");
-  
+
   FixedRotate::populate(Control);
 
   mainWidth=Control.EvalVar<double>(keyName+"MainWidth");
@@ -135,6 +120,7 @@ TriGroup::populate(const FuncDataBase& Control)
   topFlangeLength=Control.EvalVar<double>(keyName+"TopFlangeLength");
 
   midZAngle=Control.EvalVar<double>(keyName+"MidZAngle");
+  midOpeningAngle=Control.EvalVar<double>(keyName+"MidOpeningAngle");
   midLength=Control.EvalVar<double>(keyName+"MidLength");
   midHeight=Control.EvalVar<double>(keyName+"MidHeight");
   midWidth=Control.EvalVar<double>(keyName+"MidWidth");
@@ -152,14 +138,14 @@ TriGroup::populate(const FuncDataBase& Control)
   bendThick=Control.EvalVar<double>(keyName+"BendThick");
   bendFlangeRadius=Control.EvalVar<double>(keyName+"BendFlangeRadius");
   bendFlangeLength=Control.EvalVar<double>(keyName+"BendFlangeLength");
-  
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
   return;
 }
-  
+
 void
 TriGroup::createSurfaces()
   /*!
@@ -167,17 +153,17 @@ TriGroup::createSurfaces()
   */
 {
   ELog::RegMethod RegA("TriGroup","createSurfaces");
-  
+
   // Inner void
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y); 
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   // use this so angled fronts correctly make
   ExternalCut::makeShiftedSurf
     (SMap,"front",buildIndex+11,Y,flangeLength);
-  
+
 
   // main pipe
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
@@ -198,13 +184,13 @@ TriGroup::createSurfaces()
 			   Origin+X*(wallThick+mainWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(wallThick+mainHeight/2.0),Z);
-  
+
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+15,
 				  Origin-Z*(wallThick+mainHeight/2.0),
 				  Z,X,-mainSideAngle);
 
-  
-  
+
+
   // Flange Surfaces :
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
 
@@ -231,28 +217,35 @@ TriGroup::createSurfaces()
   const Geometry::Vec3D mOrg=
     Origin+mY*(mainLength/cos(M_PI*midZAngle/180.0));
   FixedComp::setConnect(2,mOrg+mY*midLength,mY);
-  
+
+  const Geometry::Quaternion QVlow =
+    Geometry::Quaternion::calcQRotDeg(-midZAngle-midOpeningAngle,X);
+  const Geometry::Vec3D mZlow=QVlow.makeRotate(Z);
+  const Geometry::Quaternion QVup =
+    Geometry::Quaternion::calcQRotDeg(-midZAngle+midOpeningAngle,X);
+  const Geometry::Vec3D mZup=QVup.makeRotate(Z);
+
   ModelSupport::buildPlane
     (SMap,buildIndex+202,mOrg+mY*midLength,mY);
   ModelSupport::buildPlane(SMap,buildIndex+203,mOrg-X*(midWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+204,mOrg+X*(midWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+205,mOrg-mZ*(midHeight/2.0),mZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mZ*(midHeight/2.0),mZ);
+  ModelSupport::buildPlane(SMap,buildIndex+205,mOrg+mY*(midLength)-mZ*(midHeight/2.0),mZlow);
+  ModelSupport::buildPlane(SMap,buildIndex+206,mOrg+mY*(midLength)+mZ*(midHeight/2.0),mZup);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+213,mOrg-X*(midThick+midWidth/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+214,mOrg+X*(midThick+midWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+215,mOrg-mZ*(midThick+midHeight/2.0),mZ);
+    (SMap,buildIndex+215,mOrg+mY*(midLength)-mZ*(midThick+midHeight/2.0),mZlow);
   ModelSupport::buildPlane
-    (SMap,buildIndex+216,mOrg+mZ*(midThick+midHeight/2.0),mZ);
+    (SMap,buildIndex+216,mOrg+mY*(midLength)+mZ*(midThick+midHeight/2.0),mZup);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+222,mOrg+mY*(midLength+midThick-midFlangeLength),mY);
   ModelSupport::buildCylinder
     (SMap,buildIndex+227,mOrg,mY,midFlangeRadius);
-  
+
   // Bend:
 
   // impact point of bend (virtual curve)
@@ -261,12 +254,12 @@ TriGroup::createSurfaces()
 
   // Two steps : angle to Orgin->bOrg and angle bOrg->bExit
   const double thetaA(2.0*180.0*asin(0.5*bendArcLength/bendArcRadius)/M_PI);
-  
+
   const Geometry::Quaternion QWA =
     Geometry::Quaternion::calcQRotDeg(-bendZAngle,X);
   const Geometry::Quaternion QWB =
     Geometry::Quaternion::calcQRotDeg(-(thetaA+bendZAngle),X);
-  
+
   const Geometry::Vec3D aY=QWA.makeRotate(Y);
   const Geometry::Vec3D aZ=QWA.makeRotate(Z);
 
@@ -306,7 +299,7 @@ TriGroup::createSurfaces()
     (SMap,buildIndex+415,bExit-bZ*(bendThick+bendHeight/2.0),bZ);
   ModelSupport::buildPlane
     (SMap,buildIndex+416,bExit+bZ*(bendThick+bendHeight/2.0),bZ);
-  
+
   // Flange
 
   ModelSupport::buildPlane(SMap,buildIndex+422,cExit-bY*bendFlangeLength,bY);
@@ -318,7 +311,7 @@ TriGroup::createSurfaces()
 
   // Mid splitting point
   FixedComp::setConnect(4,mOrg+mY*midLength-mZ*midFlangeRadius,(mY+bY).unit());
-			
+
   return;
 }
 
@@ -338,7 +331,7 @@ TriGroup::createObjects(Simulation& System)
   // Void
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4  5 -6 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"13 -14  15 -16 -2 (-3:4:-5:6) ");
   makeCell("Walls",System,cellIndex++,wallMat,0.0,Out+frontStr);
@@ -347,7 +340,7 @@ TriGroup::createObjects(Simulation& System)
 	"2 13 -14  15 -16 -12 107 (-203:204:-205:206) (-303:304:-305:306)" );
   makeCell("EndWall",System,cellIndex++,wallMat,0.0,Out);
 
-  // FLANGE Front: 
+  // FLANGE Front:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -11 -7 (-13 : 14 : -15 : 16) ");
   makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
@@ -369,11 +362,11 @@ TriGroup::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 -202 213 -214 215 -216 (-203:204:-205:206)");
-    makeCell("MidPipe",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidPipe",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-202 222 -227 (-213:214:-215:216)");
-   makeCell("MidFlange",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidFlange",System,cellIndex++,flangeMat,0.0,Out); // CF viewport
 
    // Bend Pipe
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 303 -304 305 -306 -302 ");
@@ -392,7 +385,7 @@ TriGroup::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-402 422 -427 (-313:314:-415:416)");
-  makeCell("BendFlange",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("BendFlange",System,cellIndex++,flangeMat,0.0,Out);
 
 
   // outer boundary [flange front/back]
@@ -405,9 +398,9 @@ TriGroup::createObjects(Simulation& System)
   // outer boundary [flange front/back]
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -112 -117");
   addOuterSurf("Top",Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 112 -102 -127");
-  addOuterSurf("TFlange",Out); 
+  addOuterSurf("TFlange",Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 213 -214 215 -216 -202");
@@ -421,14 +414,14 @@ TriGroup::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"302 313 -314 415 -416 -402");
   addOuterSurf("BendStr",Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"422 -427 -402");
   addOuterSurf("BFlange",Out);
 
 
   return;
 }
-  
+
 void
 TriGroup::createLinks()
   /*!
@@ -437,11 +430,11 @@ TriGroup::createLinks()
   */
 {
   ELog::RegMethod RegA("TriGroup","createLinks");
-  
-  //stuff for intersection
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front 
 
-  FixedComp::setConnect(1,Origin+Y*(topLength+mainLength),Y); 
+  //stuff for intersection
+  ExternalCut::createLink("front",*this,0,Origin,Y);  //front
+
+  FixedComp::setConnect(1,Origin+Y*(topLength+mainLength),Y);
   // connect 3 + 4 set in createSurfaces
 
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
@@ -460,11 +453,11 @@ TriGroup::createLinks()
   FixedComp::setLinkSurf(7,Out);
 
   FixedComp::nameSideIndex(7,"outerPipe");
-  
+
   return;
 }
-  
-  
+
+
 void
 TriGroup::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
@@ -480,13 +473,13 @@ TriGroup::createAll(Simulation& System,
 
   populate(System.getDataBase());
   FixedRotate::createUnitVector(FC,FIndex);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
