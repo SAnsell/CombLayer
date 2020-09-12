@@ -3,7 +3,7 @@
  
  * File:   testInclude/testFunction.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ private:
   int testBuiltIn();
   int testCopyVarSet();
   int testEval();
+  int testList();
   int testString();
   int testVariable();
   int testVec3D();

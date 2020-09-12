@@ -24,6 +24,7 @@
 
 
 class FItem;
+template<typename T> class FList;
 
 /*!
   \class FuncDataBase 
@@ -63,6 +64,9 @@ class FuncDataBase
   int stripEqual(std::string&);
   std::string subProcVar(std::string&) const;
 
+  template<typename T>
+  FList<T>* convertToList(const std::string&);
+
  public:
 
   FuncDataBase();
@@ -76,7 +80,7 @@ class FuncDataBase
   //  int hasItem(const std::string&) const;
   const FItem* findItem(const std::string&) const;
   //  void setFuncParser(const std::string&,const FuncDataBase&);
-  
+
   int Parse(const std::string&);
   template<typename T>
   T Eval();
@@ -129,7 +133,8 @@ class FuncDataBase
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
 
-  void pushStringVariable(const std::string&,const std::string&);
+  template<typename T>
+  void pushVariable(const std::string&,const T&);
   
   void removeVariable(const std::string&);
   

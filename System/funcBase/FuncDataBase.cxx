@@ -3,7 +3,7 @@
  
  * File:   funcBase/FuncDataBase.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ FuncDataBase::EvalVar(const std::string& Key) const
   if (!FI)
     throw ColErr::InContainerError<std::string>
       (Key,"FuncDataBase::EvalVar variable not found");
-
+  
   T Out;
   FI->getValue(Out);
   return Out;
@@ -345,6 +345,35 @@ FuncDataBase::subProcVar(std::string& Var) const
        EvalVar<std::string>(Var) : Var);
   Var="";
   return Out;
+}
+
+template<typename T>
+FList<T>*
+FuncDataBase::convertToList(const std::string& Name)
+  /*!
+    Convert a single value to a list
+    \throw excpetion if type mis-match
+    \param Name :: Name of variable
+   */
+{
+  FItem* FPtr=VList.findVar(Name);
+  if (!FPtr)
+    throw ColErr::InContainerError<std::string>(Name,"Name to FList");
+  
+  FList<T>* OutPtr=dynamic_cast<FList<T>*>(FPtr);
+  
+  if (OutPtr) return OutPtr;
+
+  T Value;
+  if (FPtr->getValue(Value))
+    {
+      VList.addList(Name,Value); // create new is
+      
+      FList<T>* FListPtr=
+	dynamic_cast<FList<T>*>(VList.findVar(Name));
+      if (FListPtr) return FListPtr;
+    }
+  throw ColErr::TypeMatch("List Type ",typeid(T).name());
 }
 
 int 
@@ -913,18 +942,26 @@ FuncDataBase::removeVariable(const std::string& Name)
   return;
 }
 
+template<typename T>
 void
-FuncDataBase::pushStringVariable(const std::string& Name,
-				 const std::string& V)
+FuncDataBase::pushVariable(const std::string& Name,
+			   const T& V)
   /*!
-    Extends a string (space deliminated) 
-    \todo make a true list (?)
+    Extends a string (space deliminated) [specialiszed for string]
     \param Name :: Name of the variable
     \param V :: Variable to add
   */
 {
-  VList.addVar<std::string>(Name,std::string(V));
-  return;
+  FItem* FPtr=VList.findVar(Name);
+  if (!FPtr)
+    {
+      VList.addVar<T>(Name,V);
+      return;
+    }
+
+  FList<T>* FListPtr=convertToList<T>(Name);
+  FListPtr->pushValue(V);
+  
 }
 
 template<typename T>

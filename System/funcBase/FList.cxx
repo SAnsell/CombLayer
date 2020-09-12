@@ -310,6 +310,24 @@ FList<Geometry::Vec3D>::setValue(const std::string& V)
   return;
 }
 
+
+// -----------------------------------------
+//              PUSH VALUE
+// -----------------------------------------
+
+template<typename T>
+void
+FList<T>::pushValue(const T& Value)
+  /*!
+    Simple back push of value 
+    \param Value :: Value type
+   */
+{
+  Vec.push_back(Value);
+  return;
+}
+
+
 // -----------------------------------------
 //              GET VALUE
 // -----------------------------------------

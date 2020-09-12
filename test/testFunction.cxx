@@ -3,7 +3,7 @@
  
  * File:   test/testFunction.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@ testFunction::applyTest(const int extra)
       &testFunction::testBuiltIn,
       &testFunction::testCopyVarSet,
       &testFunction::testEval,
+      &testFunction::testList,      
       &testFunction::testString, 
       &testFunction::testVariable,
       &testFunction::testVec3D,
@@ -94,6 +95,7 @@ testFunction::applyTest(const int extra)
       "BuiltIn",
       "CopyVarSet",
       "Eval",
+      "List",
       "String",
       "Variable",
       "Vec3D",
@@ -486,5 +488,22 @@ testFunction::testVec3DFunctions()
 	}
       cnt++;
     }
+  return 0;
+}
+
+int
+testFunction::testList()
+  /*!
+    Test to List
+    \return 0 on succes and -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testVarList","testList");
+
+  FuncDataBase Control;
+
+    
+  Control.addVariable("fred2alpha",1);
+
   return 0;
 }

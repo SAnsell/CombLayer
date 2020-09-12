@@ -142,7 +142,7 @@ varList::findVar(const std::string& Key) const
   if (vc!=varName.end())
     return vc->second;
 
-  return 0;
+  return nullptr;
 }
 
 const FItem*
@@ -159,7 +159,7 @@ varList::findVar(const int Key) const
   vc=varItem.find(Key);
   if (vc!=varItem.end())
     return vc->second;
-  return 0;
+  return nullptr;
 }
 
 FItem*
@@ -176,7 +176,7 @@ varList::findVar(const int Key)
   vc=varItem.find(Key);
   if (vc!=varItem.end())
     return vc->second;
-  return 0;
+  return nullptr;
 }
 
 FItem* 
@@ -193,7 +193,7 @@ varList::findVar(const std::string& Key)
   if (vc!=varName.end())
     return vc->second;
 
-  return 0;
+  return nullptr;
 }
 
 
@@ -290,6 +290,7 @@ varList::selectValue(const int Key,
 		     double& oDbl) const
   /*!
     Simple selector
+    \todo update to use std::variant + string + list
     \param Key :: Variable name
     \param oVec :: output vector
     \param oDbl :: output value [ selected]
@@ -412,46 +413,6 @@ varList::createFType<Code>(const int I,const Code& V)
   return new FFunc(this,I,V); 
 }
 
-template<>
-void
-varList::addVar(const std::string& Name,const Code& Value) 
-  /*!
-    Set the values to be V. If the variable exists
-    and is not of the correct type, it is deleted
-    and replaced.
-    \param Name :: Name of the variable
-    \param Value :: current value
-  */
-{
-  std::map<std::string,FItem*>::iterator vc;
-
-  vc=varName.find(Name);
-  FItem* Ptr(0);
-  if (vc!=varName.end())
-    {
-      // Note that the variable number is re-used 
-      // despite the change in variable.
-      const int I=vc->second->getIndex();
-
-      delete vc->second;
-      std::map<int,FItem*>::iterator ac;
-      ac=varItem.find(I);
-      varName.erase(vc);
-      varItem.erase(ac);
-      Ptr=createFType<Code>(I,Value);
-    }
-  else
-  // Need to make a completely new item
-    {
-      Ptr=createFType(varNum,Value);
-      varNum++;
-    }
-  // Now insert into master lists
-  varName.emplace(Name,Ptr);
-  varItem.emplace(Ptr->getIndex(),Ptr);
-  return;
-}
-
 template<typename T>
 void
 varList::addVar(const std::string& Name,const T& Value) 
@@ -466,7 +427,7 @@ varList::addVar(const std::string& Name,const T& Value)
   std::map<std::string,FItem*>::iterator vc;
 
   vc=varName.find(Name);
-  FItem* Ptr(0);
+  FItem* Ptr(nullptr);
   if (vc!=varName.end())
     {
       // Note that the variable number is re-used 
@@ -487,8 +448,48 @@ varList::addVar(const std::string& Name,const T& Value)
       varNum++;
     }
   // Now insert into master lists
-  varName.insert(std::pair<std::string,FItem*>(Name,Ptr));
-  varItem.insert(std::pair<int,FItem*>(Ptr->getIndex(),Ptr));
+  varName.emplace(Name,Ptr);
+  varItem.emplace(Ptr->getIndex(),Ptr);
+  return;
+}
+
+template<typename T>
+void
+varList::addList(const std::string& Name,const T& Value) 
+  /*!
+    Set the values to be V. If the variable exists
+    and is not of the correct type, it is deleted
+    and replaced.
+    \param Name :: Name of the variable
+    \param Value :: current value
+  */
+{
+  std::map<std::string,FItem*>::iterator vc;
+
+  vc=varName.find(Name);
+  FItem* Ptr(nullptr);
+  if (vc!=varName.end())
+    {
+      // Note that the variable number is re-used 
+      // despite the change in variable.
+      const int I=vc->second->getIndex();
+      delete vc->second;
+      std::map<int,FItem*>::iterator ac;
+      ac=varItem.find(I);
+      varName.erase(vc);
+      varItem.erase(ac);
+      Ptr=createFType<T>(I,Value);
+    }
+  else
+  // Need to make a completely new item
+    {
+      Ptr=new FList<T>(this,varNum,Value);
+      varNum++;
+    }
+  // Now insert into master lists
+  varName.emplace(Name,Ptr);
+  varItem.emplace(Ptr->getIndex(),Ptr);
+
   return;
 }
 
@@ -515,6 +516,24 @@ varList::setVar(const std::string& Name,const T& Value)
       // Wrong type?
       addVar(Name,Value);
     }
+  return;
+}
+
+void
+varList::setVarItem(const std::string& Name,FItem* FPtr) 
+  /*!
+    Set the variable as a points
+    \param Name :: Name of the variable
+    \param FPtr :: Pointer to MANGED FItem
+  */
+{
+  std::map<std::string,FItem*>::iterator vc;
+  vc=varName.find(Name);
+  if (vc!=varName.end())
+    removeVar(Name);
+
+  varName.emplace(Name,FPtr);
+  varItem.emplace(FPtr->getIndex(),FPtr);
   return;
 }
 
@@ -591,7 +610,7 @@ template void varList::addVar(const std::string&,const double&);
 template void varList::addVar(const std::string&,const int&);
 template void varList::addVar(const std::string&,const long int&);
 template void varList::addVar(const std::string&,const size_t&);
-// template void varList::addVar(const std::string&,const Code&);
+template void varList::addVar(const std::string&,const Code&);
 
 template void varList::setVar(const std::string&,const Geometry::Vec3D&);
 template void varList::setVar(const std::string&,const std::string&);

@@ -84,7 +84,7 @@ class FItem
 
 /*!
   \class FValue 
-  \brief Single type numbe
+  \brief Single type number
   \author S. Ansell 
   \date April 2006
   \version 1.0
@@ -161,6 +161,9 @@ class FList : public FItem
   virtual int getValue(double&) const;     
   virtual int getValue(std::string&) const;
 
+  void pushValue(const T&);
+
+  
   virtual std::string typeKey() const;
   void write(std::ostream&) const;  
 };
