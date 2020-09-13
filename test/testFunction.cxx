@@ -503,7 +503,17 @@ testFunction::testList()
   FuncDataBase Control;
 
     
-  Control.addVariable("fred2alpha",1);
+  Control.addVariable<int>("fred2alpha",1);
+  //
+  const int outA=Control.EvalVar<int>("fred2alpha");
+  Control.pushVariable<int>("fred2alpha",2);
 
+  std::vector<std::string> keys = Control.getKeys();
+
+  const int out=Control.EvalVar<int>("fred2alpha");
+
+  std::vector<int> OutVec=Control.EvalVector<int>("fred2alpha");
+  for(const int CN : OutVec)
+    ELog::EM<<"V == "<<CN<<ELog::endDiag;
   return 0;
 }

@@ -34,6 +34,7 @@
 */
 
 class FItem;
+template<typename T> class FList;
 
 class varList
 {
@@ -74,7 +75,7 @@ class varList
   void setValue(const int,const T&);
 
   template<typename T>
-  void addList(const std::string&,const T&);
+  FList<T>* createList(const std::string&);
 
   template<typename T>
   void pushList(const std::string&,const T&);

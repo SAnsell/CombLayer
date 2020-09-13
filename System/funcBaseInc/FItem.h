@@ -161,6 +161,11 @@ class FList : public FItem
   virtual int getValue(double&) const;     
   virtual int getValue(std::string&) const;
 
+  /// Access to size
+  size_t getSize() const { return Vec.size(); }
+  /// access to vector 
+  std::vector<T> getVector() const { return Vec; }
+ 
   void pushValue(const T&);
 
   

@@ -393,7 +393,6 @@ varList::createFType(const int I,const T& V)
     \param V :: Value 
     \return FItem pointer.
   */
-
 { 
   return new FValue<T>(this,I,V); 
 }
@@ -454,43 +453,56 @@ varList::addVar(const std::string& Name,const T& Value)
 }
 
 template<typename T>
-void
-varList::addList(const std::string& Name,const T& Value) 
+FList<T>*
+varList::createList(const std::string& Name) 
   /*!
     Set the values to be V. If the variable exists
     and is not of the correct type, it is deleted
     and replaced.
     \param Name :: Name of the variable
     \param Value :: current value
+    \return list pointer
   */
 {
+  ELog::RegMethod RegA("varList","createList");
+  
   std::map<std::string,FItem*>::iterator vc;
 
   vc=varName.find(Name);
-  FItem* Ptr(nullptr);
-  if (vc!=varName.end())
+  if (vc!=varName.end())  // maybe list/maybe value
     {
-      // Note that the variable number is re-used 
-      // despite the change in variable.
-      const int I=vc->second->getIndex();
-      delete vc->second;
+      FItem* FPtr(vc->second);
+      const int I=FPtr->getIndex();
       std::map<int,FItem*>::iterator ac;
       ac=varItem.find(I);
-      varName.erase(vc);
-      varItem.erase(ac);
-      Ptr=createFType<T>(I,Value);
-    }
-  else
-  // Need to make a completely new item
-    {
-      Ptr=new FList<T>(this,varNum,Value);
-      varNum++;
-    }
-  // Now insert into master lists
-  varName.emplace(Name,Ptr);
-  varItem.emplace(Ptr->getIndex(),Ptr);
+	
+      // value::
+      FValue<T>* FVPtr = dynamic_cast<FValue<T>*>(FPtr);
+      if (FVPtr)
+	{
+	  T oldValue;
+	  if (FVPtr->getValue(oldValue))
+	    {
+	      delete vc->second;
+	      varName.erase(vc);
+	      varItem.erase(ac);
+	      FList<T>* LPtr=new FList<T>(this,varNum,oldValue);
+	      LPtr->pushValue(Value);
+	      varNum++;
 
-  return;
+	      varName.emplace(Name,LPtr);
+	      varItem.emplace(LPtr->getIndex(),LPtr);
+	      return LPtr;
+	    }
+	  throw ColErr::TypeMatch("Value",typeid(T).name(),"Value/Type");
+	}	  
+
+      // FItem ?
+      FList<T>* FLPtr = dynamic_cast<FList<T>*>(FPtr);
+      if (!FLPtr)
+	throw ColErr::TypeMatch("Value",typeid(T).name(),"List/Type");
+    }
+  throw ColErr::InContainerError<std::string>(Name,"FList");
 }
 
 template<typename T>
@@ -626,6 +638,20 @@ template FItem* varList::createFType(const int,const std::string&);
 template FItem* varList::createFType(const int,const int&);
 template FItem* varList::createFType(const int,const long int&);
 template FItem* varList::createFType(const int,const size_t&);
+
+
+template FList<Geometry::Vec3D>*
+varList::createList(const std::string&);
+template FList<double>*
+varList::createList(const std::string&);
+template FList<int>*
+varList::createList(const std::string&);
+template FList<std::string>*
+varList::createList(const std::string&);
+template FList<long int>*
+varList::createList(const std::string&);
+template FList<size_t>*
+varList::createList(const std::string&);
 
 ///\endcond TEMPLATE
 

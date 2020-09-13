@@ -84,10 +84,16 @@ class FuncDataBase
   int Parse(const std::string&);
   template<typename T>
   T Eval();
+
   template<typename T>
-  T EvalVar(const std::string&) const;      
+  std::vector<T> EvalVector(const std::string&) const;
+  
   template<typename T>
-  T EvalDefVar(const std::string&,const T&) const;      
+  T EvalVar(const std::string&) const;
+  
+  template<typename T>
+  T EvalDefVar(const std::string&,const T&) const;
+  
   template<typename T>
   T EvalPair(const std::string&,const std::string&) const;      
 

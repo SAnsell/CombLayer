@@ -118,6 +118,34 @@ FuncDataBase::hasVariable(const std::string& Key) const
 }
 
 template<typename T>
+std::vector<T>
+FuncDataBase::EvalVector(const std::string& Key) const
+  /*!
+    Finds the vector of a variable item(s)
+    This is incomplete on list, as only track direct 
+    transfer and not double->int etc.
+    \param Key :: string to search
+    \return Value of variable 
+    \throw InContainterError if no variable exists
+  */
+{
+  const FItem* FI=findItem(Key);
+  if (!FI)
+    throw ColErr::InContainerError<std::string>
+      (Key,"FuncDataBase::EvalVector variable not found");
+
+  
+  const FList<T>* FListPtr=dynamic_cast<const FList<T>*>(FI);
+  if (FListPtr)
+    return FListPtr->getVector();
+      
+  T Out;
+  FI->getValue(Out);
+  
+  return std::vector<T>({Out});
+}
+
+template<typename T>
 T
 FuncDataBase::EvalVar(const std::string& Key) const
   /*!
@@ -356,6 +384,8 @@ FuncDataBase::convertToList(const std::string& Name)
     \param Name :: Name of variable
    */
 {
+  ELog::RegMethod RegA("FuncDataBase","converToList");
+  
   FItem* FPtr=VList.findVar(Name);
   if (!FPtr)
     throw ColErr::InContainerError<std::string>(Name,"Name to FList");
@@ -367,13 +397,13 @@ FuncDataBase::convertToList(const std::string& Name)
   T Value;
   if (FPtr->getValue(Value))
     {
-      VList.addList(Name,Value); // create new is
-      
       FList<T>* FListPtr=
-	dynamic_cast<FList<T>*>(VList.findVar(Name));
+	dynamic_cast<FList<T>*>(VList.createList<T>(Name));
+      ELog::EM<<"Size == "<<FListPtr->getSize()<<ELog::endDiag;
+      // This should not be possible(?)
       if (FListPtr) return FListPtr;
     }
-  throw ColErr::TypeMatch("List Type ",typeid(T).name());
+  throw ColErr::TypeMatch(FPtr->typeKey(),typeid(T).name(),"List/Var");
 }
 
 int 
@@ -1333,6 +1363,29 @@ template int FuncDataBase::EvalTriple
 template
 void FuncDataBase::addParse<double>(const std::string&,const std::string&);
 
+
+// PUSH
+template void
+FuncDataBase::pushVariable<double>(const std::string&,const double&);
+template void
+FuncDataBase::pushVariable<size_t>(const std::string&,const size_t&);
+template void
+FuncDataBase::pushVariable<int>(const std::string&,const int&);
+template void
+FuncDataBase::pushVariable<std::string>(const std::string&,const std::string&);
+
+// EVAL VECTOR
+
+template std::vector<double>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<int>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<long int>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<size_t>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<std::string>
+FuncDataBase::EvalVector(const std::string&) const;
 
 /// \endcond TEMPLATE
  
