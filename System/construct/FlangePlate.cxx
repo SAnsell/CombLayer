@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/FlangePlate.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -81,7 +81,7 @@
 namespace constructSystem
 {
 
-FlangePlate::FlangePlate(const std::string& Key) : 
+FlangePlate::FlangePlate(const std::string& Key) :
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut()
@@ -91,7 +91,7 @@ FlangePlate::FlangePlate(const std::string& Key) :
   */
 {}
 
-FlangePlate::FlangePlate(const FlangePlate& A) : 
+FlangePlate::FlangePlate(const FlangePlate& A) :
   attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -128,7 +128,7 @@ FlangePlate::operator=(const FlangePlate& A)
   return *this;
 }
 
-FlangePlate::~FlangePlate() 
+FlangePlate::~FlangePlate()
   /*!
     Destructor
   */
@@ -142,11 +142,11 @@ FlangePlate::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("FlangePlate","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
-  innerRadius=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
+  innerRadius=Control.EvalDefVar<double>(keyName+"InnerRadius",-1.0);
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
@@ -168,21 +168,21 @@ FlangePlate::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
 			       Origin-Y*(flangeLength/2.0),Y);
-      setFront(SMap.realSurf(1));
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,
 			       Origin+Y*(flangeLength/2.0),Y);
-      setBack(-SMap.realSurf(2));
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
 
   if (innerRadius>Geometry::zeroTol &&
       innerRadius<flangeRadius-Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
-  
+
   return;
 }
 
@@ -196,7 +196,7 @@ FlangePlate::createObjects(Simulation& System)
   ELog::RegMethod RegA("FlangePlate","createObjects");
 
   std::string Out;
-  
+
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
 
@@ -220,7 +220,7 @@ FlangePlate::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 FlangePlate::createLinks()
   /*!
@@ -233,8 +233,8 @@ FlangePlate::createLinks()
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   return;
 }
-  
-  
+
+
 void
 FlangePlate::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -250,12 +250,12 @@ FlangePlate::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE constructSystem
