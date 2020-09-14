@@ -249,7 +249,7 @@ FlangePlate::createAll(Simulation& System,
   ELog::RegMethod RegA("FlangePlate","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,flangeLength);
   createSurfaces();
   createObjects(System);
   createLinks();
