@@ -108,15 +108,8 @@ CurveMagnet::populate(const FuncDataBase& Control)
   coilDepth=Control.EvalVar<double>(keyName+"CoilDepth");
   coilWidth=Control.EvalVar<double>(keyName+"CoilWidth");
 
-  supportGap=Control.EvalVar<double>(keyName+"SupportGap");
-  supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
-  supportTop=Control.EvalVar<double>(keyName+"SupportTop");
-  supportDepth=Control.EvalVar<double>(keyName+"SupportDepth");
-  supportBase=Control.EvalVar<double>(keyName+"SupportBase");
-
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
-  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
 
   return;
 }
@@ -129,7 +122,7 @@ CurveMagnet::createSurfaces()
 {
   ELog::RegMethod RegA("CurveMagnet","createSurfaces");
 
-  
+
   const double zLen=coilArcLength*coilArcLength/(2.0*coilArcRadius);
   const double yLen=sqrt(coilArcLength*coilArcLength-zLen*zLen);
   // Two steps : angle to Orgin->bOrg and angle bOrg->bExit
@@ -176,7 +169,7 @@ CurveMagnet::createSurfaces()
 
   ModelSupport::buildCylinder
     (SMap,buildIndex+116,centOrg,X,coilArcRadius+poleHeight/2.0);
-  
+
   ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,X,poleHeight/2.0);
   ModelSupport::buildCylinder(SMap,buildIndex+118,bOrg,X,poleHeight/2.0);
 
@@ -190,10 +183,10 @@ CurveMagnet::createSurfaces()
   const Geometry::Vec3D poleLTopCent=Origin+
     X*(-coilGap/2.0+coilArcRadius/tan(M_PI*poleAngle/180.0))+
        Z*(-coilArcRadius+poleHeight/2.0);
-  
+
   const Geometry::Vec3D poleLBaseCent=Origin-
     X*(coilGap/2.0+coilArcRadius/tan(M_PI*poleAngle/180.0))-
-       Z*(coilArcRadius+poleHeight/2.0);  
+       Z*(coilArcRadius+poleHeight/2.0);
 
   ModelSupport::buildCone(SMap,buildIndex+207,poleLBaseCent,X,poleAngle);
   ModelSupport::buildCone(SMap,buildIndex+208,poleLTopCent,X,poleAngle);
@@ -201,11 +194,11 @@ CurveMagnet::createSurfaces()
   const Geometry::Vec3D poleRTopCent=Origin+
     X*(coilGap/2.0-coilArcRadius/tan(M_PI*poleAngle/180.0))+
        Z*(-coilArcRadius+poleHeight/2.0);
-  
+
   const Geometry::Vec3D poleRBaseCent=Origin+
     X*(coilGap/2.0+coilArcRadius/tan(M_PI*poleAngle/180.0))-
-       Z*(coilArcRadius+poleHeight/2.0);  
-  
+       Z*(coilArcRadius+poleHeight/2.0);
+
   ModelSupport::buildCone(SMap,buildIndex+217,poleRBaseCent,X,poleAngle);
   ModelSupport::buildCone(SMap,buildIndex+218,poleRTopCent,X,poleAngle);
 
@@ -231,7 +224,7 @@ CurveMagnet::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"113 -103 115 -116 (-117:151) (-118:-152)");
   makeCell("CoilMid",System,cellIndex++,poleMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"104 -114 115 -116 (-117:151) (-118:-152)");
   makeCell("CoilMid",System,cellIndex++,poleMat,0.0,Out);
@@ -264,7 +257,7 @@ CurveMagnet::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"217 -218 -104 204 115 -116 151 -152");
   makeCell("RightPole",System,cellIndex++,poleMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"-217 -104 204 105 151 -152");
   makeCell("RightPoleVoid",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"218 -104 204 -106 151 -152");
@@ -273,7 +266,7 @@ CurveMagnet::createObjects(Simulation& System)
   makeCell("RightExtraVoid",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"-108 152 204 -104 105 -106");
   makeCell("RightExtraVoid",System,cellIndex++,0,0.0,Out);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"113 -114 105 -106 (-107:151) (-108:-152)");
   addOuterSurf(Out);

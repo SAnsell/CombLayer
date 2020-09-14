@@ -42,22 +42,15 @@ class CurveMagGenerator
   double poleGap;               ///< Gap on pole
   double poleHeight;            ///< Gap height on pole
   double poleAngle;             ///< Angle on pole pieces cone
-  
+
   double coilGap;               ///< gap between coils
   double coilArcRadius;         ///< radius of main curve
   double coilArcLength;         ///< length of main curve
   double coilDepth;             ///< depth across coil
   double coilWidth;             ///< Width of coil
 
-  double supportGap;            ///< Gap between top support
-  double supportRadius;         ///< Radius of curve
-  double supportTop;            ///< Top displacement (-ve above centreline
-  double supportDepth;          ///< Depth to under gap not curved)
-  double supportBase;           ///< Base depth (flat part)
-
   std::string poleMat;                  ///< Pole material
   std::string coilMat;                  ///< Coil material
-  std::string supportMat;               ///< Support material
 
  public:
 

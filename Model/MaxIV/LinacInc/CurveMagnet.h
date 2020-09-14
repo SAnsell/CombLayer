@@ -47,24 +47,15 @@ class CurveMagnet :
   double poleGap;               ///< Gap on pole
   double poleHeight;            ///< Gap height on pole
   double poleAngle;             ///< Angle on pole pieces cone
-  
+
   double coilGap;               ///< gap between coils
-  double coilMidGap;            ///< depth across coil
   double coilArcLength;         ///< Arc lengh [straight-line]
   double coilArcRadius;         ///< radius of main curve
   double coilDepth;             ///< depth across coil
   double coilWidth;             ///< Width of coil
 
-  
-  double supportGap;            ///< Gap between top support
-  double supportRadius;         ///< Radius of curve
-  double supportTop;            ///< Top displacement
-  double supportDepth;          ///< Depth to under gap
-  double supportBase;           ///< Base depth 
-  
   int poleMat;                  ///< Pole material
   int coilMat;                  ///< Coil material
-  int supportMat;               ///< Support material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

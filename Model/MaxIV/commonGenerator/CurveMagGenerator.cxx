@@ -56,24 +56,18 @@ CurveMagGenerator::CurveMagGenerator() :
   coilGap(3.65),coilArcRadius(313.40),
   coilArcLength(240.0),
   coilDepth(15.0),coilWidth(8.0),
-  
-  supportGap(20.4),supportRadius(313.75),
-  supportDepth(25.0),supportBase(12.0),
-  
-  poleMat("Iron"),coilMat("Copper"),supportMat("Stainless304L")
+
+  poleMat("Iron"),coilMat("Copper")
   /*!
     Constructor and defaults
   */
 {}
 
-CurveMagGenerator::CurveMagGenerator(const CurveMagGenerator& A) : 
+CurveMagGenerator::CurveMagGenerator(const CurveMagGenerator& A) :
   poleGap(A.poleGap),poleHeight(A.poleHeight),poleAngle(A.poleAngle),
   coilGap(A.coilGap),coilArcRadius(A.coilArcRadius),
   coilDepth(A.coilDepth),coilWidth(A.coilWidth),
-  supportGap(A.supportGap),supportRadius(A.supportRadius),
-  supportTop(A.supportTop),supportDepth(A.supportDepth),
-  supportBase(A.supportBase),poleMat(A.poleMat),
-  coilMat(A.coilMat),supportMat(A.supportMat)
+  poleMat(A.poleMat),coilMat(A.coilMat)
   /*!
     Copy constructor
     \param A :: CurveMagGenerator to copy
@@ -97,14 +91,8 @@ CurveMagGenerator::operator=(const CurveMagGenerator& A)
       coilArcRadius=A.coilArcRadius;
       coilDepth=A.coilDepth;
       coilWidth=A.coilWidth;
-      supportGap=A.supportGap;
-      supportRadius=A.supportRadius;
-      supportTop=A.supportTop;
-      supportDepth=A.supportDepth;
-      supportBase=A.supportBase;
       poleMat=A.poleMat;
       coilMat=A.coilMat;
-      supportMat=A.supportMat;
     }
   return *this;
 }
@@ -136,16 +124,9 @@ CurveMagGenerator::generateMag(FuncDataBase& Control,
   Control.addVariable(keyName+"CoilDepth",coilDepth);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
 
-  Control.addVariable(keyName+"SupportGap",supportGap);
-  Control.addVariable(keyName+"SupportRadius",supportRadius);
-  Control.addVariable(keyName+"SupportTop",supportTop);
-  Control.addVariable(keyName+"SupportDepth",supportDepth);
-  Control.addVariable(keyName+"SupportBase",supportBase);
-
   Control.addVariable(keyName+"PoleMat",poleMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
-  Control.addVariable(keyName+"SupportMat",supportMat);
-  
+
   return;
 
 }
