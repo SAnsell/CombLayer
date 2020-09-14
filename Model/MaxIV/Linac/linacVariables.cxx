@@ -833,7 +833,6 @@ Segment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadD",74.7); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadE",114.7); // No_2_00.pdf
 
-
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
@@ -3104,10 +3103,9 @@ Segment45(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF34_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",110.5);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -3117,12 +3115,13 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
-  PGen.setCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeB",161.75);
+  PGen.setCF<setVariable::CF66_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeB",160.0);
 
-  FPGen.setCF<setVariable::CF63>();
+  FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
   FPGen.generateFlangePlate(Control,lKey+"Adaptor");
+
   return;
 }
 
