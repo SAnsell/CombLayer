@@ -172,11 +172,13 @@ CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void CrossWayGenerator::setCF<CF35_TDC>();
 template void CrossWayGenerator::setCF<CF63>();
 template void CrossWayGenerator::setCF<CF100>();
 template void CrossWayGenerator::setCF<CF120>();
 template void CrossWayGenerator::setCF<CF150>();
 
+template void CrossWayGenerator::setFlangeCF<CF35_TDC>();
 template void CrossWayGenerator::setFlangeCF<CF100>();
 template void CrossWayGenerator::setFlangeCF<CF120>();
 template void CrossWayGenerator::setFlangeCF<CF150>();
