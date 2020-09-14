@@ -93,6 +93,8 @@ class YagUnitBigGenerator
   template<typename T> void setPortCF();
   template<typename T> void setViewACF();
 
+  double getPortRadius() const {return portRadius;}
+
   void generateYagUnit(FuncDataBase&,
 		       const std::string&) const;
 
