@@ -3,7 +3,7 @@
  
  * File:   supportInc/writeSupport.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ namespace StrFunc
 {
 
 std::string flukaNum(const int);
-std::string flukaNum(const double);
+std::string flukaNum(const double,const double= 1e-40);
 
 std::vector<std::string> splitComandLine(std::string);
  
@@ -37,7 +37,7 @@ void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);
 
 /// Write file in standard FLUKA input form 
-void writeFLUKA(const std::string&,std::ostream&);
+ void writeFLUKA(const std::string&,std::ostream&,const double = 1e-40);
 
 /// Write file in standard MCNPX input form 
 void writeMCNPX(const std::string&,std::ostream&);

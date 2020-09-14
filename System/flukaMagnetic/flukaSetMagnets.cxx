@@ -151,33 +151,67 @@ setDefMagnets(SimFLUKA& System)
 {
   ELog::RegMethod RegA("flukaSefMagnets[F]","setDefMagnets");
 
+  // Database of varibles
   const FuncDataBase& Control=System.getDataBase();
+  // All cells in Simulation
+  const Simulation::OTYPE& CellObjects=System.getCells(); 
 
-  std::string magNames=
-    Control.EvalDefVar<std::string>("MagUnitList","");
+  
+  std::vector<std::string> magNames=
+    Control.EvalDefVector<std::string>("MagUnitList");
 
-  std::string Item;
-  while(StrFunc::section(magNames,Item))
+  // cells with magnetic fields
+  std::set<MonteCarlo::Object*> magnetCells;
+  
+  for(std::string& MUComponent : magNames)
     {
-      const std::string MagKey("MagUnit"+Item);
-
-      const std::string FCname=
-	Control.EvalVar<std::string>(MagKey+"FixedComp");
-      const std::string FClink=
-	Control.EvalVar<std::string>(MagKey+"LinkPt");
-      
-      if (System.hasObject(FCname))
+      std::string Item;
+      if (StrFunc::section(MUComponent,Item))   // get name
 	{
-	  std::shared_ptr<attachSystem::FixedComp> FC=
-	    System.getSharedPtr(FCname);
+	  const std::string MagKey("MagUnit"+Item);   // key + 
+	  
+	  const std::string FCname=
+	    Control.EvalVar<std::string>(MagKey+"FixedComp");
+	  const std::string FClink=
+	    Control.EvalVar<std::string>(MagKey+"LinkPt");
 
-	  std::shared_ptr<magnetUnit> magA=
-	    std::make_shared<magnetUnit>(Item);
+	  ELog::EM<<"FCNAME == "<<FCname<<ELog::endDiag;
+	  // has object in model
+	  if (System.hasObject(FCname))
+	    {
+		  
+	      std::shared_ptr<attachSystem::FixedComp> FC=
+		System.getSharedPtr(FCname);
+	      
+	      std::shared_ptr<magnetUnit> magA=
+		std::make_shared<magnetUnit>(Item);
+	      
+	      magA->createAll(System,*FC,FClink);
+	      System.addMagnetObject(magA);
 
-	  magA->createAll(System,*FC,FClink);
-	  System.addMagnetObject(magA);
+	      // MagField
+	      while(StrFunc::section(MUComponent,Item))
+		{
+		  const std::vector<int> CellNumbers=
+		    System.getObjectRange(Item);
+		  for(const int CN : CellNumbers)
+		    {
+		      Simulation::OTYPE::const_iterator mc=
+			CellObjects.find(CN);
+		      if (mc!=CellObjects.end())
+			magnetCells.emplace(mc->second);
+		    }
+		}
+	    }
 	}
     }
+  if (magnetCells.empty())
+    ELog::EM<<"Warning : No default magnetic fields set"<<ELog::endWarn;
+
+  for(MonteCarlo::Object* OPtr : magnetCells)
+    OPtr->setMagFlag();
+
+  
   return; 
 }
 

@@ -58,14 +58,22 @@ LINACmagnetVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
 
-  Control.addVariable("MagUnitList","Seg3DipoleA");
-  Control.pushVariable<std::string>("MagUnitList","Seg3DipoleB");
+  // active units : Void space for field
+  const std::vector<std::string> MUname
+    ({
+        "Seg3DipoleA L2SPF3FlatA:Void",
+	"Seg3DipoleB L2SPF3FlatB:Void"
+     });
 
-  Control.addVariable("MagUnitFieldList","L2SPF3FlatA:Void");
-  Control.pushVariable<std::string>("MagUnitFieldList","L2SPF3FlatB:Void");
+  for(const std::string& Item : MUname)
+    Control.pushVariable<std::string>("MagUnitList",Item);
+
 
   MagnetGenerator MUdipole;
-  MUdipole.generate(Control,"Seg3DipoleA","segment3","0",0.0);
+  MUdipole.setField(-1.7,0,0,0);
+  MUdipole.generate(Control,"Seg3DipoleA","L2SPF3DipoleA","0",0.0);
+  MUdipole.setField(1.7,0,0,0);
+  MUdipole.generate(Control,"Seg3DipoleB","L2SPF3DipoleB","0",0.0);
   
   return;
 }

@@ -64,6 +64,23 @@ MagnetGenerator::~MagnetGenerator()
  */
 {}
 
+void
+MagnetGenerator::setField(const double K0,const double K1,
+			  const double K2,const double K3)
+  /*!
+    Simple setter 
+    \param K0 :: Dipole monment
+    \param K1 :: Quadrupole monment
+    \param K2 :: Sexapole monment
+    \param K3 :: Octopole monment
+   */
+{
+  KFactor[0]=K0;
+  KFactor[1]=K1;
+  KFactor[2]=K2;
+  KFactor[3]=K3;
+  return;
+}
 
 void
 MagnetGenerator::generate(FuncDataBase& Control,
