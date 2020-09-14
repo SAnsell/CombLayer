@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/SixPortGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -72,14 +72,14 @@ CrossWayGenerator::CrossWayGenerator() :
   flangeYLength(CF40::flangeLength),
   flangeZLength(CF63::flangeLength),
   plateThick(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304"),
-  plateMat("Stainless304")
+  voidMat("Void"),wallMat("Stainless304L"),
+  plateMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
 
-CrossWayGenerator::~CrossWayGenerator() 
+CrossWayGenerator::~CrossWayGenerator()
  /*!
    Destructor
  */
@@ -96,7 +96,7 @@ CrossWayGenerator::setCF()
   xRadius=CF::innerRadius;
   yRadius=CF::innerRadius;
   wallThick=CF::wallThick;
-  
+
   setFlangeCF<CF>();
   return;
 }
@@ -129,23 +129,23 @@ CrossWayGenerator::setMainLength(const double F,const double B)
   backLength=B;
   return;
 }
-  
+
 void
 CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary function for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
   */
 {
   ELog::RegMethod RegA("CrossWayGenerator","generateCrossWay");
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"XRadius",xRadius);
   Control.addVariable(keyName+"YRadius",yRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
-  
+
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"FrontLength",frontLength);
@@ -155,7 +155,7 @@ CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeXRadius",flangeXRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);
   Control.addVariable(keyName+"FlangeZRadius",flangeZRadius);
-  
+
   Control.addVariable(keyName+"FlangeXLength",flangeXLength);
   Control.addVariable(keyName+"FlangeYLength",flangeYLength);
   Control.addVariable(keyName+"FlangeZLength",flangeZLength);
@@ -183,5 +183,5 @@ template void CrossWayGenerator::setFlangeCF<CF150>();
 
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable
