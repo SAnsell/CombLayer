@@ -3,7 +3,7 @@
  
  * File:   funcBase/FValue.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -330,6 +330,251 @@ FValue<Geometry::Vec3D>::setValue(const Geometry::Vec3D& V)
   return;
 }
 
+// ---------------------------------------------------
+//                GET VECTOR
+// ---------------------------------------------------
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<Geometry::Vec3D>&) const
+  /*!
+    Sets the value
+    \return 0 (never possible)
+  */
+{
+  return 0;
+}
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<double>& V) const
+  /*!
+    Output the values into a vector
+    \param V :: Output vector
+    \return 1 (always possible)
+  */
+{
+  V=std::vector<double>({static_cast<double>(Value)});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<int>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V=std::vector<int>({static_cast<int>(Value)});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<long int>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V=std::vector<long int>({static_cast<long int>(Value)});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<size_t>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  const size_t VNum=(Value<0) ? ULONG_MAX : static_cast<size_t>(Value);
+  V=std::vector<size_t>({VNum});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<typename T>
+int
+FValue<T>::getVector(std::vector<std::string>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  std::stringstream cx;
+  cx<<Value;
+  V=std::vector<std::string>({cx.str()});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FValue<std::string>::getVector(std::vector<Geometry::Vec3D>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FValue","getVector(Vec3D)");
+
+  Geometry::Vec3D VItem;
+  if (!StrFunc::convert(Value,VItem))
+    return 0;
+  V=std::vector<Geometry::Vec3D>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FValue<std::string>::getVector(std::vector<double>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FValue","getVector(double)");
+  double VItem;
+  if (!StrFunc::convert(Value,VItem))
+    return 0;
+  V=std::vector<double>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FValue<std::string>::getVector(std::vector<long int>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FValue","getVector(long int )");
+
+  long int VItem;
+  if (!StrFunc::convert(Value,VItem))
+    return 0;
+  V=std::vector<long int>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FValue<std::string>::getVector(std::vector<size_t>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FValue","getVector(size_t)");
+  size_t VItem;
+  if (!StrFunc::convert(Value,VItem))
+    return 0;
+  V=std::vector<size_t>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FValue<std::string>::getVector(std::vector<int>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FValue","getVector(int)");
+  int VItem;
+  if (!StrFunc::convert(Value,VItem))
+    return 0;
+  V=std::vector<int>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+
+template<>
+int 
+FValue<Geometry::Vec3D>::getVector(std::vector<double>&) const
+  /*!
+    Puts the value into V
+    \return  false [not possible]
+  */
+{
+  return 0; 
+}
+
+template<>
+int
+FValue<Geometry::Vec3D>::getVector(std::vector<long int>&) const
+  /*!
+    Puts the value into V
+    \return  false [not possible]
+  */
+{
+  return 0;
+}
+
+template<>
+int
+FValue<Geometry::Vec3D>::getVector(std::vector<size_t>&) const
+  /*!
+    Puts the value into V
+    \return  false [not possible]
+  */
+{
+  return 0;
+}
+
+template<>
+int
+FValue<Geometry::Vec3D>::getVector(std::vector<int>&) const
+  /*!
+    Puts the value into V
+    \return 0 as invalid
+  */
+{
+  return 0;
+}
+
+
+template<>
+int
+FValue<Geometry::Vec3D>::getVector(std::vector<std::string>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 1 as convertable (always)
+  */
+{
+  std::ostringstream cx;
+  cx<<Value;
+  V=std::vector<std::string>({cx.str()});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+
+
 // -----------------------------------------
 //              GET VALUE
 // -----------------------------------------
@@ -593,6 +838,7 @@ FValue<Geometry::Vec3D>::getValue(std::string& V) const
   const_cast<int&>(active)++;
   return 1;
 }
+
 
 template<>
 void

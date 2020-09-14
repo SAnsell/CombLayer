@@ -3,7 +3,7 @@
  
  * File:   funcBase/FFunc.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,6 +106,127 @@ FFunc::setValue(const Code& AC)
   BaseUnit=AC;
   return;
 }
+
+//  ------------------------------------------
+//        GET VECTOR
+//  --------------------------------------------
+
+int
+FFunc::getVector(std::vector<Geometry::Vec3D>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist. Note that must deal with situation that 
+    we can't easily convert to Vec3D. Since it is used in the
+    Code section
+
+    \param V :: Output value
+    \return 1 if appropiate eval / 0 otherwise
+  */
+{
+  ELog::RegMethod RegA("FFunc","getVector(Vec3D)");
+  Code BC(BaseUnit);
+  Geometry::Vec3D VItem;
+  try
+    {
+      VItem=BC.Eval<Geometry::Vec3D>(FItem::VListPtr);
+    }
+  catch(ColErr::TypeConvError<double,Geometry::Vec3D>&)
+    {
+      return 0;
+    }
+  V=std::vector<Geometry::Vec3D>({VItem});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+int
+FFunc::getVector(std::vector<double>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return 1 if appropiate eval / 0 otherwise
+  */
+{
+  Code BC(BaseUnit);
+  V=std::vector<double>
+    ({
+      BC.Eval<double>(FItem::VListPtr)
+	});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+int
+FFunc::getVector(std::vector<int>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return Code expression 
+  */
+{
+  Code BC(BaseUnit);
+  V=std::vector<int>({
+      static_cast<int>(BC.Eval<double>(VListPtr))
+	});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+int
+FFunc::getVector(std::vector<long int>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return Code expression 
+  */
+{
+  Code BC(BaseUnit);
+  V=std::vector<long int>({
+      static_cast<long int>(BC.Eval<double>(VListPtr))
+	});
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+
+int
+FFunc::getVector(std::vector<size_t>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return Code expression 
+  */
+{
+  Code BC(BaseUnit);
+  V=std::vector<size_t>({
+      static_cast<size_t>(BC.Eval<double>(VListPtr))
+	});
+  
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+int 
+FFunc::getVector(std::vector<std::string>& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return Code expression 
+  */
+{
+  Code BC(BaseUnit);
+  double Val=BC.Eval<double>(VListPtr);
+  std::stringstream cx;
+  cx<<Val;
+  V=std::vector<std::string>({cx.str()});
+  
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+//  ------------------------------------------
+//        GET VALUE
+//  --------------------------------------------
 
 int
 FFunc::getValue(Geometry::Vec3D& V) const
@@ -211,6 +332,7 @@ std::string
 FFunc::typeKey() const
   /// type name
 {  return "Code"; }
+
 
 void
 FFunc::write(std::ostream& OX) const

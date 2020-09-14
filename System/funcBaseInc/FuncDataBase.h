@@ -87,6 +87,9 @@ class FuncDataBase
 
   template<typename T>
   std::vector<T> EvalVector(const std::string&) const;
+
+  template<typename T>
+  std::vector<T> EvalDefVector(const std::string&) const;
   
   template<typename T>
   T EvalVar(const std::string&) const;
@@ -123,7 +126,8 @@ class FuncDataBase
   T EvalTriple(const std::string&,const std::string&,
 	       const std::string&,const std::string&) const;      
   
-
+  std::string EvalVarString(const std::string&) const;
+  
   template<typename T>
   void addParse(const std::string&,const std::string&);
   void copyVar(const std::string&,const std::string&);
@@ -155,6 +159,8 @@ class FuncDataBase
   /// access keys
   std::vector<std::string> getKeys() const { return VList.getKeys(); }
   std::string variableHash() const;
+
+
 
   // RESET of active
   void resetActive();

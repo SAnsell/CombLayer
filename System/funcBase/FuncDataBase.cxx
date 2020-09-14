@@ -117,6 +117,24 @@ FuncDataBase::hasVariable(const std::string& Key) const
   return (FI) ? 1 : 0;
 }
 
+
+std::string
+FuncDataBase::EvalVarString(const std::string& Key) const
+  /*!
+    Get the whole vector/value into a string
+    \param Key :: string to search
+    \return string of value(s)
+    \throw InContainterError if no variable exists
+  */
+{
+  const FItem* FI=findItem(Key);
+  if (!FI)
+    throw ColErr::InContainerError<std::string>
+      (Key,"FuncDataBase::EvalVector variable not found");
+
+  return FI->getString();
+}
+
 template<typename T>
 std::vector<T>
 FuncDataBase::EvalVector(const std::string& Key) const
@@ -134,15 +152,32 @@ FuncDataBase::EvalVector(const std::string& Key) const
     throw ColErr::InContainerError<std::string>
       (Key,"FuncDataBase::EvalVector variable not found");
 
-  
-  const FList<T>* FListPtr=dynamic_cast<const FList<T>*>(FI);
-  if (FListPtr)
-    return FListPtr->getVector();
-      
-  T Out;
-  FI->getValue(Out);
-  
-  return std::vector<T>({Out});
+  std::vector<T> Out;
+  if (!FI->getVector(Out))
+    throw ColErr::TypeMatch(typeid(T).name(),FI->typeKey(),"EvalVector");
+
+  return Out;
+}
+
+template<typename T>
+std::vector<T>
+FuncDataBase::EvalDefVector(const std::string& Key) const
+  /*!
+    Finds the vector of a variable item(s)
+    This is incomplete on list, as only track direct 
+    transfer and not double->int etc.
+    \param Key :: string to search
+    \return Value of variable 
+    \throw InContainterError if no variable exists
+  */
+{
+  std::vector<T> Out;
+  const FItem* FI=findItem(Key);
+
+  if (FI)
+    FI->getVector(Out);   // no need to check result
+
+  return Out;
 }
 
 template<typename T>
@@ -399,7 +434,7 @@ FuncDataBase::convertToList(const std::string& Name)
     {
       FList<T>* FListPtr=
 	dynamic_cast<FList<T>*>(VList.createList<T>(Name));
-      ELog::EM<<"Size == "<<FListPtr->getSize()<<ELog::endDiag;
+
       // This should not be possible(?)
       if (FListPtr) return FListPtr;
     }
@@ -1386,6 +1421,18 @@ template std::vector<size_t>
 FuncDataBase::EvalVector(const std::string&) const;
 template std::vector<std::string>
 FuncDataBase::EvalVector(const std::string&) const;
+
+// EVAL DEF VECTOR
+template std::vector<double>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<int>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<long int>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<size_t>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<std::string>
+FuncDataBase::EvalDefVector(const std::string&) const;
 
 /// \endcond TEMPLATE
  

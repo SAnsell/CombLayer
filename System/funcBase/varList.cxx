@@ -487,7 +487,6 @@ varList::createList(const std::string& Name)
 	      varName.erase(vc);
 	      varItem.erase(ac);
 	      FList<T>* LPtr=new FList<T>(this,varNum,oldValue);
-	      LPtr->pushValue(Value);
 	      varNum++;
 
 	      varName.emplace(Name,LPtr);
