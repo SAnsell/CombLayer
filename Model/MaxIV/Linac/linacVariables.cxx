@@ -327,7 +327,7 @@ setPrismaChamber(FuncDataBase& Control,
   const Geometry::Vec3D pPos01(0.0,portZStep,7.0);
   const Geometry::Vec3D pPos23(0.0,portZStep,0.0);
 
-  PItemGen.setCF<setVariable::CF40_22>(6.50778); // depends on pPos01
+  PItemGen.setCF<setVariable::CF35_TDC>(6.50778); // depends on pPos01
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",pPos01,-XVec);
 
@@ -630,7 +630,7 @@ setMirrorChamber(FuncDataBase& Control,
 
   setVariable::PortItemGenerator PItemGen;
 
-  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setCF<setVariable::CF35_TDC>(L0);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
@@ -3238,13 +3238,15 @@ Segment47(FuncDataBase& Control,
 
   // Pipes
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
+  PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",12.6); // measured
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeD",8.4); // measured
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
