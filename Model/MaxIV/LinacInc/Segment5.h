@@ -22,13 +22,6 @@
 #ifndef tdcSystem_Segment5_h
 #define tdcSystem_Segment5_h
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
 
 namespace tdcSystem
 {

@@ -65,6 +65,22 @@ MagnetGenerator::~MagnetGenerator()
 {}
 
 void
+MagnetGenerator::setSize(const double L,const double W,
+			 const double H)
+  /*!
+    Simple setter 
+    \param L :: length
+    \param W :: width (full)
+    \param H :: height (full)
+   */
+{
+  length=L;
+  width=W;
+  height=H;
+  return;
+}
+
+void
 MagnetGenerator::setField(const double K0,const double K1,
 			  const double K2,const double K3)
   /*!
@@ -83,6 +99,107 @@ MagnetGenerator::setField(const double K0,const double K1,
 }
 
 void
+MagnetGenerator::generateCorMag(FuncDataBase& Control,
+				const size_t segNumber,
+				const std::string& fcUnit,
+				const double yAngle)
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet
+    \param yAngle :: Angle
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateCorMag");
+  
+  setSize(12.0,2.5,2.5);
+  setField(0.0,0.0,0.0,0.0);
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   "0",yAngle);
+  
+  return;
+}
+
+void
+MagnetGenerator::generateQuad(FuncDataBase& Control,
+			      const size_t segNumber,
+			      const std::string& fcUnit,
+			      const double yAngle,
+			      const double QField) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet
+    \param yAngle :: Angle
+    \param QField :: K1 field
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateQuad");
+  
+  setSize(18.0,2.5,2.5);
+  setField(0.0,QField,0.0,0.0);
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   "0",yAngle);
+  
+  return;
+}
+
+void
+MagnetGenerator::generateSexupole(FuncDataBase& Control,
+				  const size_t segNumber,
+				  const std::string& fcUnit,
+				  const double yAngle,
+				  const double QField) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet
+    \param yAngle :: Angle
+    \param QField :: K1 field
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateSexupole");
+  
+  setSize(10.0,2.5,2.5);
+  setField(0.0,0.0,QField,0.0);
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   "0",yAngle);
+  
+  return;
+}
+
+void
+MagnetGenerator::generate(FuncDataBase& Control,
+			  const size_t segNumber,
+			  const std::string& fcUnit,
+			  const double yAngle) const
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet
+    \param yAngle :: Angle
+  */
+{
+  
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   "0",yAngle);
+  
+  return;
+}
+  
+void
 MagnetGenerator::generate(FuncDataBase& Control,
 			  const std::string& unitName,
 			  const std::string& fcUnit,
@@ -99,12 +216,10 @@ MagnetGenerator::generate(FuncDataBase& Control,
 
   const std::string keyName="MagUnit"+unitName;
 
-  ELog::EM<<"FC == "<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"YAngle",yAngle);
   Control.addVariable(keyName+"FixedComp",fcUnit);
   Control.addVariable(keyName+"LinkPt",linkPt);
-      
-  
+       
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);

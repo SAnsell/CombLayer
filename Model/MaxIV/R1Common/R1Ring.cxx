@@ -139,6 +139,7 @@ R1Ring::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
+  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
   outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
 
   NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
@@ -439,7 +440,7 @@ R1Ring::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
   Out+=ModelSupport::getComposite
     (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);
+  makeCell("Void",System,cellIndex++,innerMat,0.0,Out+innerBase);
 
   // loop to make individual units:
   const std::vector<std::string> Voids

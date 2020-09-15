@@ -138,7 +138,8 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userBdxConstruct","processBDX");
 
-
+  System.createObjSurfMap();
+  
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
   const std::string FCname=
@@ -146,6 +147,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const std::string FCindex=
     IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
+  ELog::EM<<"ASDFAFD "<<ELog::endDiag;
   size_t itemIndex(4);
   int cellA(0);
   int cellB(0);

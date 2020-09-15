@@ -371,7 +371,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 
   std::ostringstream cx;
   // Simple case - flat field
-  ELog::EM<<"Mag view "<<MagItem.size()<<ELog::endDiag;
+
   if (MagItem.empty())
     {
       if (BVec.abs()<Geometry::zeroTol)
@@ -539,7 +539,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
     matPtr->writeFLUKA(OX);
 
   OX<<alignment<<std::endl;
-  ELog::EM<<"magField== "<<magField<<ELog::endDiag;
+
   if (magField)
     writeMagField(OX);
   return;

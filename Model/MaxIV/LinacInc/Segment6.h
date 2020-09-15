@@ -24,15 +24,8 @@
 
 namespace constructSystem
 {
+  class VacuumPipe;
 }
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
 
 namespace tdcSystem
 {
@@ -44,7 +37,7 @@ namespace tdcSystem
     \class Segment6
     \version 1.0
     \author S. Ansell
-    \date April 2020
+    \date May 2020
     \brief Second segment in the TDC from the linac
   */
 
@@ -88,7 +81,7 @@ class Segment6 :
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+			 const long int);
 
 };
 
