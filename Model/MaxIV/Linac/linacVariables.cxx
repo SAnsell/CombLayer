@@ -464,6 +464,9 @@ setCylGateValve(FuncDataBase& Control,
   // BladeMat is guess as VAT (the manufacturer) does not want to give more details
   // (email from Marek 2020-06-17)
   Control.addVariable(name+"BladeMat","Stainless316L"); // guess
+  // PortRadius as of No_49_00,
+  // but it seems like same value for all gate valves
+  Control.addVariable(name+"PortRadius",2.005);
 
   return;
 }
@@ -1077,15 +1080,16 @@ Segment7(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
 
-  PGen.generatePipe(Control,lKey+"PipeA",102.31);
-  CMGen.generateMag(Control,lKey+"CMagHorA",37.25,0);
-  LQGen.generateQuad(Control,lKey+"QuadA",81.0);
+  PGen.generatePipe(Control,lKey+"PipeA",102.3);
+  CMGen.generateMag(Control,lKey+"CMagHorA",39.0,0);
+  LQGen.generateQuad(Control,lKey+"QuadA",79.0);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  PGen.generatePipe(Control,lKey+"PipeB",140.26);
-  CMGen.generateMag(Control,lKey+"CMagVertA",11.87,1);
+  PGen.generatePipe(Control,lKey+"PipeB",140.2);
+  CMGen.generateMag(Control,lKey+"CMagVertA",11.0,1);
 
 
   return;
@@ -3338,7 +3342,7 @@ Segment49(FuncDataBase& Control,
 
   // Pipes
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",51.29);
