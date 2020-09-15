@@ -3300,10 +3300,10 @@ Segment48(FuncDataBase& Control,
 
   // Pipe
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF37_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",12.5); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",12.6); // measured
 
   // Slit tube and jaws
   setSlitTube(Control,lKey+"SlitTube",19.91);
