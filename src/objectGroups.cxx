@@ -882,6 +882,22 @@ objectGroups::write(const std::string& OFile) const
   return;
 }
 
+std::set<std::string>
+objectGroups::getAllObjectNames() const
+  /*!
+    Produce list of all object names
+    \return Full set of names
+   */
+{
+  std::set<std::string> Out;
+
+  for(const auto& [name,grpRange] : regionMap)
+    Out.emplace(name);
+
+  return Out;
+}
+
+
 ///\cond TEMPLATE
   
 template const attachSystem::FixedComp* 

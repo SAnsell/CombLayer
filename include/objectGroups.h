@@ -123,10 +123,10 @@ class objectGroups
   int getFirstCell(const std::string&) const;
   int getLastCell(const std::string&) const;
   std::vector<int> getObjectRange(const std::string&) const;
+
   const groupRange& getGroup(const std::string&) const;
   
-
-
+  std::set<std::string> getAllObjectNames() const;
   void rotateMaster();
 
   void removeObject(const std::string&);

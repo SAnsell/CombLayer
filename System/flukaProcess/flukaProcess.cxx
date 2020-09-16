@@ -181,7 +181,7 @@ getActiveCell(const objectGroups& OGrp,
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveCell");
-  
+
   const std::vector<int> Cells=OGrp.getObjectRange(cell);
   std::set<int> activeCell(Cells.begin(),Cells.end());
 
