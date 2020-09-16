@@ -653,8 +653,6 @@ R1Ring::createSideShields(Simulation& System)
   for(auto& [ id , SWPtr ] : sideShields)
     {
       SWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
-      ELog::EM<<"Insert == "
-	      <<CellMap::getCell("VoidTriangle",id)<<ELog::endDiag;
       SWPtr->setCutSurf("Wall",-SurfMap::getSurf("SideInner",id));
       SWPtr->setCutSurf("Clip",-SurfMap::getSurf("InnerCut",id));
       SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      

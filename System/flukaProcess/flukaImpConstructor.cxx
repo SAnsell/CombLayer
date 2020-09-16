@@ -583,7 +583,6 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
-  ELog::EM<<"Process " <<mc->first<<ELog::endDiag;
   processGeneral(System,IParam,setIndex,"wEMF",mc->second);
   return;
 }

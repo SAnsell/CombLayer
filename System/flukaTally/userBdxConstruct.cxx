@@ -147,7 +147,6 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const std::string FCindex=
     IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
-  ELog::EM<<"ASDFAFD "<<ELog::endDiag;
   size_t itemIndex(4);
   int cellA(0);
   int cellB(0);

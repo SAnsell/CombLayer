@@ -123,17 +123,11 @@ constructLinkRegion(const Simulation& System,
 
   if (!FCPtr) return 0;
 
-  ELog::EM<<"YY ASFDASFSAD:"<<FCindex<<ELog::endDiag;
-
   if (!FCPtr->hasSideIndex(FCindex)) return 0;
-  ELog::EM<<"XX ASFDASFSAD"<<ELog::endDiag;
       
   const long int FCI=FCPtr->getSideIndex(FCindex);
-  const int surfN=FCPtr->getLinkSurf(FCI);
-  ELog::EM<<"ASFDASFSAD"<<ELog::endDiag;
-    
+  const int surfN=FCPtr->getLinkSurf(FCI);    
   if (!surfN) return 0;
-  ELog::EM<<"SN == "<<surfN<<ELog::endDiag;
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
