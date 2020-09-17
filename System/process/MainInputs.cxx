@@ -317,7 +317,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wWWG","Weight WindowGenerator Mesh  ");
   IParam.setDesc("wwgCalc","Single step evolve for the calculate for WWG/WWCell  ");
   IParam.setDesc("wwgMarkov","Evolve the calculate for WWG/WWCell  ");
-  IParam.setDesc("wIMP","set imp partile imp object(s)  ");
+  IParam.setDesc("wIMP","set imp: particle impValue object(s)  ");
   IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WEType","Initial model for weights [help for info]");

@@ -57,15 +57,22 @@ class MagnetGenerator
   void setSize(const double,const double,const double);
   void setField(const double,const double,const double,const double);
 
-  void generateDipole(FuncDataBase&,const std::string&,
-		      const std::string&,const std::string&,
-		      const double,const double);
-  void generateQuad(FuncDataBase&,const std::string&,
-		    const std::string&,const std::string&,
-		    const double,const double);
   void generate(FuncDataBase&,const std::string&,
 		const std::string&,const std::string&,
 		const double) const;
+
+  void generateCorMag(FuncDataBase&,const size_t,
+		      const std::string&,const double);
+
+  void generateQuad(FuncDataBase&,const size_t,
+		    const std::string&,
+		    const double,const double);
+  void generateSexupole(FuncDataBase&,const size_t,
+			const std::string&,
+			const double,const double);
+
+  void generate(FuncDataBase&,const size_t,
+		const std::string&,const double) const;
 
 };
 

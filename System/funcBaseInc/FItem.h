@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FItem.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,10 +76,22 @@ class FItem
   virtual int getValue(long int&) const= 0; 
   virtual int getValue(double&) const= 0;
   virtual int getValue(std::string&) const= 0; 
+
   
+  virtual int getVector(std::vector<Geometry::Vec3D>&) const=0;
+  virtual int getVector(std::vector<int>&) const=0;     
+  virtual int getVector(std::vector<long int>&) const=0;     
+  virtual int getVector(std::vector<size_t>&) const=0;     
+  virtual int getVector(std::vector<double>&) const=0;     
+  virtual int getVector(std::vector<std::string>&) const=0;
+
   virtual std::string typeKey() const =0;
-  virtual void write(std::ostream&) const=0;  
   ///\endcond ABSTRACT
+  
+  virtual std::string getString() const;
+  /// Null op virtual
+  virtual void write(std::ostream&) const {}  
+
 };
 
 /*!
@@ -120,15 +132,25 @@ class FValue : public FItem
   virtual int getValue(double&) const;     
   virtual int getValue(std::string&) const;
 
+  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
+  virtual int getVector(std::vector<int>&) const;     
+  virtual int getVector(std::vector<long int>&) const;     
+  virtual int getVector(std::vector<size_t>&) const;     
+  virtual int getVector(std::vector<double>&) const;     
+  virtual int getVector(std::vector<std::string>&) const;
+
+
   virtual std::string typeKey() const;
-  void write(std::ostream&) const;  
+
+  virtual void write(std::ostream&) const;
+
 };
 
 /*!
-  \class FValue 
-  \brief Single type numbe
+  \class FList
+  \brief MultipleItems in a list
   \author S. Ansell 
-  \date April 2006
+  \date September 2020
   \version 1.0
 */
 template<typename T>
@@ -161,16 +183,21 @@ class FList : public FItem
   virtual int getValue(double&) const;     
   virtual int getValue(std::string&) const;
 
+  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
+  virtual int getVector(std::vector<int>&) const;     
+  virtual int getVector(std::vector<long int>&) const;     
+  virtual int getVector(std::vector<size_t>&) const;     
+  virtual int getVector(std::vector<double>&) const;     
+  virtual int getVector(std::vector<std::string>&) const;
+
   /// Access to size
   size_t getSize() const { return Vec.size(); }
-  /// access to vector 
-  std::vector<T> getVector() const { return Vec; }
  
   void pushValue(const T&);
 
   
   virtual std::string typeKey() const;
-  void write(std::ostream&) const;  
+  virtual void write(std::ostream&) const;  
 };
 
 
@@ -207,8 +234,15 @@ class FFunc : public FItem
   virtual int getValue(double&) const;     
   virtual int getValue(std::string&) const;
 
+  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
+  virtual int getVector(std::vector<int>&) const;     
+  virtual int getVector(std::vector<long int>&) const;     
+  virtual int getVector(std::vector<size_t>&) const;     
+  virtual int getVector(std::vector<double>&) const;     
+  virtual int getVector(std::vector<std::string>&) const;
+
   virtual std::string typeKey() const;
-  void write(std::ostream&) const;
+  virtual void write(std::ostream&) const;
 
 };
 

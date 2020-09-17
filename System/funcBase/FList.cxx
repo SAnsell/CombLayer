@@ -170,17 +170,21 @@ FList<T>::setValue(const long int& V)
     \param V :: New value 
   */
 {
-  if constexpr( std::is_same<int,T>::value ||
-		std::is_same<double,T>::value ||
-		std::is_same<size_t,T>::value ||
-		std::is_same<long int,T>::value)
-     Vec=std::vector<T>({static_cast<T>(V)});
+  if constexpr( !std::is_same<int,T>::value &&
+		!std::is_same<double,T>::value &&
+		!std::is_same<size_t,T>::value &&
+		!std::is_same<long int,T>::value)
+    {
+      throw ColErr::TypeMatch("size_t",typeid(T).name(),
+			    "FList::SetValue"+std::to_string(V));
+    }
+
   else
-    throw ColErr::TypeMatch("size_t",typeid(T).name(),
-			    "FList::SetValue");
+    Vec=std::vector<T>({static_cast<T>(V)});
 
   return;
 }
+
 
 template<typename T>
 void
@@ -190,14 +194,16 @@ FList<T>::setValue(const size_t& V)
     \param V :: New value 
   */
 {
-  if constexpr( std::is_same<int,T>::value ||
-		std::is_same<double,T>::value ||
-		std::is_same<size_t,T>::value ||
-		std::is_same<long int,T>::value)
-     Vec=std::vector<T>({static_cast<T>(V)});
+  if constexpr( !std::is_same<int,T>::value &&
+		!std::is_same<double,T>::value &&
+		!std::is_same<size_t,T>::value &&
+		!std::is_same<long int,T>::value)
+    {
+      throw ColErr::TypeMatch("size_t",typeid(T).name(),
+			      "V="+std::to_string(V));
+    }
   else
-    throw ColErr::TypeMatch("size_t",typeid(T).name(),"Template");
-
+    Vec=std::vector<T>({static_cast<T>(V)});
   return;
 }
 
@@ -211,14 +217,19 @@ FList<T>::setValue(const std::string& V)
 {
   ELog::RegMethod RegA("FList","setVec(string)");
   
+
+  if constexpr( std::is_same<std::string,T>::value )
+    {		
+      Vec=std::vector<T>({V});
+      return;
+    }
+
   T Value;
-  if constexpr( std::is_same<std::string,T>::value ) 
-     Vec=std::vector<T>({V});
-  else if (!StrFunc::convert(V,Value))
-    Vec=std::vector<T>({Value});
-  else
+  if (!StrFunc::convert(V,Value))
     throw ColErr::TypeMatch(V,typeid(T).name(),"FList::setValue");
   
+  
+  Vec=std::vector<T>({Value});  
   return;
 }
 
@@ -327,6 +338,227 @@ FList<T>::pushValue(const T& Value)
   Vec.push_back(Value);
   return;
 }
+
+
+// -----------------------------------------
+//              GET VECTOR
+// -----------------------------------------
+
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<Geometry::Vec3D>& V) const
+  /*!
+    Gets the value 
+    \param V :: Return place
+    \return 1 if valid / 0 on fail
+  */
+{
+  V.clear();
+  if constexpr (std::is_same<Geometry::Vec3D,T>::value)
+    {
+      V=Vec;
+      const_cast<int&>(active)++;
+      return 1;
+    }
+
+  return 0;
+}
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<double>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V.clear(); 
+  if constexpr (std::is_same<double,T>::value ||
+		std::is_same<long int,T>::value ||
+		std::is_same<size_t,T>::value ||
+		std::is_same<int,T>::value)
+    {
+      for(const T& VItem : Vec)
+	V.push_back(static_cast<double>(VItem));
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  if constexpr (std::is_same<std::string,T>::value)
+    {
+      double DItem;
+      for(const std::string& VItem : Vec)
+	{
+	  if (!StrFunc::convert(VItem,DItem))      
+	    return 0; 
+	  V.push_back(DItem);
+	}
+      
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  return 0;
+}
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<int>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V.clear();
+
+  if constexpr (std::is_same<double,T>::value ||
+		std::is_same<long int,T>::value ||
+		std::is_same<size_t,T>::value ||
+		std::is_same<int,T>::value)
+    {
+      for(const T& VItem : Vec)
+	V.push_back(static_cast<int>(VItem));
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  
+  if constexpr (std::is_same<std::string,T>::value)
+    {
+      int DItem;
+      for(const std::string& VItem : Vec)
+	{
+	  if (!StrFunc::convert(VItem,DItem))      
+	    return 0; 
+	  V.push_back(DItem);
+	}
+      
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  return 0;
+}
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<long int>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V.clear();
+      
+  if constexpr (std::is_same<double,T>::value ||
+		std::is_same<long int,T>::value ||
+		std::is_same<size_t,T>::value ||
+		std::is_same<int,T>::value)
+    {
+      for(const T& VItem : Vec)
+	V.push_back(static_cast<long int>(VItem));
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  
+  if constexpr (std::is_same<std::string,T>::value)
+    {
+      long int DItem;
+      for(const std::string& VItem : Vec)
+	{
+	  if (!StrFunc::convert(VItem,DItem))      
+	    return 0; 
+	  V.push_back(DItem);
+	}
+      
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  return 0;
+}
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<size_t>& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+    \return 1 (always possible)
+  */
+{
+  V.clear();
+      
+  if constexpr (std::is_same<double,T>::value ||
+		std::is_same<long int,T>::value ||
+		std::is_same<size_t,T>::value ||
+		std::is_same<int,T>::value)
+    {
+      for(const T& VItem : Vec)
+	V.push_back(static_cast<size_t>(VItem));
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  
+  if constexpr (std::is_same<std::string,T>::value)
+    {
+      size_t DItem;
+      for(const std::string& VItem : Vec)
+	{
+	  if (!StrFunc::convert(VItem,DItem))      
+	    return 0; 
+	  V.push_back(DItem);
+	}
+      
+      const_cast<int&>(active)++;
+      return 1;
+    }
+  return 0;
+}
+
+template<typename T>
+int
+FList<T>::getVector(std::vector<std::string>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+
+  V.clear();
+  for(const T& VItem : Vec)
+    {
+      std::stringstream cx;
+      cx<<VItem;
+      V.push_back(cx.str());
+    }
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
+FList<std::string>::getVector(std::vector<Geometry::Vec3D>& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
+  */
+{
+  ELog::RegMethod RegA("FList","getVector(Vec3D)");
+
+  V.clear();
+  for(const std::string& VItem : Vec)
+    {
+      Geometry::Vec3D DItem;
+      if (!StrFunc::convert(VItem,DItem))
+	return 0;
+      V.push_back(DItem);
+    }
+  const_cast<int&>(active)++;
+  return 1;
+}
+
 
 
 // -----------------------------------------

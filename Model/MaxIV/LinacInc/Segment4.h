@@ -22,14 +22,6 @@
 #ifndef tdcSystem_Segment4_h
 #define tdcSystem_Segment4_h
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
   class LSexupole;

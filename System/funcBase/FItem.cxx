@@ -166,3 +166,16 @@ FItem::setValue(const Code&)
   return;
 }
 
+
+std::string
+FItem::getString() const
+  /*!
+    Write out the variable
+    \param OX :: Output stream
+   */
+{
+  std::ostringstream cx;
+  this->write(cx);
+  return cx.str();
+}
+

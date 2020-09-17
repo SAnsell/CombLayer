@@ -68,7 +68,7 @@ flukaNum(const long int I)
 }
 
 std::string
-flukaNum(const double D)
+flukaNum(const double D,const double zeroTol)
   /*!
     Process a number into a fluka style string
     \param D :: Number to use
@@ -82,6 +82,9 @@ flukaNum(const double D)
   static boost::format FMTnegLNum("%1$10.5g");  // allow for sign
   static boost::format FMTcutLNum("%1$10.4g");  // allow for sign
 
+  if (D>-zeroTol && D<zeroTol)  // float point limits
+    return (FMTnum % 0.0).str();
+  
   if (D < 1e5 && D > 1e-5)      // +ve low range
     {
       // test if 1 dp sufficiently accurate
@@ -112,7 +115,8 @@ flukaNum(const double D)
 }
 
 void
-writeFLUKA(const std::string& Line,std::ostream& OX)
+writeFLUKA(const std::string& Line,std::ostream& OX,
+	   const double zeroTol)
   /*!
     Write out the line in the fixed FLUKA format WHAT(1-6).
     Replace " - " by space to write empty WHAT cards.
@@ -139,7 +143,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 	  if (StrFunc::convert(w,I))
 	    OX<<flukaNum(I);
 	  else if (StrFunc::convert(w,D))
-	    OX<<flukaNum(D);
+	    OX<<flukaNum(D,zeroTol);
 	  else
 	    {
 	      if (w.size()>2 && w.size()<12 && w[0]=='%')

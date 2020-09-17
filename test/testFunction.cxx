@@ -515,5 +515,8 @@ testFunction::testList()
   std::vector<int> OutVec=Control.EvalVector<int>("fred2alpha");
   for(const int CN : OutVec)
     ELog::EM<<"V == "<<CN<<ELog::endDiag;
+
+  std::string OutStr=Control.EvalVarString("fred2alpha");
+  ELog::EM<<"String == "<<OutStr<<ELog::endDiag;
   return 0;
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physics/flukaImpConstructor.cxx
+ * File:   flukaProcess/flukaImpConstructor.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -274,7 +274,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VVList);
     }
-  else if (materialFlag==-1) // particile
+  else if (materialFlag==-1) // particle
     {
       const flukaGenParticle& FG=flukaGenParticle::Instance();
       const std::string& pName=FG.nameToFLUKA(cellM);
@@ -465,6 +465,42 @@ flukaImpConstructor::processEXP(SimFLUKA& System,
   return;
 }
 
+void
+flukaImpConstructor::processIMP(SimFLUKA& System,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+  /*!
+    Set individual IMP cards on Iparam
+    Implicit -wBIAS card with all / bias options set
+    \param System :: Fluka simulation
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processIMP");
+
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> impTYPE;
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wIMP",setIndex,0,"No cell/object for wIMP ");
+
+  if (type=="help" || type=="Help")
+    return writeIMPHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  //cells:
+  std::vector<std::string> VVList(4);
+  VVList[0]=type;
+  VVList[1]="0";
+  VVList[2]=IParam.getValueError<std::string>
+    ("wIMP",setIndex,1," RR value for wIMP");
+  VVList[3]=IParam.getValueError<std::string>
+    ("wIMP",setIndex,2," IMP value for wIMP");
+    
+  processGeneral(System,VVList,impTYPE(3,0,"bias")); 
+  return;
+}
+
 
 void
 flukaImpConstructor::processLAM(SimFLUKA& System,
@@ -583,7 +619,6 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
-  ELog::EM<<"Process " <<mc->first<<ELog::endDiag;
   processGeneral(System,IParam,setIndex,"wEMF",mc->second);
   return;
 }
