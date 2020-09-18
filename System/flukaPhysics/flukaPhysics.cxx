@@ -97,7 +97,6 @@ flukaPhysics::flukaPhysics() :
     }),
 
   threeFlag({
-
       { "bias",cellValueSet<3>("bias","BIASING","") },
       { "bias-user",cellValueSet<3>("bias-user","BIASING","USER")},
       { "elpothr",cellValueSet<3>("elpothr","EMFCUT","ELPO-THR",
