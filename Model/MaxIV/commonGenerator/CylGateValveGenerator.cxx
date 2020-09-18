@@ -61,7 +61,7 @@ CylGateValveGenerator::CylGateValveGenerator() :
   horRotate(0.0),
   radius(CF63::innerRadius),depth(7.8),height(10.0),
   wallThick(CF63::wallThick),portRadius(CF40_22::innerRadius),
-  portFlangeRadius(CF40_22::flangeRadius),
+  portFlangeRadius(3.0),
   portInner(1.85),portThick(0.6),
   topRadius(CF63::flangeRadius),topHoleRadius(0.63),
   topThick(CF63::flangeLength),liftHeight(7.8),
@@ -119,7 +119,7 @@ CylGateValveGenerator::generateGate(FuncDataBase& Control,
 
   if (std::abs<double>(horRotate)>1e-3)
     Control.addVariable(keyName+"YAngle",horRotate);
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"Height",height);
