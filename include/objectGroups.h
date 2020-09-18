@@ -105,6 +105,7 @@ class objectGroups
 
   bool hasRegion(const std::string&) const;
   bool hasObject(const std::string&) const;
+  bool hasActiveObject(const std::string&) const;  
 
   bool isActive(const int) const;
   

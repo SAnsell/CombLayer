@@ -522,6 +522,22 @@ objectGroups::hasObject(const std::string& Name) const
   return (mc!=Components.end()) ? 1 : 0;
 }
 
+bool
+objectGroups::hasActiveObject(const std::string& Name) const
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return true (object exists
+  */
+{
+  ELog::RegMethod RegA("objectGroups","hasObject");
+
+  cMapTYPE::const_iterator mc=Components.find(Name);
+  if (mc==Components.end()) return 0;
+  
+  return mc->second->hasActiveCells();
+}
+
 attachSystem::FixedComp*
 objectGroups::getInternalObject(const std::string& Name) 
   /*!

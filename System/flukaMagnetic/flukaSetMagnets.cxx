@@ -175,11 +175,9 @@ setDefMagnets(SimFLUKA& System)
 	  const std::string FClink=
 	    Control.EvalVar<std::string>(MagKey+"LinkPt");
 
-	  ELog::EM<<"FCNAME == "<<FCname<<ELog::endDiag;
 	  // has object in model
-	  if (System.hasObject(FCname))
+	  if (System.hasActiveObject(FCname))
 	    {
-		  
 	      std::shared_ptr<attachSystem::FixedComp> FC=
 		System.getSharedPtr(FCname);
 	      

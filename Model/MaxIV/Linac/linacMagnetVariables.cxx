@@ -71,13 +71,13 @@ LINACmagnetVariables(FuncDataBase& Control)
         "Seg5DipoleA L2SPF5FlatA:Void",
 	"Seg5DipoleB L2SPF5FlatB:Void",
 
-	"Seg7MagHorA L2SPF7PipeA:Void",
+	"Seg7CMagHorA L2SPF7PipeA:Void",
 	"Seg7QuadA L2SPF7PipeA:Void",
-	"Seg7MagVertA L2SPF7PipeB:Void",
+	"Seg7CMagVertA L2SPF7PipeB:Void"
 
-	"Seg9MagVertA L2SPF9FPipeA:Void",
-	"Seg9MagHorA L2SPF9FlatB:Void",
-	"Seg9QuadA L2SPF9FlatA:Void"
+	// "Seg9CMagHortA L2SPF9FPipeA:Void",
+	// "Seg9MagHorA L2SPF9FlatB:Void",
+	// "Seg9QuadA L2SPF9FlatA:Void"
 
     });
 

@@ -99,6 +99,10 @@ class FixedComp
 
   const LinkUnit& operator[](const size_t) const; 
 
+  /// have cells been built
+  bool hasActiveCells() const
+  { return (buildIndex+1)!=cellIndex; }
+
   void reOrientate();
   void reOrientate(const size_t,const Geometry::Vec3D&);
   
