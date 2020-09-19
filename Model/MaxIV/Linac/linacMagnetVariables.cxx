@@ -73,11 +73,17 @@ LINACmagnetVariables(FuncDataBase& Control)
 
 	"Seg7CMagHorA L2SPF7PipeA:Void",
 	"Seg7QuadA L2SPF7PipeA:Void",
-	"Seg7CMagVertA L2SPF7PipeB:Void"
+	"Seg7CMagVertA L2SPF7PipeB:Void",
 
-	// "Seg9CMagHortA L2SPF9FPipeA:Void",
-	// "Seg9MagHorA L2SPF9FlatB:Void",
-	// "Seg9QuadA L2SPF9FlatA:Void"
+	"Seg9CMagVertA L2SPF9FPipeA:Void",
+	"Seg9MagHorA L2SPF9PipeA:Void",
+	"Seg9QuadA L2SPF9PipeB:Void",
+
+	"Seg10QuadA L2SPF10PipeC:Void",
+	"Seg10CMagVertA L2SPF10FPipeC:Void"
+
+	"Seg11QuadA L2SPF10PipeC:Void",
+	"Seg11CMagVertA L2SPF10FPipeC:Void"
 
     });
 
@@ -113,7 +119,122 @@ LINACmagnetVariables(FuncDataBase& Control)
   MUdipole.generateQuad(Control,7,"QuadA",0.0,0.65);
   MUdipole.generateCorMag(Control,7,"CMagVertA",0.0);
 
+    // SEGMENT 9
+  MUdipole.generateCorMag(Control,9,"CMagVertA",0.0);
+  MUdipole.generateCorMag(Control,9,"CMagHorA",0.0);
+  MUdipole.generateQuad(Control,9,"QuadA",0.0,0.65);
+
+  // SEGMENT 10
+  MUdipole.generateQuad(Control,10,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,10,"CMagVertA",0.0);
+
+  // SEGMENT 11
+  MUdipole.generateQuad(Control,11,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,11,"CMagHorA",0.0);
+
+  // SEGMENT 12
+  MUdipole.generateDipole(Control,12,"DipoleA",0.0,1.7);
+  MUdipole.generateDipole(Control,12,"DipoleB",0.0,1.7);
+
+  // SEGMENT 13
+  MUdipole.generateCorMag(Control,13,"CMagHorA",0.0);
+  MUdipole.generateQuad(Control,13,"QuadA",0.0,0.65);
+  MUdipole.generateSexupole(Control,13,"SexuA",0.0,0.65);
+  MUdipole.generateQuad(Control,13,"QuadB",0.0,0.65);
+  MUdipole.generateCorMag(Control,13,"CMagVerC",0.0);
+
+  // SEGMENT 14
+  MUdipole.generateDipole(Control,14,"DM1",0.0,1.7);
+  MUdipole.generateDipole(Control,14,"DM2",0.0,1.7);
+
+  // SEGMENT 15
+
+  // SEGMENT 16
+  MUdipole.generateQuad(Control,16,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,16,"CMagHorA",0.0);
+  MUdipole.generateCorMag(Control,16,"CMagVertA",0.0);  
+
+  // SEGMENT 17
+
+  // SEGMENT 18  
+  MUdipole.generateQuad(Control,18,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,18,"CMagHorA",0.0);
+  MUdipole.generateCorMag(Control,18,"CMagVertA",0.0);  
+
+  // SEGMENT 19
+  // SEGMENT 20 
+
+  // SEGMENT 21 
+  MUdipole.generateQuad(Control,21,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,21,"CMagHorA",0.0);
+  MUdipole.generateCorMag(Control,21,"CMagVertA",0.0);  
+
+  // SEGMENT 23
+  MUdipole.generateQuad(Control,23,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,23,"CMagHorA",0.0);
+  MUdipole.generateCorMag(Control,23,"CMagVertA",0.0);  
+
+  // SEGMENT 24
+  MUdipole.generateCorMag(Control,24,"CMagHorA",0.0);
+  MUdipole.generateCorMag(Control,24,"CMagVertA",0.0);  
+
+  // SEGMENT 25
+  MUdipole.generateDipole(Control,25,"DipoleA",0.0,1.7);
+
+  // SEGMENT 26
+  // SEGMENT 27
+  // SEGMENT 28
+  // SEGMENT 29
+
+  // SEGMENT 30
+  MUdipole.generateCorMag(Control,30,"CMagV",0.0);  
+
+  // SEGMENT 31
+  MUdipole.generateQuad(Control,31,"Quad",0.0,0.65);
+  MUdipole.generateCorMag(Control,31,"CMagH",0.0);
+
+  // SEGMENT 32
   
+  // SEGMENT 33
+  MUdipole.generateCorMag(Control,33,"CMagHorA",0.0);
+  MUdipole.generateQuad(Control,33,"QuadA",0.0,0.65);
+  MUdipole.generateSexupole(Control,33,"SexuA",0.0,0.65);
+  MUdipole.generateQuad(Control,33,"QuadB",0.0,0.65);
+  MUdipole.generateCorMag(Control,33,"CMagVerC",0.0);
+
+  // SEGMENT 34
+  MUdipole.generateDipole(Control,34,"DMA",0.0,1.7);
+  MUdipole.generateDipole(Control,34,"DMB",0.0,1.7);
+
+
+  // SEGMENT 35
+  MUdipole.generateQuad(Control,35,"QuadA",0.0,0.65);
+  MUdipole.generateQuad(Control,35,"QuadB",0.0,0.65);
+  MUdipole.generateCorMag(Control,35,"CMagH",0.0);
+  MUdipole.generateCorMag(Control,35,"CMagV",0.0);
+
+  // SEGMENT 36
+  MUdipole.generateQuad(Control,36,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,36,"CMagH",0.0);
+  MUdipole.generateCorMag(Control,36,"CMagV",0.0);
+  MUdipole.generateQuad(Control,36,"QuadB",0.0,0.65);
+
+  // SEGMENT 37/38/39/40/41/42
+  
+
+  // SEGMENT 43
+  MUdipole.generateCorMag(Control,43,"CMagH",0.0);
+
+  // SEGMENT 44 [THIS IS a curved dipole -- check sized]
+  MUdipole.generateDipole(Control,44,"CMag",0.0,1.7);
+
+  // SEGMENT 45
+  // SEGMENT 46
+  // SEGMENT 47
+  // SEGMENT 48
+  // SEGMENT 49
+
+
   return;
 }
 

@@ -124,6 +124,33 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
 }
 
 void
+MagnetGenerator::generateDipole(FuncDataBase& Control,
+				const size_t segNumber,
+				const std::string& fcUnit,
+				const double yAngle,
+				const double QField) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables
+    \param keyName :: Head name for variable
+    \param fcUnit :: Part name of FC magnet
+    \param yAngle :: Angle
+    \param QField :: K0 field
+  */
+{
+  ELog::RegMethod RegA("MagnetGenerator","generateQuad");
+  
+  setSize(65.0,15.0,3.0);
+  setField(QField,0.0,0.0,0.0);
+  generate(Control,
+	   "Seg"+std::to_string(segNumber)+fcUnit,
+	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   "0",yAngle);
+  
+  return;
+}
+
+void
 MagnetGenerator::generateQuad(FuncDataBase& Control,
 			      const size_t segNumber,
 			      const std::string& fcUnit,
