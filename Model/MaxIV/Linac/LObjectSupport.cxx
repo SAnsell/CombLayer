@@ -122,6 +122,12 @@ correctorMagnetPair(Simulation& System,
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
+  ELog::EM<<"-----"<<ELog::endDiag;
+  ELog::EM<<"CMA == "<<CMA->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"CMB == "<<CMA->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"PIPE == "<<pipe->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"-----"<<ELog::endDiag;
+  
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
   CMA->createAll(System,*pipe,"#front");
 
@@ -169,6 +175,12 @@ pipeMagUnit(Simulation& System,
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
 
+  
+  ELog::EM<<"-----"<<ELog::endDiag;
+  ELog::EM<<"MAG == "<<magUnit->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"PIPE == "<<pipe->getKeyName()<<ELog::endDiag;
+  ELog::EM<<"-----"<<ELog::endDiag;
+  
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
   attachSystem::ContainedComp* CPtr=

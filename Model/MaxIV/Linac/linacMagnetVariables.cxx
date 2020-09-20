@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   linac/linacVariables.cxx
+ * File:   linac/linacMagnetVariables.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *
@@ -80,10 +80,26 @@ LINACmagnetVariables(FuncDataBase& Control)
 	"Seg9QuadA L2SPF9PipeB:Void",
 
 	"Seg10QuadA L2SPF10PipeC:Void",
-	"Seg10CMagVertA L2SPF10FPipeC:Void"
+	"Seg10CMagVertA L2SPF10FPipeC:Void",
 
 	"Seg11QuadA L2SPF10PipeC:Void",
-	"Seg11CMagVertA L2SPF10FPipeC:Void"
+	"Seg11CMagVertA L2SPF11FPipeB:Void",
+
+	"Seg12DipoleA L2SPF12FlatA:Void",
+	"Seg12DipoleB L2SPF12PipeLA:Void L2SPF12FlatB:Void",
+
+	"Seg13CMagHorA L2SPF11FPipeB:Void"
+	"Seg13QuadA L2SPF10PipeB:Void",
+	"Seg13SexuA L2SPF10PipeB:Void",
+	"Seg13QuadB L2SPF10PipeB:Void",
+	"Seg13CMagVerC L2SPF11FPipeB:Void",
+
+	"Seg14DipoleA L2SPF12FlatB:Void",
+	"Seg14DipoleB L2SPF12FlatB:Void"
+
+	"Seg16Quad L2SPF16PipeA:Void",
+	"Seg16CMagH L2SPF16PipeB:Void"
+	"Seg16CMagH L2SPF16PipeB:Void"
 
     });
 
@@ -150,9 +166,9 @@ LINACmagnetVariables(FuncDataBase& Control)
   // SEGMENT 15
 
   // SEGMENT 16
-  MUdipole.generateQuad(Control,16,"QuadA",0.0,0.65);
-  MUdipole.generateCorMag(Control,16,"CMagHorA",0.0);
-  MUdipole.generateCorMag(Control,16,"CMagVertA",0.0);  
+  MUdipole.generateQuad(Control,16,"Quad",0.0,0.65);
+  MUdipole.generateCorMag(Control,16,"CMagH",0.0);
+  MUdipole.generateCorMag(Control,16,"CMagV",0.0);  
 
   // SEGMENT 17
 
