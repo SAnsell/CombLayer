@@ -39,6 +39,8 @@ class MagnetGenerator
 {
  private:
 
+  std::string preName;  ///< Pre-name (L2SPF/TDC)
+  
   double length;          ///< length of magnetic unit 
   double width;           ///< width of magnetic unit
   double height;          ///< height of magnetic unit
@@ -53,7 +55,9 @@ class MagnetGenerator
   MagnetGenerator(const MagnetGenerator&);
   MagnetGenerator& operator=(const MagnetGenerator&);
   virtual ~MagnetGenerator();
-  
+
+  /// Set the prename (L2SPF etc)
+  void setPreName(const std::string& N) { preName=N;}
   void setSize(const double,const double,const double);
   void setField(const double,const double,const double,const double);
 

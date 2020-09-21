@@ -1,4 +1,4 @@
-/*********************************************************************
+ /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
  * File:   commonBeam/MagnetGenerator.cxx
@@ -51,6 +51,7 @@ namespace setVariable
 {
 
 MagnetGenerator::MagnetGenerator() :
+  preName("L2SPF"),
   length(20.0),width(10.0),height(5.0),
   KFactor({0,0,0,0})
   /*!
@@ -117,7 +118,7 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
   setField(0.0,0.0,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
   
   return;
@@ -144,7 +145,7 @@ MagnetGenerator::generateDipole(FuncDataBase& Control,
   setField(QField,0.0,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
   
   return;
@@ -171,7 +172,7 @@ MagnetGenerator::generateQuad(FuncDataBase& Control,
   setField(0.0,QField,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
   
   return;
@@ -198,7 +199,7 @@ MagnetGenerator::generateSexupole(FuncDataBase& Control,
   setField(0.0,0.0,QField,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
   
   return;
@@ -220,7 +221,7 @@ MagnetGenerator::generate(FuncDataBase& Control,
   
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
-	   "L2SPF"+std::to_string(segNumber)+fcUnit,
+	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
   
   return;
