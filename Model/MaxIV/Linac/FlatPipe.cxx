@@ -301,10 +301,10 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 -5 15");
   makeCell("BasePipe",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -3 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -3 7 -17 15 -16");
   makeCell("LeftPipe",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 4 8 -18 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 4 8 -18 15 -16 ");
   makeCell("RightPipe",System,cellIndex++,wallMat,0.0,Out);
 
   // FLANGE Front:
