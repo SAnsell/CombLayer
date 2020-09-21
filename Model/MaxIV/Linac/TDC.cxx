@@ -269,9 +269,9 @@ TDC::buildInnerZone(const FuncDataBase& Control,
   // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","LinearVoid",""}},
-      {"l2spfTurn",{"KlystronWall","#MidWall","LinearVoid",""}},
-      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LinearVoid",""}},
+      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
+      {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
+      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid",""}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},

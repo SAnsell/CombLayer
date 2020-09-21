@@ -343,14 +343,17 @@ InjectionHall::createObjects(Simulation& System)
   // INNER VOIDS:
   // up to bend anngle
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -1001 -1111 3 -4 5 -6 "
-     " (3002:3004)        "           // kystron wall
+    (SMap,buildIndex," 1 -3002  3004 -4 5 -6 ");
+  makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 3002 -1001 -1111 3 -4 5 -6 "
      " (-1003:1004:-1001) "           // main mid divider
      " (-1111:1112:1003) "           // left mid block 
      " ( -1004:1011:-1001:1104) "   // right mid block
      " (-1511:1522:1503) "          // gate block
      );
-  makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -201 1112 3 -1003 5 -6 (1522 : 1503) ");
