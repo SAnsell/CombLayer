@@ -214,6 +214,12 @@ FlatPipe::createSurfaces()
       ModelSupport::buildCylinder
 	(SMap,buildIndex+18,OrgA+X*(frontWidth/2.0),RAxis,R+wallThick);
 
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+103,
+				  buildIndex+3,X,
+				  -R-wallThick*1.1);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+104,
+				  buildIndex+4,X,
+				  R+wallThick*1.1);
     }
   else // CONE VERSION
     {
@@ -279,7 +285,7 @@ FlatPipe::createObjects(Simulation& System)
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
 
-  // Void
+  // InnerVoid
   Out=ModelSupport::getComposite(SMap,buildIndex," -3 -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
@@ -318,9 +324,15 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
   addOuterSurf("FlangeB",Out+backStr);
 
+  // aux. outer side void cells (to simplify the "Pipe" outer void cell)
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 103 -3 17 15 -16 ");
+  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 4 -104 18 15 -16 ");
+  makeCell("AuxVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 15 -16 (3:-17) (-4:-18)");
+				 "11 -12 15 -16 103 -104 ");
 
   addOuterSurf("Pipe",Out);
   return;
@@ -350,12 +362,13 @@ FlatPipe::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
-
   // top lift point : Out is an complemnt of the volume
   std::string Out;
   FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
+  // Out=ModelSupport::getComposite
+  //   (SMap,buildIndex," (-15 : 16 : (-3 17) : (4 18))");
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-15 : 16 : (-3 17) : (4 18))");
+    (SMap,buildIndex," -11:12:-15:16:-103:104 ");
   FixedComp::setLinkSurf(7,Out);
 
   FixedComp::nameSideIndex(7,"outerPipe");
