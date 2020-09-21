@@ -57,7 +57,7 @@ class SimFLUKA : public Simulation
 
   std::string defType;            ///< Default physics type
   bool basicGeom;                 ///< Use basic geometry [DNF form only]
-  bool geomPrecision;             ///< Precision (*1e-6) to use [def 0.0001]
+  double geomPrecision;             ///< Precision (*1e-6) to use [def 0.0001]
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
