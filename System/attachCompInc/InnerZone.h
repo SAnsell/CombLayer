@@ -87,6 +87,7 @@ class InnerZone
   void setFront(const HeadRule&);
   void setBack(const HeadRule&);
   void setMiddle(const HeadRule&);
+  void clearDivider() { frontDivider.reset(); }
 
   /// access surround
   const HeadRule& getSurround() const { return surroundHR; }

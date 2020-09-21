@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: linac/TDC.cxx
+ * File: Linac/TDC.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -330,7 +330,6 @@ TDC::buildInnerZone(Simulation& System,
     }
   // if (mc==bZone.end())
   //   buildZone->constructMasterCell(System);
-  ELog::EM<<"Build Zone == "<<buildZone->getVolume()<<ELog::endDiag;
   return buildZone;
 }
 
@@ -432,6 +431,7 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
+  int surf45End(0);
   // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
@@ -491,7 +491,6 @@ TDC::createAll(Simulation& System,
 	      segPtr->setInnerZone(buildZone.get());
 	    }
 
-
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->initCellMap();
 
@@ -504,6 +503,22 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
+	  if (BL=="Segment47")   // SPECIAL REMOVAL
+	    {
+	      SegTYPE::const_iterator ci=SegMap.find("Segment45");
+	      if (ci!=SegMap.end())
+		{
+		  const TDCsegment* seg45Ptr=ci->second.get();
+		  const int SN(seg45Ptr->getLinkSurf(2));
+		  const int SNback(segPtr->getLinkSurf(2));
+		  const int CN(buildZone->getInsertCell()[0]);
+		  MonteCarlo::Object* OPtr=System.findObject(CN);
+		  if (!OPtr)
+		    throw ColErr::InContainerError<int>
+		      (CN,"Object not found for Seg47");
+		  OPtr->substituteSurf(SN,SNback,0);
+		}
+	    }
 	}
     }
   return;

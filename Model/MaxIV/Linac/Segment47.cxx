@@ -143,6 +143,7 @@ Segment47::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(HRcut);
 
       IZThin->setSurround(HSurroundB);
+      IZThin->clearDivider();
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
   
@@ -164,11 +165,8 @@ Segment47::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=IZThin->getMaster();
 
   if (!masterCell)
-    {
-      ELog::EM<<"ASFASF "<<ELog::endDiag;
-      masterCell=IZThin->constructMasterCell(System);
-    }
-  ELog::EM<<"ASFASF "<<ELog::endDiag;
+    masterCell=IZThin->constructMasterCell(System);
+
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
@@ -208,7 +206,6 @@ Segment47::buildObjects(Simulation& System)
     (System,*IZThin,masterCell,*bellowA,"back",*pipeE);
 
   IZThin->removeLastMaster(System);
-
   return;
 }
 
