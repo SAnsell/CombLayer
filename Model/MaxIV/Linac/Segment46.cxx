@@ -93,7 +93,7 @@ namespace tdcSystem
 Segment46::Segment46(const std::string& Key) :
   TDCsegment(Key,4),
   IZThin(new attachSystem::InnerZone(*this,cellIndex)),
-  
+
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -157,8 +157,8 @@ Segment46::insertPrevSegment(Simulation& System,
 
   return;
 }
-  
-  
+
+
 void
 Segment46::createSplitInnerZone(Simulation& System)
   /*!
@@ -174,7 +174,8 @@ Segment46::createSplitInnerZone(Simulation& System)
     {
       const TDCsegment* sideSegment=sideVec.front();
 
-      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5);
+      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0; // \todo: UGLY FIX
+      ELog::EM << "FIXME: UGLY fix of cutOrig for surface 5005" << ELog::endDiag;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
       const Geometry::Vec3D zAxis=X*cutAxis;
@@ -202,7 +203,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
-      
+
       IZThin->setSurround(HSurroundB);
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
@@ -230,7 +231,7 @@ Segment46::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
-  
+
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*pipeA,"back",*gateA);
 
@@ -242,7 +243,7 @@ Segment46::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*IZThin,masterCell,*prismaChamber,"back",*mirrorChamberA);
-  
+
   pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*IZThin,pipeB);
@@ -325,9 +326,9 @@ Segment46::writePoints() const
      {pipeA,gateA,prismaChamber,mirrorChamberA,pipeB,slitTube,bellowB,
       mirrorChamberB,bellowC,gateB}
      );
-  
+
   TDCsegment::writeBasicItems(Items);
-  
+
   return;
 }
 
