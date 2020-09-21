@@ -80,19 +80,19 @@ LINACmagnetVariables(FuncDataBase& Control)
 	"Seg9QuadA L2SPF9PipeB:Void",
 
 	"Seg10QuadA L2SPF10PipeC:Void",
-	"Seg10CMagVertA L2SPF10FPipeC:Void",
+	"Seg10CMagVertA L2SPF10PipeC:Void",
 
-	"Seg11QuadA L2SPF11PipeC:Void",
-	"Seg11CMagHorA L2SPF11FPipeB:Void",
+	"Seg11QuadA L2SPF11PipeA:Void",
+	"Seg11CMagHorA L2SPF11PipeB:Void",
 
 	"Seg12DipoleA L2SPF12FlatA:Void",
 	"Seg12DipoleB L2SPF12PipeLA:Void L2SPF12FlatB:Void",
 
-	"Seg13CMagHorA L2SPF13FPipeA:Void"
+	"Seg13CMagHorA L2SPF13PipeA:Void",
 	"Seg13QuadA L2SPF13PipeB:Void",
 	"Seg13SexuA L2SPF13PipeB:Void",
 	"Seg13QuadB L2SPF13PipeB:Void",
-	"Seg13CMagVerC L2SPF13FPipeC:Void",
+	"Seg13CMagVerC L2SPF13PipeC:Void",
 
 	"Seg14DM1 TDC14FlatB:Void",
 	"Seg14DM2 TDC14FlatB:Void",
@@ -107,7 +107,7 @@ LINACmagnetVariables(FuncDataBase& Control)
 
 	"Seg21Quad TDC21PipeA:Void",
 	"Seg21CMagH TDC21PipeB:Void",
-	"Seg21CMagV TDC21PipeB:Void"
+	"Seg21CMagV TDC21PipeB:Void",
 
 	"Seg23Quad TDC23PipeA:Void",
 	"Seg23CMagH TDC23PipeB:Void",

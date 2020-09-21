@@ -347,13 +347,14 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3002 -1001 -1111 3 -4 5 -6 "
-     " (-1003:1004:-1001) "           // main mid divider
-     " (-1111:1112:1003) "           // left mid block 
-     " ( -1004:1011:-1001:1104) "   // right mid block
+    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 "
      " (-1511:1522:1503) "          // gate block
      );
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1511 -1001 -1111 1503 -4 5 -6 ");
+  makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -201 1112 3 -1003 5 -6 (1522 : 1503) ");

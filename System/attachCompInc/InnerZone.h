@@ -96,8 +96,10 @@ class InnerZone
   const HeadRule& getBack() const { return backHR; }
   /// access front
   const HeadRule& getDivider() const { return frontDivider; }
-  /// access front
+  /// access volume-back
   HeadRule getVolumeExclude() const;
+  /// access full volume
+  HeadRule getVolume() const;
   
   /// set the void material
   void setInnerMat(const int M) { voidMat=M; }

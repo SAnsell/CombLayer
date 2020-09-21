@@ -185,7 +185,7 @@ SurfMap::getSurfRules(const std::string& Key) const
   ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 
 
   HeadRule Out;
-  if (!Key.empty() && Key[0]=='-')
+  if (!Key.empty() && Key[0]=='-' || Key[0]=='#')
     {
       const std::vector<int> sVec=getItems(Key.substr(1));
       for(const int sn : sVec)
