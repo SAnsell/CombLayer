@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/FlatPipe.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -82,7 +82,7 @@
 namespace tdcSystem
 {
 
-FlatPipe::FlatPipe(const std::string& Key) : 
+FlatPipe::FlatPipe(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Pipe","FlangeA","FlangeB"),
   attachSystem::CellMap(),
@@ -95,7 +95,7 @@ FlatPipe::FlatPipe(const std::string& Key) :
 {}
 
 
-FlatPipe::~FlatPipe() 
+FlatPipe::~FlatPipe()
   /*!
     Destructor
   */
@@ -109,7 +109,7 @@ FlatPipe::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("FlatPipe","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Wall:
@@ -119,7 +119,7 @@ FlatPipe::populate(const FuncDataBase& Control)
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
@@ -138,7 +138,7 @@ FlatPipe::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+
 void
 FlatPipe::createSurfaces()
   /*!
@@ -146,18 +146,18 @@ FlatPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("FlatPipe","createSurfaces");
-  
+
   // Inner void
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
-			       Origin-Y*(length/2.0),Y); 
+			       Origin-Y*(length/2.0),Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
   // use this so angled fronts correctly make
   FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,flangeALength);
 
-  
+
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,
@@ -213,7 +213,7 @@ FlatPipe::createSurfaces()
 
       ModelSupport::buildCylinder
 	(SMap,buildIndex+18,OrgA+X*(frontWidth/2.0),RAxis,R+wallThick);
-      
+
     }
   else // CONE VERSION
     {
@@ -226,14 +226,14 @@ FlatPipe::createSurfaces()
       ModelSupport::buildCone(SMap,buildIndex+7,
 			      Origin-X*(width/2.0),Y,height/2.0);
       ModelSupport::buildCone(SMap,buildIndex+8,Origin+X*(width/2.0),Y,height/2.0);
-      
+
       ModelSupport::buildCone(SMap,buildIndex+17,
 				  Origin-X*(width/2.0),Y,height/2.0+wallThick);
       ModelSupport::buildCone(SMap,buildIndex+18,
 				  Origin+X*(width/2.0),Y,height/2.0+wallThick);
       */
     }
-  
+
 
   // main pipe walls
   // main pipe
@@ -257,7 +257,7 @@ FlatPipe::createSurfaces()
 			   OrgB+Z*(wallThick+backHeight/2.0),
 			   OrgB+Z*(wallThick+backHeight/2.0)+X,
 			   Z);
-  
+
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
@@ -278,9 +278,15 @@ FlatPipe::createObjects(Simulation& System)
 
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
-  
+
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(3:-7) (-4:-8) 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -3 -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 4 -8 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 6 -16");
@@ -295,7 +301,7 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 4 8 -18 ");
   makeCell("RightPipe",System,cellIndex++,wallMat,0.0,Out);
 
-  // FLANGE Front: 
+  // FLANGE Front:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -11 -107 ((7 -3) : (8 4) : -5 : 6) ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontStr);
@@ -312,14 +318,14 @@ FlatPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 ");
   addOuterSurf("FlangeB",Out+backStr);
 
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 15 -16 (3:-17) (-4:-18)");
-  
+
   addOuterSurf("Pipe",Out);
   return;
 }
-  
+
 void
 FlatPipe::createLinks()
   /*!
@@ -328,7 +334,7 @@ FlatPipe::createLinks()
   */
 {
   ELog::RegMethod RegA("FlatPipe","createLinks");
-  
+
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
@@ -338,7 +344,7 @@ FlatPipe::createLinks()
   FixedComp::setConnect(3,Origin-X*(wallThick+H+W),X);
   FixedComp::setConnect(4,Origin-Z*(wallThick+H+W),-Z);
   FixedComp::setConnect(5,Origin+Z*(wallThick+H+W),Z);
-  
+
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+18));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
@@ -353,11 +359,11 @@ FlatPipe::createLinks()
   FixedComp::setLinkSurf(7,Out);
 
   FixedComp::nameSideIndex(7,"outerPipe");
-  
+
   return;
 }
-  
-  
+
+
 void
 FlatPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -373,12 +379,12 @@ FlatPipe::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,length);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
