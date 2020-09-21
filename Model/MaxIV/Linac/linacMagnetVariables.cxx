@@ -75,7 +75,7 @@ LINACmagnetVariables(FuncDataBase& Control)
 	"Seg7QuadA L2SPF7PipeA:Void",
 	"Seg7CMagVertA L2SPF7PipeB:Void",
 
-	"Seg9CMagVertA L2SPF9FPipeA:Void",
+	"Seg9CMagVertA L2SPF9PipeA:Void",
 	"Seg9CMagHorA L2SPF9PipeA:Void",
 	"Seg9QuadA L2SPF9PipeB:Void",
 
