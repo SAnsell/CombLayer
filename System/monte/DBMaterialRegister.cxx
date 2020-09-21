@@ -1325,6 +1325,20 @@ DBMaterial::initMaterial()
   MObj.setDensity(-7.85);
   setMaterial(MObj);
 
+  // Material #150 Niodimium
+  // Source:
+  // https://prod-ng.sandia.gov/techlib-noauth/access-control.cgi/2014/1417693.pdf
+  // Table 176 on page 69
+  MObj.setMaterial(150,"Neodymium",
+		   " 60142.70c 0.271520 "
+		   " 60143.70c 0.121740 "
+		   " 60144.70c 0.237980 "
+		   " 60145.70c 0.082930 "
+		   " 60146.70c 0.171890 "
+		   " 60148.70c 0.057560 "
+		   " 60150.70c 0.056380 ","",MLib);
+  MObj.setDensity(0.0292587);
+  setMaterial(MObj);
 
   return;
 }

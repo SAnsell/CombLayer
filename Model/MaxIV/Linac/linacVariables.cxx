@@ -94,7 +94,7 @@ namespace linacVar
   //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
   void setPrismaChamber(FuncDataBase&,const std::string&);
-  void setSlitTube(FuncDataBase&,const std::string&);
+  void setSlitTube(FuncDataBase&,const std::string&,const double);
   void setRecGateValve(FuncDataBase&,const std::string&,
 		       const bool);
   void setCylGateValve(FuncDataBase&,const std::string&,
@@ -327,7 +327,7 @@ setPrismaChamber(FuncDataBase& Control,
   const Geometry::Vec3D pPos01(0.0,portZStep,7.0);
   const Geometry::Vec3D pPos23(0.0,portZStep,0.0);
 
-  PItemGen.setCF<setVariable::CF40_22>(6.50778); // depends on pPos01
+  PItemGen.setCF<setVariable::CF35_TDC>(6.50778); // depends on pPos01
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",pPos01,-XVec);
 
@@ -346,28 +346,31 @@ setPrismaChamber(FuncDataBase& Control,
 
 void
 setSlitTube(FuncDataBase& Control,
-	    const std::string& name)
+	    const std::string& name,
+	    const double length)
 /*!
   Set the slit tibe variables
   \param Control :: DataBase to use
   \param name :: name prefix
+  \param length :: total length
  */
 {
   ELog::RegMethod RegA("linacVariables[F]","setSlitTube");
 
-  const double DLength(18.0); // slit tube length, without flanges[AB]
+  const double sideWallThick(1.0);
+  const double DLength(length-sideWallThick*2.0); // slit tube length, without flanges[AB]
 
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
-  PTubeGen.setMat("Stainless304");
+  PTubeGen.setMat("Stainless304L");
+  PItemGen.setPlate(setVariable::CF63::flangeLength, "Stainless304L");
 
   const double Radius(7.5);
   const double WallThick(0.5);
   const double PortRadius(Radius+WallThick+0.5);
   PTubeGen.setPipe(Radius,WallThick);
   PTubeGen.setPortCF<setVariable::CF40>();
-  const double sideWallThick(1.0);
   PTubeGen.setPortLength(-sideWallThick,sideWallThick);
   PTubeGen.setAFlange(PortRadius,sideWallThick);
   PTubeGen.setBFlange(PortRadius,sideWallThick);
@@ -461,6 +464,9 @@ setCylGateValve(FuncDataBase& Control,
   // BladeMat is guess as VAT (the manufacturer) does not want to give more details
   // (email from Marek 2020-06-17)
   Control.addVariable(name+"BladeMat","Stainless316L"); // guess
+  // PortRadius as of No_49_00,
+  // but it seems like same value for all gate valves
+  Control.addVariable(name+"PortRadius",2.005);
 
   return;
 }
@@ -627,7 +633,7 @@ setMirrorChamber(FuncDataBase& Control,
 
   setVariable::PortItemGenerator PItemGen;
 
-  PItemGen.setCF<setVariable::CF40_22>(L0);
+  PItemGen.setCF<setVariable::CF35_TDC>(L0);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
 
@@ -832,7 +838,6 @@ Segment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadC",24.7); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadD",74.7); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadE",114.7); // No_2_00.pdf
-
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
@@ -1075,15 +1080,16 @@ Segment7(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
 
-  PGen.generatePipe(Control,lKey+"PipeA",102.31);
-  CMGen.generateMag(Control,lKey+"CMagHorA",37.25,0);
-  LQGen.generateQuad(Control,lKey+"QuadA",81.0);
+  PGen.generatePipe(Control,lKey+"PipeA",102.3);
+  CMGen.generateMag(Control,lKey+"CMagHorA",39.0,0);
+  LQGen.generateQuad(Control,lKey+"QuadA",79.0);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-  PGen.generatePipe(Control,lKey+"PipeB",140.26);
-  CMGen.generateMag(Control,lKey+"CMagVertA",11.87,1);
+  PGen.generatePipe(Control,lKey+"PipeB",140.2);
+  CMGen.generateMag(Control,lKey+"CMagVertA",11.0,1);
 
 
   return;
@@ -3104,10 +3110,9 @@ Segment45(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF34_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",110.5);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -3117,12 +3122,13 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
-  PGen.setCF<setVariable::CF63>();
-  PGen.generatePipe(Control,lKey+"PipeB",161.75);
+  PGen.setCF<setVariable::CF66_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeB",160.0);
 
-  FPGen.setCF<setVariable::CF63>();
+  FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
   FPGen.generateFlangePlate(Control,lKey+"Adaptor");
+
   return;
 }
 
@@ -3151,16 +3157,21 @@ Segment46(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::CrossWayGenerator MSPGen;
 
-
-  PGen.setCF<setVariable::CF40_22>();
-  PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
   MSPGen.setMainLength(6.3,6.3);
+  //  MSPGen.setCF<CF35_TDC>();
 
-  PGen.generatePipe(Control,lKey+"PipeA",96.8); // measured
-  const double pipeBLength(40.0);  // measured
+  PGen.setCF<setVariable::CF35_TDC>();
+  PGen.setMat("Stainless304L","Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeA",96.8);
+
+  const double pipeBLength(40.0);
+  PGen.setCF<setVariable::CF16_TDC>();
+  PGen.setMat("Aluminium","Aluminium");
   PGen.generatePipe(Control,lKey+"PipeB",pipeBLength);
+  Control.addVariable(lKey+"PipeBFeThick",0.15);
+  Control.addVariable(lKey+"PipeBYAngle",-90.0);
 
   // Gate valves
   setVariable::CylGateValveGenerator CGateGen;
@@ -3178,7 +3189,7 @@ Segment46(FuncDataBase& Control,
 
   // Mirror Chambers
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberA");
-
+  Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
 
   // Cleaning magnet
   setVariable::CleaningMagnetGenerator ClMagGen;
@@ -3186,15 +3197,20 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"CleaningMagnetYStep",pipeBLength/2.0);
 
   // Slit tube and jaws
-  setSlitTube(Control,lKey+"SlitTube");
+  setSlitTube(Control,lKey+"SlitTube",19.91);
 
   setBellow26(Control,lKey+"BellowB",10.0); // measured
 
+  const double mcbLength(12.59);
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberB");
+  Control.addVariable(lKey+"MirrorChamberBYAngle",90.0);
+  Control.addVariable(lKey+"MirrorChamberBBackLength",mcbLength/2.0);
+  Control.addVariable(lKey+"MirrorChamberBFrontLength",mcbLength/2.0);
 
   setBellow26(Control,lKey+"BellowC",10.0); // measured
 
   CGateGen.generateGate(Control,lKey+"GateB",0);
+  Control.addVariable(lKey+"GateBYAngle",90.0);
 
   // Bellow D added: it is not on the drawing BUT the
   // error in lengths is 160mm and there should be a bellow
@@ -3226,13 +3242,15 @@ Segment47(FuncDataBase& Control,
 
   // Pipes
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
+  PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",12.6); // measured
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeD",8.4); // measured
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
@@ -3286,13 +3304,13 @@ Segment48(FuncDataBase& Control,
 
   // Pipe
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF37_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",12.5); // measured
+  PGen.generatePipe(Control,lKey+"PipeA",12.6); // measured
 
   // Slit tube and jaws
-  setSlitTube(Control,lKey+"SlitTube");
+  setSlitTube(Control,lKey+"SlitTube",19.91);
 
   // Mirror Chamber
   setMirrorChamber(Control, lKey+"MirrorChamberA");
@@ -3324,7 +3342,7 @@ Segment49(FuncDataBase& Control,
 
   // Pipes
   setVariable::PipeGenerator PGen;
-  PGen.setCF<setVariable::CF40_22>();
+  PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",51.29);

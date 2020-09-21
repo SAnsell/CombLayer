@@ -115,6 +115,12 @@ global_settings {
     #declare cameraAngle = 50;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"Segment7")) // L2SPF segment 7
+    #declare cameraLocation = <170, 2560, 100>;
+    #declare cameraLookAt   = <-17, 2540, 0>;
+    #declare cameraAngle = 70;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Segment8")) // L2SPF segment 8
     #declare cameraLocation = <300, 2770, 200>;
     #declare cameraLookAt   = <0, 2830, 0>;
@@ -327,22 +333,22 @@ global_settings {
     #declare cameraAngle = 40;
   #break
   #case(strcmp(ITEM,"Segment46")) // SPF segment 46
-    #declare cameraLocation = <-700, 6750, 70>;
-    #declare cameraLookAt   = <-860, 6760, 0>;
-    #declare projection = 0;
-    #declare cameraAngle = 90;
-  #break
-  #case(strcmp(ITEM,"Segment47")) // SPF segment 47
-    #declare cameraLocation = <-750, 6800, 100>;
-    #declare cameraLookAt   = <-860, 6750, 0>;
+    #declare cameraLocation = <-600, 9470, 150>;
+    #declare cameraLookAt   = <-850, 9480, 0>;
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-  #case(strcmp(ITEM,"Segment48")) // SPF segment 48
-    #declare cameraLocation = <-600, 6600, 100>;
-    #declare cameraLookAt   = <-860, 6700, 0>;
+  #case(strcmp(ITEM,"Segment47")) // SPF segment 47
+    #declare cameraLocation = <-650, 9650, 100>;
+    #declare cameraLookAt   = <-860, 9690, 0>;
     #declare projection = 0;
-    #declare cameraAngle = 40;
+    #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment48")) // SPF segment 48
+    #declare cameraLocation = <-720, 9800, 100>;
+    #declare cameraLookAt   = <-860, 9880, -10>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment49")) // SPF segment 49
     #declare cameraLocation = <-700, 10000, 30>;

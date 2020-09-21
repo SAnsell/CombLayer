@@ -61,7 +61,7 @@ FlangePlateGenerator::FlangePlateGenerator() :
   innerRadius(-1.0),
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
-  innerMat("Void"),flangeMat("Aluminium")
+  innerMat("Void"),flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -90,12 +90,13 @@ FlangePlateGenerator::setFlange(const double R,const double T)
 
 template<typename CF>
 void
-FlangePlateGenerator::setCF()
+FlangePlateGenerator::setCF(const double R)
   /*!
     Set pipe/flange to CF-X format
+    \param R :: inner radius
   */
 {
-  innerRadius=CF::innerRadius;
+  innerRadius=R;
   flangeRadius=CF::flangeRadius;
   flangeLength=CF::flangeLength;
 
@@ -147,18 +148,18 @@ FlangePlateGenerator::generateFlangePlate
 }
 
 ///\cond TEMPLATE
-  template void FlangePlateGenerator::setCF<CF16_TDC>();
-  template void FlangePlateGenerator::setCF<CF16>();
-  template void FlangePlateGenerator::setCF<CF18_TDC>();
-  template void FlangePlateGenerator::setCF<CF25>();
-  template void FlangePlateGenerator::setCF<CF40_22>();
-  template void FlangePlateGenerator::setCF<CF40>();
-  template void FlangePlateGenerator::setCF<CF50>();
-  template void FlangePlateGenerator::setCF<CF63>();
-  template void FlangePlateGenerator::setCF<CF66_TDC>();
-  template void FlangePlateGenerator::setCF<CF100>();
-  template void FlangePlateGenerator::setCF<CF120>();
-  template void FlangePlateGenerator::setCF<CF150>();
+  template void FlangePlateGenerator::setCF<CF16_TDC>(const double);
+  template void FlangePlateGenerator::setCF<CF16>(const double);
+  template void FlangePlateGenerator::setCF<CF18_TDC>(const double);
+  template void FlangePlateGenerator::setCF<CF25>(const double);
+  template void FlangePlateGenerator::setCF<CF40_22>(const double);
+  template void FlangePlateGenerator::setCF<CF40>(const double);
+  template void FlangePlateGenerator::setCF<CF50>(const double);
+  template void FlangePlateGenerator::setCF<CF63>(const double);
+  template void FlangePlateGenerator::setCF<CF66_TDC>(const double);
+  template void FlangePlateGenerator::setCF<CF100>(const double);
+  template void FlangePlateGenerator::setCF<CF120>(const double);
+  template void FlangePlateGenerator::setCF<CF150>(const double);
   template void FlangePlateGenerator::setFlangeCF<CF25>();
   template void FlangePlateGenerator::setFlangeCF<CF40_22>();
   template void FlangePlateGenerator::setFlangeCF<CF63>();
