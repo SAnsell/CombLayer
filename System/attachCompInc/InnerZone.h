@@ -33,6 +33,7 @@ namespace attachSystem
 {
   class FixedComp;
   class CellMap;
+
   
 /*!
   \class InnerZone
@@ -211,8 +212,12 @@ class InnerZone
   MonteCarlo::Object* getMaster() const { return masterCell; }
   /// accessor to local master cell
   const attachSystem::CellMap* getCellMap() const { return CellPtr; }
-  
+
+  void write(std::ostream&) const;
 };
+
+std::ostream&
+operator<<(std::ostream&,const InnerZone&);
 
 }
 

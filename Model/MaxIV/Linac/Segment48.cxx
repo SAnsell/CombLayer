@@ -137,12 +137,18 @@ Segment48::buildObjects(Simulation& System)
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
+  
   if (isActive("front"))
     beamStopA->copyCutSurf("front",*this,"front");
-
   beamStopA->createAll(System,*this,0);
+  if (!masterCell)
+    {
+      ELog::EM<<"Build == "<<*buildZone<<ELog::endDiag;
+      masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
+
+      ELog::EM<<"Building zone:"<<*masterCell<<ELog::endDiag;
+    }
+  
   outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 

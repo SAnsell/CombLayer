@@ -225,23 +225,14 @@ Segment46::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=IZThin->getMaster();
 
   if (!masterCell)
-    {
-      ELog::EM<<"Construct "<<ELog::endDiag;
-      masterCell=IZThin->constructMasterCell(System);
-      ELog::EM<<"MA = "<<*masterCell<<ELog::endDiag;
-    }
+    masterCell=IZThin->constructMasterCell(System);
+
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  ELog::EM<<"Pipe = "<<pipeA->getLinkSurf(2)<<ELog::endDiag;
-  ELog::EM<<"Outer Cell = "<<outerCell<<ELog::endDiag;
-  ELog::EM<<"FC = "<<IZThin->getFront()<<ELog::endDiag;
-  ELog::EM<<"Div = "<<IZThin->getDivider()<<ELog::endDiag;
-  ELog::EM<<"FCX = "<<buildZone->getFront()<<ELog::endDiag;
   MonteCarlo::Object* OPtr=System.findObject(outerCell);
-  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
     
   pipeA->insertInCell(System,outerCell);
 
