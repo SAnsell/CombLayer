@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/FMUndulator.cxx
+ * File:   Linac/FMUndulator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -249,18 +249,43 @@ FMUndulator::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 203 -204 206 -306");
   makeCell("topBasePlate",System,cellIndex++,supportMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -203 -105 305");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 503 -203 -105 305");
   makeCell("lowBaseV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -504 204 -105 305");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -504 204 -105 305");
   makeCell("lowBaseV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 503 -203 106 -306");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 503 -203 106 -306");
   makeCell("topBaseV",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -302 -504 204 106 -306");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -504 204 106 -306");
   makeCell("topBaseV",System,cellIndex++,voidMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 204 -504 -205 305");
+  makeCell("topBaseVX",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 -203 503 -205 305");
+  makeCell("topBaseVX",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 204 -504 206 -306");
+  makeCell("lowBaseVX",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 -203 503 206 -306");
+  makeCell("lowBaseVX",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-302 2 204 -504 -205 305");
+  makeCell("topBaseVY",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-302 2 -203 503 -205 305");
+  makeCell("topBaseVY",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-302 2 204 -504 206 -306");
+  makeCell("lowBaseVY",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-302 2 -203 503 206 -306");
+  makeCell("lowBaseVY",System,cellIndex++,voidMat,0.0,Out);
+
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"301 -1 503 -504  205 -206");
   makeCell("frontV",System,cellIndex++,voidMat,0.0,Out);
 

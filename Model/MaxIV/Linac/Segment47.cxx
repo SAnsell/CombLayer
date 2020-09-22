@@ -139,11 +139,11 @@ Segment47::createSplitInnerZone(Simulation& System)
 	  if (sideSegment->hasSideIndex("buildZoneCut"))
 	    HRcut.addUnion(sideSegment->getLinkSurf("buildZoneCut"));
 	}				  
-           
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.addIntersection(HRcut);
 
       IZThin->setSurround(HSurroundB);
+      IZThin->clearDivider();
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
   
@@ -165,7 +165,8 @@ Segment47::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=IZThin->getMaster();
 
   if (!masterCell)
-      masterCell=IZThin->constructMasterCell(System);
+    masterCell=IZThin->constructMasterCell(System);
+
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
@@ -205,7 +206,6 @@ Segment47::buildObjects(Simulation& System)
     (System,*IZThin,masterCell,*bellowA,"back",*pipeE);
 
   IZThin->removeLastMaster(System);
-
   return;
 }
 

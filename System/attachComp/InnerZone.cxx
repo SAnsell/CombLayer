@@ -176,6 +176,20 @@ InnerZone::getVolumeExclude() const
 
   return Out.complement();
 }
+
+HeadRule
+InnerZone::getVolume() const
+  /*!
+    Get the full excluded volume
+   */
+{
+  HeadRule Out(surroundHR);
+  Out*=frontHR;
+  Out*=backHR;
+  Out *= frontDivider.complement();
+
+  return Out;
+}
   
 InnerZone
 InnerZone::buildMiddleZone(const int flag) const

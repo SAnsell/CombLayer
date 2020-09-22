@@ -178,7 +178,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       ELog::EM << "FIXME: UGLY fix of cutOrig for surface 5005" << ELog::endDiag;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
-      const Geometry::Vec3D zAxis=X*cutAxis;
+      const Geometry::Vec3D zAxis=X*cutAxis+Z*4.0;
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       int SNremoved(0);
@@ -205,6 +205,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
 
       IZThin->setSurround(HSurroundB);
+      IZThin->clearDivider();
       IZThin->setInsertCells(buildZone->getInsertCell());
     }
   return;
@@ -221,15 +222,27 @@ Segment46::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment46","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
+  MonteCarlo::Object* masterCell=IZThin->getMaster();
 
   if (!masterCell)
-    masterCell=IZThin->constructMasterCell(System);
+    {
+      ELog::EM<<"Construct "<<ELog::endDiag;
+      masterCell=IZThin->constructMasterCell(System);
+      ELog::EM<<"MA = "<<*masterCell<<ELog::endDiag;
+    }
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  ELog::EM<<"Pipe = "<<pipeA->getLinkSurf(2)<<ELog::endDiag;
+  ELog::EM<<"Outer Cell = "<<outerCell<<ELog::endDiag;
+  ELog::EM<<"FC = "<<IZThin->getFront()<<ELog::endDiag;
+  ELog::EM<<"Div = "<<IZThin->getDivider()<<ELog::endDiag;
+  ELog::EM<<"FCX = "<<buildZone->getFront()<<ELog::endDiag;
+  MonteCarlo::Object* OPtr=System.findObject(outerCell);
+  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
+    
   pipeA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit

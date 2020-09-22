@@ -55,17 +55,18 @@ class TDC :
   
   std::set<std::string> activeINJ;   ///< active components
 
-  /// All the build units
-  std::map<std::string,attachSystem::InnerZone> buildUnits;
   
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
   SegTYPE SegMap;
 
+  /// Build zones;
+  std::map<std::string,std::shared_ptr<attachSystem::InnerZone>> bZone;
+  
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
-
-  std::unique_ptr<attachSystem::InnerZone>
-  buildInnerZone(const FuncDataBase&,const std::string&);
+  
+  std::shared_ptr<attachSystem::InnerZone>
+  buildInnerZone(Simulation&,const std::string&);
 
  public:
 

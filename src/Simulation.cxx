@@ -1646,8 +1646,6 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
-  // DEBUG
-
   
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
@@ -1665,6 +1663,7 @@ Simulation::minimizeObject(const int CN)
   AX.setFunctionObjStr(CPtr->cellCompStr());
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
+
 
   AX.addImplicates(IP);
   activeFlag |= AX.constructShannonExpansion();
