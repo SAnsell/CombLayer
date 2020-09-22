@@ -175,7 +175,6 @@ Segment46::createSplitInnerZone(Simulation& System)
       const TDCsegment* sideSegment=sideVec.front();
 
       const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0; // \todo: UGLY FIX
-      ELog::EM << "FIXME: UGLY fix of cutOrig for surface 5005" << ELog::endDiag;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
       const Geometry::Vec3D zAxis=X*cutAxis+Z*4.0;
@@ -233,7 +232,7 @@ Segment46::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
   MonteCarlo::Object* OPtr=System.findObject(outerCell);
-    
+
   pipeA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit

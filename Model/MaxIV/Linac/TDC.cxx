@@ -266,13 +266,13 @@ TDC::buildInnerZone(Simulation& System,
   // MAP for BZONE
   typedef std::map<std::string,
 		   std::shared_ptr<attachSystem::InnerZone>> bzMAPTYPE;
-  
+
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
   typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
 
   static std::set<std::string> ISet;
-  
+
   // front : back : Insert
   const static RMAP regZones
     ({
@@ -291,7 +291,7 @@ TDC::buildInnerZone(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
 
-  
+
   RMAP::const_iterator rc=regZones.find(regionName);
   if (rc==regZones.end())
     throw ColErr::InContainerError<std::string>(regionName,"regionZones");
@@ -312,12 +312,12 @@ TDC::buildInnerZone(Simulation& System,
       buildZone->setBack(injectionHall->getSurfRule(backSurfName));
       buildZone->setSurround
 	(buildSurround(Control,regionName,"Origin"));
-      bZone.emplace(regionName,buildZone);      
+      bZone.emplace(regionName,buildZone);
     }
   else
     buildZone=mc->second;
-  
-  if (!voidName.empty() &&  ISet.find(regionName+voidName)==ISet.end() ) 
+
+  if (!voidName.empty() &&  ISet.find(regionName+voidName)==ISet.end() )
     {
       ISet.emplace(regionName+voidName);
       buildZone->setInsertCells(injectionHall->getCells(voidName));
@@ -431,7 +431,6 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  int surf45End(0);
   // special case of Segment10 : Segment26/27/28/29
   for(const std::string& BL : buildOrder)
     {
@@ -515,7 +514,7 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-	  
+
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");
