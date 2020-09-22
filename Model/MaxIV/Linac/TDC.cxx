@@ -485,10 +485,22 @@ TDC::createAll(Simulation& System,
 	  if (BL!="Segment26" && BL!="Segment27" &&
 	      BL!="Segment28" && BL!="Segment29" &&
 	      BL!="Segment30" && BL!="Segment45" &&
-	      BL!="Segment46" && BL!="Segment47")
+	      BL!="Segment46" && BL!="Segment47" &&
+	      BL!="Segment48")
 	    {
 	      buildZone->constructMasterCell(System);
 	      segPtr->setInnerZone(buildZone.get());
+	    }
+
+	  if (BL=="Segment48")   // SPECIAL CHANGE OF FRONT
+	    {
+	      SegTYPE::const_iterator ci=SegMap.find("Segment47");
+	      if (ci!=SegMap.end())
+		{
+		  const TDCsegment* seg47Ptr=ci->second.get();
+		  buildZone->setFront(seg47Ptr->getFullRule(2));
+		  ELog::EM<<"SN == "<<seg47Ptr->getFullRule(2)<<ELog::endDiag;
+		}
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());
@@ -503,6 +515,7 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
+	  
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");

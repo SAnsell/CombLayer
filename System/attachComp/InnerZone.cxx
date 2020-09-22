@@ -82,7 +82,20 @@
 
 namespace attachSystem
 {
- 
+
+std::ostream&
+operator<<(std::ostream& OX,const InnerZone& A)
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+    \param A :: Inner zone to write
+    return Stream after use.
+  */
+{
+  A.write(OX);
+  return OX;
+}
+  
 InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 		     int& cRef) :
   FCName(FRef.getKeyName()),cellIndex(cRef),
@@ -254,6 +267,7 @@ InnerZone::setFront(const HeadRule& HR)
   */
 {
   frontHR=HR;
+  frontDivider=HR;
   return;
 }
   
@@ -843,5 +857,19 @@ InnerZone::removeLastMaster(Simulation& System)
   return;
 }
 
+void
+InnerZone::write(std::ostream& OX) const
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+  */
+{
+  OX<<"-------------"<<std::endl;
+  OX<<"Front:"<<frontHR<<"\n";
+  OX<<"Back :"<<backHR<<"\n";
+  OX<<"Surround:"<<surroundHR<<"\n";
+  OX<<"-------------"<<std::endl;
+  return;
+}
 
 }  // NAMESPACE attachSystem
