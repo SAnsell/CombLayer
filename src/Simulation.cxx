@@ -1646,16 +1646,15 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
-  
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   CPtr->populate();
   CPtr->createSurfaceList();
-  const std::vector<std::pair<int,int>>
+  std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
   
-  //  CPtr->createLogicOpp();
+  //CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
 
   bool activeFlag(0);
@@ -1664,9 +1663,9 @@ Simulation::minimizeObject(const int CN)
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
 
-
   AX.addImplicates(IP);
   activeFlag |= AX.constructShannonExpansion();
+
 
   if (activeFlag)
     {
@@ -1681,9 +1680,9 @@ Simulation::minimizeObject(const int CN)
       CPtr->populate();
       CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
-
       return 1;
     }
+  
 
   return 0;	
 }

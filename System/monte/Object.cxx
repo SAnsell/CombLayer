@@ -715,10 +715,9 @@ Object::isValid(const Geometry::Vec3D& Pt,
 std::set<int>
 Object::getSelfPairs() const
   /*!
-    Determine all the implicate pairs for the object
-    The map is plane A has (sign A) implies plane B has (sign B)
-    \param SN :: Number of force side
-    \return Map of surf -> surf
+    Determine the set of surfaces that are represented
+    twice in the model and as both signs (+/-)
+    \return Set of opposite surfaces
   */
 {
   ELog::RegMethod RegA("Object","getSelfPairs(int)");
@@ -773,7 +772,7 @@ Object::getImplicatePairs() const
   /*!
     Determine all the implicate pairs for the object
     The map is plane A has (sign A) implies plane B has (sign B)
-    \return Map of surf -> surf
+    \return vector of implicate pairs
   */
 {
   ELog::RegMethod RegA("Object","getImplicatePairs");
@@ -784,18 +783,20 @@ Object::getImplicatePairs() const
   std::vector<std::pair<int,int>> Out;
 
   for(size_t i=0;i<SurList.size();i++)
-    for(size_t j=i+1;j<SurList.size();j++)
+    for(size_t j=0;j<SurList.size();j++)
       {
-	const Geometry::Surface* APtr=SurList[i];
-	const Geometry::Surface* BPtr=SurList[j];
-
-	// This is JUST surface SIGNS:
-	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
-	if (dirFlag.first)
+	if (j!=i)
 	  {
-	    Out.push_back(std::pair<int,int>
-			(dirFlag.first * APtr->getName(),
-			 dirFlag.second * BPtr->getName()));
+	    const Geometry::Surface* APtr=SurList[i];
+	    const Geometry::Surface* BPtr=SurList[j];
+	    // This is JUST surface SIGNS:
+	    const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+	    if (dirFlag.first)
+	      {
+		Out.push_back(std::pair<int,int>
+			      (dirFlag.first * APtr->getName(),
+			       dirFlag.second * BPtr->getName()));
+	      }
 	  }
       }
   return Out;
