@@ -61,6 +61,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "ExternalCut.h"
+#include "Object.h"
 
 #include "DipoleDIBMag.h"
 
@@ -226,7 +227,8 @@ DipoleDIBMag::createSurfaces()
 
   // auxillary planes
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*(magLength/2.0-Rout),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(magLength/2.0-Rout),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,
+			   Origin+Y*(magLength/2.0-Rout),Y);
 
   // gaps between frame and magnets
 
@@ -319,11 +321,11 @@ DipoleDIBMag::createObjects(Simulation& System)
       makeCell(partName+"MagRightRec",System,cellIndex++,coilMat,0.0,Out+tb);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 " 1002 -1008 1018 ");
+      		 "-2 1002 -1008 1018 ");
       makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 " -1001 -1007 1017 ");
+      		 " 1 -1001 -1007 1017 ");
       makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
       // Frame inside the magnet

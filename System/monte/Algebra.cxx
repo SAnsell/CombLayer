@@ -406,7 +406,6 @@ Algebra::constructShannonExpansion()
       const int realSNA=getSurfIndex(SNA);
       const int realSNB=getSurfIndex(SNB);
 
-
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
       FaFbT.resolveTrue(SNB);      // b=1
@@ -437,6 +436,7 @@ Algebra::constructShannonExpansion()
 	}
     }
   if (retFlag) F=FX;
+
   return retFlag;
 }
   
