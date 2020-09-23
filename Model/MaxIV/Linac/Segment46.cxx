@@ -177,7 +177,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0; // \todo: UGLY FIX
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
-      const Geometry::Vec3D zAxis=X*cutAxis+Z*4.0;
+      const Geometry::Vec3D zAxis=X*cutAxis;
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       int SNremoved(0);

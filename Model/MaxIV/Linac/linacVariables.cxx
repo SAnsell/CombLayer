@@ -3064,6 +3064,7 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
   // 267.75 / 168.0
   TGGen.setBend(313.40,110.4,58.46);
   TGGen.generateTri(Control,lKey+"TriBend");
+  Control.addVariable(lKey+"TriBendMidFlangeRadius",4.0); // \todo: UGLY FIX to avoid clipping with the bended pipe
 
   CMagGen.generateMag(Control,lKey+"CMag");
   Control.addVariable(lKey+"CMagYStep",9.0);
