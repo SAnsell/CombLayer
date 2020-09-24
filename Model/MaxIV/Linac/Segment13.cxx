@@ -136,6 +136,7 @@ Segment13::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment13","buildObjects");
+/* OLD INNERZONE 
 
   const attachSystem::CellMap* buildCM=buildZone->getCellMap();
 
@@ -178,6 +179,7 @@ Segment13::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeC);
   
   buildZone->removeLastMaster(System);  
+*/
   return;
 }
 

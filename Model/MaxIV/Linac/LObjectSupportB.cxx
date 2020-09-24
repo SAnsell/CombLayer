@@ -73,7 +73,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -90,20 +90,20 @@
 #include "DipoleDIBMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 
 namespace tdcSystem
 {
 
 int
 correctorMagnetPair(Simulation& System,
-		    attachSystem::InnerZone& buildZone,
+		    attachSystem::BlockZone& buildZone,
 		    const std::shared_ptr<attachSystem::FixedComp>& pipe,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMA,
 		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMB)
   /*!
     Given a pipe build the two correct magnets round it and then
-    correctly do the InnerZone splitting.
+    correctly do the BlockZone splitting.
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split -
             currently at start of pipe
@@ -120,8 +120,6 @@ correctorMagnetPair(Simulation& System,
   if (!CPtr)
     throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
 
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
-
   
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
   CMA->createAll(System,*pipe,"#front");
@@ -129,17 +127,16 @@ correctorMagnetPair(Simulation& System,
   CMB->setCutSurf("Inner",*pipe,"outerPipe");
   CMB->createAll(System,*pipe,"#front");
 
-  int outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMA,-1);
+  int outerCell=buildZone.createUnit(System,*CMA,-1);
   CPtr->insertInCell(System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMA,2);
+  outerCell=buildZone.createUnit(System,*CMA,2);
   CMA->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,-1);
+  outerCell=buildZone.createUnit(System,*CMB,-1);
   CPtr->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*CMB,2);
+  outerCell=buildZone.createUnit(System,*CMB,2);
   CMB->insertInCell(System,outerCell);
-
 
   return outerCell;
 }
@@ -147,14 +144,14 @@ correctorMagnetPair(Simulation& System,
 template<typename MagTYPE>
 int
 pipeMagUnit(Simulation& System,
-	    attachSystem::InnerZone& buildZone,
+	    attachSystem::BlockZone& buildZone,
 	    const std::shared_ptr<attachSystem::FixedComp>& pipe,
 	    const std::string& linkName,
 	    const std::string& outerName,
 	    const std::shared_ptr<MagTYPE>& magUnit)
   /*!
     Given a pipe build magnet unit round it and then
-    correctly do the InnerZone splitting.
+    correctly do the BlockZone splitting.
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split -
             currently at start of pipe
@@ -167,8 +164,6 @@ pipeMagUnit(Simulation& System,
   */
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeMagUnit");
-
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
   
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
@@ -177,11 +172,10 @@ pipeMagUnit(Simulation& System,
   if (!CPtr)
     throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
 
-  int outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,*magUnit,-1);
+  int outerCell=buildZone.createUnit(System,*magUnit,-1);
   CPtr->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
+  outerCell=buildZone.createUnit(System,*magUnit,2);
   magUnit->insertInCell(System,outerCell);
 
   return outerCell;
@@ -190,7 +184,7 @@ pipeMagUnit(Simulation& System,
 template<typename MagTYPE>
 int
 pipeMagGroup(Simulation& System,
-	     attachSystem::InnerZone& buildZone,
+	     attachSystem::BlockZone& buildZone,
 	     const std::shared_ptr<attachSystem::FixedComp>& pipe,
 	     const std::set<std::string>& containerSet,
 	     const std::string& linkName,
@@ -198,7 +192,7 @@ pipeMagGroup(Simulation& System,
 	     const std::shared_ptr<MagTYPE>& magUnit)
   /*!
     Given a pipe build magnet unit round it and then
-    correctly do the InnerZone splitting.
+    correctly do the BlockZone splitting.
     \param System :: Simulation to use
     \param buildZone :: Inner zoner to be split -
             currently at start of pipe
@@ -213,8 +207,6 @@ pipeMagGroup(Simulation& System,
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeMagGroup");
 
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
-
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
   attachSystem::ContainedGroup* CPtr=
@@ -222,12 +214,11 @@ pipeMagGroup(Simulation& System,
   if (!CPtr)
     throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
 
-  int outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,*magUnit,-1);
+  int outerCell=buildZone.createUnit(System,*magUnit,-1);
   for(const std::string& containerName: containerSet)
     CPtr->insertInCell(containerName,System,outerCell);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magUnit,2);
+  outerCell=buildZone.createUnit(System,*magUnit,2);
   magUnit->insertInCell(System,outerCell);
 
   return outerCell;
@@ -235,7 +226,7 @@ pipeMagGroup(Simulation& System,
 
 int
 pipeTerminate(Simulation& System,
-	      attachSystem::InnerZone& buildZone,
+	      attachSystem::BlockZone& buildZone,
 	      const std::shared_ptr<attachSystem::FixedComp>& pipe)
   /*!
     Teminate a pipe in the inde of a Inner zone
@@ -247,10 +238,7 @@ pipeTerminate(Simulation& System,
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate");
 
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
-
-  const int outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,*pipe,2);
+  const int outerCell=buildZone.createUnit(System,*pipe,2);
   attachSystem::ContainedComp* CPtr=
     dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
   if (CPtr)
@@ -270,7 +258,7 @@ pipeTerminate(Simulation& System,
 
 int
 pipeTerminateGroup(Simulation& System,
-		   attachSystem::InnerZone& buildZone,
+		   attachSystem::BlockZone& buildZone,
 		   const std::shared_ptr<attachSystem::FixedComp>& pipe,
 		   const std::set<std::string>& containerSet)
   /*!
@@ -290,7 +278,7 @@ pipeTerminateGroup(Simulation& System,
 
 int
 pipeTerminateGroup(Simulation& System,
-		   attachSystem::InnerZone& buildZone,
+		   attachSystem::BlockZone& buildZone,
 		   const std::shared_ptr<attachSystem::FixedComp>& pipe,
 		   const std::string& linkName,
 		   const std::set<std::string>& containerSet)
@@ -304,11 +292,7 @@ pipeTerminateGroup(Simulation& System,
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeTerminate(FC,string)");
 
-  MonteCarlo::Object* masterCell=buildZone.getMaster();
-
-  const int outerCell=
-    buildZone.createOuterVoidUnit
-    (System,masterCell,*pipe,pipe->getSideIndex(linkName));
+  const int outerCell=buildZone.createUnit(System,*pipe,linkName);
   attachSystem::ContainedGroup* CGPtr=
     dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
 
@@ -322,37 +306,12 @@ pipeTerminateGroup(Simulation& System,
   return outerCell;
 }
 
-void
-constructYagScreen(Simulation& System,const tdcSystem::YagUnit& yagUnit,
-		   tdcSystem::YagScreen& yagScreen,const int outerCell)
-  /*!
-    Construct the YagScreen in a YagUnit
-    \param System ::Simulation to use
-    \param yagUnit :: yag unit vessel
-    \param yagScreen :: yag screen object
-    \param outerCell :: outer cell
-   */
-{
-  ELog::RegMethod RegA("LObjectSupport","constructYagScreen");
-
-  // does beamaxis need to a unit
-  yagScreen.setBeamAxis(yagUnit,1);
-  yagScreen.createAll(System,yagUnit,-3);
-  yagScreen.insertInCell("Outer",System,outerCell);
-  yagScreen.insertInCell("Connect",System,yagUnit.getCell("PlateA"));
-  yagScreen.insertInCell("Connect",System,yagUnit.getCell("Void"));
-  yagScreen.insertInCell("Payload",System,yagUnit.getCell("Void"));
-
-  return;
-}
-
-
 ///\cond TEMPLATE
 
 
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
@@ -360,7 +319,7 @@ int pipeMagUnit(Simulation&,
 
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
@@ -368,7 +327,7 @@ int pipeMagUnit(Simulation&,
 
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
@@ -376,28 +335,28 @@ int pipeMagUnit(Simulation&,
 
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::CorrectorMag>&);
 template
 int pipeMagUnit(Simulation&,
-		attachSystem::InnerZone&,
+		attachSystem::BlockZone&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::CleaningMagnet>&);
 template
 int pipeMagGroup(Simulation&,
-		 attachSystem::InnerZone&,
+		 attachSystem::BlockZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
 		 const std::set<std::string>&,
 		 const std::string&,
@@ -406,7 +365,7 @@ int pipeMagGroup(Simulation&,
 
 template
 int pipeMagGroup(Simulation&,
-		 attachSystem::InnerZone&,
+		 attachSystem::BlockZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
 		 const std::set<std::string>&,
 		 const std::string&,
@@ -415,7 +374,7 @@ int pipeMagGroup(Simulation&,
 
 template
 int pipeMagGroup(Simulation&,
-		 attachSystem::InnerZone&,
+		 attachSystem::BlockZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
 		 const std::set<std::string>&,
 		 const std::string&,

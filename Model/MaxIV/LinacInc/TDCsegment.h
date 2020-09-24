@@ -22,6 +22,10 @@
 #ifndef tdcSystem_TDCsegment_h
 #define tdcSystem_TDCsegment_h
 
+namespace attachSystem
+{
+  class BlockZone;
+}
 namespace constructSystem
 {
   class portItem;
@@ -50,12 +54,12 @@ class TDCsegment :
  protected:
 
   /// System for building a divided inner
-  attachSystem::InnerZone* buildZone;
+  attachSystem::BlockZone* buildZone;
 
   size_t NCellInit;        ///< Cells at start of buildZone:
 
   /// System for next building a divided inner
-  attachSystem::InnerZone* nextZone;
+  attachSystem::BlockZone* nextZone;
 
   std::vector<HeadRule> joinItems;   ///< Stack of join items [multiface]
 
@@ -83,10 +87,10 @@ class TDCsegment :
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
 
   /// set the current inner zone [allows joining of segments]
-  void setInnerZone(attachSystem::InnerZone* IZPtr) { buildZone=IZPtr; }
+  void setInnerZone(attachSystem::BlockZone* IZPtr) { buildZone=IZPtr; }
 
   /// set the NEXT inner zone [allows joining of segments]
-  void setNextZone(attachSystem::InnerZone* IZPtr)
+  void setNextZone(attachSystem::BlockZone* IZPtr)
     {  nextZone=IZPtr; }
 
   /// accessor to join items
@@ -95,7 +99,7 @@ class TDCsegment :
 
   const constructSystem::portItem&
   buildIonPump2Port(Simulation&,
-		    attachSystem::InnerZone&,
+		    attachSystem::BlockZone&,
 		    MonteCarlo::Object*,
 		    const attachSystem::FixedComp&,
 		    const std::string&,

@@ -183,7 +183,6 @@ Segment10::constructHole(Simulation& System)
   return;
 }
 
-
 void
 Segment10::buildObjects(Simulation& System)
   /*!
@@ -193,6 +192,7 @@ Segment10::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment10","buildObjects");
+ /* OLD INNERZONE 
 
   int outerCell;
 
@@ -213,7 +213,7 @@ Segment10::buildObjects(Simulation& System)
 
   masterCell=nextZone->constructMasterCell(System,*pipeA,2);
   // allows the first surface of pipe to be the start of the masterCell
-  outerCell=nextZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=nextZone->createUnit(System,*pipeA,2);
 
   pipeA->insertInCell(System,outerCell);
   pipeTerminate(System,*nextZone,pipeA);
@@ -241,6 +241,7 @@ Segment10::buildObjects(Simulation& System)
   pipeTerminate(System,*nextZone,pipeC);
 
   nextZone->removeLastMaster(System);
+ */
   return;
 }
 

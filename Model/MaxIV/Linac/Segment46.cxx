@@ -36,6 +36,8 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -46,14 +48,13 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "InnerZone.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "NameStack.h"
-#include "RegMethod.h"
+#include "InnerZone.h"
+#include "BlockZone.h"
 #include "objectRegister.h"
 #include "Code.h"
 #include "varList.h"
@@ -168,7 +169,7 @@ Segment46::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
-  *IZThin = *buildZone;
+  //  *IZThin = *buildZone;
 
   if (!sideVec.empty())
     {
@@ -220,6 +221,7 @@ Segment46::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment46","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=IZThin->getMaster();
@@ -294,6 +296,7 @@ Segment46::buildObjects(Simulation& System)
 
   IZThin->removeLastMaster(System);
 
+*/
   return;
 }
 

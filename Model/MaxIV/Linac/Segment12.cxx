@@ -138,6 +138,7 @@ Segment12::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment12","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
 
@@ -214,6 +215,7 @@ Segment12::buildObjects(Simulation& System)
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
   buildZone->removeLastMaster(System);  
+*/
   return;
 }
 

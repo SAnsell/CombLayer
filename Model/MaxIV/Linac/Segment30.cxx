@@ -63,6 +63,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
 
@@ -126,7 +127,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","createSplitInnerZone");
 
-  *IZThin = *buildZone;
+  //  *IZThin = *buildZone;
 
   const double orgFrac(2.3);
   const double axisFrac(4.0);
@@ -162,12 +163,15 @@ Segment30::createSplitInnerZone(Simulation& System)
 	  TriCut*=sideVec[1]->getFullRule(-2);
 	  TriCut.addIntersection(-SNremoved);
 	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
+
+	  /*
 	  for(const int CN : buildZone->getInsertCell())
 	    {
 	      MonteCarlo::Object* outerObj=System.findObject(CN);
 	      if (outerObj)
 		outerObj->addIntersection(TriCut.complement());
 	    }
+	  */
 	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.removeOuterPlane(Origin,X,0.9);
@@ -188,6 +192,7 @@ Segment30::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment30","buildObjects");
+/* OLD INNERZONE 
 
 
   int outerCell;
@@ -221,6 +226,7 @@ Segment30::buildObjects(Simulation& System)
   pipeTerminate(System,*IZThin,pipeB);
 
   IZThin->removeLastMaster(System);
+*/
   return;
 
   return;

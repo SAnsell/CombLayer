@@ -63,6 +63,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
 
@@ -138,10 +139,10 @@ Segment29::createSplitInnerZone(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment29","createSplitInnerZone");
-
+  /*
   *IZTop = *buildZone;
   *IZMid = *buildZone;
-
+  */
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
 
@@ -188,6 +189,7 @@ Segment29::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment29","buildObjects");
+/* OLD INNERZONE 
 
   int outerCellA,outerCellB;
 
@@ -233,6 +235,7 @@ Segment29::buildObjects(Simulation& System)
   IZTop->removeLastMaster(System);
   IZMid->removeLastMaster(System);
 
+*/
   return;
 }
 

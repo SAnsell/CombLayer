@@ -150,6 +150,7 @@ Segment2::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment2","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -205,6 +206,7 @@ Segment2::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   buildZone->removeLastMaster(System);
+*/
   return;
 }
 

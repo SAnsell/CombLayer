@@ -134,6 +134,7 @@ Segment16::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment16","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -171,6 +172,7 @@ Segment16::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);
 
   buildZone->removeLastMaster(System);
+*/
   return;
 }
 

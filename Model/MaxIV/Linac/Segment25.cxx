@@ -128,6 +128,7 @@ Segment25::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment25","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
 
@@ -176,6 +177,7 @@ Segment25::buildObjects(Simulation& System)
   CellMap::addCell("BellowCell",outerCellBellow);
   buildZone->removeLastMaster(System);
 
+*/
   return;
 }
 

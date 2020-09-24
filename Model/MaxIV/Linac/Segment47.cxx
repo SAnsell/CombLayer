@@ -62,6 +62,7 @@
 #include "Simulation.h"
 #include "ContainedGroup.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
@@ -130,7 +131,7 @@ Segment47::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment47","createSplitInnerZone");
 
-  *IZThin = *buildZone;
+  //  *IZThin = *buildZone;
   if (!sideVec.empty())
     {
       HeadRule HRcut;
@@ -160,6 +161,7 @@ Segment47::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment47","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=IZThin->getMaster();
@@ -206,6 +208,7 @@ Segment47::buildObjects(Simulation& System)
     (System,*IZThin,masterCell,*bellowA,"back",*pipeE);
 
   IZThin->removeLastMaster(System);
+*/
   return;
 }
 

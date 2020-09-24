@@ -129,6 +129,7 @@ Segment18::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment18","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -162,6 +163,7 @@ Segment18::buildObjects(Simulation& System)
   const double realLen = (pipeB->getLinkPt("back") -
 			  bellowA->getLinkPt("front")).abs();
 
+*/
   return;
 }
 

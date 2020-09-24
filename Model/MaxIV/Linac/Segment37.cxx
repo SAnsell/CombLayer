@@ -110,6 +110,7 @@ Segment37::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment37","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
 
@@ -133,6 +134,7 @@ Segment37::buildObjects(Simulation& System)
     (System,*buildZone,masterCell,*ceramicB,"back",*pipe);
 
   buildZone->removeLastMaster(System);
+*/
   return;
 }
 

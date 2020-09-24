@@ -131,6 +131,7 @@ Segment43::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment43","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
   MonteCarlo::Object* masterCell=buildZone->getMaster();
@@ -169,6 +170,7 @@ Segment43::buildObjects(Simulation& System)
 
   buildZone->removeLastMaster(System);
 
+*/
   return;
 }
 

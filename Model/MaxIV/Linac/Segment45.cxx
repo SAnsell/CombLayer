@@ -175,6 +175,7 @@ Segment45::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment45","buildObjects");
+/* OLD INNERZONE 
 
   int outerCell;
 
@@ -212,6 +213,7 @@ Segment45::buildObjects(Simulation& System)
 
   buildZone->removeLastMaster(System);
 
+*/
   return;
 }
 
