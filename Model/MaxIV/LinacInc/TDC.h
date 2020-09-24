@@ -61,6 +61,10 @@ class TDC :
 
   /// Build zones;
   std::map<std::string,std::shared_ptr<attachSystem::InnerZone>> bZone;
+  /// HeadRules of original spaces:
+  std::map<int,HeadRule> originalSpaces;
+  std::map<int,HeadRule> originalFront;
+  std::set<std::string> originalFC;
   
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
@@ -68,6 +72,10 @@ class TDC :
   std::shared_ptr<attachSystem::InnerZone>
   buildInnerZone(Simulation&,const std::string&);
 
+  void setOriginalSpace(Simulation&,const std::string&,const std::string&);
+  void reconstructInjectionHall(Simulation&);
+  
+  
  public:
 
   TDC(const std::string&);

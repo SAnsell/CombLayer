@@ -90,6 +90,7 @@ class InnerZone
   void setMiddle(const HeadRule&);
   void clearDivider() { frontDivider.reset(); }
 
+  const std::string& getName() const { return FCName; }
   /// access surround
   const HeadRule& getSurround() const { return surroundHR; }
   /// access front
@@ -207,6 +208,7 @@ class InnerZone
 					  const std::string&);
   
   void removeLastMaster(Simulation&);
+  void removeLastMasterNoInsert(Simulation&);
   
   /// accessor to local master cell
   MonteCarlo::Object* getMaster() const { return masterCell; }

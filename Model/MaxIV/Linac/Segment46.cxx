@@ -174,10 +174,11 @@ Segment46::createSplitInnerZone(Simulation& System)
     {
       const TDCsegment* sideSegment=sideVec.front();
 
-      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0; // \todo: UGLY FIX
+      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
-      const Geometry::Vec3D zAxis=X*cutAxis+Z*4.0;
+      const Geometry::Vec3D zAxis=X*cutAxis.unit();
+      ELog::EM<<"Cut point == "<<cutOrg<<":"<<zAxis<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       int SNremoved(0);

@@ -320,19 +320,107 @@ TDC::buildInnerZone(Simulation& System,
   if (!voidName.empty() &&  ISet.find(regionName+voidName)==ISet.end() )
     {
       ISet.emplace(regionName+voidName);
-      buildZone->setInsertCells(injectionHall->getCells(voidName));
+      setOriginalSpace(System,voidName,frontSurfName);
+      
+      buildZone->setInsertCells(injectionHall->getCells(voidName));      
     }
 
   if (!voidNameB.empty() && ISet.find(regionName+voidNameB)==ISet.end() )
     {
       ISet.emplace(regionName+voidNameB);
+      setOriginalSpace(System,voidNameB,frontSurfName);
       buildZone->addInsertCells(injectionHall->getCells(voidNameB));
     }
+
+
   // if (mc==bZone.end())
   //   buildZone->constructMasterCell(System);
   return buildZone;
 }
 
+void
+TDC::setOriginalSpace(Simulation& System,
+		      const std::string& voidName,
+		      const std::string& frontSurfName)
+  /*!
+    Populate the original void space
+    \param System :: Simulation to use
+    \param voidName :: Void name
+  */
+{
+  ELog::RegMethod RegA("TDC","setOriginalSpace");
+  // make a list of HEADRULES
+  
+  const HeadRule FSurfHR=injectionHall->getSurfRules(frontSurfName);
+  for(const int CN : injectionHall->getCells(voidName))
+    {
+      if (originalSpaces.find(CN)==originalSpaces.end())
+	{
+	  originalFront.emplace(CN,FSurfHR);
+	  const MonteCarlo::Object* OPtr=
+	    System.findObject(CN);
+	  originalSpaces.emplace(CN,OPtr->getHeadRule());
+	}
+    }
+  return;
+}
+
+void
+TDC::reconstructInjectionHall(Simulation& System)
+  /*!
+    Regenerate injection hall
+    \param System :: simulatiion
+  */
+{
+  ELog::RegMethod RegA("TDC","reconstructInjectionHall");
+
+  HeadRule NewFR;
+  for(const std::string& SegName : {"Segment3"} )
+    {
+      SegTYPE::const_iterator fc=SegMap.find(SegName);
+      NewFR=fc->second->getFullRule("front");
+      //      ELog::EM<<"Fc["<<SegName<<"]="
+      //	      <<fc->second->getFullRule("front")<<ELog::endDiag;
+    }
+    
+  
+  for(const auto& [bName,sPtr] : bZone)
+    {
+      for(const int bCN : sPtr->getInsertCell())
+	{
+	  std::map<int,HeadRule>::iterator mc=
+	    originalSpaces.find(bCN);
+	  std::map<int,HeadRule>::iterator fc=
+	    originalFront.find(bCN);
+	  
+	  if (mc==originalSpaces.end())
+	    throw ColErr::InContainerError<int>(bCN,"BZone insertcell"); 
+
+	  HeadRule VOut(sPtr->getSurround());
+	  VOut*=sPtr->getDivider().complement();
+	  VOut*=NewFR;
+	  
+	  ELog::EM<<"VOUT["<<bCN<<"] == "<<VOut<<ELog::endDiag;
+	  //	  ELog::EM<<mc->second<<ELog::endDiag;
+	  //	  ELog::EM<<"VOL["<<bCN<<"] == "<<sPtr->getVolume()<<ELog::endDiag;
+	  //	  ELog::EM<<"EX["<<bCN<<"] == "<<sPtr->getVolumeExclude()<<ELog::endDiag;
+	  
+	  ELog::EM<<ELog::endDiag;
+	  
+	  mc->second.addIntersection(VOut.complement());
+	}
+    }
+  
+  for(const auto& [cn,orgHR] : originalSpaces)
+    {
+      MonteCarlo::Object* OPtr=System.findObject(cn);
+      OPtr->procHeadRule(orgHR);
+    }
+
+  return;
+
+}
+  
 void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
@@ -533,6 +621,8 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
+
+  reconstructInjectionHall(System);
   return;
 }
 

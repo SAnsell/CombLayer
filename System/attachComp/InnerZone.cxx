@@ -184,7 +184,7 @@ InnerZone::getVolumeExclude() const
    */
 {
   HeadRule Out(surroundHR);
-  Out*=frontHR;
+  Out *= frontHR;
   Out *= frontDivider.complement();
 
   return Out.complement();
@@ -808,7 +808,7 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   HeadRule MCell(extraHR*surroundHR*backHR*frontHR);
-  
+
   CellPtr->makeCell("MasterVoid",System,
 		    cellIndex++,voidMat,0.0,MCell.display());  
   masterCell= System.findObject(cellIndex-1);
@@ -851,6 +851,22 @@ InnerZone::removeLastMaster(Simulation& System)
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
     }
+  System.removeCell(masterCell->getName());
+  masterCell=0;
+  
+  return;
+}
+
+void
+InnerZone::removeLastMasterNoInsert(Simulation& System)
+ /*! 
+   This effectively removes the tail of the insert
+   from all of the cells. 
+ */
+{
+  ELog::RegMethod RegA("InnerZone","removeLastMaster");
+
+
   System.removeCell(masterCell->getName());
   masterCell=0;
   

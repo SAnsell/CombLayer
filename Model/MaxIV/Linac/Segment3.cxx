@@ -149,7 +149,9 @@ Segment3::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
+    {
+      masterCell=buildZone->constructMasterCell(System);
+    }
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
   

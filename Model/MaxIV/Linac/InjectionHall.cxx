@@ -347,9 +347,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 "
-     " (-1511:1522:1503) "          // gate block
-     );
+    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 ");
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
