@@ -72,7 +72,6 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "generateSurf.h"
@@ -94,6 +93,15 @@ operator<<(std::ostream& OX,const BlockZone& A)
   A.write(OX);
   return OX;
 }
+
+BlockZone::BlockZone() :
+  attachSystem::FixedComp(0,"BZtemp"),
+  attachSystem::CellMap(),
+  voidMat(0),fakeCell(0)
+  /*!
+    Simple constructor
+  */
+{}
   
 BlockZone::BlockZone(const std::string& key) :
   attachSystem::FixedComp(key,6),
@@ -105,6 +113,69 @@ BlockZone::BlockZone(const std::string& key) :
 {}
 
 
+BlockZone::BlockZone(const BlockZone& A) : 
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  surroundHR(A.surroundHR),frontHR(A.frontHR),backHR(A.backHR),
+  maxExtentHR(A.maxExtentHR),voidMat(A.voidMat),
+  fakeCell(A.fakeCell),insertCells(A.insertCells)
+  /*!
+    Copy constructor
+    \param A :: BlockZone to copy
+  */
+{}
+
+BlockZone&
+BlockZone::operator=(const BlockZone& A)
+  /*!
+    Assignment operator
+    \param A :: BlockZone to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      surroundHR=A.surroundHR;
+      frontHR=A.frontHR;
+      backHR=A.backHR;
+      maxExtentHR=A.maxExtentHR;
+      voidMat=A.voidMat;
+      fakeCell=A.fakeCell;
+      insertCells=A.insertCells;
+    }
+  return *this;
+}
+
+int
+BlockZone::merge(const BlockZone& BZ)
+  /*!
+    Merge two Block zones if BOTH have common
+    surround and if both have reversed front+back
+    \retval 1 if normal direction merge   [ this -- BZ]
+    \retval -1 if reversed direction merge [BZ -- this ]
+    \retval 0 no merge
+   */
+{
+  ELog::RegMethod RegA("BlockZone","merge");
+
+  if(surroundHR==BZ.surroundHR)
+    {
+      if (backHR==BZ.frontHR)
+	{
+	  backHR=BZ.backHR;
+	  return 1;
+	}
+
+      if (BZ.backHR==frontHR)
+	{
+	  frontHR=BZ.frontHR;
+	  return -1;
+	}
+    }
+  return 0;
+}
+  
 HeadRule
 BlockZone::getVolume() const
   /*!
@@ -113,7 +184,7 @@ BlockZone::getVolume() const
 {
   HeadRule Out(surroundHR);
   Out*=frontHR;
-  Out*=backHR;
+  Out*=backHR.complement();
   return Out;
 }
   
@@ -280,6 +351,7 @@ BlockZone::createUnit(Simulation& System,
 
   return cellIndex-1;
 }
+
 
 
 void

@@ -207,7 +207,7 @@ Segment46::createSplitInnerZone(Simulation& System)
 
       IZThin->setSurround(HSurroundB);
       IZThin->clearDivider();
-      IZThin->setInsertCells(buildZone->getInsertCell());
+      IZThin->setInsertCells(buildZone->getInsertCells());
     }
   return;
 }

@@ -50,7 +50,6 @@ namespace attachSystem
 
 class BlockZone  :
   public attachSystem::FixedComp,
-  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
@@ -73,11 +72,14 @@ class BlockZone  :
   
  public:
 
+  BlockZone();
   BlockZone(const std::string&);
   BlockZone(const BlockZone&);
   BlockZone& operator=(const BlockZone&);
   ~BlockZone() {}         ///< Destructor
 
+  int merge(const BlockZone&);
+  
   void setMaxExtent(const HeadRule&);
   void setSurround(const HeadRule&);
   void setFront(const HeadRule&);
@@ -97,7 +99,9 @@ class BlockZone  :
   void addInsertCell(const int);
   void addInsertCells(const std::vector<int>&);
 
-  std::vector<int> getInsertCell() const { return insertCells; }
+  /// Accessor to insert cellls
+  const std::vector<int>& getInsertCells() const
+  { return insertCells; }
   void write(std::ostream&) const;
 
   int createFakeCell(Simulation&);

@@ -74,7 +74,10 @@ class TDC :
   std::shared_ptr<attachSystem::BlockZone>
   buildInnerZone(Simulation&,const std::string&,const std::string&);
 
-  void setOriginalSpace(Simulation&,const std::string&,const std::string&);
+  void setVoidSpace(const Simulation&,
+		    const std::shared_ptr<attachSystem::BlockZone>&,
+		    const std::string&);
+  
   void reconstructInjectionHall(Simulation&);
   
   

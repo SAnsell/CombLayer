@@ -264,6 +264,35 @@ TDC::buildSurround(const FuncDataBase& Control,
   return mc->second;
 }
 
+void
+TDC::setVoidSpace(const Simulation& System,
+		 const std::shared_ptr<attachSystem::BlockZone>& buildZone,
+		 const std::string& voidName)
+  /*!
+    Add the void cells from the injection hall
+    \param :: Name of void space
+  */
+{
+  ELog::RegMethod RegA("TDC","addVoidCells");
+  
+  if (!voidName.empty())
+    {
+      const std::vector<int>& VCell=
+	injectionHall->getCells(voidName);
+      for(const int CN : VCell)
+	{
+	  if (originalSpaces.find(CN)==originalSpaces.end())
+	    {
+	      const MonteCarlo::Object* OPtr=System.findObject(CN);
+	      originalSpaces.emplace(CN,OPtr->getHeadRule());
+	    }
+	}
+      buildZone->addInsertCells(VCell);
+    }
+  return;
+}
+
+
 std::shared_ptr<attachSystem::BlockZone>
 TDC::buildInnerZone(Simulation& System,
 		    const std::string& segmentName,
@@ -320,12 +349,9 @@ TDC::buildInnerZone(Simulation& System,
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
-  
-  if (!voidName.empty())
-    buildZone->addInsertCells(injectionHall->getCells(voidName));
 
-  if (!voidNameB.empty())
-    buildZone->addInsertCells(injectionHall->getCells(voidNameB));
+  setVoidSpace(System,buildZone,voidName);
+  setVoidSpace(System,buildZone,voidNameB);
   
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
@@ -340,52 +366,54 @@ TDC::reconstructInjectionHall(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TDC","reconstructInjectionHall");
-  /*
-  HeadRule NewFR;
-  for(const std::string& SegName : {"Segment3"} )
+  // Make list of unique insert cells:
+  std::set<int> CInsert;
+  for(const auto& [name,bzPtr] : bZone)
     {
-      SegTYPE::const_iterator fc=SegMap.find(SegName);
-      NewFR=fc->second->getFullRule("front");
-      //      ELog::EM<<"Fc["<<SegName<<"]="
-      //	      <<fc->second->getFullRule("front")<<ELog::endDiag;
+      const std::vector<int>& CVec=bzPtr->getInsertCells();
+      for(const int CN : CVec)
+	CInsert.insert(CN);
     }
-    
-  
-  for(const auto& [bName,sPtr] : bZone)
+
+  attachSystem::BlockZone BZvol;
+  for(const int CN : CInsert)
     {
-      for(const int bCN : sPtr->getInsertCell())
+      HeadRule OuterVolume;
+      bool initFlag(1);
+      for(const auto& [name,bzPtr] : bZone)
 	{
-	  std::map<int,HeadRule>::iterator mc=
-	    originalSpaces.find(bCN);
-	  std::map<int,HeadRule>::iterator fc=
-	    originalFront.find(bCN);
-	  
-	  if (mc==originalSpaces.end())
-	    throw ColErr::InContainerError<int>(bCN,"BZone insertcell"); 
-
-	  HeadRule VOut(sPtr->getSurround());
-	  VOut*=sPtr->getDivider().complement();
-	  VOut*=NewFR;
-	  
-	  ELog::EM<<"VOUT["<<bCN<<"] == "<<VOut<<ELog::endDiag;
-	  //	  ELog::EM<<mc->second<<ELog::endDiag;
-	  //	  ELog::EM<<"VOL["<<bCN<<"] == "<<sPtr->getVolume()<<ELog::endDiag;
-	  //	  ELog::EM<<"EX["<<bCN<<"] == "<<sPtr->getVolumeExclude()<<ELog::endDiag;
-	  
-	  ELog::EM<<ELog::endDiag;
-	  
-	  mc->second.addIntersection(VOut.complement());
+	  const std::vector<int>& CVec=bzPtr->getInsertCells();
+	  if (std::find(CVec.begin(),CVec.end(),CN)!=CVec.end())
+	    {
+	      if (initFlag)
+		{
+		  BZvol=*(bzPtr);
+		  initFlag=0;
+		}
+	      else if (!BZvol.merge(*bzPtr))
+		{
+		  OuterVolume.addIntersection(BZvol.getVolume().complement());
+		  BZvol= *bzPtr;
+		}
+	    }
 	}
-    }
-  
-  for(const auto& [cn,orgHR] : originalSpaces)
-    {
-      MonteCarlo::Object* OPtr=System.findObject(cn);
-      OPtr->procHeadRule(orgHR);
-    }
-  */
-  return;
+      std::map<int,HeadRule>::iterator mc=
+	originalSpaces.find(CN);
+      
+      if (mc==originalSpaces.end())
+	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
+      
+      HeadRule HROut=mc->second;
+      HROut.addIntersection(BZvol.getVolume().complement());
+      HROut.addIntersection(OuterVolume);
 
+      MonteCarlo::Object* OPtr=System.findObject(CN);
+      OPtr->procHeadRule(HROut);
+    }
+
+
+
+  return;
 }
   
 void
@@ -578,7 +606,7 @@ TDC::createAll(Simulation& System,
 		  const TDCsegment* seg45Ptr=ci->second.get();
 		  const int SN(seg45Ptr->getLinkSurf(2));
 		  const int SNback(segPtr->getLinkSurf(2));
-		  const int CN(buildZone->getInsertCell()[0]);
+		  const int CN(buildZone->getInsertCells()[0]);
 		  MonteCarlo::Object* OPtr=System.findObject(CN);
 		  if (!OPtr)
 		    throw ColErr::InContainerError<int>
@@ -589,7 +617,7 @@ TDC::createAll(Simulation& System,
 	}
     }
 
-  //  reconstructInjectionHall(System);
+  reconstructInjectionHall(System);
   return;
 }
 

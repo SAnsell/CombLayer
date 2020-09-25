@@ -165,7 +165,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
 
 	  /*
-	  for(const int CN : buildZone->getInsertCell())
+	  for(const int CN : buildZone->getInsertCells())
 	    {
 	      MonteCarlo::Object* outerObj=System.findObject(CN);
 	      if (outerObj)
@@ -177,7 +177,7 @@ Segment30::createSplitInnerZone(Simulation& System)
       HSurroundB.removeOuterPlane(Origin,X,0.9);
       HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
       IZThin->setSurround(HSurroundB);
-      IZThin->setInsertCells(buildZone->getInsertCell());
+      IZThin->setInsertCells(buildZone->getInsertCells());
       IZThin->constructMasterCell(System);
     }
   return;
