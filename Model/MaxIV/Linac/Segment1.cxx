@@ -74,6 +74,7 @@
 #include "BlankTube.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
+#include "IonPumpTube.h"
 
 #include "LObjectSupport.h"
 #include "LObjectSupportB.h"
@@ -101,7 +102,7 @@ Segment1::Segment1(const std::string& Key) :
   pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
   cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA"))
+  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -140,7 +141,6 @@ Segment1::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment1","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
   
@@ -158,7 +158,7 @@ Segment1::buildObjects(Simulation& System)
   pipeB->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
 
-  outerCell=buildZone->createUnit(System,*pipeB,2);
+  outerCell=buildZone->createUnit(System,*pipeB,"back");
   pipeB->insertInCell(System,outerCell);
 
 
@@ -178,18 +178,11 @@ Segment1::buildObjects(Simulation& System)
   correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
   pipeTerminate(System,*buildZone,pipeF);
 
-  // FAKE INSERT REQUIRED
-  int fakeCell=buildZone->createFakeCell(System);
+  constructSystem::constructUnit
+    (System,*buildZone,*pipeF,"back",*pumpA);
 
-  pumpA->addAllInsertCell(fakeCell);
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*pipeF,"back");
   
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createUnit(System,VPB,"OuterPlate");
-  pumpA->insertAllInCell(System,outerCell);
 
-*/
   return;
 }
 
@@ -200,10 +193,11 @@ Segment1::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*pumpA,2);
 
+    //  const constructSystem::portItem& VPB=pumpA->getPort(1);
 
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+  // setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

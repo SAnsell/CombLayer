@@ -100,7 +100,6 @@ class TDCsegment :
   const constructSystem::portItem&
   buildIonPump2Port(Simulation&,
 		    attachSystem::BlockZone&,
-		    MonteCarlo::Object*,
 		    const attachSystem::FixedComp&,
 		    const std::string&,
 		    constructSystem::VirtualTube&,

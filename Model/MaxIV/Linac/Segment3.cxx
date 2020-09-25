@@ -72,6 +72,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -87,7 +88,7 @@
 #include "DipoleDIBMag.h"
 #include "CorrectorMag.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment3.h"
 
@@ -143,21 +144,13 @@ Segment3::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment3","buildObjects");
-/* OLD INNERZONE 
-
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-
-  if (!masterCell)
-    {
-      masterCell=buildZone->constructMasterCell(System);
-    }
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
   
   bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   flatA->setFront(*bellowA,"back");
@@ -178,10 +171,8 @@ Segment3::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatB,"back",*bellowB);
+    (System,*buildZone,*flatB,"back",*bellowB);
   
-  buildZone->removeLastMaster(System);  
-*/
   return;
 }
 

@@ -33,6 +33,7 @@ namespace tdcSystem
   class LQuadF;
   class CorrectorMag;
   class StriplineBPM;
+  class IonPumpTube;
   /*!
     \class Segment1
     \version 1.0
@@ -67,7 +68,7 @@ class Segment1 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagHorrC;   ///< corrector mag
   std::shared_ptr<tdcSystem::CorrectorMag> cMagVertC;   ///< corrector mag
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;
+  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
 
   void buildObjects(Simulation&);
   void createLinks();

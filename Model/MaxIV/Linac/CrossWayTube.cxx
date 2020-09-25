@@ -201,7 +201,7 @@ CrossWayTube::createSurfaces()
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*depth,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+415,Origin-Z*(depth-flangeXLength),Z);
+    (SMap,buildIndex+415,Origin-Z*(depth-flangeZLength),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+425,Origin-Z*(depth+plateThick),Z);
 

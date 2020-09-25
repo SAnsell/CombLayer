@@ -116,6 +116,7 @@
 #include "JawFlange.h"
 #include "portItem.h"
 #include "SquareFMask.h"
+#include "IonPumpTube.h"
 
 #include "makeSingleItem.h"
 
@@ -161,6 +162,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
+      "IonPTube",
       "Help","help"
     });
 
@@ -651,6 +653,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::CrossWayTube>
 	SP(new tdcSystem::CrossWayTube("CrossWay"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="IonPTube")
+    {
+      std::shared_ptr<tdcSystem::IonPumpTube>
+	SP(new tdcSystem::IonPumpTube("IonPTube"));
 
       OR.addObject(SP);
 

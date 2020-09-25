@@ -62,6 +62,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "VirtualTube.h"
 #include "BlankTube.h"
@@ -197,8 +198,7 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
 
 const constructSystem::portItem&
 TDCsegment::buildIonPump2Port(Simulation& System,
-			      attachSystem::InnerZone& buildZone,
-			      MonteCarlo::Object *masterCell,
+			      attachSystem::BlockZone& buildZone,
 			      const attachSystem::FixedComp& linkUnit,
 			      const std::string& sideName,
 			      constructSystem::VirtualTube& ionPump,
@@ -207,7 +207,10 @@ TDCsegment::buildIonPump2Port(Simulation& System,
   Build 2 port ion pump
  */
 {
-  ionPump.addAllInsertCell(masterCell->getName());
+  ELog::RegMethod RegA("TDCsegmetn","buildIonPump2Port");
+  
+  int fakeCell=buildZone.createFakeCell(System);
+  ionPump.addAllInsertCell(fakeCell);
   ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
   ionPump.createAll(System,linkUnit,sideName);
 
@@ -217,11 +220,7 @@ TDCsegment::buildIonPump2Port(Simulation& System,
 	ionPump.intersectPorts(System,i,j);
 
   const constructSystem::portItem& port=ionPump.getPort(1);
-  const int outerCell=
-    buildZone.createOuterVoidUnit(System,
-				  masterCell,
-				  port,
-				  port.getSideIndex("OuterPlate"));
+  const int outerCell=buildZone.createUnit(System,port,"OuterPlate");
   ionPump.insertAllInCell(System,outerCell);
 
   return port;
@@ -350,12 +349,13 @@ TDCsegment::initCellMap()
 {
   ELog::RegMethod RegA("TDCsegment","initCellMap");
 
+  /*
   const attachSystem::CellMap* CPtr=
     (buildZone) ? buildZone->getCellMap() :  0;
 
   NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
     ? CPtr->getNCells("OuterVoid") : 0;
-
+  */
   return;
 }
 
@@ -373,7 +373,7 @@ TDCsegment::captureCellMap()
    */
 {
   ELog::RegMethod RegA("TDCsegment","captureCellMap");
-
+  /*
   const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
   const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
     CPtr->getNCells("OuterVoid") : 0;
@@ -382,7 +382,7 @@ TDCsegment::captureCellMap()
     CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
 
   NCellInit=NCells;
-
+  */
   return;
 }
 

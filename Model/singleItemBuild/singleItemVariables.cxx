@@ -99,6 +99,7 @@
 #include "PortItemGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
+#include "IonPTubeGenerator.h"
 
 namespace setVariable
 {
@@ -250,6 +251,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
+
+  setVariable::IonPTubeGenerator IonPGen;
+  IonPGen.generateTube(Control,"IonPTube");
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;

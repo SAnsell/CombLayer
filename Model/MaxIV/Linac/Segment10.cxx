@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "generalConstruct.h"
@@ -77,7 +77,7 @@
 #include "CorrectorMag.h"
 #include "GateValveCube.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
 #include "Segment10.h"
@@ -192,14 +192,7 @@ Segment10::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment10","buildObjects");
- /* OLD INNERZONE 
-
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-  outerCell=masterCell->getName();
 
   constructHole(System);
 
@@ -211,7 +204,7 @@ Segment10::buildObjects(Simulation& System)
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
 
-  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
+  //  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
   // allows the first surface of pipe to be the start of the masterCell
   outerCell=nextZone->createUnit(System,*pipeA,2);
 
@@ -219,20 +212,20 @@ Segment10::buildObjects(Simulation& System)
   pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*pipeA,"back",*bellowA);
+    (System,*nextZone,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*bellowA,"back",*gateValve);
+    (System,*nextZone,*bellowA,"back",*gateValve);
 
   const constructSystem::portItem& VPB =
-    buildIonPump2Port(System,*nextZone,masterCell,*gateValve,"back",*pumpA);
+    buildIonPump2Port(System,*nextZone,*gateValve,"back",*pumpA);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,VPB,"OuterPlate",*pipeB);
+    (System,*nextZone,VPB,"OuterPlate",*pipeB);
 
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*pipeB,"back",*bellowB);
+    (System,*nextZone,*pipeB,"back",*bellowB);
 
 
   pipeC->createAll(System,*bellowB,"back");
@@ -240,8 +233,6 @@ Segment10::buildObjects(Simulation& System)
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVertA);
   pipeTerminate(System,*nextZone,pipeC);
 
-  nextZone->removeLastMaster(System);
- */
   return;
 }
 
@@ -260,8 +251,8 @@ Segment10::createLinks()
 
 void
 Segment10::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

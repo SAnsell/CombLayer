@@ -82,6 +82,7 @@
 #include "CleaningMagnetGenerator.h"
 #include "CrossWayGenerator.h"
 #include "PrismaChamberGenerator.h"
+#include "IonPTubeGenerator.h"
 
 namespace setVariable
 {
@@ -722,7 +723,8 @@ Segment1(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::StriplineBPMGenerator BPMGen;
-
+  setVariable::IonPTubeGenerator IonPGen;
+  
   // exactly 1m from wall.
   const Geometry::Vec3D startPt(0,0,0);
   const Geometry::Vec3D endPt(0,395.2,0);
@@ -762,24 +764,8 @@ Segment1(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
   CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
 
-  const Geometry::Vec3D OPos(0,2.0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
 
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.setCF<setVariable::CF66_TDC>();
-
-  SimpleTubeGen.setFlangeCap(setVariable::CF66_TDC::flangeLength, 0.0);  // No_1_00.pdf
-  SimpleTubeGen.generateBlank(Control,lKey+"PumpA",0.0,12.4);
-  Control.addVariable(lKey+"PumpABlankThick",0.4); // No_1_00.pdf
-  Control.addVariable(lKey+"PumpAFlangeCapMat","Stainless304L");
-
-  Control.addVariable(lKey+"PumpANPorts",2);
-
-  PItemGen.setCF<setVariable::CF35_TDC>(5.0);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,lKey+"PumpAPort0",OPos,-ZVec);
-  PItemGen.setLength(4.0);
-  PItemGen.generatePort(Control,lKey+"PumpAPort1",OPos,ZVec);
+  IonPGen.generateTube(Control,lKey+"PumpA");
 
 
   return;
@@ -1148,8 +1134,14 @@ Segment9(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CeramicGapGenerator CSGen;
+  setVariable::IonPTubeGenerator IonTGen;
 
 
+  IonTGen.setRadius(3.3);         // No_17_00.pdf
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setVertical(11.9,13.9);  // d / h 
+
+  
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
   const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
 
@@ -1163,8 +1155,9 @@ Segment9(FuncDataBase& Control,
   PGen.setNoWindow();
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
-  setIonPump2Port(Control, lKey+"PumpA");
 
+  IonTGen.generateTube(Control,lKey+"PumpA");
+  
   PGen.generatePipe(Control,lKey+"PipeA",57.8); // No_9_00.pdf
 
   CMGen.generateMag(Control,lKey+"CMagVertA",22.0,1);
@@ -1173,7 +1166,8 @@ Segment9(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowB");
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
-  PGen.setBFlange(setVariable::CF18_TDC::innerRadius+setVariable::CF18_TDC::wallThick,
+  PGen.setBFlange(setVariable::CF18_TDC::innerRadius+
+		  setVariable::CF18_TDC::wallThick,
 		  setVariable::CF18_TDC::flangeLength);
   PGen.generatePipe(Control,lKey+"PipeB",32.8);
   LQGen.generateQuad(Control,lKey+"QuadA",19.7-1.0); // -1 cm to avoit cutting the PipeB flangeB

@@ -283,7 +283,8 @@ TDC::buildInnerZone(Simulation& System,
   // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
+      //      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
+      {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid","LTVoid"}},
       {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
@@ -306,8 +307,8 @@ TDC::buildInnerZone(Simulation& System,
   const RTYPE& walls=rc->second;
   const std::string& frontSurfName=std::get<0>(walls);
   const std::string& backSurfName=std::get<1>(walls);
-  //  const std::string& voidName=std::get<2>(walls);
-  //  const std::string& voidNameB=std::get<3>(walls);
+  const std::string& voidName=std::get<2>(walls);
+  const std::string& voidNameB=std::get<3>(walls);
 
   if (bZone.find(segmentName)!=bZone.end())
     throw ColErr::InContainerError<std::string>
@@ -318,8 +319,14 @@ TDC::buildInnerZone(Simulation& System,
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
+  buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
+  
+  if (!voidName.empty())
+    buildZone->addInsertCells(injectionHall->getCells(voidName));
 
-
+  if (!voidNameB.empty())
+    buildZone->addInsertCells(injectionHall->getCells(voidNameB));
+  
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
 }
@@ -582,7 +589,7 @@ TDC::createAll(Simulation& System,
 	}
     }
 
-  reconstructInjectionHall(System);
+  //  reconstructInjectionHall(System);
   return;
 }
 

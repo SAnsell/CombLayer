@@ -63,6 +63,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -75,7 +76,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment2.h"
 
@@ -150,44 +151,40 @@ Segment2::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment2","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,*pipeA,"back",*bpmA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*bellowA);
+    (System,*buildZone,*bpmA,"back",*bellowA);
 
   pipeB->createAll(System,*bellowA,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*gateTube);
+    (System,*buildZone,*pipeB,"back",*gateTube);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateTube,"back",*pipeC);
+    (System,*buildZone,*gateTube,"back",*pipeC);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*beamArrivalMon);
+    (System,*buildZone,*pipeC,"back",*beamArrivalMon);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamArrivalMon,"back",*pipeD);
+    (System,*buildZone,*beamArrivalMon,"back",*pipeD);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*bellowB);
+    (System,*buildZone,*pipeD,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*bpmB);
+    (System,*buildZone,*bellowB,"back",*bpmB);
 
   pipeE->createAll(System,*bpmB,"back");
   pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadC);
@@ -196,7 +193,7 @@ Segment2::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeE);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeE,"back",*yagUnit);
+    (System,*buildZone,*pipeE,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -205,8 +202,6 @@ Segment2::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
-  buildZone->removeLastMaster(System);
-*/
   return;
 }
 

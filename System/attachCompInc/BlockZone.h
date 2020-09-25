@@ -95,6 +95,7 @@ class BlockZone  :
   void setInnerMat(const int M) { voidMat=M; }
 
   void addInsertCell(const int);
+  void addInsertCells(const std::vector<int>&);
 
   std::vector<int> getInsertCell() const { return insertCells; }
   void write(std::ostream&) const;

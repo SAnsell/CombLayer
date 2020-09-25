@@ -142,6 +142,17 @@ BlockZone::setFront(const HeadRule& HR)
 }
 
 void
+BlockZone::setMaxExtent(const HeadRule& HR)
+  /*!
+    Set the front facing rule AND the back rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  maxExtentHR=HR;
+  return;
+}
+
+void
 BlockZone::addInsertCell(const int CN)
   /*!
     Insert the cell [Check needed for uniqueness?]
@@ -149,6 +160,18 @@ BlockZone::addInsertCell(const int CN)
    */
 {
   insertCells.push_back(CN);
+  return;
+}
+
+void
+BlockZone::addInsertCells(const std::vector<int>& CVec)
+  /*!
+    Insert the cell [Check needed for uniqueness?]
+    \param CN :: Cell number
+   */
+{
+  for(const int CN : CVec)
+    insertCells.push_back(CN);
   return;
 }
 		 
@@ -209,6 +232,9 @@ BlockZone::createFakeCell(Simulation& System)
 
   const HeadRule Volume=surroundHR * backHR * maxExtentHR;
   makeCell("Fake",System,cellIndex+1001,voidMat,0.0,Volume);
+  ELog::EM<<"Vol = "<<Volume<<ELog::endDiag;
+  ELog::EM<<"back = "<<backHR<<ELog::endDiag;
+  ELog::EM<<"EXT = "<<maxExtentHR<<ELog::endDiag;
   fakeCell=cellIndex+1001;
   return fakeCell;
 }

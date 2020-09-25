@@ -39,8 +39,8 @@ class Segment9 :
 
   /// first bellow [actually ceramic gap]
   std::shared_ptr<tdcSystem::CeramicGap> ceramicBellowA;
-  /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;
+  /// ion pump 
+  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
