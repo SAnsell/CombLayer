@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -74,7 +74,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment11.h"
 
@@ -129,29 +129,24 @@ Segment11::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment11","buildObjects");
-  /* OLD INNERZONE 
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
+
   bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+    (System,*buildZone,*bellowA,"back",*bpm);
 
   pipeA->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
-
+    (System,*buildZone,*pipeA,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);
@@ -164,8 +159,6 @@ Segment11::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeB);
 
-  buildZone->removeLastMaster(System);
-  */
   return;
 }
 

@@ -311,6 +311,31 @@ BlockZone::createFakeCell(Simulation& System)
 }
 
 int
+BlockZone::createUnit(Simulation& System)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("BlockZone","createUnit(System)");
+
+  if (fakeCell) removeFakeCell(System);
+  // alway outgoing [so use complement]
+
+  // maxEXTENT is INWARDS FACING
+  const HeadRule newBackFC=maxExtentHR;
+
+  HeadRule Volume=surroundHR * backHR * newBackFC;
+  makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
+  backHR=newBackFC.complement();
+
+  insertCell(System,Volume);
+
+  return cellIndex-1;
+}
+
+int
 BlockZone::createUnit(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const std::string& linkName)

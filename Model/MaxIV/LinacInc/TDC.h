@@ -66,7 +66,6 @@ class TDC :
 
   /// HeadRules of original spaces:
   std::map<int,HeadRule> originalSpaces;
-  std::set<std::string> originalFC;
   
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);

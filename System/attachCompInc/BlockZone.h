@@ -106,6 +106,8 @@ class BlockZone  :
 
   int createFakeCell(Simulation&);
   
+  int createUnit(Simulation&);
+
   int createUnit(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

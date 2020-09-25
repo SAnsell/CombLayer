@@ -61,7 +61,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -73,9 +73,10 @@
 #include "FlatPipe.h"
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
+#include "IonPumpTube.h"
 
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment12.h"
 
@@ -93,7 +94,7 @@ Segment12::Segment12(const std::string& Key) :
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
-  ionPumpLA(new constructSystem::BlankTube(keyName+"IonPumpLA")),
+  ionPumpLA(new tdcSystem::IonPumpTube(keyName+"IonPumpLA")),
   pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
   bellowLB(new constructSystem::Bellows(keyName+"BellowLB")),
 
@@ -138,19 +139,14 @@ Segment12::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment12","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
 
   bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
   
   flatA->setFront(*bellowA,"back");
@@ -174,16 +170,13 @@ Segment12::buildObjects(Simulation& System)
   beamA->insertInCell("Main",System,outerCell);
 
 
-  // FAKE INSERT REQUIRED
-  ionPumpLA->addAllInsertCell(masterCell->getName());
-  ionPumpLA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  ionPumpLA->createAll(System,*bellowLA,"back");
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,*beamA,"back",*pipeLA);
 
-  const constructSystem::portItem& VPB=ionPumpLA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  ionPumpLA->insertAllInCell(System,outerCell);
   beamA->insertInCell("Main",System,outerCell);
+
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,*bellowLA,"back",*ionPumpLA);
 
   int cellA,cellB,cellC;
   cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
@@ -200,22 +193,27 @@ Segment12::buildObjects(Simulation& System)
   pipeLA->addInsertCell(cellB-1);
   pipeLA->addInsertCell(cellC);
   pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,VPB,"OuterPlate",*pipeLA);
 
+  return;
+  ELog::EM<<"LA "<<ionPumpLA->getFullRule("back")<<ELog::endDiag;
+  
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,*ionPumpLA,"back",*pipeLA);
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;
+  
   // add last bellows
   bellowRB->addInsertCell(outerCell);
   bellowRB->setFront(*flatB,"back");
   bellowRB->createAll(System,*flatB,"back");
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
+    (System,*buildZone,*pipeLA,"back",*bellowLB);
   bellowRB->insertInCell(System,outerCell);
 
+  ELog::EM<<"ASDFAF "<<ELog::endDiag;
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
-  buildZone->removeLastMaster(System);  
-*/
+
   return;
 }
 
@@ -227,8 +225,10 @@ Segment12::createLinks()
 {
   setLinkSignedCopy(0,*bellowA,1);
 
-  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
-  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
+  //  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
+  //  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
+  setLinkSignedCopy(1,*bellowA,2);  // straigh exit
+  setLinkSignedCopy(2,*bellowA,2);  // magnet exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"magnetExit");

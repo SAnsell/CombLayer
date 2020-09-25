@@ -1136,7 +1136,6 @@ Segment9(FuncDataBase& Control,
   setVariable::CeramicGapGenerator CSGen;
   setVariable::IonPTubeGenerator IonTGen;
 
-
   IonTGen.setRadius(3.3);         // No_17_00.pdf
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setVertical(11.9,13.9);  // d / h 
@@ -1198,6 +1197,11 @@ Segment10(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
+  setVariable::IonPTubeGenerator IonTGen;
+
+  IonTGen.setRadius(3.3);         // No_17_00.pdf
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setVertical(11.9,13.9);  // d / h 
 
   const Geometry::Vec3D startPt(-323.368,2710.648,0.0);
   const Geometry::Vec3D endPt(-492.992,3457.251,0.0);
@@ -1217,7 +1221,7 @@ Segment10(FuncDataBase& Control,
 
   setRecGateValve(Control, lKey+"GateValve", false);
 
-  setIonPump2Port(Control, lKey+"PumpA");
+  IonTGen.generateTube(Control,lKey+"PumpA");
 
   PGen.generatePipe(Control,lKey+"PipeB",152.1);
   setBellow26(Control,lKey+"BellowB");
@@ -1297,7 +1301,8 @@ Segment12(FuncDataBase& Control,
   setVariable::DipoleDIBMagGenerator DIBGen;
   setVariable::BeamDividerGenerator BDGen(CF63unit);
   setVariable::PipeTubeGenerator SimpleTubeGen;
-
+  setVariable::IonPTubeGenerator IonTGen;
+  
   const Geometry::Vec3D startPtA(-547.597,3697.597,0.0);
   const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 30
   const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 13
@@ -1354,29 +1359,14 @@ Segment12(FuncDataBase& Control,
   // small ion pump port:
   // -----------------------
   // horizontal off
-  const Geometry::Vec3D OPos(0.0,2.2,0.0);
-  const Geometry::Vec3D XVec(1,0,0);
-  const double outerR =
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick;
-  const double L0(8.5 - outerR);
-  const double L1(7.5 - outerR);
 
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.setCF<setVariable::CF63>();
-
-  SimpleTubeGen.generateBlank(Control,lKey+"IonPumpLA",0.0,12.5);
-  Control.addVariable(lKey+"IonPumpLANPorts",2);
-  Control.addVariable(lKey+"IonPumpLAFlangeCapThick",
-		      setVariable::CF63::flangeLength);
-  Control.addVariable(lKey+"IonPumpLAFlangeCapMat","Stainless304L");
-
-  PItemGen.setCF<setVariable::CF35_TDC>(L0); // Port0 length
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,lKey+"IonPumpLAPort0",OPos,-XVec);
-
-  PItemGen.setLength(L1);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,lKey+"IonPumpLAPort1",OPos,XVec);
+  
+  IonTGen.setCF<setVariable::CF63>();        
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setVertical(8.45,4.050);  // d / h [2.2cm]
+  IonTGen.setPortCF<setVariable::CF35_TDC>(); // Port
+  IonTGen.generateTube(Control,lKey+"IonPumpLA");
+  
 
   PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
 

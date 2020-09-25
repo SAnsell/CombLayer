@@ -76,6 +76,7 @@
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 #include "GateValveCube.h"
+#include "IonPumpTube.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -94,7 +95,7 @@ Segment10::Segment10(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gateValve(new constructSystem::GateValveCube(keyName+"GateValve")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
+  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
@@ -198,8 +199,11 @@ Segment10::buildObjects(Simulation& System)
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
+  
   pipeA->createAll(System,*this,0);
+  outerCell=buildZone->createUnit(System);
   pipeA->insertInCell(System,outerCell);
+
 
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
@@ -217,11 +221,11 @@ Segment10::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*nextZone,*bellowA,"back",*gateValve);
 
-  const constructSystem::portItem& VPB =
-    buildIonPump2Port(System,*nextZone,*gateValve,"back",*pumpA);
+  constructSystem::constructUnit
+    (System,*nextZone,*gateValve,"back",*pumpA);
 
   constructSystem::constructUnit
-    (System,*nextZone,VPB,"OuterPlate",*pipeB);
+    (System,*nextZone,*pumpA,"back",*pipeB);
 
 
   constructSystem::constructUnit
@@ -244,6 +248,8 @@ Segment10::createLinks()
 {
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeC,2);
+
+  //  setLinkSignedCopy(1,*pipeA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

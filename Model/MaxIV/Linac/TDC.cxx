@@ -316,7 +316,7 @@ TDC::buildInnerZone(Simulation& System,
       {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid","LTVoid"}},
-      {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoid"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
@@ -346,6 +346,7 @@ TDC::buildInnerZone(Simulation& System,
   std::shared_ptr<attachSystem::BlockZone> buildZone=
     std::make_shared<attachSystem::BlockZone>(segmentName);
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
+  ELog::EM<<"SRUF["<<segmentName<<"] ="<<injectionHall->getSurfRules(frontSurfName)<<ELog::endDiag;
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
@@ -356,7 +357,6 @@ TDC::buildInnerZone(Simulation& System,
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
 }
-
 
 void
 TDC::reconstructInjectionHall(Simulation& System)
@@ -514,7 +514,10 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
+
   // special case of Segment10 : Segment26/27/28/29
+  std::shared_ptr<attachSystem::BlockZone> seg10Zone;
+    
   for(const std::string& BL : buildOrder)
     {
       if (activeINJ.find(BL)!=activeINJ.end())
@@ -598,6 +601,18 @@ TDC::createAll(Simulation& System,
 	  if (pointCheck)
 	    segPtr->writePoints();
 
+
+	  if (BL=="Segment10")
+	    // SPECIAL CASE : Addition of pipe to TVoid cell
+	    // as it is not in a buildZone
+	    {
+	      const int CN=injectionHall->getCell("TVoid");
+	      std::map<int,HeadRule>::iterator mc= originalSpaces.find(CN);
+	      const MonteCarlo::Object* OPtr=System.findObject(CN);
+	      mc->second=OPtr->getHeadRule();
+	    }
+
+
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment45");
@@ -618,6 +633,9 @@ TDC::createAll(Simulation& System,
     }
 
   reconstructInjectionHall(System);
+
+  
+
   return;
 }
 

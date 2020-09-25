@@ -30,7 +30,8 @@ namespace constructSystem
 
 namespace tdcSystem
 {
-
+  class IonPumpTube;
+  
   /*!
     \class Segment10
     \version 1.0
@@ -56,7 +57,7 @@ class Segment10 :
   std::shared_ptr<constructSystem::GateValveCube> gateValve;
 
   /// ion pump [rotated]
-  std::shared_ptr<constructSystem::BlankTube> pumpA;
+  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
 
   /// connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
