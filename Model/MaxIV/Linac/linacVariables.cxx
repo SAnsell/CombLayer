@@ -1366,7 +1366,8 @@ Segment12(FuncDataBase& Control,
   IonTGen.setVertical(8.45,4.050);  // d / h [2.2cm]
   IonTGen.setPortCF<setVariable::CF35_TDC>(); // Port
   IonTGen.generateTube(Control,lKey+"IonPumpLA");
-  
+  // remember to re-rotate next item
+  Control.addVariable(lKey+"IonPumpLAYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
 

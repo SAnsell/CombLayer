@@ -169,18 +169,17 @@ Segment12::buildObjects(Simulation& System)
   outerCell=pipeTerminate(System,*buildZone,bellowLA);
   beamA->insertInCell("Main",System,outerCell);
 
-
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,*beamA,"back",*pipeLA);
-
-  beamA->insertInCell("Main",System,outerCell);
-
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*bellowLA,"back",*ionPumpLA);
+  ionPumpLA->insertInCell(System,outerCell);
+  // note this is a double insert 
+  beamA->insertInCell("Main",System,outerCell);
+  
 
   int cellA,cellB,cellC;
   cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
 					{"Main","FlangeB"});
+
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
 
@@ -189,28 +188,18 @@ Segment12::buildObjects(Simulation& System)
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
   cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
+
   pipeLA->addInsertCell(cellA);
   pipeLA->addInsertCell(cellB-1);
   pipeLA->addInsertCell(cellC);
   pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
-
-  return;
-  ELog::EM<<"LA "<<ionPumpLA->getFullRule("back")<<ELog::endDiag;
-  
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ionPumpLA,"back",*pipeLA);
-  ELog::EM<<"ASDFAF "<<ELog::endDiag;
-  
-  // add last bellows
-  bellowRB->addInsertCell(outerCell);
-  bellowRB->setFront(*flatB,"back");
-  bellowRB->createAll(System,*flatB,"back");
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,*pipeLA,"back",*bellowLB);
+    (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
   bellowRB->insertInCell(System,outerCell);
 
-  ELog::EM<<"ASDFAF "<<ELog::endDiag;
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
 
