@@ -91,6 +91,7 @@
 #include "EBeamStop.h"
 #include "SixPortTube.h"
 #include "CrossWayTube.h"
+#include "CrossWayBlank.h"
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
@@ -156,7 +157,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
-      "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay",
+      "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
@@ -653,6 +654,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::CrossWayTube>
 	SP(new tdcSystem::CrossWayTube("CrossWay"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="CrossBlank")
+    {
+      std::shared_ptr<tdcSystem::CrossWayBlank>
+	SP(new tdcSystem::CrossWayBlank("CrossBlank"));
 
       OR.addObject(SP);
 

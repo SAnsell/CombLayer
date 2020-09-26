@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonGeneratorInc/CrossWayGenerator.h
+ * File:   LinacInc/CrossWayBlank.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,26 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_CrossWayGenerator_h
-#define setVariable_CrossWayGenerator_h
+#ifndef tdcSystem_CrossWayBlank_h
+#define tdcSystem_CrossWayBlank_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+
+namespace tdcSystem
 {
 
-/*!
-  \class CrossWayGenerator
+  /*!
+  \class CrossWayBlank
   \version 1.0
   \author S. Ansell
-  \date April 2020
-  \brief CrossWayGenerator for variables
+  \date May 2020
+
+  \brief CrossWayBlank for Max-IV
 */
 
-class CrossWayGenerator 
+class CrossWayBlank :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
-  
+
   double radius;                ///< void radius
   double xRadius;               ///< radius of x port 
   double yRadius;               ///< radiu of Y (Beam) port
@@ -50,8 +57,8 @@ class CrossWayGenerator
 
   double frontLength;           ///< full to flange length (-ve Y)
   double backLength;            ///< full to flange length
-  double sideALength;           ///< full to flange length
-  double sideBLength;           ///< full to flange length
+  double sideALength;            ///< full to flange length
+  double sideBLength;            ///< full to flange length
 
   double flangeXRadius;         ///< Joining Flange radius
   double flangeYRadius;         ///< Joining Flange radius
@@ -63,28 +70,26 @@ class CrossWayGenerator
   
   double plateThick;            ///< Joining Flange radius
 
-  std::string voidMat;          ///< void material
-  std::string wallMat;          ///< main material
-  std::string plateMat;         ///< plate material
+  int voidMat;                  ///< void material
+  int wallMat;                  ///< main material
+  int plateMat;                 ///< plate material
  
+  void populate(const FuncDataBase&);  
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+
  public:
 
-  CrossWayGenerator();
-  CrossWayGenerator(const CrossWayGenerator&);
-  CrossWayGenerator& operator=(const CrossWayGenerator&);
-  virtual ~CrossWayGenerator();
+  CrossWayBlank(const std::string&);
+  CrossWayBlank(const std::string&,const std::string&);
+  CrossWayBlank(const CrossWayBlank&);
+  CrossWayBlank& operator=(const CrossWayBlank&);
+  virtual ~CrossWayBlank();
 
-  template<typename T> void setCF();
-  template<typename T> void setFlangeCF();
-  template<typename CF> void setPortCF();
-  template<typename CF> void setCrossCF();
-  void setMainLength(const double,const double);
-  void setPortLength(const double,const double);
-  void setCrossLength(const double,const double);
-
-  
-  void generateCrossWay(FuncDataBase&,
-		       const std::string&) const;
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Linac/CrossWayTube.cxx
+ * File:   Linac/CrossWayBlank.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "CrossWayTube.h"
+#include "CrossWayBlank.h"
 
 namespace tdcSystem
 {
 
-CrossWayTube::CrossWayTube(const std::string& Key) :
+CrossWayBlank::CrossWayBlank(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -98,20 +98,20 @@ CrossWayTube::CrossWayTube(const std::string& Key) :
 {}
 
 
-CrossWayTube::~CrossWayTube() 
+CrossWayBlank::~CrossWayBlank() 
   /*!
     Destructor
   */
 {}
 
 void
-CrossWayTube::populate(const FuncDataBase& Control)
+CrossWayBlank::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("CrossWayTube","populate");
+  ELog::RegMethod RegA("CrossWayBlank","populate");
 
   FixedRotate::populate(Control);
 
@@ -145,12 +145,12 @@ CrossWayTube::populate(const FuncDataBase& Control)
 
 
 void
-CrossWayTube::createSurfaces()
+CrossWayBlank::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CrossWayTube","createSurfaces");
+  ELog::RegMethod RegA("CrossWayBlank","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -202,9 +202,7 @@ CrossWayTube::createSurfaces()
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*depth,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+415,Origin-Z*(depth-flangeZLength),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+425,Origin-Z*(depth+plateThick),Z);
+    (SMap,buildIndex+425,Origin-Z*(depth+wallThick),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*height,Z);
   ModelSupport::buildPlane
@@ -220,13 +218,13 @@ CrossWayTube::createSurfaces()
 }
 
 void
-CrossWayTube::createObjects(Simulation& System)
+CrossWayBlank::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CrossWayTube","createObjects");
+  ELog::RegMethod RegA("CrossWayBlank","createObjects");
 
   std::string Out;
   
@@ -281,11 +279,8 @@ CrossWayTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 317");
   makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
-  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -405");
-  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -417 425 -405");
+  makeCell("LowPlate",System,cellIndex++,wallMat,0.0,Out);
 
   // TOP
   Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 7 307 ");
@@ -304,7 +299,7 @@ CrossWayTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -327 313 -314 17 417 317 ");
   makeCell("HorOuter",System,cellIndex++,0,0.0,Out);
   // vert void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417 327 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -416 17 417 327 ");
   if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
     {
       if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
@@ -325,6 +320,18 @@ CrossWayTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 200 17 327 427 -207 -202 ");
   makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
 
+    // extra under void [if both cross and port flanges are too big]
+  if ((depth+wallThick<flangeXRadius-Geometry::zeroTol) &&
+      (depth+wallThick<flangeYRadius-Geometry::zeroTol) )
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"101 -202 -427 -107  -425");
+      makeCell("BaseExtra",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"-417 -327 107 -425");
+      makeCell("BaseExtra",System,cellIndex++,0,0.0,Out);
+    }
+
   // outer void box:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
   addOuterSurf(Out+frontStr+backStr);
@@ -337,12 +344,12 @@ CrossWayTube::createObjects(Simulation& System)
 }
 
 void 
-CrossWayTube::createLinks()
+CrossWayBlank::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("CrossWayTube","createLinks");
+  ELog::RegMethod RegA("CrossWayBlank","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -363,7 +370,7 @@ CrossWayTube::createLinks()
 }
 
 void
-CrossWayTube::createAll(Simulation& System,
+CrossWayBlank::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -373,7 +380,7 @@ CrossWayTube::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("CrossWayTube","createAll");
+  ELog::RegMethod RegA("CrossWayBlank","createAll");
   
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,2.0*frontLength);

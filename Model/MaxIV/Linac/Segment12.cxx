@@ -197,7 +197,7 @@ Segment12::buildObjects(Simulation& System)
     (System,*buildZone,*ionPumpLA,"back",*pipeLA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeLA,"back",*bellowLB);
+    (System,*buildZone,*pipeLA,"back",*bellowLB);
   bellowRB->insertInCell(System,outerCell);
 
   // transfer to segment 13

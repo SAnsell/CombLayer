@@ -64,7 +64,8 @@ CrossWayGenerator::CrossWayGenerator() :
   yRadius(CF40::innerRadius),
   wallThick(CF63::wallThick),
   height(12.5),depth(8.3),
-  frontLength(6.8),backLength(6.8),sideLength(6.8),
+  frontLength(6.8),backLength(6.8),
+  sideALength(6.8),sideBLength(6.8),
   flangeXRadius(CF40::flangeRadius),
   flangeYRadius(CF40::flangeRadius),
   flangeZRadius(CF63::flangeRadius),
@@ -89,15 +90,15 @@ template<typename CF>
 void
 CrossWayGenerator::setCF()
   /*!
-    Setter for flange A
+    Setter for up/down flanges
    */
 {
   radius=CF::innerRadius;
-  xRadius=CF::innerRadius;
-  yRadius=CF::innerRadius;
   wallThick=CF::wallThick;
-
-  setFlangeCF<CF>();
+  
+  flangeZRadius=CF::flangeRadius;
+  flangeZLength=CF::flangeLength;
+  
   return;
 }
 
@@ -117,8 +118,47 @@ CrossWayGenerator::setFlangeCF()
   return;
 }
 
+template<typename CF>
 void
-CrossWayGenerator::setMainLength(const double F,const double B)
+CrossWayGenerator::setPortCF()
+  /*!
+    Setter for flange A
+   */
+{
+  yRadius=CF::innerRadius;
+  flangeYLength=CF::flangeLength;  
+  flangeYRadius=CF::flangeRadius;
+  return;
+}
+
+template<typename CF>
+void
+CrossWayGenerator::setCrossCF()
+  /*!
+    Setter for flange A
+   */
+{
+  xRadius=CF::innerRadius;
+  flangeXLength=CF::flangeLength;  
+  flangeXRadius=CF::flangeRadius;
+  return;
+}
+
+void
+CrossWayGenerator::setMainLength(const double D,const double H)
+  /*!
+    Set the main height/depth
+    \param D :: Depth
+    \param H :: Height
+  */
+{
+  height=H;
+  depth=D;
+  return;
+}
+
+void
+CrossWayGenerator::setPortLength(const double F,const double B)
   /*!
     Setter for front / back port length
     \param F :: Front length
@@ -127,6 +167,19 @@ CrossWayGenerator::setMainLength(const double F,const double B)
 {
   frontLength=F;
   backLength=B;
+  return;
+}
+
+void
+CrossWayGenerator::setCrossLength(const double XA,const double XB)
+  /*!
+    Setter for front / back port length
+    \param XA :: Front length
+    \param XB :: Back length
+  */
+{
+  sideALength=XA;
+  sideBLength=XB;
   return;
 }
 
@@ -150,7 +203,8 @@ CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
-  Control.addVariable(keyName+"SideLength",sideLength);
+  Control.addVariable(keyName+"SideALength",sideALength);
+  Control.addVariable(keyName+"SideBLength",sideBLength);
 
   Control.addVariable(keyName+"FlangeXRadius",flangeXRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);
@@ -172,6 +226,12 @@ CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void CrossWayGenerator::setPortCF<CF16_TDC>();
+template void CrossWayGenerator::setPortCF<CF35_TDC>();
+
+template void CrossWayGenerator::setCrossCF<CF16_TDC>();
+template void CrossWayGenerator::setCrossCF<CF35_TDC>();
+  
 template void CrossWayGenerator::setCF<CF35_TDC>();
 template void CrossWayGenerator::setCF<CF63>();
 template void CrossWayGenerator::setCF<CF100>();

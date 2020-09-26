@@ -658,6 +658,7 @@ setMirrorChamberBlank(FuncDataBase& Control,
   Set the blank Mirror Chamber (4 port pipe) variables
   \param Control :: DataBase to use
   \param name :: name prefix
+  \todo REMOVE
  */
 {
   ELog::RegMethod RegA("linacVariables[F]","setMirrorChamberBlank");
@@ -1366,7 +1367,7 @@ Segment12(FuncDataBase& Control,
   IonTGen.setVertical(8.45,4.050);  // d / h [2.2cm]
   IonTGen.setPortCF<setVariable::CF35_TDC>(); // Port
   IonTGen.generateTube(Control,lKey+"IonPumpLA");
-  // remember to re-rotate next item
+  // remember to re-rotate next item:
   Control.addVariable(lKey+"IonPumpLAYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
@@ -1505,6 +1506,8 @@ Segment15(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::CrossWayGenerator MSPGen;
+
 
   const Geometry::Vec3D startPt(-637.608,4507.259,0.0);
   const Geometry::Vec3D endPt(-637.608,4730.259,0.0);
@@ -1512,14 +1515,23 @@ Segment15(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
+  MSPGen.setPortLength(6.3,6.3);
+    
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",22.0); // measured
 
   // Mirror chamber
-  setMirrorChamberBlank(Control, lKey+"MirrorChamber");
-  Control.addVariable(lKey+"MirrorChamberYAngle", -90.0);
+
+  MSPGen.setCF<CF63>();
+  MSPGen.setMainLength(2.4,13.6);
+  MSPGen.setPortLength(5.9,8.1);
+  MSPGen.setCrossLength(6.25,6.25);
+  MSPGen.setPortCF<CF35_TDC>();
+  MSPGen.setCrossCF<CF35_TDC>();
+  MSPGen.generateCrossWay(Control,lKey+"MirrorChamber");
+  //  Control.addVariable(lKey+"MirrorChamberYAngle", -90.0);
 
   YagUnitGen.setCF<CF63>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -3144,7 +3156,7 @@ Segment46(FuncDataBase& Control,
 
   PGen.setNoWindow();
 
-  MSPGen.setMainLength(6.3,6.3);
+  MSPGen.setPortLength(6.3,6.3);
   //  MSPGen.setCF<CF35_TDC>();
 
   PGen.setCF<setVariable::CF35_TDC>();
@@ -3173,6 +3185,7 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"PrismaChamberYAngle",180.0);
 
   // Mirror Chambers
+  
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberA");
   Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
 

@@ -252,6 +252,15 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
 
+  setVariable::CrossWayGenerator CWBlankGen;
+  CWBlankGen.setCF<CF63>();
+  CWBlankGen.setMainLength(2.4,13.6);
+  CWBlankGen.setPortLength(5.9,8.1);
+  CWBlankGen.setCrossLength(6.25,6.25);
+  CWBlankGen.setPortCF<CF35_TDC>();
+  CWBlankGen.setCrossCF<CF35_TDC>();
+  CWBlankGen.generateCrossWay(Control,"CrossBlank");
+
   setVariable::IonPTubeGenerator IonPGen;
   IonPGen.generateTube(Control,"IonPTube");
 
