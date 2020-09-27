@@ -265,15 +265,43 @@ TDC::buildSurround(const FuncDataBase& Control,
 }
 
 void
-TDC::setVoidSpace(const Simulation& System,
-		 const std::shared_ptr<attachSystem::BlockZone>& buildZone,
-		 const std::string& voidName)
+TDC::setSegmentSpace(const Simulation& System,
+		     const std::shared_ptr<TDCsegment>& segPtr,
+		     const std::string& voidName)
   /*!
-    Add the void cells from the injection hall
+    Add the void cells from the injection hall into a segment
+    \param System :: simulation
+    \param segPtr :: Insert unit
     \param :: Name of void space
   */
 {
-  ELog::RegMethod RegA("TDC","addVoidCells");
+  ELog::RegMethod RegA("TDC","setSegmentSpace");
+
+  ELog::EM<<"Segment == "<<voidName<<" === "<<ELog::endDiag;
+    
+  if (!voidName.empty())
+    {
+      ELog::EM<<"HERE "<<ELog::endDiag;
+      const std::vector<int>& VCell=
+	injectionHall->getCells(voidName);
+      segPtr->addInsertCell(VCell);
+    }
+  return;
+}
+  
+
+void
+TDC::setVoidSpace(const Simulation& System,
+		  const std::shared_ptr<attachSystem::BlockZone>& buildZone,
+		  const std::string& voidName)
+  /*!
+    Add the void cells from the injection hall
+    \param System :: simulation
+    \param buildZone :: BuildZone
+    \param :: Name of void space
+  */
+{
+  ELog::RegMethod RegA("TDC","setVoidSpace");
   
   if (!voidName.empty())
     {
@@ -296,6 +324,7 @@ TDC::setVoidSpace(const Simulation& System,
 std::shared_ptr<attachSystem::BlockZone>
 TDC::buildInnerZone(Simulation& System,
 		    const std::string& segmentName,
+		    const std::shared_ptr<TDCsegment>& segPtr,
 		    const std::string& regionName)
   /*!
     Set the regional buildzone
@@ -320,7 +349,7 @@ TDC::buildInnerZone(Simulation& System,
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfLong"  ,{"TDCLong","#Back","",""}},
+      {"spfLong"  ,{"TDCLong","#Back","LongVoid",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
@@ -346,13 +375,18 @@ TDC::buildInnerZone(Simulation& System,
   std::shared_ptr<attachSystem::BlockZone> buildZone=
     std::make_shared<attachSystem::BlockZone>(segmentName);
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
-  ELog::EM<<"SRUF["<<segmentName<<"] ="<<injectionHall->getSurfRules(frontSurfName)<<ELog::endDiag;
   buildZone->setSurround
     (buildSurround(Control,regionName,"Origin"));
   buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
 
   setVoidSpace(System,buildZone,voidName);
   setVoidSpace(System,buildZone,voidNameB);
+
+  if (segmentName == "Segment26")
+    {
+      ELog::EM<<"Call Space:"<<regionName<<ELog::endDiag;
+      setSegmentSpace(System,segPtr,voidName);
+    }
   
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
@@ -537,7 +571,7 @@ TDC::createAll(Simulation& System,
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
 
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
-	    buildInnerZone(System,BL,bzName);
+	    buildInnerZone(System,BL,segPtr,bzName);
 
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
@@ -546,7 +580,7 @@ TDC::createAll(Simulation& System,
 	  if (BL=="Segment10")
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=
-		buildInnerZone(System,"Segment10B","tdcFront");
+		buildInnerZone(System,"Segment10B",segPtr,"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")

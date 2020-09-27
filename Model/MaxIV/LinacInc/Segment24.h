@@ -39,7 +39,7 @@ class Segment24 :
  private:
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #1 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #3 Ion Pump 75l cf63
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #3 Ion Pump 75l cf63
   std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;         ///< #6 Horizontal corrector magnet

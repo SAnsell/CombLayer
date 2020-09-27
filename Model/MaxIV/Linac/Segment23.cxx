@@ -56,7 +56,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -65,7 +65,7 @@
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "NameStack.h"
@@ -142,15 +142,11 @@ Segment23::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment23","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   pipeA->createAll(System,*bellowA, "back");
@@ -159,10 +155,10 @@ Segment23::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+    (System,*buildZone,*pipeA,"back",*bpm);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*bellowB);
+    (System,*buildZone,*bpm,"back",*bellowB);
 
   pipeB->createAll(System,*bellowB, "back");
 
@@ -170,7 +166,7 @@ Segment23::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+    (System,*buildZone,*pipeB,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -180,17 +176,14 @@ Segment23::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*pipeC);
+    (System,*buildZone,*yagUnit,"back",*pipeC);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*gate);
+    (System,*buildZone,*pipeC,"back",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*bellowC);
+    (System,*buildZone,*gate,"back",*bellowC);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 

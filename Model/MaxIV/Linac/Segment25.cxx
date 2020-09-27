@@ -58,7 +58,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -69,7 +69,7 @@
 #include "SixPortTube.h"
 #include "MultiPipe.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment25.h"
 
@@ -80,9 +80,9 @@ namespace tdcSystem
 
 Segment25::Segment25(const std::string& Key) :
   TDCsegment(Key,6),
-  IZTop(new attachSystem::InnerZone(*this,cellIndex)),
-  IZMid(new attachSystem::InnerZone(*this,cellIndex)),
-  IZLower(new attachSystem::InnerZone(*this,cellIndex)),
+  IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
+  IZMid(new attachSystem::BlockZone(keyName+"IZMid")),
+  IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   triPipeA(new tdcSystem::TriPipe(keyName+"TriPipeA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
@@ -128,17 +128,12 @@ Segment25::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment25","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   bellowA->createAll(System,*this,0);
 
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   triPipeA->setFront(*bellowA,2);
@@ -150,14 +145,14 @@ Segment25::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*triPipeA,"back",*pipeB);
+    (System,*buildZone,*triPipeA,"back",*pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*sixPortA);
+    (System,*buildZone,*pipeB,"back",*sixPortA);
 
   const int outerCellMulti=
     constructSystem::constructUnit
-    (System,*buildZone,masterCell,*sixPortA,"back",*multiPipe);
+    (System,*buildZone,*sixPortA,"back",*multiPipe);
 
   // BELLOWS:
   bellowAA->createAll(System,*multiPipe,2);
@@ -168,16 +163,14 @@ Segment25::buildObjects(Simulation& System)
   bellowCA->createAll(System,*multiPipe,4);
 
   const int outerCellBellow=
-    buildZone->createOuterVoidUnit(System,masterCell,*bellowAA,2);
+    buildZone->createUnit(System,*bellowAA,2);
   bellowAA->insertInCell(System,outerCellBellow);
   bellowBA->insertInCell(System,outerCellBellow);
   bellowCA->insertInCell(System,outerCellBellow);
 
   CellMap::addCell("MultiCell",outerCellMulti);
   CellMap::addCell("BellowCell",outerCellBellow);
-  buildZone->removeLastMaster(System);
 
-*/
   return;
 }
 
@@ -194,11 +187,11 @@ Segment25::constructVoid(Simulation& System,
     dynamic_cast<const attachSystem::CellMap*>(&FC);
   if (CPtr)
     {
-      const HeadRule volHR=IZTop->getVolumeExclude();
+      const HeadRule volHR=IZTop->getVolume();
 
-      CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZMid->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZLower->getVolumeExclude());
+      CPtr->insertComponent(System,"LongVoid",IZTop->getVolume());
+      CPtr->insertComponent(System,"LongVoid",IZMid->getVolume());
+      CPtr->insertComponent(System,"LongVoid",IZLower->getVolume());
     }
   return;
 }
@@ -243,7 +236,7 @@ Segment25::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  constructVoid(System,FC);
+  //  constructVoid(System,FC);
   return;
 }
 

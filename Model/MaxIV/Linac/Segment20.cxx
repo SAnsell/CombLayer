@@ -57,7 +57,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
 
@@ -106,29 +106,21 @@ Segment20::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment20","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
-  cavity->createAll(System,*pipeA,"back");
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*cavity,2);
-  cavity->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,*buildZone,*pipeA,"back",*cavity);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*cavity,"back",*pipeB);
+    (System,*buildZone,*cavity,"back",*pipeB);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 
