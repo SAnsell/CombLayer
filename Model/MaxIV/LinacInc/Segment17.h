@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class IonPumpTube;
   /*!
     \class Segment17
     \version 1.0
@@ -39,7 +40,7 @@ class Segment17 :
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #2
-  std::shared_ptr<constructSystem::BlankTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;       ///< #4 Ion pump 75l cf63
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
   void buildObjects(Simulation&);

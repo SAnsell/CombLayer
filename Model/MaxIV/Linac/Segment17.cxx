@@ -58,15 +58,13 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
+#include "IonPumpTube.h"
 
 #include "TDCsegment.h"
 #include "Segment17.h"
@@ -80,7 +78,7 @@ Segment17::Segment17(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
   /*!
     Constructor
@@ -113,29 +111,22 @@ Segment17::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment17","buildObjects");
-/* OLD INNERZONE 
-
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   pipeA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
-
-  const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*ionPump);
+    (System,*buildZone,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeB);
+    (System,*buildZone,*bellowA,"back",*ionPump);
 
-  buildZone->removeLastMaster(System);
 
-*/
+  constructSystem::constructUnit
+    (System,*buildZone,*ionPump,"back",*pipeB);
+
   return;
 }
 
