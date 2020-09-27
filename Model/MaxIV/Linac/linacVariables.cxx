@@ -83,6 +83,7 @@
 #include "CrossWayGenerator.h"
 #include "PrismaChamberGenerator.h"
 #include "IonPTubeGenerator.h"
+#include "GaugeGenerator.h"
 
 namespace setVariable
 {
@@ -91,8 +92,10 @@ namespace linacVar
 {
   void wallVariables(FuncDataBase&,const std::string&);
   void setIonPump2Port(FuncDataBase&,const std::string&,const double);
-  
   void setIonPump1Port(FuncDataBase&,const std::string&);
+  void setGauge34(FuncDataBase&,const std::string&);
+  void setGauge37(FuncDataBase&,const std::string&);
+
 
   //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
@@ -104,10 +107,6 @@ namespace linacVar
 		       const double,const bool);
   void setFlat(FuncDataBase&,const std::string&,
 	       const double,const double);
-  void setGauge34(FuncDataBase&,const std::string&,
-		const double);
-  void setGauge37(FuncDataBase&,const std::string&,
-		const double);
   void setBellow26(FuncDataBase&,const std::string&,
 		 const double);
   void setBellow37(FuncDataBase&,const std::string&,
@@ -172,26 +171,19 @@ void
 setIonPump1Port(FuncDataBase& Control,
 		const std::string& name)
 /*!
-  Set the 1 port ion pump variables
+  Set the 1 port ion pump variables [GaugeTube]
   \param Control :: DataBase to use
   \param name :: name prefix
-  \param nPorts :: number of ports
  */
 {
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
+  setVariable::GaugeGenerator GGen;
+  
+  GGen.setCF<CF37_TDC>();
+  GGen.setLength(12.6);
+  GGen.setSidePortCF<setVariable::CF37_TDC>(6.95);
+  GGen.setPlateThick(setVariable::CF37_TDC::flangeLength,"Stainless304L");
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  SimpleTubeGen.setCF<CF37_TDC>();
-  SimpleTubeGen.setMat("Stainless304L"); // mat checked
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // measured
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF37_TDC>(5.1); // measured
-  PItemGen.setPlate(setVariable::CF37_TDC::flangeLength, "Stainless304L"); // mat checked
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
+  GGen.generateGauge(Control,name,0.0,180.0);  
 
   return;
 }
@@ -487,23 +479,15 @@ setGauge34(FuncDataBase& Control,
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setGauge");
+  ELog::RegMethod RegA("linacVariables[F]","setGauge34");
 
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
+  setVariable::GaugeGenerator GGen;
+  GGen.setCF<CF34_TDC>();
+  GGen.setLength(12.6);
+  GGen.setSidePortCF<setVariable::CF34_TDC>(6.95);
+  GGen.setPlateThick(setVariable::CF34_TDC::flangeLength,"Stainless304L");
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  SimpleTubeGen.setCF<CF34_TDC>();
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // 12.596
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF34_TDC>(5.1); // measured in segment 19
-  PItemGen.setPlate(setVariable::CF34_TDC::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
-
+  GGen.generateGauge(Control,name,0.0,0.0);  
   return;
 }
 
@@ -516,23 +500,16 @@ setGauge37(FuncDataBase& Control,
   \param name :: name prefix
  */
 {
-  ELog::RegMethod RegA("linacVariables[F]","setGauge");
+  ELog::RegMethod RegA("linacVariables[F]","setGauge37");
 
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
+  setVariable::GaugeGenerator GGen;
+  
+  GGen.setCF<CF37_TDC>();
+  GGen.setLength(12.6);
+  GGen.setSidePortCF<setVariable::CF37_TDC>(6.95);
+  GGen.setPlateThick(setVariable::CF37_TDC::flangeLength,"Stainless304L");
 
-  const Geometry::Vec3D OPos(0,0.0,0);
-  const Geometry::Vec3D XVec(1,0,0);
-
-  SimpleTubeGen.setCF<CF37_TDC>();
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateTube(Control,name,0.0,12.6); // 12.596
-
-  Control.addVariable(name+"NPorts",1);
-  PItemGen.setCF<setVariable::CF37_TDC>(5.1); // measured in segment 19
-  PItemGen.setPlate(setVariable::CF37_TDC::flangeLength, "Stainless304L");
-  PItemGen.generatePort(Control,name+"Port0",OPos,XVec);
-
+  GGen.generateGauge(Control,name,0.0,0.0);  
   return;
 }
 

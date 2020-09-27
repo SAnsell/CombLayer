@@ -24,12 +24,13 @@
 
 namespace tdcSystem
 {
+  class GaugeTube;
   /*!
     \class Segment19
     \version 1.0
     \author K. Batkov
     \date May 2020
-    \brief TDC segment 15
+    \brief TDC segment 19 
   */
 
 class Segment19 :
@@ -38,9 +39,9 @@ class Segment19 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellow
-  std::shared_ptr<constructSystem::PipeTube> gauge;        ///< #3 Vacuum gauge PTR18751
+  std::shared_ptr<tdcSystem::GaugeTube> gauge;        ///< #3 Vacuum gauge PTR18751
   std::shared_ptr<constructSystem::GateValveCube> gateA;   ///< #4 Fast closing valve
-  std::shared_ptr<constructSystem::PipeTube> ionPump;     ///< #4 Ion pump 45l cf40
+  std::shared_ptr<tdcSystem::GaugeTube> ionPump;     ///< #4 Ion pump 45l cf40
   std::shared_ptr<xraySystem::CylGateValve> gateB;   ///< #6 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellow
 

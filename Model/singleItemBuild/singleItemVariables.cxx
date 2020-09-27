@@ -79,6 +79,7 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
+#include "GaugeGenerator.h"
 #include "PrismaChamberGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
@@ -251,6 +252,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
+
+  setVariable::GaugeGenerator GTGen;
+  GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
 
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();

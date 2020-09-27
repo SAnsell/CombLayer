@@ -92,6 +92,7 @@
 #include "SixPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
+#include "GaugeTube.h"
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
@@ -158,7 +159,7 @@ makeSingleItem::build(Simulation& System,
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","BlankTube","ButtonBPM",
@@ -666,6 +667,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<tdcSystem::CrossWayBlank>
 	SP(new tdcSystem::CrossWayBlank("CrossBlank"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="GaugeTube")
+    {
+      std::shared_ptr<tdcSystem::GaugeTube>
+	SP(new tdcSystem::GaugeTube("GaugeTube"));
 
       OR.addObject(SP);
 
