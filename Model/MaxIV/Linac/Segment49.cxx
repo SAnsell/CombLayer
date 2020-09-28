@@ -57,7 +57,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "CylGateValve.h"
@@ -108,32 +108,25 @@ Segment49::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment49","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  if (!masterCell)
-      masterCell=buildZone->constructMasterCell(System);
   if (isActive("front"))
     gateA->copyCutSurf("front",*this,"front");
 
   gateA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gateA,2);
+  outerCell=buildZone->createUnit(System,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateA,"back",*pipeA);
+    (System,*buildZone,*gateA,"back",*pipeA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+    (System,*buildZone,*pipeA,"back",*pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*gateB);
+    (System,*buildZone,*pipeB,"back",*gateB);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 
@@ -148,7 +141,7 @@ Segment49::createLinks()
   setLinkSignedCopy(0,*gateA,1);
   setLinkSignedCopy(1,*gateB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }
