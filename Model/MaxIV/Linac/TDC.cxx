@@ -348,8 +348,9 @@ TDC::buildInnerZone(Simulation& System,
   std::shared_ptr<attachSystem::BlockZone> buildZone=
     std::make_shared<attachSystem::BlockZone>(segmentName);
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
-  buildZone->setSurround
-    (buildSurround(Control,regionName,"Origin"));
+  const HeadRule  surHR=buildSurround(Control,regionName,"Origin");
+  buildZone->setSurround(surHR);
+
   buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
 
   setVoidSpace(System,buildZone,voidName);
@@ -379,6 +380,7 @@ TDC::reconstructInjectionHall(Simulation& System)
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
+      ELog::EM<<"CN "<<CN<<ELog::endDiag;
       HeadRule OuterVolume;
       bool initFlag(1);
       for(const auto& [name,bzPtr] : bZone)
@@ -396,6 +398,7 @@ TDC::reconstructInjectionHall(Simulation& System)
 		  OuterVolume.addIntersection(BZvol.getVolume().complement());
 		  BZvol= *bzPtr;
 		}
+	      ELog::EM<<"NEWBZ "<<BZvol<<ELog::endDiag;
 	    }
 	}
       std::map<int,HeadRule>::iterator mc=
@@ -566,16 +569,6 @@ TDC::createAll(Simulation& System,
 		SegMap.find(sideItem)->second.get();
 	      if (sidePtr->isBuilt())
 		segPtr->registerSideSegment(sidePtr);
-	    }
-
-	  if (BL!="Segment26" && BL!="Segment27" &&
-	      BL!="Segment28" && BL!="Segment29" &&
-	      BL!="Segment30" && BL!="Segment45" &&
-	      BL!="Segment46" && BL!="Segment47" &&
-	      BL!="Segment48")
-	    {
-	      //	      buildZone->constructMasterCell(System);
-	      segPtr->setInnerZone(buildZone.get());
 	    }
 
 	  if (BL=="Segment48")   // SPECIAL CHANGE OF FRONT

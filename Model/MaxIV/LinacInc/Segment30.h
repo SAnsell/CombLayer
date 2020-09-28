@@ -37,14 +37,24 @@ class Segment30 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+  std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
 
-  std::shared_ptr<constructSystem::PipeTube> gauge;     ///< #2 Vacuum gauge PTR18751
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   ///< #3 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<constructSystem::Bellows> bellow;     ///< #5 Bellows – 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;  ///< #4 Ion pump 75l cf63 1 port
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #7 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       ///< #8 Corrector magnet type D - vertical
+  /// #2 Vacuum gauge PTR18751
+  std::shared_ptr<tdcSystem::GaugeTube> gauge;
+  /// #3 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+
+  /// #5 Bellows – 304L
+  std::shared_ptr<constructSystem::Bellows> bellow;
+
+  /// #4 Ion pump 75l cf63 1 port
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;
+
+  /// #7 VC- Flanges 304L- Tube-316L
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// #8 Corrector magnet type D - vertical
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;       
 
   void buildObjects(Simulation&);
   void createLinks();

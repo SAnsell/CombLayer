@@ -52,8 +52,8 @@ class Segment29 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Upper inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZMid;        ///< Flat inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Flat inner zone
 
   /// Join pipe 
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
@@ -74,8 +74,7 @@ class Segment29 :
   void buildObjects(Simulation&);
   void createLinks();
 
-  void createSplitInnerZone(Simulation&);
-  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
+  void createSplitInnerZone();
   
  public:
 

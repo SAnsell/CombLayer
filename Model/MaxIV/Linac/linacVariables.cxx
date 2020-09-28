@@ -2351,13 +2351,13 @@ Segment30(FuncDataBase& Control,
   setBellow26(Control,lKey+"Bellow");
 
   // IonPump
-  
-  IonTGen.setCF<setVariable::CF63>();        
+
+  IonTGen.setCF<setVariable::CF63>();
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setRadius(3.3);         // No_17_00.pdf
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setVertical(4.15,7.55);  // d / h 
-  IonTGen.generateTube(Control,"IonPump");
+  IonTGen.setMainLength(8.5,7.5);  // front/back 
+  IonTGen.setVertical(13.9,11.9);  // d / h 
+  IonTGen.generateTube(Control,lKey+"IonPump");
 
   // CMagV
   PGen.generatePipe(Control,lKey+"PipeB",511.23);
