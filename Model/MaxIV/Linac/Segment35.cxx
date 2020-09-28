@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -72,12 +72,10 @@
 #include "YagUnitBig.h"
 #include "YagScreen.h"
 #include "Bellows.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "portItem.h"
 #include "ButtonBPM.h"
+#include "CrossWayBlank.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment35.h"
 
@@ -99,7 +97,7 @@ Segment35::Segment35(const std::string& Key) :
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
-  mirrorChamber(new constructSystem::BlankTube(keyName+"MirrorChamber")),
+  mirrorChamber(new tdcSystem::CrossWayBlank(keyName+"MirrorChamber")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
@@ -141,18 +139,14 @@ Segment35::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment35","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     yagUnit->copyCutSurf("front",*this,"front");
   yagUnit->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*yagUnit,"back");
+
+  outerCell=buildZone->createUnit(System,*yagUnit,"back");
   yagUnit->insertInCell(System,outerCell);
 
   yagScreen->setBeamAxis(*yagUnit,1);
@@ -167,7 +161,7 @@ Segment35::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+    (System,*buildZone,*pipeA,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
@@ -175,17 +169,14 @@ Segment35::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
   pipeTerminate(System,*buildZone,pipeB);
 
-  const constructSystem::portItem& ionPumpABackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeB,"back",*mirrorChamber,true);
+  constructSystem::constructUnit
+    (System,*buildZone,*pipeB,"back",*mirrorChamber);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpABackPort,"OuterPlate",*pipeC);
+    (System,*buildZone,*mirrorChamber,"back",*pipeC);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*bellow);
-
-  buildZone->removeLastMaster(System);
-*/
+    (System,*buildZone,*pipeC,"back",*bellow);
   return;
 }
 

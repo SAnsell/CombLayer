@@ -61,20 +61,19 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "Object.h"
 
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 #include "CylGateValve.h"
 #include "StriplineBPM.h"
 #include "EArrivalMon.h"
+#include "GaugeTube.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment36.h"
 
@@ -86,7 +85,7 @@ namespace tdcSystem
 
 Segment36::Segment36(const std::string& Key) :
   TDCsegment(Key,2),
-  gauge(new constructSystem::PipeTube(keyName+"Gauge")),
+  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
@@ -142,24 +141,16 @@ Segment36::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment36","buildObjects");
-/* OLD INNERZONE 
-
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
-  gauge->addAllInsertCell(masterCell->getName());
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*gauge,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
-  gauge->insertAllInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System,*gauge,"back");
+  gauge->insertInCell(System,outerCell);
 
-  pipeA->createAll(System,*gauge, "back");
+  pipeA->createAll(System,*gauge,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagH);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagV);
@@ -167,31 +158,29 @@ Segment36::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,*pipeA,"back",*bpmA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*pipeB);
+    (System,*buildZone,*bpmA,"back",*pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*beamArrivalMon);
+    (System,*buildZone,*pipeB,"back",*beamArrivalMon);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamArrivalMon,"back",*pipeC);
+    (System,*buildZone,*beamArrivalMon,"back",*pipeC);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*pipeD);
+    (System,*buildZone,*pipeC,"back",*pipeD);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*bpmB);
+    (System,*buildZone,*pipeD,"back",*bpmB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmB,"back",*gate);
+    (System,*buildZone,*bpmB,"back",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*pipeE);
+    (System,*buildZone,*gate,"back",*pipeE);
 
-  buildZone->removeLastMaster(System);
-*/
   return;
 }
 

@@ -37,7 +37,7 @@ class Segment36 :
   public TDCsegment
 {
  private:
-  std::shared_ptr<constructSystem::PipeTube> gauge;   // #3
+  std::shared_ptr<tdcSystem::GaugeTube> gauge;   // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #4
   std::shared_ptr<tdcSystem::LQuadF> quadA;           // #5
   std::shared_ptr<tdcSystem::CorrectorMag> cMagH;     // #6

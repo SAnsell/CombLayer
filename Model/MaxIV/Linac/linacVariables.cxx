@@ -566,6 +566,7 @@ setMirrorChamber(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","setMirrorChamber");
 
+  
   const Geometry::Vec3D OPos(0.0, 3.0, 0.0);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -610,56 +611,27 @@ setMirrorChamber(FuncDataBase& Control,
 
 void
 setMirrorChamberBlank(FuncDataBase& Control,
-		const std::string& name)
+		      const std::string& name,
+		      const double angle)
 /*!
   Set the blank Mirror Chamber (4 port pipe) variables
   \param Control :: DataBase to use
   \param name :: name prefix
-  \todo REMOVE
+  \param angel :: rotation angle
  */
 {
   ELog::RegMethod RegA("linacVariables[F]","setMirrorChamberBlank");
 
-  const Geometry::Vec3D OPos(0.0, 5.6, 0.0);
-  const Geometry::Vec3D XVec(1,0,0);
-  const Geometry::Vec3D ZVec(0,0,1);
+  setVariable::CrossWayGenerator MSPGen;
 
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  SimpleTubeGen.setCF<setVariable::CF63>();
-  SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateBlank(Control,name,0.0,16.0); // measured seg 15
-
-  const double wallThick(0.2);
-  Control.addVariable(name+"WallThick",wallThick);
-
-  Control.addVariable(name+"NPorts",4);
-  Control.addVariable(name+"FlangeCapThick",setVariable::CF63::flangeLength);
-  Control.addVariable(name+"FlangeCapMat","Stainless304L");
-
-  // Outer radius of the chamber
-  const double outerR =
-    setVariable::CF63::innerRadius+wallThick;
-
-  const double L0(5.9-outerR); // measured seg 15
-  const double L1(8.1-outerR); // measured seg 15
-  const double L2(12.5/2 - outerR);
-  const double L3(L2);
-
-  setVariable::PortItemGenerator PItemGen;
-
-  PItemGen.setCF<setVariable::CF35_TDC>(L0);
-  PItemGen.setNoPlate();
-  PItemGen.generatePort(Control,name+"Port0",OPos,-XVec);
-
-  PItemGen.setLength(L1);
-  PItemGen.generatePort(Control,name+"Port1",OPos,XVec);
-
-  PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304L");
-  PItemGen.setCF<setVariable::CF35_TDC>(L2);
-  PItemGen.generatePort(Control,name+"Port2",OPos,ZVec);
-
-  PItemGen.setLength(L3);
-  PItemGen.generatePort(Control,name+"Port3",OPos,-ZVec);
+  MSPGen.setCF<CF63>();
+  MSPGen.setMainLength(2.4,13.6);
+  MSPGen.setPortLength(5.9,8.1);
+  MSPGen.setCrossLength(6.25,6.25);
+  MSPGen.setPortCF<CF35_TDC>();
+  MSPGen.setCrossCF<CF35_TDC>();
+  MSPGen.generateCrossWay(Control,name);
+  Control.addVariable(name+"YAngle", angle);
 
   return;
 }
@@ -1453,7 +1425,6 @@ Segment15(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::CrossWayGenerator MSPGen;
 
 
   const Geometry::Vec3D startPt(-637.608,4507.259,0.0);
@@ -1462,7 +1433,6 @@ Segment15(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-  MSPGen.setPortLength(6.3,6.3);
     
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
@@ -1470,15 +1440,7 @@ Segment15(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",22.0); // measured
 
   // Mirror chamber
-
-  MSPGen.setCF<CF63>();
-  MSPGen.setMainLength(2.4,13.6);
-  MSPGen.setPortLength(5.9,8.1);
-  MSPGen.setCrossLength(6.25,6.25);
-  MSPGen.setPortCF<CF35_TDC>();
-  MSPGen.setCrossCF<CF35_TDC>();
-  MSPGen.generateCrossWay(Control,lKey+"MirrorChamber");
-  //  Control.addVariable(lKey+"MirrorChamberYAngle", -90.0);
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
 
   YagUnitGen.setCF<CF63>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
@@ -2589,8 +2551,7 @@ Segment35(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",41.65,1);
   CMGen.generateMag(Control,lKey+"CMagV",60.15,0);
 
-  setMirrorChamberBlank(Control, lKey+"MirrorChamber");
-  Control.addVariable(lKey+"MirrorChamberYAngle", 180.0);
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber",180.0);
 
   PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",12.6);
@@ -2603,7 +2564,7 @@ Segment35(FuncDataBase& Control,
 
 void
 Segment36(FuncDataBase& Control,
-		   const std::string& lKey)
+	  const std::string& lKey)
   /*!
     Set the variables for SPF segment 36
     \param Control :: DataBase to use
@@ -2612,7 +2573,6 @@ Segment36(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment36");
 
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PipeGenerator PGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CorrectorMagGenerator CMGen;
