@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment44.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,25 +70,11 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
-#include "InnerZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generalConstruct.h"
+#include "BlockZone.h"
 
-#include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "BlankTube.h"
-#include "Bellows.h"
 #include "TriGroup.h"
 #include "CurveMagnet.h"
 
-#include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "Segment44.h"
 
@@ -97,7 +83,7 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment44::Segment44(const std::string& Key) :
   TDCsegment(Key,6),
   triBend(new tdcSystem::TriGroup(keyName+"TriBend")),
@@ -115,7 +101,7 @@ Segment44::Segment44(const std::string& Key) :
 
   setFirstItems(triBend);
 }
-  
+
 Segment44::~Segment44()
   /*!
     Destructor
@@ -131,13 +117,8 @@ Segment44::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment44","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell,outerCellB,outerCellC;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     {
@@ -147,9 +128,9 @@ Segment44::buildObjects(Simulation& System)
 
   triBend->createAll(System,*this,0);
   // extra for bending curve and view port
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*triBend,2);
-  outerCellB=buildZone->createOuterVoidUnit(System,masterCell,*triBend,3);
-  outerCellC=buildZone->createOuterVoidUnit(System,masterCell,*triBend,4);
+  outerCell=buildZone->createUnit(System,*triBend,2);
+  outerCellB=buildZone->createUnit(System,*triBend,3);
+  outerCellC=buildZone->createUnit(System,*triBend,4);
 
   cMag->addInsertCell(outerCell);
   cMag->addInsertCell(outerCellB);
@@ -171,13 +152,11 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertInCell("BendStr",System,outerCellC);
   triBend->insertInCell("BFlange",System,outerCellC);
   triBend->insertAllInCell(System,cMag->getCell("Void"));
-  
+
   // transfer to segment 45 and 46
   CellMap::addCell("LastCell",outerCellB);
   CellMap::addCell("LastCell",outerCellC);
 
-  buildZone->removeLastMaster(System);  
-*/
   return;
 }
 
@@ -199,12 +178,12 @@ Segment44::createLinks()
   FixedComp::nameSideIndex(3,"magnetExit");
   FixedComp::nameSideIndex(4,"splitPoint");
 
-  
+
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
 
-  
+
   return;
 }
 
@@ -215,17 +194,17 @@ Segment44::writePoints() const
   */
 {
   ELog::RegMethod RegA("Segment44","writePoints");
-  
+
   const std::vector<std::shared_ptr<attachSystem::FixedComp>> Items
     (
      {triBend}
      );
   TDCsegment::writeBasicItems(Items);
-  
+
   return;
 }
 
-void 
+void
 Segment44::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -243,10 +222,9 @@ Segment44::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-
