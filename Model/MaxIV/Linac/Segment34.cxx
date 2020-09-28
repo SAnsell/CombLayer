@@ -59,9 +59,9 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -119,13 +119,9 @@ Segment34::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment34","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
   if (isActive("front"))
     flatA->copyCutSurf("front",*this,"front");
 
@@ -136,7 +132,7 @@ Segment34::buildObjects(Simulation& System)
 
   pipeA->setFront(*flatA,"back");
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatA,"back",*pipeA);
+    (System,*buildZone,*flatA,"back",*pipeA);
 
   flatB->setFront(*pipeA,"back");
   flatB->createAll(System,*pipeA,"back");
@@ -145,11 +141,8 @@ Segment34::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatB,"back",*bellow);
+    (System,*buildZone,*flatB,"back",*bellow);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 

@@ -77,8 +77,9 @@ namespace tdcSystem
 
 Segment41::Segment41(const std::string& Key) :
   TDCsegment(Key,2),
-  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
+
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
