@@ -58,7 +58,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -114,32 +114,27 @@ Segment41::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment41","buildObjects");
-/* OLD INNERZONE 
+  //OLD INNERZONE
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+    (System,*buildZone,*bellowA,"back",*bpm);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*gate);
+    (System,*buildZone,*bpm,"back",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*pipe);
+    (System,*buildZone,*gate,"back",*pipe);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bellowB);
+    (System,*buildZone,*pipe,"back",*bellowB);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 
@@ -154,7 +149,7 @@ Segment41::createLinks()
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }

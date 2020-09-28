@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -90,7 +90,7 @@ Segment40::Segment40(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(uVac);
-  
+
   setFirstItems(uVac);
 }
 
@@ -109,19 +109,11 @@ Segment40::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment40","buildObjects");
-/* OLD INNERZONE 
 
-  int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
   uVac->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*uVac,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*uVac,2);
+  int outerCell=buildZone->createUnit(System,*uVac,2);
   uVac->insertInCell(System,outerCell);
 
-  buildZone->removeLastMaster(System);
-
-*/
   return;
 }
 
@@ -136,7 +128,7 @@ Segment40::createLinks()
   setLinkSignedCopy(0,*uVac,1);
   setLinkSignedCopy(1,*uVac,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }
@@ -157,7 +149,7 @@ Segment40::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
+
   buildObjects(System);
   createLinks();
   return;
