@@ -2356,7 +2356,7 @@ Segment30(FuncDataBase& Control,
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setRadius(3.3);         // No_17_00.pdf
   IonTGen.setMainLength(8.5,7.5);  // front/back 
-  IonTGen.setVertical(13.9,11.9);  // d / h 
+  IonTGen.setVertical(14.6,11.2);  // d / h 
   IonTGen.generateTube(Control,lKey+"IonPump");
 
   // CMagV
@@ -2403,7 +2403,7 @@ Segment31(FuncDataBase& Control,
   IonTGen.setRadius(3.3);         // No_17_00.pdf
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setVertical(4.85,8.25);  // d / h
-  IonTGen.generateTube(Control,"IonPumpA");
+  IonTGen.generateTube(Control,lKey+"IonPumpA");
   Control.addVariable(lKey+"IonPumpAYAngle",90.0);
 
   setCylGateValve(Control,lKey+"Gate",-90.0,false);
@@ -2430,7 +2430,7 @@ Segment31(FuncDataBase& Control,
   // IonPumpB
   IonTGen.setCF<setVariable::CF63>();        
   IonTGen.setMainLength(10.0,10.0);        
-  IonTGen.generateTube(Control,"IonPumpB");
+  IonTGen.generateTube(Control,lKey+"IonPumpB");
   
   PGen.generatePipe(Control,lKey+"PipeC",55.7);
 

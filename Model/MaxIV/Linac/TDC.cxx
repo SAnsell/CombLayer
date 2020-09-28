@@ -380,7 +380,6 @@ TDC::reconstructInjectionHall(Simulation& System)
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
-      ELog::EM<<"CN "<<CN<<ELog::endDiag;
       HeadRule OuterVolume;
       bool initFlag(1);
       for(const auto& [name,bzPtr] : bZone)
@@ -398,7 +397,6 @@ TDC::reconstructInjectionHall(Simulation& System)
 		  OuterVolume.addIntersection(BZvol.getVolume().complement());
 		  BZvol= *bzPtr;
 		}
-	      ELog::EM<<"NEWBZ "<<BZvol<<ELog::endDiag;
 	    }
 	}
       std::map<int,HeadRule>::iterator mc=
