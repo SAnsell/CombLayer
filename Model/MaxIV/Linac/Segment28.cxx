@@ -59,7 +59,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
@@ -78,8 +77,9 @@ namespace tdcSystem
 
 Segment28::Segment28(const std::string& Key) :
   TDCsegment(Key,6),
-  IZTop(new attachSystem::InnerZone(*this,cellIndex)),
-  IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
+
+  IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
+  IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
 
   pipeAA(new constructSystem::VacuumPipe(keyName+"PipeAA")),
   pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
@@ -125,7 +125,7 @@ Segment28::~Segment28()
 
 
 void
-Segment28::createSplitInnerZone(Simulation& System)
+Segment28::createSplitInnerZone()
   /*!
     Spilit the innerZone into three parts.
     \param System :: Simulatio to use
@@ -168,9 +168,6 @@ Segment28::createSplitInnerZone(Simulation& System)
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
 
-  IZTop->constructMasterCell(System);
-  IZFlat->constructMasterCell(System);
-
   return;
 }
 
@@ -183,44 +180,35 @@ Segment28::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment28","buildObjects");
-/* OLD INNERZONE 
-
   int outerCellA,outerCellB;
 
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
   
-  createSplitInnerZone(System);
-
-  MonteCarlo::Object* masterCellA=IZTop->getMaster();
-  MonteCarlo::Object* masterCellB=IZFlat->getMaster();
+  createSplitInnerZone();
   
-  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*pipeAA,2);
-  outerCellB=IZFlat->createOuterVoidUnit(System,masterCellB,*pipeBA,2);
+  outerCellA=IZTop->createUnit(System,*pipeAA,2);
+  outerCellB=IZFlat->createUnit(System,*pipeBA,2);
 
   pipeAA->insertInCell(System,outerCellA);
   pipeBA->insertInCell(System,outerCellB);
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*pipeAA,"back",*bellowAA);
+    (System,*IZTop,*pipeAA,"back",*bellowAA);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*pipeBA,"back",*bellowBA);
+    (System,*IZFlat,*pipeBA,"back",*bellowBA);
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*bellowAA,"back",*pipeAB);
+    (System,*IZTop,*bellowAA,"back",*pipeAB);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*bellowBA,"back",*pipeBB);
+    (System,*IZFlat,*bellowBA,"back",*pipeBB);
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*pipeAB,"back",*bellowAB);
+    (System,*IZTop,*pipeAB,"back",*bellowAB);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*pipeBB,"back",*bellowBB);
+    (System,*IZFlat,*pipeBB,"back",*bellowBB);
 
   
-  IZTop->removeLastMaster(System);
-  IZFlat->removeLastMaster(System);
-
-*/
   return;
 }
 
@@ -246,28 +234,8 @@ Segment28::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 
 
+  buildZone->setBack(FixedComp::getFullRule("backMid"));
   
-  
-  return;
-}
-
-void
-Segment28::constructVoid(Simulation& System,
-			 const attachSystem::FixedComp& FC) const
-  /*!
-    Creates the space for the InnerZone
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("Segment28","constructVoid");
-
-  const attachSystem::CellMap* CPtr=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  if (CPtr)
-    {
-      CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZFlat->getVolumeExclude());
-    }
   return;
 }
 
@@ -290,7 +258,6 @@ Segment28::createAll(Simulation& System,
 
   buildObjects(System);
   createLinks();
-  constructVoid(System,FC);
   return;
 }
 

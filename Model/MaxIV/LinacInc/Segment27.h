@@ -52,9 +52,9 @@ class Segment27 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Upper inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZFlat;       ///< Flat inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZLower;      ///< Lower inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZFlat;       ///< Flat inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
   
   /// init bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;
@@ -87,7 +87,7 @@ class Segment27 :
   void buildObjects(Simulation&);
   void createLinks();
 
-  void createSplitInnerZone(Simulation&);
+  void createSplitInnerZone();
   void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
   
  public:

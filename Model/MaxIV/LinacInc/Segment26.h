@@ -83,8 +83,7 @@ class Segment26 :
   void buildObjects(Simulation&);
   void createLinks();
 
-  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
-  void createSplitInnerZone(Simulation&);
+  void createSplitInnerZone();
   
  public:
 

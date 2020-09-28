@@ -82,6 +82,7 @@ namespace tdcSystem
 
 Segment26::Segment26(const std::string& Key) :
   TDCsegment(Key,6),
+
   IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
   IZMid(new attachSystem::BlockZone(keyName+"IZMid")),
   IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
@@ -163,10 +164,9 @@ Segment26::insertPrevSegment(Simulation& System,
 }
 
 void
-Segment26::createSplitInnerZone(Simulation& System)
+Segment26::createSplitInnerZone()
   /*!
     Spilit the innerZone into three parts.
-    \param System :: Simulatio to use
    */
 {
   ELog::RegMethod RegA("Segment26","createSplitInnerZone");
@@ -206,17 +206,6 @@ Segment26::createSplitInnerZone(Simulation& System)
   IZMid->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
 
-  ELog::EM<<"ADSFA F"<<ELog::endDiag;
-  for(const int CN : this->getInsertCells())
-    ELog::EM<<"Cell == "<<CN<<ELog::endDiag;
-
-  IZTop->addInsertCells(this->getInsertCells());
-  IZMid->addInsertCells(this->getInsertCells());
-  IZLower->addInsertCells(this->getInsertCells());
-  // IZTop->constructMasterCell(System);
-  // IZMid->constructMasterCell(System);
-  // IZLower->constructMasterCell(System);
-
   return;
 }
 
@@ -236,7 +225,7 @@ Segment26::buildObjects(Simulation& System)
   pipeBA->createAll(System,*this,0);
   pipeCA->createAll(System,*this,0);
 
-  createSplitInnerZone(System);
+  createSplitInnerZone();
 
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZMid->createUnit(System,*pipeBA,2);
@@ -286,27 +275,6 @@ Segment26::buildObjects(Simulation& System)
   return;
 }
 
-void
-Segment26::constructVoid(Simulation& System,
-			 const attachSystem::FixedComp& FC) const
-  /*!
-    Creates the space for the InnerZone
-  */
-{
-  ELog::RegMethod RegA("Segment26","constructVoid");
-
-  const attachSystem::CellMap* CPtr=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  if (CPtr)
-    {
-      const HeadRule volHR=IZTop->getVolume();
-
-      CPtr->insertComponent(System,"LongVoid",IZTop->getVolume());
-      CPtr->insertComponent(System,"LongVoid",IZMid->getVolume());
-      CPtr->insertComponent(System,"LongVoid",IZLower->getVolume());
-    }
-  return;
-}
 
 void
 Segment26::createLinks()
@@ -337,13 +305,14 @@ Segment26::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
   joinItems.push_back(FixedComp::getFullRule("backLower"));
 
+  buildZone->setBack(FixedComp::getFullRule("backMid"));
   return;
 }
 
 void
 Segment26::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

@@ -79,9 +79,6 @@ class TDC :
   void setVoidSpace(const Simulation&,
 		    const std::shared_ptr<attachSystem::BlockZone>&,
 		    const std::string&);
-  void setSegmentSpace(const Simulation&,
-		       const std::shared_ptr<TDCsegment>&,
-		       const std::string&);
   
   void reconstructInjectionHall(Simulation&);
   

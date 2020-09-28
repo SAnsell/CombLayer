@@ -83,6 +83,7 @@ class BlockZone  :
   void setMaxExtent(const HeadRule&);
   void setSurround(const HeadRule&);
   void setFront(const HeadRule&);
+  void setBack(const HeadRule&);
 
   /// access surround
   const HeadRule& getSurround() const { return surroundHR; }

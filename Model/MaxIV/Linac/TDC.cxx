@@ -265,32 +265,6 @@ TDC::buildSurround(const FuncDataBase& Control,
 }
 
 void
-TDC::setSegmentSpace(const Simulation& System,
-		     const std::shared_ptr<TDCsegment>& segPtr,
-		     const std::string& voidName)
-  /*!
-    Add the void cells from the injection hall into a segment
-    \param System :: simulation
-    \param segPtr :: Insert unit
-    \param :: Name of void space
-  */
-{
-  ELog::RegMethod RegA("TDC","setSegmentSpace");
-
-  ELog::EM<<"Segment == "<<voidName<<" === "<<ELog::endDiag;
-    
-  if (!voidName.empty())
-    {
-      ELog::EM<<"HERE "<<ELog::endDiag;
-      const std::vector<int>& VCell=
-	injectionHall->getCells(voidName);
-      segPtr->addInsertCell(VCell);
-    }
-  return;
-}
-  
-
-void
 TDC::setVoidSpace(const Simulation& System,
 		  const std::shared_ptr<attachSystem::BlockZone>& buildZone,
 		  const std::string& voidName)
@@ -348,8 +322,7 @@ TDC::buildInnerZone(Simulation& System,
       {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoid"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfLong"  ,{"TDCLong","#Back","LongVoid",""}},
+      {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
@@ -381,12 +354,6 @@ TDC::buildInnerZone(Simulation& System,
 
   setVoidSpace(System,buildZone,voidName);
   setVoidSpace(System,buildZone,voidNameB);
-
-  if (segmentName == "Segment26")
-    {
-      ELog::EM<<"Call Space:"<<regionName<<ELog::endDiag;
-      setSegmentSpace(System,segPtr,voidName);
-    }
   
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
@@ -515,7 +482,7 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdc","Segment21",1}},
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
-      {"Segment25",{"spfMid","Segment24",1}},
+      {"Segment25",{"spfLong","Segment24",1}},
       {"Segment26",{"spfLong","Segment25",1}},
       {"Segment27",{"spfLong","Segment26",1}},
       {"Segment28",{"spfLong","Segment27",1}},
