@@ -61,6 +61,10 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 };
 
 }

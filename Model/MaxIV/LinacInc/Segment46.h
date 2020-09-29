@@ -52,7 +52,7 @@ class Segment46 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+  std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
   
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2

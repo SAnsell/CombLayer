@@ -107,6 +107,7 @@
 #include "Bellows.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "PortTube.h"
 #include "BlankTube.h"
 #include "ButtonBPM.h"
 #include "CleaningMagnet.h"
@@ -162,7 +163,7 @@ makeSingleItem::build(Simulation& System,
       "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
-      "MultiPipe","PipeTube","BlankTube","ButtonBPM",
+      "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube",
       "Help","help"
@@ -842,17 +843,30 @@ makeSingleItem::build(Simulation& System,
     }
 
     if (item == "PipeTube" )
-    {
-      std::shared_ptr<constructSystem::PipeTube>
-	pipeTube(new constructSystem::PipeTube("PipeTube"));
+      {
+	std::shared_ptr<constructSystem::PipeTube>
+	  pipeTube(new constructSystem::PipeTube("PipeTube"));
+	
+	OR.addObject(pipeTube);
+	
+	pipeTube->addAllInsertCell(voidCell);
+	pipeTube->createAll(System,World::masterOrigin(),0);
 
-      OR.addObject(pipeTube);
+	return;
+      }
+    if (item == "PortTube" )
+      {
+	std::shared_ptr<constructSystem::PortTube>
+	  pipeTube(new constructSystem::PortTube("PortTube"));
+	
+	OR.addObject(pipeTube);
+	
+	pipeTube->addAllInsertCell(voidCell);
+	pipeTube->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
 
-      pipeTube->addAllInsertCell(voidCell);
-      pipeTube->createAll(System,World::masterOrigin(),0);
-
-      return;
-    }
     if (item == "BlankTube" )
     {
       std::shared_ptr<constructSystem::BlankTube>

@@ -53,7 +53,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -64,7 +63,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "generalConstruct.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "generateSurf.h"
@@ -93,7 +92,7 @@ namespace tdcSystem
 
 Segment46::Segment46(const std::string& Key) :
   TDCsegment(Key,4),
-  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
+  IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
@@ -169,8 +168,6 @@ Segment46::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
-  //  *IZThin = *buildZone;
-
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -179,7 +176,6 @@ Segment46::createSplitInnerZone(Simulation& System)
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
 
       const Geometry::Vec3D zAxis=X*cutAxis.unit();
-      ELog::EM<<"Cut point == "<<cutOrg<<":"<<zAxis<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       int SNremoved(0);
@@ -206,9 +202,11 @@ Segment46::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
 
       IZThin->setSurround(HSurroundB);
-      IZThin->clearDivider();
-      IZThin->setInsertCells(buildZone->getInsertCells());
+      //      IZThin->clearDivider();
     }
+  else
+    *IZThin=*buildZone;
+
   return;
 }
 
@@ -221,44 +219,39 @@ Segment46::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment46","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=IZThin->getMaster();
-
-  if (!masterCell)
-    masterCell=IZThin->constructMasterCell(System);
-
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  MonteCarlo::Object* OPtr=System.findObject(outerCell);
-
+  outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*pipeA,"back",*gateA);
+    (System,*IZThin,*pipeA,"back",*gateA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gateA,"back",*bellowA);
+    (System,*IZThin,*gateA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
+    (System,*IZThin,*bellowA,"back",*prismaChamber);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*prismaChamber,"back",*mirrorChamberA);
+    (System,*IZThin,*prismaChamber,"back",*mirrorChamberA);
 
   pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
-  slitTube->addAllInsertCell(masterCell->getName());
+
+  outerCell=IZThin->createFakeCell(System);
+  slitTube->addAllInsertCell(outerCell);
   slitTube->setFront(*pipeB,"back");
   slitTube->createAll(System,*pipeB,"back");
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*slitTube,2);
+  return;
+  outerCell=IZThin->createUnit(System,*slitTube,2);
   slitTube->insertAllInCell(System,outerCell);
 
   for(size_t index=0;index<2;index++)
@@ -280,23 +273,19 @@ Segment46::buildObjects(Simulation& System)
   //////////////////////////////////////////////////////////////////////
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*slitTube,"back",*bellowB);
+    (System,*IZThin,*slitTube,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowB,"back",*mirrorChamberB);
+    (System,*IZThin,*bellowB,"back",*mirrorChamberB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*mirrorChamberB,"back",*bellowC);
+    (System,*IZThin,*mirrorChamberB,"back",*bellowC);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowC,"back",*gateB);
+    (System,*IZThin,*bellowC,"back",*gateB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gateB,"back",*bellowD);
-
-  IZThin->removeLastMaster(System);
-
-*/
+    (System,*IZThin,*gateB,"back",*bellowD);
   return;
 }
 
@@ -317,6 +306,8 @@ Segment46::createLinks()
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
+  //  buildZone->setBack(FixedComp::getFullRule("backMid"));
+  buildZone->setBack(slitTube->getFullRule("back"));
   return;
 }
 

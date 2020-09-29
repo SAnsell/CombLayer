@@ -23,6 +23,10 @@
 #define attachSystem_CellMap_h
 
 class Simulation;
+namespace MonteCarlo
+{
+  class Object;
+}
 
 namespace attachSystem
 {
@@ -149,6 +153,11 @@ class CellMap  : public BaseMap
 		       const FixedComp&,const long int) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
+
+
+  MonteCarlo::Object*
+  getCellObject(Simulation&,const std::string&,
+		const size_t =0) const;
 
   
   void makeCell(const std::string&,

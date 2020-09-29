@@ -203,7 +203,7 @@ PortTube::createSurfaces()
   SurfMap::addSurf("PortBCut",SMap.realSurf(buildIndex+12));
 
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
-
+  SurfMap::addSurf("OuterCyl",SMap.realSurf(buildIndex+17));
   // port
   const Geometry::Vec3D inOrg=Origin+X*portAXStep+Z*portAZStep;
   const Geometry::Vec3D outOrg=Origin+X*portBXStep+Z*portBZStep;
@@ -247,7 +247,7 @@ PortTube::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
   // main walls
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
-  makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out);
 
   // plates front/back
   if ((portARadius+portAThick-(radius+wallThick))< -Geometry::zeroTol)
