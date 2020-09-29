@@ -44,7 +44,7 @@ class Segment48 :
   std::shared_ptr<constructSystem::PortTube> slitTube; // #4
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #4
   std::shared_ptr<constructSystem::Bellows> bellowB;  // #5
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #6
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC;  // #5
 
   void buildObjects(Simulation&);

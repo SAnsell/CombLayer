@@ -576,7 +576,6 @@ TDC::createAll(Simulation& System,
 		{
 		  const TDCsegment* seg47Ptr=ci->second.get();
 		  buildZone->setFront(seg47Ptr->getFullRule(2));
-		  ELog::EM<<"SN == "<<seg47Ptr->getFullRule(2)<<ELog::endDiag;
 		}
 	    }
 
@@ -593,9 +592,6 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-
-	  ELog::EM<<"TDC ADFAF "<<ELog::endDiag;
-
 
 	  if (BL=="Segment10")
 	    // SPECIAL CASE : Addition of pipe to TVoid cell
