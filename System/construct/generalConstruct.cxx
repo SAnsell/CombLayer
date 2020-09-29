@@ -106,6 +106,7 @@ internalUnit(Simulation& System,
 
   ECut.setCutSurf("front",linkUnit,sideName);
   FC.createAll(System,linkUnit,"back");
+
   const int outerCell=
     buildZone.createOuterVoidUnit(System,masterCell,FC,2);
 
@@ -184,6 +185,7 @@ internalUnit(Simulation& System,
   ECut.setCutSurf("front",linkUnit,sideName);
   FC.createAll(System,linkUnit,"back");
   const int outerCell=buildZone.createUnit(System,FC,2);
+
 
   CC.insertInCell(System,outerCell);
   return  outerCell;

@@ -318,8 +318,7 @@ setPrismaChamber(FuncDataBase& Control,
 }
 
 void
-setSlitTube(FuncDataBase& Control,
-	    const std::string& name,
+setSlitTube(FuncDataBase& Control,const std::string& name,
 	    const double length)
 /*!
   Set the slit tibe variables
@@ -344,7 +343,7 @@ setSlitTube(FuncDataBase& Control,
   const double PortRadius(Radius+WallThick+0.5);
   PTubeGen.setPipe(Radius,WallThick);
   PTubeGen.setPortCF<setVariable::CF40>();
-  PTubeGen.setPortLength(-sideWallThick,sideWallThick);
+  PTubeGen.setPortLength(-sideWallThick,sideWallThick); // avoid changing length
   PTubeGen.setAFlange(PortRadius,sideWallThick);
   PTubeGen.setBFlange(PortRadius,sideWallThick);
   PTubeGen.generateTube(Control,name,0.0,DLength);
@@ -358,14 +357,14 @@ setSlitTube(FuncDataBase& Control,
 
   // first 2 ports are with jaws, others - without jaws
   PItemGen.setOuterVoid(1);  // create boundary round flange
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0+Radius+WallThick);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setCF<setVariable::CF63>(10.0+Radius+WallThick);
   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
 
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0+Radius+WallThick);
   PItemGen.generatePort(Control,portName+"2",-PPos,-ZVec);
-  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setCF<setVariable::CF63>(10.0+Radius+WallThick);
   PItemGen.generatePort(Control,portName+"3",MidPt,-XVec);
 
   // PItemGen.setCF<setVariable::CF63>(10.0);

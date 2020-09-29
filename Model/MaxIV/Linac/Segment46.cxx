@@ -178,7 +178,6 @@ Segment46::createSplitInnerZone(Simulation& System)
       const Geometry::Vec3D zAxis=X*cutAxis.unit();
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
-      int SNremoved(0);
       for(const TDCsegment* sidePtr : sideVec)
 	{
 	  std::vector<int> CNvec=sidePtr->getCells("BuildVoid");
@@ -192,7 +191,7 @@ Segment46::createSplitInnerZone(Simulation& System)
 	      // remove surface that tracks close to a beam going in the +Z
 	      // direction
 	      HeadRule HA=OPtr->getHeadRule();   // copy
-	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	      HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
 	      HA.addIntersection(-SMap.realSurf(buildIndex+5005));
 	      OPtr->procHeadRule(HA);
 	    }
@@ -245,14 +244,9 @@ Segment46::buildObjects(Simulation& System)
   pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
-
-  outerCell=IZThin->createFakeCell(System);
-  slitTube->addAllInsertCell(outerCell);
-  slitTube->setFront(*pipeB,"back");
-  slitTube->createAll(System,*pipeB,"back");
-  return;
-  outerCell=IZThin->createUnit(System,*slitTube,2);
-  slitTube->insertAllInCell(System,outerCell);
+  
+  constructSystem::constructUnit
+    (System,*IZThin,*pipeB,"back",*slitTube);
 
   for(size_t index=0;index<2;index++)
     {
@@ -268,12 +262,14 @@ Segment46::buildObjects(Simulation& System)
     }
 
   // simplify the DiagnosticBox inner cell
+
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
 			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
 
   constructSystem::constructUnit
-    (System,*IZThin,*slitTube,"back",*bellowB);
+      (System,*IZThin,*slitTube,"back",*bellowB);
+    
 
   constructSystem::constructUnit
     (System,*IZThin,*bellowB,"back",*mirrorChamberB);
@@ -306,8 +302,8 @@ Segment46::createLinks()
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
-  //  buildZone->setBack(FixedComp::getFullRule("backMid"));
-  buildZone->setBack(slitTube->getFullRule("back"));
+  buildZone->setBack(bellowD->getFullRule("back"));
+
   return;
 }
 
