@@ -168,6 +168,7 @@ Segment46::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
+  *IZThin=*buildZone;
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -203,8 +204,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       IZThin->setSurround(HSurroundB);
       //      IZThin->clearDivider();
     }
-  else
-    *IZThin=*buildZone;
+
 
   return;
 }

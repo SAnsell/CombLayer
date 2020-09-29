@@ -169,7 +169,7 @@ CrossWayGenerator::setPortLength(const double F,const double B)
   backLength=B;
   return;
 }
-
+  
 void
 CrossWayGenerator::setCrossLength(const double XA,const double XB)
   /*!
@@ -183,6 +183,21 @@ CrossWayGenerator::setCrossLength(const double XA,const double XB)
   return;
 }
 
+
+void
+CrossWayGenerator::setPlateThick(const double T,
+				 const std::string& Mat)
+  /*!
+    Setter for capping plates
+    \param T :: Thickness
+    \param Mat :: material
+  */
+{
+  plateThick=T;
+  plateMat=Mat;
+  return;
+}
+  
 void
 CrossWayGenerator::generateCrossWay(FuncDataBase& Control,
 				  const std::string& keyName) const
@@ -231,6 +246,7 @@ template void CrossWayGenerator::setPortCF<CF35_TDC>();
 
 template void CrossWayGenerator::setCrossCF<CF16_TDC>();
 template void CrossWayGenerator::setCrossCF<CF35_TDC>();
+template void CrossWayGenerator::setCrossCF<CF40_22>();
   
 template void CrossWayGenerator::setCF<CF35_TDC>();
 template void CrossWayGenerator::setCF<CF63>();

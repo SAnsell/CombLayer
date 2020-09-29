@@ -61,14 +61,11 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ContainedGroup.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "BlankTube.h"
-#include "portItem.h"
+#include "PrismaChamber.h"
+#include "CrossWayTube.h"
 
 #include "TDCsegment.h"
 #include "Segment47.h"
@@ -80,15 +77,15 @@ namespace tdcSystem
 
 Segment47::Segment47(const std::string& Key) :
   TDCsegment(Key,2),
-  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
+  IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
   
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  prismaChamberA(new constructSystem::BlankTube(keyName+"PrismaChamberA")),
-  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
+  prismaChamberA(new tdcSystem::PrismaChamber(keyName+"PrismaChamberA")),
+  mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  mirrorChamberB(new constructSystem::PipeTube(keyName+"MirrorChamberB")),
+  mirrorChamberB(new tdcSystem::CrossWayTube(keyName+"MirrorChamberB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  mirrorChamberC(new constructSystem::PipeTube(keyName+"MirrorChamberC")),
+  mirrorChamberC(new tdcSystem::CrossWayTube(keyName+"MirrorChamberC")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -123,7 +120,7 @@ Segment47::~Segment47()
 {}
 
 void
-Segment47::createSplitInnerZone(Simulation& System)
+Segment47::createSplitInnerZone()
   /*!
     Split the innerZone into two parts (assuming segment44 built)
     \param System :: Simulation to use
@@ -131,7 +128,7 @@ Segment47::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment47","createSplitInnerZone");
 
-  //  *IZThin = *buildZone;
+  *IZThin=*buildZone;
   if (!sideVec.empty())
     {
       HeadRule HRcut;
@@ -144,10 +141,7 @@ Segment47::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(HRcut);
 
       IZThin->setSurround(HSurroundB);
-      IZThin->clearDivider();
-      IZThin->setInsertCells(buildZone->getInsertCells());
     }
-  
   return;
 }
   
@@ -161,54 +155,47 @@ Segment47::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment47","buildObjects");
-/* OLD INNERZONE 
 
   int outerCell;
-  MonteCarlo::Object* masterCell=IZThin->getMaster();
-
-  if (!masterCell)
-    masterCell=IZThin->constructMasterCell(System);
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
-
   
-  const constructSystem::portItem& PC =
-      buildIonPump2Port(System,*IZThin,masterCell,*pipeA,"back",*prismaChamberA);
-
-  const constructSystem::portItem& MCA =
-    buildIonPump2Port(System,*IZThin,masterCell,PC,"OuterPlate",*mirrorChamberA,true);
+  constructSystem::constructUnit
+    (System,*IZThin,*pipeA,"back",*prismaChamberA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,MCA,"back",*pipeB);
-
-  const constructSystem::portItem& MCB =
-    buildIonPump2Port(System,*IZThin,masterCell,*pipeB,"back",*mirrorChamberB,true);
+    (System,*IZThin,*prismaChamberA,"back",*mirrorChamberA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,MCB,"back",*pipeC);
-
-  const constructSystem::portItem& MCC =
-    buildIonPump2Port(System,*IZThin,masterCell,*pipeC,"back",*mirrorChamberC,true);
+    (System,*IZThin,*mirrorChamberA,"back",*pipeB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,MCC,"back",*pipeD);
+    (System,*IZThin,*pipeB,"back",*mirrorChamberB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*pipeD,"back",*gateA);
+    (System,*IZThin,*mirrorChamberB,"back",*pipeC);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gateA,"back",*bellowA);
+    (System,*IZThin,*pipeC,"back",*mirrorChamberC);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowA,"back",*pipeE);
+    (System,*IZThin,*mirrorChamberC,"back",*pipeD);
+    
+  constructSystem::constructUnit
+    (System,*IZThin,*pipeD,"back",*gateA);
 
-  IZThin->removeLastMaster(System);
-*/
+  constructSystem::constructUnit
+    (System,*IZThin,*gateA,"back",*bellowA);
+
+  constructSystem::constructUnit
+    (System,*IZThin,*bellowA,"back",*pipeE);
+
+
   return;
 }
 
@@ -225,6 +212,7 @@ Segment47::createLinks()
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
+  buildZone->setBack(FixedComp::getFullRule(2));
   return;
 }
 
@@ -245,7 +233,7 @@ Segment47::createAll(Simulation& System,
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
-  createSplitInnerZone(System);
+  createSplitInnerZone();
   buildObjects(System);
   createLinks();
   return;

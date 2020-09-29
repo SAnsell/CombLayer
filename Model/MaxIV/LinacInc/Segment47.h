@@ -37,21 +37,21 @@ class Segment47 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+  std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
   
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
-  std::shared_ptr<constructSystem::BlankTube> prismaChamberA; ///< #2 and #3
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberA; ///< #4
+  std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberB; ///< #4
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberB; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #5
-  std::shared_ptr<constructSystem::PipeTube> mirrorChamberC; ///< #4
+  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberC; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #6
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #7
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
 
-  void createSplitInnerZone(Simulation&);
+  void createSplitInnerZone();
   
   void buildObjects(Simulation&);
   void createLinks();

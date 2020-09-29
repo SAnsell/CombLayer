@@ -78,10 +78,11 @@ class CrossWayGenerator
   template<typename T> void setFlangeCF();
   template<typename CF> void setPortCF();
   template<typename CF> void setCrossCF();
+  
   void setMainLength(const double,const double);
   void setPortLength(const double,const double);
   void setCrossLength(const double,const double);
-
+  void setPlateThick(const double,const std::string&);
   
   void generateCrossWay(FuncDataBase&,
 		       const std::string&) const;

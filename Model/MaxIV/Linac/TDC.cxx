@@ -587,11 +587,14 @@ TDC::createAll(Simulation& System,
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
+	  
 	  segPtr->captureCellMap();
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
+
+	  ELog::EM<<"TDC ADFAF "<<ELog::endDiag;
 
 
 	  if (BL=="Segment10")
@@ -611,14 +614,17 @@ TDC::createAll(Simulation& System,
 	      if (ci!=SegMap.end())
 		{
 		  const TDCsegment* seg45Ptr=ci->second.get();
-		  const int SN(seg45Ptr->getLinkSurf(2));
-		  const int SNback(segPtr->getLinkSurf(2));
-		  const int CN(buildZone->getInsertCells()[0]);
-		  MonteCarlo::Object* OPtr=System.findObject(CN);
-		  if (!OPtr)
-		    throw ColErr::InContainerError<int>
-		      (CN,"Object not found for Seg47");
-		  OPtr->substituteSurf(SN,SNback,0);
+		  if (seg45Ptr->hasActiveCells())
+		    {
+		      const int SN(seg45Ptr->getLinkSurf(2));
+		      const int SNback(segPtr->getLinkSurf(2));
+		      const int CN(buildZone->getInsertCells()[0]);
+		      MonteCarlo::Object* OPtr=System.findObject(CN);
+		      if (!OPtr)
+			throw ColErr::InContainerError<int>
+			  (CN,"Object not found for Seg47");
+		      OPtr->substituteSurf(SN,SNback,0);
+		    }
 		}
 	    }
 	}
