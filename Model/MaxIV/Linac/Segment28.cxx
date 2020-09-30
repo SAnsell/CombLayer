@@ -156,8 +156,8 @@ Segment28::createSplitInnerZone()
     }
  
   const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(-ZEffective); 
+  HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
+  HSurroundB.removeMatchedPlanes(-ZEffective,0.9); 
 
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));

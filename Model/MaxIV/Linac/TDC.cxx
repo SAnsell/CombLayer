@@ -552,7 +552,7 @@ TDC::createAll(Simulation& System,
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")
-	    sideSegNames={"Segment13","Segment14"};
+	    sideSegNames={"Segment13","Segment14","Segment15"};
 
 	  if (BL=="Segment46")
 	    sideSegNames={"Segment44","Segment45"};

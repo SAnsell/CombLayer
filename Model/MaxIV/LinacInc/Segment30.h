@@ -61,6 +61,8 @@ class Segment30 :
 
   void createSplitInnerZone(Simulation&);
 
+  void postBuild(Simulation&);
+  
  public:
 
   Segment30(const std::string&);

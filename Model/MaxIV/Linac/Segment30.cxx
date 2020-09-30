@@ -130,6 +130,8 @@ Segment30::createSplitInnerZone(Simulation& System)
 
   const double orgFrac(2.3);
   const double axisFrac(4.0);
+
+  *IZThin = *buildZone;
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -142,37 +144,29 @@ Segment30::createSplitInnerZone(Simulation& System)
       ModelSupport::buildPlane(SMap,buildIndex+5005,
 			       (sideOrg+Origin*orgFrac)/(orgFrac+1.0),midX);
 
-      int SNremoved(0);
-      for(const TDCsegment* sidePtr : sideVec)
+      if (sideSegment->getKeyName()=="L2SPF13")
 	{
-	  for(const int CN : sidePtr->getCells("BuildVoid"))
+	  int SNremoved(0);
+	  for(const TDCsegment* sidePtr : sideVec)
 	    {
-	      MonteCarlo::Object* OPtr=System.findObject(CN);
-	      HeadRule HA=OPtr->getHeadRule();   // copy
-	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
-	      HA.addIntersection(SMap.realSurf(buildIndex+5005));
-	      OPtr->procHeadRule(HA);
+	      if (sidePtr->getKeyName()!="TDC15")
+		{
+		  for(const int CN : sidePtr->getCells("Unit"))
+		    {
+		      MonteCarlo::Object* OPtr=System.findObject(CN);
+		      HeadRule HA=OPtr->getHeadRule();   // copy
+		      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+		      HA.addIntersection(SMap.realSurf(buildIndex+5005));
+		      OPtr->procHeadRule(HA);
+		    }
+		}
 	    }
+	  HeadRule HSurroundB=buildZone->getSurround();
+	  HSurroundB.removeOuterPlane(Origin,X,0.9);
+	  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+	  IZThin->setSurround(HSurroundB);
 	}
-      if (sideVec.size()>=2)
-	{
-	  HeadRule TriCut=buildZone->getSurround();
-	  TriCut.removeOuterPlane(Origin,X,0.9);
-	  TriCut.removeOuterPlane(Origin,-X,0.9);
-	  TriCut*=sideVec[1]->getFullRule(-2);
-	  TriCut.addIntersection(-SNremoved);
-	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
-	}
-      HeadRule HSurroundB=buildZone->getSurround();
-      HSurroundB.removeOuterPlane(Origin,X,0.9);
-      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-      IZThin->setSurround(HSurroundB);
     }
-  
-  else  // CONSTRUCTION ISOLATED:
-    {
-      *IZThin = *buildZone;
-    } 
   return;
 }
 
@@ -210,6 +204,71 @@ Segment30::buildObjects(Simulation& System)
   pipeTerminate(System,*IZThin,pipeB);
 
   return;
+}
+
+void
+Segment30::postBuild(Simulation& System)
+/*!
+    Add additonal stuff after building based on
+    relative segments
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("Segment46","postBuild");
+  
+  typedef std::map<std::string,const TDCsegment*> mapTYPE;
+  if (!sideVec.empty())
+    {
+      mapTYPE segNames;
+      for(const TDCsegment* sidePtr : sideVec)
+	{
+	  segNames.emplace(sidePtr->getKeyName(),sidePtr);
+	  ELog::EM<<"Segment == "<<sidePtr->getKeyName()<<ELog::endDiag;
+	}
+
+      HeadRule surHR=buildZone->getSurround();
+      surHR.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+      surHR.addIntersection(SMap.realSurf(buildIndex+5005));
+      
+      if (segNames.find("L2SPF13")!=segNames.end() &&
+	  segNames.find("TDC14")==segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("L2SPF13");
+	  const TDCsegment* sideSegment=mc->second;
+	  const HeadRule frontHR=sideSegment->getFullRule("back");
+	  const HeadRule backHR=getFullRule("back");
+	  surHR *= frontHR * backHR.complement();
+	}
+      if (segNames.find("L2SPF13")!=segNames.end() &&
+	  segNames.find("TDC14")!=segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("TDC14");
+	  const TDCsegment* sideSegment=mc->second;
+	  const HeadRule frontHR=sideSegment->getFullRule("back");
+	  const HeadRule backHR=getFullRule("back");
+	  surHR *= frontHR * backHR.complement();
+	}
+      if (segNames.find("TDC15")!=segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("TDC15");
+	  const TDCsegment* sideSegment=mc->second;
+	  HeadRule sxHR=sideSegment->getSurround();
+	  ELog::EM<<"CALL "<<ELog::endDiag;
+	  const int ii=sxHR.findAxisPlane(-X,0.9);
+	  ELog::EM<<"CALL "<<ii<<ELog::endDiag;	 
+	  const std::set<int> SN=sxHR.findAxisPlanes(X,0.9);
+	  const std::set<int> SN=sxHR.findAxisPlanes(X,0.9);
+	  for(const int CN : SN)
+	    ELog::EM<<"Surf == "<<CN<<ELog::endDiag;
+	  
+	  surHR.addIntersection(-SMap.realSurf(1030013));
+	  ELog::EM<<"SRU == "<<sxHR<<ELog::endDiag;
+	}
+
+      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());      
+    }
+  return;
+ 
 }
 
 void
@@ -275,6 +334,8 @@ Segment30::createAll(Simulation& System,
   createSplitInnerZone(System);
   buildObjects(System);
   createLinks();
+  postBuild(System);
+
   return;
 }
 

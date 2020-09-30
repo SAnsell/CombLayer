@@ -172,6 +172,7 @@ Segment14::createLinks()
   setLinkSignedCopy(1,*bellowB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 

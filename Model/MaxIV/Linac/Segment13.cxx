@@ -170,7 +170,8 @@ Segment13::buildObjects(Simulation& System)
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVerC);
   pipeTerminate(System,*buildZone,pipeC);
-  
+
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 

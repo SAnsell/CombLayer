@@ -196,35 +196,6 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
   return;
 }
 
-const constructSystem::portItem&
-TDCsegment::buildIonPump2Port(Simulation& System,
-			      attachSystem::BlockZone& buildZone,
-			      const attachSystem::FixedComp& linkUnit,
-			      const std::string& sideName,
-			      constructSystem::VirtualTube& ionPump,
-			      const bool intersect) const
-/*!
-  Build 2 port ion pump
- */
-{
-  ELog::RegMethod RegA("TDCsegmetn","buildIonPump2Port");
-  
-  int fakeCell=buildZone.createFakeCell(System);
-  ionPump.addAllInsertCell(fakeCell);
-  ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump.createAll(System,linkUnit,sideName);
-
-  if (intersect)
-    for (size_t i=2; i<=3; ++i)
-      for (size_t j=0; j<=1; ++j)
-	ionPump.intersectPorts(System,i,j);
-
-  const constructSystem::portItem& port=ionPump.getPort(1);
-  const int outerCell=buildZone.createUnit(System,port,"OuterPlate");
-  ionPump.insertAllInCell(System,outerCell);
-
-  return port;
-}
 
 bool
 TDCsegment::totalPathCheck(const FuncDataBase& Control,

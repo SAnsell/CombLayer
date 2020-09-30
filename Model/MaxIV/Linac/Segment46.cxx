@@ -332,9 +332,12 @@ Segment46::writePoints() const
 void
 Segment46::postBuild(Simulation& System)
   /*!
-    Add additonal stuff
-   */
+    Add additonal stuff after building based on
+    relative segments
+  */
 {
+  ELog::RegMethod RegA("Segment46","postBuild");
+  
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
   if (!sideVec.empty())
     {

@@ -187,10 +187,10 @@ Segment27::createSplitInnerZone()
 
 
   const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective);
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+  HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
+  HSurroundB.removeMatchedPlanes(ZEffective,0.9);   // remove both
+  HSurroundB.removeMatchedPlanes(-ZEffective,0.9);
+  HSurroundC.removeMatchedPlanes(-ZEffective,0.9);  // remove top
 
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
