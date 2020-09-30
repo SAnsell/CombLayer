@@ -314,9 +314,6 @@ BlockZone::createFakeCell(Simulation& System)
 
   const HeadRule Volume=surroundHR * backHR * maxExtentHR;
   makeCell("Fake",System,cellIndex+1001,voidMat,0.0,Volume);
-  ELog::EM<<"Vol = "<<Volume<<ELog::endDiag;
-  ELog::EM<<"back = "<<backHR<<ELog::endDiag;
-  ELog::EM<<"EXT = "<<maxExtentHR<<ELog::endDiag;
   fakeCell=cellIndex+1001;
   return fakeCell;
 }

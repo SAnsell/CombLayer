@@ -205,6 +205,9 @@ Segment45::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*adaptor,"back",*pipeB);
 
+  const std::vector<int> unitCells=buildZone->getCells("Unit");
+  for(const int CN : unitCells)
+    CellMap::addCell("Unit",CN);
   return;
 }
 

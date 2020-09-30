@@ -175,16 +175,20 @@ Segment46::createSplitInnerZone(Simulation& System)
 
       const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
-
       const Geometry::Vec3D zAxis=X*cutAxis.unit();
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       for(const TDCsegment* sidePtr : sideVec)
 	{
-	  std::vector<int> CNvec=sidePtr->getCells("BuildVoid");
+	  std::vector<int> CNvec;
+
 	  // need only the last cell for SPF44
 	  if (sidePtr->getKeyName()=="SPF44")
-	    CNvec.erase(CNvec.begin(),CNvec.end()-1);
+	    CNvec=sidePtr->getCells("OverLap");	    
+
+	  // need only the last cell for SPF45
+	  if (sidePtr->getKeyName()=="SPF45")
+	    CNvec=sidePtr->getCells("Unit");	    
 
 	  for(const int CN : CNvec)
 	    {
@@ -202,7 +206,6 @@ Segment46::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
 
       IZThin->setSurround(HSurroundB);
-      //      IZThin->clearDivider();
     }
 
 
@@ -327,9 +330,40 @@ Segment46::writePoints() const
 }
 
 void
+Segment46::postBuild(Simulation& System)
+  /*!
+    Add additonal stuff
+   */
+{
+  typedef std::map<std::string,const TDCsegment*> mapTYPE;
+  if (!sideVec.empty())
+    {
+      mapTYPE segNames;
+      for(const TDCsegment* sidePtr : sideVec)
+	segNames.emplace(sidePtr->getKeyName(),sidePtr);
+
+      if (segNames.find("SPF44")!=segNames.end() &&
+	  segNames.find("SPF45")==segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("SPF44");
+	  const TDCsegment* sideSegment=mc->second;
+	  HeadRule surHR=buildZone->getSurround();
+	  const HeadRule frontHR=sideSegment->getFullRule("magnetExit");
+	  const HeadRule backHR=IZThin->getBack();
+	  surHR.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	  surHR.addIntersection(-SMap.realSurf(buildIndex+5005));
+	  surHR *= frontHR * backHR.complement();
+
+	  makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
+	}
+    }
+  return;
+}
+
+void
 Segment46::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -344,6 +378,7 @@ Segment46::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSplitInnerZone(System);
   buildObjects(System);
+  postBuild(System);
   createLinks();
   //  writePoints();
   return;

@@ -157,6 +157,8 @@ Segment44::buildObjects(Simulation& System)
   CellMap::addCell("LastCell",outerCellB);
   CellMap::addCell("LastCell",outerCellC);
 
+  CellMap::addCell("OverLap",outerCellC);
+  
   return;
 }
 
