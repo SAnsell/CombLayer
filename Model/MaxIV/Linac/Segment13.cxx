@@ -142,6 +142,7 @@ Segment13::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
+  //  ELog::EM<<"This -- "<<getRule("front")<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeA);

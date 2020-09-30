@@ -2281,7 +2281,7 @@ Segment30(FuncDataBase& Control,
 
   // Gauge
   setGauge37(Control,lKey+"Gauge");
-  Control.addVariable(lKey+"GaugeYAngle",180.0);
+  Control.addVariable(lKey+"GaugeYAngle",0.0);
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");

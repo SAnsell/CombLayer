@@ -1278,16 +1278,9 @@ HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
 	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
       if (PPtr)
 	{
-	  ELog::EM<<"Ptr = "<<*PPtr<<"::"
-		  <<PPtr->getNormal()<<" = "<<
-		  PPtr->getNormal().dotProd(Axis)<<ELog::endDiag;
 	  if ((SNum>0 && PPtr->getNormal().dotProd(Axis) > tolValue) ||
 	      (SNum<0 && PPtr->getNormal().dotProd(Axis) < -tolValue))
 	    {
-	      ELog::EM<<"X = "<<Axis<<":"<<PPtr->getNormal()<<ELog::endDiag;
-	      ELog::EM<<"X = "<<PPtr->getNormal().dotProd(Axis)<<ELog::endDiag;
-	      ELog::EM<<"Ptr = "<<*PPtr<<ELog::endDiag;
-
 	      activePlane.emplace(SNum);
 	    } 
 	}
@@ -1298,11 +1291,12 @@ HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
 
 int
 HeadRule::findAxisPlane(const Geometry::Vec3D& Axis,
-			 const double tolValue) 
+			const double tolValue) 
   /*!
     Removes the first instance of a palne which matchs
-    closely to the vector Axis
-    of that surface from the Rule
+    closely to the vector Axis. The requirment is that 
+    the axis would effectively intersect the surface as 
+    if coming from the middle of the object.
     \param Axis :: Directionally matched surface 
     \param tolValue :: Tolerance value
     \return active surface
@@ -1311,32 +1305,12 @@ HeadRule::findAxisPlane(const Geometry::Vec3D& Axis,
   ELog::RegMethod RegA("HeadRule","axisPlane");
 
 
-  std::set<int> activePlane;
-  if (!HeadNode) 
-    return 0;
-  populateSurf();
-    
-  const std::set<int> allSurf=getSurfSet();
+  const std::set<int> activePlane=
+    findAxisPlanes(Axis,tolValue);
+  if (activePlane.size()!=1)
+    throw ColErr::MisMatch<size_t>(activePlane.size(),1,"activePlanes");
 
-  double outValue(0.0);
-  int outSurf(0);
-  
-  for(const int SNum : allSurf)
-    {
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
-      if (PPtr)
-	{
-	  const double PN=PPtr->getNormal().dotProd(Axis);
-	  if (PN > tolValue && PN>outValue)
-	    {
-	      outSurf=std::abs(SNum);
-	      outValue=PN;
-	    } 
-	}
-    }
-
-  return outSurf;
+  return *(activePlane.begin());
 }
 
 const SurfPoint*

@@ -195,11 +195,16 @@ Segment12::buildObjects(Simulation& System)
   pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ionPumpLA,"back",*pipeLA);
-
+  bellowRB->addInsertCell(outerCell);
+  
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeLA,"back",*bellowLB);
-  bellowRB->insertInCell(System,outerCell);
 
+
+  bellowRB->setFront(*flatB,"back");
+  bellowRB->createAll(System,*flatB,"back");
+  bellowRB->insertInCell(System,outerCell);
+  
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
 
@@ -214,10 +219,8 @@ Segment12::createLinks()
 {
   setLinkSignedCopy(0,*bellowA,1);
 
-  //  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
-  //  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
-  setLinkSignedCopy(1,*bellowA,2);  // straigh exit
-  setLinkSignedCopy(2,*bellowA,2);  // magnet exit
+  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
+  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"magnetExit");

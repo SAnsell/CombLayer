@@ -252,17 +252,9 @@ Segment30::postBuild(Simulation& System)
 	{
 	  mapTYPE::const_iterator mc=segNames.find("TDC15");
 	  const TDCsegment* sideSegment=mc->second;
-	  HeadRule sxHR=sideSegment->getSurround();
-	  ELog::EM<<"CALL "<<ELog::endDiag;
-	  const int ii=sxHR.findAxisPlane(-X,0.9);
-	  ELog::EM<<"CALL "<<ii<<ELog::endDiag;	 
-	  const std::set<int> SN=sxHR.findAxisPlanes(X,0.9);
-	  const std::set<int> SN=sxHR.findAxisPlanes(X,0.9);
-	  for(const int CN : SN)
-	    ELog::EM<<"Surf == "<<CN<<ELog::endDiag;
-	  
-	  surHR.addIntersection(-SMap.realSurf(1030013));
-	  ELog::EM<<"SRU == "<<sxHR<<ELog::endDiag;
+	  HeadRule SRX=sideSegment->getSurround();
+	  const int SN=SRX.findAxisPlane(X,0.9);
+	  surHR.addIntersection(-SMap.realSurf(SN));
 	}
 
       makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());      
