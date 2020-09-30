@@ -63,6 +63,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
+#include "Object.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -156,12 +157,16 @@ Segment27::~Segment27()
 void
 Segment27::createSplitInnerZone()
   /*!
-    Spilit the innerZone into three parts.
+    Split the innerZone into three parts.
     \param System :: Simulatio to use
    */
 {
   ELog::RegMethod RegA("Segment27","createSplitInnerZone");
 
+  *IZTop=*buildZone;
+  *IZFlat=*buildZone;
+  *IZLower=*buildZone;
+  
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
@@ -220,6 +225,13 @@ Segment27::buildObjects(Simulation& System)
 
   int outerCellA,outerCellB,outerCellC;
 
+  if (joinItems.size()>=3)
+    {
+      bellowAA->setFront(joinItems[0].display());
+      bellowBA->setFront(joinItems[1].display());
+      bellowCA->setFront(joinItems[2].display());
+    }
+    
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);

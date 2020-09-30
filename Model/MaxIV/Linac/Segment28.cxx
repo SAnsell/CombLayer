@@ -132,11 +132,7 @@ Segment28::createSplitInnerZone()
    */
 {
   ELog::RegMethod RegA("Segment28","createSplitInnerZone");
-  /*
-  *IZTop = *buildZone;
-  *IZFlat = *buildZone;
 
-  */
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
 
@@ -164,9 +160,10 @@ Segment28::createSplitInnerZone()
 
   IZTop->setFront(pipeAA->getFullRule(-1));
   IZFlat->setFront(pipeBA->getFullRule(-1));
-
+  ELog::EM<<"Pipe == "<<pipeBA->getFullRule(-1)<<ELog::endDiag;
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
+
 
   return;
 }
@@ -182,6 +179,17 @@ Segment28::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment28","buildObjects");
   int outerCellA,outerCellB;
 
+
+  if (firstItemVec.size()>=2)
+    {
+      ELog::EM<<"Front active "<<ELog::endDiag;
+
+      pipeAA->setFront(*firstItemVec[0]);
+      ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
+      pipeAB->setFront(*prevSegPtr,"backMid");
+    }
+
+  
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
   

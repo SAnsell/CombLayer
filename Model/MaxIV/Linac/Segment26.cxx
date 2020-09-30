@@ -170,6 +170,10 @@ Segment26::createSplitInnerZone()
    */
 {
   ELog::RegMethod RegA("Segment26","createSplitInnerZone");
+  
+  *IZTop=*buildZone;
+  *IZMid=*buildZone;
+  *IZLower=*buildZone;
 
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
@@ -198,9 +202,6 @@ Segment26::createSplitInnerZone()
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
-  IZTop->setFront(pipeAA->getFullRule(-1));
-  IZMid->setFront(pipeAA->getFullRule(-1));
-  IZLower->setFront(pipeAA->getFullRule(-1));
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
@@ -270,7 +271,6 @@ Segment26::buildObjects(Simulation& System)
     (System,*IZMid,*yagUnitB,"back",*pipeBB);
   constructSystem::constructUnit
     (System,*IZLower,*bellowCA,"back",*pipeCB);
-
 
   return;
 }
