@@ -161,7 +161,6 @@ PipeTube::createSurfaces()
       setBack(-SMap.realSurf(buildIndex+2));
     }
   
-  
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));

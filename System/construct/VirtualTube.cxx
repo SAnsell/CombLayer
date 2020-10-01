@@ -378,6 +378,8 @@ VirtualTube::applyPortRotation()
 {
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
+  if (keyName=="MaxPeemFrontBeamHeatBox")
+    ELog::EM<<"Keyname == "<<keyName<<" "<<portConnectIndex<<ELog::endDiag;
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
     throw ColErr::IndexError<size_t>
@@ -410,7 +412,7 @@ VirtualTube::applyPortRotation()
 	  QVpost.rotate(X);
 	  QVpost.rotate(Z);
 	}
-
+      ELog::EM<<"X/Y == "<<Origin<<ELog::endDiag;
       const size_t pIndex=portConnectIndex-3;
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
@@ -463,7 +465,8 @@ VirtualTube::calcCylinderDistance(const size_t pIndex) const
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
 
-  const double R=radius+wallThick;
+  // Length R Now zero
+  const double R=0.0;
   const double ELen=Ports[pIndex]->getExternalLength();
   //  const double CapLen=Ports[pIndex]->getCapLength();
 

@@ -281,7 +281,6 @@ R1FrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
   // FAKE insertcell:
-  heatBox->addAllInsertCell(masterCell->getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,preFC,preSideIndex);
 
@@ -437,14 +436,14 @@ R1FrontEnd::buildShutterTable(Simulation& System,
   bellowI->insertInCell(System,outerCell);
 
   // FAKE insertcell:
-  florTubeA->addAllInsertCell(masterCell->getName());
+
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertAllInCell(System,outerCell);
-  
+
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowJ,2);
@@ -452,8 +451,8 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
   insertFlanges(System,*florTubeA);
 
+
   // FAKE insertcell:
-  gateTubeB->addAllInsertCell(masterCell->getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
@@ -461,13 +460,14 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeB->insertAllInCell(System,outerCell);
 
+
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
   insertFlanges(System,*gateTubeB);
 
-  shutterBox->delayPorts();
+  //  shutterBox->delayPorts();
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterBox,2);
@@ -480,7 +480,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
     shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
   shutterBox->addAllInsertCell(outerCell);
-  shutterBox->createPorts(System);
+  //  shutterBox->createPorts(Systsem);
 
   for(size_t i=0;i<shutters.size();i++)
     {
@@ -513,7 +513,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
 void
 R1FrontEnd::insertFlanges(Simulation& System,
-			       const constructSystem::PipeTube& PT)
+			  const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
     that extend past the linkzone in to ther neighbouring regions.
