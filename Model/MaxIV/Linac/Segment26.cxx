@@ -272,6 +272,12 @@ Segment26::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZLower,*bellowCA,"back",*pipeCB);
 
+  outerCellA=IZTop->createUnit(System,*pipeBB,"back");
+  CellMap::addCell("SpaceFiller",outerCellA);
+
+  outerCellC=IZLower->createUnit(System,*pipeBB,"back");
+  CellMap::addCell("SpaceFiller",outerCellC);
+  
   return;
 }
 

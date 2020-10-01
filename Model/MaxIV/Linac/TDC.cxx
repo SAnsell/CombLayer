@@ -485,9 +485,9 @@ TDC::createAll(Simulation& System,
       {"Segment24",{"tdc","Segment23",1}},
       {"Segment25",{"spfLong","Segment24",1}},
       {"Segment26",{"spfLong","Segment25",1}},
-      {"Segment27",{"spfLong","Segment26",1}},
-      {"Segment28",{"spfLong","Segment27",1}},
-      {"Segment29",{"spfLong","Segment28",1}},
+      {"Segment27",{"spfLong","Segment26",2}},
+      {"Segment28",{"spfLong","Segment27",2}},
+      {"Segment29",{"spfLong","Segment28",2}},
       {"Segment30",{"tdcMain","Segment12",1}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
@@ -580,6 +580,7 @@ TDC::createAll(Simulation& System,
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());
+	  segPtr->removeSpaceFillers(System);
 	  segPtr->initCellMap();
 
 	  segPtr->createAll

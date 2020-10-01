@@ -86,6 +86,8 @@ class TDCsegment :
   bool isBuilt() const { return !(joinItems.empty()); }
   bool totalPathCheck(const FuncDataBase&,const double =0.1) const;
 
+  void removeSpaceFillers(Simulation&) const;
+  
   /// set the current inner zone [allows joining of segments]
   void setInnerZone(attachSystem::BlockZone* IZPtr) { buildZone=IZPtr; }
 

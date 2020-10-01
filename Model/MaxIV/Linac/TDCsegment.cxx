@@ -63,11 +63,7 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "BlockZone.h"
-
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "PipeTube.h"
-#include "portItem.h"
+#include "Simulation.h"
 
 
 #include "TDCsegment.h"
@@ -185,17 +181,34 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
 	prevSegPtr->getJoinItems();
       if (!prevJoinItems.empty())
 	{
-
 	  if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
 	    buildZone->setFront(prevJoinItems[indexPoint-1]);
 	  
 	  this->setFrontSurfs(prevJoinItems);
+
 	}
     }
   
   return;
 }
 
+void
+TDCsegment::removeSpaceFillers(Simulation& System) const
+  /*!
+    Remove space fillers
+    \param System :: Simulation to remove cells from
+   */
+{
+  if (prevSegPtr)
+    {
+      if (prevSegPtr->hasCell("SpaceFiller"))
+	{
+	  for(const int CN : prevSegPtr->getCells("SpaceFiller"))
+	    System.removeCell(CN);
+	}
+    }
+  return;
+}
 
 bool
 TDCsegment::totalPathCheck(const FuncDataBase& Control,

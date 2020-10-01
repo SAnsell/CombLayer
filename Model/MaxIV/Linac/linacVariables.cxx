@@ -2338,13 +2338,7 @@ Segment31(FuncDataBase& Control,
 
   // IonPumpA
 
-  IonTGen.setCF<setVariable::CF63>();        
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setRadius(3.3);         // No_17_00.pdf
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setVertical(4.85,8.25);  // d / h
-  IonTGen.generateTube(Control,lKey+"IonPumpA");
-  Control.addVariable(lKey+"IonPumpAYAngle",90.0);
+  setIonPump2Port(Control,lKey+"IonPumpA",90.0);
 
   setCylGateValve(Control,lKey+"Gate",-90.0,false);
 
@@ -2369,8 +2363,13 @@ Segment31(FuncDataBase& Control,
 
   // IonPumpB
   IonTGen.setCF<setVariable::CF63>();        
-  IonTGen.setMainLength(10.0,10.0);        
+  IonTGen.setMainLength(10.0,10.0);
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setRadius(3.3);         // No_17_00.pdf
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setVertical(11.9,13.9);  // d / h 
   IonTGen.generateTube(Control,lKey+"IonPumpB");
+  Control.addVariable(lKey+"IonPumpBYAngle",90.0);
   
   PGen.generatePipe(Control,lKey+"PipeC",55.7);
 

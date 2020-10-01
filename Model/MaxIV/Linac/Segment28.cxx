@@ -159,8 +159,11 @@ Segment28::createSplitInnerZone()
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
 
   IZTop->setFront(pipeAA->getFullRule(-1));
+  ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
+  ELog::EM<<"BIUKD = "<<buildZone->getFront()<<ELog::endDiag;
+
   IZFlat->setFront(pipeBA->getFullRule(-1));
-  ELog::EM<<"Pipe == "<<pipeBA->getFullRule(-1)<<ELog::endDiag;
+
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
 
@@ -185,8 +188,7 @@ Segment28::buildObjects(Simulation& System)
       ELog::EM<<"Front active "<<ELog::endDiag;
 
       pipeAA->setFront(*firstItemVec[0]);
-      ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
-      pipeAB->setFront(*prevSegPtr,"backMid");
+      pipeBA->setFront(*prevSegPtr,"backMid");
     }
 
   
@@ -216,6 +218,8 @@ Segment28::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZFlat,*pipeBB,"back",*bellowBB);
 
+  outerCellA=IZTop->createUnit(System,*bellowBB,"back");
+  CellMap::addCell("SpaceFiller",outerCellA);
   
   return;
 }

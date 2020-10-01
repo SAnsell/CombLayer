@@ -138,6 +138,9 @@ Segment29::createSplitInnerZone()
 {
   ELog::RegMethod RegA("Segment29","createSplitInnerZone");
 
+  *IZTop=*buildZone;
+  *IZMid=*buildZone;
+
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
 
@@ -219,6 +222,9 @@ Segment29::buildObjects(Simulation& System)
   yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("PlateA"));
   yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("Void"));
   yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
+
+  outerCellA=IZTop->createUnit(System,*yagUnitB,"back");
+  CellMap::addCell("SpaceFiller",outerCellA);
 
   return;
 }
