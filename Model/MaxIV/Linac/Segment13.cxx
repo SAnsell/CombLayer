@@ -199,7 +199,7 @@ Segment13::insertPrevSegment(Simulation& System,
 {
   ELog::RegMethod RegA("Segment13","insertPrevSegment");
   if (prevSegPtr && prevSegPtr->hasCell("LastCell"))
-    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell"));
+    pipeA->insertAllInCell(System,prevSegPtr->getCell("LastCell"));
   return;
 }
 

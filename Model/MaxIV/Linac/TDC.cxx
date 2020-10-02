@@ -319,7 +319,7 @@ TDC::buildInnerZone(Simulation& System,
       {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid","LTVoid"}},
-      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoid"}},
+      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
@@ -593,17 +593,6 @@ TDC::createAll(Simulation& System,
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)
 	    segPtr->writePoints();
-
-	  if (BL=="Segment10")
-	    // SPECIAL CASE : Addition of pipe to TVoid cell
-	    // as it is not in a buildZone
-	    {
-	      const int CN=injectionHall->getCell("TVoid");
-	      std::map<int,HeadRule>::iterator mc= originalSpaces.find(CN);
-	      const MonteCarlo::Object* OPtr=System.findObject(CN);
-	      mc->second=OPtr->getHeadRule();
-	    }
-
 
 	  if (BL=="Segment47")   // SPECIAL REMOVAL
 	    {

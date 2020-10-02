@@ -483,7 +483,7 @@ flexpesOpticsBeamline::buildMono(Simulation& System,
 
   pipeG->createAll(System,*monoB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeG,2);
-  pipeG->insertInCell(System,outerCell);
+  pipeG->insertAllInCell(System,outerCell);
 
   gateC->createAll(System,*pipeG,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
@@ -516,7 +516,7 @@ flexpesOpticsBeamline::buildSlitPackage(Simulation& System,
   
   pipeD->createAll(System,initFC,sideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeD,2);
-  pipeD->insertInCell(System,outerCell);
+  pipeD->insertAllInCell(System,outerCell);
 
   // FAKE insertcell: required
   slitTube->addAllInsertCell(masterCell->getName());
@@ -549,7 +549,7 @@ flexpesOpticsBeamline::buildSlitPackage(Simulation& System,
 
   pipeE->createAll(System,*slitTube,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeE,2);
-  pipeE->insertInCell(System,outerCell);
+  pipeE->insertAllInCell(System,outerCell);
 
   const constructSystem::portItem& SPI=slitTube->getPort(3);
   // this needs teh plate as well if constructed
@@ -565,7 +565,7 @@ flexpesOpticsBeamline::buildSlitPackage(Simulation& System,
 
   pipeF->createAll(System,*bellowD,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
-  pipeF->insertInCell(System,outerCell);
+  pipeF->insertAllInCell(System,outerCell);
   
 
   return;
@@ -614,7 +614,7 @@ flexpesOpticsBeamline::buildM1Mirror(Simulation& System,
   
   pipeC->createAll(System,*gateA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  pipeC->insertAllInCell(System,outerCell);
 
   screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
@@ -681,7 +681,7 @@ flexpesOpticsBeamline::buildObjects(Simulation& System)
   pipeA->createAll(System,*bellowB,2);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCellA,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
   // FAKE insertcell: reqruired
   florTubeA->addAllInsertCell(masterCellA->getName());
@@ -703,7 +703,7 @@ flexpesOpticsBeamline::buildObjects(Simulation& System)
   pipeB->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCellA,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  pipeB->insertAllInCell(System,outerCell);
 
   screenExtra->addAllInsertCell(outerCell);
   screenExtra->setCutSurf("inner",*pipeB,"pipeOuterTop");
@@ -767,12 +767,12 @@ flexpesOpticsBeamline::buildOutGoingPipes(Simulation& System,
 {
   ELog::RegMethod RegA("flexpesOpticsBeamline","buildOutgoingPipes");
 
-  outPipeA->addInsertCell(hutCells);
-  outPipeA->addInsertCell(leftCell);
+  outPipeA->addAllInsertCell(hutCells);
+  outPipeA->addAllInsertCell(leftCell);
   outPipeA->createAll(System,*pumpTubeAA,2);
   
-  outPipeB->addInsertCell(hutCells);
-  outPipeB->addInsertCell(rightCell);
+  outPipeB->addAllInsertCell(hutCells);
+  outPipeB->addAllInsertCell(rightCell);
   outPipeB->createAll(System,*pumpTubeBA,2);
 
   screenB->addAllInsertCell(ContainedComp::getMainCell());

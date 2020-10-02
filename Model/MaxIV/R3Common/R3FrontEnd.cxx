@@ -360,7 +360,7 @@ R3FrontEnd::buildHeatTable(Simulation& System,
   
   pipeB->createAll(System,*ionPB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  pipeB->insertAllInCell(System,outerCell);
   
   return;
   
@@ -405,7 +405,7 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   bellowE->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipe,2);
-  aperturePipe->insertInCell(System,outerCell);
+  aperturePipe->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
   bellowF->insertInCell(System,outerCell);
@@ -437,13 +437,13 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   bellowG->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
-  aperturePipeB->insertInCell(System,outerCell);
+  aperturePipeB->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  pipeC->insertAllInCell(System,outerCell);
 
   
   return;
@@ -573,7 +573,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   transPipe->createAll(System,undulatorFC,2);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*transPipe,2);
-  transPipe->insertInCell(System,outerCell);
+  transPipe->insertAllInCell(System,outerCell);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
   
@@ -614,7 +614,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   dipolePipe->createAll(System,*chokeChamber,
 			chokeChamber->getSideIndex("photon"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
+  dipolePipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,1);
   bellowA->insertInCell(System,outerCell);
@@ -640,7 +640,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   collABPipe->setBack(*bellowC,2);
   collABPipe->createAll(System,*bellowB,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collABPipe,2);
-  collABPipe->insertInCell(System,outerCell);
+  collABPipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,1);
   bellowC->insertInCell(System,outerCell);
@@ -660,7 +660,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   collExitPipe->setFront(*linkFC,2);
   collExitPipe->createAll(System,*linkFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
-  collExitPipe->insertInCell(System,outerCell);
+  collExitPipe->insertAllInCell(System,outerCell);
   
   buildHeatTable(System,masterCell,*collExitPipe,2);
   buildApertureTable(System,masterCell,*pipeB,2);
@@ -668,7 +668,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   
   exitPipe->createAll(System,*bellowK,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*exitPipe,2);
-  exitPipe->insertInCell(System,outerCell);
+  exitPipe->insertAllInCell(System,outerCell);
 
   setCell("MasterVoid",masterCell->getName());  
   lastComp=exitPipe;

@@ -52,6 +52,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -113,7 +114,7 @@ Segment20::buildObjects(Simulation& System)
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*cavity);

@@ -117,7 +117,9 @@ correctorMagnetPair(Simulation& System,
 
   attachSystem::ContainedComp* CPtr=
     dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
-  if (!CPtr)
+  attachSystem::ContainedGroup* CGPtr=
+    dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+  if (!CPtr && !CGPtr)
     throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
 
   
@@ -125,17 +127,24 @@ correctorMagnetPair(Simulation& System,
   CMA->createAll(System,*pipe,"#front");
 
   CMB->setCutSurf("Inner",*pipe,"outerPipe");
-  CMB->createAll(System,*pipe,"#front");
+  CMB->createAll(System,*pipe,"#front"); 
 
   int outerCell=buildZone.createUnit(System,*CMA,-1);
-  CPtr->insertInCell(System,outerCell);
+  (CGPtr) ?
+    CGPtr->insertAllInCell(System,outerCell) :
+    CPtr->insertInCell(System,outerCell) ;
+    
+
+  
   outerCell=buildZone.createUnit(System,*CMA,2);
   CMA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*CMB,-1);
-  CPtr->insertInCell(System,outerCell);
+  (CGPtr) ?
+    CGPtr->insertAllInCell(System,outerCell) :
+    CPtr->insertInCell(System,outerCell) ;
 
-  outerCell=buildZone.createUnit(System,*CMB,2);
+
   CMB->insertInCell(System,outerCell);
 
   return outerCell;
@@ -167,13 +176,20 @@ pipeMagUnit(Simulation& System,
   
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
-  attachSystem::ContainedComp* CPtr=
-    dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
-  if (!CPtr)
-    throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
-
   int outerCell=buildZone.createUnit(System,*magUnit,-1);
-  CPtr->insertInCell(System,outerCell);
+  
+  attachSystem::ContainedGroup* CGPtr=
+    dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
+  if (CGPtr)
+    CGPtr->insertAllInCell(System,outerCell);
+  else
+    {
+      attachSystem::ContainedComp* CPtr=
+	dynamic_cast<attachSystem::ContainedComp*>(pipe.get());
+      if (!CPtr)
+	throw ColErr::DynamicConv("FixedComp","Contained(Comp/Group)","pipe");
+      CPtr->insertInCell(System,outerCell);
+    }
 
   outerCell=buildZone.createUnit(System,*magUnit,2);
   magUnit->insertInCell(System,outerCell);

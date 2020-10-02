@@ -132,7 +132,7 @@ Segment24::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*ionPump);

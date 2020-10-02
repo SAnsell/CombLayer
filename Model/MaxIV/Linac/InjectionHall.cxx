@@ -358,8 +358,12 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -201 1112 3 -1003 5 -6 (1522 : 1503) ");
-  makeCell("TVoid",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 1112 -1003 5 -6 -1522  1503 ");
+  makeCell("TVoidA",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -201  3 -1003 5 -6 1522 ");
+  makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");

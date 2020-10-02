@@ -154,11 +154,11 @@ Segment26::insertPrevSegment(Simulation& System,
 
   if (prevSegPtr && prevSegPtr->hasCell("BellowCell"))
     {
-      pipeAA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
-      pipeBA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
-      pipeCA->insertInCell(System,prevSegPtr->getCell("BellowCell"));
+      pipeAA->insertAllInCell(System,prevSegPtr->getCell("BellowCell"));
+      pipeBA->insertAllInCell(System,prevSegPtr->getCell("BellowCell"));
+      pipeCA->insertAllInCell(System,prevSegPtr->getCell("BellowCell"));
       if (prevSegPtr->hasCell("MultiCell"))
-	pipeCA->insertInCell(System,prevSegPtr->getCell("MultiCell"));
+	pipeCA->insertAllInCell(System,prevSegPtr->getCell("MultiCell"));
     }
   return;
 }
@@ -232,9 +232,9 @@ Segment26::buildObjects(Simulation& System)
   outerCellB=IZMid->createUnit(System,*pipeBA,2);
   outerCellC=IZLower->createUnit(System,*pipeCA,2);
 
-  pipeAA->insertInCell(System,outerCellA);
-  pipeBA->insertInCell(System,outerCellB);
-  pipeCA->insertInCell(System,outerCellC);
+  pipeAA->insertAllInCell(System,outerCellA);
+  pipeBA->insertAllInCell(System,outerCellB);
+  pipeCA->insertAllInCell(System,outerCellC);
 
   // BELLOWS B:
   constructSystem::constructUnit

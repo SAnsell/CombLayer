@@ -54,6 +54,7 @@
 #include "FixedUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -200,8 +201,8 @@ Segment28::buildObjects(Simulation& System)
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZFlat->createUnit(System,*pipeBA,2);
 
-  pipeAA->insertInCell(System,outerCellA);
-  pipeBA->insertInCell(System,outerCellB);
+  pipeAA->insertAllInCell(System,outerCellA);
+  pipeBA->insertAllInCell(System,outerCellB);
 
   constructSystem::constructUnit
     (System,*IZTop,*pipeAA,"back",*bellowAA);

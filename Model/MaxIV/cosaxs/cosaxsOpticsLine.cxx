@@ -454,7 +454,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   adaptorPlateA->setFront(*screenPipeB,2);
   adaptorPlateA->createAll(System,*screenPipeB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*adaptorPlateA,2);
-  adaptorPlateA->insertInCell(System,outerCell);
+  adaptorPlateA->insertAllInCell(System,outerCell);
 
 
   diffPumpA->setCutSurf("front",*adaptorPlateA,2);

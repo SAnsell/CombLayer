@@ -43,6 +43,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -60,7 +61,6 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ContainedGroup.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
@@ -163,7 +163,7 @@ Segment47::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
   
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*prismaChamberA);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/ESTIA.cxx
+ * File:   estia/ESTIA.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ ESTIA::buildChopperBlock(Simulation& System,
   House.createAll(System,Disk.getKey("Main"),0);
   House.insertComponent(System,"Void",Disk);
 
-  Pipe.addInsertCell(bunkerObj.getCell("MainVoid"));
+  Pipe.addAllInsertCell(bunkerObj.getCell("MainVoid"));
   Pipe.setFront(prevVacBox,2);
   Pipe.setBack(VacBox,1);
   Pipe.createAll(System,prevVacBox,2);
@@ -217,7 +217,7 @@ ESTIA::build(Simulation& System,
   FocusMono->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
 
   // Shutter pipe [note gap front/back]
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->createAll(System,FocusMono->getKey("Guide0"),2);
 
   FocusA->addInsertCell(VPipeA->getCells("Void"));
@@ -225,7 +225,7 @@ ESTIA::build(Simulation& System,
 		    FocusMono->getKey("Guide0"),2);
 
   // pipe for first section
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
   return;

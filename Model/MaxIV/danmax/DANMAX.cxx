@@ -180,9 +180,9 @@ DANMAX::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
@@ -197,10 +197,10 @@ DANMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
-  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
-  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
@@ -216,10 +216,10 @@ DANMAX::build(Simulation& System,
   connectUnit->setBack(*exptHut,1);
   connectUnit->construct(System,*opticsHut,"back",*joinPipeB,"back");
 
-  joinPipeB->insertInCell(System,connectUnit->getCell("OuterVoid",0));
+  joinPipeB->insertAllInCell(System,connectUnit->getCell("OuterVoid",0));
   
-  joinPipeC->insertInCell(System,exptHut->getCell("Void"));
-  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
+  joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
+  joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
   
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(exptHut->getCell("Void"));

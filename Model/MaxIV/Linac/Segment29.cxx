@@ -195,8 +195,8 @@ Segment29::buildObjects(Simulation& System)
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZMid->createUnit(System,*pipeBA,2);
 
-  pipeAA->insertInCell(System,outerCellA);
-  pipeBA->insertInCell(System,outerCellB);
+  pipeAA->insertAllInCell(System,outerCellA);
+  pipeBA->insertAllInCell(System,outerCellB);
 
   constructSystem::constructUnit
     (System,*IZTop,*pipeAA,"back",*bellowAA);

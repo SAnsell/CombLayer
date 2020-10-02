@@ -458,6 +458,23 @@ ContainedGroup::getOuterSurf(const std::string& Key) const
 }
   
 std::string
+ContainedGroup::getAllExclude() const
+  /*!
+    Calculate the write out the excluded surface.
+    This allows the object to be inserted in a larger
+    object.
+    \return Exclude string [union]
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","getExclude");
+  HeadRule Out;
+  for(const auto& [key,CC] : CMap)
+    Out.addUnion(CC.getOuterSurf());
+		 
+  return Out.complement().display();
+}
+
+std::string
 ContainedGroup::getExclude(const std::string& Key) const
   /*!
     Calculate the write out the excluded surface.

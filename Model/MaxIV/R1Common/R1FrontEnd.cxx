@@ -320,7 +320,7 @@ R1FrontEnd::buildHeatTable(Simulation& System,
   
   pipeB->createAll(System,*ionPB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  pipeB->insertAllInCell(System,outerCell);
   
   return;
   
@@ -365,7 +365,7 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   bellowE->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipe,2);
-  aperturePipe->insertInCell(System,outerCell);
+  aperturePipe->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
   bellowF->insertInCell(System,outerCell);
@@ -397,13 +397,13 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   bellowG->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
-  aperturePipeB->insertInCell(System,outerCell);
+  aperturePipeB->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  pipeC->insertAllInCell(System,outerCell);
 
   
   return;
@@ -595,7 +595,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   dipolePipe->createAll(System,*magnetBlock,"Photon");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   magnetBlock->insertInCell("Magnet",System,outerCell);  
-  dipolePipe->insertInCell(System,outerCell);
+  dipolePipe->insertAllInCell(System,outerCell);
   //  setCell("MasterVoid",masterCell->getName());
   //  lastComp=magnetBlock;
   //  return;
@@ -631,7 +631,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
-  heatPipe->insertInCell(System,outerCell);
+  heatPipe->insertAllInCell(System,outerCell);
 
   if (stopPoint=="Heat")
     {

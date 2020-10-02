@@ -255,10 +255,10 @@ MAGIC::buildBunkerUnits(Simulation& System,
           <<FA.getLinkPt(startIndex).abs()
           <<ELog::endDiag;
     
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
   
   BendC->addInsertCell(VPipeC->getCells("Void"));
@@ -274,19 +274,19 @@ MAGIC::buildBunkerUnits(Simulation& System,
   //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
   //  PSCDisk->createAll(System,ChopperA->getKey("Main"),0);
 
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
 
-  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,FocusD->getKey("Guide0"),2);
   
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
-  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->addAllInsertCell(bunkerVoid);
   VPipeF->createAll(System,FocusE->getKey("Guide0"),2);
   
   FocusF->addInsertCell(VPipeF->getCells("Void"));
@@ -326,7 +326,7 @@ MAGIC::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->createAll(System,FWshield,startShield);
   
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,FWguide,startGuide);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -335,7 +335,7 @@ MAGIC::buildOutGuide(Simulation& System,
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
 
-  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
@@ -344,7 +344,7 @@ MAGIC::buildOutGuide(Simulation& System,
   
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,*ShieldB,2);
-  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+  VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->createAll(System,FocusOutB->getKey("Guide0"),2);
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
   FocusOutC->createAll(System,*ShieldB,2,*VPipeOutC,0);
@@ -352,7 +352,7 @@ MAGIC::buildOutGuide(Simulation& System,
     
   ShieldD->addInsertCell(voidCell);
   ShieldD->createAll(System,*ShieldC,2);
-  VPipeOutD->addInsertCell(ShieldD->getCell("Void"));
+  VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->createAll(System,FocusOutC->getKey("Guide0"),2);
   FocusOutD->addInsertCell(VPipeOutD->getCells("Void"));
   FocusOutD->createAll(System,*ShieldC,2,*VPipeOutD,0);
@@ -360,7 +360,7 @@ MAGIC::buildOutGuide(Simulation& System,
       
   ShieldE->addInsertCell(voidCell);
   ShieldE->createAll(System,*ShieldD,2);
-  VPipeOutE->addInsertCell(ShieldE->getCell("Void"));
+  VPipeOutE->addAllInsertCell(ShieldE->getCell("Void"));
   VPipeOutE->createAll(System,FocusOutD->getKey("Guide0"),2);
   FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
   FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
@@ -394,7 +394,7 @@ MAGIC::buildPolarizer(Simulation& System,
   ShieldF->addInsertCell(voidCell);
   ShieldF->createAll(System,FWshield,startShield);
 
-  VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
+  VPipeOutF->addAllInsertCell(ShieldF->getCell("Void"));
   VPipeOutF->createAll(System,FWguide,startGuide);
 
   FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
@@ -462,7 +462,7 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));

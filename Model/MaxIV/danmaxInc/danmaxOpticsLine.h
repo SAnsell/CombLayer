@@ -89,7 +89,7 @@ class danmaxOpticsLine :
  private:
 
   /// string for pre-insertion into mastercell:0
-  std::shared_ptr<attachSystem::ContainedComp> preInsert;
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::InnerZone buildZone;
   int innerMat;                         ///< inner material if used
@@ -251,7 +251,7 @@ class danmaxOpticsLine :
   void setInnerMat(const int M) { innerMat=M; }
   /// Assignment to extra for first volume
   void setPreInsert
-    (const std::shared_ptr<attachSystem::ContainedComp>& A) { preInsert=A; }
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

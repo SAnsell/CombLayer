@@ -153,7 +153,7 @@ Segment46::insertPrevSegment(Simulation& System,
   ELog::RegMethod RegA("Segment46","insertPrevSegment");
 
   if (prevSegPtr && prevSegPtr->hasCell("LastCell",0))
-    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
+    pipeA->insertAllInCell(System,prevSegPtr->getCell("LastCell",0));
 
   return;
 }
@@ -228,7 +228,7 @@ Segment46::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*gateA);

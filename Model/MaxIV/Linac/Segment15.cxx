@@ -124,7 +124,7 @@ Segment15::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
 
   outerCell=buildZone->createUnit(System,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
 
   outerCell=constructSystem::constructUnit

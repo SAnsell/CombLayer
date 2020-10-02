@@ -54,6 +54,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -255,8 +256,8 @@ cosaxsExptLine::buildObjects(Simulation& System)
   telescopicSystem->createAll(System,*diffPump,-7);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*telescopicSystem,2);
-  telescopicSystem->insertInCell(System,outerCell);
-  telescopicSystem->insertInCell(System,diffPump->getCell("FlangeFrontVoid"));
+  telescopicSystem->insertAllInCell(System,outerCell);
+  telescopicSystem->insertAllInCell(System,diffPump->getCell("FlangeFrontVoid"));
 
 
   // GOOD ABOVE this point:

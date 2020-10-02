@@ -32,6 +32,7 @@ namespace attachSystem
 {
 
   class ContainedComp;
+  class ContainedGroup;
 
 /*!
   \class CellMap
@@ -139,6 +140,8 @@ class CellMap  : public BaseMap
 		       const CellMap&,const std::string&,const size_t) const;
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const ContainedGroup&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,

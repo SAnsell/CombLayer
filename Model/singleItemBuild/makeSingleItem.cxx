@@ -333,7 +333,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(VC);
       OR.addObject(CM);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       CM->setCutSurf("Inner",*VC,"outerPipe");
@@ -426,7 +426,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(VC);
       OR.addObject(QF);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       QF->setCutSurf("Inner",*VC,"outerPipe");
@@ -446,7 +446,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(VC);
       OR.addObject(QH);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       QH->setCutSurf("Inner",*VC,"outerPipe");
@@ -467,7 +467,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(VC);
       OR.addObject(LS);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       LS->setCutSurf("Inner",*VC,"outerPipe");
@@ -783,7 +783,7 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(VC);
       OR.addObject(DIB);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       DIB->setCutSurf("Inner",*VC,"outerPipe");
@@ -805,13 +805,13 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(cavity);
       OR.addObject(pipeB);
 
-      pipeA->addInsertCell(voidCell);
+      pipeA->addAllInsertCell(voidCell);
       pipeA->createAll(System,World::masterOrigin(),0);
 
       cavity->addInsertCell(voidCell);
       cavity->createAll(System,*pipeA,"back");
 
-      pipeB->addInsertCell(voidCell);
+      pipeB->addAllInsertCell(voidCell);
       pipeB->createAll(System,*cavity,"back");
 
       return;
@@ -829,14 +829,14 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-    if (item == "VacuumPipe" )
+  if (item == "VacuumPipe" )
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	VC(new constructSystem::VacuumPipe("VC"));
 
       OR.addObject(VC);
 
-      VC->addInsertCell(voidCell);
+      VC->addAllInsertCell(voidCell);
       VC->createAll(System,World::masterOrigin(),0);
 
       return;
@@ -868,44 +868,43 @@ makeSingleItem::build(Simulation& System,
       }
 
     if (item == "BlankTube" )
-    {
-      std::shared_ptr<constructSystem::BlankTube>
-	blankTube(new constructSystem::BlankTube("BlankTube"));
-
-      OR.addObject(blankTube);
-
-      blankTube->addAllInsertCell(voidCell);
-      blankTube->createAll(System,World::masterOrigin(),0);
-
-      return;
-    }
+      {
+	std::shared_ptr<constructSystem::BlankTube>
+	  blankTube(new constructSystem::BlankTube("BlankTube"));
+	
+	OR.addObject(blankTube);
+	
+	blankTube->addAllInsertCell(voidCell);
+	blankTube->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    
     if (item == "ButtonBPM" )
-    {
-      std::shared_ptr<tdcSystem::ButtonBPM>
-	buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
-
-      OR.addObject(buttonBPM);
-
-      buttonBPM->addInsertCell(voidCell);
-      buttonBPM->createAll(System,World::masterOrigin(),0);
-
-      return;
-    }
-
-
-  if (item=="Help" || item=="help")
-
-  if (item=="Help" || item=="help")
-    {
-
-      ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
-
-      for(const std::string& Name : validItems)
-	ELog::EM<<"Item : "<<Name<<"\n";
-
-      ELog::EM<<"-----------"<<ELog::endDiag;
-    }
-
+      {
+	std::shared_ptr<tdcSystem::ButtonBPM>
+	  buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
+	
+	OR.addObject(buttonBPM);
+	
+	buttonBPM->addInsertCell(voidCell);
+	buttonBPM->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    
+    
+    if (item=="Help" || item=="help")
+      {
+	
+	ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
+	
+	for(const std::string& Name : validItems)
+	  ELog::EM<<"Item : "<<Name<<"\n";
+	
+	ELog::EM<<"-----------"<<ELog::endDiag;
+      }
+    
   return;
 }
 

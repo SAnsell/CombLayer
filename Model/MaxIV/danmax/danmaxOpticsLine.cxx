@@ -645,7 +645,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   // dump cell for joinPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
   if (preInsert)
-    preInsert->insertInCell(System,outerCell);
+    preInsert->insertAllInCell(System,outerCell);
 
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);

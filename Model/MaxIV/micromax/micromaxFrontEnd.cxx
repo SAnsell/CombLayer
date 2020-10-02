@@ -146,7 +146,7 @@ micromaxFrontEnd::buildUndulator(Simulation& System,
   dipolePipe->setFront(*undulatorPipe,2);
   dipolePipe->createAll(System,*undulatorPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
+  dipolePipe->insertAllInCell(System,outerCell);
 
   return *dipolePipe;
 }

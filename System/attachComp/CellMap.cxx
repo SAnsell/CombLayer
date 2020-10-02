@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "AttachSupport.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -191,13 +192,31 @@ CellMap::insertComponent(Simulation& System,
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param CC :: Contained Component ot insert 
+    \param CC :: Contained Component to insert 
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CC)");
   
   if (CC.hasOuterSurf())
     insertComponent(System,Key,CC.getExclude());
+
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			  const ContainedGroup& CG) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param CG :: Contained Component to insert 
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(CG)");
+  
+  insertComponent(System,Key,CG.getAllExclude());
 
   return;
 }

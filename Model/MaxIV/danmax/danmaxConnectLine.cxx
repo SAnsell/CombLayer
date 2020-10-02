@@ -193,7 +193,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
 
   outerCell=buildZone.createFinalVoidUnit(System,masterCell,*pipeB,2);
 
-  JPipe->addInsertCell(outerCell);
+  JPipe->addAllInsertCell(outerCell);
   JPipe->setFront(*pipeB,2);
   JPipe->createAll(System,*pipeB,2);
     

@@ -69,6 +69,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -207,7 +208,7 @@ vacTube::createObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
   
 
   constructSystem::constructUnit

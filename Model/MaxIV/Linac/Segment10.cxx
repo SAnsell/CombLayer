@@ -172,8 +172,10 @@ Segment10::constructHole(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
-      pipeA->addInsertCell(this->getCell("WallVoid"));
-      pipeA->addInsertCell(IHall->getCell("TVoid"));
+      
+      pipeA->addInsertCell("Main",this->getCell("WallVoid"));
+      pipeA->addInsertCell("Main",IHall->getCell("TVoidA"));
+      pipeA->addInsertCell("FlangeB",IHall->getCell("TVoidA"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
@@ -202,7 +204,7 @@ Segment10::buildObjects(Simulation& System)
   
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
 
   if (!nextZone)
@@ -212,7 +214,7 @@ Segment10::buildObjects(Simulation& System)
   // allows the first surface of pipe to be the start of the masterCell
   outerCell=nextZone->createUnit(System,*pipeA,2);
 
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
   pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit

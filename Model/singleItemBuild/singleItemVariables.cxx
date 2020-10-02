@@ -333,12 +333,13 @@ SingleItemVariables(FuncDataBase& Control)
   GVGen.generateGate(Control,"GV",1);
 
   // CylGateValve
-  setVariable::GateValveGenerator GVCGen;
+  setVariable::GateValveGenerator CGateGen;
+
   CGateGen.setOuter(3.4,13.0,20.0,20.0);
   CGateGen.setBladeMat("Stainless304L");
   CGateGen.setBladeThick(0.8);
   CGateGen.setPortPairCF<CF40,CF63>();
-  GVCGen.generateValve(Control,"GVCube",0.0,1);
+  CGateGen.generateValve(Control,"GVCube",0.0,1);
 
 
   //  dipole magnet DIB

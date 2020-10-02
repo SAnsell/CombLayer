@@ -189,10 +189,10 @@ Segment12::buildObjects(Simulation& System)
   cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
 
-  pipeLA->addInsertCell(cellA);
-  pipeLA->addInsertCell(cellB-1);
-  pipeLA->addInsertCell(cellC);
-  pipeLA->addInsertCell(dipoleB->getCell("VoidMiddle"));
+  pipeLA->addAllInsertCell(cellA);
+  pipeLA->addAllInsertCell(cellB-1);
+  pipeLA->addAllInsertCell(cellC);
+  pipeLA->addAllInsertCell(dipoleB->getCell("VoidMiddle"));
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ionPumpLA,"back",*pipeLA);
   bellowRB->addInsertCell(outerCell);

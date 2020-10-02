@@ -225,7 +225,7 @@ Segment45::constructHole(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
-      pipeB->insertInCell(System,this->getCell("FloorVoid"));
+      pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"Floor",Out);

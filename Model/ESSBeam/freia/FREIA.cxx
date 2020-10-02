@@ -247,13 +247,13 @@ FREIA::buildBunkerUnits(Simulation& System,
   ELog::RegMethod RegA("FREIA","buildBunkerUnits");
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());  
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
   
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
@@ -282,7 +282,7 @@ FREIA::buildBunkerUnits(Simulation& System,
   WFMDisk->createAll(System,ChopperB->getKey("Main"),0);
   ChopperB->insertAxle(System,*WFMDisk);
   
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
@@ -298,7 +298,7 @@ FREIA::buildBunkerUnits(Simulation& System,
   FOCDiskC->createAll(System,ChopperC->getKey("Main"),0);
   ChopperC->insertAxle(System,*FOCDiskC);
   
-  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));
@@ -314,7 +314,7 @@ FREIA::buildBunkerUnits(Simulation& System,
   WBC2Disk->createAll(System,ChopperD->getKey("Main"),0);
   ChopperD->insertAxle(System,*WBC2Disk);
   
-  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->addAllInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
   BendF->addInsertCell(VPipeF->getCells("Void"));
@@ -402,7 +402,7 @@ FREIA::buildOutGuide(Simulation& System,
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -474,7 +474,7 @@ FREIA::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
