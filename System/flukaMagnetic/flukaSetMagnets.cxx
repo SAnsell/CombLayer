@@ -101,8 +101,11 @@ setMagneticExternal(SimFLUKA& System,
 	  const std::set<MonteCarlo::Object*> Cells=
 	    mainSystem::getNamedObjects
 	    (System,IParam,"MagStep",index,0,"MagStep");
-	  const double minV=IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
-	  const double maxV=IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
+	  const double minV=
+	    IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
+	  const double maxV=
+	    IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
+
 	  for(MonteCarlo::Object* mc : Cells)
 	    mc->setMagStep(minV,maxV);
 	}
@@ -178,12 +181,20 @@ setDefMagnets(SimFLUKA& System)
 	  // has object in model
 	  if (System.hasActiveObject(FCname))
 	    {
+	      std::vector<double> kFactor;
+	      for(size_t i=0;i<4;i++)
+		{
+		  const double V=Control.EvalDefVar<double>
+		    (MagKey+"KFactor"+std::to_string(i),0.0);
+		  kFactor.push_back(V);
+		}
+	      
 	      std::shared_ptr<attachSystem::FixedComp> FC=
 		System.getSharedPtr(FCname);
 	      
 	      std::shared_ptr<magnetUnit> magA=
 		std::make_shared<magnetUnit>(Item);
-	      
+	      magA->setKFactor(kFactor);
 	      magA->createAll(System,*FC,FClink);
 	      System.addMagnetObject(magA);
 
@@ -198,6 +209,7 @@ setDefMagnets(SimFLUKA& System)
 			CellObjects.find(CN);
 		      if (mc!=CellObjects.end())
 			magnetCells.emplace(mc->second);
+
 		    }
 		}
 	    }
