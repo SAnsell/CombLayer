@@ -131,6 +131,8 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     -- particle FixedComp index
     -- particle cellA  cellB
     -- particle SurfMap name
+    -- particle FixedComp:CellMapName FixedComp:CellMapName 
+
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
@@ -154,27 +156,11 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       (!StrFunc::convert(FCname,cellA) ||
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
-      
+      !constructCellMapPair(System,FCname,FCindex,cellA,cellB) &&
       !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
       )
-    
     {
-
-      // special class because must give regions
-      itemIndex+=2;
-
-      const std::string errKey("No region from "+FCname+":"+FCindex);
-      const size_t regionIndexA=
-	IParam.getValueError<size_t>("tally",Index,4,errKey);
-
-      const size_t regionIndexB=
-	IParam.getValueError<size_t>("tally",Index,6,errKey);
-
-
-      if (!constructSurfRegion(System,FCname,FCindex,
-			       regionIndexA,regionIndexB,cellA,cellB))
-	throw ColErr::InContainerError<std::string>
-	  (FCname+":"+FCindex,"No connecting surface on regions");
+      throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
     }
   ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 

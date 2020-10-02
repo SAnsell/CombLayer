@@ -421,7 +421,32 @@ ObjSurfMap::connectedObjects(const int cellNumber) const
 
 }
 
+bool
+ObjSurfMap::isConnected(const int cellA,const int cellB) const
+  /*!
+    Determine if two objects are connected
+    \param cellA :: Cell number
+    \param cellB :: Cell number
+    \return true if connected
+  */
+{
+  ELog::RegMethod RegA("ObjSurfMap","isConnected");
 
+  OSTYPE::const_iterator mAc=OSurfMap.find(cellA);
+  OSTYPE::const_iterator mBc=OSurfMap.find(cellB);
+  if (mAc==OSurfMap.end() || mBc==OSurfMap.end())
+    return 0;
+
+  const std::set<int>& aSet=mAc->second;
+  const std::set<int>& bSet=mBc->second;
+
+  for(const int SN : aSet)
+    {
+      if (bSet.find(-SN)!=bSet.end()) return 1;
+    }
+  
+  return 0;
+}
 
 void
 ObjSurfMap::write(const std::string& FName) const

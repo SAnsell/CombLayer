@@ -80,6 +80,7 @@ class ObjSurfMap
   MonteCarlo::Object* findNextObject(const int,
 				     const Geometry::Vec3D&,const int) const;
 
+  bool isConnected(const int,const int) const;
   const std::set<int>& connectedObjects(const int) const;
   
   void removeReverseSurf(const int,const int);
