@@ -34,6 +34,8 @@
 #include <iterator>
 #include <memory>
 
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
@@ -51,27 +53,24 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
+
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "StriplineBPM.h"
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "CorrectorMag.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "ContainedGroup.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
+#include "IonPumpTube.h"
 
 #include "TDCsegment.h"
 #include "Segment24.h"
@@ -84,7 +83,7 @@ namespace tdcSystem
 Segment24::Segment24(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
@@ -130,19 +129,16 @@ Segment24::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment24","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   pipeA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*ionPump);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*bellow);
+    (System,*buildZone,*pipeA,"back",*ionPump);
+  
+  constructSystem::constructUnit
+    (System,*buildZone,*ionPump,"back",*bellow);
 
   pipeB->createAll(System,*bellow, "back");
 
@@ -150,14 +146,12 @@ Segment24::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bpm);
+    (System,*buildZone,*pipeB,"back",*bpm);
 
   pipeC->createAll(System,*bpm, "back");
 
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeC);
-
-  buildZone->removeLastMaster(System);
 
   return;
 }

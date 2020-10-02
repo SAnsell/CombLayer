@@ -71,6 +71,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -87,7 +88,8 @@ namespace constructSystem
 
 VacuumPipe::VacuumPipe(const std::string& Key) :
   attachSystem::FixedRotate(Key,11),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
+  attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
   /*!
@@ -101,7 +103,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 }
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) :
-  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   frontJoin(A.frontJoin),
@@ -134,7 +136,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedRotate::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -576,16 +578,18 @@ VacuumPipe::createObjects(Simulation& System)
   // outer boundary [flange front]
   Out=ModelSupport::getSetComposite
 		    (SMap,buildIndex," -101 -107 103 -104 105 -106 ");
-  addOuterSurf(Out+frontStr);
+  addOuterSurf("FlangeA",Out+frontStr);
 
   // outer boundary [flange back]
   Out=ModelSupport::getSetComposite
 		    (SMap,buildIndex," 102 -207 203 -204 205 -206 ");
-  addOuterUnionSurf(Out+backStr);
+  addOuterSurf("FlangeB",Out+frontStr);
+  
   // outer boundary mid tube
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
   Out+=CladdingLayer.display();
-  addOuterUnionSurf(Out);
+  addOuterSurf("Main",Out+frontStr);
+
 
   return;
 }

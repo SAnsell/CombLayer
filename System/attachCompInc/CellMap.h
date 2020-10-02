@@ -23,11 +23,16 @@
 #define attachSystem_CellMap_h
 
 class Simulation;
+namespace MonteCarlo
+{
+  class Object;
+}
 
 namespace attachSystem
 {
 
   class ContainedComp;
+  class ContainedGroup;
 
 /*!
   \class CellMap
@@ -135,6 +140,8 @@ class CellMap  : public BaseMap
 		       const CellMap&,const std::string&,const size_t) const;
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const ContainedGroup&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,
@@ -149,6 +156,11 @@ class CellMap  : public BaseMap
 		       const FixedComp&,const long int) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
+
+
+  MonteCarlo::Object*
+  getCellObject(Simulation&,const std::string&,
+		const size_t =0) const;
 
   
   void makeCell(const std::string&,

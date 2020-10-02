@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -124,16 +124,13 @@ Segment39::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment39","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bpm->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bpm,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bpm,2);
+  outerCell=buildZone->createUnit(System,*bpm,2);
   bpm->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*yagUnit);
+    (System,*buildZone,*bpm,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);
@@ -143,15 +140,13 @@ Segment39::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*gate);
+    (System,*buildZone,*yagUnit,"back",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*pipe);
+    (System,*buildZone,*gate,"back",*pipe);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bellow);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*pipe,"back",*bellow);
 
   return;
 }

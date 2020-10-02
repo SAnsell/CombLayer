@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/beer/BEER.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,13 +240,13 @@ BEER::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("BEER","buildBunkerUnits");
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
   
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
@@ -270,7 +270,7 @@ BEER::buildBunkerUnits(Simulation& System,
   WFMDisk->createAll(System,ChopperB->getKey("Main"),0);
   ChopperB->insertAxle(System,*WFMDisk);
   
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
@@ -284,7 +284,7 @@ BEER::buildBunkerUnits(Simulation& System,
   FOCDiskC->createAll(System,ChopperC->getKey("Main"),0);
   ChopperC->insertAxle(System,*FOCDiskC);
 
-  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));
@@ -298,7 +298,7 @@ BEER::buildBunkerUnits(Simulation& System,
   WBC2Disk->createAll(System,ChopperD->getKey("Main"),0);
   ChopperD->insertAxle(System,*WBC2Disk);
   
-  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->addAllInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
   BendF->addInsertCell(VPipeF->getCells("Void"));
@@ -370,7 +370,7 @@ BEER::buildOutGuide(Simulation& System,
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,*ShieldA,-1);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -408,7 +408,7 @@ BEER::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));

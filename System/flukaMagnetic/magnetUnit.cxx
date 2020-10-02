@@ -220,6 +220,20 @@ magnetUnit::addCell(const int CN)
 }
 
 void
+magnetUnit::setKFactor(const std::vector<double>& KF)
+  /*!
+    Set KFactor
+    \param KF :: Array of values
+   */
+{
+  for(size_t i=0;i<KF.size() && i<4;i++)
+    {
+      KFactor[i]=KF[i];
+    }
+  return;
+}
+		   
+void
 magnetUnit::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)

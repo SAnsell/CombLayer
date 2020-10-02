@@ -303,7 +303,7 @@ BIFROST::build(Simulation& System,
   
   if (stopPoint==1) return;                      // STOP At monolith
 
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
@@ -322,7 +322,7 @@ BIFROST::build(Simulation& System,
   ChopperA->insertAxle(System,*DDisk); 
   
   // Elliptic 4m section
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
@@ -337,13 +337,13 @@ BIFROST::build(Simulation& System,
   ChopperB->insertAxle(System,*FOCDiskB);
   
   // Rectangle 6m section
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   // Rectangle 4m section
-  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE->createAll(System,FocusD->getKey("Guide0"),2);
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
@@ -358,7 +358,7 @@ BIFROST::build(Simulation& System,
   ChopperC->insertAxle(System,*FOCDiskC);
   
   // Rectangle 4m section
-  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,ChopperC->getKey("Beam"),2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
@@ -375,7 +375,7 @@ BIFROST::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   
-  //  VPipeWall->addInsertCell(BInsert->getCell("Void"));
+  //  VPipeWall->addAllInsertCell(BInsert->getCell("Void"));
   //  VPipeWall->createAll(System,*BInsert,-1);
 
   // using 7 : mid point
@@ -397,21 +397,21 @@ BIFROST::build(Simulation& System,
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
 
   // Elliptic 6m section
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
   // Elliptic 6m section
-  VPipeOutB->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
 
   // Elliptic 6m section
-  VPipeOutC->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutC->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutC->createAll(System,FocusOutB->getKey("Guide0"),2);
 
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
@@ -421,7 +421,7 @@ BIFROST::build(Simulation& System,
   for(size_t i=0;i<nGuideSection;i++)
     {
       // Elliptic 6m section
-      RecPipe[i]->addInsertCell(ShieldA->getCell("Void"));
+      RecPipe[i]->addAllInsertCell(ShieldA->getCell("Void"));
       RecPipe[i]->createAll(System,*LinkPtr,2);
       
       RecFocus[i]->addInsertCell(RecPipe[i]->getCells("Void"));
@@ -463,7 +463,7 @@ BIFROST::build(Simulation& System,
   for(size_t i=0;i<nSndSection;i++)
     {
       // Rectangle 6m section
-      SndPipe[i]->addInsertCell(ShieldB->getCell("Void"));
+      SndPipe[i]->addAllInsertCell(ShieldB->getCell("Void"));
       SndPipe[i]->createAll(System,*LinkPtr,2);
       
       SndFocus[i]->addInsertCell(SndPipe[i]->getCells("Void"));
@@ -475,7 +475,7 @@ BIFROST::build(Simulation& System,
   for(size_t i=0;i<nEllSection;i++)
     {
       // Elliptic 6m sections
-      EllPipe[i]->addInsertCell(ShieldB->getCell("Void"));
+      EllPipe[i]->addAllInsertCell(ShieldB->getCell("Void"));
       EllPipe[i]->createAll(System,*LinkPtr,2);
       
       EllFocus[i]->addInsertCell(EllPipe[i]->getCells("Void"));
@@ -496,7 +496,7 @@ BIFROST::build(Simulation& System,
   CaveCut->createAll(System,*ShieldB,2);
 
   // Elliptic 6m section
-  VPipeCave->addInsertCell(Cave->getCell("Void"));
+  VPipeCave->addAllInsertCell(Cave->getCell("Void"));
   VPipeCave->createAll(System,*CaveCut,2);
 
   

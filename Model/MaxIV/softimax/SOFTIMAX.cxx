@@ -49,6 +49,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -156,9 +157,9 @@ SOFTIMAX::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));

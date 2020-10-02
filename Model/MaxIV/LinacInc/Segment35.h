@@ -67,7 +67,7 @@ class Segment35 :
   std::shared_ptr<tdcSystem::CorrectorMag> cMagV;
 
   /// mirror chamber
-  std::shared_ptr<constructSystem::BlankTube> mirrorChamber;
+  std::shared_ptr<tdcSystem::CrossWayBlank> mirrorChamber;
 
   /// exit pipe + corrector mag
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;

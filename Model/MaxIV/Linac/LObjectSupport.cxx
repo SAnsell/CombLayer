@@ -422,9 +422,6 @@ int pipeMagGroup(Simulation&,
 		 const std::string&,
 		 const std::shared_ptr<tdcSystem::DipoleDIBMag>&);
 
-
-
-
 ///\endcond TEMPLATE
 
 }   // NAMESPACE tdcSystem

@@ -60,6 +60,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "BlockZone.h"
 #include "InnerZone.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -217,43 +218,87 @@ TDC::buildSurround(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TDC","buildSurround");
 
+  /// storeage
+  static std::map<std::string,HeadRule> surroundMap;
   static int BI(buildIndex);   // keep regions in order and unique
 
-  const double outerLeft=Control.EvalVar<double>(regionName+"OuterLeft");
-  const double outerRight=Control.EvalVar<double>(regionName+"OuterRight");
-  const double outerTop=Control.EvalVar<double>(regionName+"OuterTop");
-  const double outerFloor=
-    Control.EvalDefVar<double>(regionName+"OuterFloor",-5e10); // large-neg
+  std::map<std::string,HeadRule>::const_iterator mc=
+    surroundMap.find(regionName);
 
-  const attachSystem::FixedOffsetUnit injFC
-    (Control,regionName,*injectionHall,injectionPt);
-  // rotation if needed in a bit
-  const Geometry::Vec3D& Org=injFC.getCentre();
-  const Geometry::Vec3D& InjectX=injFC.getX();
-  const Geometry::Vec3D& InjectZ=injFC.getZ();
-
-  std::string Out;
-
-  ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
-  ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
-  ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
-  if (outerFloor < -4e10)
+  if (mc==surroundMap.end())
     {
-      Out=ModelSupport::getComposite(SMap,BI," 3 -4 -6");
+      const double outerLeft=Control.EvalVar<double>(regionName+"OuterLeft");
+      const double outerRight=Control.EvalVar<double>(regionName+"OuterRight");
+      const double outerTop=Control.EvalVar<double>(regionName+"OuterTop");
+      const double outerFloor=
+	Control.EvalDefVar<double>(regionName+"OuterFloor",-5e10); // large-neg
+      
+      const attachSystem::FixedOffsetUnit injFC
+	(Control,regionName,*injectionHall,injectionPt);
+      // rotation if needed in a bit
+      const Geometry::Vec3D& Org=injFC.getCentre();
+      const Geometry::Vec3D& InjectX=injFC.getX();
+      const Geometry::Vec3D& InjectZ=injFC.getZ();
+      
+      std::string Out;
+      
+      ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
+      ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
+      ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
+      if (outerFloor < -4e10)
+	{
+	  Out=ModelSupport::getComposite(SMap,BI," 3 -4 -6");
+	  BI+=10;
+	  return HeadRule(Out+injectionHall->getSurfString("Floor"));
+	}
+      
+      ModelSupport::buildPlane(SMap,BI+5,Org-Z*outerFloor,InjectZ);
+      Out=ModelSupport::getComposite(SMap,BI," 3 -4 5 -6");
       BI+=10;
-      return HeadRule(Out+injectionHall->getSurfString("Floor"));
+
+      HeadRule OutHR(Out);
+      surroundMap.emplace(regionName,OutHR);
+      return OutHR;
     }
 
-  ModelSupport::buildPlane(SMap,BI+5,Org-Z*outerFloor,InjectZ);
-  Out=ModelSupport::getComposite(SMap,BI," 3 -4 5 -6");
-  BI+=10;
-
-  return HeadRule(Out);
-
+  return mc->second;
 }
 
-std::shared_ptr<attachSystem::InnerZone>
+void
+TDC::setVoidSpace(const Simulation& System,
+		  const std::shared_ptr<attachSystem::BlockZone>& buildZone,
+		  const std::string& voidName)
+  /*!
+    Add the void cells from the injection hall
+    \param System :: simulation
+    \param buildZone :: BuildZone
+    \param :: Name of void space
+  */
+{
+  ELog::RegMethod RegA("TDC","setVoidSpace");
+  
+  if (!voidName.empty())
+    {
+      const std::vector<int>& VCell=
+	injectionHall->getCells(voidName);
+      for(const int CN : VCell)
+	{
+	  if (originalSpaces.find(CN)==originalSpaces.end())
+	    {
+	      const MonteCarlo::Object* OPtr=System.findObject(CN);
+	      originalSpaces.emplace(CN,OPtr->getHeadRule());
+	    }
+	}
+      buildZone->addInsertCells(VCell);
+    }
+  return;
+}
+
+
+std::shared_ptr<attachSystem::BlockZone>
 TDC::buildInnerZone(Simulation& System,
+		    const std::string& segmentName,
+		    const std::shared_ptr<TDCsegment>& segPtr,
 		    const std::string& regionName)
   /*!
     Set the regional buildzone
@@ -263,27 +308,21 @@ TDC::buildInnerZone(Simulation& System,
 {
   ELog::RegMethod RegA("TDC","buildInnerZone");
 
-  // MAP for BZONE
-  typedef std::map<std::string,
-		   std::shared_ptr<attachSystem::InnerZone>> bzMAPTYPE;
-
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
   typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
 
-  static std::set<std::string> ISet;
-
   // front : back : Insert
   const static RMAP regZones
     ({
-      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
+      //      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
+      {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid","LTVoid"}},
-      {"tdcFront"  ,{"TDCCorner","#TDCMid","SPFVoid","TVoid"}},
+      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spfMid"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfLong"  ,{"TDCLong","#Back","",""}},
+      {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
@@ -291,48 +330,94 @@ TDC::buildInnerZone(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
 
-
   RMAP::const_iterator rc=regZones.find(regionName);
   if (rc==regZones.end())
     throw ColErr::InContainerError<std::string>(regionName,"regionZones");
 
-
+  // try not to use front surf:
   const RTYPE& walls=rc->second;
   const std::string& frontSurfName=std::get<0>(walls);
   const std::string& backSurfName=std::get<1>(walls);
   const std::string& voidName=std::get<2>(walls);
   const std::string& voidNameB=std::get<3>(walls);
 
-  std::shared_ptr<attachSystem::InnerZone> buildZone;
-  bzMAPTYPE::iterator mc=bZone.find(regionName);
-  if (mc==bZone.end())
-    {
-      buildZone=std::make_shared<attachSystem::InnerZone>(*this,cellIndex);
-      buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
-      buildZone->setBack(injectionHall->getSurfRule(backSurfName));
-      buildZone->setSurround
-	(buildSurround(Control,regionName,"Origin"));
-      bZone.emplace(regionName,buildZone);
-    }
-  else
-    buildZone=mc->second;
+  if (bZone.find(segmentName)!=bZone.end())
+    throw ColErr::InContainerError<std::string>
+      (segmentName,"Segment Name exists");
 
-  if (!voidName.empty() &&  ISet.find(regionName+voidName)==ISet.end() )
-    {
-      ISet.emplace(regionName+voidName);
-      buildZone->setInsertCells(injectionHall->getCells(voidName));
-    }
+  std::shared_ptr<attachSystem::BlockZone> buildZone=
+    std::make_shared<attachSystem::BlockZone>(segmentName);
+  buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
+  const HeadRule  surHR=buildSurround(Control,regionName,"Origin");
+  buildZone->setSurround(surHR);
 
-  if (!voidNameB.empty() && ISet.find(regionName+voidNameB)==ISet.end() )
-    {
-      ISet.emplace(regionName+voidNameB);
-      buildZone->addInsertCells(injectionHall->getCells(voidNameB));
-    }
-  // if (mc==bZone.end())
-  //   buildZone->constructMasterCell(System);
-  return buildZone;
+  buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
+
+  setVoidSpace(System,buildZone,voidName);
+  setVoidSpace(System,buildZone,voidNameB);
+  
+  auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
+  return mc->second;
 }
 
+void
+TDC::reconstructInjectionHall(Simulation& System)
+  /*!
+    Regenerate injection hall
+    \param System :: simulatiion
+  */
+{
+  ELog::RegMethod RegA("TDC","reconstructInjectionHall");
+  // Make list of unique insert cells:
+  std::set<int> CInsert;
+  for(const auto& [name,bzPtr] : bZone)
+    {
+      const std::vector<int>& CVec=bzPtr->getInsertCells();
+      for(const int CN : CVec)
+	CInsert.insert(CN);
+    }
+
+  attachSystem::BlockZone BZvol;
+  for(const int CN : CInsert)
+    {
+      HeadRule OuterVolume;
+      bool initFlag(1);
+      for(const auto& [name,bzPtr] : bZone)
+	{
+	  const std::vector<int>& CVec=bzPtr->getInsertCells();
+	  if (std::find(CVec.begin(),CVec.end(),CN)!=CVec.end())
+	    {
+	      if (initFlag)
+		{
+		  BZvol=*(bzPtr);
+		  initFlag=0;
+		}
+	      else if (!BZvol.merge(*bzPtr))
+		{
+		  OuterVolume.addIntersection(BZvol.getVolume().complement());
+		  BZvol= *bzPtr;
+		}
+	    }
+	}
+      std::map<int,HeadRule>::iterator mc=
+	originalSpaces.find(CN);
+      
+      if (mc==originalSpaces.end())
+	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
+      
+      HeadRule HROut=mc->second;
+      HROut.addIntersection(BZvol.getVolume().complement());
+      HROut.addIntersection(OuterVolume);
+
+      MonteCarlo::Object* OPtr=System.findObject(CN);
+      OPtr->procHeadRule(HROut);
+    }
+
+
+
+  return;
+}
+  
 void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
@@ -398,11 +483,11 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdc","Segment21",1}},
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
-      {"Segment25",{"spfMid","Segment24",1}},
+      {"Segment25",{"spfLong","Segment24",1}},
       {"Segment26",{"spfLong","Segment25",1}},
-      {"Segment27",{"spfLong","Segment26",1}},
-      {"Segment28",{"spfLong","Segment27",1}},
-      {"Segment29",{"spfLong","Segment28",1}},
+      {"Segment27",{"spfLong","Segment26",2}},
+      {"Segment28",{"spfLong","Segment27",2}},
+      {"Segment29",{"spfLong","Segment28",2}},
       {"Segment30",{"tdcMain","Segment12",1}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
@@ -431,7 +516,10 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
+
   // special case of Segment10 : Segment26/27/28/29
+  std::shared_ptr<attachSystem::BlockZone> seg10Zone;
+    
   for(const std::string& BL : buildOrder)
     {
       if (activeINJ.find(BL)!=activeINJ.end())
@@ -450,9 +538,8 @@ TDC::createAll(Simulation& System,
 	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
 
-	  std::shared_ptr<attachSystem::InnerZone> buildZone=
-	    buildInnerZone(System,bzName);
-	  std::shared_ptr<attachSystem::InnerZone> secondZone;
+	  std::shared_ptr<attachSystem::BlockZone> buildZone=
+	    buildInnerZone(System,BL,segPtr,bzName);
 
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
@@ -460,11 +547,12 @@ TDC::createAll(Simulation& System,
 	  std::vector<std::string> sideSegNames;
 	  if (BL=="Segment10")
 	    {
-	      secondZone=buildInnerZone(System,"tdcFront");
+	      std::shared_ptr<attachSystem::BlockZone> secondZone=
+		buildInnerZone(System,"Segment10B",segPtr,"tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")
-	    sideSegNames={"Segment13","Segment14"};
+	    sideSegNames={"Segment13","Segment14","Segment15"};
 
 	  if (BL=="Segment46")
 	    sideSegNames={"Segment44","Segment45"};
@@ -481,16 +569,6 @@ TDC::createAll(Simulation& System,
 		segPtr->registerSideSegment(sidePtr);
 	    }
 
-	  if (BL!="Segment26" && BL!="Segment27" &&
-	      BL!="Segment28" && BL!="Segment29" &&
-	      BL!="Segment30" && BL!="Segment45" &&
-	      BL!="Segment46" && BL!="Segment47" &&
-	      BL!="Segment48")
-	    {
-	      buildZone->constructMasterCell(System);
-	      segPtr->setInnerZone(buildZone.get());
-	    }
-
 	  if (BL=="Segment48")   // SPECIAL CHANGE OF FRONT
 	    {
 	      SegTYPE::const_iterator ci=SegMap.find("Segment47");
@@ -498,17 +576,18 @@ TDC::createAll(Simulation& System,
 		{
 		  const TDCsegment* seg47Ptr=ci->second.get();
 		  buildZone->setFront(seg47Ptr->getFullRule(2));
-		  ELog::EM<<"SN == "<<seg47Ptr->getFullRule(2)<<ELog::endDiag;
 		}
 	    }
 
 	  segPtr->setInnerZone(buildZone.get());
+	  segPtr->removeSpaceFillers(System);
 	  segPtr->initCellMap();
 
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
+	  
 	  segPtr->captureCellMap();
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
@@ -521,18 +600,26 @@ TDC::createAll(Simulation& System,
 	      if (ci!=SegMap.end())
 		{
 		  const TDCsegment* seg45Ptr=ci->second.get();
-		  const int SN(seg45Ptr->getLinkSurf(2));
-		  const int SNback(segPtr->getLinkSurf(2));
-		  const int CN(buildZone->getInsertCell()[0]);
-		  MonteCarlo::Object* OPtr=System.findObject(CN);
-		  if (!OPtr)
-		    throw ColErr::InContainerError<int>
-		      (CN,"Object not found for Seg47");
-		  OPtr->substituteSurf(SN,SNback,0);
+		  if (seg45Ptr->hasActiveCells())
+		    {
+		      const int SN(seg45Ptr->getLinkSurf(2));
+		      const int SNback(segPtr->getLinkSurf(2));
+		      const int CN(buildZone->getInsertCells()[0]);
+		      MonteCarlo::Object* OPtr=System.findObject(CN);
+		      if (!OPtr)
+			throw ColErr::InContainerError<int>
+			  (CN,"Object not found for Seg47");
+		      OPtr->substituteSurf(SN,SNback,0);
+		    }
 		}
 	    }
 	}
     }
+
+  reconstructInjectionHall(System);
+
+  
+
   return;
 }
 

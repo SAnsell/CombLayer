@@ -61,7 +61,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -70,6 +70,7 @@
 #include "BlankTube.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "CrossWayBlank.h"
 
 #include "TDCsegment.h"
 #include "Segment15.h"
@@ -82,7 +83,7 @@ namespace tdcSystem
 Segment15::Segment15(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  mirrorChamber(new constructSystem::BlankTube(keyName+"MirrorChamber")),
+  mirrorChamber(new tdcSystem::CrossWayBlank(keyName+"MirrorChamber")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
@@ -120,19 +121,17 @@ Segment15::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment15","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-
   pipeA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*pipeA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
 
-  const constructSystem::portItem& mirrorChamberPort1 =
-    buildIonPump2Port(System,*buildZone,masterCell,*pipeA,"back",*mirrorChamber,true);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
+
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,mirrorChamberPort1,"OuterPlate",*yagUnit);
+    (System,*buildZone,*pipeA,"back",*mirrorChamber);
+
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,*mirrorChamber,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);
@@ -142,9 +141,7 @@ Segment15::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*pipeB);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*yagUnit,"back",*pipeB);
 
   return;
 }

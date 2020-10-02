@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "AttachSupport.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -191,13 +192,31 @@ CellMap::insertComponent(Simulation& System,
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param CC :: Contained Component ot insert 
+    \param CC :: Contained Component to insert 
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CC)");
   
   if (CC.hasOuterSurf())
     insertComponent(System,Key,CC.getExclude());
+
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			  const ContainedGroup& CG) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param CG :: Contained Component to insert 
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(CG)");
+  
+  insertComponent(System,Key,CG.getAllExclude());
 
   return;
 }
@@ -478,6 +497,29 @@ CellMap::getCellsHR(const Simulation& System,
       Out.addUnion(cellObj->getHeadRule());
     }
   return Out;
+}
+
+MonteCarlo::Object*
+CellMap::getCellObject(Simulation& System,
+		       const std::string& Key,
+		       const size_t Index) const
+  /*!
+    Get the main head rules for all the cells [UNION]
+    \param System :: Simulation to get cell from 
+    \param Key :: cell key name
+    \param index :: Index name
+   */
+
+{
+  ELog::RegMethod RegA("CellMap","getCellObject");
+
+  const int cellN=getCell(Key,Index);
+  MonteCarlo::Object* cellObj=System.findObject(cellN);
+
+  if (!cellObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+
+  return cellObj;
 }
 
 const HeadRule&

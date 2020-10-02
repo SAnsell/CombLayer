@@ -55,14 +55,16 @@
 #include "FixedUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
+#include "Object.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -84,9 +86,9 @@ namespace tdcSystem
 Segment27::Segment27(const std::string& Key) :
   TDCsegment(Key,6),
 
-  IZTop(new attachSystem::InnerZone(*this,cellIndex)),
-  IZFlat(new attachSystem::InnerZone(*this,cellIndex)),
-  IZLower(new attachSystem::InnerZone(*this,cellIndex)),
+  IZTop(new attachSystem::BlockZone(keyName+"IZTop")),
+  IZFlat(new attachSystem::BlockZone(keyName+"IZFlat")),
+  IZLower(new attachSystem::BlockZone(keyName+"IZLower")),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -154,18 +156,18 @@ Segment27::~Segment27()
 
 
 void
-Segment27::createSplitInnerZone(Simulation& System)
+Segment27::createSplitInnerZone()
   /*!
-    Spilit the innerZone into three parts.
+    Split the innerZone into three parts.
     \param System :: Simulatio to use
    */
 {
   ELog::RegMethod RegA("Segment27","createSplitInnerZone");
 
-  *IZTop = *buildZone;
-  *IZFlat = *buildZone;
-  *IZLower = *buildZone;
-
+  *IZTop=*buildZone;
+  *IZFlat=*buildZone;
+  *IZLower=*buildZone;
+  
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
@@ -191,10 +193,10 @@ Segment27::createSplitInnerZone(Simulation& System)
 
 
   const Geometry::Vec3D ZEffective(FA.getZ());
-  HSurroundA.removeMatchedPlanes(ZEffective);   // remove base
-  HSurroundB.removeMatchedPlanes(ZEffective);   // remove both
-  HSurroundB.removeMatchedPlanes(-ZEffective);
-  HSurroundC.removeMatchedPlanes(-ZEffective);  // remove top
+  HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
+  HSurroundB.removeMatchedPlanes(ZEffective,0.9);   // remove both
+  HSurroundB.removeMatchedPlanes(-ZEffective,0.9);
+  HSurroundC.removeMatchedPlanes(-ZEffective,0.9);  // remove top
 
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
@@ -208,10 +210,6 @@ Segment27::createSplitInnerZone(Simulation& System)
   IZTop->setSurround(HSurroundA);
   IZFlat->setSurround(HSurroundB);
   IZLower->setSurround(HSurroundC);
-
-  IZTop->constructMasterCell(System);
-  IZFlat->constructMasterCell(System);
-  IZLower->constructMasterCell(System);
 
   return;
 }
@@ -228,41 +226,43 @@ Segment27::buildObjects(Simulation& System)
 
   int outerCellA,outerCellB,outerCellC;
 
-
+  if (joinItems.size()>=3)
+    {
+      bellowAA->setFront(joinItems[0].display());
+      bellowBA->setFront(joinItems[1].display());
+      bellowCA->setFront(joinItems[2].display());
+    }
+    
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
 
-  createSplitInnerZone(System);
+  createSplitInnerZone();
 
-  MonteCarlo::Object* masterCellA=IZTop->getMaster();
-  MonteCarlo::Object* masterCellB=IZFlat->getMaster();
-  MonteCarlo::Object* masterCellC=IZLower->getMaster();
-
-  outerCellA=IZTop->createOuterVoidUnit(System,masterCellA,*bellowAA,2);
-  outerCellB=IZFlat->createOuterVoidUnit(System,masterCellB,*bellowBA,2);
-  outerCellC=IZLower->createOuterVoidUnit(System,masterCellC,*bellowCA,2);
+  outerCellA=IZTop->createUnit(System,*bellowAA,2);
+  outerCellB=IZFlat->createUnit(System,*bellowBA,2);
+  outerCellC=IZLower->createUnit(System,*bellowCA,2);
 
   bellowAA->insertInCell(System,outerCellA);
   bellowBA->insertInCell(System,outerCellB);
   bellowCA->insertInCell(System,outerCellC);
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*bellowAA,"back",*pipeAA);
+    (System,*IZTop,*bellowAA,"back",*pipeAA);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*bellowBA,"back",*pipeBA);
+    (System,*IZFlat,*bellowBA,"back",*pipeBA);
   constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*bellowCA,"back",*pipeCA);
+    (System,*IZLower,*bellowCA,"back",*pipeCA);
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*pipeAA,"back",*bellowAB);
+    (System,*IZTop,*pipeAA,"back",*bellowAB);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*pipeBA,"back",*bellowBB);
+    (System,*IZFlat,*pipeBA,"back",*bellowBB);
   constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*pipeCA,"back",*bellowCB);
+    (System,*IZLower,*pipeCA,"back",*bellowCB);
 
   outerCellA = constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*bellowAB,"back",*yagUnitA);
+    (System,*IZTop,*bellowAB,"back",*yagUnitA);
 
   yagScreenA->setBeamAxis(*yagUnitA,1);
   yagScreenA->createAll(System,*yagUnitA,-3);
@@ -272,7 +272,7 @@ Segment27::buildObjects(Simulation& System)
   yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
 
   outerCellB = constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*bellowBB,"back",*yagUnitB);
+    (System,*IZFlat,*bellowBB,"back",*yagUnitB);
 
   yagScreenB->setBeamAxis(*yagUnitB,1);
   yagScreenB->createAll(System,*yagUnitB,-3);
@@ -282,7 +282,7 @@ Segment27::buildObjects(Simulation& System)
   yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
 
   outerCellC = constructSystem::constructUnit
-    (System,*IZLower,masterCellC,*bellowCB,"back",*yagUnitC);
+    (System,*IZLower,*bellowCB,"back",*yagUnitC);
 
   yagScreenC->setBeamAxis(*yagUnitC,1);
   yagScreenC->createAll(System,*yagUnitC,-3);
@@ -293,13 +293,16 @@ Segment27::buildObjects(Simulation& System)
 
 
   constructSystem::constructUnit
-    (System,*IZTop,masterCellA,*yagUnitA,"back",*bellowAC);
+    (System,*IZTop,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
-    (System,*IZFlat,masterCellB,*yagUnitB,"back",*bellowBC);
+    (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
-  IZTop->removeLastMaster(System);
-  IZFlat->removeLastMaster(System);
-  IZLower->removeLastMaster(System);
+  
+  outerCellA=IZTop->createUnit(System,*bellowBC,"back");
+  CellMap::addCell("SpaceFiller",outerCellA);
+
+  outerCellC=IZLower->createUnit(System,*bellowBC,"back");
+  CellMap::addCell("LowerFiller",outerCellC);
 
   return;
 }
@@ -333,28 +336,7 @@ Segment27::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
   joinItems.push_back(FixedComp::getFullRule("backLower"));
 
-  return;
-}
-
-void
-Segment27::constructVoid(Simulation& System,
-			 const attachSystem::FixedComp& FC) const
-  /*!
-    Creates the space for the InnerZone
-  */
-{
-  ELog::RegMethod RegA("Segment27","constructVoid");
-
-  const attachSystem::CellMap* CPtr=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  if (CPtr)
-    {
-      const HeadRule volHR=IZTop->getVolumeExclude();
-
-      CPtr->insertComponent(System,"LongVoid",IZTop->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZFlat->getVolumeExclude());
-      CPtr->insertComponent(System,"LongVoid",IZLower->getVolumeExclude());
-    }
+  buildZone->setBack(FixedComp::getFullRule("backMid"));
   return;
 }
 
@@ -377,7 +359,6 @@ Segment27::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  constructVoid(System,FC);
   return;
 }
 

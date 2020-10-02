@@ -206,6 +206,39 @@ VirtualTube::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
+VirtualTube::createPorts(Simulation& System,
+			 MonteCarlo::Object* insertObj,
+			 const HeadRule& innerSurf,
+			 const HeadRule& outerSurf)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param insertObj :: Object to insert port cut into
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
+   */
+{
+  ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
+	
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      const attachSystem::ContainedComp& CC=getCC("Main");
+      for(const int CN : CC.getInsertCells())
+	Ports[i]->addInsertCell(CN);
+
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+
+      
+      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
+      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      Ports[i]->insertObjects(System);
+    }
+
+  return;
+}
+
+void
 VirtualTube::createPorts(Simulation& System)
   /*!
     Simple function to create ports
@@ -213,7 +246,7 @@ VirtualTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts");
-
+	
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -222,6 +255,7 @@ VirtualTube::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
+
 
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System);
@@ -344,6 +378,8 @@ VirtualTube::applyPortRotation()
 {
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
+  if (keyName=="MaxPeemFrontBeamHeatBox")
+    ELog::EM<<"Keyname == "<<keyName<<" "<<portConnectIndex<<ELog::endDiag;
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
     throw ColErr::IndexError<size_t>
@@ -376,7 +412,7 @@ VirtualTube::applyPortRotation()
 	  QVpost.rotate(X);
 	  QVpost.rotate(Z);
 	}
-
+      ELog::EM<<"X/Y == "<<Origin<<ELog::endDiag;
       const size_t pIndex=portConnectIndex-3;
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
@@ -429,8 +465,8 @@ VirtualTube::calcCylinderDistance(const size_t pIndex) const
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
 
-
-  const double R=radius+wallThick;
+  // Length R Now zero
+  const double R=0.0;
   const double ELen=Ports[pIndex]->getExternalLength();
   //  const double CapLen=Ports[pIndex]->getCapLength();
 
@@ -706,10 +742,9 @@ VirtualTube::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
+  createPorts(System);
   insertObjects(System);
-  if (!delayPortBuild)
-    createPorts(System);
-
+    
   return;
 }
 

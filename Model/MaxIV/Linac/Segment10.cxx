@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "generalConstruct.h"
@@ -76,8 +76,9 @@
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 #include "GateValveCube.h"
+#include "IonPumpTube.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
 #include "Segment10.h"
@@ -94,7 +95,7 @@ Segment10::Segment10(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gateValve(new constructSystem::GateValveCube(keyName+"GateValve")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
+  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
@@ -171,8 +172,10 @@ Segment10::constructHole(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
-      pipeA->addInsertCell(this->getCell("WallVoid"));
-      pipeA->addInsertCell(IHall->getCell("TVoid"));
+      
+      pipeA->addInsertCell("Main",this->getCell("WallVoid"));
+      pipeA->addInsertCell("Main",IHall->getCell("TVoidA"));
+      pipeA->addInsertCell("FlangeB",IHall->getCell("TVoidA"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
@@ -183,7 +186,6 @@ Segment10::constructHole(Simulation& System)
   return;
 }
 
-
 void
 Segment10::buildObjects(Simulation& System)
   /*!
@@ -193,46 +195,43 @@ Segment10::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment10","buildObjects");
-
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-  outerCell=masterCell->getName();
 
   constructHole(System);
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
+  
   pipeA->createAll(System,*this,0);
-  pipeA->insertInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System);
+  pipeA->insertAllInCell(System,outerCell);
+
 
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
 
-  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
+  //  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
   // allows the first surface of pipe to be the start of the masterCell
-  outerCell=nextZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
+  outerCell=nextZone->createUnit(System,*pipeA,2);
 
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
   pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*pipeA,"back",*bellowA);
+    (System,*nextZone,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*bellowA,"back",*gateValve);
-
-  const constructSystem::portItem& VPB =
-    buildIonPump2Port(System,*nextZone,masterCell,*gateValve,"back",*pumpA);
+    (System,*nextZone,*bellowA,"back",*gateValve);
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,VPB,"OuterPlate",*pipeB);
+    (System,*nextZone,*gateValve,"back",*pumpA);
+
+  constructSystem::constructUnit
+    (System,*nextZone,*pumpA,"back",*pipeB);
 
 
   constructSystem::constructUnit
-    (System,*nextZone,masterCell,*pipeB,"back",*bellowB);
+    (System,*nextZone,*pipeB,"back",*bellowB);
 
 
   pipeC->createAll(System,*bellowB,"back");
@@ -240,7 +239,6 @@ Segment10::buildObjects(Simulation& System)
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVertA);
   pipeTerminate(System,*nextZone,pipeC);
 
-  nextZone->removeLastMaster(System);
   return;
 }
 
@@ -253,14 +251,16 @@ Segment10::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeC,2);
 
+  //  setLinkSignedCopy(1,*pipeA,2);
+
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
 void
 Segment10::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

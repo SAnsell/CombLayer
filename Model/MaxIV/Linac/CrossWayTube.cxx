@@ -124,7 +124,8 @@ CrossWayTube::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
-  sideLength=Control.EvalVar<double>(keyName+"SideLength");
+  sideALength=Control.EvalVar<double>(keyName+"SideALength");
+  sideBLength=Control.EvalVar<double>(keyName+"SideBLength");
 
   flangeXRadius=Control.EvalVar<double>(keyName+"FlangeXRadius");
   flangeYRadius=Control.EvalVar<double>(keyName+"FlangeYRadius");
@@ -182,17 +183,17 @@ CrossWayTube::createSurfaces()
 
   // Cross tubes
 
-  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*sideLength,X);
+  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*sideALength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+313,Origin-X*(sideLength-flangeXLength),X);
+    (SMap,buildIndex+313,Origin-X*(sideALength-flangeXLength),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+323,Origin-X*(sideLength+plateThick),X);
+    (SMap,buildIndex+323,Origin-X*(sideALength+plateThick),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*sideLength,X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*sideBLength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+314,Origin+X*(sideLength-flangeXLength),X);
+    (SMap,buildIndex+314,Origin+X*(sideBLength-flangeXLength),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+324,Origin+X*(sideLength+plateThick),X);
+    (SMap,buildIndex+324,Origin+X*(sideBLength+plateThick),X);
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,xRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,xRadius+wallThick);
@@ -201,7 +202,7 @@ CrossWayTube::createSurfaces()
   // Main (VERTICAL) tube
   ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*depth,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+415,Origin-Z*(depth-flangeXLength),Z);
+    (SMap,buildIndex+415,Origin-Z*(depth-flangeZLength),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+425,Origin-Z*(depth+plateThick),Z);
 
@@ -346,10 +347,10 @@ CrossWayTube::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(sideLength+plateThick),-X);
+  FixedComp::setConnect(2,Origin-X*(sideALength+plateThick),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));
 
-  FixedComp::setConnect(3,Origin+X*(sideLength+plateThick),X);
+  FixedComp::setConnect(3,Origin+X*(sideBLength+plateThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
 
   FixedComp::setConnect(4,Origin-Z*(depth+plateThick),-Z);

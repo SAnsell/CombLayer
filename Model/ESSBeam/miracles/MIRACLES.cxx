@@ -232,13 +232,13 @@ MIRACLES::buildBunkerUnits(Simulation& System,
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
   
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
@@ -259,7 +259,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
                       TwinB->getKey("Beam"),-1);
   TwinB->insertAxle(System,*BDiskLow,*BDiskTop);
   
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
@@ -277,7 +277,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
                       TwinC->getKey("Beam"),-1);
   TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
   
-  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,TwinC->getKey("BuildBeam"),2);
 
   FocusE->addInsertCell(VPipeE->getCells("Void"));
@@ -294,13 +294,13 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   ShutterA->addInsertCell(bunkerVoid);
   ShutterA->createAll(System,ChopE->getKey("Beam"),2);
 
-  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->addAllInsertCell(bunkerVoid);
   VPipeF->createAll(System,ShutterA->getKey("Beam"),2);
 
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  VPipeG->addInsertCell(bunkerVoid);
+  VPipeG->addAllInsertCell(bunkerVoid);
   VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
 
   BendG->addInsertCell(VPipeG->getCells("Void"));
@@ -328,14 +328,14 @@ MIRACLES::buildOutGuide(Simulation& System,
   ShieldA->createAll(System,FA,startIndex);
 
   // Bender 10m
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,FA,startIndex);
 
   BendOutA->addInsertCell(VPipeOutA->getCells("Void"));
   BendOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
   // Bender 10m
-  VPipeOutB->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutB->createAll(System,BendOutA->getKey("Guide0"),2);
 
   BendOutB->addInsertCell(VPipeOutB->getCells("Void"));
@@ -377,7 +377,7 @@ MIRACLES::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));

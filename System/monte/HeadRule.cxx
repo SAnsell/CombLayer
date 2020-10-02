@@ -1175,9 +1175,11 @@ HeadRule::removeOuterPlane(const Geometry::Vec3D& LOrig,
 }
 
 int
-HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis)
+HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis,
+			      const double tolValue)
   /*!
-    Given a signed surface SN , removes the first instance 
+    Removes the first instance of a palne which matchs
+    closely to the vector ZAxis
     of that surface from the Rule
     \param ZAxis :: Directionally matched surface 
     \retval -ve error,
@@ -1189,23 +1191,9 @@ HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis)
 
   if (!HeadNode) return -1;
 
-  populateSurf();
-  const std::set<int> allSurf=getSurfSet();
-  std::set<int> activePlane;
+  const std::set<int> activePlane=
+    findAxisPlanes(ZAxis,tolValue);
 
-  for(const int SNum : allSurf)
-    {
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
-      if (PPtr)
-	{
-	  if ((SNum>0 && PPtr->getNormal().dotProd(ZAxis) > 0.9) ||
-	      (SNum<0 && PPtr->getNormal().dotProd(ZAxis) < -0.9))
-	    {
-	      activePlane.emplace(SNum);
-	    } 
-	}
-    }
   int cnt(0);
   for(const int SN : activePlane)
     cnt+=removeItems(SN);
@@ -1259,6 +1247,70 @@ HeadRule::removeItems(const int SN)
 	}
     }
   return cnt;
+}
+
+std::set<int>
+HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
+			 const double tolValue) 
+  /*!
+    Removes the first instance of a palne which matchs
+    closely to the vector Axis
+    of that surface from the Rule
+    \param Axis :: Directionally matched surface 
+    \param tolValue :: Tolerance value
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findAxisPlanes");
+
+  std::set<int> activePlane;
+  if (!HeadNode) return activePlane;
+
+  populateSurf();
+  const std::set<int> allSurf=getSurfSet();
+
+
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+      if (PPtr)
+	{
+	  if ((SNum>0 && PPtr->getNormal().dotProd(Axis) > tolValue) ||
+	      (SNum<0 && PPtr->getNormal().dotProd(Axis) < -tolValue))
+	    {
+	      activePlane.emplace(SNum);
+	    } 
+	}
+    }
+
+  return activePlane;
+}
+
+int
+HeadRule::findAxisPlane(const Geometry::Vec3D& Axis,
+			const double tolValue) 
+  /*!
+    Removes the first instance of a palne which matchs
+    closely to the vector Axis. The requirment is that 
+    the axis would effectively intersect the surface as 
+    if coming from the middle of the object.
+    \param Axis :: Directionally matched surface 
+    \param tolValue :: Tolerance value
+    \return active surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","axisPlane");
+
+
+  const std::set<int> activePlane=
+    findAxisPlanes(Axis,tolValue);
+  if (activePlane.size()!=1)
+    throw ColErr::MisMatch<size_t>(activePlane.size(),1,"activePlanes");
+
+  return *(activePlane.begin());
 }
 
 const SurfPoint*

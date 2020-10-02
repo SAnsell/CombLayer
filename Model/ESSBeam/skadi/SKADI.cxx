@@ -273,12 +273,12 @@ SKADI::buildBunkerUnits(Simulation& System,
   ELog::RegMethod RegA("SKADI","buildBunkerUnits");
   /// Pipe+Guide at Light shutter position
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
   BendC->addInsertCell(VPipeC->getCells("Void"));
   BendC->createAll(System,*VPipeC,0,*VPipeC,0);
@@ -288,7 +288,7 @@ SKADI::buildBunkerUnits(Simulation& System,
   CollA->addInsertCell(VPipeC->getCell("Void"));
   CollA->createAll(System,*VPipeC,-1);
 
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,BendC->getKey("Guide0"),2);
   BendD->addInsertCell(VPipeD->getCells("Void"));
   BendD->createAll(System,BendC->getKey("Guide0"),2,
@@ -300,13 +300,13 @@ SKADI::buildBunkerUnits(Simulation& System,
   CollB->createAll(System,*VPipeD,-1);
 
   
-  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->addAllInsertCell(bunkerVoid);
   VPipeE->createAll(System,BendD->getKey("Guide0"),2);
   BendE->addInsertCell(VPipeE->getCells("Void"));
   BendE->createAll(System,BendD->getKey("Guide0"),2,
 		   BendD->getKey("Guide0"),2);
 
-  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->addAllInsertCell(bunkerVoid);
   VPipeF->createAll(System,BendE->getKey("Guide0"),2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
@@ -437,13 +437,13 @@ SKADI::build(Simulation& System,
   ShieldB->createAll(System,PitA->getKey("Mid"),2);
   
 
-  VPipeOutA->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutA->createAll(System,PitA->getKey("Mid"),2);
   GuideOutA->addInsertCell(VPipeOutA->getCells("Void"));
   GuideOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
   //  VPipeOutB->addInsertCell(ShieldB1->getCell("Void"));
-  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*VPipeOutA,2);
 
   GuideOutB->addInsertCell(VPipeOutB->getCells("Void"));
@@ -483,7 +483,7 @@ SKADI::build(Simulation& System,
   ShieldC->setBack(PitC->getKey("Mid"),1);  
   ShieldC->createAll(System,*VPipeOutB,2);
 
-  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+  VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->createAll(System,*ShieldC,-1);
   
   GuideOutC->addInsertCell(VPipeOutC->getCells("Void"));
@@ -495,7 +495,7 @@ SKADI::build(Simulation& System,
   ShieldD->setFront(PitC->getKey("Mid"),2);
   ShieldD->createAll(System,*VPipeOutC,2);
 
-  VPipeOutD->addInsertCell(ShieldD->getCell("Void"));
+  VPipeOutD->addAllInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->setBack(*ShieldD,-2);
   VPipeOutD->createAll(System,*ShieldD,-1);
   GuideOutD->addInsertCell(VPipeOutD->getCells("Void"));

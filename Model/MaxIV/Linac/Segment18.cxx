@@ -59,7 +59,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -68,11 +68,9 @@
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "CorrectorMag.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
+#include "IonPumpTube.h"
 
 #include "TDCsegment.h"
 #include "Segment18.h"
@@ -85,7 +83,7 @@ namespace tdcSystem
 Segment18::Segment18(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
@@ -129,24 +127,20 @@ Segment18::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment18","buildObjects");
-
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-  const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowA,"back",*ionPump);
+  constructSystem::constructUnit
+    (System,*buildZone,*bellowA,"back",*ionPump);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*bellowB);
+    (System,*buildZone,*ionPump,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
+    (System,*buildZone,*bellowB,"back",*bpm);
 
   pipeA->createAll(System,*bpm, "back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
@@ -155,12 +149,6 @@ Segment18::buildObjects(Simulation& System)
   pipeB->createAll(System,*pipeA, "back");
   correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
   pipeTerminate(System,*buildZone,pipeB);
-
-  buildZone->removeLastMaster(System);
-
-
-  const double realLen = (pipeB->getLinkPt("back") -
-			  bellowA->getLinkPt("front")).abs();
 
   return;
 }

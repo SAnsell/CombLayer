@@ -52,14 +52,15 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -129,13 +130,11 @@ Segment14::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment14","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
 
   bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   flatA->setFront(*bellowA,"back");
@@ -145,7 +144,7 @@ Segment14::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatA,"back",*pipeB);
+    (System,*buildZone,*flatA,"back",*pipeB);
 
   flatB->setFront(*pipeB,"back");
   flatB->createAll(System,*pipeB,"back");
@@ -154,12 +153,10 @@ Segment14::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatB,"back",*gateA);
+    (System,*buildZone,*flatB,"back",*gateA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateA,"back",*bellowB);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*gateA,"back",*bellowB);
 
   return;
 }
@@ -176,6 +173,7 @@ Segment14::createLinks()
   setLinkSignedCopy(1,*bellowB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 

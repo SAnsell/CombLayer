@@ -24,6 +24,8 @@
 
 namespace tdcSystem
 {
+  class CrossWayTube;
+  class CrossWayBlank;
   class YagScreen;
   /*!
     \class Segment15
@@ -39,7 +41,7 @@ class Segment15 :
  private:
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
-  std::shared_ptr<constructSystem::BlankTube> mirrorChamber; ///< #2 Mirror chamber
+  std::shared_ptr<tdcSystem::CrossWayBlank> mirrorChamber;       ///< #2 
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;          ///<  Yag unit
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC

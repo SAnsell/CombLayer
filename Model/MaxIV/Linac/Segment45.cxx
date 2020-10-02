@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "generalConstruct.h"
@@ -73,12 +73,11 @@
 #include "CeramicGap.h"
 #include "FlangePlate.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
 #include "Segment45.h"
 
-#include "Surface.h"
 
 namespace tdcSystem
 {
@@ -161,12 +160,12 @@ Segment45::createSurfaces()
    */
 {
   ELog::RegMethod RegA("Segment45","createSurfaces");
- 
+
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cutRadius);
-    
+
   return;
 }
-  
+
 void
 Segment45::buildObjects(Simulation& System)
   /*!
@@ -178,23 +177,19 @@ Segment45::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     ceramic->copyCutSurf("front",*this,"front");
 
   ceramic->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramic,2);
+  outerCell=buildZone->createUnit(System,*ceramic,2);
   ceramic->insertInCell(System,outerCell);
   pipeTerminate(System,*buildZone,ceramic);
-  
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*ceramic,"back",*pipeA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+    (System,*buildZone,*ceramic,"back",*pipeA);
+
+  outerCell=constructSystem::constructUnit
+    (System,*buildZone,*pipeA,"back",*yagUnit);
 
 
   yagScreen->setBeamAxis(*yagUnit,1);
@@ -205,13 +200,12 @@ Segment45::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*adaptor);
+    (System,*buildZone,*yagUnit,"back",*adaptor);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*adaptor,"back",*pipeB);
+    (System,*buildZone,*adaptor,"back",*pipeB);
 
-  buildZone->removeLastMaster(System);
-
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 
@@ -223,7 +217,7 @@ Segment45::constructHole(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment45","constructHole");
-  
+
   if (IHall)
     {
       std::string Out;
@@ -231,7 +225,7 @@ Segment45::constructHole(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
-      pipeB->insertInCell(System,this->getCell("FloorVoid"));
+      pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"Floor",Out);
@@ -251,7 +245,7 @@ Segment45::createLinks()
   setLinkSignedCopy(1,*pipeB,2);
 
   nameSideIndex(1,"buildZoneCut");
-  joinItems.push_back(FixedComp::getFullRule(2));  
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 
@@ -285,7 +279,7 @@ Segment45::createAll(Simulation& System,
   ELog::RegMethod RControl("Segment45","build");
 
   IHall=dynamic_cast<const InjectionHall*>(&FC);
-  
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 

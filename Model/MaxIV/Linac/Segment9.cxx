@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -75,8 +75,9 @@
 #include "StriplineBPM.h"
 #include "CorrectorMag.h"
 #include "CeramicGap.h"
+#include "IonPumpTube.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment9.h"
 
@@ -90,7 +91,7 @@ Segment9::Segment9(const std::string& Key) :
   TDCsegment(Key,2),
 
   ceramicBellowA(new tdcSystem::CeramicGap(keyName+"CeramicBellowA")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA")),
+  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
   cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
@@ -142,47 +143,37 @@ Segment9::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     ceramicBellowA->copyCutSurf("front",*this,"front");
+
   ceramicBellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ceramicBellowA,2);
+  outerCell=buildZone->createUnit(System,*ceramicBellowA,2);
   ceramicBellowA->insertInCell(System,outerCell);
 
 
   // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*ceramicBellowA,"back");
+  constructSystem::constructUnit
+    (System,*buildZone,*ceramicBellowA,"back",*pumpA);
 
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
-
-  pipeA->createAll(System,VPB,"OuterPlate");
+  
+  pipeA->createAll(System,*pumpA,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVertA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowB);
+    (System,*buildZone,*pipeA,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*bpm);
+    (System,*buildZone,*bellowB,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowC);
+    (System,*buildZone,*pipeB,"back",*bellowC);
 
-
-  buildZone->removeLastMaster(System);
   return;
 }
 

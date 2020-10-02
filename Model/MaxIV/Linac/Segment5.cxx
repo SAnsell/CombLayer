@@ -59,6 +59,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -67,7 +68,7 @@
 #include "DipoleDIBMag.h"
 #include "BeamDivider.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment5.h"
 
@@ -120,10 +121,6 @@ Segment5::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment5","buildObjects");
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     flatA->copyCutSurf("front",*this,"front");
   flatA->createAll(System,*this,0);
@@ -134,7 +131,7 @@ Segment5::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatA,"back",*beamA);
+    (System,*buildZone,*flatA,"back",*beamA);
 
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
@@ -144,9 +141,7 @@ Segment5::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*flatB,"back",*bellowA);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*flatB,"back",*bellowA);
 
   return;
 }

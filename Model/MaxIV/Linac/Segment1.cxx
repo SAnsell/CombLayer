@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -74,8 +74,10 @@
 #include "BlankTube.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
+#include "IonPumpTube.h"
 
 #include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment1.h"
 
@@ -100,7 +102,7 @@ Segment1::Segment1(const std::string& Key) :
   pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
   cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
   cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
-  pumpA(new constructSystem::BlankTube(keyName+"PumpA"))
+  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -141,17 +143,13 @@ Segment1::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment1","buildObjects");
 
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
+  
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bellowA);
+    (System,*buildZone,*pipeA,"back",*bellowA);
 
   //
   // build pipe + corrector magnets together:
@@ -160,12 +158,12 @@ Segment1::buildObjects(Simulation& System)
   pipeB->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
 
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System,*pipeB,"back");
+  pipeB->insertAllInCell(System,outerCell);
 
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
+    (System,*buildZone,*pipeB,"back",*pipeC);
 
   pipeD->createAll(System,*pipeC,"back");
   correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
@@ -174,23 +172,17 @@ Segment1::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeD);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*bpm);
+    (System,*buildZone,*pipeD,"back",*bpm);
 
   pipeF->createAll(System,*bpm,"back");
   correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
   pipeTerminate(System,*buildZone,pipeF);
 
-    // FAKE INSERT REQUIRED
-  pumpA->addAllInsertCell(masterCell->getName());
-  pumpA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpA->createAll(System,*pipeF,"back");
+  constructSystem::constructUnit
+    (System,*buildZone,*pipeF,"back",*pumpA);
 
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  outerCell=buildZone->createOuterVoidUnit
-    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
-  pumpA->insertAllInCell(System,outerCell);
+  
 
-  buildZone->removeLastMaster(System);
   return;
 }
 
@@ -201,10 +193,11 @@ Segment1::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeA,1);
+  setLinkSignedCopy(1,*pumpA,2);
 
+    //  const constructSystem::portItem& VPB=pumpA->getPort(1);
 
-  const constructSystem::portItem& VPB=pumpA->getPort(1);
-  setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+  // setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

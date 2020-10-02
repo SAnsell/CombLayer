@@ -36,6 +36,10 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -51,12 +55,14 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
+#include "Line.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -65,16 +71,10 @@
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 
-#include "Line.h"
-#include "ContainedGroup.h"
 #include "YagScreen.h"
 
 #include "TDCsegment.h"
@@ -136,24 +136,20 @@ Segment21::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment21","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+    (System,*buildZone,*bellowA,"back",*bpm);
 
-  pipeA->createAll(System,*bpm, "back");
-
+  pipeA->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*yagUnit);
+    (System,*buildZone,*pipeA,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -168,10 +164,7 @@ Segment21::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
-
-  buildZone->removeLastMaster(System);
-
+    (System,*buildZone,*pipeB,"back",*bellowB);
   return;
 }
 

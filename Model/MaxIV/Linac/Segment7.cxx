@@ -71,7 +71,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -85,7 +85,7 @@
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment7.h"
 
@@ -141,10 +141,6 @@ Segment7::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
@@ -155,15 +151,14 @@ Segment7::buildObjects(Simulation& System)
 
   
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+    (System,*buildZone,*pipeA,"back",*bpm);
 
   //  pipeB->copyCutSurf("front",*bpm,"back");
   pipeB->createAll(System,*bpm,"back");
 
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVertA);
   pipeTerminate(System,*buildZone,pipeB);
-  
-  buildZone->removeLastMaster(System);  
+
   return;
 }
 

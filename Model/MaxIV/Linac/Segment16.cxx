@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -71,11 +71,11 @@
 #include "VacuumPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "CorrectorMag.h"
 #include "portItem.h"
 #include "VirtualTube.h"
-#include "BlankTube.h"
+#include "IonPumpTube.h"
 
 #include "TDCsegment.h"
 #include "Segment16.h"
@@ -95,7 +95,7 @@ Segment16::Segment16(const std::string& Key) :
   cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC"))
   /*!
     Constructor
@@ -136,16 +136,13 @@ Segment16::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment16","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+    (System,*buildZone,*bellowA,"back",*bpm);
 
   // constructSystem::constructUnit
   //   (System,*buildZone,masterCell,*bpm,"back",*pipeA);
@@ -154,23 +151,21 @@ Segment16::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
   pipeTerminate(System,*buildZone,pipeA);
 
-  // constructSystem::constructUnit
-  //   (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
   pipeB->createAll(System,*pipeA, "back");
 
   correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*bellowB);
-
-  const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*ionPump);
+    (System,*buildZone,*pipeB,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,ionPumpBackPort,"OuterPlate",*pipeC);
+    (System,*buildZone,*bellowB,"back",*ionPump);
 
-  buildZone->removeLastMaster(System);
+ 
+  constructSystem::constructUnit
+    (System,*buildZone,*ionPump,"back",*pipeC);
+
   return;
 }
 

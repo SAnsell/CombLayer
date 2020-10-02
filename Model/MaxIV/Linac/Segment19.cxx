@@ -61,7 +61,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -70,6 +70,7 @@
 #include "CylGateValve.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "GaugeTube.h"
 
 #include "TDCsegment.h"
 #include "Segment19.h"
@@ -82,9 +83,9 @@ namespace tdcSystem
 Segment19::Segment19(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  gauge(new constructSystem::PipeTube(keyName+"Gauge")),
+  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
   gateA(new constructSystem::GateValveCube(keyName+"GateA")),
-  ionPump(new constructSystem::PipeTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::GaugeTube(keyName+"IonPump")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
@@ -122,39 +123,27 @@ Segment19::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment19","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   // Gauge
-  gauge->addAllInsertCell(masterCell->getName());
-  gauge->setFront(*bellowA,2);
-  gauge->createAll(System,*bellowA,2);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*gauge,2);
-  gauge->insertAllInCell(System,outerCell);
-
-
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gauge,"back",*gateA);
+    (System,*buildZone,*bellowA,"back",*gauge);
+  
+  constructSystem::constructUnit
+    (System,*buildZone,*gauge,"back",*gateA);
 
   // Ion pump
-  ionPump->addAllInsertCell(masterCell->getName());
-  ionPump->setFront(*gateA,2);
-  ionPump->createAll(System,*gateA,2);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*ionPump,2);
-  ionPump->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,*buildZone,*gateA,"back",*ionPump);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*ionPump,"back",*gateB);
+    (System,*buildZone,*ionPump,"back",*gateB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gateB,"back",*bellowB);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*gateB,"back",*bellowB);
 
   return;
 }

@@ -280,7 +280,7 @@ DREAM::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith edge
 
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
@@ -301,10 +301,10 @@ DREAM::build(Simulation& System,
   SDisk->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*SDisk);
   
-  VPipeC0->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC0->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC0->createAll(System,ChopperA->getKey("Beam"),2);
 
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,*VPipeC0,2);
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
@@ -322,7 +322,7 @@ DREAM::build(Simulation& System,
   BandADisk->createAll(System,ChopperB->getKey("Main"),0);
   ChopperB->insertAxle(System,*BandADisk);
     
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
@@ -337,7 +337,7 @@ DREAM::build(Simulation& System,
   T0DiskA->createAll(System,ChopperC->getKey("Main"),0);
   ChopperC->insertAxle(System,*T0DiskA);
   
-  VPipeE1->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE1->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE1->createAll(System,ChopperC->getKey("Beam"),2);
   FocusE1->addInsertCell(VPipeE1->getCells("Void"));
   FocusE1->createAll(System,*VPipeE1,0,*VPipeE1,0);
@@ -347,7 +347,7 @@ DREAM::build(Simulation& System,
   CollimB->addInsertCell(VPipeE1->getCells("Void"));
   CollimB->createAll(System,*VPipeE1,-1);
 
-  VPipeE2->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE2->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE2->createAll(System,*VPipeE1,2);
   FocusE2->addInsertCell(VPipeE2->getCells("Void"));
   FocusE2->createAll(System,*VPipeE2,0,*VPipeE2,0);
@@ -358,12 +358,12 @@ DREAM::build(Simulation& System,
   CollimC->createAll(System,*VPipeE2,-2);
   
   // move guide
-  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,*VPipeE2,2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  VPipeG->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeG->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeG->createAll(System,*VPipeF,2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
   FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
@@ -398,7 +398,7 @@ DREAM::build(Simulation& System,
   if (stopPoint==3) return;                      // STOP At bunker edge
   
   // Section up to 41.35 m 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWallA->getKey("Guide0"),2);
       
@@ -409,7 +409,7 @@ DREAM::build(Simulation& System,
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
 
-  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->setFront(*ShieldB,-1);
   VPipeOutB->setBack(*ShieldB,-2);
   VPipeOutB->createAll(System,*ShieldB,-1);
@@ -421,7 +421,7 @@ DREAM::build(Simulation& System,
   ShieldC->addInsertCell(voidCell);
   ShieldC->createAll(System,*ShieldB,2);
 
-  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+  VPipeOutC->addAllInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->setFront(*ShieldC,-1);
   VPipeOutC->setBack(*ShieldC,-2);
   VPipeOutC->createAll(System,*ShieldC,-1);
@@ -433,8 +433,8 @@ DREAM::build(Simulation& System,
   Cave->createAll(System,*ShieldC,2);
   Cave->insertComponent(System,"FrontWall",*ShieldC);
 
-  VPipeCaveA->addInsertCell(Cave->getCell("FrontWall"));
-  VPipeCaveA->addInsertCell(Cave->getCell("Void"));
+  VPipeCaveA->addAllInsertCell(Cave->getCell("FrontWall"));
+  VPipeCaveA->addAllInsertCell(Cave->getCell("Void"));
   VPipeCaveA->setFront(*VPipeOutC,2);
   VPipeCaveA->createAll(System,*VPipeOutC,2);
   FocusCaveA->addInsertCell(VPipeCaveA->getCell("Void"));

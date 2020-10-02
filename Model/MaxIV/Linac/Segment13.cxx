@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -73,7 +73,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment13.h"
 
@@ -137,23 +137,18 @@ Segment13::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment13","buildObjects");
 
-  const attachSystem::CellMap* buildCM=buildZone->getCellMap();
-
   int outerCell;
-
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
+  //  ELog::EM<<"This -- "<<getRule("front")<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpm);
+    (System,*buildZone,*pipeA,"back",*bpm);
 
     
   pipeB->createAll(System,*bpm,"back");
@@ -164,7 +159,7 @@ Segment13::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+    (System,*buildZone,*pipeB,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -176,8 +171,8 @@ Segment13::buildObjects(Simulation& System)
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVerC);
   pipeTerminate(System,*buildZone,pipeC);
-  
-  buildZone->removeLastMaster(System);  
+
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 
@@ -204,7 +199,7 @@ Segment13::insertPrevSegment(Simulation& System,
 {
   ELog::RegMethod RegA("Segment13","insertPrevSegment");
   if (prevSegPtr && prevSegPtr->hasCell("LastCell"))
-    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell"));
+    pipeA->insertAllInCell(System,prevSegPtr->getCell("LastCell"));
   return;
 }
 

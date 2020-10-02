@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -74,7 +74,7 @@
 #include "CylGateValve.h"
 #include "ButtonBPM.h"
 #include "CorrectorMag.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 
 #include "TDCsegment.h"
 #include "Segment43.h"
@@ -133,19 +133,17 @@ Segment43::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment43","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpmA);
+    (System,*buildZone,*bellowA,"back",*bpmA);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmA,"back",*yagUnit);
+    (System,*buildZone,*bpmA,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,4);
@@ -155,19 +153,17 @@ Segment43::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*gate);
+    (System,*buildZone,*yagUnit,"back",*gate);
 
   pipe->createAll(System,*gate,"back");
   pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagH);
   pipeTerminate(System,*buildZone,pipe);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bpmB);
+    (System,*buildZone,*pipe,"back",*bpmB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpmB,"back",*bellowB);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*bpmB,"back",*bellowB);
 
   return;
 }
@@ -183,7 +179,7 @@ Segment43::createLinks()
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }

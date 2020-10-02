@@ -60,7 +60,7 @@ class Segment12 :
   std::shared_ptr<constructSystem::Bellows> bellowLA;
 
   /// Ion pump
-  std::shared_ptr<constructSystem::BlankTube> ionPumpLA;
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPumpLA;
 
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeLA;

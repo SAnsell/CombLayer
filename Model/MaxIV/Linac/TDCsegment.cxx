@@ -62,11 +62,8 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
-
-#include "VirtualTube.h"
-#include "BlankTube.h"
-#include "PipeTube.h"
-#include "portItem.h"
+#include "BlockZone.h"
+#include "Simulation.h"
 
 
 #include "TDCsegment.h"
@@ -82,7 +79,7 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  buildZone(nullptr),NCellInit(0),
+  NCellInit(0),
   prevSegPtr(nullptr)
   /*!
     Constructor
@@ -184,47 +181,33 @@ TDCsegment::registerPrevSeg(const TDCsegment* PSPtr,
 	prevSegPtr->getJoinItems();
       if (!prevJoinItems.empty())
 	{
-
 	  if (buildZone && indexPoint && indexPoint<=prevJoinItems.size())
 	    buildZone->setFront(prevJoinItems[indexPoint-1]);
 	  
 	  this->setFrontSurfs(prevJoinItems);
+
 	}
     }
   
   return;
 }
 
-const constructSystem::portItem&
-TDCsegment::buildIonPump2Port(Simulation& System,
-			      attachSystem::InnerZone& buildZone,
-			      MonteCarlo::Object *masterCell,
-			      const attachSystem::FixedComp& linkUnit,
-			      const std::string& sideName,
-			      constructSystem::VirtualTube& ionPump,
-			      const bool intersect) const
-/*!
-  Build 2 port ion pump
- */
+void
+TDCsegment::removeSpaceFillers(Simulation& System) const
+  /*!
+    Remove space fillers
+    \param System :: Simulation to remove cells from
+   */
 {
-  ionPump.addAllInsertCell(masterCell->getName());
-  ionPump.setPortRotation(3, Geometry::Vec3D(1,0,0));
-  ionPump.createAll(System,linkUnit,sideName);
-
-  if (intersect)
-    for (size_t i=2; i<=3; ++i)
-      for (size_t j=0; j<=1; ++j)
-	ionPump.intersectPorts(System,i,j);
-
-  const constructSystem::portItem& port=ionPump.getPort(1);
-  const int outerCell=
-    buildZone.createOuterVoidUnit(System,
-				  masterCell,
-				  port,
-				  port.getSideIndex("OuterPlate"));
-  ionPump.insertAllInCell(System,outerCell);
-
-  return port;
+  if (prevSegPtr)
+    {
+      if (prevSegPtr->hasCell("SpaceFiller"))
+	{
+	  for(const int CN : prevSegPtr->getCells("SpaceFiller"))
+	    System.removeCell(CN);
+	}
+    }
+  return;
 }
 
 bool
@@ -350,12 +333,13 @@ TDCsegment::initCellMap()
 {
   ELog::RegMethod RegA("TDCsegment","initCellMap");
 
+  /*
   const attachSystem::CellMap* CPtr=
     (buildZone) ? buildZone->getCellMap() :  0;
 
   NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
     ? CPtr->getNCells("OuterVoid") : 0;
-
+  */
   return;
 }
 
@@ -373,7 +357,7 @@ TDCsegment::captureCellMap()
    */
 {
   ELog::RegMethod RegA("TDCsegment","captureCellMap");
-
+  /*
   const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
   const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
     CPtr->getNCells("OuterVoid") : 0;
@@ -382,7 +366,7 @@ TDCsegment::captureCellMap()
     CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
 
   NCellInit=NCells;
-
+  */
   return;
 }
 

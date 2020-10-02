@@ -281,7 +281,6 @@ R1FrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
   // FAKE insertcell:
-  heatBox->addAllInsertCell(masterCell->getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,preFC,preSideIndex);
 
@@ -321,7 +320,7 @@ R1FrontEnd::buildHeatTable(Simulation& System,
   
   pipeB->createAll(System,*ionPB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  pipeB->insertAllInCell(System,outerCell);
   
   return;
   
@@ -366,7 +365,7 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   bellowE->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipe,2);
-  aperturePipe->insertInCell(System,outerCell);
+  aperturePipe->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
   bellowF->insertInCell(System,outerCell);
@@ -398,13 +397,13 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   bellowG->insertInCell(System,outerCell);
     
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
-  aperturePipeB->insertInCell(System,outerCell);
+  aperturePipeB->insertAllInCell(System,outerCell);
   
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  pipeC->insertAllInCell(System,outerCell);
 
   
   return;
@@ -437,14 +436,14 @@ R1FrontEnd::buildShutterTable(Simulation& System,
   bellowI->insertInCell(System,outerCell);
 
   // FAKE insertcell:
-  florTubeA->addAllInsertCell(masterCell->getName());
+
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertAllInCell(System,outerCell);
-  
+
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowJ,2);
@@ -452,8 +451,8 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
   insertFlanges(System,*florTubeA);
 
+
   // FAKE insertcell:
-  gateTubeB->addAllInsertCell(masterCell->getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
@@ -461,13 +460,14 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeB->insertAllInCell(System,outerCell);
 
+
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
   insertFlanges(System,*gateTubeB);
 
-  shutterBox->delayPorts();
+  //  shutterBox->delayPorts();
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterBox,2);
@@ -480,7 +480,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
     shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
   shutterBox->addAllInsertCell(outerCell);
-  shutterBox->createPorts(System);
+  //  shutterBox->createPorts(Systsem);
 
   for(size_t i=0;i<shutters.size();i++)
     {
@@ -513,7 +513,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
 void
 R1FrontEnd::insertFlanges(Simulation& System,
-			       const constructSystem::PipeTube& PT)
+			  const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
     that extend past the linkzone in to ther neighbouring regions.
@@ -595,7 +595,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   dipolePipe->createAll(System,*magnetBlock,"Photon");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   magnetBlock->insertInCell("Magnet",System,outerCell);  
-  dipolePipe->insertInCell(System,outerCell);
+  dipolePipe->insertAllInCell(System,outerCell);
   //  setCell("MasterVoid",masterCell->getName());
   //  lastComp=magnetBlock;
   //  return;
@@ -631,7 +631,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
-  heatPipe->insertInCell(System,outerCell);
+  heatPipe->insertAllInCell(System,outerCell);
 
   if (stopPoint=="Heat")
     {

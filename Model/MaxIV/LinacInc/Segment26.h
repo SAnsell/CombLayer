@@ -52,9 +52,9 @@ class Segment26 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Flat inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZMid;        ///< Mid inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZLower;      ///< Lower inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Flat inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Mid inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
     
   /// Join pipe 
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
@@ -83,8 +83,7 @@ class Segment26 :
   void buildObjects(Simulation&);
   void createLinks();
 
-  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
-  void createSplitInnerZone(Simulation&);
+  void createSplitInnerZone();
   
  public:
 

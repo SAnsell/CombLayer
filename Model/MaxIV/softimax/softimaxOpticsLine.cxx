@@ -735,8 +735,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
   // dump cell for joinPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+
   if (preInsert)
-    preInsert->insertInCell(System,outerCell);
+    preInsert->insertAllInCell(System,outerCell);
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
@@ -965,12 +966,12 @@ softimaxOpticsLine::buildOutGoingPipes(Simulation& System,
 {
   ELog::RegMethod RegA("softimaxOpticsLine","buildOutgoingPipes");
 
-  joinPipeAB->addInsertCell(hutCells);
-  joinPipeAB->addInsertCell(leftCell);
+  joinPipeAB->addAllInsertCell(hutCells);
+  joinPipeAB->addAllInsertCell(leftCell);
   joinPipeAB->createAll(System,*bremCollAA,2);
 
-  joinPipeBB->addInsertCell(hutCells);
-  joinPipeBB->addInsertCell(rightCell);
+  joinPipeBB->addAllInsertCell(hutCells);
+  joinPipeBB->addAllInsertCell(rightCell);
   joinPipeBB->createAll(System,*bremCollBA,2);
 
   screenA->addAllInsertCell(rightCell);

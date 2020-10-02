@@ -63,7 +63,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ContainedGroup.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
@@ -75,6 +75,7 @@
 #include "FixedOffset.h"
 #include "EBeamStop.h"
 #include "JawFlange.h"
+#include "CrossWayTube.h"
 
 #include "TDCsegment.h"
 #include "Segment48.h"
@@ -96,7 +97,7 @@ Segment48::Segment48(const std::string& Key) :
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
     }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  mirrorChamberA(new constructSystem::PipeTube(keyName+"MirrorChamberA")),
+  mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor
@@ -135,38 +136,25 @@ Segment48::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment48","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-
   
   if (isActive("front"))
     beamStopA->copyCutSurf("front",*this,"front");
   beamStopA->createAll(System,*this,0);
-  if (!masterCell)
-    {
-      ELog::EM<<"Build == "<<*buildZone<<ELog::endDiag;
-      masterCell=buildZone->constructMasterCell(System,*beamStopA,-1);
-
-      ELog::EM<<"Building zone:"<<*masterCell<<ELog::endDiag;
-    }
   
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*beamStopA,2);
+  outerCell=buildZone->createUnit(System,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamStopA,"back",*bellowA);
+    (System,*buildZone,*beamStopA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*beamStopB);
+    (System,*buildZone,*bellowA,"back",*beamStopB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamStopB,"back",*pipeA);
+    (System,*buildZone,*beamStopB,"back",*pipeA);
 
-  // Slit tube and jaws
-  slitTube->addAllInsertCell(masterCell->getName());
-  slitTube->setFront(*pipeA,"back");
-  slitTube->createAll(System,*pipeA,"back");
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*slitTube,2);
-  slitTube->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,*buildZone,*pipeA,"back",*slitTube);
 
   for(size_t index=0;index<2;index++)
     {
@@ -187,15 +175,13 @@ Segment48::buildObjects(Simulation& System)
   //////////////////////////////////////////////////////////////////////
   
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*slitTube,"back",*bellowB);
-
-  const constructSystem::portItem& MCA =
-    buildIonPump2Port(System,*buildZone,masterCell,*bellowB,"back",*mirrorChamberA,true);
+    (System,*buildZone,*slitTube,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,MCA,"OuterPlate",*bellowC);
+    (System,*buildZone,*bellowB,"back",*mirrorChamberA);
 
-  buildZone->removeLastMaster(System);
+  constructSystem::constructUnit
+    (System,*buildZone,*mirrorChamberA,"back",*bellowC);
 
   return;
 }

@@ -79,6 +79,7 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
+#include "GaugeGenerator.h"
 #include "PrismaChamberGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
@@ -99,6 +100,7 @@
 #include "PortItemGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
+#include "IonPTubeGenerator.h"
 
 namespace setVariable
 {
@@ -251,6 +253,21 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
 
+  setVariable::GaugeGenerator GTGen;
+  GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
+
+  setVariable::CrossWayGenerator CWBlankGen;
+  CWBlankGen.setCF<CF63>();
+  CWBlankGen.setMainLength(2.4,13.6);
+  CWBlankGen.setPortLength(5.9,8.1);
+  CWBlankGen.setCrossLength(6.25,6.25);
+  CWBlankGen.setPortCF<CF35_TDC>();
+  CWBlankGen.setCrossCF<CF35_TDC>();
+  CWBlankGen.generateCrossWay(Control,"CrossBlank");
+
+  setVariable::IonPTubeGenerator IonPGen;
+  IonPGen.generateTube(Control,"IonPTube");
+
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 3.7);
@@ -316,8 +333,13 @@ SingleItemVariables(FuncDataBase& Control)
   GVGen.generateGate(Control,"GV",1);
 
   // CylGateValve
-  setVariable::GateValveGenerator GVCGen;
-  GVCGen.generateValve(Control,"GVCube",0.0,1);
+  setVariable::GateValveGenerator CGateGen;
+
+  CGateGen.setOuter(3.4,13.0,20.0,20.0);
+  CGateGen.setBladeMat("Stainless304L");
+  CGateGen.setBladeThick(0.8);
+  CGateGen.setPortPairCF<CF40,CF63>();
+  CGateGen.generateValve(Control,"GVCube",0.0,1);
 
 
   //  dipole magnet DIB
@@ -392,18 +414,33 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PortItemGenerator PItemGen;
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,"PipeTube",0.0,20.0);
-  // Control.addVariable("PipeTubeFlangeACapThick",setVariable::CF63::flangeLength);
-  // Control.addVariable("PipeTubeFlangeBCapThick",setVariable::CF63::flangeLength);
-  // Control.addVariable("PipeTubeFlangeCapMat","Lead");
-  //  Control.addVariable("PipeTubeYAngle", 90.0);
+
   Control.addVariable("PipeTubeNPorts",2);
-  PItemGen.setCF<setVariable::CF40>(6.0);
+  PItemGen.setCF<setVariable::CF40>(12.0);
   PItemGen.generatePort(Control,"PipeTubePort0",
 			Geometry::Vec3D(0.0, 3.0, 0.0),
 			Geometry::Vec3D(0.5, -0.5, 0.866));
   PItemGen.setNoPlate();
-  PItemGen.setCF<setVariable::CF40>(7.0);
+  PItemGen.setCF<setVariable::CF40>(10.0);
   PItemGen.generatePort(Control,"PipeTubePort1",
+			Geometry::Vec3D(0.0, -3.0, 0.0),
+			Geometry::Vec3D(-1.0, 0.0, 0.0));
+
+  // PortTube
+  setVariable::PortTubeGenerator PortTubeGen;
+  PortTubeGen.setPipeCF<CF63>();
+  PortTubeGen.setPortCF<CF40>();
+  PortTubeGen.setPortLength(5.0,6.0);
+  PortTubeGen.generateTube(Control,"PortTube",0.0,20.0);
+
+  Control.addVariable("PortTubeNPorts",2);
+  PItemGen.setCF<setVariable::CF40>(12.0);
+  PItemGen.generatePort(Control,"PortTubePort0",
+			Geometry::Vec3D(0.0, 3.0, 0.0),
+			Geometry::Vec3D(0.5, -0.5, 0.866));
+  PItemGen.setNoPlate();
+  PItemGen.setCF<setVariable::CF40>(10.0);
+  PItemGen.generatePort(Control,"PortTubePort1",
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
 

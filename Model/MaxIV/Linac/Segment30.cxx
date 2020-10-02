@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
 
@@ -74,7 +74,9 @@
 #include "portItem.h"
 #include "BlankTube.h"
 #include "CorrectorMag.h"
-#include "LObjectSupport.h"
+#include "GaugeTube.h"
+#include "IonPumpTube.h"
+#include "LObjectSupportB.h"
 
 #include "TDCsegment.h"
 #include "Segment30.h"
@@ -86,11 +88,11 @@ namespace tdcSystem
 
 Segment30::Segment30(const std::string& Key) :
   TDCsegment(Key,2),
-  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
-  gauge(new constructSystem::PipeTube(keyName+"Gauge")),
+  IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
+  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
-  ionPump(new constructSystem::BlankTube(keyName+"IonPump")),
+  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
   /*!
@@ -126,10 +128,10 @@ Segment30::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","createSplitInnerZone");
 
-  *IZThin = *buildZone;
-
   const double orgFrac(2.3);
   const double axisFrac(4.0);
+
+  *IZThin = *buildZone;
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
@@ -142,39 +144,28 @@ Segment30::createSplitInnerZone(Simulation& System)
       ModelSupport::buildPlane(SMap,buildIndex+5005,
 			       (sideOrg+Origin*orgFrac)/(orgFrac+1.0),midX);
 
-      int SNremoved(0);
-      for(const TDCsegment* sidePtr : sideVec)
+      if (sideSegment->getKeyName()=="L2SPF13")
 	{
-	  for(const int CN : sidePtr->getCells("BuildVoid"))
+	  int SNremoved(0);
+	  for(const TDCsegment* sidePtr : sideVec)
 	    {
-	      MonteCarlo::Object* OPtr=System.findObject(CN);
-	      HeadRule HA=OPtr->getHeadRule();   // copy
-	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
-	      HA.addIntersection(SMap.realSurf(buildIndex+5005));
-	      OPtr->procHeadRule(HA);
+	      if (sidePtr->getKeyName()!="TDC15")
+		{
+		  for(const int CN : sidePtr->getCells("Unit"))
+		    {
+		      MonteCarlo::Object* OPtr=System.findObject(CN);
+		      HeadRule HA=OPtr->getHeadRule();   // copy
+		      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+		      HA.addIntersection(SMap.realSurf(buildIndex+5005));
+		      OPtr->procHeadRule(HA);
+		    }
+		}
 	    }
+	  HeadRule HSurroundB=buildZone->getSurround();
+	  HSurroundB.removeOuterPlane(Origin,X,0.9);
+	  HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
+	  IZThin->setSurround(HSurroundB);
 	}
-      if (sideVec.size()>=2)
-	{
-	  HeadRule TriCut=buildZone->getSurround();
-	  TriCut.removeOuterPlane(Origin,X,0.9);
-	  TriCut.removeOuterPlane(Origin,-X,0.9);
-	  TriCut*=sideVec[1]->getFullRule(-2);
-	  TriCut.addIntersection(-SNremoved);
-	  TriCut.addIntersection(SMap.realSurf(buildIndex+5005));
-	  for(const int CN : buildZone->getInsertCell())
-	    {
-	      MonteCarlo::Object* outerObj=System.findObject(CN);
-	      if (outerObj)
-		outerObj->addIntersection(TriCut.complement());
-	    }
-	}
-      HeadRule HSurroundB=buildZone->getSurround();
-      HSurroundB.removeOuterPlane(Origin,X,0.9);
-      HSurroundB.addIntersection(-SMap.realSurf(buildIndex+5005));
-      IZThin->setSurround(HSurroundB);
-      IZThin->setInsertCells(buildZone->getInsertCell());
-      IZThin->constructMasterCell(System);
     }
   return;
 }
@@ -189,41 +180,87 @@ Segment30::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment30","buildObjects");
 
-
   int outerCell;
-  MonteCarlo::Object* masterCell=IZThin->getMaster();
-  if (!masterCell)
-    {
-      ELog::EM<<"Building master cell"<<ELog::endDiag;
-      masterCell=IZThin->constructMasterCell(System);
-    }
 
-  gauge->addAllInsertCell(masterCell->getName());
+  
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*gauge,2);
-  gauge->insertAllInCell(System,outerCell);
+  outerCell=IZThin->createUnit(System,*gauge,2);
+  gauge->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gauge,"back",*pipeA);
+    (System,*IZThin,*gauge,"back",*pipeA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*pipeA,"back",*bellow);
+    (System,*IZThin,*pipeA,"back",*bellow);
+
+  constructSystem::constructUnit
+    (System,*IZThin,*bellow,"back",*ionPump);
 
 
-  const constructSystem::portItem& ionPumpBackPort =
-    buildIonPump2Port(System,*IZThin,masterCell,*bellow,"back",*ionPump);
-
-
-  pipeB->createAll(System,ionPumpBackPort,"OuterPlate");
+  pipeB->createAll(System,*ionPump,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagV);
   pipeTerminate(System,*IZThin,pipeB);
 
-  IZThin->removeLastMaster(System);
   return;
+}
 
+void
+Segment30::postBuild(Simulation& System)
+/*!
+    Add additonal stuff after building based on
+    relative segments
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("Segment46","postBuild");
+  
+  typedef std::map<std::string,const TDCsegment*> mapTYPE;
+  if (!sideVec.empty())
+    {
+      mapTYPE segNames;
+      for(const TDCsegment* sidePtr : sideVec)
+	{
+	  segNames.emplace(sidePtr->getKeyName(),sidePtr);
+	  ELog::EM<<"Segment == "<<sidePtr->getKeyName()<<ELog::endDiag;
+	}
+
+      HeadRule surHR=buildZone->getSurround();
+      surHR.removeOuterPlane(Origin+Y*10.0,-X,0.9);
+      surHR.addIntersection(SMap.realSurf(buildIndex+5005));
+      
+      if (segNames.find("L2SPF13")!=segNames.end() &&
+	  segNames.find("TDC14")==segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("L2SPF13");
+	  const TDCsegment* sideSegment=mc->second;
+	  const HeadRule frontHR=sideSegment->getFullRule("back");
+	  const HeadRule backHR=getFullRule("back");
+	  surHR *= frontHR * backHR.complement();
+	}
+      if (segNames.find("L2SPF13")!=segNames.end() &&
+	  segNames.find("TDC14")!=segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("TDC14");
+	  const TDCsegment* sideSegment=mc->second;
+	  const HeadRule frontHR=sideSegment->getFullRule("back");
+	  const HeadRule backHR=getFullRule("back");
+	  surHR *= frontHR * backHR.complement();
+	}
+      if (segNames.find("TDC15")!=segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("TDC15");
+	  const TDCsegment* sideSegment=mc->second;
+	  HeadRule SRX=sideSegment->getSurround();
+	  const int SN=SRX.findAxisPlane(X,0.9);
+	  surHR.addIntersection(-SMap.realSurf(SN));
+	}
+
+      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());      
+    }
   return;
+ 
 }
 
 void
@@ -239,6 +276,7 @@ Segment30::createLinks()
 
   joinItems.push_back(FixedComp::getFullRule(2));
 
+  buildZone->setBack(FixedComp::getFullRule("back"));
   return;
 }
 
@@ -288,6 +326,8 @@ Segment30::createAll(Simulation& System,
   createSplitInnerZone(System);
   buildObjects(System);
   createLinks();
+  postBuild(System);
+
   return;
 }
 

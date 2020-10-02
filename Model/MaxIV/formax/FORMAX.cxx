@@ -188,9 +188,9 @@ FORMAX::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
   // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
@@ -202,7 +202,7 @@ FORMAX::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
   return;  
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   return;
 }

@@ -47,6 +47,7 @@ class TDC :
 
   // storage of segments
   typedef std::map<std::string,std::shared_ptr<TDCsegment>> SegTYPE;
+  typedef std::map<std::string,std::shared_ptr<attachSystem::BlockZone>> IZTYPE;
 
   /// to stop end-build check (length etc) 
   bool noCheck;
@@ -55,19 +56,33 @@ class TDC :
   
   std::set<std::string> activeINJ;   ///< active components
 
-  
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
-  SegTYPE SegMap;
 
-  /// Build zones;
-  std::map<std::string,std::shared_ptr<attachSystem::InnerZone>> bZone;
+  /// Map of segmentName : TDCsegmetn
+  SegTYPE SegMap; 
+
+  /// Map of segmentName : BlockZone
+  IZTYPE bZone;
+
+  /// HeadRules of original spaces:
+  std::map<int,HeadRule> originalSpaces;
   
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
   
-  std::shared_ptr<attachSystem::InnerZone>
-  buildInnerZone(Simulation&,const std::string&);
+  std::shared_ptr<attachSystem::BlockZone>
+  buildInnerZone(Simulation&,
+		 const std::string&,
+		 const std::shared_ptr<TDCsegment>&,
+		 const std::string&);
 
+  void setVoidSpace(const Simulation&,
+		    const std::shared_ptr<attachSystem::BlockZone>&,
+		    const std::string&);
+  
+  void reconstructInjectionHall(Simulation&);
+  
+  
  public:
 
   TDC(const std::string&);

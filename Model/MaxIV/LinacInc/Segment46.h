@@ -52,10 +52,10 @@ class Segment46 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZThin;       ///< Extra limited zone
+  std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
   
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
-  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2
+  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2x50
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamber; ///< #4
   std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
@@ -73,6 +73,7 @@ class Segment46 :
   void buildObjects(Simulation&);
   void createLinks();
 
+  void postBuild(Simulation&);
   
  public:
 

@@ -53,12 +53,13 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -77,8 +78,9 @@ namespace tdcSystem
 
 Segment41::Segment41(const std::string& Key) :
   TDCsegment(Key,2),
-  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
+
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
@@ -114,29 +116,26 @@ Segment41::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment41","buildObjects");
+  //OLD INNERZONE
 
   int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
 
   bellowA->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*bellowA,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*bpm);
+    (System,*buildZone,*bellowA,"back",*bpm);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bpm,"back",*gate);
+    (System,*buildZone,*bpm,"back",*gate);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*gate,"back",*pipe);
+    (System,*buildZone,*gate,"back",*pipe);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipe,"back",*bellowB);
-
-  buildZone->removeLastMaster(System);
+    (System,*buildZone,*pipe,"back",*bellowB);
 
   return;
 }
@@ -152,7 +151,7 @@ Segment41::createLinks()
   setLinkSignedCopy(0,*bellowA,1);
   setLinkSignedCopy(1,*bellowB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }

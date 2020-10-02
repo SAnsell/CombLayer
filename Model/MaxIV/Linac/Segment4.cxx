@@ -63,6 +63,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -75,7 +76,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment4.h"
 
@@ -142,21 +143,17 @@ Segment4::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     {
       ELog::EM<<"Front == "<<ELog::endDiag;
       pipeA->copyCutSurf("front",*this,"front");
     }
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
   
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*bpmA);
+    (System,*buildZone,*pipeA,"back",*bpmA);
 
   pipeB->createAll(System,*bpmA,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
@@ -165,7 +162,7 @@ Segment4::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*yagUnit);
+    (System,*buildZone,*pipeB,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
   yagScreen->createAll(System,*yagUnit,-3);
@@ -175,13 +172,12 @@ Segment4::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*yagUnit,"back",*bellowA);
+    (System,*buildZone,*yagUnit,"back",*bellowA);
 
   pipeC->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeC,cMagHorC,cMagVertC);
   pipeTerminate(System,*buildZone,pipeC);  
   
-  buildZone->removeLastMaster(System);  
   return;
 }
 

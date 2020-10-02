@@ -8,7 +8,7 @@
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * (at your option) any later version.<
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,11 @@
  ****************************************************************************/
 #ifndef tdcSystem_Segment28_h
 #define tdcSystem_Segment28_h
+
+namespace attachSystem
+{
+  class BlockZone;
+}
 
 namespace constructSystem
 {
@@ -52,8 +57,8 @@ class Segment28 :
 {
  private:
 
-  std::unique_ptr<attachSystem::InnerZone> IZTop;        ///< Upper inner zone
-  std::unique_ptr<attachSystem::InnerZone> IZFlat;       ///< Flat inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
+  std::unique_ptr<attachSystem::BlockZone> IZFlat;       ///< Flat inner zone
 
   /// Join pipe 
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
@@ -74,8 +79,7 @@ class Segment28 :
   void buildObjects(Simulation&);
   void createLinks();
 
-  void createSplitInnerZone(Simulation&);
-  void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
+  void createSplitInnerZone();
   
  public:
 

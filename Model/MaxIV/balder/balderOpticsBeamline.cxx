@@ -294,7 +294,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
 
     
   ionPA->setFront(*pipeInit,2);
@@ -404,7 +404,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   driftA->setFront(*pipeC,2);
   driftA->createAll(System,*pipeC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftA,2);
-  driftA->insertInCell(System,outerCell);
+  driftA->insertAllInCell(System,outerCell);
   
   driftB->createAll(System,*driftA,2);
   monoV->createAll(System,*driftA,2);
@@ -432,7 +432,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   monoBellowB->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftB,2);
-  driftB->insertInCell(System,outerCell);
+  driftB->insertAllInCell(System,outerCell);
   driftB->setCell("OuterVoid",outerCell);
 
   monoV->constructPorts(System);
@@ -446,7 +446,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   driftC->setFront(*gateC,2);
   driftC->createAll(System,*gateC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftC,2);
-  driftC->insertInCell(System,outerCell);
+  driftC->insertAllInCell(System,outerCell);
 
   beamStop->addInsertCell(driftC->getCell("Void"));
   beamStop->createAll(System,*driftC,0);

@@ -72,7 +72,10 @@ class ContainedGroup
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
 
+  virtual std::string getAllExclude() const;
+  
   virtual const HeadRule& getOuterSurf(const std::string&) const;
+
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getContainer(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;

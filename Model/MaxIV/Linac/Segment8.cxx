@@ -59,7 +59,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
@@ -117,22 +117,21 @@ Segment8::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
   bellowA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
+
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowA,"back",*eBeamStop);
+    (System,*buildZone,*bellowA,"back",*eBeamStop);
+
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*eBeamStop,"back",*bellowB);  
+    (System,*buildZone,*eBeamStop,"back",*bellowB);  
+
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*bellowB,"back",*pipeA);  
-  buildZone->removeLastMaster(System);  
+    (System,*buildZone,*bellowB,"back",*pipeA);  
+
   return;
 }
 

@@ -36,6 +36,8 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -46,14 +48,12 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "InnerZone.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "NameStack.h"
-#include "RegMethod.h"
+#include "BlockZone.h"
 #include "objectRegister.h"
 #include "Code.h"
 #include "varList.h"
@@ -63,7 +63,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "generalConstruct.h"
-#include "LObjectSupport.h"
+#include "LObjectSupportB.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "generateSurf.h"
@@ -92,7 +92,7 @@ namespace tdcSystem
 
 Segment46::Segment46(const std::string& Key) :
   TDCsegment(Key,4),
-  IZThin(new attachSystem::InnerZone(*this,cellIndex)),
+  IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
@@ -153,7 +153,7 @@ Segment46::insertPrevSegment(Simulation& System,
   ELog::RegMethod RegA("Segment46","insertPrevSegment");
 
   if (prevSegPtr && prevSegPtr->hasCell("LastCell",0))
-    pipeA->insertInCell(System,prevSegPtr->getCell("LastCell",0));
+    pipeA->insertAllInCell(System,prevSegPtr->getCell("LastCell",0));
 
   return;
 }
@@ -168,25 +168,28 @@ Segment46::createSplitInnerZone(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","createSplitInnerZone");
 
-  *IZThin = *buildZone;
-
+  *IZThin=*buildZone;
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
 
-      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0; // \todo: UGLY FIX
+      const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
+      const Geometry::Vec3D zAxis=X*cutAxis.unit();
 
-      const Geometry::Vec3D zAxis=X*cutAxis;
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
-      int SNremoved(0);
       for(const TDCsegment* sidePtr : sideVec)
 	{
-	  std::vector<int> CNvec=sidePtr->getCells("BuildVoid");
+	  std::vector<int> CNvec;
+
 	  // need only the last cell for SPF44
 	  if (sidePtr->getKeyName()=="SPF44")
-	    CNvec.erase(CNvec.begin(),CNvec.end()-1);
+	    CNvec=sidePtr->getCells("OverLap");
+
+	  // need only the last cell for SPF45
+	  if (sidePtr->getKeyName()=="SPF45")
+	    CNvec=sidePtr->getCells("Unit");
 
 	  for(const int CN : CNvec)
 	    {
@@ -194,7 +197,7 @@ Segment46::createSplitInnerZone(Simulation& System)
 	      // remove surface that tracks close to a beam going in the +Z
 	      // direction
 	      HeadRule HA=OPtr->getHeadRule();   // copy
-	      SNremoved=HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	      HA.removeOuterPlane(Origin+Y*10.0,Z,0.9);
 	      HA.addIntersection(-SMap.realSurf(buildIndex+5005));
 	      OPtr->procHeadRule(HA);
 	    }
@@ -204,9 +207,9 @@ Segment46::createSplitInnerZone(Simulation& System)
       HSurroundB.addIntersection(SMap.realSurf(buildIndex+5005));
 
       IZThin->setSurround(HSurroundB);
-      IZThin->clearDivider();
-      IZThin->setInsertCells(buildZone->getInsertCell());
     }
+
+
   return;
 }
 
@@ -221,42 +224,33 @@ Segment46::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment46","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object* masterCell=IZThin->getMaster();
-
-  if (!masterCell)
-    masterCell=IZThin->constructMasterCell(System);
-
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  MonteCarlo::Object* OPtr=System.findObject(outerCell);
-
-  pipeA->insertInCell(System,outerCell);
+  outerCell=IZThin->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*pipeA,"back",*gateA);
+    (System,*IZThin,*pipeA,"back",*gateA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gateA,"back",*bellowA);
+    (System,*IZThin,*gateA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowA,"back",*prismaChamber);
+    (System,*IZThin,*bellowA,"back",*prismaChamber);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*prismaChamber,"back",*mirrorChamberA);
+    (System,*IZThin,*prismaChamber,"back",*mirrorChamberA);
 
   pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
   pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
-  slitTube->addAllInsertCell(masterCell->getName());
-  slitTube->setFront(*pipeB,"back");
-  slitTube->createAll(System,*pipeB,"back");
-  outerCell=IZThin->createOuterVoidUnit(System,masterCell,*slitTube,2);
-  slitTube->insertAllInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,*IZThin,*pipeB,"back",*slitTube);
 
   for(size_t index=0;index<2;index++)
     {
@@ -272,27 +266,26 @@ Segment46::buildObjects(Simulation& System)
     }
 
   // simplify the DiagnosticBox inner cell
+
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
 			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*slitTube,"back",*bellowB);
+      (System,*IZThin,*slitTube,"back",*bellowB);
+
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowB,"back",*mirrorChamberB);
+    (System,*IZThin,*bellowB,"back",*mirrorChamberB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*mirrorChamberB,"back",*bellowC);
+    (System,*IZThin,*mirrorChamberB,"back",*bellowC);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*bellowC,"back",*gateB);
+    (System,*IZThin,*bellowC,"back",*gateB);
 
   constructSystem::constructUnit
-    (System,*IZThin,masterCell,*gateB,"back",*bellowD);
-
-  IZThin->removeLastMaster(System);
-
+    (System,*IZThin,*gateB,"back",*bellowD);
   return;
 }
 
@@ -312,6 +305,8 @@ Segment46::createLinks()
   FixedComp::nameSideIndex(2,"buildZoneCut");
 
   joinItems.push_back(FixedComp::getFullRule(2));
+
+  buildZone->setBack(bellowD->getFullRule("back"));
 
   return;
 }
@@ -336,9 +331,43 @@ Segment46::writePoints() const
 }
 
 void
+Segment46::postBuild(Simulation& System)
+  /*!
+    Add additonal stuff after building based on
+    relative segments
+  */
+{
+  ELog::RegMethod RegA("Segment46","postBuild");
+
+  typedef std::map<std::string,const TDCsegment*> mapTYPE;
+  if (!sideVec.empty())
+    {
+      mapTYPE segNames;
+      for(const TDCsegment* sidePtr : sideVec)
+	segNames.emplace(sidePtr->getKeyName(),sidePtr);
+
+      if (segNames.find("SPF44")!=segNames.end() &&
+	  segNames.find("SPF45")==segNames.end())
+	{
+	  mapTYPE::const_iterator mc=segNames.find("SPF44");
+	  const TDCsegment* sideSegment=mc->second;
+	  HeadRule surHR=buildZone->getSurround();
+	  const HeadRule frontHR=sideSegment->getFullRule("magnetExit");
+	  const HeadRule backHR=IZThin->getBack();
+	  surHR.removeOuterPlane(Origin+Y*10.0,Z,0.9);
+	  surHR.addIntersection(-SMap.realSurf(buildIndex+5005));
+	  surHR *= frontHR * backHR.complement();
+
+	  makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
+	}
+    }
+  return;
+}
+
+void
 Segment46::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -353,6 +382,7 @@ Segment46::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSplitInnerZone(System);
   buildObjects(System);
+  postBuild(System);
   createLinks();
   //  writePoints();
   return;

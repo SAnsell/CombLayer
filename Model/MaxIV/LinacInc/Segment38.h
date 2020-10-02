@@ -38,7 +38,7 @@ class Segment38 :
  private:
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
-  std::shared_ptr<constructSystem::BlankTube> ionPump;      ///< #2,3,4
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;      ///< #2,3,4
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5
   std::shared_ptr<constructSystem::Bellows> bellowA;        ///< #6
 

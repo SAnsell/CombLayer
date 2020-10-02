@@ -196,9 +196,9 @@ BALDER::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
   
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
@@ -211,7 +211,7 @@ BALDER::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   if (stopPoint=="opticsBeam") return;
   

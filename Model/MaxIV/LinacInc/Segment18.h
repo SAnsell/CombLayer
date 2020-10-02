@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class IonPumpTube;
   /*!
     \class Segment18
     \version 1.0
@@ -38,7 +39,7 @@ class Segment18 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<constructSystem::BlankTube> ionPump;     ///< #2, 3
+  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #2, 3
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #4 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5

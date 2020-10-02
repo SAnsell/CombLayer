@@ -59,14 +59,13 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
-
 
 #include "TDCsegment.h"
 #include "Segment6.h"
@@ -125,34 +124,28 @@ Segment6::buildObjects(Simulation& System)
 
   int outerCell;
 
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System);
-
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  outerCell=buildZone->createUnit(System,*pipeA,2);
+  pipeA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeA,"back",*pipeB);
+    (System,*buildZone,*pipeA,"back",*pipeB);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeB,"back",*pipeC);
+    (System,*buildZone,*pipeB,"back",*pipeC);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeC,"back",*scrapper);
+    (System,*buildZone,*pipeC,"back",*scrapper);
 
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*scrapper,"back",*pipeD);
+    (System,*buildZone,*scrapper,"back",*pipeD);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*pipeD,"back",*ceramicA);
+    (System,*buildZone,*pipeD,"back",*ceramicA);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*ceramicA,"back",*beamStop);
+    (System,*buildZone,*ceramicA,"back",*beamStop);
   constructSystem::constructUnit
-    (System,*buildZone,masterCell,*beamStop,"back",*ceramicB);
+    (System,*buildZone,*beamStop,"back",*ceramicB);
 
-  
-  buildZone->removeLastMaster(System);  
   return;
 }
 

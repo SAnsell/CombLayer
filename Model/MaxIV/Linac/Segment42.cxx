@@ -62,7 +62,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
 
 #include "SplitFlangePipe.h"
@@ -90,7 +90,7 @@ Segment42::Segment42(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(uVac);
-  
+
   setFirstItems(uVac);
 }
 
@@ -110,15 +110,9 @@ Segment42::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment42","buildObjects");
 
-  int outerCell;
-  MonteCarlo::Object* masterCell=buildZone->getMaster();
   uVac->createAll(System,*this,0);
-  if (!masterCell)
-    masterCell=buildZone->constructMasterCell(System,*uVac,-1);
-  outerCell=buildZone->createOuterVoidUnit(System,masterCell,*uVac,2);
+  int outerCell=buildZone->createUnit(System,*uVac,2);
   uVac->insertInCell(System,outerCell);
-
-  buildZone->removeLastMaster(System);
 
   return;
 }
@@ -134,7 +128,7 @@ Segment42::createLinks()
   setLinkSignedCopy(0,*uVac,1);
   setLinkSignedCopy(1,*uVac,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }
@@ -143,7 +137,7 @@ void
 Segment42::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
-  /*! 
+  /*!
     Carry out the full build
     \param System :: Simulation system
     \param FC :: Fixed component
@@ -155,7 +149,7 @@ Segment42::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
+
   buildObjects(System);
   createLinks();
   return;

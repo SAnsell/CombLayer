@@ -318,6 +318,9 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
   SurfMap::setSurf("MidAngleWall",SMap.realSurf(buildIndex+1111));
+
+  SurfMap::setSurf("TAngleWall",SMap.realSurf(buildIndex+1112));
+  SurfMap::setSurf("DoorEndWall",SMap.realSurf(buildIndex+1522));
   SurfMap::setSurf("KlystronWall",SMap.realSurf(buildIndex+3002));
   SurfMap::setSurf("TDCStart",SMap.realSurf(buildIndex+201));
   SurfMap::setSurf("TDCCorner",SMap.realSurf(buildIndex+201));
@@ -347,9 +350,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 "
-     " (-1511:1522:1503) "          // gate block
-     );
+    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 ");
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -357,8 +358,12 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -201 1112 3 -1003 5 -6 (1522 : 1503) ");
-  makeCell("TVoid",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 1112 -1003 5 -6 -1522  1503 ");
+  makeCell("TVoidA",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -201  3 -1003 5 -6 1522 ");
+  makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");

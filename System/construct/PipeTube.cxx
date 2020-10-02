@@ -161,7 +161,6 @@ PipeTube::createSurfaces()
       setBack(-SMap.realSurf(buildIndex+2));
     }
   
-  
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
@@ -351,6 +350,37 @@ PipeTube::createLinks()
   return;
 }
 
+void
+PipeTube::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int FIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","createAll(FC)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+
+  // both OUTWARD
+  MonteCarlo::Object* OPtr=
+    CellMap::getCellObject(System,"MainTube");
+
+  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+
+  createPorts(System,OPtr,innerSurf,outerSurf);
+  insertObjects(System);
+    
+  return;
+}
   
 
   

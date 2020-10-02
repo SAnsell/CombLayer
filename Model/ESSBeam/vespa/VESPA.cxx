@@ -3,7 +3,7 @@
 
  * File:   ESSBeam/vespa/VESPA.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -316,13 +316,13 @@ VESPA::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("VESPA","buildBunkerUnits");
   
-  VPipeA->addInsertCell(bunkerVoid);
+  VPipeA->addAllInsertCell(bunkerVoid);
   VPipeA->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FocusB->getKey("Guide0"),2);
 
   FocusC->addInsertCell(VPipeB->getCells("Void"));
@@ -357,7 +357,7 @@ VESPA::buildBunkerUnits(Simulation& System,
 
 
   // JPipeAB
-  JPipeAB->addInsertCell(bunkerVoid);
+  JPipeAB->addAllInsertCell(bunkerVoid);
   JPipeAB->setFront(TwinChopperA->getKey("Main"),2);
   JPipeAB->setBack(TwinChopperB->getKey("Main"),1);  
   JPipeAB->createAll(System, TwinChopperA->getKey("Main"),2);
@@ -365,7 +365,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   FocusD->createAll(System,*JPipeAB,7,*JPipeAB,7);
 
   // JPipeBC
-  JPipeBC->addInsertCell(bunkerVoid);
+  JPipeBC->addAllInsertCell(bunkerVoid);
   JPipeBC->setFront(TwinChopperB->getKey("Main"),2);
   JPipeBC->setBack(TwinChopperC->getKey("Main"),1);
   JPipeBC->createAll(System,TwinChopperB->getKey("Main"),2);
@@ -373,13 +373,13 @@ VESPA::buildBunkerUnits(Simulation& System,
   FocusE->createAll(System,*JPipeBC,7,*JPipeBC,7);
 
     // JPipeCOut
-  JPipeCOut->addInsertCell(bunkerVoid);
+  JPipeCOut->addAllInsertCell(bunkerVoid);
   JPipeCOut->setFront(TwinChopperC->getKey("Main"),2);
   JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
   FocusF->addInsertCell(JPipeCOut->getCells("Void"));
   FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
 
-  VPipeG->addInsertCell(bunkerVoid);
+  VPipeG->addAllInsertCell(bunkerVoid);
   VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
   FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
@@ -391,7 +391,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   FOCDisk->createAll(System,ChopperFOC->getKey("Main"),0);
   ChopperFOC->insertAxle(System,*FOCDisk);
 
-  VPipeH->addInsertCell(bunkerVoid);
+  VPipeH->addAllInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
   FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
@@ -450,10 +450,10 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
 
   // Elliptic 6m section
-  VPipeOutA->addInsertCell(ShieldA->getCells("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCells("Void"));
   VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
   VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
-  VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
+  VPipeOutA->addAllInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -473,9 +473,9 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldB->setFront(OutPitA->getKey("Mid"),2);
   ShieldB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
-  VPipeOutB->addInsertCell(ShieldB->getCells("Void"));
-  VPipeOutB->addInsertCell(OutPitA->getCells("Collet"));
-  VPipeOutB->addInsertCell(OutPitA->getCells("MidLayer"));
+  VPipeOutB->addAllInsertCell(ShieldB->getCells("Void"));
+  VPipeOutB->addAllInsertCell(OutPitA->getCells("Collet"));
+  VPipeOutB->addAllInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutB->setFront(OutPitA->getKey("Inner"),2);
   VPipeOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
@@ -486,7 +486,7 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldArray[0]->addInsertCell(voidCell);
   ShieldArray[0]->setFront(*ShieldB,2);
   ShieldArray[0]->createAll(System,*ShieldB,2);
-  VPipeArray[0]->addInsertCell(ShieldArray[0]->getCells("Void"));
+  VPipeArray[0]->addAllInsertCell(ShieldArray[0]->getCells("Void"));
   VPipeArray[0]->createAll(System,*ShieldB,2);
   FocusArray[0]->addInsertCell(VPipeArray[0]->getCell("Void"));
   FocusArray[0]->createAll(System,*VPipeArray[0],7,*VPipeArray[0],7);
@@ -517,7 +517,7 @@ VESPA::buildOutGuide(Simulation& System,
           ShieldArray[i]->setBack(OutPitB->getKey("Mid"),1);
         }
       ShieldArray[i]->createAll(System,*ShieldArray[i-1],2);
-      VPipeArray[i]->addInsertCell(ShieldArray[i]->getCells("Void"));
+      VPipeArray[i]->addAllInsertCell(ShieldArray[i]->getCells("Void"));
       VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
       FocusArray[i]->addInsertCell(VPipeArray[i]->getCell("Void"));
       FocusArray[i]->createAll(System,*VPipeArray[i],7,*VPipeArray[i],7);
@@ -575,10 +575,10 @@ VESPA::buildHut(Simulation& System,
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
   ShieldC->insertObjects(System);
 
-  VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
-  VPipeOutC->addInsertCell(Cave->getCells("Void"));
-  VPipeOutC->addInsertCell(VInner->getCells("Void"));
-  VPipeOutC->addInsertCell(ShieldC->getCells("Void"));
+  VPipeOutC->addAllInsertCell(Cave->getCells("FrontWall"));
+  VPipeOutC->addAllInsertCell(Cave->getCells("Void"));
+  VPipeOutC->addAllInsertCell(VInner->getCells("Void"));
+  VPipeOutC->addAllInsertCell(ShieldC->getCells("Void"));
   VPipeOutC->createAll(System,connectFC,connectIndex);
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
@@ -672,7 +672,7 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));

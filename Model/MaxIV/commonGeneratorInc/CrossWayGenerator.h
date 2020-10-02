@@ -50,7 +50,8 @@ class CrossWayGenerator
 
   double frontLength;           ///< full to flange length (-ve Y)
   double backLength;            ///< full to flange length
-  double sideLength;            ///< full to flange length
+  double sideALength;           ///< full to flange length
+  double sideBLength;           ///< full to flange length
 
   double flangeXRadius;         ///< Joining Flange radius
   double flangeYRadius;         ///< Joining Flange radius
@@ -75,7 +76,13 @@ class CrossWayGenerator
 
   template<typename T> void setCF();
   template<typename T> void setFlangeCF();
+  template<typename CF> void setPortCF();
+  template<typename CF> void setCrossCF();
+  
   void setMainLength(const double,const double);
+  void setPortLength(const double,const double);
+  void setCrossLength(const double,const double);
+  void setPlateThick(const double,const std::string&);
   
   void generateCrossWay(FuncDataBase&,
 		       const std::string&) const;
