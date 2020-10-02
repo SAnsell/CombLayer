@@ -122,20 +122,18 @@ correctorMagnetPair(Simulation& System,
   if (!CPtr && !CGPtr)
     throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
 
-  
+
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
   CMA->createAll(System,*pipe,"#front");
 
   CMB->setCutSurf("Inner",*pipe,"outerPipe");
-  CMB->createAll(System,*pipe,"#front"); 
+  CMB->createAll(System,*pipe,"#front");
 
   int outerCell=buildZone.createUnit(System,*CMA,-1);
   (CGPtr) ?
     CGPtr->insertAllInCell(System,outerCell) :
     CPtr->insertInCell(System,outerCell) ;
-    
 
-  
   outerCell=buildZone.createUnit(System,*CMA,2);
   CMA->insertInCell(System,outerCell);
 
@@ -144,7 +142,7 @@ correctorMagnetPair(Simulation& System,
     CGPtr->insertAllInCell(System,outerCell) :
     CPtr->insertInCell(System,outerCell) ;
 
-
+  outerCell=buildZone.createUnit(System,*CMB,2);
   CMB->insertInCell(System,outerCell);
 
   return outerCell;
@@ -173,11 +171,11 @@ pipeMagUnit(Simulation& System,
   */
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeMagUnit");
-  
+
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
   int outerCell=buildZone.createUnit(System,*magUnit,-1);
-  
+
   attachSystem::ContainedGroup* CGPtr=
     dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
   if (CGPtr)
