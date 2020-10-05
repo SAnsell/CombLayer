@@ -321,11 +321,11 @@ DipoleDIBMag::createObjects(Simulation& System)
       makeCell(partName+"MagRightRec",System,cellIndex++,coilMat,0.0,Out+tb);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 "-2 1002 -1008 1018 ");
+      		 "-2 1002 1003 -1004 -1008 1018 ");
       makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-      		 " 1 -1001 -1007 1017 ");
+      		 " 1 -1001 1003 -1004 -1007 1017 ");
       makeCell(partName+"MagCyl",System,cellIndex++,coilMat,0.0,Out+tb);
 
       // Frame inside the magnet
@@ -374,7 +374,7 @@ DipoleDIBMag::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 1003 -1004 1006 -2005 ");
   makeCell("VoidMiddle",System,cellIndex++,voidMat,0.0,Out+ICell);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -2 13 -14 15 -16 " );
   addOuterSurf(Out);

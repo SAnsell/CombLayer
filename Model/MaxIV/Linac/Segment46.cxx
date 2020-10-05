@@ -176,6 +176,7 @@ Segment46::createSplitInnerZone(Simulation& System)
       const Geometry::Vec3D cutOrg=sideSegment->getLinkPt(5)+Z*1.0;
       const Geometry::Vec3D cutAxis=sideSegment->getLinkAxis(5);
       const Geometry::Vec3D zAxis=X*cutAxis.unit();
+
       ModelSupport::buildPlane(SMap,buildIndex+5005,cutOrg,zAxis);
 
       for(const TDCsegment* sidePtr : sideVec)
@@ -184,11 +185,11 @@ Segment46::createSplitInnerZone(Simulation& System)
 
 	  // need only the last cell for SPF44
 	  if (sidePtr->getKeyName()=="SPF44")
-	    CNvec=sidePtr->getCells("OverLap");	    
+	    CNvec=sidePtr->getCells("OverLap");
 
 	  // need only the last cell for SPF45
 	  if (sidePtr->getKeyName()=="SPF45")
-	    CNvec=sidePtr->getCells("Unit");	    
+	    CNvec=sidePtr->getCells("Unit");
 
 	  for(const int CN : CNvec)
 	    {
@@ -247,7 +248,7 @@ Segment46::buildObjects(Simulation& System)
   pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
-  
+
   constructSystem::constructUnit
     (System,*IZThin,*pipeB,"back",*slitTube);
 
@@ -272,7 +273,7 @@ Segment46::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
       (System,*IZThin,*slitTube,"back",*bellowB);
-    
+
 
   constructSystem::constructUnit
     (System,*IZThin,*bellowB,"back",*mirrorChamberB);
@@ -337,7 +338,7 @@ Segment46::postBuild(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment46","postBuild");
-  
+
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
   if (!sideVec.empty())
     {

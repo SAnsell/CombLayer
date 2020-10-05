@@ -38,33 +38,12 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Line.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,24 +51,14 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
 #include "BlockZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generalConstruct.h"
 
-#include "VacuumPipe.h"
 #include "CorrectorMag.h"
 #include "CleaningMagnet.h"
-#include "FlatPipe.h"
 #include "LQuadF.h"
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
-#include "YagUnit.h"
-#include "YagScreen.h"
 #include "LObjectSupportB.h"
 
 namespace tdcSystem
@@ -122,20 +91,18 @@ correctorMagnetPair(Simulation& System,
   if (!CPtr && !CGPtr)
     throw ColErr::DynamicConv("FixedComp","ContainedComp","pipe");
 
-  
+
   CMA->setCutSurf("Inner",*pipe,"outerPipe");
   CMA->createAll(System,*pipe,"#front");
 
   CMB->setCutSurf("Inner",*pipe,"outerPipe");
-  CMB->createAll(System,*pipe,"#front"); 
+  CMB->createAll(System,*pipe,"#front");
 
   int outerCell=buildZone.createUnit(System,*CMA,-1);
   (CGPtr) ?
     CGPtr->insertAllInCell(System,outerCell) :
     CPtr->insertInCell(System,outerCell) ;
-    
 
-  
   outerCell=buildZone.createUnit(System,*CMA,2);
   CMA->insertInCell(System,outerCell);
 
@@ -144,7 +111,7 @@ correctorMagnetPair(Simulation& System,
     CGPtr->insertAllInCell(System,outerCell) :
     CPtr->insertInCell(System,outerCell) ;
 
-
+  outerCell=buildZone.createUnit(System,*CMB,2);
   CMB->insertInCell(System,outerCell);
 
   return outerCell;
@@ -173,11 +140,11 @@ pipeMagUnit(Simulation& System,
   */
 {
   ELog::RegMethod RegA("LObjectSupport[F]","pipeMagUnit");
-  
+
   magUnit->setCutSurf("Inner",*pipe,outerName);
   magUnit->createAll(System,*pipe,linkName);
   int outerCell=buildZone.createUnit(System,*magUnit,-1);
-  
+
   attachSystem::ContainedGroup* CGPtr=
     dynamic_cast<attachSystem::ContainedGroup*>(pipe.get());
   if (CGPtr)

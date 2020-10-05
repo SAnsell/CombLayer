@@ -36,30 +36,17 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -68,17 +55,14 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
-#include "SurInter.h"
 #include "surfDivide.h"
 
 #include "VacuumPipe.h"
@@ -584,7 +568,7 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite
 		    (SMap,buildIndex," 102 -207 203 -204 205 -206 ");
   addOuterSurf("FlangeB",Out+backStr);
-  
+
   // outer boundary mid tube
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
   Out+=CladdingLayer.display();
@@ -754,7 +738,7 @@ VacuumPipe::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-    
+
   createDivision(System);
   insertObjects(System);
 
