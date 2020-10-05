@@ -60,6 +60,7 @@ struct CF8_TDC
 {
   static constexpr double innerRadius=0.4;
   static constexpr double wallThick=0.1;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   /* static constexpr double bellowStep=0.5; */
@@ -82,6 +83,7 @@ struct CF16
 {
   static constexpr double innerRadius=0.8;
   static constexpr double wallThick=0.10;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=1.7;
   static constexpr double flangeLength=0.65;
   static constexpr double bellowStep=0.5;
@@ -104,6 +106,7 @@ struct CF16_TDC
 {
   static constexpr double innerRadius=0.8;
   static constexpr double wallThick=0.1;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   /* static constexpr double bellowStep=0.5; */
@@ -126,6 +129,7 @@ struct CF18_TDC
 {
   static constexpr double innerRadius=0.9;
   static constexpr double wallThick=0.2;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=0.5; // dummy
@@ -148,6 +152,7 @@ struct CF25
 {
   static constexpr double innerRadius=1.25;
   static constexpr double wallThick=0.12;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=2.7;
   static constexpr double flangeLength=1.15;
   static constexpr double bellowStep=0.9;
@@ -169,6 +174,7 @@ struct CF26_TDC
 {
   static constexpr double innerRadius=1.3;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=0.9; // dummy
@@ -191,6 +197,7 @@ struct CF27_TDC
 {
   static constexpr double innerRadius=1.35;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   /* static constexpr double bellowStep=0.5; */
@@ -213,6 +220,7 @@ struct CF34_TDC
 {
   static constexpr double innerRadius=1.7;
   static constexpr double wallThick=0.2;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   /* static constexpr double bellowStep=0.5; */
@@ -235,6 +243,7 @@ struct CF35_TDC
 {
   static constexpr double innerRadius=1.75;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   /* static constexpr double bellowStep=0.5; */
@@ -256,6 +265,7 @@ struct CF37_TDC
 {
   static constexpr double innerRadius=1.85;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=4.0; // guess
@@ -278,6 +288,7 @@ struct CF40
 {
   static constexpr double innerRadius=1.9;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;
@@ -299,6 +310,7 @@ struct CF40_22
 {
   static constexpr double innerRadius=0.95;
   static constexpr double wallThick=0.15;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;
@@ -321,6 +333,7 @@ struct CF50
 {
   static constexpr double innerRadius=2.55;
   static constexpr double wallThick=0.3;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=4.3;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;
@@ -340,6 +353,7 @@ struct CF63
 {
   static constexpr double innerRadius=3.2;
   static constexpr double wallThick=0.4;
+  static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=5.7;
   static constexpr double flangeLength=1.7;
   static constexpr double bellowStep=1.0;
@@ -359,6 +373,7 @@ struct CF66_TDC
 {
   static constexpr double innerRadius=3.3;
   static constexpr double wallThick=0.2;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=5.6;
   static constexpr double flangeLength=1.7;
   /* static constexpr double bellowStep=0.5; */
@@ -382,6 +397,7 @@ struct CF100
 {
   static constexpr double innerRadius=5.1;
   static constexpr double wallThick=0.5;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=7.7;
   static constexpr double flangeLength=2.0;
   static constexpr double bellowStep=1.5;
@@ -401,6 +417,7 @@ struct CF120
 {
   static constexpr double innerRadius=6.1;
   static constexpr double wallThick=0.5;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=8.925;
   static constexpr double flangeLength=2.25;
   static constexpr double bellowStep=1.5;
@@ -421,6 +438,7 @@ struct CF150
 {
   static constexpr double innerRadius=7.55;
   static constexpr double wallThick=0.5;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=10.15;
   static constexpr double flangeLength=2.5;
   static constexpr double bellowStep=1.5;
@@ -440,6 +458,7 @@ struct CF200
 {
   static constexpr double innerRadius=10.0;
   static constexpr double wallThick=0.5;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=12.65;
   static constexpr double flangeLength=3.45;
   static constexpr double bellowStep=2.5;
@@ -460,6 +479,7 @@ struct CF350
 {
   static constexpr double innerRadius=33.0;
   static constexpr double wallThick=0.6;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=41.15;  //
   static constexpr double flangeLength=3.5;
   static constexpr double bellowStep=2.5;
@@ -482,6 +502,7 @@ struct CF40
 {
   static constexpr double innerRadius=0.9;
   static constexpr double wallThick=0.2;
+  static constexpr double outerRadius=wallThick+innerRadius;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
   static constexpr double bellowStep=1.0;

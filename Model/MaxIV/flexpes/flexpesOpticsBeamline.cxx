@@ -371,8 +371,7 @@ flexpesOpticsBeamline::buildSplitter(Simulation& System,
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAA,2);
   gateAA->insertInCell(System,cellA);
 
-  // make build necessary
-  pumpTubeAA->addAllInsertCell(masterCellA->getName());
+  // pump  Tube
   pumpTubeAA->createAll(System,*gateAA,2);
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*pumpTubeAA,2);
   pumpTubeAA->insertAllInCell(System,cellA);
@@ -417,8 +416,6 @@ flexpesOpticsBeamline::buildM3Mirror(Simulation& System,
 
   int outerCell;
   
-  // FAKE insertcell: required
-  viewTube->addAllInsertCell(masterCell->getName());
   viewTube->createAll(System,initFC,sideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewTube,2);
   viewTube->insertAllInCell(System,outerCell);
@@ -661,8 +658,7 @@ flexpesOpticsBeamline::buildObjects(Simulation& System)
   gateRing->insertInCell(System,outerCell);
   gateRing->setCell("OuterVoid",outerCell);
 
-  // FAKE insertcell: required
-  gateTubeA->addAllInsertCell(masterCellA->getName());
+
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*gateRing,2);  
   

@@ -583,12 +583,12 @@ VacuumPipe::createObjects(Simulation& System)
   // outer boundary [flange back]
   Out=ModelSupport::getSetComposite
 		    (SMap,buildIndex," 102 -207 203 -204 205 -206 ");
-  addOuterSurf("FlangeB",Out+frontStr);
+  addOuterSurf("FlangeB",Out+backStr);
   
   // outer boundary mid tube
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
   Out+=CladdingLayer.display();
-  addOuterSurf("Main",Out+frontStr);
+  addOuterSurf("Main",Out);
 
 
   return;

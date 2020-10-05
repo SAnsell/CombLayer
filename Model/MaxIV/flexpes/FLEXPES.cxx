@@ -140,11 +140,13 @@ FLEXPES::build(Simulation& System,
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
+  
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));

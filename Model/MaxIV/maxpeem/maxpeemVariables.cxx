@@ -122,28 +122,6 @@ frontMaskVariables(FuncDataBase& Control,
   return;
 }
 		   
-void
-collimatorXVariables(FuncDataBase& Control,
-		    const std::string& collKey)
-  /*!
-    Builds the variables for the collimator
-    \param Control :: Database
-    \param collKey :: prename
-  */
-{
-  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
-
-  Control.addVariable(collKey+"Width",4.0);
-  Control.addVariable(collKey+"Height",4.0);
-  Control.addVariable(collKey+"Length",16.0);
-  Control.addVariable(collKey+"InnerAWidth",1.2);
-  Control.addVariable(collKey+"InnerAHeight",1.2);
-  Control.addVariable(collKey+"InnerBWidth",1.2);
-  Control.addVariable(collKey+"InnerBHeight",1.2);
-  Control.addVariable(collKey+"Mat","Tantalum");
-
-  return;
-}
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -238,7 +216,7 @@ splitterVariables(FuncDataBase& Control,
   PTubeGen.generateTube(Control,pumpNameB,0.0,20.0);
   Control.addVariable(pumpNameB+"NPorts",1);
 
-  PItemGen.setCF<setVariable::CF63>(14.95);
+  PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+14.95);
   PItemGen.generatePort(Control,pumpNameA+"Port0",centPoint,zVec);
   PItemGen.generatePort(Control,pumpNameB+"Port0",centPoint,zVec);
 
@@ -249,7 +227,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",82.5);
 
   ShieldGen.generateShield(Control,splitKey+"ScreenB",
-			   Geometry::Vec3D(0,-10.0,0.0),0.0);
+			   Geometry::Vec3D(0,-12.0,0.0),0.0);
   
   return;
 }
@@ -281,12 +259,12 @@ m3MirrorVariables(FuncDataBase& Control,
 
   const double wallThick=setVariable::CF63::innerRadius+
     setVariable::CF63::wallThick;
-  PItemGen.setCF<setVariable::CF40>(5.95);
+  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+5.95);
   PItemGen.setPlate(0.0,"Void");  
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
   const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
 
-  PItemGen.setCF<setVariable::CF40>(DLen);
+  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,viewName+"Port0",
 			Geometry::Vec3D(0,7.5,0),-angVec);
@@ -305,17 +283,17 @@ m3MirrorVariables(FuncDataBase& Control,
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF63>(5.4);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+5.4);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(5.4);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+5.4);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(PLen);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
@@ -434,7 +412,7 @@ slitPackageVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(6.1);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.1);
   PItemGen.setPlate(setVariable::CF63::flangeLength,"Stainless304");
 
   // -1/5 missed
@@ -588,7 +566,7 @@ opticsBeamVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setCF<setVariable::CF40>(4.45);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -605,7 +583,7 @@ opticsBeamVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
 
   Control.addVariable(florName+"NPorts",2);   // beam ports
-  PItemGen.setCF<setVariable::CF40>(2.25);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.25);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -627,17 +605,17 @@ opticsBeamVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
   Control.addVariable(collName+"NPorts",3);   // beam ports
   
-  PItemGen.setCF<setVariable::CF40>(5.95);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.95);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+4.95);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D angVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
   const double DLen=17.2-7.55/cos(M_PI*35.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(DLen);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,collName+"Port2",
 			Geometry::Vec3D(0,0,0),-angVec);
@@ -742,7 +720,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(1.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+1.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -759,7 +737,7 @@ shutterTable(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
-  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setCF<setVariable::CF40>(4.45);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -779,7 +757,7 @@ shutterTable(FuncDataBase& Control,
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube
-  PItemGen.setCF<setVariable::CF50>(14.0);
+  PItemGen.setCF<setVariable::CF50>(CF150::outerRadius+14.0);
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");

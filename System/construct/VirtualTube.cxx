@@ -412,7 +412,6 @@ VirtualTube::applyPortRotation()
 	  QVpost.rotate(X);
 	  QVpost.rotate(Z);
 	}
-      ELog::EM<<"X/Y == "<<Origin<<ELog::endDiag;
       const size_t pIndex=portConnectIndex-3;
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
