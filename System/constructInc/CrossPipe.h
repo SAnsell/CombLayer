@@ -75,6 +75,7 @@ class CrossPipe :
   CrossPipe& operator=(const CrossPipe&);
   virtual ~CrossPipe();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -244,20 +244,12 @@ heatDumpTable(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
 
+  
   // will be rotated vertical
-  const std::string gateName=frontKey+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
-
-  // beam ports
-  Control.addVariable(gateName+"NPorts",2);
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(4.05);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
+  // length 8.1
+  CylGateValveGenerator CGTGen;
+  CGTGen.generateGate(Control,frontKey+"GateTubeA",0);
+  
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
@@ -352,16 +344,8 @@ shutterTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
   // will be rotated vertical
-  const std::string gateName=frontKey+"GateTubeB";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
-  // beam ports
-  Control.addVariable(gateName+"NPorts",2);
-  PItemGen.setCF<setVariable::CF40>(4.2);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  CylGateValveGenerator CGTGen;
+  CGTGen.generateGate(Control,frontKey+"GateTubeB",0);
   
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window

@@ -136,7 +136,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -153,7 +153,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateTubeB(new constructSystem::PipeTube(newName+"GateTubeB")),
+  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
@@ -303,20 +303,15 @@ R1FrontEnd::buildHeatTable(Simulation& System,
 
 
   // FAKE insertcell:
-  gateTubeA->addAllInsertCell(masterCell->getName());
-  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
-
-  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertAllInCell(System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateTubeA,2);
+  gateTubeA->insertInCell(System,outerCell);
   
-  ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
+  ionPB->createAll(System,*gateTubeA,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPB,2);
   ionPB->insertInCell(System,outerCell);
 
-  insertFlanges(System,*gateTubeA);
+  //  insertFlanges(System,*gateTubeA);
   
   pipeB->createAll(System,*ionPB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
@@ -450,24 +445,15 @@ R1FrontEnd::buildShutterTable(Simulation& System,
   bellowJ->insertInCell(System,outerCell);
 
   insertFlanges(System,*florTubeA);
+  
+  gateTubeB->createAll(System,*bellowJ,"back");  
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateTubeB,2);
+  gateTubeB->insertInCell(System,outerCell);
 
-
-  // FAKE insertcell:
-  gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeB->createAll(System,*bellowJ,2);  
-  const constructSystem::portItem& GPI=gateTubeB->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeB->insertAllInCell(System,outerCell);
-
-
-  offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
+  offPipeA->createAll(System,*gateTubeB,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
-
-  insertFlanges(System,*gateTubeB);
-
-  //  shutterBox->delayPorts();
+  
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterBox,2);

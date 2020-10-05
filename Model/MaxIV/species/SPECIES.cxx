@@ -138,6 +138,7 @@ SPECIES::build(Simulation& System,
 
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
@@ -149,9 +150,12 @@ SPECIES::build(Simulation& System,
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
+  
+  if (!stopPoint.empty())
+    ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
 
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole" ||
-      stopPoint=="Heat") return;
+  if (stopPoint=="frontEnd" ||  stopPoint=="Dipole" ||
+      stopPoint=="Heat" || stopPoint=="Quadrupole") return;
 
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));

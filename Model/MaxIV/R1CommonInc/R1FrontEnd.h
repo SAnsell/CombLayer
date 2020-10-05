@@ -115,7 +115,7 @@ class R1FrontEnd :
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
@@ -152,7 +152,7 @@ class R1FrontEnd :
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
-  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
