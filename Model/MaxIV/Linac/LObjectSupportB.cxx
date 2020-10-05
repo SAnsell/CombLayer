@@ -113,7 +113,7 @@ correctorMagnetPair(Simulation& System,
 
   outerCell=buildZone.createUnit(System,*CMB,2);
   CMB->insertInCell(System,outerCell);
-
+  
   return outerCell;
 }
 
