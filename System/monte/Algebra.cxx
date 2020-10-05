@@ -329,45 +329,66 @@ Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
 bool
 Algebra::constructShannonDivision(const int mcnpSN)
   /*!
-    Given a surface number SN [signed]
+    Given a surface number mcnpSN [signed]
     can we divide base on implicates of that surface
     removing the +/- part 
-    \parma mcnpSN :: Surface for divide and implicate
+    \param mcnpSN :: Surface for divide and implicate
     \return true if a surface can be removed
   */
 {
   ELog::RegMethod RegA("Algebra","constructShannonDivision");
 
   bool outFlag(1);
-  const int SN=convertMCNPSurf(mcnpSN);
-  const int ASN(std::abs(SN));
-  Acomp FX(F);
-  FX.expandCNFBracket();
-  Acomp AD=FX;
+  const int PSN=convertMCNPSurf(mcnpSN);
+  const int realPNS=getSurfIndex(PSN);
+  
 
+  
+
+  Acomp FaT(F);
+  Acomp FaF(F);
+
+  FaT.resolveTrue(PSN);     // a=1
+  FaF.resolveTrue(-PSN);    // a=0
+
+
+  // resolve F into Fplus and Fminus
+  // test if any of the implicates are true:
+  
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
-      int SNA=IP.first;
-      int SNB=IP.second;
-      int ANA=std::abs(SNA);
-      int ANB=std::abs(SNB);
-      if (ANB==ASN)
-	{
-	  std::swap(ANA,ANB);
-	  std::swap(SNA,SNB);
-	  SNA*=-1;
-	  SNB*=-1;
-	}
-      if (SNA==SN)
-	{
-	  AD.resolveTrue(SNB);
-	  outFlag=1;
-	}
-    }
-  if (outFlag)
-    F=AD;
+      const int SNA=IP.first;
+      const int SNB=IP.second;
+      if (SNA==PSN)   // a->b
+	FaT.resolveTrue(SNB);     // a -> b
 
-  return outFlag;  
+      if (SNA== -PSN)
+	FaF.resolveTrue(SNB);     // a -> b
+    }
+  
+
+  // This may have already resolved something::
+  if (FaT.isFalse() && FaF.isFalse())
+    {
+      F=FaT;
+      return 1;
+    }
+
+  if (FaT.isFalse())
+    {
+      F=FaF;
+      F.addIntersect(-PSN);
+      return 1;
+    }
+
+  if (FaF.isFalse())
+    {
+      F=FaT;
+      F.addIntersect(PSN);
+      return 1;
+    }
+  // ok nothing worked
+  return 0;
 }
   
 bool

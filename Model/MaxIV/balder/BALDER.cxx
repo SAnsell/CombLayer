@@ -166,6 +166,7 @@ BALDER::build(Simulation& System,
  
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+  frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
   

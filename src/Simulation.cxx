@@ -1626,8 +1626,10 @@ Simulation::minimizeObject(const std::string& keyName)
   const std::vector<int> cVec=objectGroups::getObjectRange(keyName);
   for(const int CN : cVec)
     {
-      if (minimizeObject(CN))
-	retFlag=1;
+      while (minimizeObject(CN))
+	{
+	  retFlag=1;
+	}
     }
   return retFlag;
 }
@@ -1654,16 +1656,20 @@ Simulation::minimizeObject(const int CN)
   std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
   
-  //CPtr->createLogicOpp();
+  CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
-
+  
   bool activeFlag(0);
+  bool activeSD(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CPtr->cellCompStr());
+  AX.addImplicates(IP);
+    
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
 
-  AX.addImplicates(IP);
+  activeSD=activeFlag;
+
   activeFlag |= AX.constructShannonExpansion();
 
 
@@ -1674,15 +1680,18 @@ Simulation::minimizeObject(const int CN)
 	  Simulation::removeCell(CN);
 	  return -1;
 	}
+
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
+
       CPtr->populate();
       CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
+
+
       return 1;
     }
-  
 
   return 0;	
 }
