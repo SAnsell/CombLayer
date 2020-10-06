@@ -336,13 +336,11 @@ Algebra::constructShannonDivision(const int mcnpSN)
     \return true if a surface can be removed
   */
 {
-  ELog::RegMethod RegA("Algebra","constructShannonDivision");
+  ELog::RegMethod RegA("Algebra","constructShannonDivision ");
 
   bool outFlag(1);
   const int PSN=convertMCNPSurf(mcnpSN);
   const int realPNS=getSurfIndex(PSN);
-  
-
   
 
   Acomp FaT(F);

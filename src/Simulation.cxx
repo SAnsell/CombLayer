@@ -1626,10 +1626,8 @@ Simulation::minimizeObject(const std::string& keyName)
   const std::vector<int> cVec=objectGroups::getObjectRange(keyName);
   for(const int CN : cVec)
     {
-      while (minimizeObject(CN))
-	{
-	  retFlag=1;
-	}
+      if (minimizeObject(CN))
+	retFlag=1;
     }
   return retFlag;
 }
@@ -1667,8 +1665,6 @@ Simulation::minimizeObject(const int CN)
     
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
-
-  activeSD=activeFlag;
 
   activeFlag |= AX.constructShannonExpansion();
 
