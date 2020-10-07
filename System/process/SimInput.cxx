@@ -187,8 +187,8 @@ processExitChecks(Simulation& System,
 	D-=C;
       D.makeUnit();
       ELog::EM<<std::setprecision(12)<<"C == "<<C<<":"<<D<<ELog::endDiag;
-      ModelSupport::LineTrack LT(C,D,1000.0);
-      ModelSupport::LineTrack LTR(C,-D,1000.0);
+      ModelSupport::LineTrack LT(C,D,10000.0);
+      ModelSupport::LineTrack LTR(C,-D,10000.0);
       LT.calculate(System);
       LTR.calculate(System);
     }

@@ -281,6 +281,7 @@ LQuadF::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,PN,"2203 -2204 (-2207 : 2201) ");
       makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+outerCut+FB);
+      Out=ModelSupport::getComposite(SMap,PN,"2203 -2204 -2207  ");      
       PoleExclude.push_back(HeadRule(Out));
 
       Out=ModelSupport::getComposite
