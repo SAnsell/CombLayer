@@ -63,6 +63,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"

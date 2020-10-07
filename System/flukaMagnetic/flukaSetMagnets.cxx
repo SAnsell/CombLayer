@@ -238,7 +238,7 @@ setMagneticPhysics(SimFLUKA& System,
 {
   ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
 
-  if (!IParam.flag("NoDefMagnet"))
+  if (IParam.flag("defMagnet"))
     setDefMagnets(System);
   
   

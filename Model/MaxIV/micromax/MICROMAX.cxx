@@ -74,6 +74,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 

@@ -78,7 +78,8 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
-#include "InnerZone.h" 
+#include "InnerZone.h"
+#include "BlockZone.h" 
 
 #include "PreDipole.h"
 

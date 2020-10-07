@@ -71,7 +71,7 @@ class danmaxFrontEnd :
   std::shared_ptr<xraySystem::Wiggler> undulator;
 
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,MonteCarlo::Object*,
+    buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int);
 			      
   void createSurfaces();

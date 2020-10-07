@@ -53,6 +53,7 @@ namespace constructSystem
 namespace xraySystem
 {
 
+  class CylGateValve;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -87,8 +88,9 @@ class R3FrontEnd :
 
   /// point to stop [normal none]
   std::string stopPoint;          
+
   /// Inner buildzone
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -138,7 +140,7 @@ class R3FrontEnd :
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
@@ -197,16 +199,15 @@ class R3FrontEnd :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   MonteCarlo::Object*,
 		   const attachSystem::FixedComp&,
 		   const long int) =0;
 
 
-  void buildHeatTable(Simulation&,MonteCarlo::Object*,
+  void buildHeatTable(Simulation&,
 		      const attachSystem::FixedComp&,const long int);
-  void buildApertureTable(Simulation&,MonteCarlo::Object*,
+  void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&,MonteCarlo::Object*,
+  void buildShutterTable(Simulation&,
 			 const attachSystem::FixedComp&,const long int);  
 
   

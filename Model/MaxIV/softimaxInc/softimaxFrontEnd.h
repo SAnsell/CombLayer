@@ -56,7 +56,7 @@ class softimaxFrontEnd :
   std::shared_ptr<xraySystem::Undulator> undulator;
 
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,MonteCarlo::Object*,
+    buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();

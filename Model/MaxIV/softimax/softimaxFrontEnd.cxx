@@ -34,25 +34,15 @@
 #include <iterator>
 #include <memory>
 
-// #include "Exception.h"
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-// #include "inputParam.h"
-// #include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-// #include "Rules.h"
-// #include "Code.h"
-// #include "varList.h"
-// #include "FuncDataBase.h"
 #include "HeadRule.h"
-// #include "Object.h"
-// #include "groupRange.h"
-// #include "objectGroups.h"
-// #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -64,7 +54,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
@@ -113,14 +103,12 @@ softimaxFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 softimaxFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
+				 const attachSystem::FixedComp& preFC,
+				 const long int preSideIndex)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -130,7 +118,7 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
 

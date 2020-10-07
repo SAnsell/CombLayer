@@ -73,6 +73,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
@@ -125,14 +126,12 @@ formaxFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
-  /*!
+			       const attachSystem::FixedComp& preFC,
+			       const long int preSideIndex)
+/*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -142,7 +141,7 @@ formaxFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
   undulatorPipe->insertInCell("FFlange",System,outerCell);

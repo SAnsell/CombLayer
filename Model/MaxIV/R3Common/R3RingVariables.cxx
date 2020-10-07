@@ -65,6 +65,7 @@
 #include "PortItemGenerator.h"
 #include "HeatDumpGenerator.h"
 #include "GateValveGenerator.h"
+#include "CylGateValveGenerator.h"
 #include "BeamMountGenerator.h"
 
 #include "PreDipoleGenerator.h"
@@ -309,18 +310,10 @@ heatDumpTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
 
   // will be rotated vertical
-  const std::string gateName=frontKey+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
+  // length 8.1
+  CylGateValveGenerator CGTGen;
+  CGTGen.generateGate(Control,frontKey+"GateTubeA",0);
 
-  // beam ports
-  Control.addVariable(gateName+"NPorts",2);
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(0.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base

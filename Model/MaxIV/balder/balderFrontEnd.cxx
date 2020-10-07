@@ -72,7 +72,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
@@ -129,7 +129,6 @@ balderFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 balderFrontEnd::buildUndulator(Simulation& System,
-			       MonteCarlo::Object* masterCell,
 			       const attachSystem::FixedComp& preFC,
 			       const long int preSideIndex)
   /*!
@@ -147,7 +146,7 @@ balderFrontEnd::buildUndulator(Simulation& System,
   int outerCell;
 
   wigglerBox->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*wigglerBox,2);
+  outerCell=buildZone.createUnit(System,*wigglerBox,2);
   
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);

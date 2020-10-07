@@ -301,8 +301,6 @@ R1FrontEnd::buildHeatTable(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
-
-  // FAKE insertcell:
   gateTubeA->createAll(System,*bellowD,2);  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateTubeA,2);
   gateTubeA->insertInCell(System,outerCell);
