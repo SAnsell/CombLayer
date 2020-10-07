@@ -90,32 +90,6 @@ LQuadH::~LQuadH()
   */
 {}
 
-// LQuadH::LQuadH(const LQuadH& A) :
-//   tdcSystem::LQuadF(A),
-//   polePitch(A.polePitch)
-//   /*!
-//     Copy constructor
-//     \param A :: LQuadH to copy
-//    */
-// {
-// }
-
-// LQuadH&
-// LQuadH::operator=(const LQuadH& A)
-//   /*!
-//     Assignment operator
-//     \param A :: LQuadH to copy
-//     \return *this
-//   */
-// {
-//   if (this!=&A)
-//     {
-//       tdcSystem::LQuadF::operator=(A);
-//       polePitch=A.polePitch;
-//     }
-//   return *this;
-// }
-
 void
 LQuadH::populate(const FuncDataBase& Control)
   /*!
@@ -199,6 +173,7 @@ LQuadH::createObjects(Simulation& System)
   const std::string frontRegion=ModelSupport::getComposite(SMap,buildIndex,"11 -1");
   const std::string backRegion=ModelSupport::getComposite(SMap,buildIndex," 2 -12");
 
+  std::vector<HeadRule> CoilExclude;
   std::vector<HeadRule> PoleExclude;
   std::vector<HeadRule> frontExclude;
   std::vector<HeadRule> backExclude;
@@ -223,7 +198,7 @@ LQuadH::createObjects(Simulation& System)
       makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
       Out=ModelSupport::getComposite
 	(SMap,PN," 2003 -2004 2001 2013 2014 2017 2018");
-      PoleExclude.back().addUnion(Out);
+      CoilExclude.push_back(HeadRule(Out));
 
       // Front extra pieces
       Out=ModelSupport::getComposite
@@ -243,17 +218,27 @@ LQuadH::createObjects(Simulation& System)
 
   int aOffset(-1);
   int bOffset(0);
+  PN=buildIndex;
   std::string OutA,OutB;
   const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5"});
   for(size_t i=0;i<NPole;i++)
     {
+      const HeadRule triCut=ModelSupport::getHeadRule(SMap,PN,"2001");
+      
       OutA=ModelSupport::getRangeComposite
 	(SMap,501,504,bOffset,buildIndex,"501R -502R ");
       OutB=ModelSupport::getRangeComposite
 	(SMap,1001,1008,aOffset,buildIndex,"-1001R -1002R -1003R ");
-      makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
-	   PoleExclude[i].complement().display()+ICell);
+      ELog::EM<<"OUT  == "<<OutB<<ELog::endDiag;
+      makeCell("Triangle",System,cellIndex++,0,0.0,
+	       OutA+OutB+FB+triCut.display()+
+	       CoilExclude[i].complement().display());
 
+      makeCell("InnerTri",System,cellIndex++,0,0.0,
+	       OutA+FB+triCut.complement().display()+
+	       PoleExclude[i].complement().display()+ICell);
+
+      
       OutB=ModelSupport::getComposite(SMap,buildIndex,sides[i]);
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 ");
       makeCell("FrontVoid",System,cellIndex++,0,0.0,OutA+OutB+Out+
@@ -266,6 +251,7 @@ LQuadH::createObjects(Simulation& System)
 
       aOffset+=2;
       bOffset+=1;
+      PN+=20;
     }
   return;
 }

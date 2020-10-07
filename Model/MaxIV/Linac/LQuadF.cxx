@@ -315,7 +315,7 @@ LQuadF::createObjects(Simulation& System)
   const std::vector<std::string> sides({"-4 -6", "3 -6", "3 5", "-4 5"});
   for(size_t i=0;i<NPole;i++)
     {
-      HeadRule triCut=ModelSupport::getHeadRule(SMap,PN,"2001");
+      const HeadRule triCut=ModelSupport::getHeadRule(SMap,PN,"2001");
 	    
       OutA=ModelSupport::getRangeComposite
 	(SMap,501,504,bOffset,buildIndex,"501R -502R ");
