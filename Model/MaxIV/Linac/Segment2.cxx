@@ -168,7 +168,6 @@ Segment2::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
   pipeTerminate(System,*buildZone,pipeB);
 
-  return;
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*gateTube);
 
@@ -214,9 +213,6 @@ Segment2::createLinks()
 {
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*yagUnit,2);
-
-  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
-  setLinkSignedCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

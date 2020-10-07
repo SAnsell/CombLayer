@@ -56,6 +56,7 @@ namespace ModelSupport
   std::string getSetComposite(const surfRegister&,const int,
 			      const int,const int,const std::string&);
 
+  
   std::string getAltComposite(const surfRegister&,const int,
 			      const std::string&);
   std::string getAltComposite(const surfRegister&,const int,
@@ -78,6 +79,21 @@ namespace ModelSupport
 
   std::string getSeqIntersection(int,int,int);
   std::string getSeqUnion(int,int,int);
+
+  // HEADRULE
+  HeadRule getHeadRule(const int,const std::string&);
+  HeadRule getHeadRule(const surfRegister&,const int,const std::string&);
+  HeadRule getHeadRule(const surfRegister&,const int,const int,
+			   const std::string&);
+  HeadRule getHeadRule(const surfRegister&,const int,const int,
+			   const int,const std::string&);
+
+  HeadRule getSetHeadRule(const surfRegister&,const int,
+			      const std::string&);
+  HeadRule getSetHeadRule(const surfRegister&,const int,
+			      const int,const std::string&);
+  HeadRule getSetHeadRule(const surfRegister&,const int,
+			      const int,const int,const std::string&);
 
 }
 

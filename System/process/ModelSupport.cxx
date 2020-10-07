@@ -35,6 +35,7 @@
 
 #include "support.h"
 #include "surfRegister.h"
+#include "HeadRule.h"
 #include "ModelSupport.h"
 
 namespace ModelSupport
@@ -800,5 +801,125 @@ getRangeComposite(const surfRegister& SMap,
   return getSetComposite(SMap,Offset,minorOffset,secondOffset,cx.str());
 }
 
-  
+HeadRule
+getHeadRule(const int SOffset,const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    \param SOffset :: signed Offset number to add [-ve reverse sense]
+    \param BaseString :: BaseString number
+    \return HeadRule of components
+   */ 
+{
+  return HeadRule(getComposite(SOffset,baseString));
+}
+
+HeadRule
+getHeadRule(const surfRegister& SMap,const int SOffset,
+	    const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param SOffset :: Offset nubmer to add
+    \param BaseString :: BaseString number
+    \return HeadRule of surfaces
+  */
+{
+  return HeadRule(getComposite(SMap,SOffset,baseString));
+}
+
+HeadRule
+getHeadRule(const surfRegister& SMap,const int SOffset,
+	     const int SminorOffset,const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param SOffset :: Offset nubmer to add
+    \param SminorOffset :: minor Offset nubmer to add [M]
+    \param BaseString :: BaseString number
+    \return HeadRule of surfaces
+  */
+{
+  return HeadRule(getComposite(SMap,SOffset,SminorOffset,
+			       baseString));
+}
+
+HeadRule
+getHeadRule(const surfRegister& SMap,const int SOffset,
+	     const int SminorOffset,const int SsecondOffset,
+	     const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param SOffset :: Offset nubmer to add
+    \param SminorOffset :: minor Offset nubmer to add [M]
+    \param SsecondOffset :: second Offset nubmer to add [N]
+    \param BaseString :: BaseString number
+    \return HeadRule of surfaces
+  */
+{
+  return HeadRule(getComposite(SMap,SOffset,SminorOffset,
+			       SsecondOffset,baseString));
+}
+
+HeadRule
+getSetHeadRule(const surfRegister& SMap,const int offset,
+		const int minorOffset,const int secondOffset,
+		const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param baseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return HeadRule(getSetComposite
+		  (SMap,offset,minorOffset,secondOffset,baseString));
+}
+
+HeadRule
+getSetHeadRule(const surfRegister& SMap,const int offset,
+		const int minorOffset,const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param baseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return HeadRule(getSetComposite(SMap,offset,minorOffset,baseString));
+}
+
+HeadRule
+getSetHeadRule(const surfRegister& SMap,const int offset,
+		const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a cell does not exist ignore [no error]
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param offset :: Offset nubmer to add
+    \param baseString :: BaseString number
+    \return String with offset components
+   */
+{
+  return HeadRule(getSetComposite(SMap,offset,baseString));
+}
+
 }  // NAMESPACE ModelSupport
