@@ -213,6 +213,19 @@ BlockZone::setFront(const HeadRule& HR)
 }
 
 void
+BlockZone::initFront(const HeadRule& HR)
+  /*!
+    Set the front facing rule AND the back rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  frontHR=HR;
+  maxExtentHR=HR;
+  backHR=HR;
+  return;
+}
+
+void
 BlockZone::setBack(const HeadRule& HR)
   /*!
     Set the back rule [for delayed insert]
@@ -226,7 +239,7 @@ BlockZone::setBack(const HeadRule& HR)
 void
 BlockZone::setMaxExtent(const HeadRule& HR)
   /*!
-    Set the front facing rule AND the back rule
+    Set the maximum outward rule
     \param HR :: Rule at front [inward]
   */
 {

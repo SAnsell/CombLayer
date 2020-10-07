@@ -269,8 +269,11 @@ R3FrontEnd::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
-      setFront(SMap.realSurf(buildIndex+1));
+      buildZone.initFront(HeadRule(-SMap.realSurf(buildIndex+1)));
+      setFront(-SMap.realSurf(buildIndex+1));
     }
+  else
+    buildZone.setFront(getFrontRule());
   
   return;
 }
@@ -466,13 +469,13 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   outerCell=buildZone.createUnit(System,
 				 FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertAllInCell(System,outerCell);
-  
+
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*bellowJ,2);
   bellowJ->insertInCell(System,outerCell);
 
-  insertFlanges(System,*florTubeA);
+  //  insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
@@ -482,25 +485,25 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 				 GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeB->insertAllInCell(System,outerCell);
 
+  
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
-  insertFlanges(System,*gateTubeB);
+  //  insertFlanges(System,*gateTubeB);
 
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=buildZone.createUnit(System,*shutterBox,2);
   shutterBox->insertAllInCell(System,outerCell);
   
-  cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
-				       shutterBox->getCell("Void"),
-				       {0,1});
+  cellIndex=shutterBox->splitVoidPorts
+    (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
+
   cellIndex=
     shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
   shutterBox->addAllInsertCell(outerCell);
-  shutterBox->createPorts(System);
 
   for(size_t i=0;i<shutters.size();i++)
     {
@@ -537,6 +540,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   ELog::RegMethod RegA("R3FrontEnd","buildObjects");
 
   int outerCell;
+
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
   buildZone.addInsertCells(this->getInsertCells());
@@ -546,7 +550,11 @@ R3FrontEnd::buildObjects(Simulation& System)
 					      
   //  constructSystem::constructUnit
   //    (System,buildZone,undulatorFC,"back",*transPipe);
-  
+
+
+  outerCell=buildZone.createUnit(System,undulatorFC,"back");
+
+
   magBlockM1->createAll(System,*this,0);
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
@@ -674,8 +682,12 @@ R3FrontEnd::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  ELog::EM<<"Build == "<<buildZone<<ELog::endDiag;
   buildObjects(System);
   createLinks();
+  const MonteCarlo::Object* Obj=
+    System.findObject(buildZone.getCell("Unit",0));
+  ELog::EM<<"Cell "<<*Obj<<ELog::endDiag;
 
 
   return;

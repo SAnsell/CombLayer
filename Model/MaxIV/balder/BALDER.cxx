@@ -170,6 +170,8 @@ BALDER::build(Simulation& System,
   frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
+
+  return;
   
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));

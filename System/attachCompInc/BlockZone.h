@@ -85,6 +85,8 @@ class BlockZone  :
   void setFront(const HeadRule&);
   void setBack(const HeadRule&);
 
+  void initFront(const HeadRule&);
+
   /// access surround
   const HeadRule& getSurround() const { return surroundHR; }
   /// access front
