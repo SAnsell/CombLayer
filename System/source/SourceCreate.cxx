@@ -440,6 +440,31 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
   return GX.getKeyName();      
 }
 
+std::string
+createBeamSource(const mainSystem::MITYPE& inputMap,
+		 const std::string& keyName,
+		 const Geometry::Vec3D& Org,
+		 const Geometry::Vec3D& Axis,
+		 const Geometry::Vec3D& ZAxis)
+  /*!
+    Create a beam source along an axis
+    \param inputMap :: Variables data base
+    \param keyName :: keyname for Gamma source
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \return keyName of source
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  BeamSource GX(keyName);
+
+  GX.createAll(inputMap,Org,Axis,ZAxis);
+  SDB.registerSource(GX.getKeyName(),GX);  
+  return GX.getKeyName();      
+}
+
 
 
 std::string

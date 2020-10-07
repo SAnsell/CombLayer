@@ -48,8 +48,6 @@ class BeamSource :
   double angleSpread;           ///< Angle spread [deg]
   
   void populate(const ITYPE&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
  public:
 
@@ -63,6 +61,8 @@ class BeamSource :
   void setRadius(const double R) { radius=R; }
   void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(const ITYPE&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&);
   void createAll(const attachSystem::FixedComp&,
 		 const long int);
 

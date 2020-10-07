@@ -181,7 +181,8 @@ FixedComp::setAxisControl(const long int axisIndex,
     \param NAxis :: New Axis 
   */
 {
-  ELog::RegMethod Rega("FixedComp","setAxisControl");
+  ELog::RegMethod RegA("FixedComp","setAxisControl");
+  
   if (NAxis.abs()<Geometry::zeroTol)
     throw ColErr::NumericalAbort("NAxis is zero");
   if (axisIndex>3 || axisIndex<-3)

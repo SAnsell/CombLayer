@@ -151,6 +151,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
+  IParam.regMulti("sdefVec","sdefVec",1000,0);
   IParam.regItem("singleItem","singleItem");  
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);

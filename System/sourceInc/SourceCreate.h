@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceCreate.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,10 @@ namespace SDef
 
   std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
 			       const attachSystem::FixedComp&,const long int);
+
+  std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
+			       const Geometry::Vec3D&,const Geometry::Vec3D&,
+			       const Geometry::Vec3D&);
   
   std::string createBilbaoSource(const mainSystem::MITYPE&,
 				 const attachSystem::FixedComp&,const long int);

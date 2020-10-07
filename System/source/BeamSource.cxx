@@ -146,22 +146,6 @@ BeamSource::populate(const ITYPE& inputMap)
 }
 
 void
-BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
-  /*!
-    Create the unit vector
-    \param FC :: Fixed Component
-    \param linkIndex :: Link index [signed for opposite side]
-   */
-{
-  ELog::RegMethod RegA("BeamSource","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
-  return;
-}
-
-void
 BeamSource::rotate(const localRotate& LR)
   /*!
     Rotate the source
@@ -235,10 +219,32 @@ BeamSource::createAll(const ITYPE& inputMap,
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+
   ELog::EM<<"linkunit: == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
 
   populate(inputMap);
   createUnitVector(FC,linkIndex);
+
+  return;
+}
+
+void
+BeamSource::createAll(const ITYPE& inputMap,
+		      const Geometry::Vec3D& Org,
+		      const Geometry::Vec3D& Axis,
+		      const Geometry::Vec3D& ZAxis)
+  /*!
+    Create all the source
+    \param Control :: DataBase for variables
+    \param Org :: Origin
+    \param Axis :: Axis
+    \param ZAxis :: ZAxis
+   */
+{
+  ELog::RegMethod RegA("BeamSource","createAll<Vec3D>");
+
+  populate(inputMap);
+  FixedComp::createUnitVector(Org,Axis,ZAxis);
 
   return;
 }
