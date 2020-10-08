@@ -269,7 +269,7 @@ R3FrontEnd::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
-      buildZone.initFront(HeadRule(-SMap.realSurf(buildIndex+1)));
+      buildZone.initFront(HeadRule(SMap.realSurf(buildIndex+1)));
       setFront(-SMap.realSurf(buildIndex+1));
     }
   else
@@ -541,8 +541,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   int outerCell;
 
-  buildZone.setFront(getFrontRule());
-  buildZone.setBack(getBackRule());
   buildZone.addInsertCells(this->getInsertCells());
 
   const attachSystem::FixedComp& undulatorFC=
@@ -682,13 +680,8 @@ R3FrontEnd::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  ELog::EM<<"Build == "<<buildZone<<ELog::endDiag;
   buildObjects(System);
   createLinks();
-  const MonteCarlo::Object* Obj=
-    System.findObject(buildZone.getCell("Unit",0));
-  ELog::EM<<"Cell "<<*Obj<<ELog::endDiag;
-
 
   return;
 }

@@ -346,7 +346,6 @@ BlockZone::createUnit(Simulation& System)
 
   // maxEXTENT is INWARDS FACING
   const HeadRule newBackFC=maxExtentHR;
-
   HeadRule Volume=surroundHR * backHR * newBackFC;
   makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
   backHR=newBackFC.complement();
@@ -388,7 +387,6 @@ BlockZone::createUnit(Simulation& System,
   if (fakeCell) removeFakeCell(System);
   // alway outgoing [so use complement]
   const HeadRule newBackFC=FC.getFullRule(sideIndex);
-
   HeadRule Volume=surroundHR * backHR * newBackFC.complement();
   makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
   backHR=newBackFC;

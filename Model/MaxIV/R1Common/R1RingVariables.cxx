@@ -232,7 +232,6 @@ heatDumpTable(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
 
-  ELog::EM<<"Key = "<<frontKey<<ELog::endDiag;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",10.0);
   

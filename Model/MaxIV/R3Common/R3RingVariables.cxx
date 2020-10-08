@@ -208,7 +208,7 @@ shutterTable(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setCF<setVariable::CF40>(1.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+1.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -225,7 +225,7 @@ shutterTable(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
-  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setCF<setVariable::CF40>(4.35);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -346,7 +346,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF40>(13.05);
   PItemGen.setPlate(0.0,"Void");  
 
   const Geometry::Vec3D ZVec(0,0,1);
