@@ -105,10 +105,6 @@ namespace linacVar
 		       const bool);
   void setCylGateValve(FuncDataBase&,const std::string&,
 		       const double,const bool);
-  void setFlat(FuncDataBase&,const std::string&,
-	       const double,const double);
-  void setBellow26(FuncDataBase&,const std::string&,
-		 const double);
   void setBellow37(FuncDataBase&,const std::string&,
 		 const double);
 
@@ -450,10 +446,9 @@ setCylGateValve(FuncDataBase& Control,
 }
 
 void
-setFlat(FuncDataBase& Control,
-	const std::string& name,
-	const double length,
-	const double rotateAngle)
+setFlat(FuncDataBase& Control,const std::string& name,
+	const double length,const double rotateAngle,
+	const double xStep)
 /*!
   Set the Flat pipe variables
   \param Control :: DataBase to use
@@ -471,6 +466,7 @@ setFlat(FuncDataBase& Control,
   Control.addVariable(name+"WallThick",0.15); // No_3_00.pdf
   Control.addVariable(name+"FrontWidth",3.656-1.344); // No_3_00.pdf
   Control.addVariable(name+"BackWidth",3.656-1.344); // No_3_00.pdf
+  Control.addVariable(name+"XStep",xStep); // No_3_00.pdf
 
   return;
 }
@@ -862,41 +858,14 @@ Segment5(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment5");
 
-  setVariable::CF40 CF40unit;
-  setVariable::BeamDividerGenerator BDGen(CF40unit);
-  setVariable::FlatPipeGenerator FPGen;
-  setVariable::DipoleDIBMagGenerator DIBGen;
-
-  const double angleDipole(1.6-0.12);
-  //  const double bendDipole(1.6);
   const Geometry::Vec3D startPt(-45.073,1420.344,0);
   const Geometry::Vec3D endPt(-90.011,1683.523,0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",6.4);
-  // Control.addVariable(lKey+"XYAngle",
-  // 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
-
-  setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),angleDipole);
-
-  DIBGen.generate(Control,lKey+"DipoleA");
-  Control.addVariable(lKey+"DipoleAYStep",-0.0091); // this centers DipoleA at 40.895 [No_5_00.pdf]
-
-  BDGen.generateDivider(Control,lKey+"BeamA",angleDipole);
-  Control.addVariable(lKey+"BeamAExitLength", 15);
-  Control.addVariable(lKey+"BeamAMainLength", 34.4);
-
-  setFlat(Control,lKey+"FlatB",81.009/cos((flatAXYAngle+angleDipole*2)*M_PI/180.0),
-	  angleDipole);// No_5_00.pdf
-
-  DIBGen.generate(Control,lKey+"DipoleB");
-  Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
-
-  setBellow26(Control,lKey+"BellowA",7.5);
-  Control.addVariable(lKey+"BellowAXYAngle",angleDipole);
-
+  Segment5Magnet(Control,lKey);
+  
   return;
 }
 

@@ -50,7 +50,10 @@ class FixedRotate  : public FixedComp
   
  public:
 
+  explicit FixedRotate(const size_t);
+  FixedRotate(const size_t,const std::string&);
   FixedRotate(const std::string&,const size_t);
+  FixedRotate(const std::string&,const size_t,const size_t);
   FixedRotate(const FixedRotate&);
   FixedRotate& operator=(const FixedRotate&);
   virtual ~FixedRotate() {}     ///< Destructor

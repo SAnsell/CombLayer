@@ -54,6 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -210,6 +211,59 @@ TDCsegment::removeSpaceFillers(Simulation& System) const
   return;
 }
 
+void
+TDCsegment::createBeamLink(const FuncDataBase& Control)
+  /*!
+    Construct links that start at the beam
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("TDCsegment","createBeamLink");
+  
+  const size_t NLink=std::max<size_t>(8,this->NConnect());
+  FixedComp::setNConnect(NLink);
+  FixedComp::nameSideIndex(6,"Beam");
+
+  setLinkSignedCopy(6,*this,-1);    // copy surface and correct direction
+  if (Control.hasVariable("BeamOrg"))
+    {
+      const Geometry::Vec3D BeamOrg=
+	Control.EvalVar<Geometry::Vec3D>("BeamOrg");
+      // beam axis relative to 
+      const Geometry::Vec3D BeamAxis= 
+	Control.EvalVar<Geometry::Vec3D>("BeamAxis");
+      FixedComp::setConnect(6,BeamOrg,BeamAxis);
+    }
+  if (Control.hasVariable("BeamDelta"))
+    {
+      attachSystem::FixedRotateUnit BPoint("BeamPoint",0);
+            
+      const Geometry::Vec3D BeamDelta=
+	Control.EvalVar<Geometry::Vec3D>("BeamDelta");
+      const double beamXY=
+	Control.EvalDefVar<double>("BeamXYAngle",0.0);
+      const double beamX=
+	Control.EvalDefVar<double>("BeamXAngle",0.0);
+      const double beamY=
+	Control.EvalDefVar<double>("BeamYAngle",0.0);      
+      const double beamZ=
+	Control.EvalDefVar<double>("BeamZAngle",beamXY);
+      BPoint.setOffset(BeamDelta[0],BeamDelta[1],BeamDelta[2]);
+      BPoint.setRotation(beamX,beamY,beamZ);
+      BPoint.createUnitVector(*this,-1);
+      FixedComp::setConnect(6,BPoint.getLinkPt(0),
+			    BPoint.getLinkAxis(0));
+    }
+
+  ELog::EM<<"Link["<<keyName<<"] = "<<this->getLinkPt(1)
+	  <<" Dir = "<<this->getLinkAxis(-1)<<ELog::endDiag;
+  ELog::EM<<"Beam["<<keyName<<"] = "<<this->getLinkPt(7)
+	  <<" Dir = "<<this->getLinkAxis(7)<<ELog::endDiag;
+
+  return;
+  
+}
+
 bool
 TDCsegment::totalPathCheck(const FuncDataBase& Control,
 			   const double errDist) const
@@ -323,52 +377,7 @@ TDCsegment::totalPathCheck(const FuncDataBase& Control,
   return retFlag;
 }
 
-void
-TDCsegment::initCellMap()
-  /*!
-    Setup the Segment to capture the CellMap from a buildZone.
-    This call needs to be done BEFORE the segment is inserted into the
-    buildZone.
-   */
-{
-  ELog::RegMethod RegA("TDCsegment","initCellMap");
 
-  /*
-  const attachSystem::CellMap* CPtr=
-    (buildZone) ? buildZone->getCellMap() :  0;
-
-  NCellInit=(CPtr && CPtr->hasCell("OuterVoid"))
-    ? CPtr->getNCells("OuterVoid") : 0;
-  */
-  return;
-}
-
-void
-TDCsegment::captureCellMap()
-  /*!
-    Recovers CellMap transfer from a buildZone to the CellMap
-    of the object that is within the buildZone. This allows
-    inserts to be done after the buildObject call.
-
-    This call needs to be done AFTER the object has been inserted
-    in the buildZone.
-
-    An initCellMap call needs to have been done first.
-   */
-{
-  ELog::RegMethod RegA("TDCsegment","captureCellMap");
-  /*
-  const attachSystem::CellMap* CPtr=(buildZone) ? buildZone->getCellMap() : 0;
-  const size_t NCells=(CPtr && CPtr->hasCell("OuterVoid")) ?
-    CPtr->getNCells("OuterVoid") : 0;
-
-  for(size_t i=NCellInit;i<NCells;i++)
-    CellMap::addCell("BuildVoid",CPtr->getCell("OuterVoid",i));
-
-  NCellInit=NCells;
-  */
-  return;
-}
 
 void
 TDCsegment::writeBasicItems

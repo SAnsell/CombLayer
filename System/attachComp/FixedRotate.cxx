@@ -75,6 +75,42 @@ FixedRotate::FixedRotate(const std::string& KN,const size_t NL) :
   */
 {}
 
+FixedRotate::FixedRotate(const size_t NL,const std::string& KN) :
+  FixedComp(NL,KN),
+  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xAngle(0.0),yAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param KN :: KeyName
+    \param NL :: Number of links
+  */
+{}
+
+  
+FixedRotate::FixedRotate(const size_t NL) :
+  FixedRotate(NL,"Null")
+ /*!
+    Null version Constructor 
+    \param NL :: Number of links
+  */
+{}
+
+
+FixedRotate::FixedRotate(const std::string& KN,const size_t NL,
+			   const size_t resSize) :
+  FixedComp(KN,NL,resSize),
+  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xAngle(0.0),yAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param KN :: KeyName
+    \param NL :: Number of links
+    \param resSize :: Reserved Space						
+  */
+{}
+
 FixedRotate::FixedRotate(const FixedRotate& A) : 
   FixedComp(A),
   preXAngle(A.preXAngle),preYAngle(A.preYAngle),
@@ -304,8 +340,10 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FixedRotate","createUnitVector(length)");
 
   FixedComp::createUnitVector(FC,sideIndex);
-
+  ELog::EM<<"Org["<<keyName<<"] == "<<Origin;
   applyOffset();
+  ELog::EM<<" == "<<Origin<<ELog::endDiag;
+    
   Origin+=Y*(length/2.0);
   return;
 }

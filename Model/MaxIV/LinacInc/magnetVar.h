@@ -31,9 +31,10 @@ namespace linacVar
   void setBellow26(FuncDataBase&,const std::string&,
 		   const double);
   void setFlat(FuncDataBase&,const std::string&,
-	       const double,const double);
+	       const double,const double,const double =0);
 
-void Segment32Magnet(FuncDataBase&,const std::string&);
+  void Segment5Magnet(FuncDataBase&,const std::string&);
+  void Segment32Magnet(FuncDataBase&,const std::string&);
 
 }
 

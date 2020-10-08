@@ -87,6 +87,55 @@ namespace linacVar
 {
 
 void
+Segment5Magnet(FuncDataBase& Control,
+	       const std::string& lKey)
+  /*!
+    This should be for the magnet unit but currently doing segment5
+    to make fast compiles
+    \param Control :: Variable Database
+    \param lKey :: key name
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment5Magnet");
+  
+  setVariable::CF40 CF40unit;
+  setVariable::BeamDividerGenerator BDGen(CF40unit);
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+
+  const double angleDipole(1.6-0.12);
+  //  const double bendDipole(1.6);
+  // Control.addVariable(lKey+"XYAngle",
+  // 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
+
+  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
+
+  setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),
+	  angleDipole,0.5);
+
+  // this centers DipoleA at 40.895 [No_5_00.pdf]
+  DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAYStep",-0.0091); 
+
+  BDGen.generateDivider(Control,lKey+"BeamA",angleDipole);
+  Control.addVariable(lKey+"BeamAExitLength", 15);
+  Control.addVariable(lKey+"BeamAMainLength", 34.4);
+  Control.addVariable(lKey+"BeamAXStep", 0.0);
+
+  setFlat(Control,lKey+"FlatB",
+	  81.009/cos((flatAXYAngle+angleDipole*2)*M_PI/180.0),
+	  angleDipole);// No_5_00.pdf
+
+  DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBYStep",0.037); // this centers DipoleB at 21.538 [No_5_00.pdf]
+
+  setBellow26(Control,lKey+"BellowA",7.5);
+  Control.addVariable(lKey+"BellowAXYAngle",angleDipole);
+
+  return;
+}
+
+void
 Segment32Magnet(FuncDataBase& Control,
 		   const std::string& lKey)
   /*!

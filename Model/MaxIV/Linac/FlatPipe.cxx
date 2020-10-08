@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/FlatPipe.cxx
+ * File:   Linac/FlatPipe.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *

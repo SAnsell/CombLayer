@@ -581,14 +581,12 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
-	  segPtr->initCellMap();
 
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
-	  
-	  segPtr->captureCellMap();
+	  segPtr->createBeamLink(System.getDataBase());
 	  if (!noCheck)
 	    segPtr->totalPathCheck(System.getDataBase(),0.1);
 	  if (pointCheck)

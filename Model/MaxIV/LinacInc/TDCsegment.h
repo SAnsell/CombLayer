@@ -99,14 +99,8 @@ class TDCsegment :
   const std::vector<HeadRule>& getJoinItems() const
     { return joinItems; }
 
-  const constructSystem::portItem&
-  buildIonPump2Port(Simulation&,
-		    attachSystem::BlockZone&,
-		    const attachSystem::FixedComp&,
-		    const std::string&,
-		    constructSystem::VirtualTube&,
-		    const bool intersect=false) const;
-
+  virtual void createBeamLink(const FuncDataBase&);
+  
   virtual void setFrontSurfs(const std::vector<HeadRule>&);
   void setFirstItems(const std::shared_ptr<attachSystem::FixedComp>&);
   void setFirstItems(attachSystem::FixedComp*);
@@ -114,11 +108,10 @@ class TDCsegment :
   virtual void registerPrevSeg(const TDCsegment*,const size_t);
   virtual void registerSideSegment(const TDCsegment*);
 
-  virtual void initCellMap();
-  virtual void captureCellMap();
-
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const {}
 
+
+  
   /// Access to buildZone surround.
   const HeadRule& getSurround() const { return buildZone->getSurround(); }
   

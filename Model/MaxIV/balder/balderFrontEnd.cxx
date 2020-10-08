@@ -147,7 +147,6 @@ balderFrontEnd::buildUndulator(Simulation& System,
 
   wigglerBox->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createUnit(System,*wigglerBox,2);
-  MonteCarlo::Object* Obj=System.findObject(5830001);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);

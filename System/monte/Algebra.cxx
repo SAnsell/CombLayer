@@ -349,7 +349,6 @@ Algebra::constructShannonDivision(const int mcnpSN)
   FaT.resolveTrue(PSN);     // a=1
   FaF.resolveTrue(-PSN);    // a=0
 
-
   // resolve F into Fplus and Fminus
   // test if any of the implicates are true:
   
