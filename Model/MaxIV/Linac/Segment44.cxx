@@ -132,10 +132,10 @@ Segment44::buildObjects(Simulation& System)
   outerCellB=buildZone->createUnit(System,*triBend,3);
   outerCellC=buildZone->createUnit(System,*triBend,4);
 
-  cMag->addInsertCell(outerCell);
-  cMag->addInsertCell(outerCellB);
-  cMag->addInsertCell(outerCellC);
   cMag->createAll(System,*this,0);
+  cMag->insertInCell("Front", System, outerCell);
+  cMag->insertInCell("Mid", System, outerCellB);
+  cMag->insertInCell("Back", System, outerCellC);
 
   triBend->insertInCell("Main",System,outerCell);
   triBend->insertInCell("FFlange",System,outerCell);
@@ -146,9 +146,6 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertInCell("MFlange",System,outerCellB);
   triBend->insertInCell("Mid",System,outerCellB);
 
-
-  triBend->insertInCell("Bend",System,outerCellC);
-  triBend->insertInCell("BendStr",System,outerCellC);
   triBend->insertInCell("BendStr",System,outerCellC);
   triBend->insertInCell("BFlange",System,outerCellC);
   triBend->insertAllInCell(System,cMag->getCell("Void"));
@@ -158,7 +155,7 @@ Segment44::buildObjects(Simulation& System)
   CellMap::addCell("LastCell",outerCellC);
 
   CellMap::addCell("OverLap",outerCellC);
-  
+
   return;
 }
 

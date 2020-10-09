@@ -37,7 +37,7 @@ namespace tdcSystem
 
 class CurveMagnet :
     public attachSystem::FixedRotate,
-    public attachSystem::ContainedComp,
+    public attachSystem::ContainedGroup,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut

@@ -57,6 +57,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -70,7 +71,7 @@ namespace tdcSystem
 
 CurveMagnet::CurveMagnet(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -78,7 +79,11 @@ CurveMagnet::CurveMagnet(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+    ContainedGroup::addCC("Front");
+    ContainedGroup::addCC("Mid");
+    ContainedGroup::addCC("Back");
+}
 
 
 CurveMagnet::~CurveMagnet()
@@ -269,7 +274,16 @@ CurveMagnet::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"113 -114 105 -106 (-107:151) (-108:-152)");
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," (113 -114 -107 -151) : (113 -114 105 -106 151) ");
+  addOuterSurf("Front",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 113 -114 105 -106 ");
+  addOuterSurf("Mid",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," (113 -114 -108 152) :  (113 -114 105 -106 -152) ");
+  addOuterSurf("Back",Out);
 
   return;
 }
