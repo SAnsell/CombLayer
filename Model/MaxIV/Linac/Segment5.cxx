@@ -161,8 +161,8 @@ Segment5::createLinks()
 
 void
 Segment5::createAll(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system

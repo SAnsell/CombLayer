@@ -103,12 +103,14 @@ Segment5Magnet(FuncDataBase& Control,
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
-  const double angleDipole(1.6-0.12);
-  //  const double bendDipole(1.6);
-  // Control.addVariable(lKey+"XYAngle",
-  // 		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
+  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf  
+  const double angleDipole(1.6-0.12);
+
+  Control.addVariable(lKey+"BeamOrg",Geometry::Vec3D(106.927,1901.34,0));
+  Control.addVariable(lKey+"BeamDelta",Geometry::Vec3D(0,0,0));
+  Control.addVariable(lKey+"BeamXYAngle",-angleDipole);
+  
 
   setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),
 	  angleDipole,0.5);

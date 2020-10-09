@@ -223,37 +223,47 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   const size_t NLink=std::max<size_t>(8,this->NConnect());
   FixedComp::setNConnect(NLink);
   FixedComp::nameSideIndex(6,"Beam");
-
   setLinkSignedCopy(6,*this,-1);    // copy surface and correct direction
-  if (Control.hasVariable("BeamOrg"))
+
+  attachSystem::FixedRotateUnit BPoint(0,"BeamPoint");
+  Geometry::Vec3D BeamOrg=this->getLinkPt(1);
+  Geometry::Vec3D BeamAxis=this->getLinkAxis(-1);
+
+  if (Control.hasVariable(keyName+"BeamOrg"))
     {
-      const Geometry::Vec3D BeamOrg=
-	Control.EvalVar<Geometry::Vec3D>("BeamOrg");
-      // beam axis relative to 
-      const Geometry::Vec3D BeamAxis= 
-	Control.EvalVar<Geometry::Vec3D>("BeamAxis");
-      FixedComp::setConnect(6,BeamOrg,BeamAxis);
+      BeamOrg=
+	Control.EvalVar<Geometry::Vec3D>(keyName+"BeamOrg");
     }
-  if (Control.hasVariable("BeamDelta"))
+  if (Control.hasVariable(keyName+"BeamAxis"))
     {
-      attachSystem::FixedRotateUnit BPoint("BeamPoint",0);
-            
+      BeamAxis=
+	Control.EvalVar<Geometry::Vec3D>(keyName+"BeamAxis");
+    }
+  
+  //  FixedComp::setConnect(6,BeamOrg,BeamAxis);
+
+
+  if (Control.hasVariable(keyName+"BeamDelta"))
+    {
       const Geometry::Vec3D BeamDelta=
-	Control.EvalVar<Geometry::Vec3D>("BeamDelta");
-      const double beamXY=
-	Control.EvalDefVar<double>("BeamXYAngle",0.0);
-      const double beamX=
-	Control.EvalDefVar<double>("BeamXAngle",0.0);
-      const double beamY=
-	Control.EvalDefVar<double>("BeamYAngle",0.0);      
-      const double beamZ=
-	Control.EvalDefVar<double>("BeamZAngle",beamXY);
+	Control.EvalVar<Geometry::Vec3D>(keyName+"BeamDelta");
       BPoint.setOffset(BeamDelta[0],BeamDelta[1],BeamDelta[2]);
-      BPoint.setRotation(beamX,beamY,beamZ);
-      BPoint.createUnitVector(*this,-1);
-      FixedComp::setConnect(6,BPoint.getLinkPt(0),
-			    BPoint.getLinkAxis(0));
     }
+  
+      
+  const double beamXY=
+    Control.EvalDefVar<double>(keyName+"BeamXYAngle",0.0);
+  const double beamX=
+    Control.EvalDefVar<double>(keyName+"BeamXAngle",0.0);
+  const double beamY=
+    Control.EvalDefVar<double>(keyName+"BeamYAngle",0.0);      
+  const double beamZ=
+    Control.EvalDefVar<double>(keyName+"BeamZAngle",beamXY);
+  
+  BPoint.setRotation(beamX,beamY,beamZ);
+  BPoint.createUnitVector(BeamOrg,BeamAxis,Z);
+  FixedComp::setConnect(6,BPoint.getLinkPt(0),
+			    BPoint.getLinkAxis(0));
 
   ELog::EM<<"Link["<<keyName<<"] = "<<this->getLinkPt(1)
 	  <<" Dir = "<<this->getLinkAxis(-1)<<ELog::endDiag;

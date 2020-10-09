@@ -39,6 +39,9 @@ class FixedRotateUnit : public FixedRotate
  public:
 
   /// Simple constructor
+  FixedRotateUnit(const size_t I,const std::string& K) :
+    FixedRotate(I,K) {}
+  /// Simple constructor
   FixedRotateUnit(const std::string& K,const size_t I) :
     FixedRotate(K,I) {}
   /// Simple constructor [extra range]

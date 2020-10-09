@@ -190,6 +190,8 @@ Segment4::createLinks()
   setLinkSignedCopy(0,*pipeA,1);
   setLinkSignedCopy(1,*pipeC,2);
 
+  ELog::EM<<"Fixd == "<<this->getLinkPt(2)<<ELog::endDiag;
+    
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }

@@ -326,6 +326,26 @@ FixedRotate::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+
+void
+FixedRotate::createUnitVector(const Geometry::Vec3D& Org,
+			      const Geometry::Vec3D& YAxis,
+			      const Geometry::Vec3D& ZAxis)
+  /*!
+    Create the unit vectors
+    \param Orrg :: Origin
+    \param YAxis :: Primary axis
+    \param ZAxis :: Secondary axis
+  */
+{
+  ELog::RegMethod RegA("FixedRotate","createUnitVector(Vec,Vec,Vec)");
+      
+  FixedComp::createUnitVector(Org,YAxis,ZAxis);  
+  applyOffset();
+
+  return;
+}
+
 void
 FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
 				     const long int sideIndex,

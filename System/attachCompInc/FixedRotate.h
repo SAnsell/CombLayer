@@ -64,6 +64,9 @@ class FixedRotate  : public FixedComp
   virtual void populate(const std::string&,const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int);
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
   virtual void createUnitVector(const attachSystem::FixedComp&,
 				const long int,const long int);
 

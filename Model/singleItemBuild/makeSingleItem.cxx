@@ -731,7 +731,7 @@ makeSingleItem::build(Simulation& System,
 	cm(new tdcSystem::CurveMagnet("CMag"));
       OR.addObject(cm);
 
-      cm->addInsertCell(voidCell);
+      cm->addAllInsertCell(voidCell);
       cm->createAll(System,World::masterOrigin(),0);
 
       return;
