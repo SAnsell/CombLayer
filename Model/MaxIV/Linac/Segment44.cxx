@@ -151,7 +151,11 @@ Segment44::buildObjects(Simulation& System)
 
   triBend->insertInCell("BendStr",System,outerCellD);
   triBend->insertInCell("BFlange",System,outerCellD);
-  triBend->insertAllInCell(System,cMag->getCell("Void"));
+
+  triBend->insertInCell("Main",System,cMag->getCell("Void"));
+  triBend->insertInCell("Mid",System,cMag->getCell("Void"));
+  triBend->insertInCell("Bend",System,cMag->getCell("Void"));
+  triBend->insertInCell("BendStr",System,cMag->getCell("Void"));
 
   // transfer to segment 45 and 46
   CellMap::addCell("LastCell",outerCellC);
