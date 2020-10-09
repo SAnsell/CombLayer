@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 TriGroup::TriGroup(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key,9),
   attachSystem::ContainedGroup("Main","Top","Mid","Bend",
 			       "BendStr"),
   attachSystem::CellMap(),
@@ -453,6 +453,11 @@ TriGroup::createLinks()
   FixedComp::setLinkSurf(7,Out);
 
   FixedComp::nameSideIndex(7,"outerPipe");
+
+  FixedComp::setConnect(8,Origin+Y*(mainLength+wallThick),Y);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+12));
+  FixedComp::nameSideIndex(8,"EndWall");
+
 
   return;
 }

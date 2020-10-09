@@ -118,7 +118,7 @@ Segment44::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment44","buildObjects");
 
-  int outerCell,outerCellB,outerCellC;
+  int outerCellA,outerCellB,outerCellC,outerCellD;
 
   if (isActive("front"))
     {
@@ -128,37 +128,41 @@ Segment44::buildObjects(Simulation& System)
 
   triBend->createAll(System,*this,0);
   // extra for bending curve and view port
-  outerCell=buildZone->createUnit(System,*triBend,2);
-  outerCellB=buildZone->createUnit(System,*triBend,3);
-  outerCellC=buildZone->createUnit(System,*triBend,4);
+  outerCellA=buildZone->createUnit(System,*triBend,"EndWall");
+  outerCellB=buildZone->createUnit(System,*triBend,2);
+  outerCellC=buildZone->createUnit(System,*triBend,3);
+  outerCellD=buildZone->createUnit(System,*triBend,4);
 
-  cMag->addInsertCell(outerCell);
-  cMag->addInsertCell(outerCellB);
-  cMag->addInsertCell(outerCellC);
   cMag->createAll(System,*this,0);
+  cMag->insertInCell("Front", System, outerCellA);
+  cMag->insertInCell("Mid", System, outerCellB);
+  cMag->insertInCell("Mid", System, outerCellC);
+  cMag->insertInCell("Back", System, outerCellD);
 
-  triBend->insertInCell("Main",System,outerCell);
-  triBend->insertInCell("FFlange",System,outerCell);
-  triBend->insertInCell("TFlange",System,outerCell);
-  triBend->insertInCell("Top",System,outerCell);
-  triBend->insertInCell("Mid",System,outerCell);
+  triBend->insertInCell("Main",System,outerCellA);
+  triBend->insertInCell("FFlange",System,outerCellA);
 
-  triBend->insertInCell("MFlange",System,outerCellB);
+  triBend->insertInCell("TFlange",System,outerCellB);
+  triBend->insertInCell("Top",System,outerCellB);
   triBend->insertInCell("Mid",System,outerCellB);
 
+  triBend->insertInCell("MFlange",System,outerCellC);
+  triBend->insertInCell("Mid",System,outerCellC);
 
-  triBend->insertInCell("Bend",System,outerCellC);
-  triBend->insertInCell("BendStr",System,outerCellC);
-  triBend->insertInCell("BendStr",System,outerCellC);
-  triBend->insertInCell("BFlange",System,outerCellC);
-  triBend->insertAllInCell(System,cMag->getCell("Void"));
+  triBend->insertInCell("BendStr",System,outerCellD);
+  triBend->insertInCell("BFlange",System,outerCellD);
+
+  triBend->insertInCell("Main",System,cMag->getCell("Void"));
+  triBend->insertInCell("Mid",System,cMag->getCell("Void"));
+  triBend->insertInCell("Bend",System,cMag->getCell("Void"));
+  triBend->insertInCell("BendStr",System,cMag->getCell("Void"));
 
   // transfer to segment 45 and 46
-  CellMap::addCell("LastCell",outerCellB);
   CellMap::addCell("LastCell",outerCellC);
+  CellMap::addCell("LastCell",outerCellD);
 
-  CellMap::addCell("OverLap",outerCellC);
-  
+  CellMap::addCell("OverLap",outerCellD);
+
   return;
 }
 
