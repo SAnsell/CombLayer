@@ -360,9 +360,7 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FixedRotate","createUnitVector(length)");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  ELog::EM<<"Org["<<keyName<<"] == "<<Origin;
   applyOffset();
-  ELog::EM<<" == "<<Origin<<ELog::endDiag;
     
   Origin+=Y*(length/2.0);
   return;

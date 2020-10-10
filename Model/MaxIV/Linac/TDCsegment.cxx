@@ -265,10 +265,10 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   FixedComp::setConnect(6,BPoint.getLinkPt(0),
 			    BPoint.getLinkAxis(0));
 
-  ELog::EM<<"Link["<<keyName<<"] = "<<this->getLinkPt(1)
-	  <<" Dir = "<<this->getLinkAxis(-1)<<ELog::endDiag;
-  ELog::EM<<"Beam["<<keyName<<"] = "<<this->getLinkPt(7)
-	  <<" Dir = "<<this->getLinkAxis(7)<<ELog::endDiag;
+  // ELog::EM<<"Link["<<keyName<<"] = "<<this->getLinkPt(1)
+  // 	  <<" Dir = "<<this->getLinkAxis(-1)<<ELog::endDiag;
+  // ELog::EM<<"Beam["<<keyName<<"] = "<<this->getLinkPt(7)
+  // 	  <<" Dir = "<<this->getLinkAxis(7)<<ELog::endDiag;
 
   return;
   

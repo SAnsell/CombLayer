@@ -156,9 +156,9 @@ LINACmagnetVariables(FuncDataBase& Control)
   // SEGMENT 3
   MagnetGenerator MUdipole;
   MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(-1.7, 0.0, 0.0, 0.0);
+  MUdipole.setField(-1.7/2.0, 0.0, 0.0, 0.0);
   MUdipole.generate(Control,"Seg3DipoleA","L2SPF3DipoleA","0",0.0);
-  MUdipole.setField(1.7, 0.0, 0.0, 0.0);
+  MUdipole.setField(1.7/2.0, 0.0, 0.0, 0.0);
   MUdipole.generate(Control,"Seg3DipoleB","L2SPF3DipoleB","0",0.0);
 
   // SEGMENT 4
@@ -170,10 +170,10 @@ LINACmagnetVariables(FuncDataBase& Control)
 
   // SEGMENT 5
   MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(-1.7,0,0,0);
-  MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",0.0);
-  MUdipole.setField(1.7,0,0,0);
-  MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",0.0);
+  MUdipole.setField(0.6,0,0,0);
+  MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",-90.0);
+  MUdipole.setField(0.6,0,0,0);  // 0.56 : 0.7 
+  MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",-90.0);
 
   // SEGMENT 6
 

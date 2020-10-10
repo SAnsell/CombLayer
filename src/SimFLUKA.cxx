@@ -708,6 +708,7 @@ SimFLUKA::addMagnetObject
 {
   ELog::RegMethod RegA("SimFLUKA","addMagnetObject");
   addObject(MUnit);
+  MUnit->setIndex(MagItem.size());
   MagItem.emplace(MUnit->getKeyName(),MUnit);
   return;
 }

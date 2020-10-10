@@ -63,6 +63,7 @@ class magnetUnit :
   magnetUnit& operator=(const magnetUnit&);
   virtual ~magnetUnit();
 
+  void setIndex(const size_t I) { index=I; }
   void setExtent(const double,const double,const double);
   void addCell(const int);
   void setKFactor(const std::vector<double>&);

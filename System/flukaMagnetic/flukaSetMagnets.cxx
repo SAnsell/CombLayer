@@ -177,6 +177,8 @@ setDefMagnets(SimFLUKA& System)
 	    Control.EvalVar<std::string>(MagKey+"FixedComp");
 	  const std::string FClink=
 	    Control.EvalVar<std::string>(MagKey+"LinkPt");
+	  const double magYAngle=
+	    Control.EvalDefVar<double>(MagKey+"YAngle",0.0);
 
 	  // has object in model
 	  if (System.hasActiveObject(FCname))
@@ -195,6 +197,7 @@ setDefMagnets(SimFLUKA& System)
 	      std::shared_ptr<magnetUnit> magA=
 		std::make_shared<magnetUnit>(Item);
 	      magA->setKFactor(kFactor);
+	      magA->setRotation(0,magYAngle,0);
 	      magA->createAll(System,*FC,FClink);
 	      System.addMagnetObject(magA);
 
