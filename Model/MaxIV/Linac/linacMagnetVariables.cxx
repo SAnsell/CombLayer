@@ -170,34 +170,34 @@ LINACmagnetVariables(FuncDataBase& Control)
 
   // SEGMENT 5
   MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(0.6,0,0,0);
+  MUdipole.setField(0.675,0,0,0);
   MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",-90.0);
-  MUdipole.setField(0.6,0,0,0);  // 0.56 : 0.7 
+  MUdipole.setField(0.675,0,0,0);  // 0.66 : 0.8
   MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",-90.0);
 
   // SEGMENT 6
 
-  // SEGMENT 7
+  // // SEGMENT 7
   MUdipole.generateCorMag(Control,7,"CMagHorA",0.0);
-  MUdipole.generateQuad(Control,7,"QuadA",0.0,0.65);
+  MUdipole.generateQuad(Control,7,"QuadA",0.0,0.0);
   MUdipole.generateCorMag(Control,7,"CMagVertA",0.0);
 
-  // SEGMENT 9
+  // // SEGMENT 9
   MUdipole.generateCorMag(Control,9,"CMagVertA",0.0);
-  MUdipole.generateCorMag(Control,9,"CMagHorA",0.0);
-  MUdipole.generateQuad(Control,9,"QuadA",0.0,0.65);
+  MUdipole.generateCorMag(Control,9,"CMagHorA",90.0,0.00);
+  MUdipole.generateQuad(Control,9,"QuadA",0.0,0.0);
 
   // SEGMENT 10
-  MUdipole.generateQuad(Control,10,"QuadA",0.0,0.65);
-  MUdipole.generateCorMag(Control,10,"CMagVertA",0.0);
+  MUdipole.generateQuad(Control,10,"QuadA",0.0,0.0);
+  MUdipole.generateCorMag(Control,10,"CMagVertA",90.0,0.0);
 
   // SEGMENT 11
-  MUdipole.generateQuad(Control,11,"QuadA",0.0,0.65);
-  MUdipole.generateCorMag(Control,11,"CMagHorA",0.0);
+  MUdipole.generateQuad(Control,11,"QuadA",0.0,0.0);
+  MUdipole.generateCorMag(Control,11,"CMagHorA",90.0,0.05);
 
   // SEGMENT 12
-  MUdipole.generateDipole(Control,12,"DipoleA",0.0,1.7);
-  MUdipole.generateDipole(Control,12,"DipoleB",0.0,1.7);
+  MUdipole.generateDipole(Control,12,"DipoleA",0.0,0.65);
+  MUdipole.generateDipole(Control,12,"DipoleB",0.0,0.65);
 
   // SEGMENT 13
   MUdipole.generateCorMag(Control,13,"CMagHorA",0.0);

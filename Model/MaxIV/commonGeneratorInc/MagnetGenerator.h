@@ -66,7 +66,8 @@ class MagnetGenerator
 		const double) const;
 
   void generateCorMag(FuncDataBase&,const size_t,
-		      const std::string&,const double);
+		      const std::string&,const double,
+		      const double = 0.0);
 
   void generateDipole(FuncDataBase&,const size_t,
 		      const std::string&,

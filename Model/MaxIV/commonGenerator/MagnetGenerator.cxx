@@ -103,7 +103,8 @@ void
 MagnetGenerator::generateCorMag(FuncDataBase& Control,
 				const size_t segNumber,
 				const std::string& fcUnit,
-				const double yAngle)
+				const double yAngle,
+				const double QField) 
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -115,7 +116,7 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
   ELog::RegMethod RegA("MagnetGenerator","generateCorMag");
   
   setSize(12.0,2.5,2.5);
-  setField(0.0,0.0,0.0,0.0);
+  setField(QField,0.0,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
 	   preName+std::to_string(segNumber)+fcUnit,

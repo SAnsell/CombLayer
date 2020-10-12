@@ -113,13 +113,13 @@ Segment5Magnet(FuncDataBase& Control,
   
 
   setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),
-	  angleDipole,0.5);
+	  angleDipole,0.0);
 
   // this centers DipoleA at 40.895 [No_5_00.pdf]
   DIBGen.generate(Control,lKey+"DipoleA");
   Control.addVariable(lKey+"DipoleAYStep",-0.0091); 
 
-  BDGen.generateDivider(Control,lKey+"BeamA",angleDipole);
+  BDGen.generateDivider(Control,lKey+"BeamA",angleDipole+0.3);
   Control.addVariable(lKey+"BeamAExitLength", 15);
   Control.addVariable(lKey+"BeamAMainLength", 34.4);
   Control.addVariable(lKey+"BeamAXStep", 0.0);

@@ -40,6 +40,7 @@ class magnetUnit :
 {
  protected:
 
+  bool zeroField;         ///< If field currently zero
   size_t index;           ///< Order index for magnetic field
 
   double length;          ///< length of magnetic unit 
@@ -51,9 +52,6 @@ class magnetUnit :
   std::set<int> activeCells; 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
   
  public:
 

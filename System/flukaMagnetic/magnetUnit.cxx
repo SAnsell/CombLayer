@@ -67,7 +67,7 @@ namespace flukaSystem
 
 magnetUnit::magnetUnit(const std::string& Key) :
   attachSystem::FixedRotate(Key,0),
-  index(0),length(0.0),width(0.0),height(0.0)
+  zeroField(1),index(0),length(0.0),width(0.0),height(0.0)
   /*!
     Constructor (without index)
     \param Key :: Name of construction key
@@ -77,7 +77,7 @@ magnetUnit::magnetUnit(const std::string& Key) :
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
   attachSystem::FixedRotate(Key+std::to_string(I),0),
-  index(I),length(0.0),width(0.0),height(0.0)
+  zeroField(1),index(I),length(0.0),width(0.0),height(0.0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -87,8 +87,9 @@ magnetUnit::magnetUnit(const std::string& Key,
 
 magnetUnit::magnetUnit(const magnetUnit& A) : 
   attachSystem::FixedRotate(A),
-  index(A.index),length(A.length),width(A.width),
-  height(A.height),activeCells(A.activeCells)
+  zeroField(A.zeroField),index(A.index),
+  length(A.length),width(A.width),height(A.height),
+  KFactor(A.KFactor),activeCells(A.activeCells)
   /*!
     Copy constructor
     \param A :: magnetUnit to copy
@@ -106,10 +107,12 @@ magnetUnit::operator=(const magnetUnit& A)
   if (this!=&A)
     {
       attachSystem::FixedRotate::operator=(A);
+      zeroField=A.zeroField;
       index=A.index;
       length=A.length;
       width=A.width;
       height=A.height;
+      KFactor=A.KFactor;
       activeCells=A.activeCells;
     }
   return *this;
@@ -139,45 +142,13 @@ magnetUnit::populate(const FuncDataBase& Control)
   height=Control.EvalDefVar<double>(keyName+"Height",height);
   width=Control.EvalDefVar<double>(keyName+"Width",width);
 
+  double sum(0.0);
   for(size_t i=0;i<4;i++)
-    KFactor[i]=Control.EvalDefVar<double>(keyName+"KFactor",KFactor[i]);
-  return;
-}
-
-void
-magnetUnit::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note that it also set the view point that neutrons come from
-    \param FC :: FixedComp for origin
-    \param sideIndex :: direction for link
-  */
-{
-  ELog::RegMethod RegA("magnetUnit","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
-
-  return;
-}
-
-void
-magnetUnit::createUnitVector(const Geometry::Vec3D& OG,
-			     const Geometry::Vec3D& AY,
-			     const Geometry::Vec3D& AZ)
-  /*!
-    Create the unit vectors.
-    \param OG :: New origin
-    \param AY :: Y Axis
-    \param AZ :: Z Axis [reothorgalized]
-  */
-{
-  ELog::RegMethod RegA("magnetUnit","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(OG,AY,AZ);
-  applyOffset();  
-
+    {
+      KFactor[i]=Control.EvalDefVar<double>(keyName+"KFactor",KFactor[i]);
+      sum+=KFactor[i]*KFactor[i];
+    }
+  zeroField = (sum>Geometry::zeroTol) ? 0 : 1;
   return;
 }
 
@@ -230,6 +201,14 @@ magnetUnit::setKFactor(const std::vector<double>& KF)
     {
       KFactor[i]=KF[i];
     }
+
+  // second loop because KF can be short:
+  double sum(0.0);
+  for(size_t i=0;i<4;i++)
+    sum+=KFactor[i]*KFactor[i];
+
+  zeroField = (sum>Geometry::zeroTol) ? 0 : 1;
+
   return;
 }
 		   
@@ -277,9 +256,13 @@ magnetUnit::createAll(Simulation& System,
   magnetUnit::createUnitVector(OG,AY,AZ);
   setExtent(extent[0],extent[1],extent[2]);
 
+  double sum(0.0);
   for(size_t i=0;i<4;i++)
-    KFactor[i]=(kValue.size()>i) ? kValue[i] : 0.0;
-  
+    {
+      KFactor[i]=(kValue.size()>i) ? kValue[i] : 0.0;
+      sum+=KFactor[i]*KFactor[i];
+    }
+  zeroField = (sum>Geometry::zeroTol) ? 0 : 1;  
   return;
 }
   
@@ -300,8 +283,16 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("magnetUnit","writeFLUKA");
 
+
   const std::string magKey="Magn"+std::to_string(index);
   std::ostringstream cx;
+
+  if (zeroField)
+    {
+      OX<<"* Magnet: "<<keyName<<" ZERO Field"<<std::endl;
+      return;
+    }
+
   OX<<"* Magnet: "<<keyName<<std::endl;
   cx<<"USRICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<magKey;
 
