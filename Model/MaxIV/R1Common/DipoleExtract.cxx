@@ -122,7 +122,7 @@ DipoleExtract::populate(const FuncDataBase& Control)
   
   wideHeight=Control.EvalVar<double>(keyName+"WideHeight");
   wideWidth=Control.EvalVar<double>(keyName+"WideWidth");
-  exitLength=Control.EvalVar<double>(keyName+"ExitWidth");
+  exitLength=Control.EvalVar<double>(keyName+"ExitLength");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   edgeThick=Control.EvalVar<double>(keyName+"EdgeThick");
@@ -170,23 +170,23 @@ DipoleExtract::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+35,
 			   Origin-mainX-mainZ,
-			   Origin-wideX-wideZ,
 			   Origin-mainX-mainZ+Y,
+			   Origin-wideX-wideZ,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			   Origin-mainX+mainZ,
-			   Origin-mainX+wideZ,
 			   Origin-mainX+mainZ+Y,
+			   Origin-wideX+wideZ,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+45,
 			   Origin+mainX-mainZ,
-			   Origin+wideX-wideZ,
 			   Origin+mainX-mainZ+Y,
+			   Origin+wideX-wideZ,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,
 			   Origin+mainX+mainZ,
-			   Origin+mainX+wideZ,
 			   Origin+mainX+mainZ+Y,
+			   Origin+wideX+wideZ,
 			   Z);
 
   ModelSupport::buildPlane
@@ -216,18 +216,18 @@ DipoleExtract::createSurfaces()
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+136,
 			   Origin-mainX+wallZ,
-			   Origin-mainX+wWallZ,
 			   Origin-mainX+wallZ+Y,
+			   Origin-wideX+wWallZ,			   
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+145,
 			   Origin+mainX-wallZ,
-			   Origin+wideX-wWallZ,
 			   Origin+mainX-wallZ+Y,
+			   Origin+wideX-wWallZ,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+146,
-			   Origin+mainX+mainZ,
-			   Origin+mainX+mainZ,
-			   Origin+mainX+mainZ+Y,
+			   Origin+mainX+wallZ,
+			   Origin+mainX+wallZ+Y,
+			   Origin+wideX+wWallZ,
 			   Z);
 
   ModelSupport::buildPlane
@@ -261,12 +261,37 @@ DipoleExtract::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"13 -3 35 -36  ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
 
-
   Out=ModelSupport::getComposite(SMap,buildIndex,"-14 4 45 -46  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 35 -36  45 -46 5 -6");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"13 -14 -136 -146 -106 (36:6:46)");
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"13 -14 135 145 105 (-35:-5:-45)");
+  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63  -135 -115 105 ");
+  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 -145 -115 105");
+  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63 136 116 -106 ");
+  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 146 116 -106 ");
+  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"63 115 -116 -13 ");
+  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"14 -64 115 -116 ");
+  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"63 -64 105 -106");
+  addOuterUnionSurf(Out+fbStr);
 
 
   return;

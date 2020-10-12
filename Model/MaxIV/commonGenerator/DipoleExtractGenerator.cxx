@@ -97,6 +97,7 @@ DipoleExtractGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"WideWidth",wideWidth);
   Control.addVariable(keyName+"ExitLength",exitLength);
   Control.addVariable(keyName+"WallThick",wallThick);
+
   Control.addVariable(keyName+"EdgeThick",edgeThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);

@@ -267,7 +267,14 @@ MagnetBlock::buildInner(Simulation& System)
       dipoleChamber->createAll(System,*quadUnit,2);
       addOuterSurf("Dipole",dipoleChamber->getCC("Main"));
       addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
+
+      dipoleExtract->setCutSurf("front",*dipoleChamber,4);
+      ELog::EM<<"Dipole == "<<dipoleChamber->getLinkPt(4)<<ELog::endDiag;
+      ELog::EM<<"Dipole == "<<dipoleChamber->getLinkAxis(4)<<ELog::endDiag;
+      dipoleExtract->createAll(System,*dipoleChamber,4);
     }
+
+  
   return;
 }
 
@@ -284,6 +291,11 @@ MagnetBlock::insertInner(Simulation& System)
     {
       dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
       dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
+    }
+
+  if (CellMap::hasCell("OuterB"))
+    {
+      dipoleExtract->insertInCell(System,CellMap::getCell("OuterB"));
     }
 
   quadUnit->insertInCell("FlangeA",System,CellMap::getCell("Front"));

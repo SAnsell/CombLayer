@@ -51,6 +51,7 @@
 #include "CylGateValveGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
+#include "DipoleExtractGenerator.h"
 #include "PipeGenerator.h"
 #include "HeatDumpGenerator.h"
 #include "SplitPipeGenerator.h"
@@ -117,11 +118,13 @@ R1FrontEndVariables(FuncDataBase& Control,
   setVariable::MagnetBlockGenerator MBGen;
   MBGen.generateBlock(Control,frontKey+"MagnetBlock",0.0);
 
-
   PGen.generatePipe(Control,frontKey+"MagnetBlockQuadUnit",0.0);
 
   setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,frontKey+"MagnetBlockDipoleChamber",0.0);
+
+  setVariable::DipoleExtractGenerator DEGen;
+  DEGen.generatePipe(Control,frontKey+"MagnetBlockDipoleExtract",0.0);
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
