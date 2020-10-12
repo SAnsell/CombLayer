@@ -34,6 +34,7 @@ namespace xraySystem
 {
   class QuadUnit;
   class DipoleChamber;
+  class DipoleExtract;
   class VacuumPipe;
   
 /*!
@@ -75,6 +76,8 @@ class MagnetBlock :
 
   /// Dipole chamber
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+  /// Dipole extraction [no field]
+  std::shared_ptr<xraySystem::DipoleExtract> dipoleExtract;
 
   /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;

@@ -77,6 +77,7 @@
 #include "EPSeparator.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
+#include "DipoleExtract.h"
 #include "R3ChokeChamber.h"
 #include "PreDipole.h"
 #include "MagnetM1.h"
@@ -158,7 +159,7 @@ makeSingleItem::build(Simulation& System,
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
-      "DipoleChamber","EPSeparator","Quadrupole","TargetShield",
+      "DipoleChamber","DipoleExtract","EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
@@ -550,13 +551,24 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item=="")
+  if (item=="R3Chamber")
     {
       std::shared_ptr<xraySystem::R3ChokeChamber>
 	CChamber(new xraySystem::R3ChokeChamber("R3Chamber"));
       OR.addObject(CChamber);
       CChamber->addAllInsertCell(voidCell);
       CChamber->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="DipoleExtract")
+    {
+      std::shared_ptr<xraySystem::DipoleExtract>
+	DE(new xraySystem::DipoleExtract("DipoleExtract"));
+      OR.addObject(DE);
+      DE->addInsertCell(voidCell);
+      DE->createAll(System,World::masterOrigin(),0);
 
       return;
     }

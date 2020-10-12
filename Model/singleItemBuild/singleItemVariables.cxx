@@ -51,6 +51,7 @@
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
 #include "DipoleGenerator.h"
+#include "DipoleExtractGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
@@ -222,6 +223,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"DipoleChamber",0.0);
+
+  setVariable::DipoleExtractGenerator DEGen;
+  DEGen.generatePipe(Control,"DipoleExtract",0.0);
 
   setVariable::R3ChokeChamberGenerator CCGen;
   CCGen.generateChamber(Control,"R3Chamber");

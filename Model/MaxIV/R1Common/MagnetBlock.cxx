@@ -87,6 +87,7 @@
 #include "Quadrupole.h"
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
+#include "DipoleExtract.h"
 
 #include "MagnetBlock.h"
 
@@ -100,6 +101,7 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   attachSystem::CellMap(),
   quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
   dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber")),
+  dipoleExtract(new xraySystem::DipoleExtract(keyName+"DipoleExtract")),
   eCutDisk(new insertSystem::insertCylinder(keyName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertPlate(keyName+"ECutMagDisk")),
   eCutWallDisk(new insertSystem::insertPlate(keyName+"ECutWallDisk"))
