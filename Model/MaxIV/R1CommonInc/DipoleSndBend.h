@@ -48,16 +48,19 @@ class DipoleSndBend :
 {
  private:
 
-  double length;                ///< frame length
+  double arcAngle;             ///< full arc angle [deg]
 
-  double innerRadius;           ///< Radius of inner surf
-  double outerRadius;           ///< Radius of outer surf
-  double stripRadius;           ///< Radius of far outer surf
+  double curveRadius;          ///< Radius of centre line
+  double innerWidth;           ///< Radius of centre line
+  double outerWidth;           ///< Step to outer surf
+  double stripWidth;           ///< Radius of far outer surf
   
   double cornerWidth;           ///< inner/outer corner width
 
+  double boxXStep;             ///< Step of straight box (at front)
+  
   double height;                ///< Beam height
-  double outerHeight;                ///< Beam height
+  double outerHeight;           ///< Outer height
 
   double wallThick;             ///< Wall thickness
   
