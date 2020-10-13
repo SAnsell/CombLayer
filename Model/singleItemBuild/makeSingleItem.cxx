@@ -78,6 +78,7 @@
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "DipoleExtract.h"
+#include "DipoleSndBend.h"
 #include "R3ChokeChamber.h"
 #include "PreDipole.h"
 #include "MagnetM1.h"
@@ -159,7 +160,8 @@ makeSingleItem::build(Simulation& System,
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
-      "DipoleChamber","DipoleExtract","EPSeparator","Quadrupole","TargetShield",
+      "DipoleChamber","DipoleExtract","DipoleSndBend",
+      "EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
@@ -569,6 +571,16 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(DE);
       DE->addInsertCell(voidCell);
       DE->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="DipoleSndBend")
+    {
+      std::shared_ptr<xraySystem::DipoleSndBend>
+	DB(new xraySystem::DipoleSndBend("DipoleSndBend"));
+      OR.addObject(DB);
+      DB->addInsertCell(voidCell);
+      DB->createAll(System,World::masterOrigin(),0);
 
       return;
     }

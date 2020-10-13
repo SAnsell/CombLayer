@@ -61,6 +61,7 @@
 #include "EPCombineGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
+#include "DipoleSndBendGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
 #include "MagnetBlockGenerator.h"
@@ -226,6 +227,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::DipoleExtractGenerator DEGen;
   DEGen.generatePipe(Control,"DipoleExtract",0.0);
+
+  setVariable::DipoleSndBendGenerator DBGen;
+  DBGen.generatePipe(Control,"DipoleSndBend",0.0);
 
   setVariable::R3ChokeChamberGenerator CCGen;
   CCGen.generateChamber(Control,"R3Chamber");

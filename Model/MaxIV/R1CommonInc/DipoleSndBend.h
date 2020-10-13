@@ -51,13 +51,10 @@ class DipoleSndBend :
   double arcAngle;             ///< full arc angle [deg]
 
   double curveRadius;          ///< Radius of centre line
-  double innerWidth;           ///< Radius of centre line
-  double outerWidth;           ///< Step to outer surf
-  double stripWidth;           ///< Radius of far outer surf
-  
-  double cornerWidth;           ///< inner/outer corner width
-
-  double boxXStep;             ///< Step of straight box (at front)
+  double innerWidth;           ///< Distance for second code
+  double flatWidth;            ///< Step to outer surf
+  double wideWidth;            ///< Radius of far outer surf
+  double outerFlat;            ///< straight line from beam
   
   double height;                ///< Beam height
   double outerHeight;           ///< Outer height

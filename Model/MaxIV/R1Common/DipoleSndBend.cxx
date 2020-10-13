@@ -116,6 +116,20 @@ DipoleSndBend::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  arcAngle=Control.EvalVar<double>(keyName+"ArcAngle");
+  curveRadius=Control.EvalVar<double>(keyName+"CurveRadius");
+  innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
+  flatWidth=Control.EvalVar<double>(keyName+"FlatWidth");
+  wideWidth=Control.EvalVar<double>(keyName+"WideWidth");
+  outerFlat=Control.EvalVar<double>(keyName+"OuterFlat");
+  height=Control.EvalVar<double>(keyName+"Height");
+  outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+
   return;
 }
 
@@ -127,101 +141,55 @@ DipoleSndBend::createSurfaces()
 {
   ELog::RegMethod RegA("DipoleSndBend","createSurface");
 
+  const double coneAngle(M_PI/4.0);
+  
   if (!ExternalCut::isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-  if (!ExternalCut::isActive("back"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-      setCutSurf("back",-SMap.realSurf(buildIndex+2));
-    }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  const Geometry::Vec3D CylOrg(Origin+X*curveRadius);
+  const Geometry::Quaternion QYA
+    (Geometry::Quaternion::calcQRotDeg(arcAngle,-Z));
+  const Geometry::Vec3D PY=QYA.makeRotate(Y);
+  const Geometry::Vec3D endPoint
+    (CylOrg
+     -X*(curveRadius*cos(M_PI*arcAngle/180.0))
+     +Y*(curveRadius*sin(M_PI*arcAngle/180.0)));
+
+  ELog::EM<<" Y  == "<<Y<<" :: "<<PY<<ELog::endDiag;
+  ELog::EM<<" ORG  == "<<CylOrg<<" :: "<<endPoint<<ELog::endDiag;
+  
+  ModelSupport::buildPlane(SMap,buildIndex+2,endPoint,PY);  
+	       
+  // tip
+  ModelSupport::buildCylinder(SMap,buildIndex+7,CylOrg,Z,curveRadius);
+  // first cone end
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+17,CylOrg,Z,curveRadius+innerWidth);
+  // second cone start
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+27,CylOrg,Z,curveRadius+flatWidth);
+  // second cone end
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+37,CylOrg,Z,curveRadius+wideWidth);
+
+  // First cut:
+  const Geometry::Vec3D COrg =
+    Origin-X*
+    +Z*(height/2.0+curveRadius*cos(coneAngle));
+  
+
+  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin-X*outerFlat,X);
+    
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wideWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wideWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wideHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wideHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(outerHeight/2.0),Z);
 
-  const Geometry::Vec3D mainX(X*(width/2.0));
-  const Geometry::Vec3D mainZ(Z*(height/2.0));
-  const Geometry::Vec3D wideX(X*(wideWidth/2.0));
-  const Geometry::Vec3D wideZ(Z*(wideHeight/2.0));
-
-  ModelSupport::buildPlane(SMap,buildIndex+35,
-			   Origin-mainX-mainZ,
-			   Origin-mainX-mainZ+Y,
-			   Origin-wideX-wideZ,
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+36,
-			   Origin-mainX+mainZ,
-			   Origin-mainX+mainZ+Y,
-			   Origin-wideX+wideZ,
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+45,
-			   Origin+mainX-mainZ,
-			   Origin+mainX-mainZ+Y,
-			   Origin+wideX-wideZ,
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+46,
-			   Origin+mainX+mainZ,
-			   Origin+mainX+mainZ+Y,
-			   Origin+wideX+wideZ,
-			   Z);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+63,Origin-X*(exitLength+wideWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+64,Origin+X*(exitLength+wideWidth/2.0),X);
-
-  // WALLS:
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+105,Origin-Z*(wallThick+height/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+106,Origin+Z*(wallThick+height/2.0),Z);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+115,Origin-Z*(wallThick+wideHeight/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+116,Origin+Z*(wallThick+wideHeight/2.0),Z);
-
-  const Geometry::Vec3D wallZ(Z*(wallThick+height/2.0));
-  const Geometry::Vec3D wWallZ(Z*(wallThick+wideHeight/2.0));
-
-  ModelSupport::buildPlane(SMap,buildIndex+135,
-			   Origin-mainX-wallZ,
-			   Origin-wideX-wWallZ,
-			   Origin-mainX-wallZ+Y,
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+136,
-			   Origin-mainX+wallZ,
-			   Origin-mainX+wallZ+Y,
-			   Origin-wideX+wWallZ,			   
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+145,
-			   Origin+mainX-wallZ,
-			   Origin+mainX-wallZ+Y,
-			   Origin+wideX-wWallZ,
-			   Z);
-  ModelSupport::buildPlane(SMap,buildIndex+146,
-			   Origin+mainX+wallZ,
-			   Origin+mainX+wallZ+Y,
-			   Origin+wideX+wWallZ,
-			   Z);
-
-  ModelSupport::buildPlane
-    (SMap,buildIndex+163,Origin-X*(edgeThick+exitLength+wideWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+164,Origin+X*(edgeThick+exitLength+wideWidth/2.0),X);
-
-  
-			   
   return;
 }
 
@@ -235,48 +203,13 @@ DipoleSndBend::createObjects(Simulation& System)
   ELog::RegMethod RegA("DipoleSndBend","createObjects");
 
   std::string Out;
-  const std::string fbStr=getRuleStr("front")+
-    getRuleStr("back");
+  const std::string fStr=getRuleStr("front");
 
-  //
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -3 35 -36  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-14 4 45 -46  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);  
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"13 -14 -136 -146 -106 (36:6:46)");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"13 -14 135 145 105 (-35:-5:-45)");
-  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63  -135 -115 105 ");
-  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 -145 -115 105");
-  makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 7 4 5 -6 -2 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63 136 116 -106 ");
-  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 146 116 -106 ");
-  makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 115 -116 -13 ");
-  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"14 -64 115 -116 ");
-  makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 -64 105 -106");
-  addOuterUnionSurf(Out+fbStr);
+  addOuterUnionSurf(Out+fStr);
 
 
   return;
