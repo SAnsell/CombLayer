@@ -61,8 +61,8 @@ DipoleSndBendGenerator::DipoleSndBendGenerator() :
   arcAngle(40.0),curveRadius(379.77),
   innerWidth(3.6),flatWidth(14.0),
   wideWidth(16.5),outerFlat(24.0),
-  height(2.0),outerHeight(5.4),
-  wallThick(0.2),
+  tipHeight(0.4),height(2.0),
+  outerHeight(5.4),wallThick(0.2),
   voidMat("Void"),wallMat("Copper"),outerMat("Void")
   /*!
     Constructor and defaults
@@ -97,6 +97,9 @@ DipoleSndBendGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"FlatWidth",flatWidth);
   Control.addVariable(keyName+"WideWidth",wideWidth);
   Control.addVariable(keyName+"OuterFlat",outerFlat);
+
+
+  Control.addVariable(keyName+"TipHeight",tipHeight);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"OuterHeight",outerHeight);
   Control.addVariable(keyName+"WallThick",wallThick);

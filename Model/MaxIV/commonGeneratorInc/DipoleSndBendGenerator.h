@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/DipoleSndBendGenerator.h
+ * File:   commonGenertorInc/DipoleSndBendGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ class DipoleSndBendGenerator
   double wideWidth;            ///< Radius of far outer surf
   double outerFlat;            ///< straight line from beam
   
+  double tipHeight;            ///< tip height
   double height;               ///< Beam height
   double outerHeight;          ///< Outer height
 

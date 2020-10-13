@@ -56,6 +56,7 @@ class DipoleSndBend :
   double wideWidth;            ///< Radius of far outer surf
   double outerFlat;            ///< straight line from beam
   
+  double tipHeight;                ///< Beam height
   double height;                ///< Beam height
   double outerHeight;           ///< Outer height
 

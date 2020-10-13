@@ -117,11 +117,14 @@ DipoleSndBend::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   arcAngle=Control.EvalVar<double>(keyName+"ArcAngle");
+
   curveRadius=Control.EvalVar<double>(keyName+"CurveRadius");
+  
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
   flatWidth=Control.EvalVar<double>(keyName+"FlatWidth");
   wideWidth=Control.EvalVar<double>(keyName+"WideWidth");
   outerFlat=Control.EvalVar<double>(keyName+"OuterFlat");
+  tipHeight=Control.EvalVar<double>(keyName+"TipHeight");
   height=Control.EvalVar<double>(keyName+"Height");
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -165,21 +168,32 @@ DipoleSndBend::createSurfaces()
 	       
   // tip
   ModelSupport::buildCylinder(SMap,buildIndex+7,CylOrg,Z,curveRadius);
-  // first cone end
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+17,CylOrg,Z,curveRadius+innerWidth);
   // second cone start
   ModelSupport::buildCylinder
     (SMap,buildIndex+27,CylOrg,Z,curveRadius+flatWidth);
-  // second cone end
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+37,CylOrg,Z,curveRadius+wideWidth);
 
   // First cut:
-  const Geometry::Vec3D COrg =
-    Origin-X*
-    +Z*(height/2.0+curveRadius*cos(coneAngle));
+  const Geometry::Vec3D COrgTop =CylOrg
+    +Z*(tipHeight/2.0-curveRadius/tan(coneAngle));
+
+  const Geometry::Vec3D COrgBase =CylOrg
+    -Z*(tipHeight/2.0-curveRadius/tan(coneAngle));
+
+
+  ModelSupport::buildCone(SMap,buildIndex+85,COrgBase,Z,45.0);
+  ModelSupport::buildCone(SMap,buildIndex+86,COrgTop,Z,45.0);
+
+  // Second cut:
+  const double SR(flatWidth+curveRadius);
+
+  const Geometry::Vec3D SOrgTop = CylOrg
+    +Z*(height/2.0-SR*tan(coneAngle));
+
+  const Geometry::Vec3D SOrgBase = CylOrg
+    -Z*(height/2.0-SR/tan(coneAngle));
   
+  ModelSupport::buildCone(SMap,buildIndex+815,SOrgBase,Z,45.0);
+  ModelSupport::buildCone(SMap,buildIndex+816,SOrgTop,Z,45.0);
 
   
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin-X*outerFlat,X);
@@ -189,6 +203,47 @@ DipoleSndBend::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(outerHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(outerHeight/2.0),Z);
+
+
+  // WALLS
+  ModelSupport::buildPlane
+    (SMap,buildIndex+104,Origin-X*(outerFlat+wallThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+105,Origin-Z*(wallThick+height/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+106,Origin+Z*(wallThick+height/2.0),Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,Origin-Z*(wallThick+outerHeight/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,Origin+Z*(wallThick+outerHeight/2.0),Z);
+
+  // tip
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,CylOrg,Z,curveRadius-wallThick);
+
+ 
+  // First cut:
+  const double WRadius=curveRadius-wallThick;
+  const double SRadius(flatWidth+curveRadius-wallThick);
+  
+  const Geometry::Vec3D CWallTop =CylOrg
+    +Z*(tipHeight/2.0-WRadius/tan(coneAngle));
+
+  const Geometry::Vec3D CWallBase = CylOrg
+    -Z*(tipHeight/2.0-WRadius/tan(coneAngle));
+
+  const Geometry::Vec3D SWallTop =CylOrg
+    +Z*(height/2.0-SRadius/tan(coneAngle));
+
+  const Geometry::Vec3D SWallBase = CylOrg
+    -Z*(height/2.0-SRadius/tan(coneAngle));
+
+  ModelSupport::buildCone(SMap,buildIndex+185,CWallBase,Z,45.0);
+  ModelSupport::buildCone(SMap,buildIndex+186,CWallTop,Z,45.0);
+
+  ModelSupport::buildCone(SMap,buildIndex+1815,SWallBase+X*wallThick,Z,45.0);
+  ModelSupport::buildCone(SMap,buildIndex+1816,SWallTop+X*wallThick,Z,45.0);
 
   return;
 }
@@ -206,9 +261,22 @@ DipoleSndBend::createObjects(Simulation& System)
   const std::string fStr=getRuleStr("front");
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 7 4 5 -6 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"85 86  -27 7  5 -6 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
-  
+  addOuterUnionSurf(Out+fStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 815 816  27 4 15 -16 -2 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
+  addOuterUnionSurf(Out+fStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 105 -106 186 185 -27 107 (-85:-86:-7:-5:6) -2");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr);
+  addOuterUnionSurf(Out+fStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1815 1816 115 -116 (-815 : -816 :-15 :16) 4 27 -2 ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr);
   addOuterUnionSurf(Out+fStr);
 
 
