@@ -88,6 +88,7 @@
 #include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "DipoleExtract.h"
+#include "DipoleSndBend.h"
 
 #include "MagnetBlock.h"
 
@@ -102,6 +103,8 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   quadUnit(new xraySystem::QuadUnit(keyName+"QuadUnit")),
   dipoleChamber(new xraySystem::DipoleChamber(keyName+"DipoleChamber")),
   dipoleExtract(new xraySystem::DipoleExtract(keyName+"DipoleExtract")),
+  dipoleSndBend(new xraySystem::DipoleSndBend(keyName+"DipoleSndBend")),
+  dipoleOut(new xraySystem::DipoleExtract(keyName+"DipoleOut")),
   eCutDisk(new insertSystem::insertCylinder(keyName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertPlate(keyName+"ECutMagDisk")),
   eCutWallDisk(new insertSystem::insertPlate(keyName+"ECutWallDisk"))
@@ -220,6 +223,10 @@ MagnetBlock::createObjects(Simulation& System)
   std::string Out;
 
   const HeadRule& aSegment=quadUnit->getFullRule(2);
+  const HeadRule& bSegment=dipoleChamber->getFullRule(4);
+  const HeadRule& cSegment=dipoleExtract->getFullRule(2);
+  const HeadRule& dSegment=dipoleSndBend->getFullRule(2);
+  const HeadRule& exitSeg=dipoleOut->getFullRule(-2);
 
   // Construct the outer sectoin [divide later]
   Out=ModelSupport::getComposite
@@ -238,12 +245,29 @@ MagnetBlock::createObjects(Simulation& System)
       return;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 23 33 43 -4 5 -6 ");
-  makeCell("OuterB",System,cellIndex++,outerMat,0.0,Out+aSegment.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 23  -4 5 -6 ");
+  makeCell("OuterB",System,cellIndex++,outerMat,0.0,
+	   Out+aSegment.display()+bSegment.complement().display());
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 33 43 -4 5 -6 ");
+  makeCell("OuterC",System,cellIndex++,outerMat,0.0,
+	   Out+bSegment.display()+cSegment.complement().display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 -4 5 -6 ");
+  makeCell("OuterD",System,cellIndex++,outerMat,0.0,
+	   Out+cSegment.display()+dSegment.complement().display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 43 -4 5 -6 ");
+  makeCell("OuterE",System,cellIndex++,outerMat,0.0,
+	   Out+dSegment.display());
+
+  // Construct the outer sectoin [divide later]
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 43 -4 5 -6 ");
+  makeCell("Back",System,cellIndex++,0,0.0,Out+exitSeg.display());
+  
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -12 3 13 23 33 43 -4 5 -6 ");
-  addOuterSurf("Magnet",Out);
+    (SMap,buildIndex," 1 3 13 23 33 43 -4 5 -6 ");
+  addOuterSurf("Magnet",Out+exitSeg.display());
 
   return;
 }
@@ -269,9 +293,14 @@ MagnetBlock::buildInner(Simulation& System)
       addOuterSurf("Photon",dipoleChamber->getCC("Exit"));
 
       dipoleExtract->setCutSurf("front",*dipoleChamber,4);
-      ELog::EM<<"Dipole == "<<dipoleChamber->getLinkPt(4)<<ELog::endDiag;
-      ELog::EM<<"Dipole == "<<dipoleChamber->getLinkAxis(4)<<ELog::endDiag;
       dipoleExtract->createAll(System,*dipoleChamber,4);
+
+      dipoleSndBend->setCutSurf("front",*dipoleExtract,2);
+      dipoleSndBend->setCutSurf("side",SMap.realSurf(buildIndex+33));
+      dipoleSndBend->createAll(System,*dipoleExtract,2);
+
+      dipoleOut->setCutSurf("front",*dipoleSndBend,2);
+      dipoleOut->createAll(System,*dipoleSndBend,2);
     }
 
   
@@ -290,12 +319,12 @@ MagnetBlock::insertInner(Simulation& System)
   if (CellMap::hasCell("OuterB"))
     {
       dipoleChamber->insertInCell("Main",System,CellMap::getCell("OuterB"));
-      dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterB"));
-    }
-
-  if (CellMap::hasCell("OuterB"))
-    {
-      dipoleExtract->insertInCell(System,CellMap::getCell("OuterB"));
+      dipoleChamber->insertInCell("Exit",System,CellMap::getCell("OuterC"));
+      dipoleExtract->insertInCell(System,CellMap::getCell("OuterC"));
+      dipoleSndBend->insertInCell("Beam",System,CellMap::getCell("OuterD"));
+      dipoleSndBend->insertInCell("Extra",System,CellMap::getCell("OuterD"));
+      dipoleOut->insertInCell(System,CellMap::getCell("OuterE"));
+      dipoleOut->insertInCell(System,CellMap::getCell("Back"));
     }
 
   quadUnit->insertInCell("FlangeA",System,CellMap::getCell("Front"));
@@ -378,10 +407,11 @@ MagnetBlock::createAll(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  
-  buildInner(System);
 
   createSurfaces();
+  buildInner(System);
+
+
   createObjects(System);
   createLinks();
 

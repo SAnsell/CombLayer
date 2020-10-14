@@ -88,7 +88,7 @@ namespace xraySystem
 
 DipoleSndBend::DipoleSndBend(const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Beam","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -118,11 +118,8 @@ DipoleSndBend::populate(const FuncDataBase& Control)
 
   arcAngle=Control.EvalVar<double>(keyName+"ArcAngle");
 
-  curveRadius=Control.EvalVar<double>(keyName+"CurveRadius");
-  
-  innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
+  curveRadius=Control.EvalVar<double>(keyName+"CurveRadius");  
   flatWidth=Control.EvalVar<double>(keyName+"FlatWidth");
-  wideWidth=Control.EvalVar<double>(keyName+"WideWidth");
   outerFlat=Control.EvalVar<double>(keyName+"OuterFlat");
   tipHeight=Control.EvalVar<double>(keyName+"TipHeight");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -161,8 +158,6 @@ DipoleSndBend::createSurfaces()
      -X*(curveRadius*cos(M_PI*arcAngle/180.0))
      +Y*(curveRadius*sin(M_PI*arcAngle/180.0)));
 
-  ELog::EM<<" Y  == "<<Y<<" :: "<<PY<<ELog::endDiag;
-  ELog::EM<<" ORG  == "<<CylOrg<<" :: "<<endPoint<<ELog::endDiag;
   
   ModelSupport::buildPlane(SMap,buildIndex+2,endPoint,PY);  
 	       
@@ -259,26 +254,53 @@ DipoleSndBend::createObjects(Simulation& System)
 
   std::string Out;
   const std::string fStr=getRuleStr("front");
-
+  const std::string side=getRuleStr("side");
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"85 86  -27 7  5 -6 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
-  addOuterUnionSurf(Out+fStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 815 816  27 4 15 -16 -2 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
-  addOuterUnionSurf(Out+fStr);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr+side);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 105 -106 186 185 -27 107 (-85:-86:-7:-5:6) -2");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr);
-  addOuterUnionSurf(Out+fStr);
+
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1815 1816 115 -116 (-815 : -816 :-15 :16) 4 27 -2 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr);
-  addOuterUnionSurf(Out+fStr);
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+fStr+side);
 
+
+  // Outer Volumes
+  // note extra divider that is need for cone
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 107 -185 105 -106 -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+
+
+  // Outer Volumes
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 107 -186 105 -106 -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 27 115 -116 -1816  -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 27 115 -116 -1815  -2");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
+
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -27 107 105 -106 -2");
+  addOuterSurf("Beam",Out+fStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 115 -116 4 27 -2 ");
+  addOuterSurf("Extra",Out+fStr);
 
   return;
 }
@@ -291,7 +313,20 @@ DipoleSndBend::createLinks()
 {
   ELog::RegMethod RegA("DipoleSndBend","createLinks");
   ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+
+  const Geometry::Quaternion QYA
+    (Geometry::Quaternion::calcQRotDeg(arcAngle,-Z));
+  const Geometry::Vec3D PY=QYA.makeRotate(Y);
+  // Beam is a set distance from Origin (xstep)
+  //  xStep+
+  const Geometry::Vec3D endPoint
+    (Origin
+     +X*(-xStep+curveRadius*(1.0-cos(M_PI*arcAngle/180.0)))
+     +Y*(curveRadius*sin(M_PI*arcAngle/180.0)));
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  FixedComp::setConnect(1,endPoint,PY);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  
   return;
 }
 

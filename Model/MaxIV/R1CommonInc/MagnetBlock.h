@@ -35,6 +35,7 @@ namespace xraySystem
   class QuadUnit;
   class DipoleChamber;
   class DipoleExtract;
+  class DipoleSndBend;
   class VacuumPipe;
   
 /*!
@@ -78,6 +79,10 @@ class MagnetBlock :
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// Dipole extraction [no field]
   std::shared_ptr<xraySystem::DipoleExtract> dipoleExtract;
+  /// Dipole bend 2
+  std::shared_ptr<xraySystem::DipoleSndBend> dipoleSndBend;
+  /// Dipole extraction [no field]
+  std::shared_ptr<xraySystem::DipoleExtract> dipoleOut;
 
   /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;

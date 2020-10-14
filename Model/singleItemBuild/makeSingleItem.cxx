@@ -579,7 +579,7 @@ makeSingleItem::build(Simulation& System,
       std::shared_ptr<xraySystem::DipoleSndBend>
 	DB(new xraySystem::DipoleSndBend("DipoleSndBend"));
       OR.addObject(DB);
-      DB->addInsertCell(voidCell);
+      DB->addAllInsertCell(voidCell);
       DB->createAll(System,World::masterOrigin(),0);
 
       return;

@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 DipoleExtractGenerator::DipoleExtractGenerator() :
-  length(82.5),width(2.5),
+  length(118.5),width(2.5),
   height(2.7),wideHeight(0.51),
   wideWidth(5.5),exitLength(0.44),
   wallThick(0.1),edgeThick(1.4),

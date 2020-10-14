@@ -42,9 +42,7 @@ class DipoleSndBendGenerator
   double arcAngle;             ///< full arc angle [deg]
 
   double curveRadius;          ///< Radius of centre line
-  double innerWidth;           ///< Radius of centre line
   double flatWidth;            ///< Step to outer surf
-  double wideWidth;            ///< Radius of far outer surf
   double outerFlat;            ///< straight line from beam
   
   double tipHeight;            ///< tip height

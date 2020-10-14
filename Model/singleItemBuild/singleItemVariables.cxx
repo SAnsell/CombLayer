@@ -314,9 +314,18 @@ SingleItemVariables(FuncDataBase& Control)
   //  setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"M1DipoleChamber",0.0);
 
-  //  corrector mag
+  DEGen.generatePipe(Control,"M1DipoleExtract",0.0);
+
+  DBGen.generatePipe(Control,"M1DipoleSndBend",2.8);
+
+  DEGen.setLength(82.0);
+  DEGen.generatePipe(Control,"M1DipoleOut",0.0);
+
+  // corrector mag
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,"CM",0.0,0); // last argument is vertical/horizontal switch
+  // last argument is vertical/horizontal switch
+  CMGen.generateMag(Control,"CM",0.0,0);
+
   setVariable::PipeGenerator PGen;
   PGen.setNoWindow();
   PGen.setCF<setVariable::CF40_22>();

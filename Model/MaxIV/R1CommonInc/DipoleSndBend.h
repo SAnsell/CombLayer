@@ -41,7 +41,7 @@ namespace xraySystem
 
 class DipoleSndBend :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -51,9 +51,7 @@ class DipoleSndBend :
   double arcAngle;             ///< full arc angle [deg]
 
   double curveRadius;          ///< Radius of centre line
-  double innerWidth;           ///< Distance for second code
   double flatWidth;            ///< Step to outer surf
-  double wideWidth;            ///< Radius of far outer surf
   double outerFlat;            ///< straight line from beam
   
   double tipHeight;                ///< Beam height

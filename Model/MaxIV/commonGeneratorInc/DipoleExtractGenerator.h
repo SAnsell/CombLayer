@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/DipoleExtractGenerator.h
+ * File:   commonGeneratorInc/DipoleExtractGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,9 @@ class DipoleExtractGenerator
   DipoleExtractGenerator(const DipoleExtractGenerator&);
   DipoleExtractGenerator& operator=(const DipoleExtractGenerator&);
   virtual ~DipoleExtractGenerator();
-  
+
+  /// accessor to length
+  void setLength(const double D) { length=D; }
   
   virtual void generatePipe(FuncDataBase&,const std::string&,
 			    const double) const;

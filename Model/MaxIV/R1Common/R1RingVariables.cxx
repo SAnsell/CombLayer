@@ -52,6 +52,7 @@
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "DipoleExtractGenerator.h"
+#include "DipoleSndBendGenerator.h"
 #include "PipeGenerator.h"
 #include "HeatDumpGenerator.h"
 #include "SplitPipeGenerator.h"
@@ -125,6 +126,12 @@ R1FrontEndVariables(FuncDataBase& Control,
 
   setVariable::DipoleExtractGenerator DEGen;
   DEGen.generatePipe(Control,frontKey+"MagnetBlockDipoleExtract",0.0);
+
+  DEGen.setLength(82.0);
+  DEGen.generatePipe(Control,frontKey+"MagnetBlockDipoleOut",0.0);
+
+  setVariable::DipoleSndBendGenerator DBGen;
+  DBGen.generatePipe(Control,frontKey+"MagnetBlockDipoleSndBend",2.8);
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();

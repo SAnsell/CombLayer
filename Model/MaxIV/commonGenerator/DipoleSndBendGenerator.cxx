@@ -58,9 +58,8 @@ namespace setVariable
 {
 
 DipoleSndBendGenerator::DipoleSndBendGenerator() :
-  arcAngle(40.0),curveRadius(379.77),
-  innerWidth(3.6),flatWidth(14.0),
-  wideWidth(16.5),outerFlat(24.0),
+  arcAngle(15.0),curveRadius(379.77),
+  flatWidth(6.3),outerFlat(9.32),
   tipHeight(0.4),height(2.0),
   outerHeight(5.4),wallThick(0.2),
   voidMat("Void"),wallMat("Copper"),outerMat("Void")
@@ -77,25 +76,23 @@ DipoleSndBendGenerator::~DipoleSndBendGenerator()
 
 void
 DipoleSndBendGenerator::generatePipe(FuncDataBase& Control,
-				 const std::string& keyName,
-				 const double yStep) const
+				     const std::string& keyName,
+				     const double xStep) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: Step along beam centre
+    \param xStep :: Step along beam centre
   */
 {
   ELog::RegMethod RegA("DipoleSndBendGenerator","generatePipe");
 
 
-  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"XStep",xStep);
 
   Control.addVariable(keyName+"ArcAngle",arcAngle);
   Control.addVariable(keyName+"CurveRadius",curveRadius);
-  Control.addVariable(keyName+"InnerWidth",innerWidth);
   Control.addVariable(keyName+"FlatWidth",flatWidth);
-  Control.addVariable(keyName+"WideWidth",wideWidth);
   Control.addVariable(keyName+"OuterFlat",outerFlat);
 
 
