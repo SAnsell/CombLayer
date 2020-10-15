@@ -304,6 +304,17 @@ Segment27::buildObjects(Simulation& System)
   outerCellC=IZLower->createUnit(System,*bellowBC,"back");
   CellMap::addCell("LowerFiller",outerCellC);
 
+
+  return;
+}
+
+void
+Segment27::buildFrontSpacer(Simulation& System)
+  /*!
+    Build the front spacer if needed
+   */
+{
+  ELog::RegMethod RegA("Segment27","buildFrontSpacer");
   
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
@@ -322,8 +333,7 @@ Segment27::buildObjects(Simulation& System)
       volume*=IZLower->getSurround();
       makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
     }
-
-  return;
+    return;
 }
 
 void
@@ -377,6 +387,7 @@ Segment27::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   buildObjects(System);
+  buildFrontSpacer(System);
   createLinks();
   return;
 }

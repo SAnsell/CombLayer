@@ -85,6 +85,7 @@ class Segment27 :
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 
   void buildObjects(Simulation&);
+  void buildFrontSpacer(Simulation&);
   void createLinks();
 
   void createSplitInnerZone();

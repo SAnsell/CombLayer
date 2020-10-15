@@ -81,6 +81,7 @@ class Segment26 :
 
 
   void buildObjects(Simulation&);
+  void buildFrontSpacer(Simulation&);
   void createLinks();
 
   void createSplitInnerZone();

@@ -202,6 +202,10 @@ Segment26::createSplitInnerZone()
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
+  IZTop->setFront(pipeAA->getFullRule(-1));
+  IZMid->setFront(pipeBA->getFullRule(-1));
+  IZLower->setFront(pipeCA->getFullRule(-1));
+
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);
@@ -221,6 +225,13 @@ Segment26::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment26","buildObjects");
 
   int outerCellA,outerCellB,outerCellC;
+
+  if (joinItems.size()>=3)
+    {
+      pipeAA->setFront(joinItems[0].display());
+      pipeBA->setFront(joinItems[1].display());
+      pipeCA->setFront(joinItems[2].display());
+    }
 
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
@@ -316,6 +327,33 @@ Segment26::createLinks()
 }
 
 void
+Segment26::buildFrontSpacer(Simulation& System)
+  /*!
+    Build the front spacer if needed
+   */
+{
+  ELog::RegMethod RegA("Segment27","buildFrontSpacer");
+  
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
+    {
+      HeadRule volume=buildZone->getFront();
+      volume*=IZTop->getFront().complement();
+      volume*=IZTop->getSurround();
+      volume.addIntersection(SMap.realSurf(buildIndex+5015));
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZMid->getFront().complement();
+      volume*=IZMid->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZLower->getFront().complement();
+      volume*=IZLower->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+    }
+    return;
+}
+
+void
 Segment26::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
@@ -332,8 +370,8 @@ Segment26::createAll(Simulation& System,
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   buildObjects(System);
+  buildFrontSpacer(System);
   createLinks();
-  //  constructVoid(System,FC);
 
   return;
 }

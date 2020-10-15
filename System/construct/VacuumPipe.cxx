@@ -343,7 +343,6 @@ VacuumPipe::createSurfaces()
 
   if (!isActive("front"))
     {
-      ELog::EM<<"Not front :"<<keyName<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
