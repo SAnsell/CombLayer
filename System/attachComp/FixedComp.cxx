@@ -1172,7 +1172,7 @@ FixedComp::setUSLinkCopy(const size_t Index,
   if (sideIndex>=FC.LU.size())
     throw ColErr::IndexError<size_t>(sideIndex,FC.LU.size(),"FC/index");
   
-  LU[Index]=FC.LU[sideIndex];
+  LU[Index]=FC.LU[sideIndex];	
   return;
 }
 
@@ -1896,6 +1896,7 @@ FixedComp::getFullRule(const long int sideIndex) const
   HeadRule Out=(sideIndex>0) ? 
     LObj.getMainRule() :
     LObj.getMainRule().complement();
+
   Out.addIntersection(LObj.getCommonRule());
   return Out;
 }

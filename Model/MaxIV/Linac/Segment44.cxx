@@ -184,12 +184,10 @@ Segment44::createLinks()
   FixedComp::nameSideIndex(3,"magnetExit");
   FixedComp::nameSideIndex(4,"splitPoint");
 
-
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
-
-
+  
   return;
 }
 

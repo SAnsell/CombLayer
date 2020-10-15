@@ -3329,6 +3329,12 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcOuterRight",50.0);
   Control.addVariable("tdcOuterTop",100.0);
 
+  Control.addVariable("tdcShortXStep",-622.286+linacVar::zeroX);
+  Control.addVariable("tdcShortYStep",4226.013+linacVar::zeroY);
+  Control.addVariable("tdcShortOuterLeft",70.0);
+  Control.addVariable("tdcShortOuterRight",50.0);
+  Control.addVariable("tdcShortOuterTop",100.0);
+
   // segments 25-29
   Control.addVariable("spfMidXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfMidYStep",4226.013+linacVar::zeroY);

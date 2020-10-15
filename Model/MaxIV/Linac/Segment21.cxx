@@ -137,6 +137,9 @@ Segment21::buildObjects(Simulation& System)
 
   int outerCell;
 
+  if (isActive("front"))
+    bellowA->copyCutSurf("front",*this,"front");
+
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);

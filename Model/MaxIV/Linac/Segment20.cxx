@@ -113,6 +113,7 @@ Segment20::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
+
   outerCell=buildZone->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
 

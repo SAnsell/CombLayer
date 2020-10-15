@@ -243,9 +243,10 @@ Segment45::createLinks()
 
   setLinkSignedCopy(0,*ceramic,1);
   setLinkSignedCopy(1,*pipeB,2);
-
   nameSideIndex(1,"buildZoneCut");
   joinItems.push_back(FixedComp::getFullRule("back"));
+
+    
   return;
 }
 

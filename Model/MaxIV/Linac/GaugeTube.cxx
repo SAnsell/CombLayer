@@ -188,7 +188,7 @@ GaugeTube::createSurfaces()
 	Geometry::Quaternion::calcQRotDeg(-sideAngle,Y);
       sideX=QV.makeRotate(X);
     }
-  ELog::EM<<"X = "<<sideX<<ELog::endDiag;
+
   const Geometry::Vec3D sideOrg(Origin+Y*sideYStep);
   ModelSupport::buildPlane(SMap,buildIndex+100,sideOrg,sideX);
   

@@ -48,6 +48,7 @@ class InjectionHall :
   double linearRCutLength;       ///< Length to right out step
   double linearLTurnLength;      ///< Length to left angle out (inner)
   double spfAngleLength;         ///< Length to left off angle
+  double spfMidLength;           ///< Length to  mid of angle [calculted]
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
 

@@ -340,11 +340,16 @@ Segment46::postBuild(Simulation& System)
   ELog::RegMethod RegA("Segment46","postBuild");
 
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
+
   if (!sideVec.empty())
     {
       mapTYPE segNames;
       for(const TDCsegment* sidePtr : sideVec)
-	segNames.emplace(sidePtr->getKeyName(),sidePtr);
+	{
+	  segNames.emplace(sidePtr->getKeyName(),sidePtr);
+	  ELog::EM<<"FIND BOTH:"<<sidePtr->getKeyName()<<ELog::endDiag;
+	}
+
 
       if (segNames.find("SPF44")!=segNames.end() &&
 	  segNames.find("SPF45")==segNames.end())
@@ -358,6 +363,20 @@ Segment46::postBuild(Simulation& System)
 	  surHR.addIntersection(-SMap.realSurf(buildIndex+5005));
 	  surHR *= frontHR * backHR.complement();
 
+	  makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
+	}
+      if (segNames.find("SPF44")!=segNames.end() &&
+	  segNames.find("SPF45")!=segNames.end())
+	{
+	  
+	  mapTYPE::const_iterator mc=segNames.find("SPF45");
+	  const TDCsegment* sideSegment=mc->second;
+	  const HeadRule frontHR=IZThin->getBack();
+	  const HeadRule backHR=sideSegment->FixedComp::getFullRule("#back");
+	  HeadRule surHR=buildZone->getSurround();
+	  surHR.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
+	  surHR.addIntersection(SMap.realSurf(buildIndex+5005));
+	  surHR *= frontHR * backHR;
 	  makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
 	}
     }

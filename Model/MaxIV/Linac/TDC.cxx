@@ -322,6 +322,7 @@ TDC::buildInnerZone(Simulation& System,
       {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"tdcShort", {"TDCAngleMid","#TDCMid","SPFVoid","LongVoid"}},
       {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
@@ -480,7 +481,7 @@ TDC::createAll(Simulation& System,
       {"Segment19",{"tdc","Segment18",1}},
       {"Segment20",{"tdc","Segment19",1}},
       {"Segment21",{"tdc","Segment20",1}},
-      {"Segment22",{"tdc","Segment21",1}},
+      {"Segment22",{"tdcShort","Segment21",1}},
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
       {"Segment25",{"spfLong","Segment24",1}},
@@ -537,7 +538,7 @@ TDC::createAll(Simulation& System,
 	  const TDCsegment* prevSegPtr=
 	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
-
+	  
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,segPtr,bzName);
 

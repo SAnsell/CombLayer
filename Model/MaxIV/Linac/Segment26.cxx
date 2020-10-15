@@ -202,10 +202,12 @@ Segment26::createSplitInnerZone()
   HSurroundB.addIntersection(SMap.realSurf(buildIndex+5015));
   HSurroundC.addIntersection(-SMap.realSurf(buildIndex+5015));
 
-  IZTop->setFront(pipeAA->getFullRule(-1));
-  IZMid->setFront(pipeBA->getFullRule(-1));
-  IZLower->setFront(pipeCA->getFullRule(-1));
-
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
+    {
+      IZTop->setFront(pipeAA->getFullRule(-1));
+      IZMid->setFront(pipeBA->getFullRule(-1));
+      IZLower->setFront(pipeCA->getFullRule(-1));
+    }
 
   IZTop->setSurround(HSurroundA);
   IZMid->setSurround(HSurroundB);

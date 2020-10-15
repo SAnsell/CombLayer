@@ -151,7 +151,7 @@ LQuadH::createObjects(Simulation& System)
     \param System :: Simulation to create objects in
   */
 {
-    ELog::RegMethod RegA("LQuadF","createObjects");
+  ELog::RegMethod RegA("LQuadH","createObjects");
   const size_t NPole(4);
 
   std::string Out,unitStr;
@@ -229,7 +229,7 @@ LQuadH::createObjects(Simulation& System)
 	(SMap,501,504,bOffset,buildIndex,"501R -502R ");
       OutB=ModelSupport::getRangeComposite
 	(SMap,1001,1008,aOffset,buildIndex,"-1001R -1002R -1003R ");
-      ELog::EM<<"OUT  == "<<OutB<<ELog::endDiag;
+
       makeCell("Triangle",System,cellIndex++,0,0.0,
 	       OutA+OutB+FB+triCut.display()+
 	       CoilExclude[i].complement().display());
