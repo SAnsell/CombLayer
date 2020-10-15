@@ -94,7 +94,7 @@ R1FrontEndVariables(FuncDataBase& Control,
   
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
-  setVariable::QuadUnitGenerator PGen;
+  setVariable::QuadUnitGenerator QPGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator CGateGen;
   
@@ -119,19 +119,20 @@ R1FrontEndVariables(FuncDataBase& Control,
   setVariable::MagnetBlockGenerator MBGen;
   MBGen.generateBlock(Control,frontKey+"MagnetBlock",0.0);
 
-  PGen.generatePipe(Control,frontKey+"MagnetBlockQuadUnit",0.0);
+  QPGen.setLength(98.0);  //73.4
+  QPGen.generatePipe(Control,frontKey+"MagnetBlockQuadUnit",0.0);
 
   setVariable::DipoleChamberGenerator DCGen;  
-  DCGen.generatePipe(Control,frontKey+"MagnetBlockDipoleChamber",0.0);
+  DCGen.generatePipe(Control,frontKey+"MagnetBlockDipoleChamber",15.0);
 
   setVariable::DipoleExtractGenerator DEGen;
   DEGen.generatePipe(Control,frontKey+"MagnetBlockDipoleExtract",0.0);
 
-  DEGen.setLength(82.0);
+  DEGen.setLength(89.0);
   DEGen.generatePipe(Control,frontKey+"MagnetBlockDipoleOut",0.0);
 
   setVariable::DipoleSndBendGenerator DBGen;
-  DBGen.generatePipe(Control,frontKey+"MagnetBlockDipoleSndBend",2.8);
+  DBGen.generatePipe(Control,frontKey+"MagnetBlockDipoleSndBend",2.8,15.0);
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();

@@ -131,8 +131,8 @@ maxpeemFrontEnd::buildUndulator(Simulation& System,
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildUndulator");
 
-    int outerCell;
-    undulatorPipe->createAll(System,preFC,preSideIndex);
+  int outerCell;
+  undulatorPipe->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);

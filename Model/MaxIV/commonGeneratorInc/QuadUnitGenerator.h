@@ -70,7 +70,7 @@ class QuadUnitGenerator
   QuadUnitGenerator& operator=(const QuadUnitGenerator&);
   virtual ~QuadUnitGenerator();
   
-  
+  void setLength(const double L) { length=L; }
   virtual void generatePipe(FuncDataBase&,const std::string&,
 			    const double) const;
 

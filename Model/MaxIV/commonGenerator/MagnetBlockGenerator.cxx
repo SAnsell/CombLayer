@@ -57,8 +57,9 @@ namespace setVariable
 {
 
 MagnetBlockGenerator::MagnetBlockGenerator() :
-  blockYStep(4.0),aLength(50.2),bLength(125.3),
-  midLength(116.0),sectorAngle(33.0),
+  blockXStep(-2.0),blockYStep(4.0),
+  aLength(50.2),bLength(125.3),
+  midLength(116.0),sectorAngle(30.0),
   height(70.0),width(34.0),
   voidMat("Void"),outerMat("Stainless304")
   /*!
@@ -89,6 +90,7 @@ MagnetBlockGenerator::generateBlock(FuncDataBase& Control,
 
   Control.addVariable(keyName+"YStep",yStep);
   
+  Control.addVariable(keyName+"BlockXStep",blockXStep);
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"ALength",aLength);
   Control.addVariable(keyName+"BLength",bLength);

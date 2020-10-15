@@ -253,9 +253,10 @@ R1FrontEnd::createSurfaces()
       buildZone.setSurround(HR);
     }
 
+  ELog::EM<<"Front == "<<ELog::endDiag;
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*150.0,Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
   return;

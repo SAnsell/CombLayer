@@ -59,6 +59,7 @@ class MagnetBlock :
 
   std::string stopPoint;        ///< Stop point (option -> Quadrupole")
   
+  double blockXStep;            ///< Step across of main block
   double blockYStep;            ///< Step forward of main block
   double aLength;               ///< first length  (x2)
   double bLength;               ///< second length (x2)

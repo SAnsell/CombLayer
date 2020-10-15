@@ -345,11 +345,7 @@ Segment46::postBuild(Simulation& System)
     {
       mapTYPE segNames;
       for(const TDCsegment* sidePtr : sideVec)
-	{
-	  segNames.emplace(sidePtr->getKeyName(),sidePtr);
-	  ELog::EM<<"FIND BOTH:"<<sidePtr->getKeyName()<<ELog::endDiag;
-	}
-
+	segNames.emplace(sidePtr->getKeyName(),sidePtr);
 
       if (segNames.find("SPF44")!=segNames.end() &&
 	  segNames.find("SPF45")==segNames.end())
@@ -377,7 +373,7 @@ Segment46::postBuild(Simulation& System)
 	  surHR.removeOuterPlane(Origin+Y*10.0,-Z,0.9);
 	  surHR.addIntersection(SMap.realSurf(buildIndex+5005));
 	  surHR *= frontHR * backHR;
-	  makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
+	  makeCell("SpaceFiller",System,cellIndex++,0,0.0,surHR.display());
 	}
     }
   return;

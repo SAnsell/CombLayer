@@ -77,7 +77,8 @@ DipoleSndBendGenerator::~DipoleSndBendGenerator()
 void
 DipoleSndBendGenerator::generatePipe(FuncDataBase& Control,
 				     const std::string& keyName,
-				     const double xStep) const
+				     const double xStep,
+				     const double chamberAngle) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -87,10 +88,11 @@ DipoleSndBendGenerator::generatePipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DipoleSndBendGenerator","generatePipe");
 
-
+  const double CA((chamberAngle>1.0) ? chamberAngle : arcAngle);
+  
   Control.addVariable(keyName+"XStep",xStep);
 
-  Control.addVariable(keyName+"ArcAngle",arcAngle);
+  Control.addVariable(keyName+"ArcAngle",CA);
   Control.addVariable(keyName+"CurveRadius",curveRadius);
   Control.addVariable(keyName+"FlatWidth",flatWidth);
   Control.addVariable(keyName+"OuterFlat",outerFlat);

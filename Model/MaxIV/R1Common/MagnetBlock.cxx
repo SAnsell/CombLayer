@@ -145,6 +145,7 @@ MagnetBlock::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  blockXStep=Control.EvalVar<double>(keyName+"BlockXStep");
   blockYStep=Control.EvalVar<double>(keyName+"BlockYStep");
   aLength=Control.EvalVar<double>(keyName+"ALength");
   bLength=Control.EvalVar<double>(keyName+"BLength");
@@ -179,8 +180,8 @@ MagnetBlock::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*blockYStep,Y);
   ExternalCut::setCutSurf("frontBlock",SMap.realSurf(buildIndex+11));
   
-  Geometry::Vec3D POrg(Origin+Y*blockYStep-X*(frontWidth/2.0));
-  Geometry::Vec3D QOrg(Origin+Y*blockYStep+X*(frontWidth/2.0));
+  Geometry::Vec3D POrg(Origin+Y*blockYStep+X*(blockXStep-frontWidth/2.0));
+  Geometry::Vec3D QOrg(Origin+Y*blockYStep+X*(blockXStep+frontWidth/2.0));
 
   int index(buildIndex+3);
   Geometry::Vec3D PX(X);
@@ -249,11 +250,11 @@ MagnetBlock::createObjects(Simulation& System)
   makeCell("OuterB",System,cellIndex++,outerMat,0.0,
 	   Out+aSegment.display()+bSegment.complement().display());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 33 43 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 33 -4 5 -6 ");
   makeCell("OuterC",System,cellIndex++,outerMat,0.0,
 	   Out+bSegment.display()+cSegment.complement().display());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 33 43 -4 5 -6 ");
   makeCell("OuterD",System,cellIndex++,outerMat,0.0,
 	   Out+cSegment.display()+dSegment.complement().display());
 
@@ -295,8 +296,10 @@ MagnetBlock::buildInner(Simulation& System)
       dipoleExtract->setCutSurf("front",*dipoleChamber,4);
       dipoleExtract->createAll(System,*dipoleChamber,4);
 
+      HeadRule sideCut(SMap.realSurf(buildIndex+33));
+      sideCut.addIntersection(SMap.realSurf(buildIndex+43));
       dipoleSndBend->setCutSurf("front",*dipoleExtract,2);
-      dipoleSndBend->setCutSurf("side",SMap.realSurf(buildIndex+33));
+      dipoleSndBend->setCutSurf("side",sideCut);
       dipoleSndBend->createAll(System,*dipoleExtract,2);
 
       dipoleOut->setCutSurf("front",*dipoleSndBend,2);

@@ -64,7 +64,7 @@ class DipoleSndBendGenerator
   
   
   virtual void generatePipe(FuncDataBase&,const std::string&,
-			    const double) const;
+			    const double,const double=0.0) const;
 
 };
 

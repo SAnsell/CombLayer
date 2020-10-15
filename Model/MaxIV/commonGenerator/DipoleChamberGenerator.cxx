@@ -83,8 +83,8 @@ DipoleChamberGenerator::~DipoleChamberGenerator()
 
 void
 DipoleChamberGenerator::generatePipe(FuncDataBase& Control,
-				 const std::string& keyName,
-				 const double yStep) const
+				     const std::string& keyName,
+				     const double chamberAngle) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -94,13 +94,13 @@ DipoleChamberGenerator::generatePipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DipoleChamberGenerator","generatePipe");
 
-  Control.addVariable(keyName+"YStep",yStep);
+  const double CA((chamberAngle>1.0) ? chamberAngle : curveAngle);
   
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"RingWidth",ringWidth);
   Control.addVariable(keyName+"CurveRadius",curveRadius);
-  Control.addVariable(keyName+"CurveAngle",curveAngle);
+  Control.addVariable(keyName+"CurveAngle",CA);
   Control.addVariable(keyName+"Height",height);
   
   Control.addVariable(keyName+"ExitWidth",exitWidth);
