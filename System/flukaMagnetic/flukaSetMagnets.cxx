@@ -127,14 +127,26 @@ setMagneticExternal(SimFLUKA& System,
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
 
+	  // Additional angle flag:
+	  double magYAngle(0.0); 
+	  std::string angleFlag= IParam.getValueError<std::string>
+	    ("MagUnit",setIndex,index,"Angle/K Value");
+	  if (angleFlag=="angle" || angleFlag=="Angle")
+	    {
+	      index++;
+	      magYAngle=IParam.getValueError<double>
+		("MagUnit",setIndex,index++,"Angle rotation");
+	    }
+
 	  std::vector<double> KV(4);
 	  KV[0]=IParam.getValueError<double>
-	    ("MagUnit",setIndex,index,"K Value");
+	    ("MagUnit",setIndex,index++,"K Value");
 	  for(size_t i=1;i<4;i++)
-	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index);
+	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index++);
 
 	  std::shared_ptr<flukaSystem::magnetUnit>
 	    OPtr(new magnetUnit("MagUnit",setIndex));
+	  OPtr->setRotation(0,magYAngle,0);		  
 	  OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
 	  System.addMagnetObject(OPtr);
 	}

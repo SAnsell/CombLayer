@@ -429,7 +429,7 @@ R1Ring::createObjects(Simulation& System)
   makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
 
 
-  // Create inner voids
+  // Create divide inner voids
   std::ostringstream unitCX;
   int surfN=0;
   for(size_t i=0;i<concaveNPoints;i++)
