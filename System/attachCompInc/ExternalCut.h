@@ -31,12 +31,12 @@ namespace  ModelSupport
 namespace attachSystem
 {
 
+  
 struct cutUnit
 {
   HeadRule main;           ///<  cut
   HeadRule divider;        ///<  divider
 };
-  
   
 /*!
   \class ExternalCut
@@ -55,7 +55,6 @@ class ExternalCut
   /// typedef for map holder of rules
   typedef std::map<std::string,cutUnit> cutTYPE;
   cutTYPE cutItems;        ///< Set of external rules
-
 
   static void makeShiftedSurf(ModelSupport::surfRegister&,
 			      const HeadRule&,const int,
@@ -118,8 +117,12 @@ class ExternalCut
 			const Geometry::Vec3D&,
 			const double) const;
 
+  void write(std::ostream&) const;
 };
 
+std::ostream&
+operator<<(std::ostream&,const ExternalCut&);
+  
 }
 
 #endif

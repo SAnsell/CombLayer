@@ -64,6 +64,16 @@
 namespace attachSystem
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const ExternalCut& A)
+  /*!
+    Stream output
+   */
+{
+  A.write(OX);
+  return OX;
+}
+  
 ExternalCut::ExternalCut() 
   /*!
     Constructor [default]
@@ -550,5 +560,20 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   return;
 }
 
-  
+void
+ExternalCut::write(std::ostream& OX) const
+  /*!
+    Debug stream output
+    \param OX :: Output stream
+   */
+{
+  for(const auto& [name,CU] : cutItems)
+    {
+      OX<<"["<<name<<"]:Main == "<<CU.main<<"\n";
+      OX<<"["<<name<<"]:divider == "<<CU.divider<<"\n";
+      OX<<std::endl;
+    }
+  return;
+}
+
 }  // NAMESPACE attachSystem

@@ -97,7 +97,8 @@ class Rule
   virtual Rule* findKey(const int)  =0;           ///< Abstract key find    
   virtual int type() const { return 0; }          ///< Null rule    
   
-
+  /// Abstract: Does the object have surfaces
+  virtual bool isEmpty() const =0;
   /// Abstract: The point is within the object [exclude list]
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::set<int>&) const =0;           
@@ -178,7 +179,9 @@ class Intersection : public Rule
 
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
 
-     
+
+  virtual bool isEmpty() const;
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
@@ -238,6 +241,8 @@ class Union : public Rule
 
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
 
+  virtual bool isEmpty() const;
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
@@ -296,6 +301,9 @@ class SurfPoint : public Rule
   void setKeyN(const int);             ///< set keyNumber
   void setKey(const Geometry::Surface*);
 
+  /// alway not empty
+  virtual bool isEmpty() const { return 0; }
+  
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&) const;
@@ -363,6 +371,8 @@ class CompObj : public Rule
 
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
 
+  virtual bool isEmpty() const;
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
@@ -425,6 +435,10 @@ class CompGrp : public Rule
 
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
 
+
+  /// is empty
+  virtual bool isEmpty() const { return (A && !A->isEmpty()) ? 0 : 1; }
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
@@ -480,6 +494,9 @@ class BoolValue : public Rule
 
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
 
+  /// is empty [alway - no surface]
+  virtual bool isEmpty() const { return 1 ;}
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;
@@ -536,6 +553,9 @@ class ContGrp : public Rule
   /// Complementary status is true
   int isComplementary() const { return 1; }  
 
+  /// is empty 
+  virtual bool isEmpty() const { return (A && !A->isEmpty()) ? 0 : 1; }
+  
   virtual int pairValid(const int,const Geometry::Vec3D&) const;
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
@@ -596,6 +616,8 @@ class ContObj : public Rule
   void setObj(MonteCarlo::Object*);               ///< Set a Object state
   int pairValid(const int,const Geometry::Vec3D&) const;
 
+  virtual bool isEmpty() const;
+  
   virtual bool isValid(const Geometry::Vec3D&) const;
   virtual bool isDirectionValid(const Geometry::Vec3D&,const int) const;
   virtual bool isValid(const Geometry::Vec3D&,const int) const;

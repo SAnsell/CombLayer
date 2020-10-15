@@ -409,6 +409,18 @@ Intersection::displayAddress() const
 }
 
 bool
+Intersection::isEmpty() const
+  /*!
+    Calculates if valid surface
+    \return if A/B have a valid surface rule
+  */
+{
+  if ((A && !A->isEmpty()) ||
+      (B && !B->isEmpty())) return 0;
+  return 1;
+}
+
+bool
 Intersection::isValid(const Geometry::Vec3D& Vec) const
   /*!
     Calculates if Vec is within the object

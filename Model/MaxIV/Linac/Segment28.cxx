@@ -160,8 +160,8 @@ Segment28::createSplitInnerZone()
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
 
   IZTop->setFront(pipeAA->getFullRule(-1));
-  ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
-  ELog::EM<<"BIUKD = "<<buildZone->getFront()<<ELog::endDiag;
+  // ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
+  // ELog::EM<<"BIUKD = "<<buildZone->getFront()<<ELog::endDiag;
 
   IZFlat->setFront(pipeBA->getFullRule(-1));
 
@@ -183,19 +183,18 @@ Segment28::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment28","buildObjects");
   int outerCellA,outerCellB;
 
-
+  if (isActive("front"))
+    pipeAA->copyCutSurf("front",*this,"front");
+  
   if (firstItemVec.size()>=2)
     {
-      ELog::EM<<"Front active "<<ELog::endDiag;
-
-      pipeAA->setFront(*firstItemVec[0]);
-      pipeBA->setFront(*prevSegPtr,"backMid");
+      if (prevSegPtr && prevSegPtr->hasLinkSurf("backMid"))
+	pipeBA->setFront(*prevSegPtr,"backMid");
     }
 
-  
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
-  
+
   createSplitInnerZone();
   
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
@@ -221,7 +220,18 @@ Segment28::buildObjects(Simulation& System)
 
   outerCellA=IZTop->createUnit(System,*bellowBB,"back");
   CellMap::addCell("SpaceFiller",outerCellA);
-  
+
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
+    {
+      HeadRule volume=buildZone->getFront();
+      volume*=IZTop->getFront().complement();
+      volume*=IZTop->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZFlat->getFront().complement();
+      volume*=IZFlat->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+    }
   return;
 }
 
@@ -245,7 +255,6 @@ Segment28::createLinks()
   //    setLinkSignedCopy(1,*triPipeA,2);
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
-
 
   buildZone->setBack(FixedComp::getFullRule("backMid"));
   

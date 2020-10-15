@@ -85,7 +85,9 @@ class HeadRule
   void reset();
 
   /// Has a valid rule
-  bool hasRule() const { return (HeadNode) ? 1 : 0; } 
+  bool hasRule() const { return (HeadNode) ? 1 : 0; }
+  /// has valid filled rule [non-empty]
+  bool isEmpty() const;
   bool isComplementary() const;
   bool isUnion() const;
 

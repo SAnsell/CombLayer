@@ -1498,13 +1498,29 @@ FixedComp::hasLinkPt(const std::string& sideName) const
   /*!
     Accessor to the link point
     \param sideName :: named link point
-    \return True if link poni tset
+    \return True if link point set 
   */
 {
   ELog::RegMethod RegA("FixedComp","getLinkPt[str]:"+keyName);
 
+  if (!hasSideIndex(sideName)) return 0;
   const long int sideIndex=getSideIndex(sideName);
   return hasLinkPt(sideIndex);
+}
+
+bool
+FixedComp::hasLinkSurf(const std::string& sideName) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if full valid surface
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkPt[str]:"+keyName);
+
+  if (!hasSideIndex(sideName)) return 0;
+  const long int sideIndex=getSideIndex(sideName);
+  return hasLinkSurf(sideIndex);
 }
 
 bool
@@ -1526,6 +1542,28 @@ FixedComp::hasLinkPt(const long int sideIndex) const
 	return LU[linkIndex].hasConnectPt();
     }
   return 1;   // orgin always true
+}
+
+bool
+FixedComp::hasLinkSurf(const long int sideIndex) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if link poni tset
+  */
+{
+  ELog::RegMethod RegA("FixedComp","hasLinkSurf[LI]:"+keyName);
+
+  if (sideIndex)
+    {
+      const size_t linkIndex=
+	(sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+	static_cast<size_t>(-sideIndex-1) ;
+
+      const HeadRule& HR = LU[linkIndex].getMainRule();
+      if (HR.hasRule()) return 1;
+    }
+  return 0;
 }
 
 

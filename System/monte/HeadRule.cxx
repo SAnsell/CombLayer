@@ -692,6 +692,16 @@ HeadRule::populateSurf()
 }
 
 bool
+HeadRule::isEmpty() const
+  /*!
+    Is rule empty [i.e. without surfaces]
+    \return true/false on surfaces present
+  */
+{
+   return (HeadNode) ? HeadNode->isEmpty() : 0;
+}
+
+bool
 HeadRule::isUnion() const
   /*!
     Is a union object

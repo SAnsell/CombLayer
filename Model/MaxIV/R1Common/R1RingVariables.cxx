@@ -121,7 +121,7 @@ R1FrontEndVariables(FuncDataBase& Control,
 
   PGen.generatePipe(Control,frontKey+"MagnetBlockQuadUnit",0.0);
 
-  setVariable::DipoleChamberGenerator DCGen;
+  setVariable::DipoleChamberGenerator DCGen;  
   DCGen.generatePipe(Control,frontKey+"MagnetBlockDipoleChamber",0.0);
 
   setVariable::DipoleExtractGenerator DEGen;

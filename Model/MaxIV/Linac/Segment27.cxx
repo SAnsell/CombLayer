@@ -304,6 +304,25 @@ Segment27::buildObjects(Simulation& System)
   outerCellC=IZLower->createUnit(System,*bellowBC,"back");
   CellMap::addCell("LowerFiller",outerCellC);
 
+  
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
+    {
+
+      HeadRule volume=buildZone->getFront();
+      volume*=IZTop->getFront().complement();
+      volume*=IZTop->getSurround();
+      volume.addIntersection(SMap.realSurf(buildIndex+5015));
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZFlat->getFront().complement();
+      volume*=IZFlat->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZLower->getFront().complement();
+      volume*=IZLower->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+    }
+
   return;
 }
 
