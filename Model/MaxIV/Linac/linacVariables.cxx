@@ -2338,9 +2338,9 @@ Segment31(FuncDataBase& Control,
 
   // IonPumpA
 
-  setIonPump2Port(Control,lKey+"IonPumpA",90.0);
+  setIonPump2Port(Control,lKey+"IonPumpA",0.0);
 
-  setCylGateValve(Control,lKey+"Gate",-90.0,false);
+  setCylGateValve(Control,lKey+"Gate",0.0,false);
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
@@ -2529,7 +2529,7 @@ Segment35(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",41.65,1);
   CMGen.generateMag(Control,lKey+"CMagV",60.15,0);
 
-  setMirrorChamberBlank(Control, lKey+"MirrorChamber",180.0);
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
 
   PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",12.6);
@@ -2675,7 +2675,7 @@ Segment38(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",221.0); // No_38_00
 
 
-  setIonPump2Port(Control,lKey+"IonPump",180.0);
+  setIonPump2Port(Control,lKey+"IonPump",90.0);
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
@@ -3200,7 +3200,7 @@ Segment48(FuncDataBase& Control,
   // Pipe
 
   // Mirror Chamber
-  setMirrorChamber(Control, lKey+"MirrorChamberA",0.0);
+  setMirrorChamber(Control, lKey+"MirrorChamberA",90.0);
 
   return;
 }
