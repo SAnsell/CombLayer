@@ -280,7 +280,7 @@ DipoleChamber::createObjects(Simulation& System)
     (SMap,buildIndex," -12 2 13 317 15 -16 (-113:114:-115:116) -1000");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 2 -317 17 -1000");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -16 -12 2 -317 17 -1000");
   makeCell("ElectronPlate",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -102 103 -104 105 -106 ");

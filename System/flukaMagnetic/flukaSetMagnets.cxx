@@ -273,7 +273,7 @@ setMagneticPhysics(SimFLUKA& System,
 	{	  
 	  const std::set<MonteCarlo::Object*> Cells=
 	    mainSystem::getNamedObjects
-	    (System,IParam,"MagField",0,0,"MagField Cells");
+	    (System,IParam,"MagField",setIndex,index,"MagField Cells");
 
 	  for(MonteCarlo::Object* OPtr : Cells)
 	    OPtr->setMagFlag();
