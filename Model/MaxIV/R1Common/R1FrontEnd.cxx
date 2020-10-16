@@ -547,7 +547,8 @@ R1FrontEnd::buildObjects(Simulation& System)
   magnetBlock->setStopPoint(stopPoint);
   magnetBlock->createAll(System,*elecGateA,2);
   // UGLY insert into main ring
-  magnetBlock->insertInCell("Magnet",System,this->getInsertCells()[0]);
+  for(const int CN : magnetCells)
+    magnetBlock->insertInCell("Magnet",System,CN);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magnetBlock,2);
 
   magnetBlock->insertInCell("Magnet",System,outerCell);

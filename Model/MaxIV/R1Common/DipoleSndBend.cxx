@@ -87,7 +87,7 @@ namespace xraySystem
 {
 
 DipoleSndBend::DipoleSndBend(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Beam","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -97,7 +97,6 @@ DipoleSndBend::DipoleSndBend(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
-
 
 DipoleSndBend::~DipoleSndBend() 
   /*!
@@ -260,7 +259,7 @@ DipoleSndBend::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 815 816  27 4 15 -16 -2 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fStr+side);
+  makeCell("OuterVoid",System,cellIndex++,wallMat,0.0,Out+fStr+side);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 105 -106 186 185 -27 107 (-85:-86:-7:-5:6) -2");
@@ -323,10 +322,22 @@ DipoleSndBend::createLinks()
     (Origin
      +X*(-xStep+curveRadius*(1.0-cos(M_PI*arcAngle/180.0)))
      +Y*(curveRadius*sin(M_PI*arcAngle/180.0)));
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+
   FixedComp::setConnect(1,endPoint,PY);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  // mid point
+  const Geometry::Quaternion QMA
+    (Geometry::Quaternion::calcQRotDeg(arcAngle/2.0,-Z));
+  const Geometry::Vec3D MY=QMA.makeRotate(Y);
   
+  const Geometry::Vec3D midPoint
+    (Origin
+     +X*(-xStep+curveRadius*(1.0-cos(M_PI*arcAngle/360.0)))
+     +Y*(curveRadius*sin(M_PI*arcAngle/360.0)));
+
+  FixedComp::setConnect(6,midPoint,MY);
+  FixedComp::nameSideIndex(6,"dipoleCentre");
   return;
 }
 

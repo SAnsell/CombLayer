@@ -139,7 +139,9 @@ SPECIES::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
-  frontBeam->addInsertCell(r1Ring->getCell("Void"));
+  frontBeam->addInsertCell(r1Ring->getCell("Void",9));
+  frontBeam->addInsertCell(r1Ring->getCell("Void",0));
+  frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",0));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));

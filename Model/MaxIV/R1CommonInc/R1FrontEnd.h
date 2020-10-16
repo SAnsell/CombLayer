@@ -80,7 +80,10 @@ class R1FrontEnd :
 {
  protected:   
 
-    /// point to stop [normal none]
+  /// insert cells for magnet block
+  std::set<int> magnetCells;
+  
+  /// point to stop [normal none]
   std::string stopPoint;          
   /// Inner buildzone
   attachSystem::InnerZone buildZone;
@@ -195,6 +198,8 @@ class R1FrontEnd :
   R1FrontEnd& operator=(const R1FrontEnd&);
   virtual ~R1FrontEnd();
 
+  /// insert a magnet cells
+  void addInsertMagnetCell(const int CN) { magnetCells.emplace(CN); }
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

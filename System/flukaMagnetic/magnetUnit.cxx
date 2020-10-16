@@ -67,7 +67,7 @@ namespace flukaSystem
 
 magnetUnit::magnetUnit(const std::string& Key) :
   attachSystem::FixedRotate(Key,0),
-  zeroField(1),index(0),length(0.0),width(0.0),height(0.0)
+  zeroField(1),index(0)
   /*!
     Constructor (without index)
     \param Key :: Name of construction key
@@ -77,7 +77,7 @@ magnetUnit::magnetUnit(const std::string& Key) :
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
   attachSystem::FixedRotate(Key+std::to_string(I),0),
-  zeroField(1),index(I),length(0.0),width(0.0),height(0.0)
+  zeroField(1),index(I)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,7 +88,7 @@ magnetUnit::magnetUnit(const std::string& Key,
 magnetUnit::magnetUnit(const magnetUnit& A) : 
   attachSystem::FixedRotate(A),
   zeroField(A.zeroField),index(A.index),
-  length(A.length),width(A.width),height(A.height),
+  magExtent(A.magExtent),
   KFactor(A.KFactor),activeCells(A.activeCells)
   /*!
     Copy constructor
@@ -109,9 +109,7 @@ magnetUnit::operator=(const magnetUnit& A)
       attachSystem::FixedRotate::operator=(A);
       zeroField=A.zeroField;
       index=A.index;
-      length=A.length;
-      width=A.width;
-      height=A.height;
+      magExtent=A.magExtent;
       KFactor=A.KFactor;
       activeCells=A.activeCells;
     }
@@ -138,10 +136,12 @@ magnetUnit::populate(const FuncDataBase& Control)
   
   FixedRotate::populate(Control);
 
-  length=Control.EvalDefVar<double>(keyName+"Length",length);
-  height=Control.EvalDefVar<double>(keyName+"Height",height);
-  width=Control.EvalDefVar<double>(keyName+"Width",width);
+  const double length=Control.EvalDefVar<double>(keyName+"Length",magExtent[0]);
+  const double height=Control.EvalDefVar<double>(keyName+"Height",magExtent[1]);
+  const double width=Control.EvalDefVar<double>(keyName+"Width",magExtent[2]);
 
+  magExtent=Geometry::Vec3D(width,length,height);
+  
   double sum(0.0);
   for(size_t i=0;i<4;i++)
     {
@@ -165,17 +165,10 @@ magnetUnit::setExtent(const double EX,const double EY,
   if (EX>Geometry::zeroTol &&
       EY>Geometry::zeroTol &&
       EZ>Geometry::zeroTol)
-    {
-      length=EY;
-      width=EX;
-      height=EZ;
-    }
+    magExtent=Geometry::Vec3D(EX,EY,EZ);
   else
-    {
-      length=0.0;
-      width=0.0;
-      height=0.0;
-    }
+    magExtent=Geometry::Vec3D(0,0,0);
+
   return;
 }
   
@@ -241,7 +234,7 @@ magnetUnit::createAll(Simulation& System,
 		      const std::vector<double>& kValue)
   /*!
     If the object is created as a normal object populate
-    variables
+    variables. 
     \param System :: Simulation system
     \param OG :: New origin
     \param AY :: Y Axis
@@ -254,15 +247,16 @@ magnetUnit::createAll(Simulation& System,
 
   this->populate(System.getDataBase());
   magnetUnit::createUnitVector(OG,AY,AZ);
-  setExtent(extent[0],extent[1],extent[2]);
-
+  setExtent(extent[0],extent[1],extent[2]); 
+  
   double sum(0.0);
   for(size_t i=0;i<4;i++)
     {
       KFactor[i]=(kValue.size()>i) ? kValue[i] : 0.0;
       sum+=KFactor[i]*KFactor[i];
     }
-  zeroField = (sum>Geometry::zeroTol) ? 0 : 1;  
+  zeroField = (sum>Geometry::zeroTol) ? 0 : 1;
+  
   return;
 }
   
@@ -310,15 +304,13 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
   cx<<"USRICALL 3 "<<StrFunc::makeString(Z)<<" - - "<<magKey;
   StrFunc::writeFLUKA(cx.str(),OX);
 
-  if (length>Geometry::zeroTol &&
-      width>Geometry::zeroTol &&
-      height>Geometry::zeroTol)
+  
+  if (magExtent[0]>Geometry::zeroTol &&
+      magExtent[1]>Geometry::zeroTol &&
+      magExtent[2]>Geometry::zeroTol)
     {
       cx.str("");
-      cx<<"USRICALL 4 "<<StrFunc::makeString(width)<<" "
-	<<StrFunc::makeString(length)<<" "
-	<<StrFunc::makeString(height)<<" - - "
-	<<magKey;
+      cx<<"USRICALL 4 "<<StrFunc::makeString(magExtent)<<" - - "<<magKey;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
 

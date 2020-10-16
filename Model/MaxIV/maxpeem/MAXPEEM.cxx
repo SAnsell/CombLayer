@@ -141,9 +141,13 @@ MAXPEEM::build(Simulation& System,
 
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
-  frontBeam->addInsertCell(r1Ring->getCell("Void"));
+
+  frontBeam->addInsertCell(r1Ring->getCell("Void",8));
+  frontBeam->addInsertCell(r1Ring->getCell("Void",9));
+  frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
+  
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
@@ -168,7 +172,6 @@ MAXPEEM::build(Simulation& System,
   joinPipe->addAllInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
 
-
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
@@ -184,7 +187,7 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
   				 opticsBeam->getCell("RightVoid"),
   				 cells);
-  
+
   return;
 }
 

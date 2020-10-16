@@ -88,7 +88,7 @@ namespace xraySystem
 {
 
 DipoleChamber::DipoleChamber(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,8),
   attachSystem::ContainedGroup("Main","Exit"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -177,7 +177,8 @@ DipoleChamber::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-
+  // cylinder divider
+  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin+X*curveRadius/2.0,X);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
@@ -248,8 +249,6 @@ DipoleChamber::createSurfaces()
     (SMap,buildIndex+307,Origin-X*(elecXCut-curveRadius),Z,curveRadius);  
   ModelSupport::buildCylinder                          // Outside of 204
     (SMap,buildIndex+317,Origin-X*(elecXFull-curveRadius),Z,curveRadius);  
-
-  
   return;
 }
 
@@ -278,8 +277,11 @@ DipoleChamber::createObjects(Simulation& System)
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -12 2 13 17 15 -16 (-113:114:-115:116) ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr);
+    (SMap,buildIndex," -12 2 13 317 15 -16 (-113:114:-115:116) -1000");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 2 -317 17 -1000");
+  makeCell("ElectronPlate",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -102 103 -104 105 -106 ");
   makeCell("ExitVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -325,6 +327,7 @@ DipoleChamber::createLinks()
    */
 {
   ELog::RegMethod RegA("DipoleChamber","createLinks");
+
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
   ExternalCut::createLink("exit",*this,2,Origin,Y);
@@ -354,6 +357,17 @@ DipoleChamber::createLinks()
   
   FixedComp::nameSideIndex(2,"exit");
   FixedComp::nameSideIndex(3,"dipoleExit");
+
+
+  // Dipole Centre
+  const double midAng(0.5*M_PI*curveAngle/180.0);
+  const double xMid=curveRadius*(1.0-cos(midAng));
+  const double yMid=curveRadius*sin(midAng);
+
+  const Geometry::Vec3D MidAxis(X*sin(midAng)+Y*cos(midAng));
+  const Geometry::Vec3D midPt(Origin+X*((ringWidth-elecXFull)/2.0+xMid)+Y*yMid);
+  FixedComp::setConnect(6,midPt,MidAxis);
+  FixedComp::nameSideIndex(6,"dipoleCentre");
   return;
 }
 

@@ -43,15 +43,15 @@ class magnetUnit :
   bool zeroField;         ///< If field currently zero
   size_t index;           ///< Order index for magnetic field
 
-  double length;          ///< length of magnetic unit 
-  double width;           ///< width of magnetic unit
-  double height;          ///< height of magnetic unit
+  Geometry::Vec3D magExtent;  ///< extent of magnetic field
 
   std::array<double,4> KFactor;  ///< Magnet units
   /// active cells
   std::set<int> activeCells; 
 
   void populate(const FuncDataBase&);
+
+  void rotateExtent();
   
  public:
 

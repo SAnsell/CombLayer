@@ -122,6 +122,9 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
   
   OR.addObject(quadUnit);
   OR.addObject(dipoleChamber);
+  OR.addObject(dipoleExtract);
+  OR.addObject(dipoleSndBend);
+  OR.addObject(dipoleOut);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(eCutWallDisk);

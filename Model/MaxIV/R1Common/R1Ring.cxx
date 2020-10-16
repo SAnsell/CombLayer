@@ -335,9 +335,13 @@ R1Ring::createSurfaces()
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
       SurfMap::addSurf("InnerCut",SMap.realSurf(surfN+9));
-      surfN+=10;
-    }
 
+      ModelSupport::buildPlane(SMap,surfN+1001,
+			       Origin+AP,Origin,
+			       Origin+Z,BP-AP);
+      SurfMap::addSurf("DivideCut",SMap.realSurf(surfN+1001));
+      surfN+=10;      
+    }  
   
   return;
 }
@@ -429,19 +433,26 @@ R1Ring::createObjects(Simulation& System)
   makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
 
 
-  // Create divide inner voids
-  std::ostringstream unitCX;
-  int surfN=0;
-  for(size_t i=0;i<concaveNPoints;i++)
+  // loop to make individual units:
+  const std::vector<std::string> MidZone
+    ({
+      "5099 103 6091 -6001 3097 3007",
+      "5009 (103:113) 6001 -6011 3007 3017",
+      "5019 (113:123) 6011 -6021 3017 3027",
+      "5029 (113:123) 6021 -6031 3027 3037",
+      "5039 (123:133) 6031 -6041 3037 3047",
+      "5049 (133:143) 6041 -6051 3047 3057",
+      "5059       143 6051 -6061 3057 3067",
+      "5069 (143:153) 6061 -6071 3067 3077",
+      "5079      153  6071 -6081 3077 3087",
+      "5089 (153:103) 6081 -6091 3087 3097",
+	});
+  for(const std::string& Item : MidZone)
     {
-      unitCX<<surfN+5009<<" "<<surfN+3007<<" ";
-      surfN+=10;
+      Out=ModelSupport::getComposite(SMap,buildIndex,Item);
+      makeCell("Void",System,cellIndex++,innerMat,0.0,Out+innerBase);
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
-  Out+=ModelSupport::getComposite
-    (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("Void",System,cellIndex++,innerMat,0.0,Out+innerBase);
-
+  
   // loop to make individual units:
   const std::vector<std::string> Voids
     ({
