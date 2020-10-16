@@ -277,7 +277,6 @@ DipoleSndBend::createObjects(Simulation& System)
     (SMap,buildIndex," 107 -185 105 -106 -2");
   makeCell("Outer",System,cellIndex++,outerMat,0.0,Out+fStr);
 
-
   // Outer Volumes
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 107 -186 105 -106 -2");

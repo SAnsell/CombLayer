@@ -201,10 +201,11 @@ DipoleExtract::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+106,Origin+Z*(wallThick+height/2.0),Z);
 
+  // 10% overflow to allow definiative angle join and no microgaps
   ModelSupport::buildPlane
-    (SMap,buildIndex+115,Origin-Z*(wallThick+wideHeight/2.0),Z);
+    (SMap,buildIndex+115,Origin-Z*(wallThick+wideHeight/1.9),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+116,Origin+Z*(wallThick+wideHeight/2.0),Z);
+    (SMap,buildIndex+116,Origin+Z*(wallThick+wideHeight/1.9),Z);
 
   const Geometry::Vec3D wallZ(Z*(wallThick+height/2.0));
   const Geometry::Vec3D wWallZ(Z*(wallThick+wideHeight/2.0));
@@ -255,14 +256,8 @@ DipoleExtract::createObjects(Simulation& System)
 
   //
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 5 35 45 -36 -46 -6  ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -3 35 -36  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-14 4 45 -46  ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);  
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"13 -14 -136 -146 -106 (36:6:46)");
@@ -272,22 +267,22 @@ DipoleExtract::createObjects(Simulation& System)
     (SMap,buildIndex,"13 -14 135 145 105 (-35:-5:-45)");
   makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out+fbStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63  -135 -115 105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 63 -135 -115 105 ");
   makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 -145 -115 105");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-64 -145 -115 105");
   makeCell("LowGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-3 63 136 116 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"63 136 116 -106 ");
   makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"4 -64 146 116 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-64 146 116 -106 ");
   makeCell("TopGap",System,cellIndex++,outerMat,0.0,Out+fbStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"63 115 -116 -13 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"63 115 -116 (-13:136:-135) ");
   makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"14 -64 115 -116 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"(14:146:-145) -64 115 -116 ");
   makeCell("End",System,cellIndex++,wallMat,0.0,Out+fbStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"63 -64 105 -106");
