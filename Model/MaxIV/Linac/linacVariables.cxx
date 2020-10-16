@@ -3259,14 +3259,16 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
-  Control.addVariable(wallKey+"LinearWidth",981.0);
-  Control.addVariable(wallKey+"WallThick",39.0);
+  Control.addVariable(wallKey+"LinearWidth",1190.0); // calculated based on K_20-1_08C6c1
+  Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
 
-  Control.addVariable(wallKey+"FloorDepth",134.0);  // GUESS
-  Control.addVariable(wallKey+"RoofHeight",140.0);  // GUESS
+  const double totalHeight(360.0); // K_20-6_050
+  const double floorDepth(134.0); // guess
+  Control.addVariable(wallKey+"FloorDepth",floorDepth);
+  Control.addVariable(wallKey+"RoofHeight",totalHeight-floorDepth);
 
-  Control.addVariable(wallKey+"RoofThick",90.0);
-  Control.addVariable(wallKey+"FloorThick",150.0);
+  Control.addVariable(wallKey+"RoofThick", 60.0); // K_20-6_053
+  Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
 
   // Extra for boundary
   Control.addVariable(wallKey+"BoundaryWidth",200.0);
@@ -3286,15 +3288,16 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
-  Control.addVariable(wallKey+"MidGateOut",206.0);
+  Control.addVariable(wallKey+"MidGateOut",206.0+100);
   Control.addVariable(wallKey+"MidGateWidth",432.0);
   Control.addVariable(wallKey+"MidGateWall",100.0);
 
-
-  Control.addVariable(wallKey+"KlystronXStep",28.0);
-  Control.addVariable(wallKey+"KlystronLen",978.0);
-  Control.addVariable(wallKey+"KlystronFrontWall",100.0);
-  Control.addVariable(wallKey+"KlystronSideWall",150.0);
+  const double klystronSideWall(150.0);  // K_20-1_08C6c1
+  // adjusted so that the corner is at the correct x coordinate
+  Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0-22.911);
+  Control.addVariable(wallKey+"KlystronLen",978.215);
+  Control.addVariable(wallKey+"KlystronFrontWall",100.0); // K_20-1_08F6b4
+  Control.addVariable(wallKey+"KlystronSideWall",klystronSideWall);
 
 
   Control.addVariable(wallKey+"VoidMat","Void");
