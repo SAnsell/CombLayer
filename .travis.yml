@@ -1,7 +1,7 @@
 # test of travis ci for comblayer
 language: cpp
 matrix:
-   # include:
+   include:
    #  # linux - g++ 5
    #   - os: linux
    #     addons:
