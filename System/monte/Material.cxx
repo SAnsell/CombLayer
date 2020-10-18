@@ -848,8 +848,11 @@ Material::writePHITS(std::ostream& OX) const
 	    }
 	  else
 	    {
-	      cx<<"    "<<EL.elmSym(ZItem.getZ())
-		<<"       "<<ZItem.getDensity();
+	      if (ZItem.getZ()!=30)
+		{
+		  cx<<"    "<<EL.elmSym(ZItem.getZ())
+		    <<"       "<<ZItem.getDensity();
+		}
 	    }
 	}
 		  

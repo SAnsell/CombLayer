@@ -64,7 +64,7 @@ phitsPhysics::phitsPhysics() :
   }),
   libEMax
   ({
-    {"neutron",150.0},    // set for high energy
+    {"neutron",20.0},    // set for high energy
     {"electron",3000.0},  
     {"positron",1000.0},
     {"photon",3000.0},

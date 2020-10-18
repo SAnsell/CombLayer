@@ -97,17 +97,35 @@ setModelPhysics(SimPHITS& System,
 {
   ELog::RegMethod RegA("phitsDefPhysics[F]","setModelPhysics");
 
-
-  phitsSystem::phitsPhysics* PC=System.getPhysics();
-  if (!PC) return;
-
   // This forces icntl : Should not be needed. 
   if (IParam.flag("icntl"))
     {
       ELog::EM<<"VAL "<<IParam.getValue<std::string>("icntl")<<ELog::endDiag;
       System.setICNTL(IParam.getValue<std::string>("icntl"));
     }
-      
+  
+  phitsSystem::phitsPhysics* PC=System.getPhysics();
+  if (!PC) return;
+  
+  
+  size_t nSet=IParam.setCnt("energyCut");
+  for(size_t i=0;i<nSet;i++)
+    {
+      const size_t nElm=IParam.itemCnt("energyCut",i);
+      size_t index(0);
+      while(index<nElm)
+	{
+	  const std::string particle=
+	    IParam.getValueError<std::string>
+	    ("energyCut",i,index++,"particle value");
+	  const double V=
+	    IParam.getValueError<double>
+	    ("energyCut",i,index++,"value");
+	}
+	  
+    }
+
+
   
   return; 
 }
