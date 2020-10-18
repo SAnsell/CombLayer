@@ -105,15 +105,16 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
       
       setVariable::PipeVariables(SimPtr->getDataBase());
+
       InputModifications(SimPtr,IParam,Names);
-        
+      mainSystem::setMaterialsDataBase(IParam);
+      
       pipeSystem::makePipe pipeObj;
-      World::createOuterObjects(*SimPtr);
       pipeObj.build(SimPtr,IParam);
       
-      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      
       ModelSupport::calcVolumes(SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }

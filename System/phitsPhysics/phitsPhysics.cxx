@@ -3,7 +3,7 @@
  
  * File:   phitsPhysics/phitsPhysics.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,34 @@
 namespace phitsSystem
 {
 		       
-phitsPhysics::phitsPhysics() 
+phitsPhysics::phitsPhysics() :
+  particleECut
+  ({
+    {"electron",1e+9},
+    {"positron",1e+9}
+  }),
+  libEMax
+  ({
+    {"neutron",150.0},    // set for high energy
+    {"electron",3000.0},  
+    {"positron",1000.0},
+    {"photon",3000.0},
+  }),
+  flags
+  ({
+    { "nucdata",1 },
+    { "negs" , 1 },     // use egs5 [D=0]
+    { "nspred", 2},     // Lynch(Moliere) scattering
+    { "nedisp", 1},     // straggling events [D=0] 
+    { "e-mode", 2}     // Create secondary events [D=0]
+  })
   /*!
     Constructor
   */
 {}
 
-phitsPhysics::phitsPhysics(const phitsPhysics& A)   
+phitsPhysics::phitsPhysics(const phitsPhysics& A) :
+  particleECut(A.particleECut)
   /*!
     Copy constructor
     \param A :: phitsPhysics to copy
@@ -79,6 +100,7 @@ phitsPhysics::operator=(const phitsPhysics& A)
 {
   if (this!=&A)
     {
+      particleECut=A.particleECut;
     }
   return *this;
 }
@@ -89,6 +111,37 @@ phitsPhysics::~phitsPhysics()
   */
 {}
 
+void
+phitsPhysics::writePHITS(std::ostream& OX) const
+  /*!
+    Write out all the non-default and stuff that needs 
+    a reminder
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("phitsPhysics","writePHITS");
+  
+  const particleConv& PC=particleConv::Instance();
+  for(const auto& [ name , value ] :   particleECut)
+    {
+      const int n=PC.phitsITYP(name);
+      OX<<"emin("<<n<<")     = "<<value<<"   # "<<name<<"\n";
+    }
+
+  for(const auto& [ flag , IVal ] :   flags)
+    OX<<flag<<"   = "<<IVal<<"\n";
+  
+  for(const auto& [ particle , value ] :   libEMax)
+    {
+      const int n=PC.phitsITYP(particle);
+      OX<<"dmax("<<n<<")     = "<<value<<"   # "<<particle<<"\n";
+    }
+
+      
+      
+  return;
+}
+  
   
 } // NAMESPACE phitsSystem
       

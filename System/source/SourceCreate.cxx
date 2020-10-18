@@ -432,6 +432,7 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
 {
   ELog::RegMethod RegA("SourceCreate","createBeamSource");
 
+  ELog::EM<<"BEAM SORUCE "<<ELog::endDiag;
   sourceDataBase& SDB=sourceDataBase::Instance();
   BeamSource GX(keyName);
 

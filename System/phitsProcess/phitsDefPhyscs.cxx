@@ -128,6 +128,7 @@ setXrayPhysics(phitsPhysics& PC,
   typedef std::tuple<size_t,std::string,std::string,
 		     std::string,std::string> unitTYPE;
 
+  ELog::EM<<"Call here "<<ELog::endDiag;
   
   return; 
 }

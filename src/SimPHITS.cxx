@@ -371,8 +371,8 @@ SimPHITS::writePhysics(std::ostream& OX) const
   OX<<" file(7)     = /home/ansell/mcnpxNew/xsdir_short"<<std::endl;
   OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
 
-  ELog::EM<<"NOTE NOT WRITING PHYSICS"<<ELog::endDiag;
-  //  PhysPtr->writePHITS(OX);
+
+  PhysPtr->writePHITS(OX);
 
 
   if (WM.hasParticle("n"))
