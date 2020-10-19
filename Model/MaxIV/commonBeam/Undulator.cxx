@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Undulator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,6 +112,9 @@ Undulator::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   magnetWidth=Control.EvalVar<double>(keyName+"MagnetWidth");
   magnetDepth=Control.EvalVar<double>(keyName+"MagnetDepth");
+  magnetCorner=Control.EvalDefVar<double>(keyName+"MagnetCorner",0.0);
+  // cutting flag
+  magnetCutSurf=Control.EvalDefVar<double>(keyName+"MagnetCutSurf",0.0);
 
   supportWidth=Control.EvalVar<double>(keyName+"SupportWidth");
   supportThick=Control.EvalVar<double>(keyName+"SupportThick");
@@ -140,6 +143,14 @@ Undulator::createSurfaces()
   ELog::RegMethod RegA("Undulator","createSurfaces");
 
   // Build Magnet first
+  // mid split line
+  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,X);
+
+  // Stupidness to build a zone infront of magnet block
+  if (magnetCutSurf>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+11,Origin-Y*(length/2.0-magnetCutSurf),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(magnetWidth/2.0),X);
@@ -152,7 +163,27 @@ Undulator::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
 			   Z*(magnetDepth+vGap/2.0),Z);
   
+  if (magnetCorner>Geometry::zeroTol)
+    {      
+      ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*magnetCorner,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+33,Origin-X*(magnetWidth/2.0-magnetCorner),X);
 
+      ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*magnetCorner,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+34,Origin+X*(magnetWidth/2.0-magnetCorner),X);
+
+      ModelSupport::buildPlane(SMap,buildIndex+25,
+			       Origin-Z*(magnetCorner+vGap/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+35,
+			   Origin-Z*(magnetDepth+vGap/2.0-magnetCorner),Z);
+
+      ModelSupport::buildPlane(SMap,buildIndex+26,
+			       Origin+Z*(magnetCorner+vGap/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+36,
+			   Origin+Z*(magnetDepth+vGap/2.0-magnetCorner),Z);
+
+    }
   // Build Support
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(supportLength/2.0),Y);
@@ -225,20 +256,75 @@ Undulator::createObjects(Simulation& System)
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
 
   // front /back void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 103 -104 -106 6 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1  103 -104 -106 6 ");
   makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 103 -104 -5 105 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1  103 -104 -5 105 ");
   makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -106 6 ");
   makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -102 103 -104 -5 105 ");
   makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
 
-  // MAGNET
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -5 15");
-  makeCell("BaseMagnet",System,cellIndex++,magnetMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 6 -16");
-  makeCell("TopMagnet",System,cellIndex++,magnetMat,0.0,Out);
+  // MAGNET 
+  
+  Out=ModelSupport::getAltComposite
+    (SMap,buildIndex,"11A 1B -2 3 -10 -5 15 (33:-25) (-23:35)");
+  makeCell("BLeftMagnet",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getAltComposite
+    (SMap,buildIndex,"11A 1B -2 3 -10 6 -16 (33:26) (-23:-36)");
+  makeCell("TLeftMagnet",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getAltComposite
+    (SMap,buildIndex,"11A 1B -2 10 -4 -5 15 (-34:-25) (24:35)");
+  makeCell("BRightMagnet",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getAltComposite
+    (SMap,buildIndex,"11A 1B -2 10 -4 6 -16 (-34:26) (24:-36)");
+  makeCell("TRightMagnet",System,cellIndex++,magnetMat,0.0,Out);
+
+  if (magnetCorner>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 23 -24 36 -16");
+      makeCell("TopSlot",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 23 -24 -35 15");
+      makeCell("BaseSlot",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 -33 3 25 -5");
+      makeCell("BLSlot",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 34 -4 25 -5");
+      makeCell("BRSlot",System,cellIndex++,0,0.0,Out);
+      
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 -33 3 -26 6");
+      makeCell("TLSlot",System,cellIndex++,0,0.0,Out);
+      
+      Out=ModelSupport::getAltComposite
+	(SMap,buildIndex,"11A 1B -2 -4 34 -26 6");
+      makeCell("TRSlot",System,cellIndex++,0,0.0,Out);
+    }
+
+  // BUILD 4 front surface cutting cells to allow
+  // fluka surf-surf tally
+  if (magnetCutSurf>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -11 -2 3 -10 -5 15 ");
+      makeCell("BLeftPlate",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -11 -2 3 -10 6 -16 ");
+      makeCell("TLeftPlate",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -11 -2 10 -4 -5 15 ");
+      makeCell("BRightPlate",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"1 -11 -2 10 -4 6 -16 ");
+      makeCell("TRightPlate",System,cellIndex++,0,0.0,Out);
+      
+    }
 
   // Support
   Out=ModelSupport::getComposite

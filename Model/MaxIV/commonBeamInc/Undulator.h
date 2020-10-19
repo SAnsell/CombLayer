@@ -50,6 +50,8 @@ class Undulator :
   double length;                   ///< Main length
   double magnetWidth;              ///< Block [quad unit] width
   double magnetDepth;              ///< Depth of unit
+  double magnetCorner;             ///< Depth of unit
+  double magnetCutSurf;            ///< Cut surface at front of magnet
 
   double sVOffset;                 ///< suppor offset in z
   double supportThick;             ///< support thick [z axis]

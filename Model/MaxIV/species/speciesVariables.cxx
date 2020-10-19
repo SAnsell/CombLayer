@@ -149,8 +149,10 @@ undulatorVariables(FuncDataBase& Control,
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
   Control.addVariable(undKey+"UndulatorLength",247.989);   // 46.2mm*30*2
-  Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
-  Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
+  Control.addVariable(undKey+"UndulatorMagnetWidth",6.6);
+  Control.addVariable(undKey+"UndulatorMagnetDepth",3.3);
+  Control.addVariable(undKey+"UndulatorMagnetCorner",0.5);
+  Control.addVariable(undKey+"UndulatorMagnetCutSurf",0.01);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
   Control.addVariable(undKey+"UndulatorSupportThick",8.0);
   Control.addVariable(undKey+"UndulatorSupportLength",4.0);  // extra
