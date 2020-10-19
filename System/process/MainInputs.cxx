@@ -226,6 +226,11 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
+  // PHITS Options -- to be updated
+  IParam.regMulti("energyCut","energyCut",1000);
+  IParam.setDesc("energyCut","PHITS: { particle minEnergy }");
+
+  
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("basicGeom","Use basic fluka geometry system");
