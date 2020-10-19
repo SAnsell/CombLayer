@@ -3275,7 +3275,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
-  Control.addVariable(wallKey+"MidTThick",150.0);
   Control.addVariable(wallKey+"MidTXStep",43.0);
   Control.addVariable(wallKey+"MidTYStep",3357.0+extraYLen);  // to flat of T
   Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
@@ -3290,7 +3289,7 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"MidGateOut",206.0+100);
   Control.addVariable(wallKey+"MidGateWidth",432.0);
-  Control.addVariable(wallKey+"MidGateWall",100.0);
+  Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
 
   const double klystronSideWall(150.0);  // K_20-1_08C6c1
   // adjusted so that the corner is at the correct x coordinate
