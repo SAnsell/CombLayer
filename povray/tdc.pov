@@ -379,6 +379,12 @@ global_settings {
     #declare cameraLookAt   = <-600, 5100, 0>;
     #declare projection = 1;
   #break
+  #case(strcmp(ITEM,"TeraBack")) // Terahertz penetration [back view]
+    #declare cameraLocation = <-138, 4200, 10>;
+    #declare cameraLookAt   = <-138, 3410, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
