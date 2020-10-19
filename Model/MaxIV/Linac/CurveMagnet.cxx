@@ -222,8 +222,16 @@ CurveMagnet::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"(-107:151) (-108:-152) 105 -106 203 -204" );
+    (SMap,buildIndex," 151 -152 105 -106 203 -204" );
   makeCell("Void",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -107 -151 203 -204" );
+  makeCell("VoidFront",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -108 152 203 -204" );
+  makeCell("VoidBack",System,cellIndex++,0,0.0,Out);
 
   // left/right coil:
   Out=ModelSupport::getComposite
