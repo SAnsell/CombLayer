@@ -34,6 +34,7 @@ namespace linacVar
 	       const double,const double,const double =0);
 
   void Segment5Magnet(FuncDataBase&,const std::string&);
+  void Segment12Magnet(FuncDataBase&,const std::string&); 
   void Segment32Magnet(FuncDataBase&,const std::string&);
 
 }

@@ -188,6 +188,7 @@ Segment44::createLinks()
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
+
   return;
 }
 

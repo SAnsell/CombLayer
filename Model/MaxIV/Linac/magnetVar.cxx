@@ -77,6 +77,8 @@
 #include "ButtonBPMGenerator.h"
 #include "CurveMagGenerator.h"
 #include "CleaningMagnetGenerator.h"
+#include "IonPTubeGenerator.h"
+#include "GaugeGenerator.h"
 
 #include "magnetVar.h"
 
@@ -137,6 +139,98 @@ Segment5Magnet(FuncDataBase& Control,
   return;
 }
 
+void
+Segment12Magnet(FuncDataBase& Control,
+		const std::string& lKey)
+  /*!
+    This should be for the magnet unit but currently doing segment12
+    to make fast compiles
+    \param Control :: Variable Database
+    \param lKey :: key name
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment12Magnet");
+
+  setVariable::CF63 CF63unit;
+  setVariable::PipeGenerator PGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlatPipeGenerator FPGen;
+  setVariable::DipoleDIBMagGenerator DIBGen;
+  setVariable::BeamDividerGenerator BDGen(CF63unit);
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::IonPTubeGenerator IonTGen;
+
+  const double XYAngle(12.8);
+  
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+
+  setBellow26(Control,lKey+"BellowA",7.5);
+
+  // No_12_00.pdf
+  const double flatAXYAngle = -1.6;
+  setFlat(Control,lKey+"FlatA",
+	  (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0),
+	  flatAXYAngle/2.0);
+  Control.addVariable(lKey+"FlatAFrontWidth",3.304-1.344); // outer width
+  Control.addVariable(lKey+"FlatABackWidth",5.445-1.344); // outer width
+  Control.addVariable(lKey+"FlatAWallMat","Stainless316L");
+
+  DIBGen.generate(Control,lKey+"DipoleA");
+  // this fixes the Y horizontal coordinate but X is still wrong
+  // => Wrong FlatA angle?
+  Control.addVariable(lKey+"DipoleAYStep",-2.8321);
+
+  //  BDGen.setMainSize(60.0,3.2);
+  BDGen.setAFlangeCF<setVariable::CF50>();
+  BDGen.setBFlangeCF<setVariable::CF18_TDC>();
+  BDGen.setEFlangeCF<setVariable::CF18_TDC>();
+  // Angle (1.6) / short on left /  -1: left side aligned
+  // angle of 1.6 gets us to direct (12.8 against y for exitpipe)
+  //  1.6-flatAXYAngle/2,
+  //  BDGen.generateDivider(Control,lKey+"BeamA",-flatAXYAngle/2.0,1,0);
+  BDGen.generateDivider(Control,lKey+"BeamA",-3.2/2.0,1,-1);
+
+  
+  Control.addVariable(lKey+"BeamAWallThick",0.2); // No_12_00.pdf
+  // + 0.313 in order to have correct coordinates of the [BE] flanges
+  // according to No_12_00.pdf
+  Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
+  Control.addVariable(lKey+"BeamAXStep",0.0);
+  
+  setBellow26(Control,lKey+"BellowLA",7.5);
+
+  // small ion pump port:
+  // -----------------------
+  // horizontal off
+
+
+  IonTGen.setCF<setVariable::CF63>();
+  IonTGen.setWallThick(0.2);      // No_17_00.pdf
+  IonTGen.setVertical(8.45,4.050);  // d / h [2.2cm]
+  IonTGen.setPortCF<setVariable::CF35_TDC>(); // Port
+  IonTGen.generateTube(Control,lKey+"IonPumpLA");
+  // remember to re-rotate next item:
+  Control.addVariable(lKey+"IonPumpLAYAngle",-90.0);
+
+  PGen.generatePipe(Control,lKey+"PipeLA",93.3-2.87);
+
+  setBellow26(Control,lKey+"BellowLB",7.5);
+
+  // RIGHT SIDE
+
+  setFlat(Control,lKey+"FlatB",85.4-2.87,1.6);
+
+  DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBXStep",6.0);
+
+  setBellow26(Control,lKey+"BellowRB",7.5);
+
+  Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
+  return;
+}
+  
 void
 Segment32Magnet(FuncDataBase& Control,
 		   const std::string& lKey)
