@@ -175,6 +175,7 @@ BeamDivider::createSurfaces()
   const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
   const Geometry::Vec3D RNorm(X*cos(ang)-Y*sin(ang));
   const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
+
   
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*boxLength,Y);
   ModelSupport::buildPlane

@@ -171,8 +171,8 @@ Segment12Magnet(FuncDataBase& Control,
   // No_12_00.pdf
   const double flatAXYAngle = -1.6;
   setFlat(Control,lKey+"FlatA",
-	  (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0),
-	  flatAXYAngle/2.0);
+	  (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0),0.0);
+  //	  flatAXYAngle/2);
   Control.addVariable(lKey+"FlatAFrontWidth",3.304-1.344); // outer width
   Control.addVariable(lKey+"FlatABackWidth",5.445-1.344); // outer width
   Control.addVariable(lKey+"FlatAWallMat","Stainless316L");
@@ -190,7 +190,7 @@ Segment12Magnet(FuncDataBase& Control,
   // angle of 1.6 gets us to direct (12.8 against y for exitpipe)
   //  1.6-flatAXYAngle/2,
   //  BDGen.generateDivider(Control,lKey+"BeamA",-flatAXYAngle/2.0,1,0);
-  BDGen.generateDivider(Control,lKey+"BeamA",-3.2/2.0,1,-1);
+  BDGen.generateDivider(Control,lKey+"BeamA",0,1,-1);
 
   
   Control.addVariable(lKey+"BeamAWallThick",0.2); // No_12_00.pdf
