@@ -156,6 +156,7 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertInCell("Mid",System,cMag->getCell("Void"));
   triBend->insertInCell("Bend",System,cMag->getCell("Void"));
   triBend->insertInCell("BendStr",System,cMag->getCell("Void"));
+  triBend->insertInCell("BendStr",System,cMag->getCell("VoidBack"));
 
   // transfer to segment 45 and 46
   CellMap::addCell("LastCell",outerCellC);
@@ -187,7 +188,6 @@ Segment44::createLinks()
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   joinItems.push_back(FixedComp::getFullRule(4));
-  
   return;
 }
 

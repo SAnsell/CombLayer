@@ -165,7 +165,8 @@ namespace linacVar
 
 void
 setIonPump1Port(FuncDataBase& Control,
-		const std::string& name)
+		const std::string& name,
+		const double angle=0.0)
 /*!
   Set the 1 port ion pump variables [GaugeTube]
   \param Control :: DataBase to use
@@ -173,13 +174,13 @@ setIonPump1Port(FuncDataBase& Control,
  */
 {
   setVariable::GaugeGenerator GGen;
-  
+
   GGen.setCF<CF37_TDC>();
   GGen.setLength(12.6);
   GGen.setSidePortCF<setVariable::CF37_TDC>(6.95);
   GGen.setPlateThick(setVariable::CF37_TDC::flangeLength,"Stainless304L");
 
-  GGen.generateGauge(Control,name,0.0,180.0);  
+  GGen.generateGauge(Control,name,0.0,angle);
 
   return;
 }
@@ -198,12 +199,10 @@ setIonPump2Port(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","setIonPump2Port");
 
   setVariable::IonPTubeGenerator IonTGen;
-  
-  IonTGen.setCF<setVariable::CF63>();        
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setRadius(3.3);         // No_17_00.pdf
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setVertical(11.9,13.9);  // d / h 
+
+  IonTGen.setCF<setVariable::CF66_TDC>();
+  IonTGen.setPortCF<setVariable::CF35_TDC>();
+  IonTGen.setVertical(11.9,5.0);  // d / h    5.0 is dummy
   IonTGen.generateTube(Control,pumpName);
   Control.addVariable(pumpName+"YAngle",angle);
 
@@ -488,7 +487,7 @@ setGauge34(FuncDataBase& Control,
   GGen.setSidePortCF<setVariable::CF34_TDC>(6.95);
   GGen.setPlateThick(setVariable::CF34_TDC::flangeLength,"Stainless304L");
 
-  GGen.generateGauge(Control,name,0.0,0.0);  
+  GGen.generateGauge(Control,name,0.0,0.0);
   return;
 }
 
@@ -504,13 +503,13 @@ setGauge37(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","setGauge37");
 
   setVariable::GaugeGenerator GGen;
-  
+
   GGen.setCF<CF37_TDC>();
   GGen.setLength(12.6);
   GGen.setSidePortCF<setVariable::CF37_TDC>(6.95);
   GGen.setPlateThick(setVariable::CF37_TDC::flangeLength,"Stainless304L");
 
-  GGen.generateGauge(Control,name,0.0,0.0);  
+  GGen.generateGauge(Control,name,0.0,0.0);
   return;
 }
 
@@ -579,7 +578,7 @@ setMirrorChamber(FuncDataBase& Control,
   MSPGen.setPlateThick(setVariable::CF34_TDC::flangeLength,"Stainless304L");
   MSPGen.generateCrossWay(Control,name);
   Control.addVariable(name+"YAngle", angle);
-  
+
   return;
 }
 
@@ -628,7 +627,7 @@ Segment1(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::IonPTubeGenerator IonPGen;
-  
+
   // exactly 1m from wall.
   const Geometry::Vec3D startPt(0,0,0);
   const Geometry::Vec3D endPt(0,395.2,0);
@@ -711,7 +710,7 @@ Segment2(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
 
-  setCylGateValve(Control,lKey+"GateTube", 90.0, false);
+  setCylGateValve(Control,lKey+"GateTube", 180.0, false);
 
   PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
@@ -724,6 +723,7 @@ Segment2(FuncDataBase& Control,
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeE",133.4); // No_2_00.pdf
+  Control.addVariable(lKey+"PipeEYAngle",90.0);
 
   LQGen.generateQuad(Control,lKey+"QuadC",24.7); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadD",74.7); // No_2_00.pdf
@@ -1011,7 +1011,7 @@ Segment9(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::CeramicGapGenerator CSGen;
-  
+
   const Geometry::Vec3D startPt(-288.452,2556.964,0.0);
   const Geometry::Vec3D endPt(-323.368,2710.648,0.0);
 
@@ -1026,9 +1026,11 @@ Segment9(FuncDataBase& Control,
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicBellowA");
 
-  setIonPump2Port(Control, lKey+"PumpA",0.0);
-  
+  const double yAngle(-90.0);
+  setIonPump2Port(Control, lKey+"PumpA",yAngle);
+
   PGen.generatePipe(Control,lKey+"PipeA",57.8); // No_9_00.pdf
+  Control.addVariable(lKey+"PipeAYAngle", -yAngle);
 
   CMGen.generateMag(Control,lKey+"CMagVertA",22.0,1);
   CMGen.generateMag(Control,lKey+"CMagHorA",42.0,0);
@@ -1088,9 +1090,11 @@ Segment10(FuncDataBase& Control,
 
   setRecGateValve(Control, lKey+"GateValve", false);
 
-  setIonPump2Port(Control, lKey+"PumpA",0.0);
+  const double yAngle(-90.0);
+  setIonPump2Port(Control, lKey+"PumpA",yAngle);
 
   PGen.generatePipe(Control,lKey+"PipeB",152.1);
+  Control.addVariable(lKey+"PipeBYAngle", -yAngle);
   setBellow26(Control,lKey+"BellowB",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeC",126.03);
@@ -1169,7 +1173,7 @@ Segment12(FuncDataBase& Control,
   setVariable::BeamDividerGenerator BDGen(CF63unit);
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::IonPTubeGenerator IonTGen;
-  
+
   const Geometry::Vec3D startPtA(-547.597,3697.597,0.0);
   const Geometry::Vec3D endPtA(-609.286,3969.122,0.0);  // to segment 30
   const Geometry::Vec3D endPtB(-593.379,3968.258,0.0);  // to segment 13
@@ -1227,8 +1231,8 @@ Segment12(FuncDataBase& Control,
   // -----------------------
   // horizontal off
 
-  
-  IonTGen.setCF<setVariable::CF63>();        
+
+  IonTGen.setCF<setVariable::CF63>();
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setVertical(8.45,4.050);  // d / h [2.2cm]
   IonTGen.setPortCF<setVariable::CF35_TDC>(); // Port
@@ -1380,18 +1384,18 @@ Segment15(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
-    
+
   PGen.setCF<setVariable::CF40_22>();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",22.0); // measured
 
   // Mirror chamber
-  setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber",0.0);
 
   YagUnitGen.setCF<CF63>();
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitYAngle",180.0);
+  Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0); // 1=closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
@@ -1453,7 +1457,7 @@ Segment16(FuncDataBase& Control,
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
-  setIonPump2Port(Control,lKey+"IonPump",90.0);
+  setIonPump2Port(Control,lKey+"IonPump",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",126.03); // measured
 
@@ -1472,7 +1476,7 @@ Segment17(FuncDataBase& Control,
   ELog::RegMethod RegA("linacVariables[F]","Segment17");
   setVariable::PipeGenerator PGen;
 
-  
+
   const Geometry::Vec3D startPt(-637.608,4983.291,0.0);
   const Geometry::Vec3D endPt(-637.608,5780.261,0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
@@ -1486,8 +1490,8 @@ Segment17(FuncDataBase& Control,
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  setIonPump2Port(Control,lKey+"IonPump",90.0);
-  
+  setIonPump2Port(Control,lKey+"IonPump",0.0);
+
   PGen.generatePipe(Control,lKey+"PipeB",382.23); // No_17_00.pdf
 
   return;
@@ -1519,8 +1523,8 @@ Segment18(FuncDataBase& Control,
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  setIonPump2Port(Control, lKey+"IonPump",90.0);
-  
+  setIonPump2Port(Control, lKey+"IonPump",0.0);
+
   setBellow26(Control,lKey+"BellowB",7.5);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
@@ -1542,8 +1546,8 @@ Segment18(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",127.3);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
 
   return;
 }
@@ -1567,11 +1571,13 @@ Segment19(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowA",7.5);
 
   setGauge37(Control,lKey+"Gauge");
+  Control.addVariable(lKey+"GaugeYAngle", 180.0);
 
   // Fast closing valve
   setRecGateValve(Control,lKey+"GateA",false);
+  Control.addVariable(lKey+"GateAYAngle", -180.0);
 
-  setIonPump1Port(Control,lKey+"IonPump");
+  setIonPump1Port(Control,lKey+"IonPump",-180.0);
 
   setCylGateValve(Control,lKey+"GateB",180.0,false);
 
@@ -1804,14 +1810,14 @@ Segment24(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeA",325.8);
 
-  setIonPump2Port(Control,lKey+"IonPump",90.0);
+  setIonPump2Port(Control,lKey+"IonPump",0.0);
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,1);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,0);
+  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -2237,7 +2243,7 @@ Segment30(FuncDataBase& Control,
   setVariable::CorrectorMagGenerator CMGen;
   setVariable::IonPTubeGenerator IonTGen;
 
-    
+
   const Geometry::Vec3D startPt(-609.286, 3969.122, 0.0);
   const Geometry::Vec3D endPt(-827.249, 4928.489, 0.0);
   Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
@@ -2260,17 +2266,11 @@ Segment30(FuncDataBase& Control,
   setBellow26(Control,lKey+"Bellow",7.5);
 
   // IonPump
-
-  IonTGen.setCF<setVariable::CF63>();
-  IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setRadius(3.3);         // No_17_00.pdf
-  IonTGen.setMainLength(8.5,7.5);  // front/back 
-  IonTGen.setVertical(14.6,11.2);  // d / h 
-  IonTGen.generateTube(Control,lKey+"IonPump");
+  setIonPump2Port(Control, lKey+"IonPump", 90.0); // TODO: actually, 1 port ion pump
 
   // CMagV
   PGen.generatePipe(Control,lKey+"PipeB",511.23);
-  CMGen.generateMag(Control,lKey+"CMagV",500.13,1);
+  CMGen.generateMag(Control,lKey+"CMagV",500.13,0);
 
   return;
 }
@@ -2293,7 +2293,7 @@ Segment31(FuncDataBase& Control,
   setVariable::StriplineBPMGenerator BPMGen;
   setVariable::LinacQuadGenerator LQGen;
   setVariable::IonPTubeGenerator IonTGen;
-  
+
   const Geometry::Vec3D startPt(-827.249, 4928.489, 0.0);
   const Geometry::Vec3D endPt  (-921.651, 5344.0, 0.0);
 
@@ -2307,9 +2307,9 @@ Segment31(FuncDataBase& Control,
 
   // IonPumpA
 
-  setIonPump2Port(Control,lKey+"IonPumpA",90.0);
+  setIonPump2Port(Control,lKey+"IonPumpA",0.0);
 
-  setCylGateValve(Control,lKey+"Gate",-90.0,false);
+  setCylGateValve(Control,lKey+"Gate",0.0,false);
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
@@ -2331,15 +2331,16 @@ Segment31(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",24.7,0);
 
   // IonPumpB
-  IonTGen.setCF<setVariable::CF63>();        
+  //  setIonPump2Port(Control,lKey+"IonPumpB", -90);
+  IonTGen.setCF<setVariable::CF63>();
   IonTGen.setMainLength(10.0,10.0);
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
   IonTGen.setRadius(3.3);         // No_17_00.pdf
   IonTGen.setWallThick(0.2);      // No_17_00.pdf
-  IonTGen.setVertical(11.9,13.9);  // d / h 
+  IonTGen.setVertical(11.9,13.9);  // d / h
   IonTGen.generateTube(Control,lKey+"IonPumpB");
-  Control.addVariable(lKey+"IonPumpBYAngle",90.0);
-  
+  Control.addVariable(lKey+"IonPumpBYAngle",-90.0);
+
   PGen.generatePipe(Control,lKey+"PipeC",55.7);
 
   setBellow26(Control,lKey+"BellowD",7.5);
@@ -2497,7 +2498,7 @@ Segment35(FuncDataBase& Control,
   CMGen.generateMag(Control,lKey+"CMagH",41.65,1);
   CMGen.generateMag(Control,lKey+"CMagV",60.15,0);
 
-  setMirrorChamberBlank(Control, lKey+"MirrorChamber",180.0);
+  setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
 
   PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeC",12.6);
@@ -2643,7 +2644,7 @@ Segment38(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",221.0); // No_38_00
 
 
-  setIonPump2Port(Control,lKey+"IonPump",180.0);
+  setIonPump2Port(Control,lKey+"IonPump",90.0);
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
@@ -3029,7 +3030,7 @@ Segment46(FuncDataBase& Control,
   Control.addVariable(lKey+"PrismaChamberYAngle",180.0);
 
   // Mirror Chambers
-  
+
   MSPGen.generateCrossWay(Control,lKey+"MirrorChamberA");
   Control.addVariable(lKey+"MirrorChamberAYAngle",90.0);
 
@@ -3085,7 +3086,7 @@ Segment47(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  
+
 
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
@@ -3099,11 +3100,11 @@ Segment47(FuncDataBase& Control,
   PGen.setCF<setVariable::CF37_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",12.6); // measured
 
-  
+
   setMirrorChamber(Control, lKey+"MirrorChamberB",0.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",12.6); // measured
-  
+
   setMirrorChamber(Control, lKey+"MirrorChamberC",0.0);
 
   PGen.setCF<setVariable::CF35_TDC>();
@@ -3114,7 +3115,7 @@ Segment47(FuncDataBase& Control,
 
 
   setBellow26(Control,lKey+"BellowA",7.5);
-  
+
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
 
@@ -3166,9 +3167,9 @@ Segment48(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowC",10.0); // measured
 
   // Pipe
-  
+
   // Mirror Chamber
-  setMirrorChamber(Control, lKey+"MirrorChamberA",0.0);
+  setMirrorChamber(Control, lKey+"MirrorChamberA",90.0);
 
   return;
 }
@@ -3227,21 +3228,22 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
-  Control.addVariable(wallKey+"LinearWidth",981.0);
-  Control.addVariable(wallKey+"WallThick",39.0);
+  Control.addVariable(wallKey+"LinearWidth",1190.0); // calculated based on K_20-1_08C6c1
+  Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
 
-  Control.addVariable(wallKey+"FloorDepth",134.0);  // GUESS
-  Control.addVariable(wallKey+"RoofHeight",140.0);  // GUESS
+  const double totalHeight(360.0); // K_20-6_050
+  const double floorDepth(134.0); // guess
+  Control.addVariable(wallKey+"FloorDepth",floorDepth);
+  Control.addVariable(wallKey+"RoofHeight",totalHeight-floorDepth);
 
-  Control.addVariable(wallKey+"RoofThick",90.0);
-  Control.addVariable(wallKey+"FloorThick",150.0);
+  Control.addVariable(wallKey+"RoofThick", 60.0); // K_20-6_053
+  Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
 
   // Extra for boundary
   Control.addVariable(wallKey+"BoundaryWidth",200.0);
   Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
-  Control.addVariable(wallKey+"MidTThick",150.0);
   Control.addVariable(wallKey+"MidTXStep",43.0);
   Control.addVariable(wallKey+"MidTYStep",3357.0+extraYLen);  // to flat of T
   Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
@@ -3254,15 +3256,16 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
-  Control.addVariable(wallKey+"MidGateOut",206.0);
+  Control.addVariable(wallKey+"MidGateOut",206.0+100);
   Control.addVariable(wallKey+"MidGateWidth",432.0);
-  Control.addVariable(wallKey+"MidGateWall",100.0);
+  Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
 
-
-  Control.addVariable(wallKey+"KlystronXStep",28.0);
-  Control.addVariable(wallKey+"KlystronLen",978.0);
-  Control.addVariable(wallKey+"KlystronFrontWall",100.0);
-  Control.addVariable(wallKey+"KlystronSideWall",150.0);
+  const double klystronSideWall(150.0);  // K_20-1_08C6c1
+  // adjusted so that the corner is at the correct x coordinate
+  Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0-22.911);
+  Control.addVariable(wallKey+"KlystronLen",978.215);
+  Control.addVariable(wallKey+"KlystronFrontWall",100.0); // K_20-1_08F6b4
+  Control.addVariable(wallKey+"KlystronSideWall",klystronSideWall);
 
 
   Control.addVariable(wallKey+"VoidMat","Void");

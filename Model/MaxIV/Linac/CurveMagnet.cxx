@@ -222,29 +222,64 @@ CurveMagnet::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"(-107:151) (-108:-152) 105 -106 203 -204" );
+    (SMap,buildIndex," 151 -152 105 -106 203 -204" );
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
-  // left/right coil:
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"113 -103 115 -116 (-117:151) (-118:-152)");
-  makeCell("CoilMid",System,cellIndex++,poleMat,0.0,Out);
+    (SMap,buildIndex," -107 -151 203 -204" );
+  makeCell("VoidFront",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"104 -114 115 -116 (-117:151) (-118:-152)");
-  makeCell("CoilMid",System,cellIndex++,poleMat,0.0,Out);
+    (SMap,buildIndex," -108 152 203 -204" );
+  makeCell("VoidBack",System,cellIndex++,0,0.0,Out);
 
-  // note simplified inner exclusion adjust if offset:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -117 -151 113 -103 ");
+  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"115 -116 151 -152 113 -103 ");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -118 152 113 -103 ");
+  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -117 -151 104 -114 ");
+  makeCell("PoleFront",System,cellIndex++,poleMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 115 -116 151 -152 104 -114 ");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -118 152 104 -114 ");
+  makeCell("PoleBack",System,cellIndex++,poleMat,0.0,Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,
-     "113 -103 105 -106 (-107:151) (-108:-152)"
-     " 117 118 (-151:152:-115:116)" );
+     "-107 117 -151 113 -103 " );
+  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+     "113 -103 105 -106 151 -152 (-115:116)" );
+  makeCell("Coil",System,cellIndex++,coilMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+     "-108 118 152 113 -103 " );
+  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-107 117 -151 104 -114" );
+  makeCell("CoilFront",System,cellIndex++,coilMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"104 -114 105 -106 151 -152 (-115:116)" );
   makeCell("Coil",System,cellIndex++,coilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"104 -114 105 -106 (-107:151) (-108:-152)"
-     " 117 118 (-151:152:-115:116)" );
-  makeCell("Coil",System,cellIndex++,coilMat,0.0,Out);
-
+    (SMap,buildIndex,"-108 118 152 104 -114" );
+  makeCell("CoilBack",System,cellIndex++,coilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"103 -203 115 -116 151 -152 207 -208" );

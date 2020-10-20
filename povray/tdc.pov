@@ -1,5 +1,5 @@
 // Usage:
-// povray povray/singleItem.pov <<< '"Segment15"'
+// povray povray/tdc.pov <<< '"Segment15"'
 
 #version 3.7;
 #include "colors.inc"
@@ -209,6 +209,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
+  #case(strcmp(ITEM,"Segment22")) // TDC segment 22
+    #declare cameraLocation = <-655, 7350, 40>;
+    #declare cameraLookAt   = <-485, 7190, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
   #case(strcmp(ITEM,"Segment23")) // TDC segment 23
     #declare cameraLocation = <-350, 7290, 50>;
     #declare cameraLookAt   = <-485, 7355, 0>;
@@ -257,10 +263,10 @@ global_settings {
     #declare projection = 1;
   #break
   #case(strcmp(ITEM,"Segment31")) // SPF segment 31
-    #declare cameraLocation = <-440, 5400, 20>;
-    #declare cameraLookAt   = <-485, 5450, 10>;
+    #declare cameraLocation = <-440, 5730, 40>;
+    #declare cameraLookAt   = <-730, 5640, 0>;
     #declare projection = 0;
-    #declare cameraAngle = 60;
+    #declare cameraAngle = 80;
   #break
   #case(strcmp(ITEM,"Segment32")) // SPF segment 32
     #declare cameraLocation = <-614, 6200, 70>;
@@ -273,6 +279,12 @@ global_settings {
     #declare cameraLookAt   = <-830, 6210, 0>;
     #declare projection = 0;
     #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment34")) // SPF segment 34
+    #declare cameraLocation = <-510, 6500, 170>;
+    #declare cameraLookAt   = <-835, 6490, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment35")) // SPF segment 35
     #declare cameraLocation = <-600, 6725, 70>;
@@ -313,6 +325,12 @@ global_settings {
     #declare cameraLookAt   = <-860, 8485, 0>;
     #declare projection = 0;
     #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"Segment42")) // SPF segment 42
+    #declare cameraLocation = <-230, 8800, 200>;
+    #declare cameraLookAt   = <-855, 8790, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment43")) // SPF segment 43
     #declare cameraLocation = <-815, 9150, 40>;
@@ -356,20 +374,21 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 90;
   #break
-  #case(strcmp(ITEM,"Segment1000")) // beamline view
-    #declare cameraLocation = <200, 160, 40>;
-    #declare cameraLookAt   = <125, 160, 0>;
-    #declare cameraAngle = 170;
+  #case(strcmp(ITEM,"All")) // Whole beamline view
+    #declare cameraLocation = <-500, 5200, 1000>;
+    #declare cameraLookAt   = <-600, 5100, 0>;
     #declare projection = 1;
   #break
-  #case(strcmp(ITEM,"Segment1001")) // beamline back view
-    #declare cameraLocation = <200, 550, 40>;
-    #declare cameraLookAt   = <125, 400, 0>;
-    #declare cameraAngle = 90;
+  #case(strcmp(ITEM,"TeraBack")) // Terahertz penetration [back view]
+    #declare cameraLocation = <-138, 4200, 10>;
+    #declare cameraLookAt   = <-138, 3410, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
   #break
-  #else
-    #declare cameraLocation = <100, 100, 100>;
-    #declare cameraLookAt   = <0, 0, 0>;
+  #else // whole beamline view (like All)
+    #declare cameraLocation = <-500, 5200, 1000>;
+    #declare cameraLookAt   = <-600, 5100, 0>;
+    #declare projection = 1;
 #break
 #end
 
