@@ -136,10 +136,10 @@ magnetUnit::populate(const FuncDataBase& Control)
   
   FixedRotate::populate(Control);
 
+  
   const double length=Control.EvalDefVar<double>(keyName+"Length",magExtent[0]);
   const double height=Control.EvalDefVar<double>(keyName+"Height",magExtent[1]);
   const double width=Control.EvalDefVar<double>(keyName+"Width",magExtent[2]);
-
   magExtent=Geometry::Vec3D(width,length,height);
   
   double sum(0.0);
@@ -313,7 +313,8 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
       cx<<"USRICALL 4 "<<StrFunc::makeString(magExtent)<<" - - "<<magKey;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
-
+  else
+    ELog::EM<<"Magnet "<<keyName<<" has no valid extent"<<ELog::endErr;
   cx.str("");
   cx<<"USRICALL 5 ";
 

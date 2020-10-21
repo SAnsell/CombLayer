@@ -2355,7 +2355,7 @@ Segment33(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadB",61.7);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit"); // length 20.2 != 20
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // open
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 

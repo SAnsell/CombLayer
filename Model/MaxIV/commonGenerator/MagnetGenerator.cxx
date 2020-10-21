@@ -121,7 +121,7 @@ MagnetGenerator::generateCorMag(FuncDataBase& Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,
 	   preName+std::to_string(segNumber)+fcUnit,
 	   "0",yAngle);
-  
+
   return;
 }
 
@@ -252,7 +252,7 @@ MagnetGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  
+
   Control.addVariable(keyName+"FixedComp",fcUnit);
   Control.addVariable(keyName+"LinkPt",linkPt);
 

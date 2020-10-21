@@ -205,9 +205,9 @@ setDefMagnets(SimFLUKA& System)
 	      
 	      std::shared_ptr<attachSystem::FixedComp> FC=
 		System.getSharedPtr(FCname);
-	      
+
 	      std::shared_ptr<magnetUnit> magA=
-		std::make_shared<magnetUnit>(Item);
+		std::make_shared<magnetUnit>(MagKey);
 	      magA->setKFactor(kFactor);
 	      magA->setRotation(0,magYAngle,0);
 	      magA->createAll(System,*FC,FClink);
