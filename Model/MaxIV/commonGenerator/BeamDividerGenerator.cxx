@@ -63,8 +63,8 @@ BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
   mainWidth(3.0),exitWidth(1.0),
   height(3.0),
   mainXStep(-1.37),
-  exitXStep(1.25),
-  exitAngle(3.2),mainLength(32.71),
+  exitXStep(0.0),
+  exitAngle(3.6),mainLength(32.71),
   mainRadius(CF40_22::innerRadius),
   mainThick(CF40_22::wallThick),
   exitLength(5.1),
@@ -184,6 +184,7 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
   else
     Control.addVariable(keyName+"ZAngle",ZAngle);
 
+  ELog::EM<<"ZAngle == "<<normalSide<<" : "<<ZAngle<<" "<<exitAngle<<ELog::endDiag;
   Control.addVariable(keyName+"XStep",-1.1);
 
 

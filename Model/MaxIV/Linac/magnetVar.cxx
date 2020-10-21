@@ -174,7 +174,7 @@ Segment12Magnet(FuncDataBase& Control,
 	  (935.83-73.14)/10.0/cos((XYAngle+flatAXYAngle)*M_PI/180.0),0.0);
   //	  flatAXYAngle/2);
   Control.addVariable(lKey+"FlatAFrontWidth",3.304-1.344); // outer width
-  Control.addVariable(lKey+"FlatABackWidth",5.445-1.344); // outer width
+  Control.addVariable(lKey+"FlatABackWidth",1.0+5.445-1.344); // outer width
   Control.addVariable(lKey+"FlatAWallMat","Stainless316L");
 
   DIBGen.generate(Control,lKey+"DipoleA");
