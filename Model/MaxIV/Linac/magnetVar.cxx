@@ -191,8 +191,6 @@ Segment12Magnet(FuncDataBase& Control,
   //  1.6-flatAXYAngle/2,
   //  BDGen.generateDivider(Control,lKey+"BeamA",-flatAXYAngle/2.0,1,0);
   BDGen.generateDivider(Control,lKey+"BeamA",0,1,-1);
-
-  
   Control.addVariable(lKey+"BeamAWallThick",0.2); // No_12_00.pdf
   // + 0.313 in order to have correct coordinates of the [BE] flanges
   // according to No_12_00.pdf

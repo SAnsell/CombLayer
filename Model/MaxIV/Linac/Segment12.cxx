@@ -159,9 +159,6 @@ Segment12::buildObjects(Simulation& System)
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
 
-  ELog::EM<<"bellow = "<<bellowA->getLinkAxis(2)<<ELog::endDiag;
-  ELog::EM<<"flatA = "<<flatA->getLinkAxis(2)<<ELog::endDiag;
-  ELog::EM<<"BeamA = "<<beamA->getLinkAxis(3)<<ELog::endDiag;
   pipeTerminateGroup(System,*buildZone,beamA,"exit",
 		     {"Exit","Box","FlangeE","FlangeA","Main"});
 

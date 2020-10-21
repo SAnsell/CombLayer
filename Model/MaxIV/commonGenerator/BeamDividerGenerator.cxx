@@ -60,7 +60,7 @@ namespace setVariable
 template<>
 BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
   boxLength(56.1),wallThick(0.4),
-  mainWidth(3.0),exitWidth(1.0),
+  mainWidth(3.0),exitWidth(2.0),
   height(3.0),
   mainXStep(-1.37),
   exitXStep(0.0),
@@ -184,7 +184,6 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
   else
     Control.addVariable(keyName+"ZAngle",ZAngle);
 
-  ELog::EM<<"ZAngle == "<<normalSide<<" : "<<ZAngle<<" "<<exitAngle<<ELog::endDiag;
   Control.addVariable(keyName+"XStep",-1.1);
 
 
