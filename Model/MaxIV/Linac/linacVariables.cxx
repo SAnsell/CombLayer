@@ -2421,7 +2421,7 @@ Segment35(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
@@ -2621,7 +2621,7 @@ Segment39(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   setVariable::YagScreenGenerator YagScreenGen;
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
