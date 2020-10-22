@@ -45,7 +45,6 @@ namespace setVariable
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);
-  void MaxIVVariables(FuncDataBase&,const std::set<std::string>&);
   void MuonVariables(FuncDataBase&);
   void PipeVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);
@@ -68,7 +67,6 @@ namespace setVariable
   void TS1CylFluxTrapReal(FuncDataBase&);
   void TS1EllipticCylTarget(FuncDataBase&);
   void TS1CylMod(FuncDataBase&);
-
 
   void TS1layout(FuncDataBase&);
   void TS2layout(FuncDataBase&);

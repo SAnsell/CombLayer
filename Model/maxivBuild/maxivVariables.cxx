@@ -47,7 +47,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 
 #include "maxivVariables.h"
 
@@ -56,6 +55,7 @@ namespace setVariable
 
 void
 MaxIVVariables(FuncDataBase& Control,
+	       const std::string& magField,
 	       const std::set<std::string>& beamNames)
   /*!
     Function to set the control variables and constants
@@ -64,7 +64,7 @@ MaxIVVariables(FuncDataBase& Control,
     \param beamName :: Set of beamline names
   */
 {
-  ELog::RegMethod RegA("setVariable","maxivVariables");
+  ELog::RegMethod RegA("setVariable","MaxIVVariables");
 
 // -----------
 // GLOBAL stuff
@@ -73,7 +73,7 @@ MaxIVVariables(FuncDataBase& Control,
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
-  maxivInstrumentVariables(beamNames,Control);
+  maxivInstrumentVariables(beamNames,magField,Control);
   
   Control.addVariable("sdefEnergy",3000.0);
   // FINAL:
@@ -83,11 +83,13 @@ MaxIVVariables(FuncDataBase& Control,
 
 void
 maxivInstrumentVariables(const std::set<std::string>& BL,
+			 const std::string& defMagField,
 			 FuncDataBase& Control)
   /*!
     Construct the variables for the beamlines if required
     for MaxIV
     \param BL :: Set for the beamlines
+    \param defMagField :: Default arrangement for magnets
     \param Control :: Database for variables
    */
   
@@ -96,7 +98,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
                        "maxivInstrumentVariables");
 
   const std::set<std::string> magnetConfigs
-    ({"TDCLine","SPFLine"});
+    ({"TDCline","SPFline"});
   
   const std::set<std::string> Linac
     ({"LINAC","SPF"});
@@ -127,16 +129,14 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   bool linacFlag(0);
 
   // Which magnetic configuration:
-  std::set<std::string> magSelect;
-  std::set_intersection(BL.begin(),BL.end(),
-			magnetConfigs.begin(),magnetConfigs.end(),
-			std::inserter(magSelect,magSelect.begin()));
-  if (magSelect.size()>1)
-    throw ColErr::InContainerError<std::string>
-      ("MagConfig","Multiple magnetic configurations requested");
-
+  if (!defMagField.empty() &&
+      magnetConfigs.find(defMagField)==magnetConfigs.end())
+    {
+      throw ColErr::InContainerError<std::string>
+	(defMagField,"Magnetic configurations");
+    }
   const std::string magField
-    (magSelect.empty() ? "TDCline" : *magSelect.begin());
+    (defMagField.empty() ? "TDCline" : defMagField);
   
 	
   for(const std::string& beam : BL)

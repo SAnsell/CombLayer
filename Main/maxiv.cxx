@@ -74,7 +74,7 @@
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
-#include "variableSetup.h"
+#include "maxivVariables.h"
 #include "ImportControl.h"
 #include "World.h"
 
@@ -117,7 +117,11 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       const std::set<std::string> beamlines=
         IParam.getComponents<std::string>("beamlines",0);
-      setVariable::MaxIVVariables(SimPtr->getDataBase(),beamlines);
+      const std::string magField=
+        IParam.getDefValue<std::string>("","defaultMag");
+
+      setVariable::MaxIVVariables
+	(SimPtr->getDataBase(),magField,beamlines);
 
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);

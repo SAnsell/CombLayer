@@ -65,11 +65,11 @@ createXrayInputs(inputParam& IParam)
   IParam.regFlag("pointCheck","pointCheck");
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regMulti("stopPoint","stopPoint",1000);
-  IParam.regMulti("defaultMagnet","defaultManget",1000);
+  IParam.regMulti("defaultMag","defaultMag",1000);
 
   IParam.setValue("sdefType",std::string("Wiggler"));
 
-  IParam.setDesc("defaultMagnet",
+  IParam.setDesc("defaultMag",
 		 "Chooses which version of the magnetic fields are required\n"
 		 "This allows different tracks through a magnetic chicane");
   return;

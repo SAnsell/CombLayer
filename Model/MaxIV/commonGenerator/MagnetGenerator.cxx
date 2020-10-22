@@ -142,7 +142,7 @@ MagnetGenerator::generateDipole(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetGenerator","generateQuad");
   
-  setSize(65.0,15.0,3.0);
+  setSize(65.0,3.0,15.0);
   setField(QField,0.0,0.0,0.0);
   generate(Control,
 	   "Seg"+std::to_string(segNumber)+fcUnit,

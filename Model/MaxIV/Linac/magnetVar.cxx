@@ -222,6 +222,7 @@ Segment12Magnet(FuncDataBase& Control,
 
   DIBGen.generate(Control,lKey+"DipoleB");
   Control.addVariable(lKey+"DipoleBXStep",6.0);
+  Control.addVariable(lKey+"DipoleBYStep",-4.0);
 
   setBellow26(Control,lKey+"BellowRB",7.5);
 

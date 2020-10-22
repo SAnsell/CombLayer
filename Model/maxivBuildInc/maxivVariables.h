@@ -22,6 +22,7 @@
 #ifndef setVariable_maxivVariables_h
 #define setVariable_maxivVariables_h
 
+class FuncDataBase;
 
 namespace mainSystem
 {
@@ -30,9 +31,14 @@ namespace mainSystem
 
 namespace setVariable
 {
+  void MaxIVVariables(FuncDataBase&,
+		      const std::string&,
+		      const std::set<std::string>&);
 
   void maxivInstrumentVariables
-    (const std::set<std::string>&,FuncDataBase&);
+    (const std::set<std::string>&,
+     const std::string&,
+     FuncDataBase&);
     
   // MAXIV Beamlines 1.5GeV Ring
   void R1RingVariables(FuncDataBase&);
