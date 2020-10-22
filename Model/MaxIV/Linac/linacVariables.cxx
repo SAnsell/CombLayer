@@ -730,7 +730,7 @@ Segment2(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadE",114.7); // No_2_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   return;
@@ -834,7 +834,7 @@ Segment4(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   setBellow26(Control,lKey+"BellowA",7.5);
@@ -1145,7 +1145,7 @@ Segment11(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // open
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",154.47);
@@ -2773,7 +2773,7 @@ Segment43(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
   setVariable::YagScreenGenerator YagScreenGen;
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
@@ -2901,7 +2901,7 @@ Segment45(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   Control.addVariable(lKey+"YagUnitYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreen",1);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 

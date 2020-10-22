@@ -50,10 +50,12 @@ namespace setVariable
 
 
 void
-LINACmagnetVariables(FuncDataBase& Control)
+LINACmagnetVariables(FuncDataBase& Control,
+		     const std::string& magField)
   /*!
     Function to set the control variables and constants
     \param Control :: Function data base to add constants too
+    \param magField :: Field for the magnet
   */
 {
   ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
@@ -294,7 +296,7 @@ LINACmagnetVariables(FuncDataBase& Control)
   MUdipole.generateCorMag(Control,43,"CMagH",0.0);
 
   // SEGMENT 44 [THIS IS a curved dipole -- check sized]
-  MUdipole.generateDipole(Control,44,"CMag",0.0,1.7);
+  MUdipole.generateDipole(Control,44,"CMag",0.0,0.0);
 
   // SEGMENT 45
   // SEGMENT 46

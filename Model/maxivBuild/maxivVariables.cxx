@@ -95,6 +95,9 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
 
+  const std::set<std::string> magnetConfigs
+    ({"TDCLine","SPFLine"});
+  
   const std::set<std::string> Linac
     ({"LINAC","SPF"});
 
@@ -122,6 +125,20 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   bool r1Flag(0);
   bool r3Flag(0);
   bool linacFlag(0);
+
+  // Which magnetic configuration:
+  std::set<std::string> magSelect;
+  std::set_intersection(BL.begin(),BL.end(),
+			magnetConfigs.begin(),magnetConfigs.end(),
+			std::inserter(magSelect,magSelect.begin()));
+  if (magSelect.size()>1)
+    throw ColErr::InContainerError<std::string>
+      ("MagConfig","Multiple magnetic configurations requested");
+
+  const std::string magField
+    (magSelect.empty() ? "TDCline" : *magSelect.begin());
+  
+	
   for(const std::string& beam : BL)
     {
       
@@ -140,7 +157,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       if (!linacFlag && (Linac.find(beam)!=Linac.end()))
 	{
 	  LINACvariables(Control);
-	  LINACmagnetVariables(Control);
+	  LINACmagnetVariables(Control,magField);
 	  linacFlag=1;
 	}
 	  

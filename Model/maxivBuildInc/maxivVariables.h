@@ -54,7 +54,7 @@ namespace setVariable
 			   const double);
 
   void LINACvariables(FuncDataBase&);
-  void LINACmagnetVariables(FuncDataBase&);
+  void LINACmagnetVariables(FuncDataBase&,const std::string&);
 }
 
 
