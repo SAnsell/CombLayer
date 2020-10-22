@@ -60,7 +60,6 @@ LINACmagnetVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("linacMangnetVariables[F]","LINACmagnetVariables");
 
-  
   // active units : Void space for field
   const std::vector<std::string> MUname
     ({
@@ -280,7 +279,7 @@ LINACmagnetVariables(FuncDataBase& Control,
     }
   
   // SEGMENT 30
-  if (magField=="SPFLine")
+  if (magField=="SPFline")
     {
       MUdipole.setPreName("SPF");
       MUdipole.generateCorMag(Control,30,"CMagV",0.0);

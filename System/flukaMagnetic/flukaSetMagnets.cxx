@@ -174,7 +174,7 @@ setDefMagnets(SimFLUKA& System)
   
   std::vector<std::string> magNames=
     Control.EvalDefVector<std::string>("MagUnitList");
-
+  
   // cells with magnetic fields
   std::set<MonteCarlo::Object*> magnetCells;
   

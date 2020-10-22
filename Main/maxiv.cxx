@@ -118,7 +118,7 @@ main(int argc,char* argv[])
       const std::set<std::string> beamlines=
         IParam.getComponents<std::string>("beamlines",0);
       const std::string magField=
-        IParam.getDefValue<std::string>("","defaultMag");
+        IParam.getDefValue<std::string>("","defMagnet");
 
       setVariable::MaxIVVariables
 	(SimPtr->getDataBase(),magField,beamlines);

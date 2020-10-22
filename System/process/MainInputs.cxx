@@ -92,7 +92,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("MagStep","MagStep",1000,0);
   IParam.regMulti("MagUnit","MagUnit",1000,0);
   IParam.regMulti("MagField","MagField",1000,0);
-  IParam.regFlag("defMagnet","defMagnet");
+  IParam.regItem("defMagnet","defMagnet");
   IParam.regMulti("userWeight","userWeight",1000,0);
   IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
