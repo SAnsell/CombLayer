@@ -40,6 +40,8 @@ class MagnetGenerator
  private:
 
   std::string preName;  ///< Pre-name (L2SPF/TDC)
+
+  Geometry::Vec3D xyzStep;         ///< One-time x,y,z step
   
   double length;          ///< length of magnetic unit 
   double width;           ///< width of magnetic unit
@@ -58,12 +60,14 @@ class MagnetGenerator
 
   /// Set the prename (L2SPF etc)
   void setPreName(const std::string& N) { preName=N;}
+  void setOffset(const double,const double,const double);
+  void setOffset(const Geometry::Vec3D&);
   void setSize(const double,const double,const double);
   void setField(const double,const double,const double,const double);
 
   void generate(FuncDataBase&,const std::string&,
 		const std::string&,const std::string&,
-		const double) const;
+		const double);
 
   void generateCorMag(FuncDataBase&,const size_t,
 		      const std::string&,const double,
@@ -80,7 +84,7 @@ class MagnetGenerator
 			const double,const double);
 
   void generate(FuncDataBase&,const size_t,
-		const std::string&,const double) const;
+		const std::string&,const double);
 
 };
 

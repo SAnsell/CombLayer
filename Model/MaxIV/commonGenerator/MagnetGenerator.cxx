@@ -82,6 +82,32 @@ MagnetGenerator::setSize(const double L,const double W,
 }
 
 void
+MagnetGenerator::setOffset(const Geometry::Vec3D& deltaXYZ)
+
+  /*!
+    Set the onetime offset
+    \param deltaXYZ :: step in x,x,z
+  */
+{
+  xyzStep=deltaXYZ;
+  return;
+}
+
+void
+MagnetGenerator::setOffset(const double xStep,const double yStep,
+			   const double zStep)
+  /*!
+    Set the onetime offset
+    \param xStep :: step in x
+    \param yStep :: step in y
+    \param zStep :: step in z
+  */
+{
+  xyzStep=Geometry::Vec3D(xStep,yStep,zStep);
+  return;
+}
+
+void
 MagnetGenerator::setField(const double K0,const double K1,
 			  const double K2,const double K3)
   /*!
@@ -141,6 +167,7 @@ MagnetGenerator::generateDipole(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generateQuad");
+
   
   setSize(65.0,3.0,15.0);
   setField(QField,0.0,0.0,0.0);
@@ -210,7 +237,7 @@ void
 MagnetGenerator::generate(FuncDataBase& Control,
 			  const size_t segNumber,
 			  const std::string& fcUnit,
-			  const double yAngle) const
+			  const double yAngle) 
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -233,18 +260,25 @@ MagnetGenerator::generate(FuncDataBase& Control,
 			  const std::string& unitName,
 			  const std::string& fcUnit,
 			  const std::string& linkPt,
-			  const double yAngle) const
+			  const double yAngle) 
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
     \param Unit :: FixedComp for active units / origin
+    \param yAngle :: Rotation of magnetic field
   */
 {
   ELog::RegMethod RegA("MagnetGenerator","generate");
 
   const std::string keyName="MagUnit"+unitName;
 
+  if (!xyzStep.nullVector())
+    {
+      Control.addVariable(keyName+"Offset",xyzStep);
+      xyzStep=Geometry::Vec3D(0,0,0);
+    }
+  
   Control.addVariable(keyName+"YAngle",yAngle);
   Control.addVariable(keyName+"FixedComp",fcUnit);
   Control.addVariable(keyName+"LinkPt",linkPt);
