@@ -3288,7 +3288,7 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
-  Control.addVariable(wallKey+"MidGateOut",206.0+100);
+  Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
   Control.addVariable(wallKey+"MidGateWidth",440.0);// K_20-1_08F6c1
   Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
 
