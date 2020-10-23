@@ -8,7 +8,7 @@ matrix:
          apt:
            sources:
              - ubuntu-toolchain-r-test
-             - llvm-toolchain-precise-7.0
+             - llvm-toolchain-trusty-7.0
              - george-edison55-precise-backports
            packages:
              - clang-7.0

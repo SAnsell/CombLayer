@@ -163,7 +163,8 @@ namespace linacVar
   void Segment48(FuncDataBase&,const std::string&);
   void Segment49(FuncDataBase&,const std::string&);
 
-  const double zeroX(152.0);   // coordiated offset to master
+  // zeroX adjusted so that distance to KG wall is 1 m
+  const double zeroX(275.0);   // coordiated offset to master
   const double zeroY(481.0);    // drawing README.pdf
   const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
 
@@ -3259,7 +3260,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
-  Control.addVariable(wallKey+"LinearWidth",1190.0); // calculated based on K_20-1_08C6c1
+  Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
 
   const double totalHeight(360.0); // K_20-6_050
@@ -3276,7 +3277,7 @@ wallVariables(FuncDataBase& Control,
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
   Control.addVariable(wallKey+"MidTXStep",43.0);
-  Control.addVariable(wallKey+"MidTYStep",3357.0+extraYLen);  // to flat of T
+  Control.addVariable(wallKey+"MidTYStep",3327.94585+extraYLen);  // to flat of T
   Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
   Control.addVariable(wallKey+"MidTThick",200.0);  // Thick of T
 
@@ -3288,12 +3289,12 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",206.0+100);
-  Control.addVariable(wallKey+"MidGateWidth",432.0);
+  Control.addVariable(wallKey+"MidGateWidth",440.0);// K_20-1_08F6c1
   Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
 
-  const double klystronSideWall(150.0);  // K_20-1_08C6c1
+  const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
-  Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0-22.911);
+  Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0+100.0);
   Control.addVariable(wallKey+"KlystronLen",978.215);
   Control.addVariable(wallKey+"KlystronFrontWall",100.0); // K_20-1_08F6b4
   Control.addVariable(wallKey+"KlystronSideWall",klystronSideWall);
