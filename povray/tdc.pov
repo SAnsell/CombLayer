@@ -385,6 +385,24 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
+    #case(strcmp(ITEM,"Anders40")) // Picture for Anders
+    #declare cameraLocation = <-600, 8900, 100>;
+    #declare cameraLookAt   = <-855, 8300, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+  #case(strcmp(ITEM,"Anders12")) // Picture for Anders @ split b/w SPF and TDC
+    #declare cameraLocation = <-450, 4000, 130>;
+    #declare cameraLookAt   = <-440, 4600, -50>;
+    #declare cameraAngle = 30;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"AndersAll")) // Picture for Anders @ whole beam line
+    #declare cameraLocation = <-430, 6210, 100>;
+    #declare cameraLookAt   = <-650, 6800, -250>;
+    #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
