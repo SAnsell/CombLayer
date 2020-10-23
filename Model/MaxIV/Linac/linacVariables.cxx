@@ -3263,7 +3263,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
 
   const double totalHeight(360.0); // K_20-6_050
-  const double floorDepth(134.0); // guess
+  const double floorDepth(130.0); // K_20-2_348
   Control.addVariable(wallKey+"FloorDepth",floorDepth);
   Control.addVariable(wallKey+"RoofHeight",totalHeight-floorDepth);
 
