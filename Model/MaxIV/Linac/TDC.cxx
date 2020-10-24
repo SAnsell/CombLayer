@@ -357,10 +357,8 @@ TDC::buildInnerZone(Simulation& System,
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
   HeadRule surHR=buildSurround(Control,regionName,"Origin");
   if (ec!=extraSUR.end())
-    {
-      surHR.addIntersection(injectionHall->getSurfRules(ec->second));
-      ELog::EM<<"SUR == "<<surHR<<ELog::endDiag;
-    }
+    surHR.addIntersection(injectionHall->getSurfRules(ec->second));
+
   buildZone->setSurround(surHR);
   buildZone->setMaxExtent(injectionHall->getSurfRules(backSurfName));
 
