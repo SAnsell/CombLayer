@@ -3249,8 +3249,8 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("l2spfAngleXStep",linacVar::zeroX-155.0);
   Control.addVariable("l2spfAngleYStep",linacVar::zeroY+2000.0);
-  Control.addVariable("l2spfAngleOuterLeft",100.0);
-  Control.addVariable("l2spfAngleOuterRight",100.0);
+  Control.addVariable("l2spfAngleOuterLeft",50.0);
+  Control.addVariable("l2spfAngleOuterRight",50.0);
   Control.addVariable("l2spfAngleOuterTop",100.0);
   Control.addVariable("l2spfAngleXYAngle",12.0);
 

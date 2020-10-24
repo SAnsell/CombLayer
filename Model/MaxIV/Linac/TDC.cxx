@@ -310,6 +310,7 @@ TDC::buildInnerZone(Simulation& System,
   // FrontSurf : BackSurf : Cell : Cell(if not empty)
   typedef std::tuple<std::string,std::string,std::string,std::string> RTYPE;
   typedef std::map<std::string,RTYPE> RMAP;
+  typedef std::map<std::string,std::string> EMAP;
 
   // front : back : Insert
   const static RMAP regZones
@@ -326,12 +327,18 @@ TDC::buildInnerZone(Simulation& System,
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
     });
+  //Extra surfaces to add to the main surround
+  const static EMAP extraSUR
+    ({
+      {"l2spfAngle","#MidWall"}
+    });
 
   const FuncDataBase& Control=System.getDataBase();
 
   RMAP::const_iterator rc=regZones.find(regionName);
   if (rc==regZones.end())
     throw ColErr::InContainerError<std::string>(regionName,"regionZones");
+  EMAP::const_iterator ec=extraSUR.find(regionName);
 
   // try not to use front surf:
   const RTYPE& walls=rc->second;
@@ -348,9 +355,13 @@ TDC::buildInnerZone(Simulation& System,
     std::make_shared<attachSystem::BlockZone>(segmentName);
 
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
-  const HeadRule  surHR=buildSurround(Control,regionName,"Origin");
+  HeadRule surHR=buildSurround(Control,regionName,"Origin");
+  if (ec!=extraSUR.end())
+    {
+      surHR.addIntersection(injectionHall->getSurfRules(ec->second));
+      ELog::EM<<"SUR == "<<surHR<<ELog::endDiag;
+    }
   buildZone->setSurround(surHR);
-
   buildZone->setMaxExtent(injectionHall->getSurfRules(backSurfName));
 
   setVoidSpace(System,buildZone,voidName);
@@ -613,7 +624,7 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
-
+ 
   reconstructInjectionHall(System);
 
   
