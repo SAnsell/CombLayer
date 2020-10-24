@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/InjectionHall.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,7 +67,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
@@ -83,7 +83,7 @@
 namespace tdcSystem
 {
 
-InjectionHall::InjectionHall(const std::string& Key) : 
+InjectionHall::InjectionHall(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -94,7 +94,7 @@ InjectionHall::InjectionHall(const std::string& Key) :
   */
 {}
 
-InjectionHall::~InjectionHall() 
+InjectionHall::~InjectionHall()
   /*!
     Destructor
   */
@@ -108,9 +108,9 @@ InjectionHall::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("InjectionHall","populate");
-  
+
   FixedOffset::populate(Control);
-  
+
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   linearRCutLength=Control.EvalVar<double>(keyName+"LinearRCutLength");
   linearLTurnLength=Control.EvalVar<double>(keyName+"LinearLTurnLength");
@@ -119,7 +119,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
-  
+
   linearWidth=Control.EvalVar<double>(keyName+"LinearWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
@@ -138,27 +138,27 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
-  
+
   midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
   midGateWidth=Control.EvalVar<double>(keyName+"MidGateWidth");
   midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
-  
+
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
   klystronFrontWall=Control.EvalVar<double>(keyName+"KlystronFrontWall");
   klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
-  
+
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
-  
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
-  
+
   return;
 }
- 
+
 void
 InjectionHall::createSurfaces()
   /*!
@@ -173,7 +173,7 @@ InjectionHall::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(linearWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(linearWidth/2.0),X);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(linearWidth/2.0+wallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
@@ -185,7 +185,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+111,Origin+Y*(linearRCutLength+wallThick),Y);
 
-  
+
   ModelSupport::buildPlane
     (SMap,buildIndex+104,Origin+X*(linearWidth/2.0+rightWallStep),X);
   ModelSupport::buildPlane
@@ -197,7 +197,7 @@ InjectionHall::createSurfaces()
     Geometry::Quaternion::calcQRotDeg(spfAngle,Z);
   const Geometry::Vec3D PX(QR.makeRotate(X));
   Geometry::Vec3D LWPoint(Origin-X*(linearWidth/2.0)+Y*linearLTurnLength);
-  
+
   ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin+Y*linearLTurnLength,Y);
   ModelSupport::buildPlane
@@ -225,7 +225,7 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+233,Origin-X*(linearWidth/2.0+spfAngleStep+wallThick),X);
 
   // roof / floor
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+15,Origin-Z*(floorDepth+floorThick),Z);
@@ -271,13 +271,13 @@ InjectionHall::createSurfaces()
 
   SurfMap::addSurf("TMidFront",SMap.realSurf(buildIndex+1111));
   SurfMap::addSurf("TMidBack",SMap.realSurf(buildIndex+1112));
-	  
+
 
   ModelSupport::buildPlane(SMap,buildIndex+1201,FMidPtA,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1202,BMidPtA,Y);
-  
+
   // caps
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1103,MidPt-X*midTLeft,X);
   ModelSupport::buildPlane(SMap,buildIndex+1104,MidPt+X*midTRight,X);
 
@@ -286,7 +286,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+1511,gatePt-Y*(midGateWall+midGateWidth/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+1512,gatePt-Y*(midGateWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1521,gatePt+Y*(midGateWidth/2.0),Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+1521,gatePt+Y*(midGateWidth/2.0),Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+1522,gatePt+Y*(midGateWall+midGateWidth/2.0),Y);
    // step out
@@ -308,13 +308,16 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+3014,Origin+X*(klystronXStep-klystronSideWall),X);
 
   // now build externals:
-  
+
   ModelSupport::buildPlane
     (SMap,buildIndex+53,
        Origin-X*(linearWidth/2.0+spfAngleStep+boundaryWidth+wallThick),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+54,
        Origin+X*(linearWidth/2.0+rightWallStep+boundaryWidth+wallThick),X);
+
+  // Auxiliary cyliner to cure geometric problems in corners
+  ModelSupport::buildCylinder(SMap,buildIndex+2007,FMidPt,Z,0.5);
 
 
   // transfer for later
@@ -361,7 +364,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1511 -1001 -1111 1503 -4 5 -6 ");
+    (SMap,buildIndex," 1511 -1001 -1111 1503 -4 5 -6 2007 ");
   makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -388,7 +391,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
-  
+
   //OUTER WALLS:
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -3 13 5 -6");
   makeCell("LeftWall",System,cellIndex++,wallMat,0.0,Out);
@@ -401,7 +404,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
   makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -111 14 -114 5 -6");
   makeCell("CutWall",System,cellIndex++,wallMat,0.0,Out);
 
@@ -413,7 +416,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   // OUTER VOIDS:
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
   makeCell("LeftOuter",System,cellIndex++,voidMat,0.0,Out);
@@ -439,7 +442,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -211 213 -14 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 233 -14 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
@@ -447,17 +450,23 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MID T
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 1003 -1004 -2 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 1003 -1004 -2 5 -6 2007 ");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007 ");
   makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  // Auxiliary cyliner to cure geometric problems in corners
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 5 -6 -2007 ");
+  makeCell("MidTAuxCyl",System,cellIndex++,wallMat,0.0,Out);
+
 
   // GATE:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1512 3 -1503 5 -6  ");
@@ -483,7 +492,7 @@ InjectionHall::createObjects(Simulation& System)
   addOuterSurf(Out);
 
 
-  
+
   return;
 }
 
@@ -517,12 +526,12 @@ InjectionHall::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);  
+  createSurfaces();
+  createObjects(System);
   createLinks();
   insertObjects(System);
 
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

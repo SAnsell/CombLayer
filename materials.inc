@@ -22,3 +22,5 @@
     dents .5 scale .5 }}
 
 #declare matIron = texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.9 } };
+
+#declare matCopper = texture { pigment{color rgb<0.969028364,0.0335801908,0.244655676>  } };

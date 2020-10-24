@@ -152,6 +152,7 @@ Segment10::createSurfaces()
   ELog::RegMethod RegA("L2SFPsegment10","createSurfaces");
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wallRadius);
+
   return;
 }
 
@@ -163,22 +164,23 @@ Segment10::constructHole(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment10","constructHole");
-  
+
   if (IHall)
     {
       std::string Out;
       const HeadRule fbHR=IHall->combine("TMidFront #TMidBack");
 
-
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
-      
+
       pipeA->addInsertCell("Main",this->getCell("WallVoid"));
       pipeA->addInsertCell("Main",IHall->getCell("TVoidA"));
       pipeA->addInsertCell("FlangeB",IHall->getCell("TVoidA"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
+      IHall->insertComponent(System,"MidT",Out);
+      IHall->insertComponent(System,"MidTAuxCyl",Out);
 
       // This might not be the best place for this:::
 
@@ -201,11 +203,10 @@ Segment10::buildObjects(Simulation& System)
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
-  
+
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System);
   pipeA->insertAllInCell(System,outerCell);
-
 
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
