@@ -269,8 +269,8 @@ InjectionHall::createSurfaces()
 			   BMidPtA+Z,
 			   X);
 
-  SurfMap::addSurf("TMidFront",SMap.realSurf(buildIndex+1111));
-  SurfMap::addSurf("TMidBack",SMap.realSurf(buildIndex+1112));
+  SurfMap::setSurf("TMidFront",SMap.realSurf(buildIndex+1111));
+  SurfMap::setSurf("TMidBack",SMap.realSurf(buildIndex+1112));
 
 
   ModelSupport::buildPlane(SMap,buildIndex+1201,FMidPtA,Y);
@@ -326,11 +326,15 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
-  SurfMap::setSurf("MidAngleWall",SMap.realSurf(buildIndex+1111));
+  SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
+  SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
+  SurfMap::addSurf("MidAngleWall",SMap.realSurf(buildIndex+2007));
 
   SurfMap::setSurf("TAngleWall",SMap.realSurf(buildIndex+1112));
   SurfMap::setSurf("DoorEndWall",SMap.realSurf(buildIndex+1522));
   SurfMap::setSurf("KlystronWall",SMap.realSurf(buildIndex+3002));
+  SurfMap::setSurf("KlystronCorner",SMap.realSurf(buildIndex+3002));
+  SurfMap::addSurf("KlystronCorner",-SMap.realSurf(buildIndex+4));
   SurfMap::setSurf("TDCStart",SMap.realSurf(buildIndex+201));
   SurfMap::setSurf("TDCCorner",SMap.realSurf(buildIndex+201));
   SurfMap::addSurf("TDCCorner",SMap.realSurf(buildIndex+203));

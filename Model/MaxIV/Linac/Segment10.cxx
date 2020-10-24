@@ -168,7 +168,7 @@ Segment10::constructHole(Simulation& System)
   if (IHall)
     {
       std::string Out;
-      const HeadRule fbHR=IHall->combine("TMidFront #TMidBack");
+      const HeadRule fbHR=IHall->combine("#MidAngleWall #TMidBack");
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());

@@ -298,7 +298,6 @@ TDC::setVoidSpace(const Simulation& System,
 std::shared_ptr<attachSystem::BlockZone>
 TDC::buildInnerZone(Simulation& System,
 		    const std::string& segmentName,
-		    const std::shared_ptr<TDCsegment>& segPtr,
 		    const std::string& regionName)
   /*!
     Set the regional buildzone
@@ -315,10 +314,9 @@ TDC::buildInnerZone(Simulation& System,
   // front : back : Insert
   const static RMAP regZones
     ({
-      //      {"l2spf",{"Front","#MidWall","LinearVoid","LWideVoid"}},
       {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
-      {"l2spfAngle",{"KlystronWall","#MidAngleWall","LWideVoid","LTVoid"}},
+      {"l2spfAngle",{"KlystronCorner","MidAngleWall","LWideVoid","LTVoid"}},
       {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
       {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
@@ -348,11 +346,12 @@ TDC::buildInnerZone(Simulation& System,
 
   std::shared_ptr<attachSystem::BlockZone> buildZone=
     std::make_shared<attachSystem::BlockZone>(segmentName);
+
   buildZone->setFront(injectionHall->getSurfRules(frontSurfName));
   const HeadRule  surHR=buildSurround(Control,regionName,"Origin");
   buildZone->setSurround(surHR);
 
-  buildZone->setMaxExtent(injectionHall->getSurfRule(backSurfName));
+  buildZone->setMaxExtent(injectionHall->getSurfRules(backSurfName));
 
   setVoidSpace(System,buildZone,voidName);
   setVoidSpace(System,buildZone,voidNameB);
@@ -540,7 +539,7 @@ TDC::createAll(Simulation& System,
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
 	  
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
-	    buildInnerZone(System,BL,segPtr,bzName);
+	    buildInnerZone(System,BL,bzName);
 
 	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
@@ -549,7 +548,7 @@ TDC::createAll(Simulation& System,
 	  if (BL=="Segment10")
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=
-		buildInnerZone(System,"Segment10B",segPtr,"tdcFront");
+		buildInnerZone(System,"Segment10B","tdcFront");
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")

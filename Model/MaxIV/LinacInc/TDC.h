@@ -73,7 +73,6 @@ class TDC :
   std::shared_ptr<attachSystem::BlockZone>
   buildInnerZone(Simulation&,
 		 const std::string&,
-		 const std::shared_ptr<TDCsegment>&,
 		 const std::string&);
 
   void setVoidSpace(const Simulation&,

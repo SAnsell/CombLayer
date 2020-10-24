@@ -1080,7 +1080,7 @@ Segment10(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",12.8);
 
-  Control.addVariable(lKey+"WallRadius",4.0);
+  Control.addVariable(lKey+"WallRadius",3.0);
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L","Stainless304L");
