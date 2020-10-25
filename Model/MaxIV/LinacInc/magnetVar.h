@@ -27,12 +27,19 @@ namespace setVariable
 
 namespace linacVar
 {
+
+  // zeroX adjusted so that distance to KG wall is 1 m
+  const double zeroX(275.0);   // coordiated offset to master
+  const double zeroY(481.0);    // drawing README.pdf
+  const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
+
   // forward declaration - implemented in linacVariables
   void setBellow26(FuncDataBase&,const std::string&,
 		   const double);
   void setFlat(FuncDataBase&,const std::string&,
 	       const double,const double,const double =0);
 
+  void Segment1Magnet(FuncDataBase&,const std::string&);
   void Segment5Magnet(FuncDataBase&,const std::string&);
   void Segment12Magnet(FuncDataBase&,const std::string&); 
   void Segment32Magnet(FuncDataBase&,const std::string&);

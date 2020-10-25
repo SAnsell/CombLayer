@@ -93,7 +93,11 @@ LINACmagnetVariables(FuncDataBase& Control,
   for(const std::string& Item : MUname)
     Control.pushVariable<std::string>("MagUnitList",Item);
 
-  if (magField=="TDCline")
+  if (magField=="TDCline" ||
+      magField=="TDClineA" ||
+      magField=="TDClineB" ||
+      magField=="TDClineC"
+      )
     {
       const std::vector<std::string> TDCname
 	({
@@ -169,14 +173,11 @@ LINACmagnetVariables(FuncDataBase& Control,
 	Control.pushVariable<std::string>("MagUnitList",Item);
     }
       
+  MagnetGenerator MUdipole;
 
   // SEGMENT 3
-  MagnetGenerator MUdipole;
-  MUdipole.setSize(65.0,15.0,3.0);
-  MUdipole.setField(-1.7/2.0, 0.0, 0.0, 0.0);
-  MUdipole.generate(Control,"Seg3DipoleA","L2SPF3DipoleA","0",0.0);
-  MUdipole.setField(1.7/2.0, 0.0, 0.0, 0.0);
-  MUdipole.generate(Control,"Seg3DipoleB","L2SPF3DipoleB","0",0.0);
+  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.86);
+  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.865);
 
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
@@ -270,7 +271,10 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateQuad(Control,24,"Quad",0.0,0.0);
       
       // SEGMENT 25
-      MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.865);
+      if (magField=="TDCline" || magField=="TDClineB")
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.780);
+      if (magField=="TDClineC")
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,1.560);
       
       // SEGMENT 26
       // SEGMENT 27

@@ -160,9 +160,9 @@ namespace linacVar
   void Segment49(FuncDataBase&,const std::string&);
 
   // zeroX adjusted so that distance to KG wall is 1 m
-  const double zeroX(275.0);   // coordiated offset to master
-  const double zeroY(481.0);    // drawing README.pdf
-  const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
+  // const double zeroX(275.0);   // coordiated offset to master
+  // const double zeroY(481.0);    // drawing README.pdf
+  // const Geometry::Vec3D zeroOffset(zeroX,zeroY,0.0);
 
 void
 setIonPump1Port(FuncDataBase& Control,
@@ -621,57 +621,9 @@ Segment1(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment1");
-  setVariable::PipeGenerator PGen;
-  setVariable::LinacQuadGenerator LQGen;
-  setVariable::CorrectorMagGenerator CMGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::StriplineBPMGenerator BPMGen;
-  setVariable::IonPTubeGenerator IonPGen;
-
-  // exactly 1m from wall.
-  const Geometry::Vec3D startPt(0,0,0);
-  const Geometry::Vec3D endPt(0,395.2,0);
-  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
-
-  PGen.setCF<setVariable::CF18_TDC>();
-  PGen.setMat("Stainless316L");
-  PGen.setNoWindow();
-
-  PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
-
-  setBellow26(Control,lKey+"BellowA",7.5);
-
-  //  corrector mag and pie
-  PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
-  CMGen.generateMag(Control,lKey+"CMagHorrA",31.85,0); // No_1_00.pdf
-  CMGen.generateMag(Control,lKey+"CMagVertA",46.85,1); // No_1_00.pdf
-
-  PGen.setCF<setVariable::CF16_TDC>();
-  PGen.setMat("Stainless304L");
-  PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
-
-  PGen.setCF<setVariable::CF18_TDC>();
-  PGen.setMat("Stainless316L");
-  PGen.generatePipe(Control,lKey+"PipeD",113.7);
-
-  CMGen.generateMag(Control,lKey+"CMagHorrB",51.86, 0);
-  CMGen.generateMag(Control,lKey+"CMagVertB",69.36, 1);
-  LQGen.generateQuad(Control,lKey+"QuadA",96.86);
-
-  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
-
-  PGen.setCF<setVariable::CF18_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeF",128.0);
-
-  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
 
 
-  IonPGen.generateTube(Control,lKey+"PumpA");
-
-
+  Segment1Magnet(Control,lKey);
   return;
 }
 
@@ -1936,13 +1888,13 @@ Segment26(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
   Control.addVariable(lKey+"YagUnitAYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   PGen.setCF<CF40>();

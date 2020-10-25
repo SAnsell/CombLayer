@@ -89,6 +89,71 @@ namespace linacVar
 {
 
 void
+Segment1Magnet(FuncDataBase& Control,
+	       const std::string& lKey)
+  /*!
+    This should be for the magnet unit but currently doing segment1
+    to make fast compiles
+    \param Control :: Variable Database
+    \param lKey :: key name
+  */
+{
+  setVariable::PipeGenerator PGen;
+  setVariable::LinacQuadGenerator LQGen;
+  setVariable::CorrectorMagGenerator CMGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::StriplineBPMGenerator BPMGen;
+  setVariable::IonPTubeGenerator IonPGen;
+
+  // exactly 1m from wall.
+  const Geometry::Vec3D startPt(0,0,0);
+  const Geometry::Vec3D endPt(0,395.2,0);
+  Control.addVariable(lKey+"Offset",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"BeamOrg",startPt+linacVar::zeroOffset);
+  Control.addVariable(lKey+"BeamDelta",Geometry::Vec3D(0,0,0));
+
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
+  PGen.setNoWindow();
+
+  PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
+
+  setBellow26(Control,lKey+"BellowA",7.5);
+
+  //  corrector mag and pie
+  PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagHorrA",31.85,0); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagVertA",46.85,1); // No_1_00.pdf
+
+  PGen.setCF<setVariable::CF16_TDC>();
+  PGen.setMat("Stainless304L");
+  PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
+
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setMat("Stainless316L");
+  PGen.generatePipe(Control,lKey+"PipeD",113.7);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrB",51.86, 0);
+  CMGen.generateMag(Control,lKey+"CMagVertB",69.36, 1);
+  LQGen.generateQuad(Control,lKey+"QuadA",96.86);
+
+  BPMGen.generateBPM(Control,lKey+"BPM",0.0);
+
+  PGen.setCF<setVariable::CF18_TDC>();
+  PGen.generatePipe(Control,lKey+"PipeF",128.0);
+
+  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
+  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
+
+
+  IonPGen.generateTube(Control,lKey+"PumpA");
+  return;
+}
+  
+void
 Segment5Magnet(FuncDataBase& Control,
 	       const std::string& lKey)
   /*!
@@ -109,7 +174,7 @@ Segment5Magnet(FuncDataBase& Control,
   const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf  
   const double angleDipole(1.6-0.12);
 
-  Control.addVariable(lKey+"BeamOrg",Geometry::Vec3D(106.927,1901.34,0));
+  Control.addVariable(lKey+"BeamOrg",Geometry::Vec3D(229.927,1901.34,0));
   Control.addVariable(lKey+"BeamDelta",Geometry::Vec3D(0,0,0));
   Control.addVariable(lKey+"BeamXYAngle",-angleDipole);
   
