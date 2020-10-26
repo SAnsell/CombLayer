@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/phitsTallyBuilder.h
+ * File:   phitsSupportInc/aType.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,20 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef phitsTallyBuilder_h
-#define phitsTallyBuilder_h
-
-class Simulation;
-class SimPHITS;
+#ifndef phitsSystem_aType_h
+#define phitsSystem_aType_h
 
 namespace phitsSystem
 {
-   
-  void tallySelection(SimPHITS&,const mainSystem::inputParam&);
-  void helpTallyType(const std::string&);
 
-}
+/*!
+  \class aType
+  \version 1.0
+  \date October 2020
+  \author S. Ansell
+  \brief 
+*/
+
+class aType 
+{
+ private:
+
+  int aIndex;                       ///< A-type 
+  
+  std::vector<double> aValue;       ///< Values (e-type: 1)
+
+  size_t na;                       ///< Number of points
+  double aMin;                     ///< A Min [deg] [a-type 2]
+  double aMax;                     ///< A Max [deg] [a-type 2]
+
+ public:
+
+  aType(const std::vector<double>&);
+  aType(const std::string&,const double,const double,const double);
+  aType(const std::string&,const size_t,const double,const double);
+  
+  aType(const aType&);
+  aType& operator=(const aType&);
+  virtual ~aType() {}   ///< Destructor
+
   
 
+  void write(std::ostream&) const;
+
+};
+
+}  
+
 #endif
- 

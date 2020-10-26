@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/phitsTallyBuilder.h
+ * File:   phitsTallyInc/tcrossConstruct.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef phitsTallyBuilder_h
-#define phitsTallyBuilder_h
+#ifndef phitsSystem_tcrossConstruct_h
+#define phitsSystem_tcrossConstruct_h
+
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+namespace mainSystem
+{
+  class inputParam;
+}
 
 class Simulation;
-class SimPHITS;
 
 namespace phitsSystem
 {
-   
-  void tallySelection(SimPHITS&,const mainSystem::inputParam&);
-  void helpTallyType(const std::string&);
+
+/*!
+  \class tcrossConstruct
+  \version 1.0
+  \author S. Ansell
+  \date October 2020
+  \brief Constructs a t-cross tally from inputParam
+*/
+
+class tcrossConstruct 
+{
+  private:
+  
+  /// Private constructor
+  tcrossConstruct() {}
+
+  static void createTally(SimPHITS&,const int);
+
+  
+
+  static std::string convertTallyType(const std::string&);
+  
+ public:
+
+  static void processSurface(SimPHITS&,const mainSystem::inputParam&,
+			     const size_t);
+  
+  static void writeHelp(std::ostream&);
+};
 
 }
-  
 
 #endif
  

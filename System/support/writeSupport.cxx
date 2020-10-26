@@ -205,6 +205,66 @@ writeFLUKAhead(const std::string& HeadUnit,
   return;
 }
 
+template<typename T>
+void
+writePHITSCont(std::ostream& OX,const size_t depth,
+	       const size_t index,const T& value)
+ /*!
+   Write out the line neatly for PHITS
+   using a continued 4 stream
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param current index :: 
+   \param value :: value
+*/
+{
+  if (!index % 4)
+    {
+      if (index) OX<<"\n";
+      OX<<std::string((depth+1)*2,' ');
+    }
+  OX<<value<<" ";
+  return;
+}
+
+template<typename T>
+void
+writePHITS(std::ostream& OX,const size_t depth,
+	   const std::string& unit,const T& value)
+ /*!
+   Write out the line neatly for PHITS
+  \param OX :: ostream to write to
+  \param depth :: step depth
+  \param unit :: unit name
+  \param value :: value
+*/
+{
+  writePHITSOpen(OX,depth,unit);
+  OX<<value<<std::endl;
+  return;
+}
+
+void
+writePHITSOpen(std::ostream& OX,const size_t depth,
+	       const std::string& unit)
+ /*!
+   Write out an open line
+   (four unit for vector)
+  \param OX :: ostream to write to
+  \param depth :: step depth
+  \param unit :: unit name
+*/
+{
+  constexpr size_t equalPt(14);
+  const std::string spc((depth+1)*2,' ');
+
+  const size_t TLen((depth+1)*2+unit.size());
+  
+  OX<<spc<<unit;
+  if (TLen<equalPt)
+    OX<<std::string(equalPt-TLen,' ') << "=";
+  return;
+}
 
 void
 writeMCNPX(const std::string& Line,std::ostream& OX)

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/phitsTallyBuilder.h
+ * File:   phitsSupportInc/eType.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,20 +19,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef phitsTallyBuilder_h
-#define phitsTallyBuilder_h
-
-class Simulation;
-class SimPHITS;
+#ifndef phitsSystem_eType_h
+#define phitsSystem_eType_h
 
 namespace phitsSystem
 {
-   
-  void tallySelection(SimPHITS&,const mainSystem::inputParam&);
-  void helpTallyType(const std::string&);
 
-}
+/*!
+  \class eType
+  \version 1.0
+  \date October 2020
+  \author S. Ansell
+  \brief 
+*/
+
+class eType 
+{
+ private:
+
+  int eIndex;                       ///< Etype
+  
+  std::vector<double> eValue;       ///< Values (e-type: 1)
+
+  size_t ne;                   ///< Number of points
+  double eMin;                 ///< E Min [MeV] [e-type 2,3,4,5]
+  double eMax;                 ///< E Max [MeV] [e-type 2,3,4,5]
+  double eDel;                 ///< Ewidth or log( M_{i+1} / M_i ) ) [etype 5]
+
+ public:
+
+  eType(const std::vector<double>&);
+  eType(const std::string&,const double,const double,const double);
+  eType(const std::string&,const size_t,const double,const double);
+  
+  eType(const eType&);
+  eType& operator=(const eType&);
+  virtual ~eType() {}   ///< Destructor
+
   
 
+  void write(std::ostream&) const;
+
+};
+
+}  
+
 #endif
- 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTally/userBdxConstruct.cxx
+ * File:   phitsTally/tcrossConstruct.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -46,7 +46,9 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
@@ -57,90 +59,60 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "BaseMap.h"
-#include "SurfMap.h"
-#include "CellMap.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 
-#include "Object.h"
-#include "SimFLUKA.h"
+#include "SimPHITS.h"
 #include "particleConv.h"
-#include "flukaGenParticle.h"
 #include "TallySelector.h"
-#include "flukaTallySelector.h"
-#include "flukaTally.h"
-#include "userBdx.h"
-#include "userBdxConstruct.h" 
+#include "meshConstruct.h"
+#include "MeshXYZ.h"
+#include "eType.h"
+#include "aType.h"
+#include "phitsTally.h"
+#include "TCross.h"
+#include "tcrossConstruct.h" 
 
-
-namespace flukaSystem
+namespace phitsSystem
 {
-
 
 void 
-userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& PType,const int fortranTape,
-			      const int cellA,const int cellB,
-			      const bool eLog,const double Emin,
-			      const double Emax,const size_t nE,
-			      const bool aLog,const double Amin,
-			      const double Amax,const size_t nA)
-  /*!
+tcrossConstruct::createTally(SimPHITS& System,
+			     const int ID)
+/*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
-    \param System :: SimFLUKA to add tallies
-    \param PType :: particle name
-    \param fortranTape :: output stream
-    \param CellA :: initial region
-    \param CellB :: secondary region
-    \param eLog :: energy in log bins
-    \param aLog :: angle in log bins
-    \param Emin :: Min energy 
-    \param Emax :: Max energy 
-    \param Amin :: Min angle 
-    \param Amax :: Max angle 
-    \param nE :: Number of energy bins
-    \param nA :: Number of angle bins
+    \param System :: SimPHITS to add tallies
+    \param ID :: output stream
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","createTally");
+  ELog::RegMethod RegA("tcrossConstruct","createTally");
 
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
-    
-  userBdx UD(fortranTape);
-  UD.setParticle(FG.nameToFLUKA(PType));
+  TCross UB(ID);
 
-  UD.setCell(cellA,cellB);
-  UD.setEnergy(eLog,Emin,Emax,nE);
-  UD.setAngle(aLog,Amin,Amax,nA);
   
-  System.addTally(UD);
+  System.addTally(UB);
 
   return;
 }
 
+  
+      
 
 void
-userBdxConstruct::processBDX(SimFLUKA& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+tcrossConstruct::processSurface(SimPHITS& System,
+				const mainSystem::inputParam& IParam,
+				const size_t Index) 
   /*!
-    Add BDX tally (s) as needed
-    - Input:
-    -- particle FixedComp index
-    -- particle cellA  cellB
-    -- particle SurfMap name
-    -- particle FixedComp:CellMapName FixedComp:CellMapName 
-
-    \param System :: SimFLUKA to add tallies
+    Add t-cross tally (s) as needed
+    \param System :: SimPHITS to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","processBDX");
+  ELog::RegMethod RegA("tcrossConstruct","processSurface");
 
-  System.createObjSurfMap();
+  const int nextId=10; // System.getNextFTape();
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
@@ -164,27 +136,22 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     }
   ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 
-  // This needs to be more sophisticated
-  const int nextId=System.getNextFTape();
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
 
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
-  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
+  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
-  
-  userBdxConstruct::createTally(System,particleType,nextId,
-				cellA,cellB,
-				1,EA,EB,NE,
-				0,AA,AB,NA);
+
+  creatTally(System,ID);
   
   return;      
-}  
+}
   
 void
-userBdxConstruct::writeHelp(std::ostream& OX) 
+tcrossConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream
@@ -200,7 +167,8 @@ userBdxConstruct::writeHelp(std::ostream& OX)
     "  Emin EMax NE \n"
     "  AMin AngleMax NA (all optional) \n"
     <<std::enld;
+
   return;
 }
 
-}  // NAMESPACE flukaSystem
+}  // NAMESPACE phitsSystem
