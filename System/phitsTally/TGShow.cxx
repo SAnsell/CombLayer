@@ -130,6 +130,25 @@ TGShow::setIndex(const std::array<size_t,3>& A)
 }
 
 void
+TGShow::setOutputStyle(const bool materialName,
+		       const bool regionName)
+  /*!
+    Set the output name
+    \param materialName :: Write material name
+    \param regionName :: Write region name
+   */
+{
+  if (regionName)
+    output=6;
+  else
+    {
+      output= (materialName) ? 4 : 2;
+    }
+  return;
+}
+    
+  
+void
 TGShow::setCoordinates(const Geometry::Vec3D& A,const Geometry::Vec3D& B)
   /*!
     Sets the coordinates but work should be done here to

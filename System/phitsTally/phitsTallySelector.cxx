@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTallySelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,9 +129,7 @@ tallyModification(SimPHITS& System,
 	    ("TMod",i,3,"Amax for "+key);
 	  const size_t NA=IParam.getValueError<size_t>
 	    ("TMod",i,4,"NPTS for "+key);
-
-	  const int AFlag=IParam.getDefValue<int>(0,"TMod",i,5);
-          phitsSystem::setAngle(System,tName,AA,AB,NA,AFlag);
+          phitsSystem::setAngle(System,tName,AA,AB,NA);
         }
       else
 	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;

@@ -30,7 +30,7 @@ namespace phitsSystem
   \version 1.0
   \date October 2020
   \author S. Ansell
-  \brief 
+  \brief simple etype card for	PHITS tallies
 */
 
 class eType 

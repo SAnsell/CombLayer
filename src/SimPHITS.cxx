@@ -192,6 +192,25 @@ SimPHITS::addTally(const phitsSystem::phitsTally& TRef)
   return;
 }
 
+int
+SimPHITS::getNextTallyID() const
+  /*!
+    Get a unique id for the tally
+    \return ID number [unused]
+  */
+{
+  std::set<int> IDSet;
+  for(const auto& [Name , PPtr] : PTItem)
+    IDSet.emplace(PPtr->getID());
+
+  int index(1);
+  while(IDSet.find(index)!=IDSet.end())
+    {
+      index++;
+    }
+  return index;
+}
+
 void
 SimPHITS::writeSource(std::ostream& OX) const
   /*!

@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ constructSurfRegion(const Simulation& System,
     \param cellB :: Secondary region cell number
   */
 {
-  ELog::RegMethod RegA("flukaTallySelector[F]","constructSurfRegion");
+  ELog::RegMethod RegA("TallySelector[F]","constructSurfRegion");
 
   const attachSystem::SurfMap* SMPtr=
     System.getObject<attachSystem::SurfMap>(FCname);

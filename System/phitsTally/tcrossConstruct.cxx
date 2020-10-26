@@ -77,21 +77,45 @@ namespace phitsSystem
 {
 
 void 
-tcrossConstruct::createTally(SimPHITS& System,
-			     const int ID)
+tcrossConstruct::createTally
+(SimPHITS& System,
+ const std::string& PType,const int ID,
+ const int cellA,const int cellB,
+ const size_t NE,const double eMin,const double eMax,
+ const size_t NA,const double aMin,const double aMax)
 /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimPHITS to add tallies
+    \param PType :: particle name
+    \param CellA :: initial region
+    \param CellB :: secondary region
     \param ID :: output stream
+    \param NE :: number of energy points
+    \parma eMin :: Energy Min
+    \parma eMax :: Energy Max
+    \param NA :: number of angle points
+    \parma aMin :: Angle Min
+    \parma aMax :: Angle Max
   */
 {
   ELog::RegMethod RegA("tcrossConstruct","createTally");
 
-  TCross UB(ID);
+  TCross CT(ID);
 
-  
-  System.addTally(UB);
+  CT.setParticle(PType);
+  CT.setRegions(cellA,cellB);
+  if (eMin>1e-12 && NE>1)
+    CT.setEnergy(eType("Log",NE,eMin,eMax));
+  else
+    CT.setEnergy(eType("Linear",NE,eMin,eMax));
+
+  if (aMin>=-1.0 && aMin<=1.0)
+    CT.setAngle(aType("Cos",NA,aMin,aMax));
+  else
+    CT.setAngle(aType("Deg",NA,aMin,aMax));
+
+  System.addTally(CT);
 
   return;
 }
@@ -112,7 +136,7 @@ tcrossConstruct::processSurface(SimPHITS& System,
 {
   ELog::RegMethod RegA("tcrossConstruct","processSurface");
 
-  const int nextId=10; // System.getNextFTape();
+  const int nextID=System.getNextTallyID();
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
@@ -144,8 +168,7 @@ tcrossConstruct::processSurface(SimPHITS& System,
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
-
-  creatTally(System,ID);
+  createTally(System,particleType,nextID,cellA,cellB,NE,EA,EB,NA,AA,AB);
   
   return;      
 }
@@ -166,7 +189,7 @@ tcrossConstruct::writeHelp(std::ostream& OX)
     "       FixedComp:CellMap:Index (index optional) \n"
     "  Emin EMax NE \n"
     "  AMin AngleMax NA (all optional) \n"
-    <<std::enld;
+    <<std::endl;
 
   return;
 }

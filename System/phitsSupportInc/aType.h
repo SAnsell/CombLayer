@@ -47,7 +47,7 @@ class aType
 
  public:
 
-  aType(const std::vector<double>&);
+  aType(const std::string&,const std::vector<double>&);
   aType(const std::string&,const double,const double,const double);
   aType(const std::string&,const size_t,const double,const double);
   
@@ -56,7 +56,6 @@ class aType
   virtual ~aType() {}   ///< Destructor
 
   
-
   void write(std::ostream&) const;
 
 };

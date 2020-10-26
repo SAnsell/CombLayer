@@ -25,6 +25,8 @@
 namespace phitsSystem
 {
 
+  class eType;
+  class aType;
   
 /*!
   \class phitsTally
@@ -60,11 +62,13 @@ class phitsTally
   void setComment(const std::string&);
 
   virtual void setParticle(const std::string&);
-  virtual void setEnergy(const bool,const double,const double,const size_t);
-  virtual void setAngle(const bool,const double,const double,const size_t);
+  virtual void setEnergy(const eType&);
+  virtual void setAngle(const aType&);
 
   /// accessor to keyname
   const std::string& getKey() const { return keyName; }
+  /// accessor to keyname
+  int getID() const { return idNumber; }
   
   virtual void write(std::ostream&) const;
 

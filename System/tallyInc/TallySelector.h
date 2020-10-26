@@ -24,7 +24,22 @@
 
 class SimMCNP;
 
-void checkLinkCells(const Simulation&,const int,const int);
+bool checkLinkCells(const Simulation&,const int,const int);
+bool constructCellMapPair(const Simulation&,
+			  const std::string&,
+			  const std::string&,
+			  int&,int&);
+bool
+constructLinkRegion(const Simulation&,
+		    const std::string&,
+		    const std::string&,
+		    int&,int&);
+
+bool
+constructSurfRegion(const Simulation&,
+		    const std::string&,const std::string&,
+		    const size_t,const size_t,
+		    int&,int&);
 
 void pointTallyWeights(SimMCNP&,const mainSystem::inputParam&);
 void tallyModification(SimMCNP&,const mainSystem::inputParam&);

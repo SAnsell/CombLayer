@@ -87,7 +87,8 @@ class SimPHITS : public Simulation
   phitsSystem::phitsTally* getTally(const int) const;
   PTallyTYPE& getTallyMap() { return PTItem; }            ///< Access tally map
   const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
-  
+  int getNextTallyID() const;
+    
   virtual void write(const std::string&) const;
 
 };

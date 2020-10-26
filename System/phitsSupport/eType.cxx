@@ -3,7 +3,7 @@
  
  * File:   phitsSupport/eType.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ eType::eType(const std::vector<double>& ePts) :
 {
   ELog::RegMethod RegA("eType","eType(vector)");
   
-  if (eValue.emtpy())
+  if (eValue.empty())
     ELog::EM<<"Error Energy Vector empty:"<<ELog::endErr;
 }
 
@@ -72,8 +72,7 @@ eType::eType(const std::string& tName,
 	     const double minValue,
 	     const double maxValue) :
   eIndex((tName=="Log" || tName=="log") ? 3 : 2),
-  eMin(minValue),
-  eMax(maxValue)
+  ne(NEnergy),eMin(minValue),eMax(maxValue)
   /*!
     Constructor linear or log
     \param tName :: Data type [log/linear]
@@ -85,8 +84,8 @@ eType::eType(const std::string& tName,
       tName!="linear" || tName!="log")
     ELog::EM<<"Error e-type unknown:"<<tName<<ELog::endErr;
 
-  if (minValue>maxValue)
-    ELog::EM<<"Error Energy-Range -ve:"<<minValue<<" "<<maxValue<<ELog::endErr;
+  if (eMin>eMax)
+    ELog::EM<<"Error Energy-Range -ve:"<<eMin<<" "<<eMax<<ELog::endErr;
   
 }
 
@@ -173,7 +172,7 @@ eType::write(std::ostream& OX) const
 	  if (!(cnt % 4))
 	    OX<<spc<<spc;
 	  cnt++;
-	  OX<<eValue<<" ";
+	  OX<<EV<<" ";
 	}
       OX<<"\n";
     }
@@ -188,7 +187,7 @@ eType::write(std::ostream& OX) const
   else if (eIndex==4 || eIndex==5)
     {
       OX<<spc<<"e-type = "<<eIndex<<"\n";
-      OX<<spc<<spc<<"edel = "<<edel<<"\n";
+      OX<<spc<<spc<<"edel = "<<eDel<<"\n";
       OX<<spc<<spc<<"emin = "<<eMin<<"\n";
       OX<<spc<<spc<<"emax = "<<eMax<<"\n";
     }

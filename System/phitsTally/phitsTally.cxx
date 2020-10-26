@@ -149,16 +149,14 @@ phitsTally::setParticle(const std::string&)
 {}
 
 void
-phitsTally::setEnergy(const bool,const double,
-		      const double,const size_t)
+phitsTally::setEnergy(const eType&)
   /*!
     Null op call for non-energy detectors
   */
 {}
 
 void
-phitsTally::setAngle(const bool,const double,
-		      const double,const size_t)
+phitsTally::setAngle(const aType&)
  /*!
    Null op call for non-angle detectors
  */

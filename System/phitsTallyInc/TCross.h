@@ -40,12 +40,12 @@ class TCross : public phitsTally
 
   eType energy;                   ///< Energy grid / value
   aType angle;                    ///< Angle grid / value
+  int regionA;                    ///< first region
+  int regionB;                    ///< second region
   
   std::string title;              ///< title
   std::string xTxt;               ///< x-text
   std::string yTxt;               ///< y-Text
-
-  size_t getZeroIndex() const;
   
  public:
 
@@ -55,9 +55,10 @@ class TCross : public phitsTally
   TCross& operator=(const TCross&);
   virtual ~TCross();
 
-  void setFlux() { fluxFlag=1; }
-  void setEnergy(const eType& A) { energy = A; }
-  void setAngle(const aType& A) { angle = A; }
+  void setFlux() { fluxFlag=1; }  ///< set the tally as a flux tally
+  void setRegions(const int A,const int B) { regionA=A; regionB=B;}
+  virtual void setEnergy(const eType& A) { energy = A; }
+  virtual void setAngle(const aType& A) { angle = A; }
   
   virtual void write(std::ostream&) const;
   

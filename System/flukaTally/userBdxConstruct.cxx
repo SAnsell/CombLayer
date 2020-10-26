@@ -199,7 +199,7 @@ userBdxConstruct::writeHelp(std::ostream& OX)
     "       FixedComp:CellMap:Index (index optional) \n"
     "  Emin EMax NE \n"
     "  AMin AngleMax NA (all optional) \n"
-    <<std::enld;
+    <<std::endl;
   return;
 }
 

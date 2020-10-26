@@ -56,6 +56,8 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "eType.h"
+#include "aType.h"
 #include "phitsTally.h"
 
 #include "phitsTallyModification.h"
@@ -138,16 +140,18 @@ setEnergy(SimPHITS& Sim,const std::string& tName,
   const std::set<phitsTally*> ATallySet=
     getActiveTally(Sim,tName);
 
+  const std::string eDistType((logFlag) ? "Log" : "Linear");
+  const eType ET(eDistType,NA,EA,EB);
   for(phitsTally* mc: ATallySet)
-    mc->setEnergy(logFlag,EA,EB,NA);
+    mc->setEnergy(ET);
 
   return static_cast<int>(ATallySet.size());
 }
 
 int
 setAngle(SimPHITS& Sim,const std::string& tName,
-	 const double AA,const double AB,
-	 const size_t NA,const bool logFlag)
+	 const double aMin,const double aMax,
+	 const size_t NA)
 /*!
     Get the last tally point based on the tallynumber
     \param Sim :: System to access tally tables
@@ -155,7 +159,6 @@ setAngle(SimPHITS& Sim,const std::string& tName,
     \param AA :: start energy
     \param AB :: end enegy
     \param NA :: number of points
-    \param logFlag :: log points
     \return tally number [0 on fail]
   */
 {
@@ -164,8 +167,11 @@ setAngle(SimPHITS& Sim,const std::string& tName,
   const std::set<phitsTally*> ATallySet=
     getActiveTally(Sim,tName);
 
+  const std::string angleUnit=
+    (aMin>=-1.0 && aMin<=1.0) ? "Cos" : "Deg";
+  const aType AT(angleUnit,NA,aMin,aMax);  
   for(phitsTally* mc: ATallySet)
-    mc->setAngle(logFlag,AA,AB,NA);
+    mc->setAngle(AT);
 
   return static_cast<int>(ATallySet.size());
 }

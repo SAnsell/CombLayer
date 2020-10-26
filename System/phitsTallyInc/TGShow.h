@@ -38,7 +38,7 @@ class TGShow : public phitsTally
 
   MeshXYZ grid;                     ///< Axis grid
   
-  int output;                      ///< output type
+  int output;                       ///< output type
   int axisDirection;                ///< Axis direction xy,yz,xz (+/- rev)
   double lineWidth;                 ///< Width scale [default =0.5]
     
@@ -57,6 +57,7 @@ class TGShow : public phitsTally
   virtual ~TGShow();
      
   void setIndex(const std::array<size_t,3>&);
+  void setOutputStyle(const bool,const bool);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
   virtual void write(std::ostream&) const;

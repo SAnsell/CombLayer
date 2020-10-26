@@ -41,8 +41,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h" 
 #include "support.h"
 #include "writeSupport.h"
 #include "MatrixBase.h"
@@ -68,7 +66,7 @@ aType::aType(const std::string& unitName,
       unitName!="cos" || unitName=="Cos")
     ELog::EM<<"Error unitName unknown:"<<ELog::endErr;
 
-  if (eValue.emtpy())
+  if (aValue.empty())
     ELog::EM<<"Error Angle Vector empty:"<<ELog::endErr;
 }
 
@@ -88,13 +86,13 @@ aType::aType(const std::string& unitName,
       unitName!="cos")
     ELog::EM<<"Error unitName unknown:"<<ELog::endErr;
 
-  if (eValue.emtpy())
+  if (aValue.empty())
     ELog::EM<<"Error Angle Vector empty:"<<ELog::endErr;
 }
 
 aType::aType(const aType& A) : 
-  aIndex(A.eIndex),aValue(A.eValue),na(A.na),
-  aMin(A.eMin),aMax(A.aMax)
+  aIndex(A.aIndex),aValue(A.aValue),na(A.na),
+  aMin(A.aMin),aMax(A.aMax)
   /*!
     Copy constructor
     \param A :: aType to copy
@@ -111,12 +109,11 @@ aType::operator=(const aType& A)
 {
   if (this!=&A)
     {
-      eIndex=A.eIndex;
-      eValue=A.eValue;
-      ne=A.ne;
-      eMin=A.eMin;
-      eMax=A.eMax;
-      eDel=A.eDel;
+      aIndex=A.aIndex;
+      aValue=A.aValue;
+      na=A.na;
+      aMin=A.aMin;
+      aMax=A.aMax;
     }
   return *this;
 }
@@ -136,22 +133,22 @@ aType::write(std::ostream& OX) const
 
   if (aIndex==1 || aIndex==-1)
     {
-      OX<<spc<<"a-type = "<<eIndex<<"\n";
-      OX<<spc<<"na = "<<eValue.size()-1;
+      OX<<spc<<"a-type = "<<aIndex<<"\n";
+      OX<<spc<<"na = "<<aValue.size()-1;
       int cnt(0);
-      for(const double& EV : aValue)
+      for(const double& AV : aValue)
 	{
 	  if (!(cnt % 4))
 	    OX<<spc<<spc;
 	  cnt++;
-	  OX<<aValue<<" ";
+	  OX<<AV<<" ";
 	}
       OX<<"\n";
     }
 
   else if (aIndex==2 || aIndex==-2)
     {
-      OX<<spc<<"a-type = "<<eIndex<<"\n";
+      OX<<spc<<"a-type = "<<aIndex<<"\n";
       OX<<spc<<spc<<"na = "<<na<<"\n";
       OX<<spc<<spc<<"amin = "<<aMin<<"\n";
       OX<<spc<<spc<<"amax = "<<aMax<<"\n";
