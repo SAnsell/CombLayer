@@ -87,7 +87,8 @@ InjectionHall::InjectionHall(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  nPillars(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -150,6 +151,26 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
+
+  nPillars=Control.EvalDefVar<size_t>(keyName+"NPillars", 0);
+
+  for (size_t i=0; i<nPillars; ++i)
+    {
+      const std::string n(std::to_string(i+1));
+
+      const double R=Control.EvalPair<double>(keyName+"Pillar"+n+"Radius",
+					keyName+"PillarRadius");
+      pRadii.push_back(R);
+
+      const int m=ModelSupport::EvalMat<int>(Control,
+				       keyName+"Pillar"+n+"Mat",
+				       keyName+"PillarMat");
+      pMat.push_back(m);
+
+      const double x=Control.EvalVar<double>(keyName+"Pillar"+n+"X");
+      const double y=Control.EvalVar<double>(keyName+"Pillar"+n+"Y");
+      pXY.emplace_back(x,y,0.0);
+    }
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -319,6 +340,13 @@ InjectionHall::createSurfaces()
   // Auxiliary cyliner to cure geometric problems in corners
   ModelSupport::buildCylinder(SMap,buildIndex+2007,FMidPt,Z,0.5);
 
+  // Pillars
+  int SI(buildIndex+3000);
+  for (size_t i=0; i<nPillars; ++i)
+    {
+      ModelSupport::buildCylinder(SMap,SI+7,pXY[i],Z,pRadii[i]);
+      SI += 10;
+    }
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -356,6 +384,7 @@ InjectionHall::createObjects(Simulation& System)
   ELog::RegMethod RegA("InjectionHall","createObjects");
 
   std::string Out;
+  int SI(buildIndex+3000);
 
   // INNER VOIDS:
   // up to bend anngle
@@ -364,7 +393,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LinearVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 3002 -1001 -1511 3 -4 5 -6 ");
+    (SMap,buildIndex,SI," 3002 -1001 -1511 3 -4 5 -6 7M 17M 27M 37M ");
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -380,7 +409,8 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -1003 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 " 201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M ");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 1004 -4 5 -6");
@@ -390,7 +420,8 @@ InjectionHall::createObjects(Simulation& System)
 				 " 1001 -2111 1004 (1011:1104) -4 5 -6");
   makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -2 223 -1003 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "211 -2 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
@@ -491,6 +522,16 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"1 3 -3002 -3004 (3001:3014) 5 -6");
   makeCell("KystronWall",System,cellIndex++,wallMat,0.0,Out);
+
+  // Pillars
+  for (size_t i=0; i<nPillars; ++i)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI," 5 -6 -7M ");
+      makeCell("Pillar"+std::to_string(i),
+	       System,cellIndex++,pMat[i],0.0,Out);
+      SI += 10;
+    }
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);

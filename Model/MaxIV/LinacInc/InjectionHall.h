@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: LinacInc/InjectionHall.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_InjectionHall_h
@@ -26,13 +26,13 @@ class Simulation;
 
 namespace tdcSystem
 {
-  
+
 /*!
   \class InjectionHall
   \version 1.0
   \author S. Ansell
   \date February 2018
-  \brief Main 1.5GeV ring building and inner void  
+  \brief Main 1.5GeV ring building and inner void
 */
 
 class InjectionHall :
@@ -44,7 +44,7 @@ class InjectionHall :
  private:
 
   double mainLength;             ///< total length
-  
+
   double linearRCutLength;       ///< Length to right out step
   double linearLTurnLength;      ///< Length to left angle out (inner)
   double spfAngleLength;         ///< Length to left off angle
@@ -53,7 +53,7 @@ class InjectionHall :
   double spfAngle;               ///< SPF hall diagonal wall
 
   double rightWallStep;          ///< Extra out step on right
-  
+
   double linearWidth;            ///< Wall - Wall width
 
   double floorDepth;             ///< Depth (floor to under roof)
@@ -67,38 +67,42 @@ class InjectionHall :
   double midTYStep;             ///< Step to centre of T
   double midTThick;             ///< Thickness
   double midTAngle;             ///< angle of offset
-  double midTLeft;              ///< left flat 
+  double midTLeft;              ///< left flat
   double midTRight;             ///< right flat
   double midTFrontAngleStep;    ///< angle at front extent from mid line
   double midTBackAngleStep;     ///< angle at back extent from mid line
 
   double klysDivThick;      ///< Thickness of klystrong divder
-  
-  double midGateOut;            ///< Size outwards from wall 
-  double midGateWidth;          ///< Gate width 
+
+  double midGateOut;            ///< Size outwards from wall
+  double midGateWidth;          ///< Gate width
   double midGateWall;           ///< Gate wall
 
   double klystronXStep;         ///< Step of inner klystron wall
   double klystronLen;           ///< Length of klystron wall
   double klystronFrontWall;      ///< Thick of front kylstron wall
   double klystronSideWall;      ///< Thickness of klystron divder
-  
+
   double boundaryWidth;           ///< Width after walls
   double boundaryHeight;          ///< Height after roof
-  
-    
+
+  size_t nPillars;              ///< Number of pillars
+  std::vector<double> pRadii;   ///< Pillar radii
+  std::vector<int> pMat;        ///< Pillar materials
+  std::vector<Geometry::Vec3D> pXY; ///< Pillar coordinates (with respect to building origin)
+
   int voidMat;               ///< void material
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
   void createFloor(Simulation&);
-    
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   InjectionHall(const std::string&);
@@ -115,4 +119,3 @@ class InjectionHall :
 }
 
 #endif
- 

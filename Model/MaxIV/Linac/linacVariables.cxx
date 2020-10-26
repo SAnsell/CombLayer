@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <cassert>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -818,7 +819,7 @@ Segment5(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",6.4);
 
   Segment5Magnet(Control,lKey);
-  
+
   return;
 }
 
@@ -1147,7 +1148,7 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",XYAngle);
 
   Segment12Magnet(Control,lKey);
-  
+
   return;
 }
 
@@ -3161,11 +3162,44 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"KlystronFrontWall",100.0); // K_20-1_08F6b4
   Control.addVariable(wallKey+"KlystronSideWall",klystronSideWall);
 
-
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
+
+  // Pillars
+  /* numbering of pillars in the injection hall
+     basis: 0 1 0 -1 0 0 (as in the construction drawings)
+
+       1        |      6  8  10  |  12  14  16
+         2 3 4  |  5   7  9  11  |  13  15  17
+   */
+  constexpr size_t nPillars(17); // 12 = 4 + 7 + 6 (different injection hall cells)
+  Control.addVariable(wallKey+"NPillars",nPillars);
+  Control.addVariable(wallKey+"PillarRadius",30.0); // measured in the PDF drawing
+  Control.addVariable(wallKey+"PillarMat","Concrete");
+
+  const std::array<double,nPillars>
+    x{-208,57.9,17.9,-22.1,
+      -485,-985,-485,-985,-485,-985,-485,
+      -985,-485,-985,-485,-985,-485};
+
+  assert(std::abs(x[0]-x[5]-777.0)<Geometry::zeroTol && "X-distance between pillars 1 and 6 is wrong");
+  assert(std::abs(x[1]-x[4]-542.9)<Geometry::zeroTol && "X-distance between pillars 2 and 5 is wrong");
+
+  const std::array<double,nPillars>
+    y{1534.715,1621.215,2021.215,2421.215,
+      5814.015,6364.015,6364.015,6964.015,6964.015,7564.015,7564.015,
+      8213.215,8214.015,8864.015,8864.015,9464.015,9464.015};
+
+  assert(std::abs(y[16]-y[0]-7929.3)<Geometry::zeroTol && "Y-distance between first and last pillars is wrong");
+
+  for (size_t i=0; i<nPillars; ++i)
+    {
+      const std::string n(std::to_string(i+1));
+      Control.addVariable(wallKey+"Pillar"+n+"X",x[i]);
+      Control.addVariable(wallKey+"Pillar"+n+"Y",y[i]);
+    }
 
   return;
 }
