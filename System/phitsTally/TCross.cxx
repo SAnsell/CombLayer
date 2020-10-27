@@ -59,7 +59,7 @@ namespace phitsSystem
 TCross::TCross(const int ID) :
   phitsTally(ID),fluxFlag(0),
   energy(eType("Linear",1UL,0.0,5e3)),
-  angle(aType("Linear",1UL,0.0,5e3))
+  angle(aType("Cos",1UL,-1.0,1.0))
   /*!
     Constructor
     \param ID :: Identity number of tally 
@@ -115,6 +115,15 @@ TCross::~TCross()
   */
 {}
 
+void
+TCross::setUnit(const std::string& unitName)
+{
+  static const std::map<std::string,int> uConv
+    ({
+      {"1/cm^2/MeV/",1}
+    });
+  
+}
 
 void
 TCross::write(std::ostream& OX) const
@@ -132,15 +141,13 @@ TCross::write(std::ostream& OX) const
   OX<<"  flux =" << ((fluxFlag) ? "flux" : "current")<<"\n";
   energy.write(OX);
   angle.write(OX);
-  
-  
+  OX<<"  unit = "<<unit<<"\n";
+  OX<<"  reg = 1\n";
   if (!title.empty())
     OX<<"  title = "<<title<<"\n";
   if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";
   if (!yTxt.empty())  OX<<"  y-txt = "<<yTxt<<"\n";
   OX<<"  epsout = "<<epsFlag<<"\n";
-  OX<<"  vtkout = "<<vtkFlag<<"\n";
-  OX<<"  vtkfmt = "<<vtkFormat<<"\n";
   OX<<"  file = "<<keyName<<"\n";
   OX.flush();
   return;

@@ -56,7 +56,7 @@ class eType
   eType& operator=(const eType&);
   virtual ~eType() {}   ///< Destructor
 
-  
+  int calcUnit(const std::string&) const;
 
   void write(std::ostream&) const;
 

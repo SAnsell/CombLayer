@@ -110,6 +110,7 @@ tcrossConstruct::createTally
   else
     CT.setEnergy(eType("Linear",NE,eMin,eMax));
 
+
   if (aMin>=-1.0 && aMin<=1.0)
     CT.setAngle(aType("Cos",NA,aMin,aMax));
   else

@@ -3,7 +3,7 @@
  
  * File:   phitsSupport/aType.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ namespace phitsSystem
 
 aType::aType(const std::string& unitName,
 	     const std::vector<double>& aPts) :
-  aIndex((unitName=="Cos" || unitName=="cos") ? -1 : 1),
+  aIndex(calcUnit(unitName)),
   aValue(aPts)
   /*!
     Constructor of vector of points
@@ -61,10 +61,6 @@ aType::aType(const std::string& unitName,
   */
 {
   ELog::RegMethod RegA("aType","aType(vector)");
-
-  if (unitName!="degree" || unitName!="deg" ||
-      unitName!="cos" || unitName=="Cos")
-    ELog::EM<<"Error unitName unknown:"<<ELog::endErr;
 
   if (aValue.empty())
     ELog::EM<<"Error Angle Vector empty:"<<ELog::endErr;
@@ -74,21 +70,12 @@ aType::aType(const std::string& unitName,
 	     const size_t NAngle,
 	     const double minValue,
 	     const double maxValue) :
-  aIndex((unitName=="Cos" || unitName=="cos") ? -2 : 2),
-  aMin(minValue),aMax(maxValue)
+  aIndex(calcUnit(unitName)*2),
+  na(NAngle),aMin(minValue),aMax(maxValue)
   /*!
     Constructor linear or 
   */
-{
-  ELog::RegMethod RegA("aType","aType(S,int,double,double)");
-
-   if (unitName!="degree" || unitName!="deg" ||
-      unitName!="cos")
-    ELog::EM<<"Error unitName unknown:"<<ELog::endErr;
-
-  if (aValue.empty())
-    ELog::EM<<"Error Angle Vector empty:"<<ELog::endErr;
-}
+{}
 
 aType::aType(const aType& A) : 
   aIndex(A.aIndex),aValue(A.aValue),na(A.na),
@@ -118,6 +105,32 @@ aType::operator=(const aType& A)
   return *this;
 }
 
+int
+aType::calcUnit(const std::string& unitName) const
+  /*!
+    Set the unit from a name 
+    \param unitName :: Name of the units
+    \retval -1 : cos 
+    \retval 1 : degree
+   */
+{
+  const static std::map<std::string,int> unitMap
+    ({
+      {"degree",1},
+      {"Degree",1},
+      {"deg",1},
+      {"Deg",1},
+      {"cos",-1},
+      {"Cos",-1}
+    });
+
+  std::map<std::string,int>::const_iterator mc=
+    unitMap.find(unitName);
+  if (mc==unitMap.end())
+    throw ColErr::InContainerError<std::string>
+      (unitName,"Atype::UnitName unknown");
+  return mc->second;
+}
   
 void
 aType::write(std::ostream& OX) const

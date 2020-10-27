@@ -55,6 +55,7 @@ class aType
   aType& operator=(const aType&);
   virtual ~aType() {}   ///< Destructor
 
+  int calcUnit(const std::string&) const;
   
   void write(std::ostream&) const;
 

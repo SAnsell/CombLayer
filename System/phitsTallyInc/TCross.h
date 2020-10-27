@@ -40,6 +40,8 @@ class TCross : public phitsTally
 
   eType energy;                   ///< Energy grid / value
   aType angle;                    ///< Angle grid / value
+  std::string axis;               ///< Axis (eng/angle etc)
+  int unit;                       ///< Unit 
   int regionA;                    ///< first region
   int regionB;                    ///< second region
   
@@ -57,6 +59,8 @@ class TCross : public phitsTally
 
   void setFlux() { fluxFlag=1; }  ///< set the tally as a flux tally
   void setRegions(const int A,const int B) { regionA=A; regionB=B;}
+  void setUnit(const int A) { unit=A; }
+  void setUnit(const std::string&);
   virtual void setEnergy(const eType& A) { energy = A; }
   virtual void setAngle(const aType& A) { angle = A; }
   

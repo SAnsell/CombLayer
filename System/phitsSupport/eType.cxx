@@ -71,7 +71,7 @@ eType::eType(const std::string& tName,
 	     const size_t NEnergy,
 	     const double minValue,
 	     const double maxValue) :
-  eIndex((tName=="Log" || tName=="log") ? 3 : 2),
+  eIndex(calcUnit(tName)),
   ne(NEnergy),eMin(minValue),eMax(maxValue)
   /*!
     Constructor linear or log
@@ -80,10 +80,6 @@ eType::eType(const std::string& tName,
 {
   ELog::RegMethod RegA("eType","eType(S,int,double,double)");
   
-  if (tName!="Linear" || tName!="Log" ||
-      tName!="linear" || tName!="log")
-    ELog::EM<<"Error e-type unknown:"<<tName<<ELog::endErr;
-
   if (eMin>eMax)
     ELog::EM<<"Error Energy-Range -ve:"<<eMin<<" "<<eMax<<ELog::endErr;
   
@@ -93,18 +89,22 @@ eType::eType(const std::string& tName,
 	     const double minValue,
 	     const double maxValue,
 	     const double delta) :
-  eIndex((tName=="Log" || tName=="log") ? 5 : 4),
+  eIndex(calcUnit(tName)+2),
   eMin(minValue),
   eMax(maxValue),
   eDel(delta)
   /*!
-    Constructor linear or 
+    Constructor linear or log energy mesh with setp size
+    \param tName :: Mesh type
+    \param minValue :: minimum Value [MeV]
+    \param maxValue :: maximum Value [MeV]
+    \param delta :: step size [MeV]
   */
 {
   ELog::RegMethod RegA("eType","eType(S,double,double,double)");
   
-  if (tName!="Linear" || tName!="Log" ||
-      tName!="linear" || tName!="log")
+  if (tName!="Linear" && tName!="Log" &&
+      tName!="linear" && tName!="log")
     ELog::EM<<"Error e-type unknown:"<<tName<<ELog::endErr;
 
   if (minValue>maxValue)
@@ -114,10 +114,6 @@ eType::eType(const std::string& tName,
     ELog::EM<<"Error Energy Delta :"<<eDel<<ELog::endErr;
   
 }
-
-
-
-
   
 eType::eType(const eType& A) : 
   eIndex(A.eIndex),eValue(A.eValue),ne(A.ne),
@@ -148,6 +144,31 @@ eType::operator=(const eType& A)
   return *this;
 }
 
+int
+eType::calcUnit(const std::string& unitName) const
+  /*!
+    Set the unit from a name 
+    \param unitName :: Name of the units
+    \retval 1 : linear
+    \retval 
+   */
+{
+  const static std::map<std::string,int> unitMap
+    ({
+      {"linear",2},
+      {"Linear",2},
+      {"Log",3},
+      {"log",3},
+    });
+
+  std::map<std::string,int>::const_iterator mc=
+    unitMap.find(unitName);
+  if (mc==unitMap.end())
+    throw ColErr::InContainerError<std::string>
+      (unitName,"eType::UnitName unknown");
+  return mc->second;
+}
+  
   
 void
 eType::write(std::ostream& OX) const
