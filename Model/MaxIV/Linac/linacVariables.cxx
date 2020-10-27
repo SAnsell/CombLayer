@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -49,7 +50,6 @@
 #include "BellowGenerator.h"
 #include "FlangePlateGenerator.h"
 
-#include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
@@ -3184,15 +3184,16 @@ wallVariables(FuncDataBase& Control,
       -485,-985,-485,-985,-485,-985,-485,
       -985,-485,-985,-485,-985,-485};
 
-  assert(std::abs(x[0]-x[5]-777.0)<Geometry::zeroTol && "X-distance between pillars 1 and 6 is wrong");
-  assert(std::abs(x[1]-x[4]-542.9)<Geometry::zeroTol && "X-distance between pillars 2 and 5 is wrong");
+  assert(std::abs(std::accumulate(x.begin(), x.end(), 0.0)+9459.3)<Geometry::zeroTol &&
+	 "x-coordinates of pillars are wrong");
 
   const std::array<double,nPillars>
     y{1534.715,1621.215,2021.215,2421.215,
       5814.015,6364.015,6364.015,6964.015,6964.015,7564.015,7564.015,
       8213.215,8214.015,8864.015,8864.015,9464.015,9464.015};
 
-  assert(std::abs(y[16]-y[0]-7929.3)<Geometry::zeroTol && "Y-distance between first and last pillars is wrong");
+  assert(std::abs(std::accumulate(y.begin(), y.end(), 0.0)-108279.755)<Geometry::zeroTol &&
+	 "y-coordinates of pillars are wrong");
 
   for (size_t i=0; i<nPillars; ++i)
     {
