@@ -91,6 +91,12 @@ class InjectionHall :
   std::vector<int> pMat;        ///< Pillar materials
   std::vector<Geometry::Vec3D> pXY; ///< Pillar coordinates (with respect to building origin)
 
+  double thzWidth;              ///< Width of THz penetration
+  double thzHeight;             ///< Height of THz penetration
+  double thzXStep;              ///< THz penetration X offset with respect to FMidPt
+  double thzZStep;              ///< THz penetration X offset with respect to FMidPt
+  double thzZAngle;             ///< THz penetration Z angle
+
   int voidMat;               ///< void material
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material

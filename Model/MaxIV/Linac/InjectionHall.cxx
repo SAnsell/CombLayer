@@ -172,6 +172,13 @@ InjectionHall::populate(const FuncDataBase& Control)
       pXY.emplace_back(x,y,0.0);
     }
 
+  // THz penetration
+  thzWidth=Control.EvalVar<double>(keyName+"THzWidth");
+  thzHeight=Control.EvalVar<double>(keyName+"THzHeight");
+  thzXStep=Control.EvalVar<double>(keyName+"THzXStep");
+  thzZStep=Control.EvalVar<double>(keyName+"THzZStep");
+  thzZAngle=Control.EvalVar<double>(keyName+"THzZAngle");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
@@ -348,6 +355,16 @@ InjectionHall::createSurfaces()
       SI += 10;
     }
 
+  // THz penetration
+  const Geometry::Quaternion QTHz =
+        Geometry::Quaternion::calcQRotDeg(thzZAngle,Z);
+  const Geometry::Vec3D THzX(QTHz.makeRotate(X));
+
+  ModelSupport::buildPlane(SMap,buildIndex+5003,FMidPt-X*(thzWidth/2.0-thzXStep),THzX);
+  ModelSupport::buildPlane(SMap,buildIndex+5004,FMidPt+X*(thzWidth/2.0+thzXStep),THzX);
+  ModelSupport::buildPlane(SMap,buildIndex+5005,FMidPt-Z*(thzHeight/2.0-thzZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5006,FMidPt+Z*(thzHeight/2.0+thzZStep),Z);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -485,7 +502,8 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MID T
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 1003 -1004 -2 5 -6 2007 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1001 1003 -1004 -2 5 -6 2007 (-5003:5004:-5005:5006)");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
@@ -532,6 +550,9 @@ InjectionHall::createObjects(Simulation& System)
       SI += 10;
     }
 
+  // THz penetration
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 1003 5003 -5004 5005 -5006 ");
+  makeCell("THz",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
