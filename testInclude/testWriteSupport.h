@@ -39,7 +39,8 @@ class testWriteSupport
 private:
 
   //Tests 
-  int testDouble();   
+  int testDouble();
+  int testPHITS();   
 
 public:
 

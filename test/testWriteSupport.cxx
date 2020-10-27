@@ -75,12 +75,15 @@ testWriteSupport::applyTest(const int extra)
   typedef int (testWriteSupport::*testPtr)();
   testPtr TPtr[]=
     {
-      &testWriteSupport::testDouble
+      &testWriteSupport::testDouble,
+      &testWriteSupport::testPHITS
     };
 
   const std::string TestName[]=
     {
-      "Double"
+      "Double",
+      "PHITS",
+      
     };
 
   const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -145,6 +148,46 @@ testWriteSupport::testDouble()
 	  ELog::EM<<"10 count    :1234567890:=="<<ELog::endDiag;
 	  ELog::EM<<"Output    ==:"<<out<<":=="<<ELog::endDiag;
 	  ELog::EM<<"Expected  ==:"<<TLine<<":=="<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
+
+int
+testWriteSupport::testPHITS()
+  /*!
+    Applies a test writePhits
+    \retval 0 on success
+  */
+{
+  ELog::RegMethod RegA("testWriteSupport","testPHITS");
+
+  // type : Init string : final : results : (outputs)
+  typedef std::tuple<std::string,size_t,std::string> TTYPE;
+
+  const std::vector<TTYPE> Tests=
+    {
+      //         1234567890 
+      TTYPE("unit",1,   "    unit          ="),
+      TTYPE("unitlog",1,"    unitlog       =")
+    };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      std::ostringstream cx;
+      const std::string& unit=std::get<0>(tc);
+      const size_t NSpc=std::get<1>(tc);
+      const std::string& res=std::get<2>(tc);
+      writePHITSOpen(cx,NSpc,unit);
+      if (cx.str()!=res)
+	{
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"          : 012345678901234567890"<<ELog::endDiag;
+	  ELog::EM<<"Output    : "<<cx.str()<<" :=="<<ELog::endDiag;
+	  ELog::EM<<"Expect    : "<<res<<" :=="<<ELog::endDiag;
 	  return -1;
 	}
       cnt++;

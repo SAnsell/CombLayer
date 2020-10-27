@@ -3,7 +3,7 @@
  
  * File:   support/writeSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,8 +229,10 @@ writePHITSCont(std::ostream& OX,const size_t depth,
 
 template<typename T>
 void
-writePHITS(std::ostream& OX,const size_t depth,
-	   const std::string& unit,const T& value)
+writePHITS(std::ostream& OX,
+	   const size_t depth,
+	   const std::string& unit,
+	   const T& value)
  /*!
    Write out the line neatly for PHITS
   \param OX :: ostream to write to
@@ -245,24 +247,21 @@ writePHITS(std::ostream& OX,const size_t depth,
 }
 
 void
-writePHITSOpen(std::ostream& OX,const size_t depth,
+writePHITSOpen(std::ostream& OX,
+	       const size_t depth,
 	       const std::string& unit)
  /*!
-   Write out an open line
-   (four unit for vector)
+   Write out an open line as <spces>unit = 
   \param OX :: ostream to write to
   \param depth :: step depth
   \param unit :: unit name
 */
 {
-  constexpr size_t equalPt(14);
+  constexpr size_t equalPt(14);     // distance to name
   const std::string spc((depth+1)*2,' ');
 
-  const size_t TLen((depth+1)*2+unit.size());
-  
-  OX<<spc<<unit;
-  if (TLen<equalPt)
-    OX<<std::string(equalPt-TLen,' ') << "=";
+  OX<<spc<<std::left<<std::setw(equalPt)<<unit;
+  OX<<"=";
   return;
 }
 
@@ -414,5 +413,25 @@ splitComandLine(std::string Line)
   outVec.push_back(unit);
   return outVec;
 }
+
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const double&);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const std::string&);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const int&);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const size_t&);
+
+template void
+writePHITSCont(std::ostream&,const size_t,const size_t,const double&);
+template void
+writePHITSCont(std::ostream&,const size_t,const size_t,const std::string&);
+template void
+writePHITSCont(std::ostream&,const size_t,const size_t,const int&);
+template void
+writePHITSCont(std::ostream&,const size_t,const size_t,const size_t&);
+
+
 
 }  // NAMESPACE StrFunc
