@@ -31,6 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <cassert>
+#include <numeric>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -48,7 +50,6 @@
 #include "BellowGenerator.h"
 #include "FlangePlateGenerator.h"
 
-#include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
 #include "LinacSexuGenerator.h"
@@ -818,7 +819,7 @@ Segment5(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",6.4);
 
   Segment5Magnet(Control,lKey);
-  
+
   return;
 }
 
@@ -1147,7 +1148,7 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",XYAngle);
 
   Segment12Magnet(Control,lKey);
-  
+
   return;
 }
 
@@ -3161,11 +3162,51 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"KlystronFrontWall",100.0); // K_20-1_08F6b4
   Control.addVariable(wallKey+"KlystronSideWall",klystronSideWall);
 
-
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
+
+  // Pillars
+  /* numbering of pillars in the injection hall
+     basis: 0 1 0 -1 0 0 (as in the construction drawings)
+
+       1        |      6  8  10  |  12  14  16
+         2 3 4  |  5   7  9  11  |  13  15  17
+   */
+  constexpr size_t nPillars(17); // 12 = 4 + 7 + 6 (different injection hall cells)
+  Control.addVariable(wallKey+"NPillars",nPillars);
+  Control.addVariable(wallKey+"PillarRadius",30.0); // measured in the PDF drawing
+  Control.addVariable(wallKey+"PillarMat","Concrete");
+
+  const std::array<double,nPillars>
+    x{-208,57.9,17.9,-22.1,
+      -485,-985,-485,-985,-485,-985,-485,
+      -985,-485,-985,-485,-985,-485};
+
+  assert(std::abs(std::accumulate(x.begin(), x.end(), 0.0)+9459.3)<Geometry::zeroTol &&
+	 "x-coordinates of pillars are wrong");
+
+  const std::array<double,nPillars>
+    y{1534.715,1621.215,2021.215,2421.215,
+      5814.015,6364.015,6364.015,6964.015,6964.015,7564.015,7564.015,
+      8213.215,8214.015,8864.015,8864.015,9464.015,9464.015};
+
+  assert(std::abs(std::accumulate(y.begin(), y.end(), 0.0)-108279.755)<Geometry::zeroTol &&
+	 "y-coordinates of pillars are wrong");
+
+  for (size_t i=0; i<nPillars; ++i)
+    {
+      const std::string n(std::to_string(i+1));
+      Control.addVariable(wallKey+"Pillar"+n+"X",x[i]);
+      Control.addVariable(wallKey+"Pillar"+n+"Y",y[i]);
+    }
+
+  Control.addVariable(wallKey+"THzHeight",5.0); // K_20-2_348
+  Control.addVariable(wallKey+"THzWidth",30.0); // K_20-2_348
+  Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
+  Control.addVariable(wallKey+"THzZStep",-10.0); // K_20-2_348: 130-120 = 10
+  Control.addVariable(wallKey+"THzZAngle",7.35); // measured with liner on K_20-1_08F6c1
 
   return;
 }
