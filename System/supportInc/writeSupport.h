@@ -40,6 +40,8 @@ void writeControl(const std::string&,std::ostream&,
 void writeFLUKA(const std::string&,std::ostream&,const double = 1e-40);
 
 void writePHITSOpen(std::ostream&,const size_t,const std::string&);
+void writePHITSTableHead(std::ostream&,const size_t,
+			 const std::vector<std::string>&);
 		  
 
 template<typename T>

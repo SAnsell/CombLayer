@@ -268,6 +268,35 @@ writePHITSOpen(std::ostream& OX,
 }
 
 void
+writePHITSTableHead(std::ostream& OX,
+		    const size_t depth,
+		    const std::vector<std::string>& units)
+ /*!
+   Write out an open line as a table set
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param units :: unit names
+ */
+{
+  constexpr size_t equalPt(12);     // distance to name
+
+  const std::string spc((depth+1)*2,' ');
+  OX<<spc<<std::endl;
+  
+  for(const std::string& item : units)
+    {
+      const int width(equalPt-item.size());
+      
+      if (width>0)
+	OX<<std::left<<std::setw(width)<<item;
+      else
+	OX<<item;
+    }
+  OX<<std::endl;
+  return;
+}
+
+void
 writeMCNPX(const std::string& Line,std::ostream& OX)
 /*!
   Write out the line in the limited form for MCNPX
