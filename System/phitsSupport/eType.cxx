@@ -182,11 +182,11 @@ eType::write(std::ostream& OX) const
   
   std::string spc("  ");
   
-
+  StrFunc::writePHITS(OX,1,"e-type",eIndex);
   if (eIndex==1)
     {
-      OX<<spc<<"e-type = "<<eIndex;
-      OX<<spc<<"ne     = "<<eValue.size()-1;
+      StrFunc::writePHITS(OX,2,"ne",eValue.size()-1);
+      
       int cnt(0);
       for(const double EV : eValue)
 	{
@@ -200,17 +200,15 @@ eType::write(std::ostream& OX) const
 
   else if (eIndex==2 || eIndex==3)
     {
-      OX<<spc<<"e-type   = "<<eIndex<<"\n";
-      OX<<spc<<spc<<"ne   = "<<ne<<"\n";
-      OX<<spc<<spc<<"emin = "<<eMin<<"\n";
-      OX<<spc<<spc<<"emax = "<<eMax<<"\n";
+      StrFunc::writePHITS(OX,2,"ne",ne);
+      StrFunc::writePHITS(OX,2,"emin",eMin);
+      StrFunc::writePHITS(OX,2,"emax",eMax);
     }
   else if (eIndex==4 || eIndex==5)
     {
-      OX<<spc<<"e-type = "<<eIndex<<"\n";
-      OX<<spc<<spc<<"edel = "<<eDel<<"\n";
-      OX<<spc<<spc<<"emin = "<<eMin<<"\n";
-      OX<<spc<<spc<<"emax = "<<eMax<<"\n";
+      StrFunc::writePHITS(OX,2,"edel",eDel);
+      StrFunc::writePHITS(OX,2,"emin",eMin);
+      StrFunc::writePHITS(OX,2,"emax",eMax);
     }
 
   return;

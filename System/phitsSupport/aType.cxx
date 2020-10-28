@@ -142,29 +142,27 @@ aType::write(std::ostream& OX) const
   ELog::RegMethod RegA("aType","write");
 
   
-  std::string spc("  ");  
-
+  StrFunc::writePHITS(OX,1,"a-type",aIndex);
   if (aIndex==1 || aIndex==-1)
     {
-      OX<<spc<<"a-type = "<<aIndex<<"\n";
-      OX<<spc<<"na = "<<aValue.size()-1;
+      std::string spc("    ");
+      StrFunc::writePHITS(OX,2,"na",aValue.size()-1);
+
       int cnt(0);
       for(const double& AV : aValue)
 	{
 	  if (!(cnt % 4))
-	    OX<<spc<<spc;
+	    OX<<spc;
 	  cnt++;
 	  OX<<AV<<" ";
 	}
       OX<<"\n";
     }
-
   else if (aIndex==2 || aIndex==-2)
     {
-      OX<<spc<<"a-type = "<<aIndex<<"\n";
-      OX<<spc<<spc<<"na = "<<na<<"\n";
-      OX<<spc<<spc<<"amin = "<<aMin<<"\n";
-      OX<<spc<<spc<<"amax = "<<aMax<<"\n";
+      StrFunc::writePHITS(OX,2,"na",na);
+      StrFunc::writePHITS(OX,2,"amin",aMin);
+      StrFunc::writePHITS(OX,2,"amax",aMax);
     }
 
   return;

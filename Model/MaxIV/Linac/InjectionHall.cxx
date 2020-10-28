@@ -348,10 +348,12 @@ InjectionHall::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+2007,FMidPt,Z,0.5);
 
   // Pillars
+  ELog::EM<<"NPillar == "<<nPillars<<ELog::endDiag;
   int SI(buildIndex+3000);
   for (size_t i=0; i<nPillars; ++i)
     {
       ModelSupport::buildCylinder(SMap,SI+7,pXY[i],Z,pRadii[i]);
+      ELog::EM<<"PR == "<<pXY[i]<<" "<<pRadii[i]<<ELog::endDiag;
       SI += 10;
     }
 

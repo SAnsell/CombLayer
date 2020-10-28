@@ -229,10 +229,8 @@ writePHITSCont(std::ostream& OX,const size_t depth,
 
 template<typename T>
 void
-writePHITS(std::ostream& OX,
-	   const size_t depth,
-	   const std::string& unit,
-	   const T value)
+writePHITS(std::ostream& OX,const size_t depth,
+	   const std::string& unit,const T value)
  /*!
    Write out the line neatly for PHITS
   \param OX :: ostream to write to
@@ -257,11 +255,15 @@ writePHITSOpen(std::ostream& OX,
   \param unit :: unit name
 */
 {
-  constexpr size_t equalPt(14);     // distance to name
+  constexpr size_t equalPt(20);     // distance to name
   const std::string spc((depth+1)*2,' ');
 
-  OX<<spc<<std::left<<std::setw(equalPt)<<unit;
-  OX<<"=";
+  const int width(equalPt-(depth+1)*2-unit.size());
+  if (width>0)
+    OX<<spc<<std::left<<unit<<std::setw(width)<<" ";
+  else
+    OX<<spc<<unit;
+  OX<<"= ";
   return;
 }
 
