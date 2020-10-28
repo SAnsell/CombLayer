@@ -59,7 +59,9 @@ namespace phitsSystem
 TCross::TCross(const int ID) :
   phitsTally(ID),fluxFlag(0),
   energy(eType("Linear",1UL,0.0,5e3)),
-  angle(aType("Cos",1UL,-1.0,1.0))
+  angle(aType("Cos",1UL,-1.0,1.0)),
+  axis("eng"),unit(1),                  //1/MeV/cm^3
+  regionA(0),regionB(0)
   /*!
     Constructor
     \param ID :: Identity number of tally 
@@ -70,8 +72,10 @@ TCross::TCross(const int ID) :
 
 TCross::TCross(const TCross& A) : 
   phitsTally(A),
-  fluxFlag(A.fluxFlag),
-  energy(A.energy),angle(A.angle)
+  fluxFlag(A.fluxFlag),energy(A.energy),angle(A.angle),
+  axis(A.axis),unit(A.unit),regionA(A.regionA),
+  regionB(A.regionB),title(A.title),xTxt(A.xTxt),
+  yTxt(A.yTxt)
   /*!
     Copy constructor
     \param A :: TCross to copy
@@ -89,15 +93,19 @@ TCross::operator=(const TCross& A)
   if (this!=&A)
     {
       phitsTally::operator=(A);
+      fluxFlag=A.fluxFlag;
       energy=A.energy;
       angle=A.angle;
+      axis=A.axis;
+      unit=A.unit;
+      regionA=A.regionA;
+      regionB=A.regionB;
       title=A.title;
       xTxt=A.xTxt;
       yTxt=A.yTxt;
     }
   return *this;
 }
-
   
 TCross*
 TCross::clone() const
@@ -117,12 +125,24 @@ TCross::~TCross()
 
 void
 TCross::setUnit(const std::string& unitName)
+  /*!
+    Set units
+    \param unitName :: string
+   */
 {
   static const std::map<std::string,int> uConv
     ({
       {"1/cm^2/MeV/",1}
     });
+  std::map<std::string,int>::const_iterator mc=uConv.find(unitName);
+
+  if (mc!=uConv.end())
+    throw ColErr::InContainerError<std::string>
+      (unitName,"unitName not known");
+
+  unit=mc->second;
   
+  return;
 }
 
 void
@@ -137,18 +157,21 @@ TCross::write(std::ostream& OX) const
   
   OX<<"[T-cross]\n";
 
-  OX<<"  axis = eng \n";
-  OX<<"  flux =" << ((fluxFlag) ? "flux" : "current")<<"\n";
+  StrFunc::writePHITS(OX,1,"axis","eng");
+  StrFunc::writePHITS(OX,1,"flux",((fluxFlag) ? "flux" : "current"));
   energy.write(OX);
   angle.write(OX);
-  OX<<"  unit = "<<unit<<"\n";
-  OX<<"  reg = 1\n";
-  if (!title.empty())
-    OX<<"  title = "<<title<<"\n";
-  if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";
-  if (!yTxt.empty())  OX<<"  y-txt = "<<yTxt<<"\n";
-  OX<<"  epsout = "<<epsFlag<<"\n";
-  OX<<"  file = "<<keyName<<"\n";
+
+  StrFunc::writePHITS(OX,1,"unit",unit);
+  StrFunc::writePHITS(OX,1,"mesh","reg");
+  StrFunc::writePHITS(OX,2,"reg",1);
+
+  if (!title.empty()) StrFunc::writePHITS(OX,1,"title",1);
+  if (!xTxt.empty()) StrFunc::writePHITS(OX,1,"x-txt",xTxt);
+  if (!yTxt.empty()) StrFunc::writePHITS(OX,1,"y-txt",yTxt);
+  StrFunc::writePHITS(OX,1,"epsout",epsFlag);
+  StrFunc::writePHITS(OX,1,"file",keyName);
+
   OX.flush();
   return;
 }

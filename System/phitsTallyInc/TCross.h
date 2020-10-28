@@ -59,6 +59,7 @@ class TCross : public phitsTally
 
   void setFlux() { fluxFlag=1; }  ///< set the tally as a flux tally
   void setRegions(const int A,const int B) { regionA=A; regionB=B;}
+  /// set units
   void setUnit(const int A) { unit=A; }
   void setUnit(const std::string&);
   virtual void setEnergy(const eType& A) { energy = A; }

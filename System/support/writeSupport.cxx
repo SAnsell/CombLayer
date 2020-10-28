@@ -232,7 +232,7 @@ void
 writePHITS(std::ostream& OX,
 	   const size_t depth,
 	   const std::string& unit,
-	   const T& value)
+	   const T value)
  /*!
    Write out the line neatly for PHITS
   \param OX :: ostream to write to
@@ -415,13 +415,19 @@ splitComandLine(std::string Line)
 }
 
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const double&);
+writePHITS(std::ostream&,const size_t,const std::string&,const bool);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const std::string&);
+writePHITS(std::ostream&,const size_t,const std::string&,const double);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const int&);
+writePHITS(std::ostream&,const size_t,const std::string&,const char*);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const size_t&);
+writePHITS(std::ostream&,const size_t,const std::string&,const int);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const size_t);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const long int);
+template void
+writePHITS(std::ostream&,const size_t,const std::string&,const std::string);
 
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const double&);
