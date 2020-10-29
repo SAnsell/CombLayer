@@ -39,16 +39,6 @@ void writeControl(const std::string&,std::ostream&,
 /// Write file in standard FLUKA input form 
 void writeFLUKA(const std::string&,std::ostream&,const double = 1e-40);
 
-void writePHITSOpen(std::ostream&,const size_t,const std::string&);
-void writePHITSTableHead(std::ostream&,const size_t,
-			 const std::vector<std::string>&);
-		  
-
-template<typename T>
-void writePHITS(std::ostream&,const size_t,const std::string&,const T);
-
-template<typename T>
-void writePHITSCont(std::ostream&,const size_t,const size_t,const T&);
 
 
 /// Write file in standard MCNPX input form 

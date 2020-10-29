@@ -42,6 +42,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "phitsWriteSupport.h"
 
 #include "testFunc.h"
 #include "testWriteSupport.h"
