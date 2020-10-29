@@ -159,16 +159,26 @@ TCross::write(std::ostream& OX) const
 
   StrFunc::writePHITS(OX,1,"axis","eng");
   StrFunc::writePHITS(OX,1,"flux",((fluxFlag) ? "flux" : "current"));
+  
   energy.write(OX);
   angle.write(OX);
 
   StrFunc::writePHITS(OX,1,"unit",unit);
   StrFunc::writePHITS(OX,1,"mesh","reg");
+  
   StrFunc::writePHITS(OX,2,"reg",1);
+  StrFunc::writePHITSTableHead
+    (OX,2,{"non","r-in","r-out","area"});
+  //  StrFunc::writePHITSTableItem(OX,2,0,1);
+  
+  //  StrFunc::writePHITSTableItem(OX,2,0,);
+     
 
+  
   if (!title.empty()) StrFunc::writePHITS(OX,1,"title",1);
   if (!xTxt.empty()) StrFunc::writePHITS(OX,1,"x-txt",xTxt);
   if (!yTxt.empty()) StrFunc::writePHITS(OX,1,"y-txt",yTxt);
+  
   StrFunc::writePHITS(OX,1,"epsout",epsFlag);
   StrFunc::writePHITS(OX,1,"file",keyName);
 

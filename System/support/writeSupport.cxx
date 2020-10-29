@@ -258,7 +258,7 @@ writePHITSOpen(std::ostream& OX,
   constexpr size_t equalPt(20);     // distance to name
   const std::string spc((depth+1)*2,' ');
 
-  const int width(equalPt-(depth+1)*2-unit.size());
+  const int width(static_cast<int>(equalPt-(depth+1)*2-unit.size()));
   if (width>0)
     OX<<spc<<std::left<<unit<<std::setw(width)<<" ";
   else
@@ -281,7 +281,7 @@ writePHITSTableHead(std::ostream& OX,
   constexpr size_t equalPt(12);     // distance to name
 
   const std::string spc((depth+1)*2,' ');
-  OX<<spc<<std::endl;
+  OX<<spc;
   
   for(const std::string& item : units)
     {
@@ -295,6 +295,7 @@ writePHITSTableHead(std::ostream& OX,
   OX<<std::endl;
   return;
 }
+
 
 void
 writeMCNPX(const std::string& Line,std::ostream& OX)
@@ -459,6 +460,7 @@ template void
 writePHITS(std::ostream&,const size_t,const std::string&,const long int);
 template void
 writePHITS(std::ostream&,const size_t,const std::string&,const std::string);
+
 
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const double&);
