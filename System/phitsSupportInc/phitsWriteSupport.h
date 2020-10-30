@@ -28,7 +28,7 @@ namespace StrFunc
 template<typename T>
 void writePHITSItems(std::ostream& OX,const T Item)
 {
-  OX<<std::setw(10)<<Item<<" ";
+  OX<<std::left<<std::setw(14)<<Item<<" ";
   return;
 }
 
@@ -41,12 +41,12 @@ void writePHITSItems(std::ostream& OX,
     \param 
    */
 {
-  writePHITSTable(OX,AItem);
-  writePHITSTable(ListItems...);
+  writePHITSItems(OX,AItem);
+  writePHITSItems(OX,ListItems...);
   return;
 }
 
-template<typename T,typename... Other>
+template<typename... Other>
 void writePHITSTable(std::ostream& OX,const size_t depth,
 		     const Other... ListItems)
 /*!

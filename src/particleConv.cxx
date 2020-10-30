@@ -92,7 +92,7 @@ particleConv::particleConv() :
   {"%", 23, "kaonzero",  24,  "kaon0",      9,     311,   493.677,    1},  // k0 version
   {"^", 24, "kaonlong",  12,  "kaon0",      9,     130,   497.611,    1},  // long version
   {"?", 36, "kaon-",     16,  "kaon-",     10,    -321,   493.677,    1},
-  {"e", 3,  "electron",   3,  "electron",  11,      11,   0.5109989461, 1},
+  {"e", 3,  "electron",   3,  "electron",  12,      11,   0.5109989461, 1},
   {"f", 8,  "positron",   4,  "positron",  13,     -11,   0.5109989461, 1},
   {"p", 2,  "photon",     7,  "photon",    14,      22,   0.0,          1},
   {"d", 31, "deuteron",  -3,  "deuteron",  15, 1000002,   1875.612793,  2},

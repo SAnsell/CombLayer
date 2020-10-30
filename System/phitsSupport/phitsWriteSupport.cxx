@@ -121,19 +121,14 @@ writePHITSTableHead(std::ostream& OX,
    \param units :: unit names
  */
 {
-  constexpr size_t equalPt(12);     // distance to name
+  constexpr size_t equalPt(14);     // distance to name
 
   const std::string spc((depth+1)*2,' ');
   OX<<spc;
   
   for(const std::string& item : units)
     {
-      const int width(equalPt-item.size());
-      
-      if (width>0)
-	OX<<std::left<<std::setw(width)<<item;
-      else
-	OX<<item;
+      OX<<std::left<<std::setw(equalPt)<<item;
     }
   OX<<std::endl;
   return;
