@@ -59,8 +59,9 @@ namespace phitsSystem
 phitsPhysics::phitsPhysics() :
   particleECut
   ({
-    {"electron",1e+9},
-    {"positron",1e+9}
+    {"electron",1.0},
+    {"positron",1.0},
+    {"photon",0.010}
   }),
   libEMax
   ({

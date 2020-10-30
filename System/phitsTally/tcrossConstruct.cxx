@@ -165,7 +165,7 @@ tcrossConstruct::processSurface(SimPHITS& System,
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
 
-  const double AA=IParam.getDefValue<double>(-1.0,"tally",Index,itemIndex++);
+  const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(1.0,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 

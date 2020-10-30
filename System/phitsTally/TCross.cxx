@@ -59,7 +59,7 @@ namespace phitsSystem
 TCross::TCross(const int ID) :
   phitsTally(ID),fluxFlag(0),
   energy(eType("Linear",1UL,0.0,5e3)),
-  angle(aType("Cos",1UL,-1.0,1.0)),
+  angle(aType("Cos",1UL,0.0,1.0)),
   axis("eng"),unit(1),                  //1/MeV/cm^3
   regionA(0),regionB(0)
   /*!
