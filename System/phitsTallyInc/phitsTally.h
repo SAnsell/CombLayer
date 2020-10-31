@@ -45,11 +45,14 @@ class phitsTally
   const int idNumber;               ///< iD number
   std::string comments;             ///< comment line
 
+  std::string particle;             ///< particle(s)
   bool epsFlag;                     ///< Write an eps file
   bool vtkFlag;                     ///< Write a vtk file
   bool vtkFormat;                   ///< Write VTK in binary
   std::string fileName;             ///< file name
 
+  static std::string convertParticleType(const std::string&);
+  
  public:
   
   explicit phitsTally(const int);

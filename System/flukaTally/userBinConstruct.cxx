@@ -113,14 +113,8 @@ userBinConstruct::convertTallyType(const std::string& TType)
   ELog::RegMethod RegA("userBinConstruct","convertTallyType");
   const flukaGenParticle& pConv=flukaGenParticle::Instance();
   
-  if (TType=="help")
-    {
-      ELog::EM<<"Tally Type:"<<ELog::endDiag;
-      ELog::EM<<" -- Particle"<<ELog::endDiag;
-      throw ColErr::ExitAbort("Help termianted");
-    }
-      
-  
+  if (TType=="help" || TType=="help") return "help";
+        
   std::ostringstream cx;
   
   if (pConv.hasName(TType))
@@ -146,7 +140,11 @@ userBinConstruct::processMesh(SimFLUKA& System,
     IParam.getValueError<std::string>("tally",Index,1,"tallyType");
   const std::string tallyParticle=
     userBinConstruct::convertTallyType(tallyType);
-
+  if (tallyParticle=="help")
+    {
+      ELog::EM<<userBinConstruct::writeHelp()<<ELog::endDiag;
+      return;
+    }
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   
@@ -166,20 +164,18 @@ userBinConstruct::processMesh(SimFLUKA& System,
   return;      
 }
   
-void
-userBinConstruct::writeHelp(std::ostream& OX) 
+std::string
+userBinConstruct::writeHelp()
   /*!
     Write out help
-    \param OX :: Output stream
+    \return help string
   */
 {
-  OX<<
+  return
     "tallyType free Vec3D Vec3D Nx Ny Nz \n"
     "tallyType object objectName LinkPt  Vec3D Vec3D Nx Ny Nz \n"
     "  -- Object-link point is used to construct basis set \n"
     "     Then the Vec3D are used as the offset points ";
-
-  return;
 }
 
 }  // NAMESPACE tallySystem

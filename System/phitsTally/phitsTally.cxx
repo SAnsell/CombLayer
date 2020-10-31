@@ -142,11 +142,15 @@ phitsTally::setComment(const std::string& C)
 
 
 void
-phitsTally::setParticle(const std::string&)
+phitsTally::setParticle(const std::string& P)
   /*!
-    Null op call for non-particle detectors
+     Call for particle detectors
+     \param P :: valid particles (outside of phits) ( all )
   */
-{}
+{
+  particle= (P=="all") ? "" : P;
+  return;
+}
 
 void
 phitsTally::setEnergy(const eType&)

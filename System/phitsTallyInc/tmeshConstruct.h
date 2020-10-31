@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/userBinConstruct.h
+ * File:   phitsTallyInc/tmeshConstruct.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_userBinConstruct_h
-#define tallySystem_userBinConstruct_h
+#ifndef phitsSystem_tmeshConstruct_h
+#define phitsSystem_tmeshConstruct_h
 
 namespace attachSystem
 {
@@ -34,37 +34,35 @@ namespace mainSystem
 
 class Simulation;
 
-namespace flukaSystem
+namespace phitsSystem
 {
 
 /*!
-  \class userBinConstruct
+  \class tmeshConstruct
   \version 1.0
   \author S. Ansell
-  \date July 2012
-  \brief Constructs a mesh tally from inputParam
+  \date October 2020
+  \brief Constructs a t-cross tally from inputParam
 */
 
-class userBinConstruct 
+class tmeshConstruct 
 {
   private:
   
   /// Private constructor
-  userBinConstruct() {}
+  tmeshConstruct() {}
 
-  static void createTally(SimFLUKA&,
-			  const std::string&,
-			  const int,
-			  const Geometry::Vec3D&,const Geometry::Vec3D&,
-			  const std::array<size_t,3>&);
-  
+  static void createTally(SimPHITS&,const std::string&,
+			  const int,const int,const int,
+			  const size_t,const double,const double,
+			  const size_t,const double,const double);
 
-  static std::string convertTallyType(const std::string&);
+  static std::string convertParticleType(const std::string&);
   
  public:
 
-  static void processMesh(SimFLUKA&,const mainSystem::inputParam&,
-			  const size_t);
+  static void processMesh(SimPHITS&,const mainSystem::inputParam&,
+			     const size_t);
   
   static std::string writeHelp();
 };
