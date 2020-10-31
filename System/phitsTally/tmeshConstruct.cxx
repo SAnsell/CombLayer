@@ -151,7 +151,7 @@ tmeshConstruct::processMesh(SimPHITS& System,
     tallySystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,3,APt,BPt,Nxyz);
 
-  tmeshConstrcut::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
+  tmeshConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
   
   return;      
 }

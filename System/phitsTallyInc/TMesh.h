@@ -59,8 +59,8 @@ class TMesh : public phitsTally
   /// set units
   void setUnit(const int A) { unit=A; }
   void setUnit(const std::string&);
+
   virtual void setEnergy(const eType& A) { energy = A; }
-  virtual void setAngle(const aType& A) { angle = A; }
   
   virtual void write(std::ostream&) const;
   
