@@ -58,7 +58,8 @@ namespace phitsSystem
 
 TMesh::TMesh(const int ID) :
   phitsTally(ID),
-  axis("eng"),unit(1)                  //1/MeV/cm^3
+  energy(eType("Linear",1UL,0.0,5e3)),
+  axis("xy"),unit(1)                  //1/MeV/cm^3
   /*!
     Constructor
     \param ID :: Identity number of tally 
@@ -69,7 +70,7 @@ TMesh::TMesh(const int ID) :
 
 TMesh::TMesh(const TMesh& A) : 
   phitsTally(A),
-  xyz,energy(A.energy),
+  xyz(A.xyz),energy(A.energy),
   unit(A.unit),
   title(A.title),xTxt(A.xTxt),yTxt(A.yTxt)
   /*!
@@ -90,7 +91,7 @@ TMesh::operator=(const TMesh& A)
     {
       phitsTally::operator=(A);
       xyz=A.xyz;
-
+      energy=A.energy;
       axis=A.axis;
       unit=A.unit;
       title=A.title;

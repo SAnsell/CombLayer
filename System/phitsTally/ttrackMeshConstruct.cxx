@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   phitsTally/tmeshConstruct.cxx
+ * File:   phitsTally/ttrackMeshConstruct.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -64,57 +64,51 @@
 
 #include "SimPHITS.h"
 #include "particleConv.h"
-#include "TallySelector.h"
 #include "meshConstruct.h"
+#include "phitsTallySelector.h"
 #include "MeshXYZ.h"
 #include "eType.h"
 #include "aType.h"
 #include "phitsTally.h"
 #include "TMesh.h"
-#include "tmeshConstruct.h" 
+#include "ttrackMeshConstruct.h" 
 
 namespace phitsSystem
 {
 
 void 
-tmeshConstruct::createTally
-(SimPHITS& System,
- const std::string& PType,const int ID,
- const int cellA,const int cellB,
- const size_t NE,const double eMin,const double eMax,
- const size_t NA,const double aMin,const double aMax)
-/*!
+ttrackMeshConstruct::createTally(SimPHITS& System,
+				 const std::string& PType,
+				 const int ID,
+				 const Geometry::Vec3D& APt,
+				 const Geometry::Vec3D& BPt,
+			    const std::array<size_t,3>& MPts) 
+  /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
-    \param System :: SimPHITS to add tallies
-    \param PType :: particle name
-    \param CellA :: initial region
-    \param CellB :: secondary region
-    \param ID :: output stream
-    \param NE :: number of energy points
-    \parma eMin :: Energy Min
-    \parma eMax :: Energy Max
-    \param NA :: number of angle points
-    \parma aMin :: Angle Min
-    \parma aMax :: Angle Max
-  */s
+    \param System :: SimFLUKA to add tallies
+    \param PType :: processed particle type
+    \param fortranTape :: output stream
+    \param APt :: Lower point 
+    \param BPt :: Upper point 
+    \param MPts :: Points ot use
+  */
 {
-  ELog::RegMethod RegA("tmeshConstruct","createTally");
+  ELog::RegMethod RegA("ttrackMeshConstruct","createTally");
 
-  TMesh CM(ID);
-
-  CM.setParticle(PType);
-
-  System.addTally(CM);
+  TMesh TM(ID);
+  TM.setParticle(PType);
+  TM.setCoordinates(APt,BPt);
+  TM.setIndex(MPts);
+  System.addTally(TM);
 
   return;
 }
 
   
-      
-
+ 
 void
-tmeshConstruct::processMesh(SimPHITS& System,
+ttrackMeshConstruct::processMesh(SimPHITS& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
@@ -124,7 +118,7 @@ tmeshConstruct::processMesh(SimPHITS& System,
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("tmeshConstruct","processSurface");
+  ELog::RegMethod RegA("ttrackMeshConstruct","processMesh");
 
   const int nextID=System.getNextTallyID();
   
@@ -136,7 +130,7 @@ tmeshConstruct::processMesh(SimPHITS& System,
       return;
     }
   const std::string tallyParticle=
-    tmeshConstruct::convertParticleType(particleType);
+    convertTallyParticle(particleType);
 
   const std::string PType=
     IParam.getValueError<std::string>("tally",Index,2,"object/free"); 
@@ -151,13 +145,13 @@ tmeshConstruct::processMesh(SimPHITS& System,
     tallySystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,3,APt,BPt,Nxyz);
 
-  tmeshConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
+  ttrackMeshConstruct::createTally(System,tallyParticle,nextID,APt,BPt,Nxyz);
   
   return;      
 }
   
 std::string
-tmeshConstruct::writeHelp()
+ttrackMeshConstruct::writeHelp()
   /*!
     Write out help
     \return :: Output stream

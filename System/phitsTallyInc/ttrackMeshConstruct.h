@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   phitsTallyInc/tmeshConstruct.h
+ * File:   phitsTallyInc/ttrackMeshConstruct.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef phitsSystem_tmeshConstruct_h
-#define phitsSystem_tmeshConstruct_h
+#ifndef phitsSystem_ttrackMeshConstruct_h
+#define phitsSystem_ttrackMeshConstruct_h
 
 namespace attachSystem
 {
@@ -33,30 +33,33 @@ namespace mainSystem
 }
 
 class Simulation;
+class SimPHITS;
 
 namespace phitsSystem
 {
 
 /*!
-  \class tmeshConstruct
+  \class ttrackMeshConstruct
   \version 1.0
   \author S. Ansell
   \date October 2020
   \brief Constructs a t-cross tally from inputParam
 */
 
-class tmeshConstruct 
+class ttrackMeshConstruct 
 {
   private:
   
   /// Private constructor
-  tmeshConstruct() {}
+  ttrackMeshConstruct() {}
 
   static void createTally(SimPHITS&,const std::string&,
-			  const int,const int,const int,
-			  const size_t,const double,const double,
-			  const size_t,const double,const double);
+			  const int,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&,
+			  const std::array<size_t,3>&);
 
+			  
   static std::string convertParticleType(const std::string&);
   
  public:

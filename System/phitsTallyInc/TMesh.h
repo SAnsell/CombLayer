@@ -41,7 +41,7 @@ class TMesh : public phitsTally
 
   eType energy;                   ///< Energy grid / value
 
-  std::string axis;               ///< Axis (eng/angle etc)
+  std::string axis;               ///< Axis (eng/angle/xy/yz etc)
   int unit;                       ///< Unit 
   
   std::string title;              ///< title
@@ -61,7 +61,12 @@ class TMesh : public phitsTally
   void setUnit(const std::string&);
 
   virtual void setEnergy(const eType& A) { energy = A; }
-  
+
+  void setIndex(const std::array<size_t,3>& IPts)
+  {  xyz.setIndex(IPts); }
+  void setCoordinates(const Geometry::Vec3D& APt,
+		      const Geometry::Vec3D& BPt)
+  { xyz.setCoordinates(APt,BPt); }
   virtual void write(std::ostream&) const;
   
 };

@@ -56,10 +56,31 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "particleConv.h"
 
 #include "phitsTallyModification.h"
 #include "phitsTallySelector.h"
 
+std::string
+convertTallyParticle(const std::string& TParticle)
+  /*!
+    Construct to convert words into an index
+    \param TParticle :: incoming value / particle
+    \return particle name [upper case] or string of number
+  */
+{
+  ELog::RegMethod RegA("phitsTallySelector[F]","convertTallyParticle");
+  const particleConv& pConv=particleConv::Instance();
+  
+  if (TParticle=="help" || TParticle=="help") return "help";
+        
+  std::ostringstream cx;
+  
+  if (pConv.hasName(TParticle))
+    return pConv.nameToPHITS(TParticle);
+
+  throw ColErr::InContainerError<std::string>(TParticle,"Unknown Particle");
+}
 
 void
 tallyModification(SimPHITS& System,

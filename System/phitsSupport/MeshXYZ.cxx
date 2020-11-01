@@ -3,7 +3,7 @@
  
  * File:   phitsSupport/MeshXYZ.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,6 +156,17 @@ MeshXYZ::setSize(const size_t XP,const size_t YP,const size_t ZP)
    */
 {
   nBins={XP,YP,ZP};
+  return;
+}
+
+void
+MeshXYZ::setIndex(const std::array<size_t,3>& newBins)
+  /*!
+    Set the mesh size [number of points]
+    \param newBins :: bins
+   */
+{
+  nBins=newBins;
   return;
 }
 
