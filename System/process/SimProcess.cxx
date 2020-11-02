@@ -152,9 +152,9 @@ writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
 {
   //  physicsSystem::PhysicsCards& PC=System.getPC();
   //  PC.setRND(PC.getRNDseed()+Number*10);
-  std::ostringstream cx;
-  cx<<FName<<Number+1<<".x";
-  System.write(cx.str());
+  std::string fileName=FName+std::to_string(Number+1);
+  System.setFileName(fileName);
+  System.write(fileName+".x");
   // increase the RND seed by 10
   
   return;

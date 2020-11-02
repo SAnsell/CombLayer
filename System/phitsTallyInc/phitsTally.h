@@ -46,10 +46,14 @@ class phitsTally
   std::string comments;             ///< comment line
 
   std::string particle;             ///< particle(s)
+
+  std::string title;              ///< title
+  std::string xTxt;               ///< x-text
+  std::string yTxt;               ///< y-Text
+
   bool epsFlag;                     ///< Write an eps file
-  bool vtkFlag;                     ///< Write a vtk file
-  bool vtkFormat;                   ///< Write VTK in binary
-  std::string fileName;             ///< file name
+  bool vtkout;                     ///< Write a vtk file
+  bool vtkBinary;                   ///< Write VTK in binary
 
   static std::string convertParticleType(const std::string&);
   
@@ -73,12 +77,9 @@ class phitsTally
   /// accessor to keyname
   int getID() const { return idNumber; }
   
-  virtual void write(std::ostream&) const;
+  virtual void write(std::ostream&,const std::string&) const;
 
 };
-
-std::ostream&
-operator<<(std::ostream&,const phitsTally&);
   
 }  // NAMESPACE phitsSystem
 

@@ -274,7 +274,6 @@ BeamSource::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("BeamSource","writePHITS");
 
   boost::format fFMT("%1$11.6g%|14t|");
-  ELog::EM<<"Call here "<<ELog::endDiag;
   const double phi=180.0*acos(Y[0])/M_PI;
   
   OX<<"  s-type =  1        # axial source \n";

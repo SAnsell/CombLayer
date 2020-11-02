@@ -73,7 +73,8 @@ writePHITSCont(std::ostream& OX,const size_t depth,
 template<typename T>
 void
 writePHITS(std::ostream& OX,const size_t depth,
-	   const std::string& unit,const T value)
+	   const std::string& unit,const T value,
+	   const std::string& comment)
  /*!
    Write out the line neatly for PHITS
   \param OX :: ostream to write to
@@ -82,8 +83,11 @@ writePHITS(std::ostream& OX,const size_t depth,
   \param value :: value
 */
 {
+  constexpr size_t equalPt(20);     // distance to name
   writePHITSOpen(OX,depth,unit);
-  OX<<value<<std::endl;
+  OX<<std::setw(equalPt)<<value;
+  if (!comment.empty()) OX<<comment;
+  OX<<std::endl;
   return;
 }
 
@@ -136,19 +140,26 @@ writePHITSTableHead(std::ostream& OX,
 
 
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const bool);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const bool,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const double);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const double,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const char*);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const char*,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const int);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const int,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const size_t);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const size_t,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const long int);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const long int,const std::string&);
 template void
-writePHITS(std::ostream&,const size_t,const std::string&,const std::string);
+writePHITS(std::ostream&,const size_t,const std::string&,
+	   const std::string,const std::string&);
 
 
 template void

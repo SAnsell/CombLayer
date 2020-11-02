@@ -36,13 +36,12 @@ class TGShow : public phitsTally
 {
  private:
 
-  MeshXYZ grid;                     ///< Axis grid
+  MeshXYZ xyzGrid;                ///< Axis grid
   
-  int output;                       ///< output type
-  int axisDirection;                ///< Axis direction xy,yz,xz (+/- rev)
-  double lineWidth;                 ///< Width scale [default =0.5]
+  int output;                     ///< output type [mat:4,reg:6:line:2] 
+  double lineWidth;               ///< Width scale [default =0.5]
     
-  std::string title;               ///< title
+  std::string title;              ///< title
   std::string xTxt;               ///< x-text
   std::string yTxt;               ///< y-Text
 
@@ -60,7 +59,7 @@ class TGShow : public phitsTally
   void setOutputStyle(const bool,const bool);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
-  virtual void write(std::ostream&) const;
+  virtual void write(std::ostream&,const std::string&) const;
   
 };
 

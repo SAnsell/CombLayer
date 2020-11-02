@@ -74,8 +74,7 @@ TCross::TCross(const TCross& A) :
   phitsTally(A),
   fluxFlag(A.fluxFlag),energy(A.energy),angle(A.angle),
   axis(A.axis),unit(A.unit),regionA(A.regionA),
-  regionB(A.regionB),title(A.title),xTxt(A.xTxt),
-  yTxt(A.yTxt)
+  regionB(A.regionB)
   /*!
     Copy constructor
     \param A :: TCross to copy
@@ -100,9 +99,6 @@ TCross::operator=(const TCross& A)
       unit=A.unit;
       regionA=A.regionA;
       regionB=A.regionB;
-      title=A.title;
-      xTxt=A.xTxt;
-      yTxt=A.yTxt;
     }
   return *this;
 }
@@ -146,10 +142,12 @@ TCross::setUnit(const std::string& unitName)
 }
 
 void
-TCross::write(std::ostream& OX) const
+TCross::write(std::ostream& OX,
+	      const std::string& fileHead) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream
+    \param fileHead :: fileheader
    */
 {
   ELog::RegMethod RegA("TCross","write");
@@ -157,7 +155,6 @@ TCross::write(std::ostream& OX) const
   
   OX<<"[T-cross]\n";
 
-  StrFunc::writePHITS(OX,1,"axis","eng");
   StrFunc::writePHITS(OX,1,"output",((fluxFlag) ? "flux" : "current"));
   
   energy.write(OX);
@@ -170,19 +167,20 @@ TCross::write(std::ostream& OX) const
   StrFunc::writePHITSTableHead
     (OX,2,{"non","r-in","r-out","area"});
   StrFunc::writePHITSTable(OX,2,1,regionA,regionB,1.0);
-  //  StrFunc::writePHITSTableItem(OX,2,0,1);
-  
-  //  StrFunc::writePHITSTableItem(OX,2,0,);
      
-
-  
   if (!title.empty()) StrFunc::writePHITS(OX,1,"title",1);
   if (!xTxt.empty()) StrFunc::writePHITS(OX,1,"x-txt",xTxt);
   if (!yTxt.empty()) StrFunc::writePHITS(OX,1,"y-txt",yTxt);
-  
-  StrFunc::writePHITS(OX,1,"epsout",epsFlag);
-  StrFunc::writePHITS(OX,1,"file","TCross"+keyName+".out");
 
+  StrFunc::writePHITS(OX,1,"axis",axis);
+
+  StrFunc::writePHITS(OX,1,"epsout",epsFlag);
+  StrFunc::writePHITS(OX,1,"file",fileHead+"TCross"+keyName+".out");
+  if (vtkout)
+    {
+      StrFunc::writePHITS(OX,1,"vtkout",vtkout);
+      StrFunc::writePHITS(OX,1,"vtkfmt",vtkBinary);
+    }
   OX.flush();
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   phitsTally/T3DShow.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Mesh3D.h"
+#include "MeshXYZ.h"
 
 #include "phitsTally.h"
 #include "T3DShow.h"
@@ -55,9 +55,8 @@
 namespace phitsSystem
 {
 
-T3DShow::T3DShow(const int outID) :
-  phitsTally("mesh"+std::to_string(outID),outID),
-  meshType(10),particle("208")
+T3DShow::T3DShow(const int ID) :
+  phitsTally(ID)
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -66,9 +65,7 @@ T3DShow::T3DShow(const int outID) :
 
 T3DShow::T3DShow(const T3DShow& A) : 
   phitsTally(A),
-  meshType(A.meshType),particle(A.particle),
-  Pts(A.Pts),minCoord(A.minCoord),
-  maxCoord(A.maxCoord)
+  xyz(A.xyz)
   /*!
     Copy constructor
     \param A :: T3DShow to copy
@@ -86,11 +83,7 @@ T3DShow::operator=(const T3DShow& A)
   if (this!=&A)
     {
       phitsTally::operator=(A);
-      meshType=A.meshType;
-      particle=A.particle;
-      Pts=A.Pts;
-      minCoord=A.minCoord;
-      maxCoord=A.maxCoord;
+      xyz=A.xyz;
     }
   return *this;
 }
@@ -113,47 +106,7 @@ T3DShow::~T3DShow()
 {}
   
 void
-T3DShow::setParticle(const std::string& P)
-  /*!
-    Set the mesh particle
-    \param P :: Partile
-  */
-{
-  particle=P;
-  return;
-}
-
-void
-T3DShow::setCoordinates(const Geometry::Vec3D& A,
-			const Geometry::Vec3D& B)
-  /*!
-    Sets the min/max coordinates
-    \param A :: First coordinate
-    \param B :: Second coordinate
-  */
-{
-  ELog::RegMethod RegA("T3DShow","setCoordinates");
-  
-  minCoord=A;
-  maxCoord=B;
-  // Add some checking here
-  for(size_t i=0;i<3;i++)
-    {
-      if (std::abs(minCoord[i]-maxCoord[i])<Geometry::zeroTol)
-	throw ColErr::NumericalAbort(StrFunc::makeString(minCoord)+" ::: "+
-				     StrFunc::makeString(maxCoord)+
-				     " Equal components");
-      if (minCoord[i]>maxCoord[i])
-	std::swap(minCoord[i],maxCoord[i]);
-    }
-
-
-  return;
-}
-
-  
-void
-T3DShow::write(std::ostream& OX) const
+T3DShow::write(std::ostream& OX,const std::string& fileHead) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream

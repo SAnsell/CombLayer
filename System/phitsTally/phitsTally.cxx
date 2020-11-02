@@ -51,22 +51,9 @@
 namespace phitsSystem
 {
 
-std::ostream&
-operator<<(std::ostream& OX,const phitsTally& TX)
-  /*!
-    Generic writing function
-    \param OX :: Output stream
-    \param TX :: phitsTally
-    \return Output stream
-   */
-{
-  TX.write(OX);
-  return OX;
-}
-
 phitsTally::phitsTally(const int ID)  :
   keyName(std::to_string(ID)),
-  idNumber(ID),epsFlag(0),vtkFlag(0),vtkFormat(1)
+  idNumber(ID),epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
     \param ID :: phitsTally ID number
@@ -75,7 +62,7 @@ phitsTally::phitsTally(const int ID)  :
 
 phitsTally::phitsTally(const std::string& KName,const int ID)  :
   keyName(KName+std::to_string(ID)),idNumber(ID),
-  epsFlag(0),vtkFlag(0),vtkFormat(1)
+  epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
     \param KName :: keyname
@@ -86,7 +73,7 @@ phitsTally::phitsTally(const std::string& KName,const int ID)  :
 phitsTally::phitsTally(const phitsTally& A) : 
   keyName(A.keyName),idNumber(A.idNumber),
   comments(A.comments),epsFlag(A.epsFlag),
-  vtkFlag(A.vtkFlag),vtkFormat(A.vtkFormat),fileName(A.fileName)
+  vtkout(A.vtkout),vtkBinary(A.vtkBinary)
   /*!
     Copy constructor
     \param A :: phitsTally to copy
@@ -104,10 +91,14 @@ phitsTally::operator=(const phitsTally& A)
   if (this!=&A)
     {
       comments=A.comments;
+
+      title=A.title;
+      xTxt=A.xTxt;
+      yTxt=A.yTxt;
+
       epsFlag=A.epsFlag;
-      vtkFlag=A.vtkFlag;
-      vtkFormat=A.vtkFormat;
-      fileName=A.fileName;
+      vtkout=A.vtkout;
+      vtkBinary=A.vtkBinary;
     }
   return *this;
 }
@@ -168,7 +159,7 @@ phitsTally::setAngle(const aType&)
   
 
 void
-phitsTally::write(std::ostream&) const
+phitsTally::write(std::ostream&,const std::string&) const
   /*!
     Writes out the phitsTally depending on the 
     fields that have been set.

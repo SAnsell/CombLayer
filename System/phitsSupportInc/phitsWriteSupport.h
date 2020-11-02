@@ -68,7 +68,8 @@ void writePHITSTableHead(std::ostream&,const size_t,
 		  
 
 template<typename T>
-void writePHITS(std::ostream&,const size_t,const std::string&,const T);
+void writePHITS(std::ostream&,const size_t,
+		const std::string&,const T,const std::string& ="");
 
 template<typename T>
 void writePHITSCont(std::ostream&,const size_t,const size_t,const T&);

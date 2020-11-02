@@ -243,9 +243,9 @@ SimPHITS::writeTally(std::ostream& OX) const
   OX<<"$ -----------------------------------------------------------"<<std::endl;
   OX<<"$ ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"$ -----------------------------------------------------------"<<std::endl;
-  ELog::EM<<"Size -== "<<PTItem.size()<<ELog::endDiag;
+  const std::string& FN=fileName;
   for(const PTallyTYPE::value_type& TI : PTItem)
-    TI.second->write(OX);
+    TI.second->write(OX,fileName);
 
   return;
 }

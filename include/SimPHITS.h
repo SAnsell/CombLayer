@@ -3,7 +3,7 @@
  
  * File:   include/SimPHITS.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ class SimPHITS : public Simulation
 
  private:
 
+  std::string fileName;                ///< Output file name [for tallies]
   int icntl;                           ///< ICNTL
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
@@ -88,7 +89,12 @@ class SimPHITS : public Simulation
   PTallyTYPE& getTallyMap() { return PTItem; }            ///< Access tally map
   const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
   int getNextTallyID() const;
-    
+
+  /// set generic filename
+  void setFileName(const std::string& FN) { fileName=FN; }
+  /// access generic filename
+  const std::string&  getFileName() const { return fileName; }
+  
   virtual void write(const std::string&) const;
 
 };

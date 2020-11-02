@@ -48,7 +48,7 @@ class MeshXYZ
   Geometry::Vec3D minPoint;    ///< lower point
   Geometry::Vec3D maxPoint;    ///< top point
 
-  Geometry::Transform* TransPtr;
+  Geometry::Transform* TransPtr;  
   
   static double getCoordinate(const std::vector<double>&,
 			      const std::vector<size_t>&,
@@ -77,7 +77,9 @@ class MeshXYZ
   void setSize(const size_t,const size_t,const size_t);
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
+
   
+  void writeAxis(std::ostream&,const size_t) const;
   void write2D(std::ostream&) const;
   void write(std::ostream&) const;
 

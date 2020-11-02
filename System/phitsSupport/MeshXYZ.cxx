@@ -44,7 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h" 
 #include "support.h"
-#include "writeSupport.h"
+#include "phitsWriteSupport.h"
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -95,25 +95,15 @@ size_t
 MeshXYZ::getZeroIndex() const
    /*!
      Determine if one bin in singular
-     \throw if no none zero/unit bin or two such bins
      \return Index  [0-2] 
     */
 {
   ELog::RegMethod RegA("MeshXYZ","getZeroIndex");
-  size_t zUnit=0;
     
   for(size_t i=0;i<3;i++)
     if (nBins[i]<2)
-      {
-	if (zUnit) zUnit=-10;
-	zUnit=i+1;
-      }
-
-  if (zUnit<1)
-    throw ColErr::DimensionError<3,size_t>
-      ({nBins[0],nBins[1],nBins[2]},{2,2,2},"Array need only one zero/one");
-
-  return zUnit-1;
+      return i+1;
+  return 0;
 }  
   
 Geometry::Vec3D
@@ -207,7 +197,7 @@ MeshXYZ::write2D(std::ostream& OX) const
   ELog::RegMethod RegA("MeshXYZ","write2D");
 
   const std::string txyz[]={"x","y","z"};
-  const std::string axyz[]={"yz","xz","xy"};
+
   OX<<"  mesh = xyz \n";
   const size_t nullIndex=getZeroIndex();
     
@@ -228,12 +218,27 @@ MeshXYZ::write2D(std::ostream& OX) const
 	  OX<<"        "<<minPoint[index]<<" "<<maxPoint[index]<<"\n";
 	}
     }
-  // this must be after mesh:
-  OX<<"  axis = "<<axyz[nullIndex]<<"\n";
 
   return;
 }
-  
+
+void
+MeshXYZ::writeAxis(std::ostream& OX,const size_t depth) const
+  /*!
+    Write the axis parameter
+    \param OX :: Output
+    \param depth :: distance to offset
+  */
+{
+  const static std::string axyz[]={"xy","yz","xz","xy"};
+  const size_t nullIndex=getZeroIndex();
+
+  // note: nullIndex is 0 if no unaritary axis so write xy.
+  StrFunc::writePHITS(OX,depth,"axis",axyz[nullIndex-1]);
+  return;
+}
+
+
 void
 MeshXYZ::write(std::ostream& OX) const
   /*!
@@ -242,30 +247,19 @@ MeshXYZ::write(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("MeshXYZ","write");
-
+  
   if (nBins[0]*nBins[1]*nBins[2]==0) return;
-
   std::string spc("  ");
   const std::string txyz[]={"x","y","z"};
-  
-  OX<<spc<<"mesh = xyz\n";
-  spc+="  ";
+
+  StrFunc::writePHITS(OX,1,"mesh","xyz");
   for(size_t i=0;i<3;i++)
     {
       const std::string xyzT=txyz[i];
-      if (nBins[i]>1)
-	{
-	  OX<<spc<<xyzT<<"-type = "<<(2+logSpace[i])<<"\n";
-	  OX<<spc<<"n"<<xyzT<<" = "<<nBins[i]<<"\n";
-	  OX<<spc<<xyzT<<"min = "<<minPoint[i]<<"\n";
-	  OX<<spc<<xyzT<<"max = "<<maxPoint[i]<<"\n";
-	}
-      else
-	{
-	  OX<<spc<<xyzT<<"-type = 1\n";
-	  OX<<spc<<"n"<<xyzT<<" = 1 \n";
-	  OX<<spc<<"     "<<minPoint[i]<<" "<<maxPoint[i]<<"\n";
-	}
+      StrFunc::writePHITS(OX,2,xyzT+"-type",(2+logSpace[i]));
+      StrFunc::writePHITS(OX,2,"n"+xyzT,nBins[i]);
+      StrFunc::writePHITS(OX,2,xyzT+"min",minPoint[i]);
+      StrFunc::writePHITS(OX,2,xyzT+"max",maxPoint[i]);
     }
   return;
 }

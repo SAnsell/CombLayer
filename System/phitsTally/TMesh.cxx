@@ -70,9 +70,8 @@ TMesh::TMesh(const int ID) :
 
 TMesh::TMesh(const TMesh& A) : 
   phitsTally(A),
-  xyz(A.xyz),energy(A.energy),
-  unit(A.unit),
-  title(A.title),xTxt(A.xTxt),yTxt(A.yTxt)
+  gridXYZ(A.gridXYZ),energy(A.energy),
+  unit(A.unit)
   /*!
     Copy constructor
     \param A :: TMesh to copy
@@ -90,13 +89,10 @@ TMesh::operator=(const TMesh& A)
   if (this!=&A)
     {
       phitsTally::operator=(A);
-      xyz=A.xyz;
+      gridXYZ=A.gridXYZ;
       energy=A.energy;
       axis=A.axis;
       unit=A.unit;
-      title=A.title;
-      xTxt=A.xTxt;
-      yTxt=A.yTxt;
     }
   return *this;
 }
@@ -140,7 +136,7 @@ TMesh::setUnit(const std::string& unitName)
 }
 
 void
-TMesh::write(std::ostream& OX) const
+TMesh::write(std::ostream& OX,const std::string& fileHead) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream
@@ -149,9 +145,27 @@ TMesh::write(std::ostream& OX) const
   ELog::RegMethod RegA("TMesh","write");
 
   
-  OX<<"[T-track]\n";
+  OX<<"[T-Track]\n";
 
+  gridXYZ.write(OX);
+  gridXYZ.writeAxis(OX,1);
+  energy.write(OX);
 
+  StrFunc::writePHITS(OX,1,"file",fileHead+"TMesh"+keyName+".out");
+  if (vtkout)
+    {
+      StrFunc::writePHITS(OX,1,"vtkout",vtkout);
+      StrFunc::writePHITS(OX,1,"vtkfmt",vtkBinary);
+    }
+
+  StrFunc::writePHITS(OX,1,"epsout",epsFlag);
+  StrFunc::writePHITS(OX,1,"file",fileHead+"TCross"+keyName+".out");
+  if (vtkout)
+    {
+      StrFunc::writePHITS(OX,1,"vtkout",vtkout);
+      StrFunc::writePHITS(OX,1,"vtkfmt",vtkBinary);
+    }
+	     
   OX.flush();
   return;
 }

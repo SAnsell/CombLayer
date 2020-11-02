@@ -63,6 +63,7 @@
 #include "TGShow.h"
 #include "tgshowConstruct.h"
 #include "tcrossConstruct.h"
+#include "ttrackMeshConstruct.h"
 #include "phitsTallyBuilder.h"
 
 namespace phitsSystem
@@ -100,6 +101,9 @@ tallySelection(SimPHITS& System,
 
       else if (TType=="surface")
 	tcrossConstruct::processSurface(System,IParam,i);
+
+      else if (TType=="mesh")
+	ttrackMeshConstruct::processMesh(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 

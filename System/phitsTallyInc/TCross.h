@@ -44,11 +44,7 @@ class TCross : public phitsTally
   int unit;                       ///< Unit 
   int regionA;                    ///< first region
   int regionB;                    ///< second region
-  
-  std::string title;              ///< title
-  std::string xTxt;               ///< x-text
-  std::string yTxt;               ///< y-Text
-  
+    
  public:
 
   explicit TCross(const int);
@@ -65,7 +61,7 @@ class TCross : public phitsTally
   virtual void setEnergy(const eType& A) { energy = A; }
   virtual void setAngle(const aType& A) { angle = A; }
   
-  virtual void write(std::ostream&) const;
+  virtual void write(std::ostream&,const std::string&) const;
   
 };
 
