@@ -68,12 +68,17 @@ class phitsTally
   
   void setComment(const std::string&);
 
+  /// no op renumber 
+  virtual void renumberCell(const int,const int) {}
+  
   virtual void setParticle(const std::string&);
   virtual void setEnergy(const eType&);
   virtual void setAngle(const aType&);
+  virtual void setVTKout();
+  virtual void setBinary();
 
   /// accessor to keyname
-  const std::string& getKey() const { return keyName; }
+  const std::string& getKeyName() const { return keyName; }
   /// accessor to keyname
   int getID() const { return idNumber; }
   

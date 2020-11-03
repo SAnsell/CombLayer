@@ -109,13 +109,21 @@ tallyModification(SimPHITS& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
+	    "  -- binary : tallyName/Number  \n"
 	    "  -- particle ::tallyName/Number particle \n"
 	    "  -- energy : tallyName/Number Emin Emax NPts LinearFlag  \n"
 	    "  -- angle : tallyName/Number Amin Amax NPts LogFlag  \n"
+	    "  -- vtk : tallyName/Number  \n"
 		  <<ELog::endBasic
 		  <<ELog::endErr;
           return;
 	}
+      else if(key=="binary")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+          phitsSystem::setBinaryOutput(System,tName);
+        }
       else if(key=="particle")
         {
 	  const std::string tName=IParam.getValueError<std::string>
@@ -151,6 +159,12 @@ tallyModification(SimPHITS& System,
 	  const size_t NA=IParam.getValueError<size_t>
 	    ("TMod",i,4,"NPTS for "+key);
           phitsSystem::setAngle(System,tName,AA,AB,NA);
+        }
+      else if(key=="vtk")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+          phitsSystem::setVTKout(System,tName);
         }
       else
 	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;

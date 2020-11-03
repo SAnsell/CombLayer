@@ -58,6 +58,8 @@ class TCross : public phitsTally
   /// set units
   void setUnit(const int A) { unit=A; }
   void setUnit(const std::string&);
+
+  virtual void renumberCell(const int,const int);
   virtual void setEnergy(const eType& A) { energy = A; }
   virtual void setAngle(const aType& A) { angle = A; }
   

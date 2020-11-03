@@ -156,6 +156,24 @@ phitsTally::setAngle(const aType&)
    Null op call for non-angle detectors
  */
 {}
+
+void
+phitsTally::setVTKout()
+ /*!
+   Set the output for vtk format
+ */
+{
+  vtkout=1;
+}
+
+void
+phitsTally::setBinary()
+ /*!
+   Set the output for vtk into binary form
+ */
+{
+  vtkBinary=1;
+}
   
 
 void

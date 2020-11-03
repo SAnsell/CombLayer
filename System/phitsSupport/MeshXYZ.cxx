@@ -234,7 +234,7 @@ MeshXYZ::writeAxis(std::ostream& OX,const size_t depth) const
   const size_t nullIndex=getZeroIndex();
 
   // note: nullIndex is 0 if no unaritary axis so write xy.
-  StrFunc::writePHITS(OX,depth,"axis",axyz[nullIndex-1]);
+  StrFunc::writePHITS(OX,depth,"axis",axyz[nullIndex]);
   return;
 }
 

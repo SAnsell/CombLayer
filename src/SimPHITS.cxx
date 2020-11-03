@@ -183,7 +183,7 @@ SimPHITS::addTally(const phitsSystem::phitsTally& TRef)
 {
   ELog::RegMethod RegA("SimPHITS","addTally");
   
-  const std::string keyNum=TRef.getKey();
+  const std::string keyNum=TRef.getKeyName();
   if (PTItem.find(keyNum)!=PTItem.end())
     throw ColErr::InContainerError<std::string>(keyNum,"Tally Present");
 
@@ -243,12 +243,38 @@ SimPHITS::writeTally(std::ostream& OX) const
   OX<<"$ -----------------------------------------------------------"<<std::endl;
   OX<<"$ ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"$ -----------------------------------------------------------"<<std::endl;
-  const std::string& FN=fileName;
   for(const PTallyTYPE::value_type& TI : PTItem)
     TI.second->write(OX,fileName);
 
   return;
 }
+
+std::map<int,int>
+SimPHITS::renumberCells(const std::vector<int>& cOffset,
+			const std::vector<int>& cRange)
+  /*!
+    Re-arrange all the cell numbers to be sequentual from 1-N.
+    \param cOffset :: Protected start
+    \param cRange :: Protected range
+    \return map<oldNumber,newNumber>
+  */
+{
+  ELog::RegMethod RegA("SimMCNP","renumberCells");
+
+  const std::map<int,int> RMap=
+    Simulation::renumberCells(cOffset,cRange);
+
+  // CARE HERE: RMap is the old number. The objects themselve
+  //  have already been updated
+  for(const auto [cNum,nNum] : RMap)
+    {
+      //      PhysPtr->substituteCell(cNum,nNum);
+      for(PTallyTYPE::value_type& TI : PTItem)
+	TI.second->renumberCell(cNum,nNum);
+    }
+  return RMap;
+}
+
 
 void
 SimPHITS::writeTransform(std::ostream& OX) const

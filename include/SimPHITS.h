@@ -82,7 +82,9 @@ class SimPHITS : public Simulation
   /// access to physics
   phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
 
-
+  virtual std::map<int,int>
+  renumberCells(const std::vector<int>&,const std::vector<int>&);
+  
   // TALLY Processing 
   void addTally(const phitsSystem::phitsTally&);
   phitsSystem::phitsTally* getTally(const int) const;
