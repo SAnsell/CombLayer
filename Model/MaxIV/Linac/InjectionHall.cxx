@@ -370,7 +370,10 @@ InjectionHall::createSurfaces()
 
   // Back wall
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*backWallYStep,Y);
+  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+22));
+
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin+Y*(backWallYStep+backWallThick),Y);
+  SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+23));
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
