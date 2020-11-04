@@ -143,6 +143,9 @@ InjectionHall::populate(const FuncDataBase& Control)
   midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
   midGateWidth=Control.EvalVar<double>(keyName+"MidGateWidth");
   midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
+  backWallYStep=Control.EvalVar<double>(keyName+"BackWallYStep");
+  backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+  backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
 
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
@@ -365,6 +368,10 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5005,FMidPt-Z*(thzHeight/2.0-thzZStep),Z);
   ModelSupport::buildPlane(SMap,buildIndex+5006,FMidPt+Z*(thzHeight/2.0+thzZStep),Z);
 
+  // Back wall
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*backWallYStep,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin+Y*(backWallYStep+backWallThick),Y);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -438,8 +445,16 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -2 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -22 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "22 -23 223 -1003 5 -6 ");
+  makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "23 -2 223 -1003 5 -6 ");
+  makeCell("LongVoidAfter",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);

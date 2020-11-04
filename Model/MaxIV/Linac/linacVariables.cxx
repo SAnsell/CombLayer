@@ -3155,6 +3155,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidGateWidth",440.0);// K_20-1_08F6c1
   Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
 
+  // back wall
+  Control.addVariable(wallKey+"BackWallYStep",10044.0); // tdc-map.pdf
+  Control.addVariable(wallKey+"BackWallThick",100.0); // dummy
+  Control.addVariable(wallKey+"BackWallMat","Concrete"); // dummy
+
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
   Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0+100.0);
