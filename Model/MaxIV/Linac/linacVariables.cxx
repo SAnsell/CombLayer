@@ -3088,6 +3088,8 @@ Segment49(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  Control.addVariable(lKey+"WallRadius",3.0);
+
   setCylGateValve(Control,lKey+"GateA",0.0,false);
   setCylGateValve(Control,lKey+"GateB",180.0,false);
 
@@ -3315,6 +3317,13 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfFarOuterLeft",50.0);
   Control.addVariable("spfFarOuterRight",50.0);
   Control.addVariable("spfFarOuterTop",100.0);
+
+  // segment 49
+  Control.addVariable("spfBehindBackWallXStep",-995.514+linacVar::zeroX); // dummy
+  Control.addVariable("spfBehindBackWallYStep",9495.745+linacVar::zeroY); // start of segment49
+  Control.addVariable("spfBehindBackWallOuterLeft",50.0);
+  Control.addVariable("spfBehindBackWallOuterRight",50.0);
+  Control.addVariable("spfBehindBackWallOuterTop",100.0);
 
 
   linacVar::Segment1(Control,"L2SPF1");

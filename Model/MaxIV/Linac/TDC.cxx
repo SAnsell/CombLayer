@@ -232,16 +232,16 @@ TDC::buildSurround(const FuncDataBase& Control,
       const double outerTop=Control.EvalVar<double>(regionName+"OuterTop");
       const double outerFloor=
 	Control.EvalDefVar<double>(regionName+"OuterFloor",-5e10); // large-neg
-      
+
       const attachSystem::FixedOffsetUnit injFC
 	(Control,regionName,*injectionHall,injectionPt);
       // rotation if needed in a bit
       const Geometry::Vec3D& Org=injFC.getCentre();
       const Geometry::Vec3D& InjectX=injFC.getX();
       const Geometry::Vec3D& InjectZ=injFC.getZ();
-      
+
       std::string Out;
-      
+
       ModelSupport::buildPlane(SMap,BI+3,Org-X*outerLeft,InjectX);
       ModelSupport::buildPlane(SMap,BI+4,Org+X*outerRight,InjectX);
       ModelSupport::buildPlane(SMap,BI+6,Org+Z*outerTop,InjectZ);
@@ -251,7 +251,7 @@ TDC::buildSurround(const FuncDataBase& Control,
 	  BI+=10;
 	  return HeadRule(Out+injectionHall->getSurfString("Floor"));
 	}
-      
+
       ModelSupport::buildPlane(SMap,BI+5,Org-Z*outerFloor,InjectZ);
       Out=ModelSupport::getComposite(SMap,BI," 3 -4 5 -6");
       BI+=10;
@@ -276,7 +276,7 @@ TDC::setVoidSpace(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("TDC","setVoidSpace");
-  
+
   if (!voidName.empty())
     {
       const std::vector<int>& VCell=
@@ -325,7 +325,8 @@ TDC::buildInnerZone(Simulation& System,
       {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
-      {"spfFar"  ,{"TDCMid","#Back","LongVoid",""}}
+      {"spfFar"  ,{"TDCMid","#BackWallFront","LongVoid",""}}, // last cell with columns
+      {"spfBehindBackWall"  ,{"BackWallBack","#Back","LongVoidAfter",""}} // cell behind back wall
     });
   //Extra surfaces to add to the main surround
   const static EMAP extraSUR
@@ -364,7 +365,7 @@ TDC::buildInnerZone(Simulation& System,
 
   setVoidSpace(System,buildZone,voidName);
   setVoidSpace(System,buildZone,voidNameB);
-  
+
   auto [mc,successflag] =  bZone.emplace(segmentName,buildZone);
   return mc->second;
 }
@@ -410,10 +411,10 @@ TDC::reconstructInjectionHall(Simulation& System)
 	}
       std::map<int,HeadRule>::iterator mc=
 	originalSpaces.find(CN);
-      
+
       if (mc==originalSpaces.end())
 	throw ColErr::InContainerError<int>(CN,"BZone insertcell");
-      
+
       HeadRule HROut=mc->second;
       HROut.addIntersection(BZvol.getVolume().complement());
       HROut.addIntersection(OuterVolume);
@@ -426,7 +427,7 @@ TDC::reconstructInjectionHall(Simulation& System)
 
   return;
 }
-  
+
 void
 TDC::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
@@ -528,7 +529,7 @@ TDC::createAll(Simulation& System,
 
   // special case of Segment10 : Segment26/27/28/29
   std::shared_ptr<attachSystem::BlockZone> seg10Zone;
-    
+
   for(const std::string& BL : buildOrder)
     {
       if (activeINJ.find(BL)!=activeINJ.end())
@@ -546,7 +547,7 @@ TDC::createAll(Simulation& System,
 	  const TDCsegment* prevSegPtr=
 	    (prevC!=SegMap.end()) ?  prevC->second.get() : nullptr;
 	  const std::shared_ptr<TDCsegment>& segPtr=mc->second;
-	  
+
 	  std::shared_ptr<attachSystem::BlockZone> buildZone=
 	    buildInnerZone(System,BL,bzName);
 
@@ -568,6 +569,13 @@ TDC::createAll(Simulation& System,
 
 	  if (BL=="Segment47")
 	    sideSegNames={"Segment45","Segment46"};
+
+	  if (BL=="Segment49") // same treatment as Segment10
+	    {
+	      std::shared_ptr<attachSystem::BlockZone> secondZone=
+		buildInnerZone(System,"Segment49B","spfBehindBackWall");
+	      segPtr->setNextZone(secondZone.get());
+	    }
 
 	  // Add side segments:
 	  for(const std::string& sideItem : sideSegNames)
@@ -622,10 +630,10 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
- 
+
   reconstructInjectionHall(System);
 
-  
+
 
   return;
 }

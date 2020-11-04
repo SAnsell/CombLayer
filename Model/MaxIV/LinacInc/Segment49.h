@@ -37,11 +37,19 @@ class Segment49 :
 {
  private:
 
+  const InjectionHall* IHall; ///< Storage for injection hall if used
+
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #1
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #3
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #4
 
+  double wallRadius; // radius of the IHall penetration
+
+  void constructHole(Simulation&);
+
+  void populate(const FuncDataBase&);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
 
