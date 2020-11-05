@@ -3088,6 +3088,8 @@ Segment49(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
+  Control.addVariable(lKey+"WallRadius",3.0);
+
   setCylGateValve(Control,lKey+"GateA",0.0,false);
   setCylGateValve(Control,lKey+"GateB",180.0,false);
 
@@ -3154,6 +3156,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
   Control.addVariable(wallKey+"MidGateWidth",440.0);// K_20-1_08F6c1
   Control.addVariable(wallKey+"MidGateWall",100.0); // K_20-1_08F6c1
+
+  // back wall
+  Control.addVariable(wallKey+"BackWallYStep",10044.0); // tdc-map.pdf
+  Control.addVariable(wallKey+"BackWallThick",100.0); // dummy
+  Control.addVariable(wallKey+"BackWallMat","Concrete"); // dummy
 
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
@@ -3310,6 +3317,13 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfFarOuterLeft",50.0);
   Control.addVariable("spfFarOuterRight",50.0);
   Control.addVariable("spfFarOuterTop",100.0);
+
+  // segment 49
+  Control.addVariable("spfBehindBackWallXStep",-995.514+linacVar::zeroX); // dummy
+  Control.addVariable("spfBehindBackWallYStep",9495.745+linacVar::zeroY); // start of segment49
+  Control.addVariable("spfBehindBackWallOuterLeft",50.0);
+  Control.addVariable("spfBehindBackWallOuterRight",50.0);
+  Control.addVariable("spfBehindBackWallOuterTop",100.0);
 
 
   linacVar::Segment1(Control,"L2SPF1");

@@ -78,6 +78,10 @@ class InjectionHall :
   double midGateWidth;          ///< Gate width
   double midGateWall;           ///< Gate wall
 
+  double backWallYStep;         ///< Y offset of the back wall
+  double backWallThick;         ///< Back wall thickness
+  int backWallMat;              ///< Back wall material
+
   double klystronXStep;         ///< Step of inner klystron wall
   double klystronLen;           ///< Length of klystron wall
   double klystronFrontWall;      ///< Thick of front kylstron wall

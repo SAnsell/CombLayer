@@ -180,7 +180,7 @@ Segment10::constructHole(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
       IHall->insertComponent(System,"MidT",Out);
-      IHall->insertComponent(System,"MidTAuxCyl",Out);
+      //      IHall->insertComponent(System,"MidTAuxCyl",Out);
 
       // This might not be the best place for this:::
 
@@ -270,7 +270,7 @@ Segment10::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment10","build");
+  ELog::RegMethod RControl("Segment10","createAll");
 
   IHall=dynamic_cast<const InjectionHall*>(&FC);
 

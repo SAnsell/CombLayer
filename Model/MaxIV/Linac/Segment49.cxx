@@ -34,7 +34,9 @@
 #include <iterator>
 #include <memory>
 
+
 #include "FileReport.h"
+#include "BaseVisit.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -50,6 +52,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -59,13 +62,17 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "BlockZone.h"
+#include "generateSurf.h"
+#include "ModelSupport.h"
 #include "generalConstruct.h"
 
 #include "CylGateValve.h"
 #include "VacuumPipe.h"
-
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
+#include "InjectionHall.h"
 #include "Segment49.h"
+
 
 namespace tdcSystem
 {
@@ -74,6 +81,7 @@ namespace tdcSystem
 
 Segment49::Segment49(const std::string& Key) :
   TDCsegment(Key,2),
+  IHall(nullptr),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -101,6 +109,63 @@ Segment49::~Segment49()
 {}
 
 void
+Segment49::populate(const FuncDataBase& Control)
+  /*!
+    Get required variable
+    \param Control :: DatatBase
+   */
+{
+  ELog::RegMethod RegA("Segment49","populate");
+
+  FixedRotate::populate(Control);
+
+  wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
+
+  return;
+}
+
+void
+Segment49::createSurfaces()
+  /*!
+    Build surface(s) for wall hole.
+  */
+{
+  ELog::RegMethod RegA("Segment49","createSurfaces");
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,wallRadius);
+
+  return;
+}
+
+void
+Segment49::constructHole(Simulation& System)
+  /*!
+    Construct the hole in the wall
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("Segment49","constructHole");
+
+  if (IHall)
+    {
+      std::string Out;
+      const HeadRule fbHR=IHall->combine("BackWallFront #BackWallBack");
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
+
+      pipeB->addInsertCell("Main",this->getCell("WallVoid"));
+      pipeB->addInsertCell("Main",IHall->getCell("LongVoidAfter"));
+      pipeB->addInsertCell("FlangeB",IHall->getCell("LongVoidAfter"));
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
+      IHall->insertComponent(System,"BackWall",Out);
+    }
+
+  return;
+}
+
+void
 Segment49::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -112,6 +177,8 @@ Segment49::buildObjects(Simulation& System)
 
   int outerCell;
 
+  constructHole(System);
+
   if (isActive("front"))
     gateA->copyCutSurf("front",*this,"front");
 
@@ -122,11 +189,20 @@ Segment49::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*gateA,"back",*pipeA);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,*pipeA,"back",*pipeB);
+  pipeB->createAll(System,*pipeA,"back");
+  outerCell=buildZone->createUnit(System);
+  pipeB->insertAllInCell(System,outerCell);
+
+  if (!nextZone)
+    ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
+
+  // this creates spfBehindBackWall zone
+  outerCell=nextZone->createUnit(System,*pipeB,2);
+  pipeB->insertAllInCell(System,outerCell);
+  pipeTerminate(System,*nextZone,pipeB);
 
   constructSystem::constructUnit
-    (System,*buildZone,*pipeB,"back",*gateB);
+    (System,*nextZone,*pipeB,"back",*gateB);
 
   return;
 }
@@ -159,11 +235,13 @@ Segment49::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("Segment49","build");
+  ELog::RegMethod RControl("Segment49","createAll");
 
-  FixedRotate::populate(System.getDataBase());
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
+
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  createSurfaces();
   buildObjects(System);
   createLinks();
   return;
