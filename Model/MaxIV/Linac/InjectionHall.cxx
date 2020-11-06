@@ -497,17 +497,22 @@ InjectionHall::createObjects(Simulation& System)
 
   // FemtoMAX/BSP01 wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6101 6103 -6104 5 -6 ");
+  				 "22 -2 6103 -6104 5 -6 ");
   makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 " 6101 -2 6103 -6104 5 -6 ");
-  makeCell("BSP01WallBack",System,cellIndex++,wallMat,0.0,Out);
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -2 6104 -1003 5 -6 ");
+  				 "22 -6101 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6101 -6102 6104 -1003 5 -6 ");
+  makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6102 -2 6104 -1003 5 -6 ");
+  makeCell("C080017Maze",System,cellIndex++,voidMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
