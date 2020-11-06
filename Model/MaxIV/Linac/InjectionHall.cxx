@@ -120,9 +120,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
-  femtoMAXWallXStep=Control.EvalVar<double>(keyName+"FemtoMAXWallXStep");
+  femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
   bsp01WallThick=Control.EvalVar<double>(keyName+"BSP01WallThick");
   bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
+  bsp01WallLength=Control.EvalVar<double>(keyName+"BSP01WallLength");
+  bsp01MazeWidth=Control.EvalVar<double>(keyName+"BSP01MazeWidth");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
 
@@ -375,19 +377,26 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5006,FMidPt+Z*(thzHeight/2.0+thzZStep),Z);
 
   // Back wall
-  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*backWallYStep,Y);
-  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+22));
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*backWallYStep,Y);
+  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+21));
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin+Y*(backWallYStep+backWallThick),Y);
-  SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+23));
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(backWallYStep+backWallThick),Y);
+  SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+22));
 
   // Wall between SPF hallway and FemtoMAX beamline area
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6001,buildIndex+223,X,femtoMAXWallXStep);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6002,buildIndex+6001,X,femtoMAXWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6004,buildIndex+6003,X,femtoMAXWallThick);
 
   // Wall between FemtoMAX and BSP01 beamline areas
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6101,buildIndex+223,X,bsp01WallOffset);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,X,bsp01WallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6103,buildIndex+223,X,bsp01WallOffset);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6104,buildIndex+6103,X,bsp01WallThick);
+
+  // maze in the end of FemtoMAX/BSP01 areas
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6101,buildIndex+22,Y,bsp01WallLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,Y,bsp01WallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bsp01MazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6112,buildIndex+6111,Y,bsp01WallThick);
+
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -462,38 +471,42 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -22 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -21 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "22 -23 223 -1003 5 -6 ");
+				 "21 -22 223 -1003 5 -6 ");
   makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
 
   // SPF hallway
   // C080012 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "23 -2 223 -6001 5 -6 ");
+				 "22 -2 223 -6003 5 -6 ");
   makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
 
   // SPF/FemtoMAX wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "23 -2 6001 -6002 5 -6 ");
+				 "22 -2 6003 -6004 5 -6 ");
   makeCell("FemtoMAXWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "23 -2 6002 -6101 5 -6 ");
+  				 "22 -2 6004 -6103 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
   // FemtoMAX/BSP01 wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "23 -2 6101 -6102 5 -6 ");
+  				 "22 -6101 6103 -6104 5 -6 ");
   makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 " 6101 -2 6103 -6104 5 -6 ");
+  makeCell("BSP01WallBack",System,cellIndex++,wallMat,0.0,Out);
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "23 -2 6102 -1003 5 -6 ");
+  				 "22 -2 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");

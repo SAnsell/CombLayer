@@ -53,10 +53,12 @@ class InjectionHall :
   double spfAngle;               ///< SPF hall diagonal wall
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
-  double femtoMAXWallXStep;      ///< X-offset of the SPF/FemtoMAX wall
+  double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
 
   double bsp01WallThick;        ///< Thickness of wall between FemtoMAX and BSP01 beamline areas
   double bsp01WallOffset;       ///< BSP01 wall offset
+  double bsp01WallLength;       ///< BSP01 wall length (before maze starts)
+  double bsp01MazeWidth;        ///< Maze width in the BSP01 beamline area
 
   double rightWallStep;          ///< Extra out step on right
 
