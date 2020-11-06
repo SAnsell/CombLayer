@@ -118,9 +118,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfMidLength=spfAngleLength/2.0;
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
-  femtoMAXWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FemtoMAXWallMat");
+
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallXStep=Control.EvalVar<double>(keyName+"FemtoMAXWallXStep");
+  bsp01WallThick=Control.EvalVar<double>(keyName+"BSP01WallThick");
+  bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
 
@@ -383,6 +385,10 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6001,buildIndex+223,X,femtoMAXWallXStep);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6002,buildIndex+6001,X,femtoMAXWallThick);
 
+  // Wall between FemtoMAX and BSP01 beamline areas
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6101,buildIndex+223,X,bsp01WallOffset);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,X,bsp01WallThick);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -472,14 +478,23 @@ InjectionHall::createObjects(Simulation& System)
   // SPF/FemtoMAX wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "23 -2 6001 -6002 5 -6 ");
-  makeCell("FemtoMAXWall",System,cellIndex++,femtoMAXWallMat,0.0,Out);
+  makeCell("FemtoMAXWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "23 -2 6002 -1003 5 -6 ");
+  				 "23 -2 6002 -6101 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
+  // FemtoMAX/BSP01 wall
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "23 -2 6101 -6102 5 -6 ");
+  makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  // BSP01 beamline area
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "23 -2 6102 -1003 5 -6 ");
+  makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);

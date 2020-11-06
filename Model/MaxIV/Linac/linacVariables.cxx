@@ -3119,15 +3119,17 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"MainLength",12080.0);
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
-  Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
+  Control.addVariable(wallKey+"LinearLTurnLength",3639.735+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
-  Control.addVariable(wallKey+"SPFAngleLength",4124.0);
+  Control.addVariable(wallKey+"SPFAngleLength",4181.5);
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
-  Control.addVariable(wallKey+"SPFAngle",12.7);
+  Control.addVariable(wallKey+"SPFAngle",12.8); // derived from K_20-1_08C6c1 and K_20-1_08C6b2
 
-  Control.addVariable(wallKey+"FemtoMAXWallMat","Concrete"); // K_01-0_010
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallXStep",405.0); // derived from K_20-1_08G6b[34]
+
+  Control.addVariable(wallKey+"BSP01WallThick",100.0); // K_01-0_010
+  Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1

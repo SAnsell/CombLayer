@@ -52,9 +52,11 @@ class InjectionHall :
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
 
-  int femtoMAXWallMat;           ///< Material of the wall between SPF hallway and FemtoMAX beamline area
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallXStep;      ///< X-offset of the SPF/FemtoMAX wall
+
+  double bsp01WallThick;        ///< Thickness of wall between FemtoMAX and BSP01 beamline areas
+  double bsp01WallOffset;       ///< BSP01 wall offset
 
   double rightWallStep;          ///< Extra out step on right
 
