@@ -94,7 +94,7 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
+    
   std::string Oname;
   std::vector<std::string> Names;  
 
@@ -105,16 +105,16 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createSingleItemInputs(IParam);
-      
+	  
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
+
       // The big variable setting
       setVariable::SingleItemVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
+
       singleItemSystem::makeSingleItem singleItemObj;
       singleItemObj.build(*SimPtr,IParam);
       

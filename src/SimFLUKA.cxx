@@ -99,7 +99,7 @@ SimFLUKA::SimFLUKA() :
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
   defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
   writeVariable(1),lowEnergyNeutron(1),
-  nps(1000),rndSeed(2374891),BVec(0,0,0),
+  nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
   RadDecayPtr(new flukaSystem::radDecay())
   /*!
@@ -113,7 +113,7 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   basicGeom(A.basicGeom),geomPrecision(A.geomPrecision),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
-  nps(A.nps),rndSeed(A.rndSeed),BVec(A.BVec),
+  nps(A.nps),rndSeed(A.rndSeed),
   sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr)),
   RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
@@ -140,7 +140,6 @@ SimFLUKA::operator=(const SimFLUKA& A)
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
-      BVec=A.BVec;
       sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
@@ -370,41 +369,29 @@ SimFLUKA::writeMagField(std::ostream& OX) const
   OX<<"* ------------------------------------------------------"<<std::endl;
 
   std::ostringstream cx;
-  // Simple case - flat field
-
-  if (MagItem.empty())
+  if (!MagItem.empty())
     {
-      if (BVec.abs()<Geometry::zeroTol)
-	cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
-      else
-	cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
-      
+      // Need to set mgnfield to zero
+      cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
       StrFunc::writeFLUKA(cx.str(),OX);
       
-      return;
-    }
-
-  // Need to set mgnfield to zero
-  cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
-  StrFunc::writeFLUKA(cx.str(),OX);
-
-  flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
-  for(const OTYPE::value_type& mp : OList)
-    {
-      if (mp.second->hasMagField())
+      flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      for(const OTYPE::value_type& mp : OList)
 	{
-	  const std::pair<double,double> magStep=
-	    mp.second->getMagStep();
-	  Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	  if (mp.second->hasMagField())
+	    {
+	      const std::pair<double,double> magStep=
+		mp.second->getMagStep();
+	      Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	    }
 	}
+      const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+      const std::vector<int> cellInfo=this->getCellVector();
+      Steps.writeFLUKA(OX,cellInfo,fmtSTR);
+      
+      for(const MagTYPE::value_type& MI : MagItem)
+	MI.second->writeFLUKA(OX);
     }
-  const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
-  const std::vector<int> cellInfo=this->getCellVector();
-  Steps.writeFLUKA(OX,cellInfo,fmtSTR);
-
-  for(const MagTYPE::value_type& MI : MagItem)
-    MI.second->writeFLUKA(OX);
-
   return;
 }
 
@@ -700,7 +687,7 @@ SimFLUKA::getLowMat(const size_t Z,const size_t,
 
 void
 SimFLUKA::addMagnetObject
-(const std::shared_ptr<flukaSystem::magnetUnit>& MUnit)
+(const std::shared_ptr<magnetSystem::magnetUnit>& MUnit)
   /*!
     Add an object to this data base
     \param MUnit :: Magnetic unit

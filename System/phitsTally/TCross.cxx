@@ -177,6 +177,7 @@ TCross::write(std::ostream& OX,
   StrFunc::writePHITSComment(OX,1,comments);
 
   StrFunc::writePHITS(OX,1,"output",((fluxFlag) ? "flux" : "current"));
+  StrFunc::writePHITS(OX,1,"part",particle);
   
   energy.write(OX);
   angle.write(OX);
@@ -196,7 +197,7 @@ TCross::write(std::ostream& OX,
   StrFunc::writePHITS(OX,1,"axis",axis);
 
   StrFunc::writePHITS(OX,1,"epsout",epsFlag);
-  StrFunc::writePHITS(OX,1,"file",fileHead+"TCross"+keyName+".out");
+  StrFunc::writePHITS(OX,1,"file",fileHead+keyName+".out");
   if (vtkout)
     {
       StrFunc::writePHITS(OX,1,"vtkout",vtkout);

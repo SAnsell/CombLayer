@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,66 +47,41 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "version.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
-#include "DBMaterial.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "ArbPoly.h"
-#include "Cylinder.h"
-#include "Cone.h"
-#include "MBrect.h"
-#include "NullSurface.h"
-#include "Sphere.h"
-#include "Torus.h"
-#include "General.h"
-#include "surfaceFactory.h"
-#include "surfProg.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
 #include "FuncDataBase.h"
 #include "SurInter.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "AcompTools.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "WForm.h"
-#include "ModeCard.h"
-#include "LSwitchCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "PhysicsCards.h"
 #include "inputSupport.h"
+#include "phitsWriteSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "phitsPhysics.h"
 #include "phitsTally.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+#include "magnetUnit.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
@@ -246,6 +221,22 @@ SimPHITS::writeTally(std::ostream& OX) const
   for(const PTallyTYPE::value_type& TI : PTItem)
     TI.second->write(OX,fileName);
 
+  return;
+}
+
+void
+SimPHITS::addMagnetObject
+(const std::shared_ptr<magnetSystem::magnetUnit>& MUnit)
+  /*!
+    Add an object to this data base
+    \param MUnit :: Magnetic unit
+   */
+{
+  ELog::RegMethod RegA("SimPHITS","addMagnetObject");
+  
+  addObject(MUnit);
+  MUnit->setIndex(MagItem.size());
+  MagItem.emplace(MUnit->getKeyName(),MUnit);
   return;
 }
 
@@ -396,7 +387,6 @@ SimPHITS::writePhysics(std::ostream& OX) const
     to the physics
     \param OX :: Output stream
   */
-
 {  
   ELog::RegMethod RegA("SimPHITS","writePhysics");
   // Processing for point tallies
@@ -404,22 +394,24 @@ SimPHITS::writePhysics(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
 
-  boost::format FMT("%1$8.0d ");
   OX<<"[Parameters]"<<std::endl;
 
-  OX<<" icntl       =        "<<(FMT % icntl)<<std::endl;
-  OX<<" maxcas      =        "<<(FMT % (nps/10))<<std::endl;
-  OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
-  OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
-  OX<<" file(1)     = /home/ansell/phits"<<std::endl;  
-  OX<<" file(6)     = phits.out"<<std::endl;
-  OX<<" file(7)     = /home/ansell/mcnpxNew/xsdir_short"<<std::endl;
-  OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
-
-
+  StrFunc::writePHITS(OX,1,"icntl",icntl);
+  StrFunc::writePHITS(OX,1,"maxcas",nps/10);
+  StrFunc::writePHITS(OX,1,"maxbch",10);
+  StrFunc::writePHITS(OX,1,"file(1)","/home/ansell/phits");
+  StrFunc::writePHITS(OX,1,"file(6)","phits.out");
+  StrFunc::writePHITS(OX,1,"file(7)","/home/ansell/mcnpxNew/xsdir_short");
+  StrFunc::writePHITS(OX,1,"rseed","rndSeed");
+  
+  if (!MagItem.empty())
+    {
+      StrFunc::writePHITS(OX,1,"imagnf",1);
+      StrFunc::writePHITS(OX,1,"ielctf",1);
+    }
+    
   PhysPtr->writePHITS(OX);
-
-
+  
   if (WM.hasParticle("n"))
     {
       ELog::EM<<"WEIGHT"<<ELog::endErr;
@@ -430,6 +422,31 @@ SimPHITS::writePhysics(std::ostream& OX) const
 
   
   OX<<std::endl;
+  return;
+}
+
+void
+SimPHITS::writeMagnet(std::ostream& OX) const
+  /*! 
+    Write all the magnet units to standard phits
+    Note that wes use type 103 to get to usrmgf3.f
+    \param OX :: Output stream
+  */
+{
+  if (!MagItem.empty())
+    {
+      // assume at least one magnetic region:
+      OX<<"[Magnetic Field]"<<std::endl;
+      StrFunc::writePHITSTableHead
+	(OX,1,{"reg","type","gap","mgf","trcl"});
+
+      for(const auto& [name , oPtr] : OList)
+	{
+	  if (oPtr->hasMagField())
+	    StrFunc::writePHITSTable
+	      (OX,1,name,103,10.0,-1.0,0);
+	}
+    }
   return;
 }
 
@@ -453,6 +470,7 @@ SimPHITS::write(const std::string& Fname) const
   writeTransform(OX);
   writeTally(OX);
   writeSource(OX);
+  writeMagnet(OX);
 
   OX<<"[end]"<<std::endl;
   OX.close();

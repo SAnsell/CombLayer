@@ -84,7 +84,7 @@ class EBeamStopGenerator
   double ionPortFlangeLength;   /// flange length
   double ionPortPlateThick;     /// coverplate thick
   
-  std::vector<int> stopMat;     ///< Stop materials 
+  std::vector<std::string> stopMat;     ///< Stop materials 
 
   std::string voidMat;                  ///< void material
   std::string wallMat;                  ///< wallmaterial

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcess/flukaSetMagnets.cxx
+ * File:   magnetic/SetMagnets.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -73,17 +73,18 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
+#include "SimPHITS.h"
 
 #include "magnetUnit.h"
-#include "flukaSetMagnets.h"
+#include "SetMagnets.h"
 
 
-namespace flukaSystem
+namespace magnetSystem
 {
   
-
+template<typename SimTYPE>
 void
-setMagneticExternal(SimFLUKA& System,
+setMagneticExternal(SimTYPE& System,
 		    const mainSystem::inputParam& IParam)
   /*!
     Sets the external magnetic fields in object(s) 
@@ -91,7 +92,7 @@ setMagneticExternal(SimFLUKA& System,
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
+  ELog::RegMethod Rega("SetMagnets[F]","setMagneticExternal");
 
   if (IParam.flag("MagStep"))
     {
@@ -144,7 +145,7 @@ setMagneticExternal(SimFLUKA& System,
 	  for(size_t i=1;i<4;i++)
 	    KV[i]=IParam.getDefValue<double>(0.0,"MagUnit",setIndex,index++);
 
-	  std::shared_ptr<flukaSystem::magnetUnit>
+	  std::shared_ptr<magnetSystem::magnetUnit>
 	    OPtr(new magnetUnit("MagUnit",setIndex));
 	  OPtr->setRotation(0,magYAngle,0);		  
 	  OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
@@ -155,16 +156,17 @@ setMagneticExternal(SimFLUKA& System,
 }
 
   
+template<typename SimTYPE>
 void
-setDefMagnets(SimFLUKA& System)
+setDefMagnets(SimTYPE& System)
   /*!
     This sets the magnets from the main Control variables
     assuming that a magnet region has been built.
     \todo specialize to remove selected defaults
-    \param System :: Simulation [Fluka]
+    \param System :: Simulation [Fluka/Phits]
   */
 {
-  ELog::RegMethod RegA("flukaSefMagnets[F]","setDefMagnets");
+  ELog::RegMethod RegA("SefMagnets[F]","setDefMagnets");
 
   // Database of varibles
   const FuncDataBase& Control=System.getDataBase();
@@ -240,9 +242,9 @@ setDefMagnets(SimFLUKA& System)
   return; 
 }
 
-  
+template<typename SimTYPE>  
 void
-setMagneticPhysics(SimFLUKA& System,
+setMagneticPhysics(SimTYPE& System,
 		   const mainSystem::inputParam& IParam)
   /*!
     Currently very simple but expect to get complex.
@@ -251,19 +253,11 @@ setMagneticPhysics(SimFLUKA& System,
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
+  ELog::RegMethod Rega("SetMagnets","setMagneticPhysics");
 
   if (IParam.flag("defMagnet"))
     setDefMagnets(System);
   
-  
-  if (IParam.flag("MAG"))
-    {
-      const Geometry::Vec3D MF=
-	IParam.getValue<Geometry::Vec3D>("MAG",0);  
-      System.setMagField(MF);
-    }
-
   const size_t nSet=IParam.setCnt("MagField");
   for(size_t setIndex=0;setIndex<nSet;setIndex++)
     {
@@ -283,4 +277,15 @@ setMagneticPhysics(SimFLUKA& System,
   return;
 }
 
-}
+///\cond TEMPLATE
+
+template void setDefMagnets(SimFLUKA&);
+template void setMagneticPhysics(SimFLUKA&,const mainSystem::inputParam&);
+template void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
+
+template void setDefMagnets(SimPHITS&);
+template void setMagneticPhysics(SimPHITS&,const mainSystem::inputParam&);
+template void setMagneticExternal(SimPHITS&,const mainSystem::inputParam&);
+
+///\endcond TEMPLATE
+}   // NAMESPACE MagnetSystem

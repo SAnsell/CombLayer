@@ -22,6 +22,10 @@
 #ifndef SimFLUKA_h
 #define SimFLUKA_h
 
+namespace magnetSystem
+{
+  class magnetUnit;
+}
 
 namespace flukaSystem
 {
@@ -47,7 +51,7 @@ class SimFLUKA : public Simulation
   typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE;
   /// Name : magnet
   typedef std::map<std::string,
-    std::shared_ptr<flukaSystem::magnetUnit>> MagTYPE;
+    std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
   /// Name : Flag active 
   typedef std::map<std::string,std::string> FlagTYPE;
   
@@ -62,7 +66,6 @@ class SimFLUKA : public Simulation
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
-  Geometry::Vec3D BVec;           ///< Magnetic field
 
   std::string sourceExtraName;    ///< Extra name if using combined sources
 
@@ -141,8 +144,6 @@ class SimFLUKA : public Simulation
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
-  /// Set the vector field
-  void setMagField(const Geometry::Vec3D& B) { BVec=B; }
   
   void setDefaultPhysics(const std::string&);
   void setForCinder();

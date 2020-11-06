@@ -53,7 +53,8 @@ namespace phitsSystem
 
 phitsTally::phitsTally(const int ID)  :
   keyName(std::to_string(ID)),
-  idNumber(ID),epsFlag(0),vtkout(0),vtkBinary(0)
+  idNumber(ID),particle("all"),
+  epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
     \param ID :: phitsTally ID number
@@ -62,6 +63,7 @@ phitsTally::phitsTally(const int ID)  :
 
 phitsTally::phitsTally(const std::string& KName,const int ID)  :
   keyName(KName+std::to_string(ID)),idNumber(ID),
+  particle("all"),
   epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
@@ -72,7 +74,9 @@ phitsTally::phitsTally(const std::string& KName,const int ID)  :
 
 phitsTally::phitsTally(const phitsTally& A) : 
   keyName(A.keyName),idNumber(A.idNumber),
-  comments(A.comments),epsFlag(A.epsFlag),
+  comments(A.comments),particle(A.particle),
+  title(A.title),xTxt(A.xTxt),
+  yTxt(A.yTxt),epsFlag(A.epsFlag),
   vtkout(A.vtkout),vtkBinary(A.vtkBinary)
   /*!
     Copy constructor
@@ -91,7 +95,8 @@ phitsTally::operator=(const phitsTally& A)
   if (this!=&A)
     {
       comments=A.comments;
-
+      particle=A.particle;
+      
       title=A.title;
       xTxt=A.xTxt;
       yTxt=A.yTxt;
@@ -139,7 +144,7 @@ phitsTally::setParticle(const std::string& P)
      \param P :: valid particles (outside of phits) ( all )
   */
 {
-  particle= (P=="all") ? "" : P;
+  particle= (StrFunc::isEmpty(P)) ? "all" : P;
   return;
 }
 

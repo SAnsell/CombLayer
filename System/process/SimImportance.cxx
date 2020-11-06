@@ -72,7 +72,7 @@
 #include "flukaProcess.h"
 #include "flukaDefPhysics.h"
 #include "phitsDefPhysics.h"
-#include "flukaSetMagnets.h"
+#include "SetMagnets.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -104,7 +104,7 @@ importanceSim(SimFLUKA& System,
   
   mainSystem::renumberCells(System,IParam);
   flukaSystem::setModelPhysics(System,IParam);
-  flukaSystem::setMagneticPhysics(System,IParam);
+  magnetSystem::setMagneticPhysics(System,IParam);
   return;
 }
 

@@ -35,6 +35,8 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "Code.h"
@@ -116,6 +118,7 @@ SingleItemVariables(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
+  ELog::RegMethod RegA("singleItemVariables[F]","SingleItemVariables");
 // -----------
 // GLOBAL stuff
 // -----------
@@ -358,7 +361,6 @@ SingleItemVariables(FuncDataBase& Control)
   CGateGen.setPortPairCF<CF40,CF63>();
   CGateGen.generateValve(Control,"GVCube",0.0,1);
 
-
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
@@ -392,9 +394,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);
-
+  
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
+
 
   setVariable::YagUnitGenerator YagUnitGen;
   YagUnitGen.generateYagUnit(Control,"YU");

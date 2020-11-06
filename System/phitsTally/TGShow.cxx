@@ -178,7 +178,7 @@ TGShow::write(std::ostream& OX,const std::string& fileHead) const
   if (!xTxt.empty()) StrFunc::writePHITS(OX,1,"x-txt",xTxt);
   if (!yTxt.empty()) StrFunc::writePHITS(OX,1,"y-txt",yTxt);
   StrFunc::writePHITS(OX,1,"epsout",epsFlag);
-  StrFunc::writePHITS(OX,1,"file",fileHead+"TCross"+keyName+".out");
+  StrFunc::writePHITS(OX,1,"file",fileHead+keyName+".out");
   if (vtkout)
     {
       StrFunc::writePHITS(OX,1,"vtkout",vtkout);

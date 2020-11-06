@@ -24,6 +24,11 @@
 
 class localRotate;
 
+namespace magnetSystem
+{
+  class magnetUnit;
+}
+
 namespace phitsSystem
 {
   class phitsTally;
@@ -43,6 +48,9 @@ class SimPHITS : public Simulation
 
   /// Tally  : tally
   typedef std::map<std::string,phitsSystem::phitsTally*> PTallyTYPE;
+  /// Name : magnet
+  typedef std::map<std::string,
+    std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
 
  private:
 
@@ -52,6 +60,8 @@ class SimPHITS : public Simulation
   long int rndSeed;                    ///< RND seed
 
   PTallyTYPE PTItem;                   ///< Phits tally map
+
+  MagTYPE MagItem;                ///< Fluka magnetic map
   
   phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics 
   
@@ -59,6 +69,7 @@ class SimPHITS : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeSource(std::ostream&) const;
+  void writeMagnet(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
@@ -92,6 +103,8 @@ class SimPHITS : public Simulation
   const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
   int getNextTallyID() const;
 
+  void addMagnetObject(const MagTYPE::mapped_type&);
+  
   /// set generic filename
   void setFileName(const std::string& FN) { fileName=FN; }
   /// access generic filename

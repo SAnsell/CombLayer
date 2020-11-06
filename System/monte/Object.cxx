@@ -140,7 +140,7 @@ Object::Object(const Object& A) :
   trcl(A.trcl),imp(A.imp),populated(A.populated),
   activeMag(A.activeMag),
   magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
-  magVec(A.magVec),HRule(A.HRule),objSurfValid(0),
+  HRule(A.HRule),objSurfValid(0),
   SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
@@ -169,7 +169,6 @@ Object::operator=(const Object& A)
       activeMag=A.activeMag;
       magMinStep=A.magMinStep;
       magMaxStep=A.magMaxStep;
-      magVec=A.magVec;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -542,18 +541,6 @@ Object::addSurfString(const std::string& XE)
   populated=0;
   objSurfValid=0;
   return flag;
-}
-
-void
-Object::setMagField(const Geometry::Vec3D& M)
-  /*!
-    Simple setter for magnetic field in an object
-    \param M :: Magnetic vector
-  */
-{
-  magVec=M;
-  activeMag=1;
-  return;
 }
 
 int

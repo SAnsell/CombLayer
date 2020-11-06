@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/flukaMagnets.h
+ * File:   magneticInc/SetMagnets.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,11 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_flukaSetMagnets_h
-#define flukaSystem_flukaSetMagnets_h
+#ifndef magnetSystem_flukaSetMagnets_h
+#define magnetSystem_flukaSetMagnets_h
 
 class Simulation;
 class SimFLUKA;
+class SimPHITS;
 class FuncDataBase;
 
 namespace mainSystem
@@ -31,14 +32,15 @@ namespace mainSystem
   class inputParam;
 }
 
-namespace flukaSystem
+namespace magnetSystem
 {
-  
-  void setDefMagnets(SimFLUKA&);
-  void setMagneticPhysics(SimFLUKA&,const mainSystem::inputParam&);
-  void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
-    
 
+  template<typename SimTYPE> void setDefMagnets(SimTYPE&);
+  template<typename SimTYPE>
+    void setMagneticPhysics(SimTYPE&,const mainSystem::inputParam&);
+  template<typename SimTYPE>
+    void setMagneticExternal(SimTYPE&,const mainSystem::inputParam&);
+    
 }
 
 

@@ -25,6 +25,7 @@
 
 namespace StrFunc
 {
+  
 template<typename T>
 void writePHITSItems(std::ostream& OX,const T Item)
 {
@@ -61,6 +62,7 @@ void writePHITSTable(std::ostream& OX,const size_t depth,
   return;
 }
 
+  
 void writePHITSComment(std::ostream&,const size_t,const std::string&);
 void writePHITSOpen(std::ostream&,const size_t,const std::string&);
 void writePHITSTableHead(std::ostream&,const size_t,
@@ -73,7 +75,24 @@ void writePHITS(std::ostream&,const size_t,
 
 template<typename T>
 void writePHITSCont(std::ostream&,const size_t,const size_t,const T&);
- 
+
+template<typename T>
+void writePHITSIndex(std::ostream& OX,const size_t depth,
+		     const std::string& unit,const size_t index,
+		     const T value,const std::string& comment ="")
+  /*!
+    Transfer function to write item(index) units
+    \param OX :: Output stream
+    \param depth :: offset spacing
+    \param index :: index number
+    \param value :: value to write
+    \param Comment :: comment string if any
+  */
+{
+  writePHITS<T>(OX,depth,unit+"("+std::to_string(index)+")",
+	     value,comment);
+}
+  
 }  
 
 #endif

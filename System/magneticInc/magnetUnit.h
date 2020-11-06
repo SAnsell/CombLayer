@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_magnetUnit_h
-#define flukaSystem_magnetUnit_h
+#ifndef magnetSystem_magnetUnit_h
+#define magnetSystem_magnetUnit_h
 
-namespace flukaSystem
+namespace magnetSystem
 {
   
 /*!
@@ -76,6 +76,7 @@ class magnetUnit :
 
 
   
+  virtual void writePHITS(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
 };
 

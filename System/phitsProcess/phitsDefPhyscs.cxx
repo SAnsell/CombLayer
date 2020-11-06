@@ -107,7 +107,6 @@ setModelPhysics(SimPHITS& System,
   phitsSystem::phitsPhysics* PC=System.getPhysics();
   if (!PC) return;
   
-  
   size_t nSet=IParam.setCnt("energyCut");
   for(size_t i=0;i<nSet;i++)
     {
@@ -124,6 +123,7 @@ setModelPhysics(SimPHITS& System,
 	}
 	  
     }
+
   
   return; 
 }

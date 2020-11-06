@@ -57,7 +57,6 @@ class Object
   bool activeMag;         ///< Magnetic field active
   double magMinStep;      ///< min step for mag field [fluka]
   double magMaxStep;      ///< max step for mag field [fluka]
-  Geometry::Vec3D magVec; ///< Magnetic field  [for fluka/phits]
   
   HeadRule HRule;    ///< Top rule
 
@@ -107,7 +106,6 @@ class Object
   void setCreate(const int lx) { listNum=lx; }         ///< Set Creation point
   void setTemp(const double A) { Tmp=A; }              ///< Set temperature [Kelvin]
   void setImp(const int A) { imp=A; }                  ///< Set imp
-  void setMagField(const Geometry::Vec3D&);
   void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
   
   int setObject(std::string);

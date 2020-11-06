@@ -51,6 +51,7 @@
 #include "particleConv.h"
 #include "cellValueSet.h"
 #include "pairValueSet.h"
+#include "phitsWriteSupport.h"
 #include "phitsPhysics.h"
 
 namespace phitsSystem
@@ -76,7 +77,9 @@ phitsPhysics::phitsPhysics() :
     { "negs" , 1 },     // use egs5 [D=0]
     { "nspred", 2},     // Lynch(Moliere) scattering
     { "nedisp", 1},     // straggling events [D=0] 
-    { "e-mode", 2}     // Create secondary events [D=0]
+    { "e-mode", 2},     // Create secondary events [D=0]
+    { "igmuppd", 1},     // photon induced muon-pair production [D=0]
+    { "ipnint", 1}      // photo-nuclear reaction [D=0]
   })
   /*!
     Constructor
@@ -123,19 +126,19 @@ phitsPhysics::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("phitsPhysics","writePHITS");
   
   const particleConv& PC=particleConv::Instance();
-  for(const auto& [ name , value ] :   particleECut)
+  for(const auto& [ particle , value ] :   particleECut)
     {
-      const int n=PC.phitsITYP(name);
-      OX<<"emin("<<n<<")     = "<<value<<"   # "<<name<<"\n";
+      const int n=PC.phitsITYP(particle);
+      StrFunc::writePHITSIndex(OX,1,"emin",n,value,particle);
     }
 
   for(const auto& [ flag , IVal ] :   flags)
-    OX<<flag<<"   = "<<IVal<<"\n";
+    StrFunc::writePHITS(OX,1,flag,IVal);
   
   for(const auto& [ particle , value ] :   libEMax)
     {
       const int n=PC.phitsITYP(particle);
-      OX<<"dmax("<<n<<")     = "<<value<<"   # "<<particle<<"\n";
+      StrFunc::writePHITSIndex(OX,1,"dmax",n,value,particle);
     }
 
       

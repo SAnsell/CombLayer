@@ -146,11 +146,13 @@ TMesh::write(std::ostream& OX,const std::string& fileHead) const
 
   OX<<"[T-Track]\n";
 
+  StrFunc::writePHITS(OX,1,"part",particle);
   gridXYZ.write(OX);
   gridXYZ.writeAxis(OX,1);
   energy.write(OX);
 
-  StrFunc::writePHITS(OX,1,"file",fileHead+"TMesh"+keyName+".out");
+  StrFunc::writePHITS(OX,1,"file",fileHead+keyName+".out");
+  StrFunc::writePHITS(OX,1,"gshow",1);  // lines
   if (vtkout)
     {
       StrFunc::writePHITS(OX,1,"vtkout",vtkout);

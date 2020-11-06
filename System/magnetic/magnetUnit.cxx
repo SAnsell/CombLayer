@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaMagnetic/magnetUnit.cxx
+ * File:   magnetic/magnetUnit.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -62,7 +62,7 @@
 #include "FixedRotate.h"
 #include "magnetUnit.h"
 
-namespace flukaSystem
+namespace magnetSystem
 {
 
 magnetUnit::magnetUnit(const std::string& Key) :
@@ -261,6 +261,26 @@ magnetUnit::createAll(Simulation& System,
 }
   
 void
+magnetUnit::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the magnetic unit
+    Structure is :
+    - 0 x y z :: [origin]
+    - 2 x1 x2 x3 :: [x axis]
+    - 3 y1 y2 y3 :: [y axis]
+    - 4 z1 z2 x3 :: [z axis]
+    - 5 extX extY extZ :: [Extent vector [optional]]
+    - 6 kValue :: [kValue]
+    
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("magnetUnit","writePHITS");
+ 
+  return;
+}
+
+void
 magnetUnit::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the magnetic unit
@@ -329,4 +349,4 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
 }
   
 
-}  // NAMESPACE flukaSystem
+}  // NAMESPACE magnetSystem
