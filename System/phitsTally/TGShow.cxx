@@ -55,7 +55,7 @@ namespace phitsSystem
 {
 
 TGShow::TGShow(const int ID) :
-  phitsTally(ID),output(6),
+  phitsTally("TGShow",ID),output(6),
   lineWidth(0.5)
   /*!
     Constructor

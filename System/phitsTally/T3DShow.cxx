@@ -56,7 +56,7 @@ namespace phitsSystem
 {
 
 T3DShow::T3DShow(const int ID) :
-  phitsTally(ID)
+  phitsTally("T3DShow",ID)
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]

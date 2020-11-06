@@ -70,6 +70,40 @@ writePHITSCont(std::ostream& OX,const size_t depth,
   return;
 }
 
+void
+writePHITSComment(std::ostream& OX,const size_t depth,
+		  const std::string& Line )
+ /*!
+   Write out comments for PHITS
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param Line :: comment line
+*/
+{
+  const size_t MaxLine(72);
+
+  std::string::size_type pos(0);
+  std::string X=Line.substr(0,MaxLine);
+  std::string::size_type posB=X.find_last_of(" ");
+
+  const std::string spc((depth+1)*2,' ');
+  while (posB!=std::string::npos && 
+	 X.length()>=MaxLine)
+    {
+      pos+=posB+1;
+      const std::string Out=X.substr(0,posB);
+      if (!isEmpty(Out))
+	OX<<"#"<<spc<<X.substr(0,posB)<<std::endl;
+
+      X=Line.substr(pos,MaxLine);
+      posB=X.find_last_of(" ");
+    }
+  if (!isEmpty(X))
+    OX<<"#"<<spc<<X<<std::endl;
+
+  return;
+}
+
 template<typename T>
 void
 writePHITS(std::ostream& OX,const size_t depth,

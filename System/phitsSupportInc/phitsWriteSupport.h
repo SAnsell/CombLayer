@@ -61,7 +61,7 @@ void writePHITSTable(std::ostream& OX,const size_t depth,
   return;
 }
 
-
+void writePHITSComment(std::ostream&,const size_t,const std::string&);
 void writePHITSOpen(std::ostream&,const size_t,const std::string&);
 void writePHITSTableHead(std::ostream&,const size_t,
 			 const std::vector<std::string>&);

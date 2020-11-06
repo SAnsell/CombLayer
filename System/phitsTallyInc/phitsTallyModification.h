@@ -31,6 +31,7 @@ namespace phitsSystem
   std::set<phitsTally*>
     getActiveTally(SimPHITS&,const std::string&);
 
+  int setBinaryOutput(SimPHITS&,const std::string&);
 
   int setParticle(SimPHITS&,const std::string&,
 		     const std::string&);
@@ -44,6 +45,8 @@ namespace phitsSystem
 	       const size_t);
   
   int setParticleType(SimPHITS&,const int,const std::string&);
+
+  int setVTKout(SimPHITS&,const std::string&);
 
     
 }  // namespace phitsSystem 

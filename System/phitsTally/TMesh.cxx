@@ -57,7 +57,7 @@ namespace phitsSystem
 {
 
 TMesh::TMesh(const int ID) :
-  phitsTally(ID),
+  phitsTally("TMesh",ID),
   energy(eType("Linear",1UL,0.0,5e3)),
   axis("xy"),unit(1)                  //1/MeV/cm^3
   /*!
@@ -144,7 +144,6 @@ TMesh::write(std::ostream& OX,const std::string& fileHead) const
 {
   ELog::RegMethod RegA("TMesh","write");
 
-  
   OX<<"[T-Track]\n";
 
   gridXYZ.write(OX);
@@ -159,7 +158,7 @@ TMesh::write(std::ostream& OX,const std::string& fileHead) const
     }
 
   StrFunc::writePHITS(OX,1,"epsout",epsFlag);
-  StrFunc::writePHITS(OX,1,"file",fileHead+"TCross"+keyName+".out");
+
   if (vtkout)
     {
       StrFunc::writePHITS(OX,1,"vtkout",vtkout);

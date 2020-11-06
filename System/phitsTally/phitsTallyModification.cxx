@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTallyModification.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,28 +79,52 @@ getActiveTally(SimPHITS& Sim,const std::string& tName)
   std::set<phitsTally*> Out;
   SimPHITS::PTallyTYPE& tmap=Sim.getTallyMap();
 
-  for(SimPHITS::PTallyTYPE::value_type& mc : tmap)
+  // map<string,tally>
+  for(auto[ kName , tallyPtr ] : tmap)
     {
-      std::string KN=mc.second->getKey();
-      if (tName.back()=='*')
+      std::string KN(kName);
+      const size_t knSize(KN.size());
+
+      if (!tName.empty() && tName.size()<knSize &&
+	  tName.back()=='*')
 	{
-	  // method to make KN ==> stuff*
 	  KN.erase(tName.size(),std::string::npos);
 	  KN.back()='*';
 	}
       if (KN==tName)
-	{
-	  Out.insert(mc.second);
-	}
+	Out.insert(tallyPtr);
     }
+  if (Out.empty())
+    throw ColErr::InContainerError<std::string>
+      (tName,"Tally modification type not present:");
+
   return Out;
 }
   
+int
+setBinaryOutput(SimPHITS& Sim,const std::string& tName) 
+  /*!
+    Set the binary file
+    \param Sim :: System to access tally tables
+    \param tNumber :: Tally number [0 for all]
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("phitsTallyModificaiton[F]","setBinaryOutput");
+
+  const std::set<phitsTally*> ATallySet=
+    getActiveTally(Sim,tName);
+  
+  for(phitsTally* mc: ATallySet)
+    mc->setBinary();
+
+  return 1;
+}
  
 int
 setParticle(SimPHITS& Sim,const std::string& tName,
 	    const std::string& particle)
-/*!
+  /*!
     Get the last tally point based on the tallynumber
     \param Sim :: System to access tally tables
     \param tName :: Tally number [0 for all]
@@ -153,7 +177,7 @@ setAngle(SimPHITS& Sim,const std::string& tName,
 	 const double aMin,const double aMax,
 	 const size_t NA)
 /*!
-    Get the last tally point based on the tallynumber
+  Set the angle base of a group of tallies
     \param Sim :: System to access tally tables
     \param tName :: Tally number [0 for all]
     \param AA :: start energy
@@ -162,7 +186,7 @@ setAngle(SimPHITS& Sim,const std::string& tName,
     \return tally number [0 on fail]
   */
 {
-  ELog::RegMethod RegA("phitsTallyModificaiton[F]","setEnergy");
+  ELog::RegMethod RegA("phitsTallyModificaiton[F]","setAngle");
 
   const std::set<phitsTally*> ATallySet=
     getActiveTally(Sim,tName);
@@ -172,6 +196,26 @@ setAngle(SimPHITS& Sim,const std::string& tName,
   const aType AT(angleUnit,NA,aMin,aMax);  
   for(phitsTally* mc: ATallySet)
     mc->setAngle(AT);
+
+  return static_cast<int>(ATallySet.size());
+}
+
+int
+setVTKout(SimPHITS& Sim,const std::string& tName)
+/*!
+    Get the last tally point based on the tallynumber
+    \param Sim :: System to access tally tables
+    \param tName :: Tally number [0 for all]
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("phitsTallyModificaiton[F]","setVTKout");
+
+  const std::set<phitsTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  for(phitsTally* mc: ATallySet)
+    mc->setVTKout();
 
   return static_cast<int>(ATallySet.size());
 }

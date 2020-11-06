@@ -57,7 +57,7 @@ namespace phitsSystem
 {
 
 TCross::TCross(const int ID) :
-  phitsTally(ID),fluxFlag(0),
+  phitsTally("TCross",ID),fluxFlag(0),
   energy(eType("Linear",1UL,0.0,5e3)),
   angle(aType("Cos",1UL,0.0,1.0)),
   axis("eng"),unit(1),                  //1/MeV/cm^3
@@ -142,6 +142,26 @@ TCross::setUnit(const std::string& unitName)
 }
 
 void
+TCross::renumberCell(const int oldCell,const int newCell)
+  /*!
+    Renumber cells
+\
+  */
+{
+  if (regionA==oldCell)
+    {
+      regionA=newCell;
+      comments+="regionA:"+std::to_string(oldCell)+" ";
+    }
+  if (regionB==oldCell)
+    {
+      regionB=newCell;
+      comments+="regionB:"+std::to_string(oldCell)+" ";
+    }
+  return;
+}
+  
+void
 TCross::write(std::ostream& OX,
 	      const std::string& fileHead) const
   /*!
@@ -154,6 +174,7 @@ TCross::write(std::ostream& OX,
 
   
   OX<<"[T-cross]\n";
+  StrFunc::writePHITSComment(OX,1,comments);
 
   StrFunc::writePHITS(OX,1,"output",((fluxFlag) ? "flux" : "current"));
   
@@ -162,7 +183,7 @@ TCross::write(std::ostream& OX,
 
   StrFunc::writePHITS(OX,1,"unit",unit);
   StrFunc::writePHITS(OX,1,"mesh","reg");
-  
+
   StrFunc::writePHITS(OX,2,"reg",1);
   StrFunc::writePHITSTableHead
     (OX,2,{"non","r-in","r-out","area"});
