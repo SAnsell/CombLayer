@@ -118,6 +118,9 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfMidLength=spfAngleLength/2.0;
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  femtoMAXWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FemtoMAXWallMat");
+  femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
+  femtoMAXWallXStep=Control.EvalVar<double>(keyName+"FemtoMAXWallXStep");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
 
@@ -132,6 +135,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTXStep=Control.EvalVar<double>(keyName+"MidTXStep");
   midTYStep=Control.EvalVar<double>(keyName+"MidTYStep");
   midTThick=Control.EvalVar<double>(keyName+"MidTThick");
+  midTThickX=Control.EvalVar<double>(keyName+"MidTThickX");
   midTAngle=Control.EvalVar<double>(keyName+"MidTAngle");
   midTLeft=Control.EvalVar<double>(keyName+"MidTLeft");
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
@@ -269,20 +273,19 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-Y*midTThick,Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+1011,MidPt,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThick/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThick/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,MidPt-X*(midTThickX/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,MidPt+X*(midTThickX/2.0),X);
 
   const Geometry::Quaternion QRMid=
     Geometry::Quaternion::calcQRotDeg(midTAngle,Z);
   const Geometry::Vec3D MX(QRMid.makeRotate(X));
   const Geometry::Vec3D MY(QRMid.makeRotate(Y));
 
-  const Geometry::Vec3D FMidPt(MidPt-X*(midTThick/2.0)-Y*midTThick);
-  const Geometry::Vec3D BMidPt(MidPt-X*(midTThick/2.0));
+  const Geometry::Vec3D FMidPt(MidPt-X*(midTThickX/2.0)-Y*midTThick);
+  const Geometry::Vec3D BMidPt(MidPt-X*(midTThickX/2.0));
   // end points of slope
   const Geometry::Vec3D FMidPtA(FMidPt-MX*midTFrontAngleStep);
   const Geometry::Vec3D BMidPtA(BMidPt-MX*midTBackAngleStep);
-
 
   ModelSupport::buildPlane(SMap,buildIndex+1111,
 			   FMidPt,
@@ -376,6 +379,10 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin+Y*(backWallYStep+backWallThick),Y);
   SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+23));
 
+  // Wall between SPF hallway and FemtoMAX beamline area
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6001,buildIndex+223,X,femtoMAXWallXStep);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6002,buildIndex+6001,X,femtoMAXWallThick);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -456,9 +463,23 @@ InjectionHall::createObjects(Simulation& System)
 				 "22 -23 223 -1003 5 -6 ");
   makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
 
+  // SPF hallway
+  // C080012 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "23 -2 223 -1003 5 -6 ");
-  makeCell("LongVoidAfter",System,cellIndex++,voidMat,0.0,Out);
+				 "23 -2 223 -6001 5 -6 ");
+  makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
+
+  // SPF/FemtoMAX wall
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "23 -2 6001 -6002 5 -6 ");
+  makeCell("FemtoMAXWall",System,cellIndex++,femtoMAXWallMat,0.0,Out);
+
+  // FemtoMAX (BSP02) beamline area
+  // C080016 is official room name
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "23 -2 6002 -1003 5 -6 ");
+  makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -2 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -575,8 +596,6 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
-
-
 
   return;
 }

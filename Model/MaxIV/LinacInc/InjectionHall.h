@@ -52,6 +52,10 @@ class InjectionHall :
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
 
+  int femtoMAXWallMat;           ///< Material of the wall between SPF hallway and FemtoMAX beamline area
+  double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
+  double femtoMAXWallXStep;      ///< X-offset of the SPF/FemtoMAX wall
+
   double rightWallStep;          ///< Extra out step on right
 
   double linearWidth;            ///< Wall - Wall width
@@ -65,7 +69,8 @@ class InjectionHall :
 
   double midTXStep;             ///< Step to centre of T
   double midTYStep;             ///< Step to centre of T
-  double midTThick;             ///< Thickness
+  double midTThick;             ///< T-shape wall thickness (short segment perp.to Y + inclined segments)
+  double midTThickX;            ///< T-shape wall thickness (long segment perp.to X axis)
   double midTAngle;             ///< angle of offset
   double midTLeft;              ///< left flat
   double midTRight;             ///< right flat

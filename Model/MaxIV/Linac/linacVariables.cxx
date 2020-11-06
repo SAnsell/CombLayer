@@ -3125,9 +3125,9 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
-  Control.addVariable(wallKey+"SPFFemtoMAXWallMat","Concrete"); // K_01-0_010
-  Control.addVariable(wallKey+"SPFFemtoMAXWallThick",105.0); // K_01-0_010
-  Control.addVariable(wallKey+"SPFFemtoMAXWallXStep",0.0); // dummy
+  Control.addVariable(wallKey+"FemtoMAXWallMat","Concrete"); // K_01-0_010
+  Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
+  Control.addVariable(wallKey+"FemtoMAXWallXStep",405.0); // derived from K_20-1_08G6b[34]
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
