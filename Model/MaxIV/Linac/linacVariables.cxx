@@ -3214,6 +3214,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
   Control.addVariable(wallKey+"THzZStep",-10.0); // K_20-2_348: 130-120 = 10
   Control.addVariable(wallKey+"THzZAngle",7.35); // measured with liner on K_20-1_08F6c1
+  Control.addVariable(wallKey+"THzMat","Void"); // AR 201106: currently it's lead or concrete, but eventually it will be empty
 
   return;
 }

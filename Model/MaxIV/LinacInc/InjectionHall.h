@@ -100,6 +100,7 @@ class InjectionHall :
   double thzXStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZAngle;             ///< THz penetration Z angle
+  int thzMat;                   ///< THz penetration material
 
   int voidMat;               ///< void material
   int wallMat;               ///< Wall material

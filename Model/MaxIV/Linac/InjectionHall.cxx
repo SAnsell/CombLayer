@@ -181,6 +181,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   thzXStep=Control.EvalVar<double>(keyName+"THzXStep");
   thzZStep=Control.EvalVar<double>(keyName+"THzZStep");
   thzZAngle=Control.EvalVar<double>(keyName+"THzZAngle");
+  thzMat=ModelSupport::EvalMat<int>(Control,keyName+"THzMat");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -570,7 +571,7 @@ InjectionHall::createObjects(Simulation& System)
 
   // THz penetration
   Out=ModelSupport::getComposite(SMap,buildIndex," 1001 1003 5003 -5004 5005 -5006 ");
-  makeCell("THz",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("THz",System,cellIndex++,thzMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
