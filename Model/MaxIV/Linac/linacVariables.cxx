@@ -2860,7 +2860,7 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeB",160.0);
+  PGen.generatePipe(Control,lKey+"PipeB",145.0); // orig: 160.0 but goes out from InjectionHall
 
   FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
