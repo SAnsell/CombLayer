@@ -3088,7 +3088,7 @@ Segment49(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  Control.addVariable(lKey+"WallRadius",3.0);
+  Control.addVariable(lKey+"WallRadius",4.0); // K_20-2_354
 
   setCylGateValve(Control,lKey+"GateA",0.0,false);
   setCylGateValve(Control,lKey+"GateB",180.0,false);
@@ -3125,6 +3125,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.7);
 
+  Control.addVariable(wallKey+"SPFFemtoMAXWallMat","Concrete"); // K_01-0_010
+  Control.addVariable(wallKey+"SPFFemtoMAXWallThick",105.0); // K_01-0_010
+  Control.addVariable(wallKey+"SPFFemtoMAXWallXStep",0.0); // dummy
+
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
 
@@ -3141,10 +3145,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
-  Control.addVariable(wallKey+"MidTXStep",43.0);
-  Control.addVariable(wallKey+"MidTYStep",3327.94585+extraYLen);  // to flat of T
-  Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
-  Control.addVariable(wallKey+"MidTThick",200.0);  // Thick of T
+  Control.addVariable(wallKey+"MidTXStep",40.0); // derived from K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTYStep",3325.33584+extraYLen);  // to flat of T
+  Control.addVariable(wallKey+"MidTAngle",12.4695);  // derived from K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTThick",200.0);  // K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTThickX",150.0);  // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"MidTLeft",427.1);  // from mid line
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
@@ -3159,8 +3164,8 @@ wallVariables(FuncDataBase& Control,
 
   // back wall
   Control.addVariable(wallKey+"BackWallYStep",10044.0); // tdc-map.pdf
-  Control.addVariable(wallKey+"BackWallThick",100.0); // dummy
-  Control.addVariable(wallKey+"BackWallMat","Concrete"); // dummy
+  Control.addVariable(wallKey+"BackWallThick",200.0); // K_20-1_08G6b3
+  Control.addVariable(wallKey+"BackWallMat","Concrete"); // K_01-0_010: IV1.10 - Bvägg = 2000, Betong
 
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
