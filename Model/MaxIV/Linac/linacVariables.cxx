@@ -3117,7 +3117,7 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",12080+1000.0);
+  Control.addVariable(wallKey+"MainLength",13209.0); // K_20-1_08C6c1
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3639.735+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
