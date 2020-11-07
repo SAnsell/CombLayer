@@ -71,15 +71,16 @@ phitsPhysics::phitsPhysics() :
     {"positron",1000.0},
     {"photon",3000.0},
   }),
+
   flags
   ({
-    { "nucdata",1 },
-    { "negs" , 1 },     // use egs5 [D=0]
-    { "nspred", 2},     // Lynch(Moliere) scattering
-    { "nedisp", 1},     // straggling events [D=0] 
-    { "e-mode", 2},     // Create secondary events [D=0]
-    { "igmuppd", 1},     // photon induced muon-pair production [D=0]
-    { "ipnint", 1}      // photo-nuclear reaction [D=0]
+    { "nucdata", {1 ,  "JENDL-4.0 default neutrons libs"}},
+    { "negs" ,   {1,  "Use egs5 electron [D=0]" }},   
+    { "nspred",  {2,  "Lynch(Moliere) scattering"}},
+    { "nedisp",  {1,  "Straggling events [D=0]" }},
+    { "e-mode",  {2,  "Create secondary events from electrons [D=0]"}},
+    { "igmuppd", {1,  "Photon induced muon-pair production [D=0]"}},
+    { "ipnint",  {1,  "Photo-nuclear reaction [D=0]"}}
   })
   /*!
     Constructor
@@ -133,7 +134,7 @@ phitsPhysics::writePHITS(std::ostream& OX) const
     }
 
   for(const auto& [ flag , IVal ] :   flags)
-    StrFunc::writePHITS(OX,1,flag,IVal);
+    StrFunc::writePHITS(OX,1,flag,IVal.first,IVal.second);
   
   for(const auto& [ particle , value ] :   libEMax)
     {

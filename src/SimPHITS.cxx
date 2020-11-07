@@ -97,12 +97,17 @@ SimPHITS::SimPHITS() :
 
 SimPHITS::SimPHITS(const SimPHITS& A) :
   Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
+  PTItem(A.PTItem),MagItem(A.MagItem),
   PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
  */
-{}
+{
+  // need to replace tally point with clone or just have copy
+  for(auto& [name, tPtr ] : PTItem)
+    tPtr=tPtr->clone();
+}
 
 SimPHITS&
 SimPHITS::operator=(const SimPHITS& A)
@@ -117,6 +122,8 @@ SimPHITS::operator=(const SimPHITS& A)
       Simulation::operator=(A);
       nps=A.nps;
       rndSeed=A.rndSeed;
+      PTItem=A.PTItem;
+      MagItem=A.MagItem;
       *PhysPtr=*PhysPtr;
     }
   return *this;
@@ -406,8 +413,8 @@ SimPHITS::writePhysics(std::ostream& OX) const
   
   if (!MagItem.empty())
     {
-      StrFunc::writePHITS(OX,1,"imagnf",1);
-      StrFunc::writePHITS(OX,1,"ielctf",1);
+      StrFunc::writePHITS(OX,1,"imagnf",1,"Turn on magnetic fields");
+      StrFunc::writePHITS(OX,1,"ielctf",1,"Turn on electromag fields");
     }
     
   PhysPtr->writePHITS(OX);
@@ -433,6 +440,8 @@ SimPHITS::writeMagnet(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("SimPHITS","writeMagnet");
+
   if (!MagItem.empty())
     {
       // assume at least one magnetic region:

@@ -124,9 +124,11 @@ importanceSim(SimPHITS& System,
 
   WeightSystem::WCellControl WCell;
   WCell.processWeights(System,IParam);
-  
-  mainSystem::renumberCells(System,IParam);
+
   phitsSystem::setModelPhysics(System,IParam);
+  magnetSystem::setMagneticPhysics(System,IParam);
+
+  mainSystem::renumberCells(System,IParam);
   return;
 }  
 
@@ -153,13 +155,15 @@ importanceSim(SimMCNP& System,
   WeightSystem::DXT(System,PC,IParam);
   WeightSystem::PWT(System,PC,IParam);
   WeightSystem::EnergyCellCut(System,IParam);
-
+  
   mainSystem::renumberCells(System,IParam);
 
   WeightSystem::WCellControl WCell;
   WeightSystem::WWGControl WWGC;
   WCell.processWeights(System,IParam);
   WWGC.processWeights(System,IParam);
+
+
   
   return;
 }

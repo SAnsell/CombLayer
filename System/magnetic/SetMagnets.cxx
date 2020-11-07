@@ -253,7 +253,7 @@ setMagneticPhysics(SimTYPE& System,
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod Rega("SetMagnets","setMagneticPhysics");
+  ELog::RegMethod RegA("SetMagnets","setMagneticPhysics");
 
   if (IParam.flag("defMagnet"))
     setDefMagnets(System);

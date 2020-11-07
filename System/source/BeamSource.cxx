@@ -64,6 +64,7 @@
 #include "WorkData.h"
 #include "World.h"
 #include "particleConv.h"
+#include "phitsWriteSupport.h"
 #include "flukaGenParticle.h"
 
 #include "SourceBase.h"
@@ -273,19 +274,19 @@ BeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("BeamSource","writePHITS");
 
-  boost::format fFMT("%1$11.6g%|14t|");
   const double phi=180.0*acos(Y[0])/M_PI;
-  
-  OX<<"  s-type =  1        # axial source \n";
-  OX<<"  r0  =   "<<(fFMT % radius)   <<"  # radius [cm]\n";
-  OX<<"  x0  =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
-  OX<<"  y0  =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
-  OX<<"  z0  =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
-  OX<<"  z1  =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
-  OX<<" dir  =   "<<(fFMT % Y[2])     <<"  # dir cosine direction of Z\n";
-  OX<<" phi  =   "<<(fFMT % phi)      <<"  # phi angle to X axis [deg]\n";
+
+  StrFunc::writePHITS(OX,1,"s-type",1,"axial source");
+  StrFunc::writePHITS(OX,2,"r0",radius,"radius [cm]");
+  StrFunc::writePHITS(OX,2,"x0",Origin[0],"center position of x-axis [cm]");
+  StrFunc::writePHITS(OX,2,"y0",Origin[1],"center position of y-axis [cm]");
+  StrFunc::writePHITS(OX,2,"z0",Origin[2],"min position of z-axis [cm]");
+  StrFunc::writePHITS(OX,2,"z1",Origin[2],"max position of z-axis [cm]");
+  StrFunc::writePHITS(OX,2,"dir",Y[2],"Dir cosine direction of Z");
+  StrFunc::writePHITS(OX,2,"phi",phi,"Phi angle to X axis [deg]");
+
   if (angleSpread>Geometry::zeroTol)
-    OX<<" dom =    "<<(fFMT % angleSpread)<<"  # solid angle to X axis [deg]\n";
+    StrFunc::writePHITS(OX,2,"dom",angleSpread,"Solid angle fo X axis [deg]");
 
   SourceBase::writePHITS(OX);
   OX<<std::endl;

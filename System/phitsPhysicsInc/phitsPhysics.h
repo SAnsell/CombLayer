@@ -46,7 +46,9 @@ class phitsPhysics
   /// Max energy in libraries
   std::map<std::string,double> libEMax;  
 
-  std::map<std::string,int> flags;     ///< Simple integer flags
+
+  /// Simple integer flags
+  std::map<std::string,std::pair<int,std::string>> flags; 
 
   std::map<std::string,double> values; ///< simple double values
 

@@ -120,7 +120,7 @@ writePHITS(std::ostream& OX,const size_t depth,
   constexpr size_t equalPt(20);     // distance to name
   writePHITSOpen(OX,depth,unit);
   OX<<std::setw(equalPt)<<value;
-  if (!comment.empty()) OX<<comment;
+  if (!comment.empty()) OX<<"# "<<comment;
   OX<<std::endl;
   return;
 }
