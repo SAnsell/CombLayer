@@ -783,7 +783,8 @@ Vec3D::read(std::istream& IX)
       std::getline(IX,Name,')');
       std::ios::off_type LNum=
 	static_cast<std::ios::off_type>(Name.size());
-      if (Name.substr(0,5)=="Vec3D" )
+      if (Name.substr(0,5)=="Vec3D"  ||
+	  Name.substr(0,5)=="vec3d")
 	{
 	  Name+=")";
 	  std::string::size_type pos(5);

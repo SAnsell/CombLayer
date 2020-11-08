@@ -125,6 +125,28 @@ writePHITS(std::ostream& OX,const size_t depth,
   return;
 }
 
+template<>
+void
+writePHITS(std::ostream& OX,const size_t depth,
+	   const std::string& unit,
+	   const Geometry::Vec3D value,
+	   const std::string& comment)
+ /*!
+   Write out the line neatly for PHITS
+  \param OX :: ostream to write to
+  \param depth :: step depth
+  \param unit :: unit name
+  \param value :: value
+*/
+{
+  constexpr size_t equalPt(20);     // distance to name
+  writePHITSOpen(OX,depth,unit);
+  OX<<std::setw(equalPt)<<"Vec3D("<<value<<")";
+  if (!comment.empty()) OX<<"# "<<comment;
+  OX<<std::endl;
+  return;
+}
+
 void
 writePHITSOpen(std::ostream& OX,
 	       const size_t depth,

@@ -48,6 +48,7 @@
 #include "Quaternion.h"
 #include "stringCombine.h"
 #include "writeSupport.h"
+#include "phitsWriteSupport.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "varList.h"
@@ -276,9 +277,29 @@ magnetUnit::writePHITS(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("magnetUnit","writePHITS");
- 
+
+  const std::string magKey="Magn"+std::to_string(index);
+  if (zeroField)
+    {
+      OX<<"# Magnet: "<<keyName<<" ZERO Field"<<std::endl;
+      return;
+    }
+
+  StrFunc::writePHITS(OX,2,"MagKey",magKey);
+  StrFunc::writePHITS(OX,2,"Centre",Origin);
+  StrFunc::writePHITS(OX,2,"Extent",Origin);
+  StrFunc::writePHITS(OX,2,"X-Axis",X);
+  StrFunc::writePHITS(OX,2,"Y-Axis",Y);
+  StrFunc::writePHITS(OX,2,"Z-Axis",Z);
+
+  std::ostringstream cx;
+  for(const double kv : KFactor)
+    cx<<kv<<" ";
+  StrFunc::writePHITS(OX,2,"K-Values",cx.str());
   return;
 }
+
+
 
 void
 magnetUnit::writeFLUKA(std::ostream& OX) const
@@ -296,7 +317,6 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("magnetUnit","writeFLUKA");
-
 
   const std::string magKey="Magn"+std::to_string(index);
   std::ostringstream cx;

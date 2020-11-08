@@ -409,7 +409,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
   StrFunc::writePHITS(OX,1,"file(1)","/home/ansell/phits");
   StrFunc::writePHITS(OX,1,"file(6)","phits.out");
   StrFunc::writePHITS(OX,1,"file(7)","/home/ansell/mcnpxNew/xsdir_short");
-  StrFunc::writePHITS(OX,1,"rseed","rndSeed");
+  StrFunc::writePHITS(OX,1,"rseed",rndSeed);
   
   if (!MagItem.empty())
     {
@@ -447,7 +447,7 @@ SimPHITS::writeMagnet(std::ostream& OX) const
       // assume at least one magnetic region:
       OX<<"[Magnetic Field]"<<std::endl;
       StrFunc::writePHITSTableHead
-	(OX,1,{"reg","type","gap","mgf","trcl"});
+	(OX,1,{"reg","typ","gap","mgf","trcl"});
 
       for(const auto& [name , oPtr] : OList)
 	{
@@ -455,6 +455,10 @@ SimPHITS::writeMagnet(std::ostream& OX) const
 	    StrFunc::writePHITSTable
 	      (OX,1,name,103,10.0,-1.0,0);
 	}
+
+      OX<<"[Magnetic Units]"<<std::endl;
+      for(const auto& [name , mPtr] : MagItem)
+	mPtr->writePHITS(OX);
     }
   return;
 }
