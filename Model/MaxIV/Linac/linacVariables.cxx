@@ -2860,7 +2860,7 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeB",160.0);
+  PGen.generatePipe(Control,lKey+"PipeB",145.0); // orig: 160.0 but goes out from InjectionHall
 
   FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
@@ -3088,7 +3088,7 @@ Segment49(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",
   		      atan((startPt.X()-endPt.X())/(endPt.Y()-startPt.Y()))*180.0/M_PI);
 
-  Control.addVariable(lKey+"WallRadius",3.0);
+  Control.addVariable(lKey+"WallRadius",4.0); // K_20-2_354
 
   setCylGateValve(Control,lKey+"GateA",0.0,false);
   setCylGateValve(Control,lKey+"GateB",180.0,false);
@@ -3117,13 +3117,21 @@ wallVariables(FuncDataBase& Control,
 
   const double extraYLen(82.7);
 
-  Control.addVariable(wallKey+"MainLength",12080.0);
+  Control.addVariable(wallKey+"MainLength",13209.0); // K_20-1_08C6c1
   Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
-  Control.addVariable(wallKey+"LinearLTurnLength",3672.0+extraYLen);
+  Control.addVariable(wallKey+"LinearLTurnLength",3639.735+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
-  Control.addVariable(wallKey+"SPFAngleLength",4124.0);
+  Control.addVariable(wallKey+"SPFAngleLength",4181.5);
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
-  Control.addVariable(wallKey+"SPFAngle",12.7);
+  Control.addVariable(wallKey+"SPFAngle",12.8); // derived from K_20-1_08C6c1 and K_20-1_08C6b2
+
+  Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
+  Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
+
+  Control.addVariable(wallKey+"BSP01WallThick",100.0); // K_01-0_010
+  Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]
+  Control.addVariable(wallKey+"BSP01WallLength",1720.0); // derived from K_20-1_08G6b4
+  Control.addVariable(wallKey+"BSP01MazeWidth",100.0); // K_20-1_08G6c1
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
@@ -3141,10 +3149,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
-  Control.addVariable(wallKey+"MidTXStep",43.0);
-  Control.addVariable(wallKey+"MidTYStep",3327.94585+extraYLen);  // to flat of T
-  Control.addVariable(wallKey+"MidTAngle",13.0);  // slopes
-  Control.addVariable(wallKey+"MidTThick",200.0);  // Thick of T
+  Control.addVariable(wallKey+"MidTXStep",40.0); // derived from K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTYStep",3325.33584+extraYLen);  // to flat of T
+  Control.addVariable(wallKey+"MidTAngle",12.4695);  // derived from K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTThick",200.0);  // K_20-1_08F6c1
+  Control.addVariable(wallKey+"MidTThickX",150.0);  // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"MidTLeft",427.1);  // from mid line
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
@@ -3159,8 +3168,8 @@ wallVariables(FuncDataBase& Control,
 
   // back wall
   Control.addVariable(wallKey+"BackWallYStep",10044.0); // tdc-map.pdf
-  Control.addVariable(wallKey+"BackWallThick",100.0); // dummy
-  Control.addVariable(wallKey+"BackWallMat","Concrete"); // dummy
+  Control.addVariable(wallKey+"BackWallThick",200.0); // K_20-1_08G6b3
+  Control.addVariable(wallKey+"BackWallMat","Concrete"); // K_01-0_010: IV1.10 - Bvägg = 2000, Betong
 
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
@@ -3214,6 +3223,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
   Control.addVariable(wallKey+"THzZStep",-10.0); // K_20-2_348: 130-120 = 10
   Control.addVariable(wallKey+"THzZAngle",7.35); // measured with liner on K_20-1_08F6c1
+  Control.addVariable(wallKey+"THzMat","Void"); // AR 201106: currently it's lead or concrete, but eventually it will be empty
 
   return;
 }

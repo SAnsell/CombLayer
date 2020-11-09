@@ -155,8 +155,8 @@ Segment49::constructHole(Simulation& System)
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
 
       pipeB->addInsertCell("Main",this->getCell("WallVoid"));
-      pipeB->addInsertCell("Main",IHall->getCell("LongVoidAfter"));
-      pipeB->addInsertCell("FlangeB",IHall->getCell("LongVoidAfter"));
+      pipeB->addInsertCell("Main",IHall->getCell("C080016"));
+      pipeB->addInsertCell("FlangeB",IHall->getCell("C080016"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"BackWall",Out);

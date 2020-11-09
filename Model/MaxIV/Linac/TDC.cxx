@@ -326,7 +326,7 @@ TDC::buildInnerZone(Simulation& System,
       {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#BackWallFront","LongVoid",""}}, // last cell with columns
-      {"spfBehindBackWall"  ,{"BackWallBack","#Back","LongVoidAfter",""}} // cell behind back wall
+      {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXBack","C080016",""}} // cell behind back wall
     });
   //Extra surfaces to add to the main surround
   const static EMAP extraSUR
@@ -493,7 +493,7 @@ TDC::createAll(Simulation& System,
       {"Segment22",{"tdcShort","Segment21",1}},
       {"Segment23",{"tdc","Segment22",1}},
       {"Segment24",{"tdc","Segment23",1}},
-      {"Segment25",{"spfLong","Segment24",1}},
+      {"Segment25",{"tdc","Segment24",1}},
       {"Segment26",{"spfLong","Segment25",1}},
       {"Segment27",{"spfLong","Segment26",2}},
       {"Segment28",{"spfLong","Segment27",2}},

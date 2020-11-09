@@ -167,7 +167,7 @@ Segment27::createSplitInnerZone()
   *IZTop=*buildZone;
   *IZFlat=*buildZone;
   *IZLower=*buildZone;
-  
+
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
@@ -232,7 +232,7 @@ Segment27::buildObjects(Simulation& System)
       bellowBA->setFront(joinItems[1].display());
       bellowCA->setFront(joinItems[2].display());
     }
-    
+
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
@@ -286,7 +286,7 @@ Segment27::buildObjects(Simulation& System)
 
   yagScreenC->setBeamAxis(*yagUnitC,1);
   yagScreenC->createAll(System,*yagUnitC,-3);
-  yagScreenC->insertInCell("Outer",System,outerCellB);
+  yagScreenC->insertInCell("Outer",System,outerCellC);
   yagScreenC->insertInCell("Connect",System,yagUnitC->getCell("PlateA"));
   yagScreenC->insertInCell("Connect",System,yagUnitC->getCell("Void"));
   yagScreenC->insertInCell("Payload",System,yagUnitC->getCell("Void"));
@@ -297,7 +297,7 @@ Segment27::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
-  
+
   outerCellA=IZTop->createUnit(System,*bellowBC,"back");
   CellMap::addCell("SpaceFiller",outerCellA);
 
@@ -315,7 +315,7 @@ Segment27::buildFrontSpacer(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment27","buildFrontSpacer");
-  
+
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
 

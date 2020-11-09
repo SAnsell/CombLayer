@@ -52,6 +52,14 @@ class InjectionHall :
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
 
+  double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
+  double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
+
+  double bsp01WallThick;        ///< Thickness of wall between FemtoMAX and BSP01 beamline areas
+  double bsp01WallOffset;       ///< BSP01 wall offset
+  double bsp01WallLength;       ///< BSP01 wall length (before maze starts)
+  double bsp01MazeWidth;        ///< Maze width in the BSP01 beamline area
+
   double rightWallStep;          ///< Extra out step on right
 
   double linearWidth;            ///< Wall - Wall width
@@ -65,7 +73,8 @@ class InjectionHall :
 
   double midTXStep;             ///< Step to centre of T
   double midTYStep;             ///< Step to centre of T
-  double midTThick;             ///< Thickness
+  double midTThick;             ///< T-shape wall thickness (short segment perp.to Y + inclined segments)
+  double midTThickX;            ///< T-shape wall thickness (long segment perp.to X axis)
   double midTAngle;             ///< angle of offset
   double midTLeft;              ///< left flat
   double midTRight;             ///< right flat
@@ -100,6 +109,7 @@ class InjectionHall :
   double thzXStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZStep;              ///< THz penetration X offset with respect to FMidPt
   double thzZAngle;             ///< THz penetration Z angle
+  int thzMat;                   ///< THz penetration material
 
   int voidMat;               ///< void material
   int wallMat;               ///< Wall material
