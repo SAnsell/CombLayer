@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,20 +39,21 @@ int confirmStr(const std::string&,const std::string&);
 /// Get a word from a string
 int extractWord(std::string&,const std::string&,const size_t=4);
 
-/// strip all spaces
-std::string removeSpace(const std::string&);
+/// strip ALL spaces
+std::string removeAllSpace(const std::string&);
 /// Strip out excessive spaces
 std::string stripMultSpc(const std::string&);
 /// find quoted blocks (section for strings)
 int quoteBlock(std::string&,std::string&);
 
- std::string getDelimUnit(const std::string&,const std::string&,
+std::string getDelimUnit(const std::string&,const std::string&,
 			  std::string&);
+bool splitUnit(const std::string&,std::string&,std::string&,const std::string&);
 
 /// strip pre-spaces
 std::string frontBlock(const std::string&);
 /// strip pre/post spaces
-std::string fullBlock(const std::string&);
+std::string removeOuterSpace(const std::string&);
 /// strip pre/post + returns + double spaces:
 std::string singleLine(const std::string&);
 /// Find comment

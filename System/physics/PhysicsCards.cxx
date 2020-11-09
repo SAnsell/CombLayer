@@ -310,7 +310,7 @@ PhysicsCards::processCard(const std::string& Line)
   
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
-  Comd=StrFunc::fullBlock(Comd);
+  Comd=StrFunc::removeOuterSpace(Comd);
 
   // Check the first 2 characters for comment
   if(Comd.size()<2 || (isspace(Comd[1]) &&

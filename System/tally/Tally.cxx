@@ -237,7 +237,7 @@ Tally::processParticles(std::string& Line)
   if (pos!=std::string::npos)
     {
       Line.erase(0,pos+1);
-      Line=StrFunc::fullBlock(Line);
+      Line=StrFunc::removeOuterSpace(Line);
       pos=Line.find_first_of(", ");
       while(!Line.empty())
         {

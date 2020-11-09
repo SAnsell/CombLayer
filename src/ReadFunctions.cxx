@@ -174,7 +174,7 @@ processSurface(const std::string& InputLine,const int offset)
 {
   ELog::RegMethod RegItem("ReadFunctions","processSurface");
 
-  std::string Line=StrFunc::fullBlock(InputLine);
+  std::string Line=StrFunc::removeOuterSpace(InputLine);
   StrFunc::stripComment(Line);
   if (Line.size()<1 ||               // comments blank line, ^c or ^c<spc> 
       (tolower(Line[0])=='c' && 
@@ -376,7 +376,7 @@ readCells(FuncDataBase& DB,std::istream& IX,
 	  else
 	    {
 	      StrFunc::stripComment(Line);
-	      ObjLine+=" "+StrFunc::fullBlock(Line);	  
+	      ObjLine+=" "+StrFunc::removeOuterSpace(Line);	  
 	    }
 	}
       
@@ -407,7 +407,7 @@ readCells(FuncDataBase& DB,std::istream& IX,
         {
 	  // Add line without comments + end <spc>
 	  StrFunc::stripComment(Line);
-	  ObjLine=StrFunc::fullBlock(Line);
+	  ObjLine=StrFunc::removeOuterSpace(Line);
 	}
       endActive=0;
     }

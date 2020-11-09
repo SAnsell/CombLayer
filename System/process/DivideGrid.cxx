@@ -183,7 +183,7 @@ DivideGrid::loadXML(const std::string& FName,
 	  for(const size_t RN : RVec)
 	    {
 	      MatName= AR->getNamedItem<std::string>("Material");
-	      MatName=StrFunc::fullBlock(MatName);
+	      MatName=StrFunc::removeOuterSpace(MatName);
 	      const size_t HN=DivideGrid::hash(SN,VN,RN);
 	      std::map<size_t,std::string>::iterator mc=MatMap.find(HN);
 	      if (mc!=MatMap.end())

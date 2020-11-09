@@ -353,7 +353,7 @@ Material::lineType(std::string& Line)
        (Line.size()==1 || isspace(Line[1]))))
     return -1;
   
-  Line=StrFunc::fullBlock(Line);                
+  Line=StrFunc::removeOuterSpace(Line);                
   int index;
   std::string part;
   if (!StrFunc::convert(Line,part)) return 0;
@@ -514,7 +514,7 @@ Material::setMaterial(const int MIndex,
   // PROCESS MT Line:
   std::vector<std::string> MTItems=StrFunc::StrParts(MTLine);
   for(const std::string& sUnit : MTItems)
-    SQW.push_back(StrFunc::fullBlock(sUnit));
+    SQW.push_back(StrFunc::removeOuterSpace(sUnit));
   
   // PROCESS LIBS
   std::vector<std::string> LibItems=StrFunc::StrParts(LibLine);
@@ -591,7 +591,7 @@ Material::setMaterial(const std::vector<std::string>& PVec)
       switch (mType)
 	{
 	case 1:          // mt card
-	  SQW.push_back(StrFunc::fullBlock(sqwItem));
+	  SQW.push_back(StrFunc::removeOuterSpace(sqwItem));
 	  break;
 	case 2:          // mx card
 	  throw ColErr::InContainerError<std::string>

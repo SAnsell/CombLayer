@@ -1224,7 +1224,7 @@ Rule::procPair(std::string& Ln,
   std::vector<int> Joins;
   int Rnum;
   int flag(1);
-  Ln=StrFunc::fullBlock(Ln);
+  Ln=StrFunc::removeOuterSpace(Ln);
   while(!Ln.empty())
     {
       if (flag)

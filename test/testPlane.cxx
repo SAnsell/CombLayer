@@ -282,7 +282,7 @@ testPlane::testSet()
 	A.setPlane(std::get<1>(tc),std::get<2>(tc),std::get<3>(tc));
       std::ostringstream cx;
       cx<<A;
-      if (StrFunc::fullBlock(cx.str())!=std::get<4>(tc))
+      if (StrFunc::removeOuterSpace(cx.str())!=std::get<4>(tc))
 	{
 	  ELog::EM<<"Failed on test: "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Plane  == "<<A;
@@ -322,7 +322,7 @@ testPlane::testTransform()
       A.applyTransform(TMap);
       std::ostringstream cx;
       cx<<A;
-      if (StrFunc::fullBlock(cx.str())!=std::get<2>(tc))
+      if (StrFunc::removeOuterSpace(cx.str())!=std::get<2>(tc))
 	{
 	  ELog::EM<<"A == "<<A;
 	  ELog::EM<<"Expected "<<std::get<2>(tc)<<ELog::endTrace;

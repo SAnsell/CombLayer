@@ -138,7 +138,7 @@ tmeshTally::setKeyWords(const std::string& K)
   */
 {
   if (!K.empty())
-    keyWords=StrFunc::fullBlock(K);
+    keyWords=StrFunc::removeOuterSpace(K);
   else
     keyWords="";
   return;

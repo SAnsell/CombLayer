@@ -299,7 +299,7 @@ writeColumn(const std::string& Fname,const V<T,A>& Y,const V<T,A>& E)
   while(IX.good())
     {
       std::string line=StrFunc::getLine(IX,512);
-      line=StrFunc::removeSpace(line);
+      line=StrFunc::removeAllSpace(line);
       if (!line.empty())
 	Lines.push_back(line);
     }

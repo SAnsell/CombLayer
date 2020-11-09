@@ -311,7 +311,7 @@ testObject::testSetObject()
       A.setObject(std::get<0>(tc));
       A.write(cx);
       const std::string Out=
-	StrFunc::fullBlock(StrFunc::stripMultSpc(cx.str()));
+	StrFunc::removeOuterSpace(StrFunc::stripMultSpc(cx.str()));
       
       if (Out!=std::get<1>(tc))
 	{
@@ -640,7 +640,7 @@ testObject::testMakeComplement()
       MObj[index]->write(ocx);
       MObj[index]->makeComplement();
       MObj[index]->write(cx);
-      if (StrFunc::fullBlock(cx.str())!=std::get<1>(tc))
+      if (StrFunc::removeOuterSpace(cx.str())!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Original "<<ocx.str()<<":"<<ELog::endDebug;
 	  ELog::EM<<"Expected "<<std::get<1>(tc)<<":"<<ELog::endDebug;

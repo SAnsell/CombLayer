@@ -213,7 +213,7 @@ NTree::processString(const std::string& N)
     throw ColErr::InvalidLine(N,"bracket mis-match",0);
 
   std::string fullUnit=
-    StrFunc::fullBlock(N);
+    StrFunc::removeOuterSpace(N);
 
   std::string BPart;
   std::string Part;

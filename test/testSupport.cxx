@@ -303,7 +303,7 @@ testSupport::testExtractWord()
 int
 testSupport::testFullBlock()
   /*!
-    Applies a test to the fullBlock Command 
+    Applies a test to the removeOuterSpace Command 
     \retval -1 :: failed find word in string
     when the pattern exists.
   */
@@ -318,7 +318,7 @@ testSupport::testFullBlock()
   
   for(const TTYPE& tc : Tests)
     {
-      std::string Out=StrFunc::fullBlock(std::get<0>(tc));
+      std::string Out=StrFunc::removeOuterSpace(std::get<0>(tc));
       if (Out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Input  == "<<std::get<0>(tc)<<" =="<<ELog::endTrace;

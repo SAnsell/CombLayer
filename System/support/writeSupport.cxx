@@ -263,7 +263,7 @@ writeControl(const std::string& Line,std::ostream& OX,
     {
       pos+=posB+1;
       if (!isspace(X[posB])) posB++;  // skip pass comma 
-      X=fullBlock(X.substr(0,posB));
+      X=removeOuterSpace(X.substr(0,posB));
       if (!isEmpty(X))
 	OX<<std::string(spcLen,' ')<<X<<std::endl;
 
@@ -272,7 +272,7 @@ writeControl(const std::string& Line,std::ostream& OX,
       posB=X.find_last_of(" ,");
     }
     
-  X=fullBlock(X);
+  X=removeOuterSpace(X);
   if (!isEmpty(X))
     OX<<std::string(spcLen,' ')<<X<<std::endl;
   return;

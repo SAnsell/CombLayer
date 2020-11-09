@@ -222,7 +222,7 @@ getPartLine(std::istream& IX,std::string& Out,
 }
 
 std::string
-removeSpace(const std::string& CLine)
+removeAllSpace(const std::string& CLine)
   /*!
     Removes all spaces from a string 
     except those with in the form '\ '
@@ -486,6 +486,31 @@ getDelimUnit(const std::string& A,
   return Out;
 }
 
+bool
+splitUnit(const std::string& Item,
+	  std::string& A,
+	  std::string& B,
+	  const std::string& delimit)
+  /*!
+    Splits the first instance of XXX delimit YYY 
+    Note that XXX and YYY are space trimmed
+    \param A :: part A
+    \param B :: part B
+    \param delimit :: string to delimit on
+    \return true if A and B found 
+  */
+{
+  std::string Out;
+  const std::string::size_type posA=Item.find(delimit);
+  if (posA==std::string::npos)
+    return 0;
+
+  A=removeOuterSpace(Item.substr(0,posA));
+  B=removeOuterSpace(Item.substr(posA+delimit.size()));
+    
+  return 1;
+}
+
 int
 quoteBlock(std::string& Line,std::string& Unit)
   /*!
@@ -550,7 +575,7 @@ singleLine(const std::string& A)
   std::string Out(A);
   std::replace(Out.begin(),Out.end(),'\n',' ');
   Out=StrFunc::stripMultSpc(Out);
-  Out=StrFunc::fullBlock(Out);
+  Out=StrFunc::removeOuterSpace(Out);
   return Out;
 }
 
@@ -576,7 +601,7 @@ frontBlock(const std::string& A)
 }
 
 std::string
-fullBlock(const std::string& A)
+removeOuterSpace(const std::string& A)
   /*!
     Returns the string from the first non-space to the 
     last non-space 

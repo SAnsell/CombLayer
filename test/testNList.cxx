@@ -113,7 +113,7 @@ testNList::testRange()
   std::ostringstream cx;
   NE.write(cx);
 
-  if (StrFunc::fullBlock(cx.str())!=expectString)
+  if (StrFunc::removeOuterSpace(cx.str())!=expectString)
     {
       ELog::EM<<"Failed on process string"<<ELog::endDiag;
       ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;
@@ -124,7 +124,7 @@ testNList::testRange()
   cx.str("");
   NList<int> NX(NE);
   NX.write(cx);
-  if (StrFunc::fullBlock(cx.str())!=expectString)
+  if (StrFunc::removeOuterSpace(cx.str())!=expectString)
     {
       ELog::EM<<"Failed on constructor"<<ELog::endDiag;
       ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;
@@ -136,7 +136,7 @@ testNList::testRange()
   NList<int> NY;
   NY=NX;
   NY.write(cx);
-  if (StrFunc::fullBlock(cx.str())!=expectString)
+  if (StrFunc::removeOuterSpace(cx.str())!=expectString)
     {
       ELog::EM<<"Failed on assignment"<<ELog::endDiag;
       ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;

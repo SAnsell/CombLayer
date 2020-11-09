@@ -142,7 +142,7 @@ testNRange::testCondense()
       NE.condense(1e-6);
       std::ostringstream cx;
       cx<<NE;
-      if (StrFunc::fullBlock(cx.str())!=TString[i])
+      if (StrFunc::removeOuterSpace(cx.str())!=TString[i])
 	{
 	  // Strip into components and test:
 	  double VT,VC;
@@ -294,7 +294,7 @@ testNRange::testRange()
     }
   std::ostringstream cx;
   NE.write(cx);
-  if (StrFunc::fullBlock(cx.str())!=expectString)
+  if (StrFunc::removeOuterSpace(cx.str())!=expectString)
     {
       ELog::EM<<"Failed on string match"<<ELog::endDiag;
       ELog::EM<<"Result == "<<cx.str()<<ELog::endDiag;
