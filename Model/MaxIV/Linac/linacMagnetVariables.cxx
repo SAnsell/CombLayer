@@ -176,8 +176,8 @@ LINACmagnetVariables(FuncDataBase& Control,
   MagnetGenerator MUdipole;
 
   // SEGMENT 3
-  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.86);
-  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.865);
+  MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  // 0.86
+  MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);   // 0.865
 
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
