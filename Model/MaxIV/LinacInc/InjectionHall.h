@@ -57,6 +57,13 @@ class InjectionHall :
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
 
+  double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
+  double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
+  double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)
+
+  double spfExitLength;         ///< Length of the SPF emergency exit room
+  double spfExitDoorLength;     ///< Length of the SPF emergency exit door
+
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
 

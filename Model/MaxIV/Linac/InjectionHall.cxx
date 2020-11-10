@@ -104,6 +104,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
   spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
+  spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
+  spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
+  spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
+  spfExitLength=Control.EvalVar<double>(keyName+"SPFExitLength");
+  spfExitDoorLength=Control.EvalVar<double>(keyName+"SPFExitDoorLength");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
@@ -400,6 +405,20 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7002,buildIndex+22,Y,spfMazeWidthSPF);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7012,buildIndex+7002,Y,wallThick);
 
+  // SPF concrete door parking space
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7101,buildIndex+7012,Y,
+				  spfParkingFrontWallLength-wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7102,buildIndex+7101,Y,spfParkingLength);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7103,buildIndex+223,X,-spfParkingWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7113,buildIndex+7103,X,-wallThick);
+
+  // SPF emergency exit
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7201,buildIndex+7102,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7202,buildIndex+7201,Y,spfExitLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7211,buildIndex+7202,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7212,buildIndex+7202,Y,-spfExitDoorLength);
+
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -611,7 +630,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -223 5 -6");
   makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -233 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
   makeCell("SPFMazeSPFWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -16 ");
@@ -619,9 +638,45 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -16 ");
   makeCell("SPFMazeRoofVoid",System,cellIndex++,voidMat,0.0,Out);
-  ///
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -2   233 -223 5 -6");
+  // SPF concrete door parking space (room C080012)
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7101 7113 -223 5 -6");
+  makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
+  makeCell("ParkingSideVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
+  makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7102 -223 7103 5 -6");
+  makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
+
+  // SPF emergency exit
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7102 -7201 7103 -223 5 -6");
+  makeCell("ParkingExitWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7202 7103 -233 5 -6");
+  makeCell("SPFEmergencyExitVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7212 233 -223 5 -6");
+  makeCell("SPFEmergencyExitDoorWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -6");
+  makeCell("SPFEmergencyExitDoor",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
+  makeCell("SPFEmergencyExitWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -16 ");
+  makeCell("SPFEmergencyExitRoof",System,cellIndex++,roofMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113 6 -16 ");
+  makeCell("SPFEmergencyExitRoofVoid",System,cellIndex++,voidMat,0.0,Out);
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7211 -2   233 -223 5 -6");
   makeCell("LongWallAfterMaze",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
@@ -648,7 +703,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 7012 -2 53 -233 5 -16");
+    (SMap,buildIndex," 7211 -2 53 -233 5 -16");
   makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
 
 
