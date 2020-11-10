@@ -160,9 +160,6 @@ Segment28::createSplitInnerZone()
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
 
   IZTop->setFront(pipeAA->getFullRule(-1));
-  // ELog::EM<<"PREV = "<<prevSegPtr->getFullRule("backMid")<<ELog::endDiag;
-  // ELog::EM<<"BIUKD = "<<buildZone->getFront()<<ELog::endDiag;
-
   IZFlat->setFront(pipeBA->getFullRule(-1));
 
   IZTop->setSurround(HSurroundA);

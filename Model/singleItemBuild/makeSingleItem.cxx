@@ -122,6 +122,7 @@
 #include "portItem.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
+#include "LBeamStop.h"
 
 #include "makeSingleItem.h"
 
@@ -168,7 +169,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube",
+      "IonPTube","LBeamStop",
       "Help","help"
     });
 
@@ -721,6 +722,19 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item=="LBeamStop")
+    {
+      std::shared_ptr<tdcSystem::LBeamStop>
+	BS(new tdcSystem::LBeamStop("BeamStop"));
+
+      OR.addObject(BS);
+
+      BS->addInsertCell(voidCell);
+      BS->createAll(System,World::masterOrigin(),0);
 
       return;
     }
