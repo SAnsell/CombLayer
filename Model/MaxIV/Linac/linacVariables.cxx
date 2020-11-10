@@ -3125,6 +3125,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFLongLength",200.0); // extra divider
   Control.addVariable(wallKey+"SPFAngle",12.8); // derived from K_20-1_08C6c1 and K_20-1_08C6b2
 
+  Control.addVariable(wallKey+"SPFMazeWidthTDC",180.0); // K_20-1_08G6b3
+  Control.addVariable(wallKey+"SPFMazeWidthSide",160.0); // K_20-1_08G6b3
+  Control.addVariable(wallKey+"SPFMazeWidthSPF",160.0); // K_20-1_08G6b3
+  Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
+
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
 
@@ -3145,7 +3150,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
 
   // Extra for boundary
-  Control.addVariable(wallKey+"BoundaryWidth",200.0);
+  Control.addVariable(wallKey+"BoundaryWidth",400.0); // 200 (+200 due to SPF access hall maze)
   Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint

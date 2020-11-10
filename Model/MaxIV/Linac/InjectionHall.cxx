@@ -3,7 +3,7 @@
 
  * File:   Linac/InjectionHall.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,6 +118,10 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfMidLength=spfAngleLength/2.0;
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  spfMazeWidthTDC=Control.EvalVar<double>(keyName+"SPFMazeWidthTDC");
+  spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
+  spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
+  spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
@@ -231,7 +235,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+114,Origin+X*(linearWidth/2.0+wallThick+rightWallStep),X);
 
-
   // left hand angle
   const Geometry::Quaternion QR=
     Geometry::Quaternion::calcQRotDeg(spfAngle,Z);
@@ -250,7 +253,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+251,
      Origin+Y*(linearLTurnLength+spfMidLength),Y);
-
 
   ModelSupport::buildPlane
     (SMap,buildIndex+203,LWPoint,PX);
@@ -405,6 +407,18 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bsp01MazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bsp01WallThick/2.0);
 
+  // SPF hall access maze
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7013,buildIndex+223,X,-spfMazeLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7023,buildIndex+7013,X,-wallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7003,buildIndex+7013,X,spfMazeWidthSide);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7001,buildIndex+21,Y,-spfMazeWidthTDC);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7011,buildIndex+7001,Y,-wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7002,buildIndex+22,Y,spfMazeWidthSPF);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7012,buildIndex+7002,Y,wallThick);
+
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -465,7 +479,6 @@ InjectionHall::createObjects(Simulation& System)
     (SMap,buildIndex," -201  3 -1003 5 -6 1522 ");
   makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
-
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 " 201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M ");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -482,7 +495,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "21 -22 223 -1003 5 -6 ");
+				 "21 -22 7003 -1003 5 -6 ");
   makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
 
   // SPF hallway
@@ -584,7 +597,6 @@ InjectionHall::createObjects(Simulation& System)
   				 "6121 -6122 6113 -1004 5 -6 ");
   makeCell("C080017MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
-
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -12 4 -104 5 -6");
   makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
 
@@ -595,8 +607,40 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 -203 213 5 -6");
   makeCell("SPFWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -2 -223 233 5 -6");
-  makeCell("LongWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -7001 233 -223 5 -6");
+  makeCell("LongWallBeforeMaze",System,cellIndex++,wallMat,0.0,Out);
+
+  // SPF hall access maze (room C080011)
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -21 7013 -223 5 -6");
+  makeCell("SPFMazeTDCVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7023 -7013 5 -6");
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 7013 -7003 5 -6");
+  makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
+  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
+  makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -223 5 -6");
+  makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -233 5 -6");
+  makeCell("SPFMazeSPFWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -16 ");
+  makeCell("SPFMazeRoof",System,cellIndex++,roofMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -16 ");
+  makeCell("SPFMazeRoofVoid",System,cellIndex++,voidMat,0.0,Out);
+  ///
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -2   233 -223 5 -6");
+  makeCell("LongWallAfterMaze",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
   makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
@@ -618,8 +662,14 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LeftOuter",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 211 -2 53 -233 5 -16");
+    (SMap,buildIndex," 211 -7011 53 -233 5 -16");
   makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7012 -2 53 -233 5 -16");
+  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+
+
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -101 -54 14  5 -16 ");

@@ -385,7 +385,13 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
-    #case(strcmp(ITEM,"Anders40")) // Picture for Anders
+  #case(strcmp(ITEM,"SPFMaze")) // SPF access maze
+    #declare cameraLocation = <-2800, 10400, 1000>;
+    #declare cameraLookAt   = <-2000, 10000, 300>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"Anders40")) // Picture for Anders
     #declare cameraLocation = <-600, 8900, 100>;
     #declare cameraLookAt   = <-855, 8300, 0>;
     #declare projection = 0;
