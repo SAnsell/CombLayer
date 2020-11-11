@@ -30,9 +30,9 @@ namespace tdcSystem
 /*!
   \class InjectionHall
   \version 1.0
-  \author S. Ansell
-  \date February 2018
-  \brief Main 1.5GeV ring building and inner void
+  \author S. Ansell / K. Batkov
+  \date February 2020
+  \brief TDC/SPF building (byggnader B och C)
 */
 
 class InjectionHall :
@@ -51,6 +51,18 @@ class InjectionHall :
   double spfMidLength;           ///< Length to  mid of angle [calculted]
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
+
+  double spfMazeWidthTDC;       ///< SPF access maze width from the TDC side
+  double spfMazeWidthSide;      ///< SPF access maze side width
+  double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
+  double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
+
+  double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
+  double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
+  double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)
+
+  double spfExitLength;         ///< Length of the SPF emergency exit room
+  double spfExitDoorLength;     ///< Length of the SPF emergency exit door
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
