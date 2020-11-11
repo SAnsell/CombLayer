@@ -39,7 +39,8 @@ class LBeamStop :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::ExternalCut
 {
  private:
 

@@ -39,6 +39,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -57,7 +58,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "Exception.h"
+#include "ExternalCut.h"
 
 #include "LBeamStop.h"
 
@@ -68,7 +69,9 @@ LBeamStop::LBeamStop(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  attachSystem::ExternalCut()
+  
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -129,6 +132,7 @@ LBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*length,Y);
 
+  
   // mid
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*midVoidLen,Y);
   ModelSupport::buildPlane
@@ -185,10 +189,10 @@ LBeamStop::createLinks()
   ELog::RegMethod RegA("LBeamStop","createLinks");
 
   FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
 
   return;
 }

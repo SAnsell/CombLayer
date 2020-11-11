@@ -52,9 +52,9 @@ namespace setVariable
 
 LBeamStopGenerator::LBeamStopGenerator() :
   length(50.0),innerVoidLen(15.0),
-  innerLength(5.0),innerRadius(3.0),
+  innerLength(5.0),innerRadius(4.0),
   midVoidLen(7.5),midLength(22.5),
-  midRadius(6.0),outerRadius(20.0),
+  midRadius(7.0),outerRadius(20.0),
   voidMat("Void"),innerMat("Graphite"),
   midMat("Poly"),outerMat("Stainless304L")
   /*!
