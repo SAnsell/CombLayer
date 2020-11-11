@@ -105,6 +105,7 @@
 #include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
+#include "LBeamStopGenerator.h"
 
 namespace setVariable
 {
@@ -323,6 +324,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   DEGen.setLength(82.0);
   DEGen.generatePipe(Control,"M1DipoleOut",0.0);
+  
+  // Beam Stop
+  setVariable::LBeamStopGenerator BS;
+  BS.generateBStop(Control,"BeamStop");
 
   // corrector mag
   setVariable::CorrectorMagGenerator CMGen;

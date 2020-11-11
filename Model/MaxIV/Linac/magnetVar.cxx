@@ -79,6 +79,7 @@
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
+#include "LBeamStopGenerator.h"
 
 #include "magnetVar.h"
 
@@ -152,7 +153,7 @@ Segment1Magnet(FuncDataBase& Control,
   IonPGen.generateTube(Control,lKey+"PumpA");
   return;
 }
-  
+
 void
 Segment5Magnet(FuncDataBase& Control,
 	       const std::string& lKey)
@@ -164,27 +165,27 @@ Segment5Magnet(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment5Magnet");
-  
+
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
 
-  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf  
+  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
   const double angleDipole(1.6-0.12);
 
   Control.addVariable(lKey+"BeamOrg",Geometry::Vec3D(229.927,1901.34,0));
   Control.addVariable(lKey+"BeamDelta",Geometry::Vec3D(0,0,0));
   Control.addVariable(lKey+"BeamXYAngle",-angleDipole);
-  
+
 
   setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),
 	  angleDipole,0.0);
 
   // this centers DipoleA at 40.895 [No_5_00.pdf]
   DIBGen.generate(Control,lKey+"DipoleA");
-  Control.addVariable(lKey+"DipoleAYStep",-0.0091); 
+  Control.addVariable(lKey+"DipoleAYStep",-0.0091);
 
   BDGen.generateDivider(Control,lKey+"BeamA",angleDipole+0.3);
   Control.addVariable(lKey+"BeamAExitLength", 15);
@@ -226,7 +227,7 @@ Segment12Magnet(FuncDataBase& Control,
   setVariable::IonPTubeGenerator IonTGen;
 
   const double XYAngle(12.8);
-  
+
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
@@ -261,7 +262,7 @@ Segment12Magnet(FuncDataBase& Control,
   // according to No_12_00.pdf
   Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
   Control.addVariable(lKey+"BeamAXStep",0.0);
-  
+
   setBellow26(Control,lKey+"BellowLA",7.5);
 
   // small ion pump port:
@@ -294,7 +295,80 @@ Segment12Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"BellowRBXYAngle",-1.6);
   return;
 }
-  
+
+void
+Segment29Magnet(FuncDataBase& Control,
+		const std::string& lKey)
+  /*!
+    This should be for the magnet unit but currently doing segment29
+    to make fast compiles
+    \param Control :: Variable Database
+    \param lKey :: key name
+  */
+{
+  ELog::RegMethod RegA("linacVariables[F]","Segment29Magnet");
+
+  setVariable::YagScreenGenerator YagScreenGen;
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::LBeamStopGenerator BSGen;
+
+  const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
+  const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
+
+  const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
+  const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
+
+  Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"FrontLinkA","frontFlat");
+  Control.addVariable(lKey+"BackLinkA","backFlat");
+  Control.addVariable(lKey+"FrontLinkB","frontMid");
+  Control.addVariable(lKey+"BackLinkB","backMid");
+
+  setVariable::PipeGenerator PGen;
+  PGen.setCF<CF35_TDC>();
+  PGen.setNoWindow();
+  PGen.setMat("Stainless304L");
+
+  PGen.generatePipe(Control,lKey+"PipeAA",291.6);
+  PGen.generatePipe(Control,lKey+"PipeBA",292.0);
+
+  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+
+  Control.addVariable(lKey+"PipeAAXAngle",
+		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
+  Control.addVariable(lKey+"PipeBAXAngle",
+		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
+
+  setBellow37(Control,lKey+"BellowAA");
+  setBellow37(Control,lKey+"BellowBA", 16.066); // No_29_00
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
+  Control.addVariable(lKey+"YagUnitAYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitAFrontLength", 12.95);
+
+  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
+  Control.addVariable(lKey+"YagUnitBYAngle",90.0);
+
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
+  Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
+  Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
+
+
+  BSGen.generateBStop(Control,lKey+"BeamStopA");
+  BSGen.generateBStop(Control,lKey+"BeamStopB");
+  Control.addVariable(lKey+"BeamStopAYStep",30.0);
+  Control.addVariable(lKey+"BeamStopBYStep",30.0);
+  return;
+}
+
+
 void
 Segment32Magnet(FuncDataBase& Control,
 		   const std::string& lKey)

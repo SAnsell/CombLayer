@@ -71,6 +71,7 @@
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LBeamStop.h"
 
 #include "TDCsegment.h"
 #include "Segment29.h"
@@ -96,7 +97,10 @@ Segment29::Segment29(const std::string& Key) :
   yagUnitB(new tdcSystem::YagUnit(keyName+"YagUnitB")),
 
   yagScreenA(new tdcSystem::YagScreen(keyName+"YagScreenA")),
-  yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB"))
+  yagScreenB(new tdcSystem::YagScreen(keyName+"YagScreenB")),
+
+  beamStopA(new tdcSystem::LBeamStop(keyName+"BeamStopA")),
+  beamStopB(new tdcSystem::LBeamStop(keyName+"BeamStopB"))
 
   /*!
     Constructor
@@ -118,6 +122,9 @@ Segment29::Segment29(const std::string& Key) :
   OR.addObject(yagScreenA);
   OR.addObject(yagScreenB);
 
+  OR.addObject(beamStopA);
+  OR.addObject(beamStopB);
+
   setFirstItems(pipeAA);
   setFirstItems(pipeBA);
 }
@@ -138,8 +145,8 @@ Segment29::createSplitInnerZone()
 {
   ELog::RegMethod RegA("Segment29","createSplitInnerZone");
 
-  *IZTop=*buildZone;
-  *IZMid=*buildZone;
+  // *IZTop=*buildZone;
+  // *IZMid=*buildZone;
 
   HeadRule HSurroundA=buildZone->getSurround();
   HeadRule HSurroundB=buildZone->getSurround();
@@ -187,6 +194,15 @@ Segment29::buildObjects(Simulation& System)
 
   int outerCellA,outerCellB;
 
+  if (isActive("front"))
+    pipeAA->copyCutSurf("front",*this,"front");
+  
+  if (firstItemVec.size()>=2)
+    {
+      if (prevSegPtr && prevSegPtr->hasLinkSurf("backMid"))
+	pipeBA->setFront(*prevSegPtr,"backMid");
+    }
+
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
 
@@ -223,8 +239,28 @@ Segment29::buildObjects(Simulation& System)
   yagScreenB->insertInCell("Connect",System,yagUnitB->getCell("Void"));
   yagScreenB->insertInCell("Payload",System,yagUnitB->getCell("Void"));
 
-  outerCellA=IZTop->createUnit(System,*yagUnitB,"back");
+  outerCellA = constructSystem::constructUnit
+    (System,*IZTop,*yagUnitA,"back",*beamStopA);
+
+  outerCellB = constructSystem::constructUnit
+    (System,*IZMid,*yagUnitB,"back",*beamStopB);
+
+  // end space filler
+  outerCellA=IZTop->createUnit(System,*beamStopB,"back");
   CellMap::addCell("SpaceFiller",outerCellA);
+
+  // inital cell if needed
+  if (!prevSegPtr || !prevSegPtr->isBuilt())
+    {
+      HeadRule volume=buildZone->getFront();
+      volume*=IZTop->getFront().complement();
+      volume*=IZTop->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+      volume=buildZone->getFront();
+      volume*=IZMid->getFront().complement();
+      volume*=IZMid->getSurround();
+      makeCell("FrontSpace",System,cellIndex++,0,0.0,volume);
+    }
 
   return;
 }
@@ -236,9 +272,9 @@ Segment29::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*yagUnitA,2);
+  setLinkSignedCopy(1,*beamStopA,2);
   setLinkSignedCopy(2,*pipeBA,1);
-  setLinkSignedCopy(3,*yagUnitB,2);
+  setLinkSignedCopy(3,*beamStopB,2);
 
 
   FixedComp::nameSideIndex(0,"frontFlat");
@@ -271,7 +307,6 @@ Segment29::createAll(Simulation& System,
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
   buildObjects(System);
   createLinks();
   return;

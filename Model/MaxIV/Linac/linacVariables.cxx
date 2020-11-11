@@ -106,8 +106,6 @@ namespace linacVar
 		       const bool);
   void setCylGateValve(FuncDataBase&,const std::string&,
 		       const double,const bool);
-  void setBellow37(FuncDataBase&,const std::string&,
-		 const double);
 
   void Segment1(FuncDataBase&,const std::string&);
   void Segment2(FuncDataBase&,const std::string&);
@@ -539,7 +537,7 @@ setBellow26(FuncDataBase& Control,
 void
 setBellow37(FuncDataBase& Control,
 	  const std::string& name,
-	  const double length=16.0)
+	  const double length)
 /*!
   Set the Bellow variables with CF37_TDC flanges
   \param Control :: DataBase to use
@@ -2070,56 +2068,7 @@ Segment29(FuncDataBase& Control,
 
   ELog::RegMethod RegA("linacVariables[F]","Segment29");
 
-  setVariable::YagScreenGenerator YagScreenGen;
-  setVariable::YagUnitGenerator YagUnitGen;
-
-  const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
-  const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
-
-  const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
-  const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
-
-  Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
-
-  Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
-
-  Control.addVariable(lKey+"FrontLinkA","frontFlat");
-  Control.addVariable(lKey+"BackLinkA","backFlat");
-  Control.addVariable(lKey+"FrontLinkB","frontMid");
-  Control.addVariable(lKey+"BackLinkB","backMid");
-
-  setVariable::PipeGenerator PGen;
-  PGen.setCF<CF35_TDC>();
-  PGen.setNoWindow();
-  PGen.setMat("Stainless304L");
-
-  PGen.generatePipe(Control,lKey+"PipeAA",291.6);
-  PGen.generatePipe(Control,lKey+"PipeBA",292.0);
-
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
-
-  Control.addVariable(lKey+"PipeAAXAngle",
-		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
-  Control.addVariable(lKey+"PipeBAXAngle",
-		      std::atan((endPtB-startPtB).unit()[2])*180.0/M_PI);
-
-  setBellow37(Control,lKey+"BellowAA");
-  setBellow37(Control,lKey+"BellowBA", 16.066); // No_29_00
-
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitA",true);
-  Control.addVariable(lKey+"YagUnitAYAngle",90.0);
-  Control.addVariable(lKey+"YagUnitAFrontLength", 12.95);
-
-  YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
-  Control.addVariable(lKey+"YagUnitBYAngle",90.0);
-
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);
-  Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);
-  Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
+  Segment29Magnet(Control,lKey);
 
   return;
 }
