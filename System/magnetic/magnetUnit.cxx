@@ -285,9 +285,9 @@ magnetUnit::writePHITS(std::ostream& OX) const
       return;
     }
 
-  StrFunc::writePHITS(OX,2,"MagKey",magKey);
+  StrFunc::writePHITS(OX,2,"MagID",index);
   StrFunc::writePHITS(OX,2,"Centre",Origin);
-  StrFunc::writePHITS(OX,2,"Extent",Origin);
+  StrFunc::writePHITS(OX,2,"Extent",magExtent);
   StrFunc::writePHITS(OX,2,"X-Axis",X);
   StrFunc::writePHITS(OX,2,"Y-Axis",Y);
   StrFunc::writePHITS(OX,2,"Z-Axis",Z);

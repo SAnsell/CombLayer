@@ -452,8 +452,11 @@ SimPHITS::writeMagnet(std::ostream& OX) const
       for(const auto& [name , oPtr] : OList)
 	{
 	  if (oPtr->hasMagField())
-	    StrFunc::writePHITSTable
-	      (OX,1,name,103,10.0,-1.0,0);
+	    // -5: type
+	    // 10.0 :  1/Stepsize
+	    // 10.0 : t to kG [field is provided in tesla]
+	    // 0 : transform (trcl)
+	    StrFunc::writePHITSTable(OX,1,name,-5,10.0,10.0,0); 
 	}
 
       OX<<"[Magnetic Units]"<<std::endl;
@@ -485,7 +488,7 @@ SimPHITS::write(const std::string& Fname) const
   writeSource(OX);
   writeMagnet(OX);
 
-  OX<<"[end]"<<std::endl;
+  OX<<"[end]"<<std::endl; 
   OX.close();
   return;
 }
