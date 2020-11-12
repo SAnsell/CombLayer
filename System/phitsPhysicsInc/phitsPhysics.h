@@ -60,7 +60,8 @@ class phitsPhysics
   phitsPhysics& operator=(const phitsPhysics&);
   virtual ~phitsPhysics();
 
-
+  void setECut(const std::string&,const double);
+  
   void writePHITS(std::ostream&) const;
 };
 

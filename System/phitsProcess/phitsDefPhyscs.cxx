@@ -108,6 +108,7 @@ setModelPhysics(SimPHITS& System,
   if (!PC) return;
   
   size_t nSet=IParam.setCnt("energyCut");
+
   for(size_t i=0;i<nSet;i++)
     {
       const size_t nElm=IParam.itemCnt("energyCut",i);
@@ -120,6 +121,7 @@ setModelPhysics(SimPHITS& System,
 	  const double V=
 	    IParam.getValueError<double>
 	    ("energyCut",i,index++,"value");
+	  PC->setECut(particle,V);
 	}
 	  
     }

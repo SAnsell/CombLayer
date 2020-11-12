@@ -150,6 +150,16 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("TubeAMat","Stainless304");
   Control.addVariable("TubeBMat","Lead");
 
+  Control.addVariable("MagTubeRadius",3.0);
+  Control.addVariable("MagTubeLength",25.0);
+  Control.addVariable("MagTubeDefMat","Stainless304");
+
+  Control.addVariable("MagTubeBXStep",-300.0);
+  Control.addVariable("MagTubeBRadius",3.0);
+  Control.addVariable("MagTubeBLength",25.0);
+  Control.addVariable("MagTubeBDefMat","Stainless304");
+
+
   Control.addVariable("CryoBOuterRadius",20.0);
 
   Control.addVariable("CryoBNLayers",0);

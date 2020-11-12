@@ -117,6 +117,23 @@ phitsPhysics::~phitsPhysics()
 {}
 
 void
+phitsPhysics::setECut(const std::string& particle,const double V)
+  /*!
+    Set the energy cut of a particle
+    \param V :: Value
+   */
+{
+  ELog::RegMethod RegA("phitsPhysics","setECut");
+  
+  std::map<std::string,double>::iterator mc=
+    particleECut.find(particle);
+  if (mc==particleECut.end())
+    throw ColErr::InContainerError<std::string>(particle,"particleECut");
+  mc->second=V;
+  return;
+}
+  
+void
 phitsPhysics::writePHITS(std::ostream& OX) const
   /*!
     Write out all the non-default and stuff that needs 
