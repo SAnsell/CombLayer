@@ -101,7 +101,7 @@ Segment10::Segment10(const std::string& Key) :
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
 
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA"))
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -117,7 +117,7 @@ Segment10::Segment10(const std::string& Key) :
   OR.addObject(bellowB);
   OR.addObject(pipeC);
   OR.addObject(QuadA);
-  OR.addObject(cMagVertA);
+  OR.addObject(cMagVA);
 
   setFirstItems(bellowA);
 }
@@ -237,7 +237,7 @@ Segment10::buildObjects(Simulation& System)
 
   pipeC->createAll(System,*bellowB,"back");
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVertA);
+  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*nextZone,pipeC);
 
   return;

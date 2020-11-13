@@ -93,8 +93,8 @@ Segment9::Segment9(const std::string& Key) :
   ceramicBellowA(new tdcSystem::CeramicGap(keyName+"CeramicBellowA")),
   pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
 
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
@@ -114,8 +114,8 @@ Segment9::Segment9(const std::string& Key) :
   OR.addObject(ceramicBellowA);
   OR.addObject(pumpA);
   OR.addObject(pipeA);
-  OR.addObject(cMagVertA);
-  OR.addObject(cMagHorA);
+  OR.addObject(cMagVA);
+  OR.addObject(cMagHA);
   OR.addObject(bellowB);
   OR.addObject(bpm);
   OR.addObject(pipeB);
@@ -157,8 +157,8 @@ Segment9::buildObjects(Simulation& System)
 
   
   pipeA->createAll(System,*pumpA,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVertA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit

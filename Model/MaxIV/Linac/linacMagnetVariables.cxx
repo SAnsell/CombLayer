@@ -63,12 +63,30 @@ LINACmagnetVariables(FuncDataBase& Control,
   // active units : Void space for field
   const std::vector<std::string> MUname
     ({
-        "Seg3DipoleA L2SPF3FlatA:Void",
-	"Seg3DipoleB L2SPF3FlatB:Void",
+	"Seg1CMagHA L2SPF1PipeB:Void",
+	"Seg1CMagVA L2SPF1PipeB:Void",
+	"Seg1CMagHB L2SPF1PipeD:Void",
+	"Seg1CMagVB L2SPF1PipeD:Void",
+	"Seg1QuadA  L2SPF1PipeD:Void",
+	"Seg1CMagHC L2SPF1PipeE:Void",
+	"Seg1CMagVC L2SPF1PipeE:Void",
+	
+	"Seg2QuadA L2SPF2PipeA:Void",
+	"Seg2QuadB L2SPF1PipeB:Void",
+	"Seg2QuadC L2SPF1PipeE:Void",
+	"Seg2QuadD L2SPF1PipeE:Void",
+	"Seg2QuadE L2SPF1PipeE:Void",
 
-	"Seg4QuadA L2SPF4PipeB:Void",
-	"Seg4SexuA L2SPF4PipeB:Void",
-	"Seg4QuadB L2SPF4PipeB:Void",
+        "Seg3DipoleA L2SPF3FlatA:Void",
+	"Seg3CMagHA  L2SPF3PipeA:Void",
+	"Seg3CMagVA  L2SPF3PipeA:Void",
+	"Seg3DipoleB L2SPF3FlatB:Void",
+ 
+	"Seg4QuadA   L2SPF4PipeB:Void",
+	"Seg4SexuA   L2SPF4PipeB:Void",
+	"Seg4QuadB   L2SPF4PipeB:Void",
+	"Seg4CMagHA  L2SPF4PipeC:Void",
+	"Seg4CMagVA  L2SPF4PipeC:Void",
 
         "Seg5DipoleA L2SPF5FlatA:Void",
 	"Seg5DipoleB L2SPF5FlatB:Void",
@@ -174,17 +192,27 @@ LINACmagnetVariables(FuncDataBase& Control,
     }
       
   MagnetGenerator MUdipole;
-
+  // SEGMENT 1
+  MUdipole.generateCorMag(Control,1,"CMagHA",0.0);
+  MUdipole.generateCorMag(Control,1,"CMagVA",0.0);
+  MUdipole.generateCorMag(Control,1,"CMagHB",0.0);
+  MUdipole.generateCorMag(Control,1,"CMagVB",0.0);
+  MUdipole.generateQuad(Control,1,"QuadA",0.0,0.0);
+  MUdipole.generateCorMag(Control,1,"CMagHC",0.0);
+  MUdipole.generateCorMag(Control,1,"CMagVC",0.0);
+  
   // SEGMENT 3
   MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  // 0.86
+  MUdipole.generateCorMag(Control,3,"CMagHA",0.0);
+  MUdipole.generateCorMag(Control,3,"CMagVA",0.0);
   MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);   // 0.865
 
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
   MUdipole.generateSexupole(Control,4,"SexuA",0.0,0.0);
   MUdipole.generateQuad(Control,4,"QuadB",0.0,0.0);
-  MUdipole.generateCorMag(Control,4,"CMagHorC",0.0);
-  MUdipole.generateCorMag(Control,4,"CMagVertC",0.0);
+  MUdipole.generateCorMag(Control,4,"CMagHA",0.0);
+  MUdipole.generateCorMag(Control,4,"CMagVA",0.0);
 
   // SEGMENT 5
   MUdipole.setSize(65.0,15.0,3.0);

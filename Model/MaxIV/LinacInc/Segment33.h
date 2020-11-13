@@ -42,7 +42,7 @@ class Segment33 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;
 
   /// BPM
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;
@@ -69,7 +69,7 @@ class Segment33 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVerC;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;
 
   /// bellow
   std::shared_ptr<constructSystem::Bellows> bellow;

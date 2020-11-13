@@ -54,7 +54,7 @@ class Segment7 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 
   /// horizontal corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;   
   /// first quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
   /// bpm
@@ -64,7 +64,7 @@ class Segment7 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
 
   /// vertical corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   
   
   void buildObjects(Simulation&);
   void createLinks();

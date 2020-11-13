@@ -91,17 +91,17 @@ Segment1::Segment1(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHorrA(new tdcSystem::CorrectorMag(keyName+"CMagHorrA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  cMagHorrB(new tdcSystem::CorrectorMag(keyName+"CMagHorrB")),
-  cMagVertB(new tdcSystem::CorrectorMag(keyName+"CMagVertB")),
+  cMagHB(new tdcSystem::CorrectorMag(keyName+"CMagHB")),
+  cMagVB(new tdcSystem::CorrectorMag(keyName+"CMagVB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
-  pipeF(new constructSystem::VacuumPipe(keyName+"PipeF")),
-  cMagHorrC(new tdcSystem::CorrectorMag(keyName+"CMagHorrC")),
-  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC")),
+  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
+  cMagHC(new tdcSystem::CorrectorMag(keyName+"CMagHC")),
+  cMagVC(new tdcSystem::CorrectorMag(keyName+"CMagVC")),
   pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor
@@ -112,17 +112,22 @@ Segment1::Segment1(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(bellowA);
   OR.addObject(pipeB);
-  OR.addObject(cMagHorrA);
-  OR.addObject(cMagVertA);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(pipeC);
   OR.addObject(pipeD);
-  OR.addObject(cMagHorrB);
-  OR.addObject(cMagVertB);
+  OR.addObject(cMagHB);
+  OR.addObject(cMagVB);
   OR.addObject(QuadA);
   OR.addObject(bpm);
-  OR.addObject(pumpA);
 
+  OR.addObject(pipeE);
+  OR.addObject(cMagHC);
+  OR.addObject(cMagVC);
+  OR.addObject(pumpA);
+  
   setFirstItems(pipeA);
 }
 
@@ -156,7 +161,7 @@ Segment1::buildObjects(Simulation& System)
   // THIS becomes a function:
   //
   pipeB->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,*buildZone,pipeB,cMagHorrA,cMagVertA);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
 
   outerCell=buildZone->createUnit(System,*pipeB,"back");
   pipeB->insertAllInCell(System,outerCell);
@@ -166,7 +171,7 @@ Segment1::buildObjects(Simulation& System)
     (System,*buildZone,*pipeB,"back",*pipeC);
 
   pipeD->createAll(System,*pipeC,"back");
-  correctorMagnetPair(System,*buildZone,pipeD,cMagHorrB,cMagVertB);
+  correctorMagnetPair(System,*buildZone,pipeD,cMagHB,cMagVB);
 
   pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeD);
@@ -174,12 +179,12 @@ Segment1::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*bpm);
 
-  pipeF->createAll(System,*bpm,"back");
-  correctorMagnetPair(System,*buildZone,pipeF,cMagHorrC,cMagVertC);
-  pipeTerminate(System,*buildZone,pipeF);
+  pipeE->createAll(System,*bpm,"back");
+  correctorMagnetPair(System,*buildZone,pipeE,cMagHC,cMagVC);
+  pipeTerminate(System,*buildZone,pipeE);
 
   constructSystem::constructUnit
-    (System,*buildZone,*pipeF,"back",*pumpA);
+    (System,*buildZone,*pipeE,"back",*pumpA);
 
   
 

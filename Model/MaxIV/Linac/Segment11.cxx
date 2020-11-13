@@ -94,7 +94,7 @@ Segment11::Segment11(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA"))
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -109,7 +109,7 @@ Segment11::Segment11(const std::string& Key) :
   OR.addObject(QuadA);
   OR.addObject(yagUnit);
   OR.addObject(pipeB);
-  OR.addObject(cMagHorA);
+  OR.addObject(cMagHA);
 
   setFirstItems(bellowA);
 }
@@ -156,7 +156,7 @@ Segment11::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   pipeB->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHorA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeB);
 
   return;

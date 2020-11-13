@@ -126,8 +126,8 @@ Segment1Magnet(FuncDataBase& Control,
 
   //  corrector mag and pie
   PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
-  CMGen.generateMag(Control,lKey+"CMagHorrA",31.85,0); // No_1_00.pdf
-  CMGen.generateMag(Control,lKey+"CMagVertA",46.85,1); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagHA",31.85,0); // No_1_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagVA",46.85,1); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Stainless304L");
@@ -137,17 +137,17 @@ Segment1Magnet(FuncDataBase& Control,
   PGen.setMat("Stainless316L");
   PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
-  CMGen.generateMag(Control,lKey+"CMagHorrB",51.86, 0);
-  CMGen.generateMag(Control,lKey+"CMagVertB",69.36, 1);
+  CMGen.generateMag(Control,lKey+"CMagHB",51.86, 0);
+  CMGen.generateMag(Control,lKey+"CMagVB",69.36, 1);
   LQGen.generateQuad(Control,lKey+"QuadA",96.86);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
   PGen.setCF<setVariable::CF18_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeF",128.0);
+  PGen.generatePipe(Control,lKey+"PipeE",128.0);
 
-  CMGen.generateMag(Control,lKey+"CMagHorrC",101.20,0);
-  CMGen.generateMag(Control,lKey+"CMagVertC",117.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHC",101.20,0);
+  CMGen.generateMag(Control,lKey+"CMagVC",117.0,1);
 
 
   IonPGen.generateTube(Control,lKey+"PumpA");

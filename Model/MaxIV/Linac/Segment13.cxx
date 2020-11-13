@@ -87,7 +87,7 @@ Segment13::Segment13(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),  
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
@@ -96,7 +96,7 @@ Segment13::Segment13(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagVerC(new tdcSystem::CorrectorMag(keyName+"CMagVerC"))
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,7 +106,7 @@ Segment13::Segment13(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
-  OR.addObject(cMagHorA);
+  OR.addObject(cMagHA);
   OR.addObject(bpm);
   OR.addObject(pipeB);
   OR.addObject(QuadA);
@@ -115,7 +115,7 @@ Segment13::Segment13(const std::string& Key) :
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
   OR.addObject(pipeC);
-  OR.addObject(cMagVerC);
+  OR.addObject(cMagVA);
 
   setFirstItems(nullptr);          /// skip straight joing
   setFirstItems(pipeA);
@@ -144,7 +144,7 @@ Segment13::buildObjects(Simulation& System)
 
   //  ELog::EM<<"This -- "<<getRule("front")<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
@@ -169,7 +169,7 @@ Segment13::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
     
   pipeC->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVerC);
+  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeC);
 
   CellMap::addCells("Unit",buildZone->getCells("Unit"));

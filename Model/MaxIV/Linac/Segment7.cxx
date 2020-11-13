@@ -100,11 +100,11 @@ Segment7::Segment7(const std::string& Key) :
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA"))
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -114,11 +114,11 @@ Segment7::Segment7(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
-  OR.addObject(cMagHorA);
+  OR.addObject(cMagHA);
   OR.addObject(QuadA);
   OR.addObject(bpm);
   OR.addObject(pipeB);
-  OR.addObject(cMagVertA);
+  OR.addObject(cMagVA);
 
   setFirstItems(pipeA);  
 }
@@ -145,7 +145,7 @@ Segment7::buildObjects(Simulation& System)
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
 
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHorA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
   pipeTerminate(System,*buildZone,pipeA);
 
@@ -156,7 +156,7 @@ Segment7::buildObjects(Simulation& System)
   //  pipeB->copyCutSurf("front",*bpm,"back");
   pipeB->createAll(System,*bpm,"back");
 
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVertA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   return;

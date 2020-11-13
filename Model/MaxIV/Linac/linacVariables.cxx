@@ -728,8 +728,8 @@ Segment3(FuncDataBase& Control,
   // Control.addVariable(lKey+"PipeAXStep",-1.2);
   // Control.addVariable(lKey+"PipeAFlangeFrontXStep",1.2);
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",15.176/pipeAcos,0);  // No_3_00.pdf
-  CMGen.generateMag(Control,lKey+"CMagVertA",31.151/pipeAcos,1); // No_3_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagHA",15.176/pipeAcos,0);  // No_3_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagVA",31.151/pipeAcos,1); // No_3_00.pdf
 
   const double flatBXYAngle = 1.6;  // No_3_00.pdf
   const double flatBcos = cos((flatAXYAngle+pipeAXYAngle+flatBXYAngle)*M_PI/180.0);  // No_3_00.pdf
@@ -793,8 +793,8 @@ Segment4(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeC",70.2); // No_4_00.pdf
 
-  CMGen.generateMag(Control,lKey+"CMagHorC",14,1);
-  CMGen.generateMag(Control,lKey+"CMagVertC",34,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",14,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",34,0);
 
   return;
 }
@@ -900,11 +900,11 @@ Segment7(FuncDataBase& Control,
   PGen.setNoWindow();
 
   PGen.generatePipe(Control,lKey+"PipeA",102.3);
-  CMGen.generateMag(Control,lKey+"CMagHorA",39.0,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",39.0,0);
   LQGen.generateQuad(Control,lKey+"QuadA",79.0);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
   PGen.generatePipe(Control,lKey+"PipeB",140.2);
-  CMGen.generateMag(Control,lKey+"CMagVertA",11.0,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",11.0,1);
 
 
   return;
@@ -984,8 +984,8 @@ Segment9(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",57.8); // No_9_00.pdf
   Control.addVariable(lKey+"PipeAYAngle", -yAngle);
 
-  CMGen.generateMag(Control,lKey+"CMagVertA",22.0,1);
-  CMGen.generateMag(Control,lKey+"CMagHorA",42.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVA",22.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",42.0,0);
 
   setBellow26(Control,lKey+"BellowB",7.5);
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
@@ -1052,7 +1052,7 @@ Segment10(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeC",126.03);
 
   LQGen.generateQuad(Control,lKey+"QuadA",33.8);
-  CMGen.generateMag(Control,lKey+"CMagVertA",115.23,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",115.23,1);
 
   return;
 }
@@ -1102,7 +1102,7 @@ Segment11(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeB",154.47);
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",10.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,1);
   return;
 }
 
@@ -1181,7 +1181,7 @@ Segment13(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",67.001); // No_13_00.pdf
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",56.701,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",56.701,0);
 
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
@@ -1197,7 +1197,7 @@ Segment13(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
-  CMGen.generateMag(Control,lKey+"CMagVerC",11,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",11,1);
   return;
 }
 
@@ -2248,7 +2248,7 @@ Segment33(FuncDataBase& Control,
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",67.0);
 
-  CMGen.generateMag(Control,lKey+"CMagHorA",56.7,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",56.7,0);
 
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0); // 22 cm length OK
 
@@ -2263,7 +2263,7 @@ Segment33(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
-  CMGen.generateMag(Control,lKey+"CMagVerC",11.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVA",11.0,0);
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
