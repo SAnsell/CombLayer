@@ -80,10 +80,10 @@ Segment34::Segment34(const std::string& Key) :
   TDCsegment(Key,2),
 
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
-  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DMA")),
+  dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
-  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DMB")),
+  dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
@@ -156,7 +156,7 @@ Segment34::createLinks()
 
   setLinkSignedCopy(0,*flatA,1);
   setLinkSignedCopy(1,*bellow,2);
-  
+
   joinItems.push_back(FixedComp::getFullRule(2));
 
   return;
@@ -195,8 +195,8 @@ Segment34::writePoints() const
     acos(bAxis.Y())*180.0/M_PI<<ELog::endDiag;
   return;
 }
-  
-  
+
+
 void
 Segment34::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,

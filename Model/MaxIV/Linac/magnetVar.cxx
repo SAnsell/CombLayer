@@ -388,9 +388,9 @@ Segment32Magnet(FuncDataBase& Control,
 
   setFlat(Control,lKey+"FlatA",82.581,0.0);
 
-  DIBGen.generate(Control,lKey+"DMA");
-  Control.addVariable(lKey+"DMAXStep",-0.5198);
-  Control.addVariable(lKey+"DMAYStep",0.0009);
+  DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAXStep",-0.5198);
+  Control.addVariable(lKey+"DipoleAYStep",0.0009);
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
@@ -401,9 +401,9 @@ Segment32Magnet(FuncDataBase& Control,
 
   setFlat(Control,lKey+"FlatB",82.582,-1.6); // measured
 
-  DIBGen.generate(Control,lKey+"DMB");
-  Control.addVariable(lKey+"DMBXStep",-0.23505);
-  Control.addVariable(lKey+"DMAYStep",0.02628);
+  DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBXStep",-0.23505);
+  Control.addVariable(lKey+"DipoleAYStep",0.02628);
 
   setBellow26(Control,lKey+"Bellow",7.501);
   Control.addVariable(lKey+"BellowXYAngle",-1.6);

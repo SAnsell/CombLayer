@@ -1234,7 +1234,7 @@ Segment14(FuncDataBase& Control,
   setFlat(Control,lKey+"FlatA",82.581,flatAXYAngle); // No_14_00.pdf
 
   setVariable::DipoleDIBMagGenerator DIBGen;
-  DIBGen.generate(Control,lKey+"DM1");
+  DIBGen.generate(Control,lKey+"DipoleA");
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",94.4); // No_14_00.pdf
@@ -1244,7 +1244,7 @@ Segment14(FuncDataBase& Control,
   // -0.2 to shift the BellowB end at the correct place
   setFlat(Control,lKey+"FlatB",82.581,-1.6-0.2);
 
-  DIBGen.generate(Control,lKey+"DM2");
+  DIBGen.generate(Control,lKey+"DipoleB");
 
   setCylGateValve(Control,lKey+"GateA",-90,false);
 
