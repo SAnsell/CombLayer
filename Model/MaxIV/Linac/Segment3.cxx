@@ -104,8 +104,8 @@ Segment3::Segment3(const std::string& Key) :
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   pipeA(new constructSystem::OffsetFlangePipe(keyName+"PipeA")),
-  cMagHorA(new tdcSystem::CorrectorMag(keyName+"CMagHorA")),
-  cMagVertA(new tdcSystem::CorrectorMag(keyName+"CMagVertA")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
@@ -121,10 +121,11 @@ Segment3::Segment3(const std::string& Key) :
   OR.addObject(flatA);
   OR.addObject(dipoleA);
   OR.addObject(pipeA);
-  OR.addObject(cMagHorA);
-  OR.addObject(cMagVertA);  
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);  
   OR.addObject(flatB);
   OR.addObject(dipoleB);
+  OR.addObject(bellowB);
 
   setFirstItems(bellowA);
 }
@@ -161,7 +162,7 @@ Segment3::buildObjects(Simulation& System)
 
   pipeA->setFront(*flatA,"back");
   pipeA->createAll(System,*flatA,"back");  
-  correctorMagnetPair(System,*buildZone,pipeA,cMagHorA,cMagVertA);
+  correctorMagnetPair(System,*buildZone,pipeA,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeA);
 
   flatB->setFront(*pipeA,"back");

@@ -77,8 +77,8 @@ class Segment3 :
   /// first pipe in dipole
   std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;    ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;    ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
 
   /// second pipe in dipole
   std::shared_ptr<tdcSystem::FlatPipe> flatB;   

@@ -414,7 +414,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
   if (!MagItem.empty())
     {
       StrFunc::writePHITS(OX,1,"imagnf",1,"Turn on magnetic fields");
-      StrFunc::writePHITS(OX,1,"ielctf",1,"Turn on electromag fields");
+      StrFunc::writePHITS(OX,1,"ielctf",0,"Turn on electromag fields");
     }
     
   PhysPtr->writePHITS(OX);
@@ -452,8 +452,11 @@ SimPHITS::writeMagnet(std::ostream& OX) const
       for(const auto& [name , oPtr] : OList)
 	{
 	  if (oPtr->hasMagField())
-	    StrFunc::writePHITSTable
-	      (OX,1,name,103,10.0,-1.0,0);
+	    // -5: type
+	    // 10.0 :  1/Stepsize : unused
+	    // 10.0 : t to kG [field is provided in tesla:unused]
+	    // 0 : transform (trcl)
+	    StrFunc::writePHITSTable(OX,1,name,-5,10.0,10.0,0); 
 	}
 
       OX<<"[Magnetic Units]"<<std::endl;
@@ -485,7 +488,7 @@ SimPHITS::write(const std::string& Fname) const
   writeSource(OX);
   writeMagnet(OX);
 
-  OX<<"[end]"<<std::endl;
+  OX<<"[end]"<<std::endl; 
   OX.close();
   return;
 }

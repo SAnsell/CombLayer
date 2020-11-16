@@ -169,7 +169,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","LBeamStop",
+      "IonPTube","LBeamStop","MagTube",
       "Help","help"
     });
 
@@ -195,6 +195,23 @@ makeSingleItem::build(Simulation& System,
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+  if (item == "MagTube")
+    {
+      std::shared_ptr<insertSystem::insertCylinder>
+	TubeA(new insertSystem::insertCylinder("MagTube"));
+      std::shared_ptr<insertSystem::insertCylinder>
+	TubeB(new insertSystem::insertCylinder("MagTubeB"));
+
+      OR.addObject(TubeA);
+      OR.addObject(TubeB);
+      
+      TubeA->addInsertCell(voidCell);
+      TubeA->createAll(System,World::masterOrigin(),0);
+
+      TubeB->addInsertCell(voidCell);
+      TubeB->createAll(System,World::masterOrigin(),0);
       return;
     }
   if (item == "GateValveCube" )

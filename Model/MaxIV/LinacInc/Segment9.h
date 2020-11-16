@@ -44,8 +44,10 @@ class Segment9 :
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;   ///< corrector mag
+  /// corrector mag (vertical)
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;
+  /// corrector mag (horizontal)
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;   
 
   /// second bellow
   std::shared_ptr<constructSystem::Bellows> bellowB;

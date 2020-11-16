@@ -98,8 +98,8 @@ Segment4::Segment4(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagHorC(new tdcSystem::CorrectorMag(keyName+"CMagHorC")),
-  cMagVertC(new tdcSystem::CorrectorMag(keyName+"CMagVertC"))
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   
   /*!
     Constructor
@@ -119,8 +119,8 @@ Segment4::Segment4(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(bellowA);
   OR.addObject(pipeC);
-  OR.addObject(cMagHorC);
-  OR.addObject(cMagVertC);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
 
   setFirstItems(pipeA);
 }
@@ -175,7 +175,7 @@ Segment4::buildObjects(Simulation& System)
     (System,*buildZone,*yagUnit,"back",*bellowA);
 
   pipeC->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,*buildZone,pipeC,cMagHorC,cMagVertC);
+  correctorMagnetPair(System,*buildZone,pipeC,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeC);  
   
   return;

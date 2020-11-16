@@ -71,7 +71,7 @@ class Segment10 :
   /// Quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVertA;   ///< corrector mag
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
 
 
   double wallRadius;       ///< Hole radius in wall

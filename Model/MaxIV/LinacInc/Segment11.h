@@ -58,7 +58,7 @@ class Segment11 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHorA;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;
 
   void buildObjects(Simulation&);
   void createLinks();

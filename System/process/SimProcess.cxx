@@ -154,7 +154,7 @@ writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
   //  PC.setRND(PC.getRNDseed()+Number*10);
   std::string fileName=FName+std::to_string(Number+1);
   System.setFileName(fileName);
-  System.write(fileName+".x");
+  System.write(fileName+".phs");
   // increase the RND seed by 10
   
   return;
