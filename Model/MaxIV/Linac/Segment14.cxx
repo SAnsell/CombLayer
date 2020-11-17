@@ -85,10 +85,10 @@ Segment14::Segment14(const std::string& Key) :
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
-  dm1(new tdcSystem::DipoleDIBMag(keyName+"DM1")),
+  dm1(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
-  dm2(new tdcSystem::DipoleDIBMag(keyName+"DM2")),
+  dm2(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!

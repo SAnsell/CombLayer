@@ -153,7 +153,7 @@ Segment1Magnet(FuncDataBase& Control,
   IonPGen.generateTube(Control,lKey+"PumpA");
   return;
 }
-  
+
 void
 Segment5Magnet(FuncDataBase& Control,
 	       const std::string& lKey)
@@ -165,27 +165,27 @@ Segment5Magnet(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("linacVariables[F]","Segment5Magnet");
-  
+
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);
   setVariable::FlatPipeGenerator FPGen;
   setVariable::DipoleDIBMagGenerator DIBGen;
 
 
-  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf  
+  const double flatAXYAngle = atan(117.28/817.51)*180/M_PI; // No_5_00.pdf
   const double angleDipole(1.6-0.12);
 
   Control.addVariable(lKey+"BeamOrg",Geometry::Vec3D(229.927,1901.34,0));
   Control.addVariable(lKey+"BeamDelta",Geometry::Vec3D(0,0,0));
   Control.addVariable(lKey+"BeamXYAngle",-angleDipole);
-  
+
 
   setFlat(Control,lKey+"FlatA",81.751/cos(flatAXYAngle*M_PI/180.0),
 	  angleDipole,0.0);
 
   // this centers DipoleA at 40.895 [No_5_00.pdf]
   DIBGen.generate(Control,lKey+"DipoleA");
-  Control.addVariable(lKey+"DipoleAYStep",-0.0091); 
+  Control.addVariable(lKey+"DipoleAYStep",-0.0091);
 
   BDGen.generateDivider(Control,lKey+"BeamA",angleDipole+0.3);
   Control.addVariable(lKey+"BeamAExitLength", 15);
@@ -227,7 +227,7 @@ Segment12Magnet(FuncDataBase& Control,
   setVariable::IonPTubeGenerator IonTGen;
 
   const double XYAngle(12.8);
-  
+
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
@@ -262,7 +262,7 @@ Segment12Magnet(FuncDataBase& Control,
   // according to No_12_00.pdf
   Control.addVariable(lKey+"BeamABoxLength",56.1+0.313);
   Control.addVariable(lKey+"BeamAXStep",0.0);
-  
+
   setBellow26(Control,lKey+"BellowLA",7.5);
 
   // small ion pump port:
@@ -355,9 +355,9 @@ Segment29Magnet(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);   // closed
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);   // closed
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
 
@@ -388,9 +388,9 @@ Segment32Magnet(FuncDataBase& Control,
 
   setFlat(Control,lKey+"FlatA",82.581,0.0);
 
-  DIBGen.generate(Control,lKey+"DMA");
-  Control.addVariable(lKey+"DMAXStep",-0.5198);
-  Control.addVariable(lKey+"DMAYStep",0.0009);
+  DIBGen.generate(Control,lKey+"DipoleA");
+  Control.addVariable(lKey+"DipoleAXStep",-0.5198);
+  Control.addVariable(lKey+"DipoleAYStep",0.0009);
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
@@ -401,9 +401,9 @@ Segment32Magnet(FuncDataBase& Control,
 
   setFlat(Control,lKey+"FlatB",82.582,-1.6); // measured
 
-  DIBGen.generate(Control,lKey+"DMB");
-  Control.addVariable(lKey+"DMBXStep",-0.23505);
-  Control.addVariable(lKey+"DMAYStep",0.02628);
+  DIBGen.generate(Control,lKey+"DipoleB");
+  Control.addVariable(lKey+"DipoleBXStep",-0.23505);
+  Control.addVariable(lKey+"DipoleAYStep",0.02628);
 
   setBellow26(Control,lKey+"Bellow",7.501);
   Control.addVariable(lKey+"BellowXYAngle",-1.6);

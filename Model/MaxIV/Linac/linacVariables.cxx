@@ -1234,7 +1234,7 @@ Segment14(FuncDataBase& Control,
   setFlat(Control,lKey+"FlatA",82.581,flatAXYAngle); // No_14_00.pdf
 
   setVariable::DipoleDIBMagGenerator DIBGen;
-  DIBGen.generate(Control,lKey+"DM1");
+  DIBGen.generate(Control,lKey+"DipoleA");
 
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeB",94.4); // No_14_00.pdf
@@ -1244,7 +1244,7 @@ Segment14(FuncDataBase& Control,
   // -0.2 to shift the BellowB end at the correct place
   setFlat(Control,lKey+"FlatB",82.581,-1.6-0.2);
 
-  DIBGen.generate(Control,lKey+"DM2");
+  DIBGen.generate(Control,lKey+"DipoleB");
 
   setCylGateValve(Control,lKey+"GateA",-90,false);
 
@@ -1974,21 +1974,21 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"YagUnitAYAngle",90.0);
   Control.addVariable(lKey+"YagUnitAFrontLength",12.95); // No_27_00
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenA",0);
   Control.addVariable(lKey+"YagScreenAYAngle",-90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitB",true);
   Control.addVariable(lKey+"YagUnitBYAngle",90.0);
   Control.addVariable(lKey+"YagUnitBFrontLength",13.008); // No_27_00
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenB",0);
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnitC",true);
   Control.addVariable(lKey+"YagUnitCYAngle",90.0);
   Control.addVariable(lKey+"YagUnitCFrontLength",12.993); // No_27_00
 
-  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",1);   // closed
+  YagScreenGen.generateScreen(Control,lKey+"YagScreenC",0);
   Control.addVariable(lKey+"YagScreenCYAngle",-90.0);
 
   setBellow37(Control,lKey+"BellowAC");
