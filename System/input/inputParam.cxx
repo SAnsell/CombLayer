@@ -64,7 +64,8 @@ inputParam::inputParam()
   */
 {}
 
-inputParam::inputParam(const inputParam& A) 
+inputParam::inputParam(const inputParam& A) :
+  commandLine(A.commandLine)
   /*!
     Copy constructor
     \param A :: inputParamter to copy
@@ -83,6 +84,7 @@ inputParam::operator=(const inputParam& A)
 {
   if (this!=&A)
     {
+      commandLine=A.commandLine;
       copyMaps(A);
     }
   return *this;
@@ -1109,6 +1111,27 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   return;  
 }
 
+void
+inputParam::processMainInput(const int argc,const char** argv,
+			     std::string& lastUnit)
+  /*!
+    Process all the main input. Populate pre-defined object.
+    Those imtes/values in Name that are processed correctly are
+    removed.
+    \param argc :: number of components
+    \param argv :: argument list 
+    \param lastUnit :: remove last unit	
+  */
+{
+  ELog::RegMethod RegA("inputParam","processMainInput(argv)");
+
+  std::vector<std::string> Names;
+  for(int i=1;i<argc-1;i++)
+    Names.push_back(std::string(argv[i]));
+  lastUnit= (argc>1) ? std::string(argv[argc-1]) : "";
+  processMainInput(Names);
+  return;
+}
 
 void
 inputParam::processMainInput(std::vector<std::string>& Names)

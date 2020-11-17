@@ -59,6 +59,7 @@ class inputParam
 {
  private:
 
+  std::string commandLine;       ///< full command line
   /// Keys/Names type
   typedef std::map<std::string,IItem*> MTYPE;
 
@@ -175,8 +176,11 @@ class inputParam
   void setValue(const std::string&,const T&,const size_t,const size_t);
   void setMultiValue(const std::string&,const size_t,const std::string&);
 
+  void processMainInput(const int argc,const char**,std::string&);
   void processMainInput(std::vector<std::string>&);
-  
+
+  /// accessor to commandline
+  const std::string& getCommmandLine() const { return commandLine; }
   void writeDescription(std::ostream&) const;
   void write(std::ostream&) const;
 

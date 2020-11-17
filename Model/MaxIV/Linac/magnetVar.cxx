@@ -137,8 +137,8 @@ Segment1Magnet(FuncDataBase& Control,
   PGen.setMat("Stainless316L");
   PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
-  CMGen.generateMag(Control,lKey+"CMagHB",51.86, 0);
-  CMGen.generateMag(Control,lKey+"CMagVB",69.36, 1);
+  CMGen.generateMag(Control,lKey+"CMagHB",51.86,0);
+  CMGen.generateMag(Control,lKey+"CMagVB",69.36,1);
   LQGen.generateQuad(Control,lKey+"QuadA",96.86);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
