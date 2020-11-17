@@ -196,7 +196,6 @@ YagScreen::createSurfaces()
   ELog::RegMethod RegA("YagScreen","createSurfaces");
 
   calcImpactVector();
-  const double threadStep(inBeam ? 0.0 : 1.0);
 
   // linear pneumatics feedthrough
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
