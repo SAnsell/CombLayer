@@ -114,6 +114,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
   spfExitLength=Control.EvalVar<double>(keyName+"SPFExitLength");
   spfExitDoorLength=Control.EvalVar<double>(keyName+"SPFExitDoorLength");
+  spfExitDoorHeight=Control.EvalVar<double>(keyName+"SPFExitDoorHeight");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
@@ -424,6 +425,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7202,buildIndex+7201,Y,spfExitLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7211,buildIndex+7202,Y,wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7212,buildIndex+7202,Y,-spfExitDoorLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7205,buildIndex+5,Z,spfExitDoorHeight);
 
   // Future klystron gallery maze
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7301,buildIndex+1011,Y,fkgMazeWidth);
@@ -433,7 +435,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7304,buildIndex+1004,X,fkgMazeWidth);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7305,buildIndex+5,Z,fkgDoorHeight);
-
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -694,8 +695,11 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7212 233 -223 5 -6");
   makeCell("SPFEmergencyExitDoorWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -6");
-  makeCell("SPFEmergencyExitDoor",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -7305");
+  makeCell("SPFEmergencyExitDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 7305 -6");
+  makeCell("SPFEmergencyExitDoorRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
   makeCell("SPFEmergencyExitWall",System,cellIndex++,wallMat,0.0,Out);

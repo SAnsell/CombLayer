@@ -3090,7 +3090,8 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFParkingWidth",290.0); // derived from K_20-1_08G6b3: 620-330
 
   Control.addVariable(wallKey+"SPFExitLength",250.0); // derived from K_20-1_08G6b3: 1446.6-1156.6-40
-  Control.addVariable(wallKey+"SPFExitDoorLength",101.0); // derived from K_20-1_08G6b3: 1446.6-1345.6
+  Control.addVariable(wallKey+"SPFExitDoorLength",101.0); // K_20-2_353
+  Control.addVariable(wallKey+"SPFExitDoorHeight",211.0); // K_20-2_353
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
