@@ -105,6 +105,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
   spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
   fkgDoorWidth=Control.EvalVar<double>(keyName+"FKGDoorWidth");
+  fkgDoorHeight=Control.EvalVar<double>(keyName+"FKGDoorHeight");
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
   fkgMazeLength=Control.EvalVar<double>(keyName+"FKGMazeLength");
   fkgMazeWallThick=Control.EvalVar<double>(keyName+"FKGMazeWallThick");
@@ -431,6 +432,8 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7303,buildIndex+4,X,-fkgDoorWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7304,buildIndex+1004,X,fkgMazeWidth);
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7305,buildIndex+5,Z,fkgDoorHeight);
+
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -718,8 +721,10 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out);
 
   // Klystrong divivde
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -6");
-  makeCell("KlystronDoor",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
+  makeCell("KlystronDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
+  makeCell("KlystronDoorWall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
   makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
