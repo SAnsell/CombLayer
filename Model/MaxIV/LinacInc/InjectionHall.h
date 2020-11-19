@@ -57,6 +57,11 @@ class InjectionHall :
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
 
+  double fkgDoorWidth;          ///< Future klystron gallery access door width
+  double fkgMazeWidth;          ///< Future klystron gallery maze width
+  double fkgMazeLength;         ///< Future klystron gallery maze length
+  double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
+
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
   double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)

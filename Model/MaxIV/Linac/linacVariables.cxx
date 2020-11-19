@@ -3067,7 +3067,7 @@ wallVariables(FuncDataBase& Control,
   const double extraYLen(82.7);
 
   Control.addVariable(wallKey+"MainLength",13209.0); // K_20-1_08C6c1
-  Control.addVariable(wallKey+"LinearRCutLength",3812.0+extraYLen);
+  Control.addVariable(wallKey+"LinearRCutLength",3785.3358+extraYLen);
   Control.addVariable(wallKey+"LinearLTurnLength",3639.735+extraYLen);
   Control.addVariable(wallKey+"RightWallStep",145.0);
   Control.addVariable(wallKey+"SPFAngleLength",4181.5);
@@ -3078,6 +3078,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"SPFMazeWidthSide",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeWidthSPF",160.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFMazeLength",360.0); // derived from K_20-1_08G6b3: 690.0-330.0
+
+  Control.addVariable(wallKey+"FKGDoorWidth",131.0); // K_20-1_08F6c1
+  Control.addVariable(wallKey+"FKGMazeWidth",100.0); // K_20-1_08F6c1
+  Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
+  Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
   Control.addVariable(wallKey+"SPFParkingFrontWallLength",100.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFParkingLength",335.0); // K_20-1_08G6b3
@@ -3120,7 +3125,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTLeft",427.1);  // from mid line
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
-  Control.addVariable(wallKey+"MidTRight",283.0);  // from mid line
+  Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
