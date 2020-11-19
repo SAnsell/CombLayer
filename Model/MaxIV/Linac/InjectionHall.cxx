@@ -152,7 +152,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
-  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
+  //  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
 
   nPillars=Control.EvalDefVar<size_t>(keyName+"NPillars", 0);
 
@@ -186,6 +186,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
+  soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
 
   return;
 }
@@ -622,7 +623,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
-  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
@@ -644,7 +645,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
-  makeCell("ParkingSideVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("ParkingSideVoid",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
   makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
@@ -696,21 +697,21 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
-  makeCell("LeftOuter",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuter",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 211 -7011 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 7211 -2 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
-  makeCell("RightLinear",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("RightLinear",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -2 -54 114  5 -16");

@@ -109,7 +109,7 @@ class InjectionHall :
   double klystronSideWall;      ///< Thickness of klystron divder
 
   double boundaryWidth;           ///< Width after walls
-  double boundaryHeight;          ///< Height after roof
+  //  double boundaryHeight;          ///< Height after roof
 
   size_t nPillars;              ///< Number of pillars
   std::vector<double> pRadii;   ///< Pillar radii
@@ -123,10 +123,11 @@ class InjectionHall :
   double thzZAngle;             ///< THz penetration Z angle
   int thzMat;                   ///< THz penetration material
 
-  int voidMat;               ///< void material
-  int wallMat;               ///< Wall material
-  int roofMat;               ///< Roof material
-  int floorMat;              ///< Floor material
+  int voidMat;                  ///< Void material
+  int wallMat;                  ///< Wall material
+  int roofMat;                  ///< Roof material
+  int floorMat;                 ///< Floor material
+  int soilMat;                  ///< Earth material
 
   void createFloor(Simulation&);
 

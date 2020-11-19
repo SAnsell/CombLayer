@@ -3106,8 +3106,9 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FloorThick",60.0); // K_20-6_050
 
   // Extra for boundary
-  Control.addVariable(wallKey+"BoundaryWidth",400.0); // 200 (+200 due to SPF access hall maze)
-  Control.addVariable(wallKey+"BoundaryHeight",100.0);
+  // 400 is enough, but we add more to allocate for soil
+  Control.addVariable(wallKey+"BoundaryWidth",1000.0);
+  //  Control.addVariable(wallKey+"BoundaryHeight",100.0);
 
   // Midwalls: MUST BE INFRONT OF LinearLTurnPoint
   Control.addVariable(wallKey+"MidTXStep",40.0); // derived from K_20-1_08F6c1
@@ -3143,6 +3144,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WallMat","Concrete");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
+  Control.addVariable(wallKey+"SoilMat","Earth");
 
   // Pillars
   /* numbering of pillars in the injection hall
