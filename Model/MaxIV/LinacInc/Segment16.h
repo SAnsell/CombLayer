@@ -48,10 +48,10 @@ class Segment16 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
 
   /// #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH; 
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA; 
   
   /// #6 - vertical corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;      
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;      
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows 304L  
   std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #7
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9

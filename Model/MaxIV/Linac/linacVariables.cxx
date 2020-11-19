@@ -1345,8 +1345,8 @@ Segment16(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",40.0); // measured
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // measured
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1); // measured
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0); // measured
+  CMGen.generateMag(Control,lKey+"CMagVA",28.0,1); // measured
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
@@ -1439,8 +1439,8 @@ Segment18(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",127.3);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVA",28.0,1);
 
   return;
 }
@@ -1568,8 +1568,8 @@ Segment21(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",45.7);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.3,1);
-  CMGen.generateMag(Control,lKey+"CMagV",28.3,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.3,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",28.3,0);
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
@@ -1647,8 +1647,8 @@ Segment23(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0); // guess
-  CMGen.generateMag(Control,lKey+"CMagV",29.0,1); // No_23_00.pdf
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0); // guess
+  CMGen.generateMag(Control,lKey+"CMagVA",29.0,1); // No_23_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit",true);
   Control.addVariable(lKey+"YagUnitPortRadius",1.7);
@@ -1709,8 +1709,8 @@ Segment24(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
-  CMGen.generateMag(Control,lKey+"CMagH",10.0,0);
-  CMGen.generateMag(Control,lKey+"CMagV",28.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0);
+  CMGen.generateMag(Control,lKey+"CMagVA",28.0,1);
 
   BPMGen.generateBPM(Control,lKey+"BPM",0.0);
 
@@ -2114,7 +2114,7 @@ Segment30(FuncDataBase& Control,
 
   // CMagV
   PGen.generatePipe(Control,lKey+"PipeB",511.23);
-  CMGen.generateMag(Control,lKey+"CMagV",500.13,0);
+  CMGen.generateMag(Control,lKey+"CMagVA",500.13,0);
 
   return;
 }
@@ -2172,7 +2172,7 @@ Segment31(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowC",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeB",232.7);
-  CMGen.generateMag(Control,lKey+"CMagH",24.7,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",24.7,0);
 
   // IonPumpB
   //  setIonPump2Port(Control,lKey+"IonPumpB", -90);
@@ -2339,8 +2339,8 @@ Segment35(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeB",75.15);
   LQGen.generateQuad(Control,lKey+"QuadB",16.15);
-  CMGen.generateMag(Control,lKey+"CMagH",41.65,1);
-  CMGen.generateMag(Control,lKey+"CMagV",60.15,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",41.65,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",60.15,0);
 
   setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
 
@@ -2396,10 +2396,10 @@ Segment36(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadB",128.54);
 
   // Corrector magnets
-  CMGen.generateMag(Control,lKey+"CMagH",43.04,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",43.04,0);
   // Control.addVariable(lKey+"CMagHMagInnerLength",10.3); // 11.5
   // Control.addVariable(lKey+"CMagHMagLength",14.2-1.2); //
-  CMGen.generateMag(Control,lKey+"CMagV",61.54,1);
+  CMGen.generateMag(Control,lKey+"CMagVA",61.54,1);
 
   // Beam position monitors
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
@@ -2691,7 +2691,7 @@ Segment43(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"Pipe",39.9);
 
   setVariable::CorrectorMagGenerator CMGen;
-  CMGen.generateMag(Control,lKey+"CMagH",9.74,0);
+  CMGen.generateMag(Control,lKey+"CMagHA",9.74,0);
 
   // Button pickup PBM
   setVariable::ButtonBPMGenerator BPMBGen;

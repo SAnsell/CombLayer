@@ -94,8 +94,8 @@ Segment21::Segment21(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
     Constructor
@@ -112,8 +112,8 @@ Segment21::Segment21(const std::string& Key) :
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(bellowB);
 
   setFirstItems(bellowA);
@@ -163,7 +163,7 @@ Segment21::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*yagUnit, "back");
 
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit

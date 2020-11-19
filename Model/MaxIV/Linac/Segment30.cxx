@@ -94,7 +94,7 @@ Segment30::Segment30(const std::string& Key) :
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -108,7 +108,7 @@ Segment30::Segment30(const std::string& Key) :
   OR.addObject(bellow);
   OR.addObject(ionPump);
   OR.addObject(pipeB);
-  OR.addObject(cMagV);
+  OR.addObject(cMagVA);
 
   setFirstItems(gauge);
 }
@@ -200,7 +200,7 @@ Segment30::buildObjects(Simulation& System)
 
 
   pipeB->createAll(System,*ionPump,"back");
-  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagV);
+  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*IZThin,pipeB);
 
   return;

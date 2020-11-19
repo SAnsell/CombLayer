@@ -89,8 +89,8 @@ Segment18::Segment18(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV"))
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,8 +106,8 @@ Segment18::Segment18(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(quad);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
 
   setFirstItems(bellowA);
 }
@@ -147,7 +147,7 @@ Segment18::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeA);
 
   pipeB->createAll(System,*pipeA, "back");
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   return;

@@ -93,7 +93,7 @@ Segment31::Segment31(const std::string& Key) :
   quad(new tdcSystem::LQuadF(keyName+"Quad")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
   ionPumpB(new tdcSystem::IonPumpTube(keyName+"IonPumpB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellowD(new constructSystem::Bellows(keyName+"BellowD"))
@@ -114,7 +114,7 @@ Segment31::Segment31(const std::string& Key) :
   OR.addObject(quad);
   OR.addObject(bellowC);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
+  OR.addObject(cMagHA);
   OR.addObject(ionPumpB);
   OR.addObject(pipeC);
   OR.addObject(bellowD);
@@ -164,7 +164,7 @@ Segment31::buildObjects(Simulation& System)
     (System,*buildZone,*pipeA,"back",*bellowC);
 
   pipeB->createAll(System,*bellowC,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit

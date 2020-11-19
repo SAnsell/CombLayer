@@ -86,8 +86,8 @@ Segment24::Segment24(const std::string& Key) :
   ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   quad(new tdcSystem::LQuadH(keyName+"Quad"))
@@ -103,8 +103,8 @@ Segment24::Segment24(const std::string& Key) :
   OR.addObject(ionPump);
   OR.addObject(bellow);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(bpm);
   OR.addObject(pipeC);
   OR.addObject(quad);
@@ -142,7 +142,7 @@ Segment24::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bellow, "back");
 
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
