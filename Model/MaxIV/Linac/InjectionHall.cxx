@@ -150,7 +150,9 @@ InjectionHall::populate(const FuncDataBase& Control)
   midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
   backWallYStep=Control.EvalVar<double>(keyName+"BackWallYStep");
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+  backWallIronThick=Control.EvalVar<double>(keyName+"BackWallIronThick");
   backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
+  backWallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallIronMat");
 
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
@@ -374,10 +376,12 @@ InjectionHall::createSurfaces()
 
   // Back wall
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*backWallYStep,Y);
-  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+21));
 
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(backWallYStep+backWallThick),Y);
   SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+22));
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-backWallIronThick);
+  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+31));
 
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
@@ -525,12 +529,16 @@ InjectionHall::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -21 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "21 -22 7003 -1003 5 -6 ");
-  makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
+  makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "31 -21 7003 -1003 5 -6 ");
+  makeCell("BackWallIron",System,cellIndex++,backWallIronMat,0.0,Out);
 
   // SPF hallway
   // C080012 is official room name
@@ -645,13 +653,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LongWallBeforeMaze",System,cellIndex++,wallMat,0.0,Out);
 
   // SPF hall access maze (room C080011)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -21 7013 -223 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -31 7013 -223 5 -6");
   makeCell("SPFMazeTDCVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7023 -7013 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 7013 -7003 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -22 7013 -7003 5 -6");
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");

@@ -3047,7 +3047,7 @@ Segment49(FuncDataBase& Control,
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeA",51.29-15); // TODO -15 is artificial to avoid clipping with BackWall
   PGen.generatePipe(Control,lKey+"PipeB",230.0);
 
   return;
@@ -3139,6 +3139,10 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BackWallYStep",10044.0); // tdc-map.pdf
   Control.addVariable(wallKey+"BackWallThick",200.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"BackWallMat","Concrete"); // K_01-0_010: IV1.10 - Bvägg = 2000, Betong
+
+  // K_20-1_08G6b[34] + email from AR 2020-11-1[79]
+  Control.addVariable(wallKey+"BackWallIronThick",20.0);
+  Control.addVariable(wallKey+"BackWallIronMat","Iron");
 
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
