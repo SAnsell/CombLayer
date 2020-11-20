@@ -78,6 +78,7 @@ class InjectionHall :
   double bsp01WallOffset;       ///< BSP01 wall offset
   double bsp01WallLength;       ///< BSP01 wall length (before maze starts)
   double bsp01MazeWidth;        ///< Maze width in the BSP01 beamline area
+  double bsp01WallIronThick;    ///< Thick of the iron layer in the end of BSP01 room
 
   double rightWallStep;          ///< Extra out step on right
 

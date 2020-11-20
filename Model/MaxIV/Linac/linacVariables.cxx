@@ -3100,6 +3100,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"BSP01WallLength",1720.0); // derived from K_20-1_08G6b4
   Control.addVariable(wallKey+"BSP01MazeWidth",100.0); // K_20-1_08G6c1
+  Control.addVariable(wallKey+"BSP01WallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1

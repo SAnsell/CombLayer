@@ -122,6 +122,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
   bsp01WallLength=Control.EvalVar<double>(keyName+"BSP01WallLength");
   bsp01MazeWidth=Control.EvalVar<double>(keyName+"BSP01MazeWidth");
+  bsp01WallIronThick=Control.EvalVar<double>(keyName+"BSP01WallIronThick");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
 
@@ -405,6 +406,8 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bsp01MazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bsp01WallThick/2.0);
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bsp01WallIronThick);
+
   // SPF hall access maze
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7013,buildIndex+223,X,-spfMazeLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7023,buildIndex+7013,X,-wallThick);
@@ -604,15 +607,19 @@ InjectionHall::createObjects(Simulation& System)
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6101 6104 -1003 5 -6 ");
+  				 "22 -6201 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6201 -6101 6104 -6113 5 -6 ");
+  makeCell("C080017IronWall",System,cellIndex++,backWallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6104 -6113 5 -6 ");
   makeCell("C080017BackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6113 -1003 5 -6 ");
+  				 "6201 -6102 6113 -1003 5 -6 ");
   makeCell("C080017BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
