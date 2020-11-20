@@ -57,12 +57,19 @@ class InjectionHall :
   double spfMazeWidthSPF;       ///< SPF access maze width from the SPF hallway
   double spfMazeLength;         ///< SPF access maze full length (along the x-axis)
 
+  double fkgDoorWidth;          ///< Future klystron gallery access door width
+  double fkgDoorHeight;         ///< Future klystron gallery access door height
+  double fkgMazeWidth;          ///< Future klystron gallery maze width
+  double fkgMazeLength;         ///< Future klystron gallery maze length
+  double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
+
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
   double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)
 
   double spfExitLength;         ///< Length of the SPF emergency exit room
   double spfExitDoorLength;     ///< Length of the SPF emergency exit door
+  double spfExitDoorHeight;     ///< Height of the SPF emergency exit door
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
@@ -109,7 +116,7 @@ class InjectionHall :
   double klystronSideWall;      ///< Thickness of klystron divder
 
   double boundaryWidth;           ///< Width after walls
-  double boundaryHeight;          ///< Height after roof
+  //  double boundaryHeight;          ///< Height after roof
 
   size_t nPillars;              ///< Number of pillars
   std::vector<double> pRadii;   ///< Pillar radii
@@ -123,10 +130,11 @@ class InjectionHall :
   double thzZAngle;             ///< THz penetration Z angle
   int thzMat;                   ///< THz penetration material
 
-  int voidMat;               ///< void material
-  int wallMat;               ///< Wall material
-  int roofMat;               ///< Roof material
-  int floorMat;              ///< Floor material
+  int voidMat;                  ///< Void material
+  int wallMat;                  ///< Wall material
+  int roofMat;                  ///< Roof material
+  int floorMat;                 ///< Floor material
+  int soilMat;                  ///< Earth material
 
   void createFloor(Simulation&);
 

@@ -104,11 +104,17 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
   spfMazeLength=Control.EvalVar<double>(keyName+"SPFMazeLength");
+  fkgDoorWidth=Control.EvalVar<double>(keyName+"FKGDoorWidth");
+  fkgDoorHeight=Control.EvalVar<double>(keyName+"FKGDoorHeight");
+  fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
+  fkgMazeLength=Control.EvalVar<double>(keyName+"FKGMazeLength");
+  fkgMazeWallThick=Control.EvalVar<double>(keyName+"FKGMazeWallThick");
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
   spfExitLength=Control.EvalVar<double>(keyName+"SPFExitLength");
   spfExitDoorLength=Control.EvalVar<double>(keyName+"SPFExitDoorLength");
+  spfExitDoorHeight=Control.EvalVar<double>(keyName+"SPFExitDoorHeight");
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
@@ -152,7 +158,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
-  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
+  //  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
 
   nPillars=Control.EvalDefVar<size_t>(keyName+"NPillars", 0);
 
@@ -186,6 +192,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
+  soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
 
   return;
 }
@@ -418,7 +425,16 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7202,buildIndex+7201,Y,spfExitLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7211,buildIndex+7202,Y,wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7212,buildIndex+7202,Y,-spfExitDoorLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7205,buildIndex+5,Z,spfExitDoorHeight);
 
+  // Future klystron gallery maze
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7301,buildIndex+1011,Y,fkgMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7302,buildIndex+7301,Y,fkgMazeWallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7303,buildIndex+4,X,-fkgDoorWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7304,buildIndex+1004,X,fkgMazeWidth);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7305,buildIndex+5,Z,fkgDoorHeight);
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -487,9 +503,26 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -12 1004 -4 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
+  // Out=ModelSupport::getComposite(SMap,buildIndex,
+  // 				 " 1011 -2111 1004 -4 5 -6");
+  // makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
+
+  // Future klystron gallery maze
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1001 -2111 1004 (1011:1104) -4 5 -6");
-  makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
+				 " 1011 -7301 1004 -4 5 -6");
+  makeCell("FKGMazeEntrance",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 7301 -7302 1004 -7304 5 -6");
+  makeCell("FKGMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 7301 -7302 7304 -4 5 -6");
+  makeCell("FKGMazeWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 7302 -2111 1004 -4 5 -6");
+  makeCell("FKGMazeExit",System,cellIndex++,voidMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "211 -21 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
@@ -622,7 +655,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
-  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
@@ -644,7 +677,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
-  makeCell("ParkingSideVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("ParkingSideVoid",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
   makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
@@ -662,8 +695,11 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7201 -7212 233 -223 5 -6");
   makeCell("SPFEmergencyExitDoorWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -6");
-  makeCell("SPFEmergencyExitDoor",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 5 -7305");
+  makeCell("SPFEmergencyExitDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7212 -7202 233 -223 7305 -6");
+  makeCell("SPFEmergencyExitDoorRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
   makeCell("SPFEmergencyExitWall",System,cellIndex++,wallMat,0.0,Out);
@@ -689,28 +725,32 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out);
 
   // Klystrong divivde
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
+  makeCell("KlystronDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
+  makeCell("KlystronDoorWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
   makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   // OUTER VOIDS:
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
-  makeCell("LeftOuter",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuter",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 211 -7011 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 7211 -2 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
-  makeCell("RightLinear",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("RightLinear",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -2 -54 114  5 -16");
@@ -739,6 +779,9 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
+  makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007 ");
   makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
