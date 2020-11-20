@@ -88,8 +88,8 @@ Segment36::Segment36(const std::string& Key) :
   gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   bpmA(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -111,8 +111,8 @@ Segment36::Segment36(const std::string& Key) :
   OR.addObject(gauge);
   OR.addObject(pipeA);
   OR.addObject(quadA);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(quadB);
   OR.addObject(bpmA);
   OR.addObject(pipeB);
@@ -152,8 +152,8 @@ Segment36::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*gauge,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagH);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagV);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadB);
   pipeTerminate(System,*buildZone,pipeA);
 

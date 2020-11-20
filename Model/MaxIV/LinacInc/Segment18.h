@@ -45,8 +45,8 @@ class Segment18 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;          ///< #8 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;          ///< #8 - vertical corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;          ///< #8 - horizontal corrector magnet
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;          ///< #8 - vertical corrector magnet
 
   void buildObjects(Simulation&);
   void createLinks();

@@ -61,10 +61,10 @@ class Segment35 :
   std::shared_ptr<tdcSystem::LQuadF> quadB;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;
 
   /// corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;
 
   /// mirror chamber
   std::shared_ptr<tdcSystem::CrossWayBlank> mirrorChamber;

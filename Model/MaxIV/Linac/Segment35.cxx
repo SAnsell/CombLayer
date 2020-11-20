@@ -95,8 +95,8 @@ Segment35::Segment35(const std::string& Key) :
   bpm(new tdcSystem::ButtonBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   mirrorChamber(new tdcSystem::CrossWayBlank(keyName+"MirrorChamber")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
@@ -115,8 +115,8 @@ Segment35::Segment35(const std::string& Key) :
   OR.addObject(bpm);
   OR.addObject(pipeB);
   OR.addObject(quadB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(mirrorChamber);
   OR.addObject(pipeC);
   OR.addObject(bellow);
@@ -165,8 +165,8 @@ Segment35::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagH);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagV);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit

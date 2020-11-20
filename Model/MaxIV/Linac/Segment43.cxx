@@ -92,7 +92,7 @@ Segment43::Segment43(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
   bpmB(new tdcSystem::ButtonBPM(keyName+"BPMB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!
@@ -109,7 +109,7 @@ Segment43::Segment43(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(gate);
   OR.addObject(pipe);
-  OR.addObject(cMagH);
+  OR.addObject(cMagHA);
   OR.addObject(bpmB);
   OR.addObject(bellowB);
 
@@ -156,7 +156,7 @@ Segment43::buildObjects(Simulation& System)
     (System,*buildZone,*yagUnit,"back",*gate);
 
   pipe->createAll(System,*gate,"back");
-  pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagH);
+  pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipe);
 
   constructSystem::constructUnit

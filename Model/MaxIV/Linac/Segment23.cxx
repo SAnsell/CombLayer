@@ -96,8 +96,8 @@ Segment23::Segment23(const std::string& Key) :
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagH(new tdcSystem::CorrectorMag(keyName+"CMagH")),
-  cMagV(new tdcSystem::CorrectorMag(keyName+"CMagV")),
+  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
@@ -117,8 +117,8 @@ Segment23::Segment23(const std::string& Key) :
   OR.addObject(bpm);
   OR.addObject(bellowB);
   OR.addObject(pipeB);
-  OR.addObject(cMagH);
-  OR.addObject(cMagV);
+  OR.addObject(cMagHA);
+  OR.addObject(cMagVA);
   OR.addObject(yagScreen);
   OR.addObject(yagUnit);
   OR.addObject(pipeC);
@@ -163,7 +163,7 @@ Segment23::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bellowB, "back");
 
-  correctorMagnetPair(System,*buildZone,pipeB,cMagH,cMagV);
+  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
   pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit

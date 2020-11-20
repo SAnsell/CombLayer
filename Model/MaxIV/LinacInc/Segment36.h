@@ -40,8 +40,8 @@ class Segment36 :
   std::shared_ptr<tdcSystem::GaugeTube> gauge;   // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #4
   std::shared_ptr<tdcSystem::LQuadF> quadA;           // #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagH;     // #6
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagV;     // #6
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;     // #6
+  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;     // #6
   std::shared_ptr<tdcSystem::LQuadF> quadB;           // #5
   std::shared_ptr<tdcSystem::StriplineBPM> bpmA;      // #9 - stripline BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #8
