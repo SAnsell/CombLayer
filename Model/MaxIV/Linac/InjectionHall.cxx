@@ -153,7 +153,6 @@ InjectionHall::populate(const FuncDataBase& Control)
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
   backWallIronThick=Control.EvalVar<double>(keyName+"BackWallIronThick");
   backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
-  backWallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallIronMat");
 
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
@@ -193,6 +192,7 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  wallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"WallIronMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -541,7 +541,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "31 -21 7003 -1003 5 -6 ");
-  makeCell("BackWallIron",System,cellIndex++,backWallIronMat,0.0,Out);
+  makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   // SPF hallway
   // C080012 is official room name
@@ -612,7 +612,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6101 6104 -6113 5 -6 ");
-  makeCell("C080017IronWall",System,cellIndex++,backWallIronMat,0.0,Out);
+  makeCell("C080017IronWall",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6104 -6113 5 -6 ");

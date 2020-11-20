@@ -111,7 +111,6 @@ class InjectionHall :
   double backWallThick;         ///< Back wall thickness
   double backWallIronThick;     ///< Thickness of iron layer before the back wall
   int backWallMat;              ///< Back wall material
-  int backWallIronMat;          ///< Material of the iron layer before the back wall
 
   double klystronXStep;         ///< Step of inner klystron wall
   double klystronLen;           ///< Length of klystron wall
@@ -135,6 +134,7 @@ class InjectionHall :
 
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
+  int wallIronMat;              ///< Material of the iron layer before the back wall
   int roofMat;                  ///< Roof material
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material

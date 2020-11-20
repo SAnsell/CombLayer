@@ -3143,7 +3143,6 @@ wallVariables(FuncDataBase& Control,
 
   // K_20-1_08G6b[34] + email from AR 2020-11-1[79]
   Control.addVariable(wallKey+"BackWallIronThick",20.0);
-  Control.addVariable(wallKey+"BackWallIronMat","Iron");
 
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
@@ -3154,6 +3153,7 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
+  Control.addVariable(wallKey+"WallIronMat","Iron");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");
