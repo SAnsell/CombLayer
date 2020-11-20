@@ -118,6 +118,7 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
+  femtoMAXWallIronThick=Control.EvalVar<double>(keyName+"FemtoMAXWallIronThick");
   bsp01WallThick=Control.EvalVar<double>(keyName+"BSP01WallThick");
   bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
   bsp01WallLength=Control.EvalVar<double>(keyName+"BSP01WallLength");
@@ -557,16 +558,20 @@ InjectionHall::createObjects(Simulation& System)
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6101 6004 -6103 5 -6 ");
+  				 "22 -6201 6004 -6103 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6004 -6014 5 -6 ");
+  				 "6201 -6102 6004 -6014 5 -6 ");
   makeCell("C080016BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6014 -6103 5 -6 ");
   makeCell("C080016BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6201 -6101 6014 -6103 5 -6 ");
+  makeCell("C080016BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6004 -6103 5 -6 ");
