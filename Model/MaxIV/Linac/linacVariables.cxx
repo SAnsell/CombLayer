@@ -3097,11 +3097,17 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"FemtoMAXWallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
 
-  Control.addVariable(wallKey+"BSP01WallThick",100.0); // K_01-0_010
+  Control.addVariable(wallKey+"BSPWallThick",100.0); // K_01-0_010
   Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"BSP01WallLength",1720.0); // derived from K_20-1_08G6b4
-  Control.addVariable(wallKey+"BSP01MazeWidth",100.0); // K_20-1_08G6c1
-  Control.addVariable(wallKey+"BSP01WallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMazeWidth",100.0); // K_20-1_08G6c1
+  Control.addVariable(wallKey+"BSPFrontMazeThick",100.0); // K_20-1_08G6b4: IV1.6 [K_01-0_010]
+  // calculated K_20-1_08G6c1 + email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeThick",120.0);
+  Control.addVariable(wallKey+"BSPBackMazeThick",50.0); // K_20-1_08G6c1: IV1.12 [K_01-0_010]
+  Control.addVariable(wallKey+"BSPFrontMazeIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeIronThick1",20.0); // Email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeIronThick2",30.0); // Email from AR 2020-11-17
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1

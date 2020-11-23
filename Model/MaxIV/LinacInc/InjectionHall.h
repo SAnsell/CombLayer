@@ -73,13 +73,17 @@ class InjectionHall :
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
-  double femtoMAXWallIronThick; ///< Thick of the iron layer in the end of the FemtoMAX room
 
-  double bsp01WallThick;        ///< Thickness of wall between FemtoMAX and BSP01 beamline areas
   double bsp01WallOffset;       ///< BSP01 wall offset
   double bsp01WallLength;       ///< BSP01 wall length (before maze starts)
-  double bsp01MazeWidth;        ///< Maze width in the BSP01 beamline area
-  double bsp01WallIronThick;    ///< Thick of the iron layer in the end of the BSP01 room
+  double bspWallThick;        ///< Thickness of wall between FemtoMAX (BSP02) and BSP01 beamline areas
+  double bspMazeWidth;          ///< Maze width (passage) in the BSP beamline areas
+  double bspFrontMazeThick;     ///< Thick of the BSP front maze walls
+  double bspFrontMazeIronThick;    ///< Thick of the iron layer in the end of the BSP0[12] rooms
+  double bspMidMazeIronThick1;   ///< Thick of the first iron layer in the BSP maze
+  double bspMidMazeIronThick2;   ///< Thick of the second iron layer in the BSP maze
+  double bspMidMazeThick;       ///< Thick of the BSP middle maze walls
+  double bspBackMazeThick;      ///< Thick of the BSP back maze walls
 
   double rightWallStep;          ///< Extra out step on right
 
