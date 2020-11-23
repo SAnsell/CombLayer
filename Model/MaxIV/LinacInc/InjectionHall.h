@@ -83,6 +83,7 @@ class InjectionHall :
   double bspMidMazeIronThick1;   ///< Thick of the first iron layer in the BSP maze
   double bspMidMazeIronThick2;   ///< Thick of the second iron layer in the BSP maze
   double bspMidMazeThick;       ///< Thick of the BSP middle maze walls
+  double bspMidMazeDoorHeight;  ///< Height of the BSP middle maze doors
   double bspBackMazeThick;      ///< Thick of the BSP back maze walls
 
   double rightWallStep;          ///< Extra out step on right

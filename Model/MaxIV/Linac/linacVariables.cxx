@@ -3104,6 +3104,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BSPFrontMazeThick",100.0); // K_20-1_08G6b4: IV1.6 [K_01-0_010]
   // calculated K_20-1_08G6c1 + email from AR 2020-11-17
   Control.addVariable(wallKey+"BSPMidMazeThick",120.0);
+  Control.addVariable(wallKey+"BSPMidMazeDoorHeight",250.0); // K_20-1_08G6b4: B-B [K_20-2_359]
   Control.addVariable(wallKey+"BSPBackMazeThick",50.0); // K_20-1_08G6c1: IV1.12 [K_01-0_010]
   Control.addVariable(wallKey+"BSPFrontMazeIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
   Control.addVariable(wallKey+"BSPMidMazeIronThick1",20.0); // Email from AR 2020-11-17
@@ -3160,7 +3161,8 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
-  Control.addVariable(wallKey+"WallIronMat","Iron");
+  // WallIronMat is some unknown kind of steel with Co content <50 ppm [AR: 201120]
+  Control.addVariable(wallKey+"WallIronMat","Stainless304L");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");

@@ -124,6 +124,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   bspMazeWidth=Control.EvalVar<double>(keyName+"BSPMazeWidth");
   bspFrontMazeThick=Control.EvalVar<double>(keyName+"BSPFrontMazeThick");
   bspMidMazeThick=Control.EvalVar<double>(keyName+"BSPMidMazeThick");
+  bspMidMazeDoorHeight=Control.EvalVar<double>(keyName+"BSPMidMazeDoorHeight");
   bspBackMazeThick=Control.EvalVar<double>(keyName+"BSPBackMazeThick");
   bspFrontMazeIronThick=Control.EvalVar<double>(keyName+"BSPFrontMazeIronThick");
   bspMidMazeIronThick1=Control.EvalVar<double>(keyName+"BSPMidMazeIronThick1");
@@ -411,6 +412,8 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bspMazeWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bspBackMazeThick);
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6106,buildIndex+5,Y,bspMidMazeDoorHeight);
+
   // iron layers
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bspFrontMazeIronThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6211,buildIndex+6111,Y,bspMidMazeIronThick1);
@@ -601,8 +604,12 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("C080016MidMazeWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6013 -6103 5 -6 ");
+  				 "6111 -6112 6013 -6103 5 -6106 ");
   makeCell("C080016MazeWallVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6111 -6112 6013 -6103 6106 -6 ");
+  makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6112 -6121 6003 -6103 5 -6 ");
@@ -651,8 +658,12 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("C080017Maze",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6104 -6114 5 -6 ");
+  				 "6111 -6112 6104 -6114 5 -6106 ");
   makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6111 -6112 6104 -6114 6106 -6 ");
+  makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6211 6114 -1003 5 -6 ");
