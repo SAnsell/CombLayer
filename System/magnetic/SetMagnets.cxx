@@ -218,15 +218,17 @@ setDefMagnets(SimTYPE& System)
 	      // MagField
 	      while(StrFunc::section(MUComponent,Item))
 		{
-		  const std::vector<int> CellNumbers=
-		    System.getObjectRange(Item);
-		  for(const int CN : CellNumbers)
+		  if (System.builtFCName(Item))
 		    {
-		      Simulation::OTYPE::const_iterator mc=
-			CellObjects.find(CN);
-		      if (mc!=CellObjects.end())
-			magnetCells.emplace(mc->second);
-
+		      const std::vector<int> CellNumbers=
+			System.getObjectRange(Item);
+		      for(const int CN : CellNumbers)
+			{
+			  Simulation::OTYPE::const_iterator mc=
+			    CellObjects.find(CN);
+			  if (mc!=CellObjects.end())
+			    magnetCells.emplace(mc->second);
+			}
 		    }
 		}
 	    }

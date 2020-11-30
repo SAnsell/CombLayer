@@ -87,6 +87,7 @@ class objectGroups
   
   std::string inRange(const int) const;
   bool hasCell(const std::string&,const int) const;
+  bool builtFCName(const std::string&) const;
 
   int calcRenumber(const int) const;
     

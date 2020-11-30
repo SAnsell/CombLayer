@@ -141,6 +141,29 @@ objectGroups::hasRegion(const std::string& Name) const
 }
 
 bool
+objectGroups::builtFCName(const std::string& itemName) const
+  /*!
+    returns true if the FixedComp part of item name 
+    has been built
+    \param itemName :: FixedComp / cell name
+   */
+{
+  ELog::RegMethod RegA("objectGroups","buildFCName");
+  
+  std::string FCname,tail;
+  if (!StrFunc::splitUnit(itemName,FCname,tail,":"))
+    FCname=itemName;
+
+  const attachSystem::FixedComp* FCPtr=
+	getObject<attachSystem::FixedComp>(FCname);
+
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(FCname,"FC unknown");
+
+  return FCPtr->hasActiveCells();
+}
+
+bool
 objectGroups::hasCell(const std::string& Name,
 		      const int cellN) const
   /*!
@@ -737,6 +760,7 @@ objectGroups::getLastCell(const std::string& objName) const
   return (mc==regionMap.end()) ? 0 : mc->second.getLast();
 }
 
+
 std::vector<int>
 objectGroups::getObjectRange(const std::string& objName) const
   /*!
@@ -751,7 +775,6 @@ objectGroups::getObjectRange(const std::string& objName) const
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-
 
   // CELLMAP Range ::  objectName:cellName
   // FixedComp :: OffsetIndex
@@ -831,9 +854,7 @@ objectGroups::getObjectRange(const std::string& objName) const
     }
 
   throw ColErr::InContainerError<std::string>
-    (objName,"objectName does not convert to cells");
-
-  
+    (objName,"objectName does not convert to cells");  
 }
   
 void

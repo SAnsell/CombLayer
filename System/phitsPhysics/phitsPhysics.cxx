@@ -60,6 +60,7 @@ namespace phitsSystem
 phitsPhysics::phitsPhysics() :
   particleECut
   ({
+    {"neutron",1e-11},
     {"electron",1.0},
     {"positron",1.0},
     {"photon",0.010}
@@ -80,7 +81,9 @@ phitsPhysics::phitsPhysics() :
     { "nedisp",  {1,  "Straggling events [D=0]" }},
     { "e-mode",  {2,  "Create secondary events from electrons [D=0]"}},
     { "igmuppd", {1,  "Photon induced muon-pair production [D=0]"}},
-    { "ipnint",  {1,  "Photo-nuclear reaction [D=0]"}}
+    { "ipnint",  {1,  "Photo-nuclear reaction [D=0]"}},
+    { "iprofr",  {1,  "Droppler broadening for comptorn[D=1]"}},
+    { "incohr",  {1,  "Incoherrent data [D=1 ?]"}}
   })
   /*!
     Constructor
@@ -124,12 +127,14 @@ phitsPhysics::setECut(const std::string& particle,const double V)
    */
 {
   ELog::RegMethod RegA("phitsPhysics","setECut");
-  
-  std::map<std::string,double>::iterator mc=
-    particleECut.find(particle);
-  if (mc==particleECut.end())
-    throw ColErr::InContainerError<std::string>(particle,"particleECut");
-  mc->second=V;
+  if (V>=0.0)
+    {
+      std::map<std::string,double>::iterator mc=
+	particleECut.find(particle);
+      if (mc==particleECut.end())
+	throw ColErr::InContainerError<std::string>(particle,"particleECut");
+      mc->second=V;
+    }
   return;
 }
   
