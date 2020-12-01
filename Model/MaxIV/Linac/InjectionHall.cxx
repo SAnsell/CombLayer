@@ -59,6 +59,10 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Exception.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 
 #include "InjectionHall.h"
 
@@ -894,6 +898,8 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
 
+  layerProcess(System, "MidT", 3, -4, 10, wallMat);
+
   return;
 }
 
@@ -907,6 +913,14 @@ InjectionHall::createLinks()
   */
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
+
+  const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
+
+  FixedComp::setConnect(2,MidPt-X*(midTThickX/2.0),-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
+
+  FixedComp::setConnect(3,MidPt+X*(midTThickX/2.0),X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1004));
 
   return;
 }
@@ -928,11 +942,79 @@ InjectionHall::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();
-  createObjects(System);
   createLinks();
+  createObjects(System);
   insertObjects(System);
 
   return;
+}
+void
+InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
+			    const long int& lpS, const long int& lsS,
+			    const size_t& N, const int& mat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param N :: number of layers to divide to
+    \param mat :: material
+  */
+{
+    ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+    if (N<=1)
+      return;
+
+    const long int pS(getLinkSurf(lpS));
+    const long int sS(getLinkSurf(lsS));
+
+    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findObject(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = 1.0/N;
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<N;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/N;
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, buildIndex+10000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
+			     SMap.realSurf(static_cast<int>(sS)));
+
+    std::string OutA = getLinkString(lpS);
+    std::string OutB = getLinkString(-lsS);
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System);
+
+    cellIndex=DA.getCellNum();
+
+    return;
 }
 
 }  // NAMESPACE tdcSystem
