@@ -167,7 +167,7 @@ LINACmagnetVariables(FuncDataBase& Control,
 	  "Seg32DipoleA SPF32FlatA:Void",
 	  "Seg32DipoleB SPF32FlatB:Void",
 	  
-	  "Seg33CMagHA SPF31PipeA:Void",
+	  "Seg33CMagHA SPF33PipeA:Void",
 	  "Seg33QuadA SPF33PipeB:Void",
 	  "Seg33SexuA SPF33PipeB:Void",
 	  "Seg33QuadB SPF33PipeB:Void",
