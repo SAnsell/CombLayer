@@ -147,9 +147,9 @@ class InjectionHall :
   int soilMat;                  ///< Earth material
 
   void createFloor(Simulation&);
-  void layerProcess(Simulation& System, const std::string& cellName,
-                    const long int& lpS, const long int& lsS, const size_t&,
-                    const int&);
+  void layerProcess(Simulation&,const std::string&,
+                    const int,const int,const size_t);
+
 
 
   void populate(const FuncDataBase&);

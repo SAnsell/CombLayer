@@ -273,7 +273,8 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
 }
 
 void
-LayerDivide3D::setSurfPair(const size_t index,const int ASurf,
+LayerDivide3D::setSurfPair(const size_t index,
+			   const int ASurf,
 			   const int BSurf)
   /*!
     Set a give pair of surfaces  for division

@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "surfRegister.h"
@@ -59,6 +60,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Object.h"
 #include "Exception.h"
 #include "surfDivide.h"
 #include "surfDBase.h"
@@ -153,7 +155,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
-  midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1.0);
+  midTNLayers=Control.EvalVar<size_t>(keyName+"MidTNLayers");
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
@@ -900,7 +902,10 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
 
-  layerProcess(System, "MidT", 3, -4, midTNLayers, wallMat);
+  layerProcess(System,"MidT",
+	       SMap.realSurf(buildIndex+1003),
+	       -SMap.realSurf(buildIndex+1004),
+	       midTNLayers);
 
   return;
 }
@@ -951,68 +956,58 @@ InjectionHall::createAll(Simulation& System,
   return;
 }
 void
-InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
-			    const long int& lpS, const long int& lsS,
-			    const size_t& N, const int& mat)
+InjectionHall::layerProcess(Simulation& System,
+			    const std::string& cellName,
+			    const int primSurf,
+			    const int sndSurf,
+			    const size_t NLayers)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: cell name
-    \param lpS :: link pont of primary surface
+    \param lpS :: link point of primary surface
     \param lsS :: link point of secondary surface
-    \param N :: number of layers to divide to
-    \param mat :: material
+    \param NLayers :: number of layers to divide to
   */
 {
     ELog::RegMethod RegA("InjectionHall","layerProcess");
+    
+    if (NLayers<=1) return;
 
-    if (N<=1)
-      return;
-
-    const long int pS(getLinkSurf(lpS));
-    const long int sS(getLinkSurf(lsS));
-
-    attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(this);
-    MonteCarlo::Object* wallObj(0);
-    int wallCell(0);
-
-    if (CM)
-      {
-	wallCell=CM->getCell(cellName);
-	wallObj=System.findObject(wallCell);
-      }
-
+    // cellmap -> material
+    const int wallCell=this->getCell(cellName);
+    const MonteCarlo::Object* wallObj=System.findObject(wallCell);
     if (!wallObj)
-      throw ColErr::InContainerError<int>(wallCell,
-					  "Cell '" + cellName + "' not found");
+      throw ColErr::InContainerError<int>
+	(wallCell,"Cell '" + cellName + "' not found");
+    
 
-    double baseFrac = 1.0/N;
+    const int mat=wallObj->getMatID();
+    double baseFrac = 1.0/static_cast<double>(NLayers);
     ModelSupport::surfDivide DA;
-    for(size_t i=1;i<N;i++)
+    for(size_t i=1;i<NLayers;i++)
       {
 	DA.addFrac(baseFrac);
 	DA.addMaterial(mat);
-	baseFrac += 1.0/N;
+	baseFrac += 1.0/static_cast<double>(NLayers);
       }
     DA.addMaterial(mat);
 
     DA.setCellN(wallCell);
-    DA.setOutNum(cellIndex, buildIndex+100);
+    // CARE here :: buildIndex + X should be so that X+NLayer does not
+    // interfer.
+    DA.setOutNum(cellIndex, buildIndex+8000);
 
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
 
-    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
-			     SMap.realSurf(static_cast<int>(sS)));
-
-    std::string OutA = getLinkString(lpS);
-    std::string OutB = getLinkString(-lsS);
-
-    surroundRule.setInnerRule(OutA);
-    surroundRule.setOuterRule(OutB);
+    surroundRule.setSurfPair(primSurf,sndSurf);
+      
+    surroundRule.setInnerRule(primSurf);
+    surroundRule.setOuterRule(sndSurf);
 
     DA.addRule(&surroundRule);
-    DA.activeDivideTemplate(System,CM);
+    DA.activeDivideTemplate(System,this);
 
     cellIndex=DA.getCellNum();
 

@@ -78,6 +78,10 @@ class mergeTemplate : public surfDBase
   void setSurfPair(const int,const int);
   void setInnerRule(const std::string&);
   void setOuterRule(const std::string&);
+  void setInnerRule(const HeadRule&);
+  void setOuterRule(const HeadRule&);
+  void setInnerRule(const int);
+  void setOuterRule(const int);
 
   void setDirection(const std::vector<int>&);
 

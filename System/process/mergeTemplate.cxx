@@ -201,7 +201,8 @@ mergeTemplate<T,U>::populate()
       const T* PPtr=dynamic_cast<const T*>
 	(SurI.getSurf(abs(PN)));
       if (!PPtr)
-	ELog::EM<<"Failed on primary surface "<<PN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(PN,"Primary surface");
+
       primSPtr.push_back(PPtr);
     }
   for(int SN : sSurf)
@@ -209,7 +210,8 @@ mergeTemplate<T,U>::populate()
       const U* SPtr=dynamic_cast<const U*>
 	(SurI.getSurf(abs(SN)));
       if (!SPtr)
-	ELog::EM<<"Failed on secondary surface "<<SN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(SN,"Secondary surface");
+
       secSPtr.push_back(SPtr);
     }
   return;
@@ -247,15 +249,72 @@ mergeTemplate<T,U>::setInnerRule(const std::string& iStr)
 
 template<typename T,typename U>
 void
-mergeTemplate<T,U>::setOuterRule(const std::string& iStr) 
+mergeTemplate<T,U>::setInnerRule(const HeadRule& iHR) 
   /*!
     Process the cells 
-    \param iStr :: Inner Head Rule
+    \param iHR :: Inner Head Rule
    */
 {
-  ELog::RegMethod RegA("mergeTemplate","setInnerRule");
-  if (!OutTemplate.procString(iStr))
-    throw ColErr::InvalidLine(iStr,"iStr value",0);
+  ELog::RegMethod RegA("mergeTemplate","setInnerRule(HR)");
+  
+  InTemplate=iHR;
+  return;
+}
+
+template<typename T,typename U>
+void
+mergeTemplate<T,U>::setInnerRule(const int iSurf) 
+  /*!
+    Process the cells 
+    \param iSurf :: Inner surf number
+   */
+{
+  ELog::RegMethod RegA("mergeTemplate","setInnerRule(surfN)");
+  
+  InTemplate=HeadRule(iSurf);
+  return;
+}
+
+template<typename T,typename U>
+void
+mergeTemplate<T,U>::setOuterRule(const std::string& oStr) 
+  /*!
+    Process the cells 
+    \param oStr :: Outer Head Rule (string)
+   */
+{
+  ELog::RegMethod RegA("mergeTemplate","setOuterRule");
+  if (!OutTemplate.procString(oStr))
+    throw ColErr::InvalidLine(oStr,"oStr value",0);
+  return;
+}
+
+template<typename T,typename U>
+void
+mergeTemplate<T,U>::setOuterRule(const HeadRule& oHR) 
+  /*!
+    Process the cells 
+    \param oHR :: Outer Head Rule
+   */
+{
+  ELog::RegMethod RegA("mergeTemplate","setOuterRule(HR)");
+  
+  OutTemplate=oHR;
+  return;
+}
+
+template<typename T,typename U>
+void
+mergeTemplate<T,U>::setOuterRule(const int oSurf) 
+  /*!
+    Process the cells 
+    \param oSurf :: Outer Head Rule
+   */
+{
+  ELog::RegMethod RegA("mergeTemplate","setOuterRule(surfN)");
+
+  
+  OutTemplate=HeadRule(oSurf);
   return;
 }
 

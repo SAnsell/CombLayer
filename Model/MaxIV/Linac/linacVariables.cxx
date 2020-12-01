@@ -3137,7 +3137,8 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
-
+  Control.addVariable(wallKey+"MidTNLayers",4);  // Number of divisions
+    
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
@@ -3184,7 +3185,8 @@ wallVariables(FuncDataBase& Control,
       -485,-985,-485,-985,-485,-985,-485,
       -985,-485,-985,-485,-985,-485};
 
-  assert(std::abs(std::accumulate(x.begin(), x.end(), 0.0)+9459.3)<Geometry::zeroTol &&
+  assert(std::abs(std::accumulate
+		  (x.begin(),x.end(), 0.0)+9459.3)<Geometry::zeroTol &&
 	 "x-coordinates of pillars are wrong");
 
   const std::array<double,nPillars>
@@ -3192,7 +3194,8 @@ wallVariables(FuncDataBase& Control,
       5814.015,6364.015,6364.015,6964.015,6964.015,7564.015,7564.015,
       8213.215,8214.015,8864.015,8864.015,9464.015,9464.015};
 
-  assert(std::abs(std::accumulate(y.begin(), y.end(), 0.0)-108279.755)<Geometry::zeroTol &&
+  assert(std::abs(std::accumulate
+		  (y.begin(), y.end(), 0.0)-108279.755)<Geometry::zeroTol &&
 	 "y-coordinates of pillars are wrong");
 
   for (size_t i=0; i<nPillars; ++i)

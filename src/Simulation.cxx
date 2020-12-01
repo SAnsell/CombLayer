@@ -813,7 +813,7 @@ Simulation::findObject(const int CellN)
 {
   ELog::RegMethod RegA("Simulation","findObject");
   OTYPE::iterator mp=OList.find(CellN);
-  return (mp==OList.end()) ? 0 : mp->second;
+  return (mp==OList.end()) ? nullptr : mp->second;
 }
 
 const MonteCarlo::Object*
