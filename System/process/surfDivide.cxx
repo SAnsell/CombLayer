@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   process/surfDivide.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,12 +70,14 @@
 #include "mergeMulti.h"
 #include "mergeTemplate.h"
 #include "ModelSupport.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "surfDivide.h"
 
 namespace ModelSupport
 {
 
-surfDivide::surfDivide() : 
+surfDivide::surfDivide() :
   cellNumber(0),BaseObj(0),
   outCellN(0),outSurfN(0)
   /*!
@@ -83,7 +85,7 @@ surfDivide::surfDivide() :
   */
 {}
 
-surfDivide::surfDivide(const surfDivide& A) : 
+surfDivide::surfDivide(const surfDivide& A) :
   cellNumber(A.cellNumber),BaseObj(A.BaseObj),
   outCellN(A.outCellN),outSurfN(A.outSurfN),
   material(A.material),frac(A.frac)
@@ -112,7 +114,7 @@ surfDivide::operator=(const surfDivide& A)
       BaseObj=A.BaseObj;
       outCellN=A.outCellN;
       outSurfN=A.outSurfN;
-      
+
       clearRules();
       std::vector<surfDBase*>::const_iterator vc;
       for(vc=A.PRules.begin();vc!=A.PRules.end();vc++)
@@ -165,7 +167,7 @@ surfDivide::addRule(const surfDBase* SBase)
   */
 {
   ELog::RegMethod REgA("surfDivide","addRule");
-  
+
   if (SBase)
     PRules.push_back(SBase->clone());
   return;
@@ -176,8 +178,8 @@ void
 surfDivide::makeSignPair(const int iPt,const int oPt,const int dir)
   /*!
     Creates a simple two surface system with sign type
-    \param iPt :: inner Point 
-    \param oPt :: outer Point 
+    \param iPt :: inner Point
+    \param oPt :: outer Point
     \param dir :: sign direction on replacement [Not sign effected :: Note]
   */
 {
@@ -187,8 +189,8 @@ surfDivide::makeSignPair(const int iPt,const int oPt,const int dir)
   DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
   DR->addSecondarySurf(oPt);
   DR->setSignReplace(dir);
-  PRules.push_back(DR);  
-  
+  PRules.push_back(DR);
+
   return;
 }
 
@@ -197,8 +199,8 @@ void
 surfDivide::makePair(const int iPt,const int oPt)
   /*!
     Creates a simple two surface system
-    \param iPt :: inner Point 
-    \param oPt :: outer Point 
+    \param iPt :: inner Point
+    \param oPt :: outer Point
   */
 {
   ELog::RegMethod RegA("surfDivide","makePair");
@@ -206,7 +208,7 @@ surfDivide::makePair(const int iPt,const int oPt)
   mergeMulti<T,T>* DR=new mergeMulti<T,T>();
   DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
   DR->addSecondarySurf(oPt);
-  PRules.push_back(DR);  
+  PRules.push_back(DR);
 
   return;
 }
@@ -216,8 +218,8 @@ void
 surfDivide::makePair(const int iPt,const int oPt)
   /*!
     Creates a simple two surface system
-    \param iPt :: inner Point 
-    \param oPt :: outer Point 
+    \param iPt :: inner Point
+    \param oPt :: outer Point
   */
 {
   ELog::RegMethod RegA("surfDivide","makePair");
@@ -225,7 +227,7 @@ surfDivide::makePair(const int iPt,const int oPt)
   mergeMulti<T,U>* DR=new mergeMulti<T,U>();
   DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
   DR->addSecondarySurf(oPt);
-  PRules.push_back(DR);  
+  PRules.push_back(DR);
 
   return;
 }
@@ -236,8 +238,8 @@ surfDivide::makeMulti(const int iPt,const int oPtA,const int oPtB)
   /*!
     Creates a simple three surface system. All surfaces
     must take a sign
-    \param iPt :: inner Point 
-    \param oPtA :: outer Point (primary) 
+    \param iPt :: inner Point
+    \param oPtA :: outer Point (primary)
     \param oPtB :: outer Point (secondary)
   */
 {
@@ -247,7 +249,7 @@ surfDivide::makeMulti(const int iPt,const int oPtA,const int oPtB)
   DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
   DR->addSecondarySurf(oPtA);
   DR->addSecondarySurf(oPtB);
-  PRules.push_back(DR);  
+  PRules.push_back(DR);
   return;
 }
 
@@ -257,15 +259,15 @@ surfDivide::makeTemplate(const int iPt,const int oPtA)
   /*!
     Creates a simple three surface system. All surfaces
     must take a sign
-    \param iPt :: inner Point 
-    \param oPtA :: outer Point (primary) 
+    \param iPt :: inner Point
+    \param oPtA :: outer Point (primary)
   */
 {
   ELog::RegMethod RegA("surfDivide","makeTemplate");
 
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
   DR->setSurfPair(iPt,oPtA);
-  PRules.push_back(DR);  
+  PRules.push_back(DR);
   return;
 }
 
@@ -275,22 +277,22 @@ surfDivide::makeTemplate(const int iPt,const int oPtA,const int oPtB)
   /*!
     Creates a simple three surface system. All surfaces
     must take a sign
-    \param iPt :: inner Point 
-    \param oPtA :: outer Point (primary) 
+    \param iPt :: inner Point
+    \param oPtA :: outer Point (primary)
     \param oPtB :: outer Point (secondary)
   */
 {
   ELog::RegMethod RegA("surfDivide","makeTemplate");
 
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
-  DR->setSurfPair(iPt,oPtA);  
+  DR->setSurfPair(iPt,oPtA);
   DR->setSurfPair(iPt,oPtB);
 
-  PRules.push_back(DR);  
+  PRules.push_back(DR);
   return;
 }
 
-void 
+void
 surfDivide::addInnerSingle(const int)
   /*!
     Have an outer surface that is only used in the
@@ -303,7 +305,7 @@ surfDivide::addInnerSingle(const int)
   return;
 }
 
-void 
+void
 surfDivide::addOuterSingle(const int)
   /*!
     Have an outer surface that is only used in the
@@ -312,11 +314,11 @@ surfDivide::addOuterSingle(const int)
   */
 {
   ELog::RegMethod RegA("surfDivide","addOuterSingle");
-   
+
   return;
 }
 
-void 
+void
 surfDivide::preDivide(Simulation& System)
   /*!
     Preparation work for dividing the cell
@@ -325,24 +327,24 @@ surfDivide::preDivide(Simulation& System)
 {
   ELog::RegMethod RegA("surfDivide","preDivide");
 
-  BaseObj=System.findObject(cellNumber);  
+  BaseObj=System.findObject(cellNumber);
   if (!BaseObj)
     throw ColErr::InContainerError<int>(cellNumber,"Cell number");
-  
+
   BaseObj->populate();
-  BaseObj->createSurfaceList();  
-  
+  BaseObj->createSurfaceList();
+
   return;
 }
 
 void
 surfDivide::populateSurfaces()
   /*!
-    Create the inner surfaces 
+    Create the inner surfaces
   */
 {
   ELog::RegMethod RegA("surfDivide","populateSurfaces");
-  
+
   /// GET Planes to split:
   for(size_t i=0;i<PRules.size();i++)
     PRules[i]->populate();
@@ -351,9 +353,10 @@ surfDivide::populateSurfaces()
 
 
 void
-surfDivide::activeDivideTemplate(Simulation& System)
+surfDivide::activeDivideTemplate(Simulation& System,
+				 attachSystem::CellMap* CM)
   /*!
-    This assumes that mergeTemplate objects are being 
+    This assumes that mergeTemplate objects are being
     used exclusively.
     \param System :: Simulation to use
    */
@@ -367,8 +370,10 @@ surfDivide::activeDivideTemplate(Simulation& System)
     PRules[rN]->setOutSurfNumber
       (outSurfN+100*static_cast<int>(rN));
 
+  std::string cellName = CM ? CM->getName(cellNumber) : "";
+
   for(size_t i=0;i<=frac.size();i++)
-    {      
+    {
       // Create outer object
 
       // Process Rules:
@@ -381,15 +386,18 @@ surfDivide::activeDivideTemplate(Simulation& System)
 
       // Set cell:
       MonteCarlo::Object NewObj(*BaseObj);
-      NewObj.setName(outCellN++);
+      NewObj.setName(outCellN);
       NewObj.setMaterial(material[i]);
       NewObj.procString(cell.display());
       System.addCell(NewObj);
+      if (!cellName.empty())
+	CM->addCell(cellName+std::to_string(i),outCellN);
       cellBuilt.push_back(NewObj.getName());
+      outCellN++;
     }
   // Remove Original Cell
   System.removeCell(cellNumber);
-  return;  
+  return;
 }
 
 
@@ -419,7 +427,7 @@ surfDivide::setBasicSplit(const size_t NDiv,const int matN)
   return;
 }
 
-  
+
 void
 surfDivide::addFrac(const double F)
   /*!
@@ -437,16 +445,16 @@ surfDivide::addFrac(const double F)
       (F-frac.back())<Geometry::zeroTol)
     throw ColErr::RangeError<double>(F,F-frac.back(),1.0,
 				     "Frac misorderd");
-  
+
   frac.push_back(F);
   return;
 }
-  
+
 void
 surfDivide::activeDivide(Simulation& System)
   /*!
-    Splits an object into two sections 
-    - registers new surface 
+    Splits an object into two sections
+    - registers new surface
     - register new object
     - This currently requires that all initial surfaces, in the cell,
     different
@@ -458,11 +466,11 @@ surfDivide::activeDivide(Simulation& System)
 
   preDivide(System);
   populateSurfaces();
-  std::vector<Token> innerCell=BaseObj->cellVec();;  // Inner Cell 
+  std::vector<Token> innerCell=BaseObj->cellVec();;  // Inner Cell
   std::vector<Token> outerCell;  // outer Cell
 
   for(size_t i=0;i<=frac.size();i++)
-    {      
+    {
       // Create outer object
       MonteCarlo::Object NewObj(*BaseObj);
       NewObj.setName(outCellN++);
@@ -488,7 +496,7 @@ surfDivide::activeDivide(Simulation& System)
   // Remove Original Cell
   System.removeCell(cellNumber);
 
-  return;  
+  return;
 }
 
 void
@@ -526,9 +534,9 @@ surfDivide::procSurfDivide(Simulation& System,
 			   const std::string& Inner,
 			   const std::string& Outer)
   /*!
-    Process all the basic dividing layers 
+    Process all the basic dividing layers
     [Copied from GhipIRGuide -- make general??]
-    \param System :: Simuation 
+    \param System :: Simuation
     \param SMap :: Surface registration
     \param cellNubmer :: cell number to process
     \param moduleNumber :: offset number from objectRegister
@@ -541,7 +549,7 @@ surfDivide::procSurfDivide(Simulation& System,
    */
 {
   ELog::RegMethod RegA("surfDivide","procSurfDivide");
-  
+
   std::string OutA,OutB;
   // Cell Specific:
   init();
@@ -565,7 +573,7 @@ surfDivide::procSurfDivide(Simulation& System,
 
   addRule(&surroundRule);
   activeDivideTemplate(System);
-  
+
   return getCellNum();
 }
 
@@ -579,7 +587,7 @@ surfDivide::procSimpleDivide(Simulation& System,
 			     const std::vector<std::pair<int,int>>& VA)
   /*!
     Process all the basic dividing layers -- simple split
-    \param System :: Simuation 
+    \param System :: Simuation
     \param SMap :: Surface registration
     \param cellNubmer :: cell number to split/process
     \param moduleIndex :: offset number for surfaces in VA
@@ -590,7 +598,7 @@ surfDivide::procSimpleDivide(Simulation& System,
    */
 {
   ELog::RegMethod Rega("surfDivide","procSimpleDivide");
-  
+
   std::string OutA,OutB;
   // Cell Specific:
   init();
@@ -613,8 +621,8 @@ surfDivide::procSimpleDivide(Simulation& System,
       surroundRule.setOuterRule(OutB);
       addRule(&surroundRule);
     }
-  
-  activeDivideTemplate(System);  
+
+  activeDivideTemplate(System);
   return getCellNum();
 }
 
@@ -649,5 +657,5 @@ template void surfDivide::makeTemplate<Geometry::Plane>(const int,const int,cons
 ///\endcond TEMPLATE
 
 
- 
+
 }  // NAMESPACE ModelSupport
