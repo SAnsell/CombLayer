@@ -59,6 +59,10 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Exception.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 
 #include "InjectionHall.h"
 
@@ -149,6 +153,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
+  midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1.0);
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
@@ -717,7 +722,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
-  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
@@ -739,7 +744,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
-  makeCell("ParkingSideVoid",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
   makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
@@ -798,21 +803,21 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
-  makeCell("LeftOuter",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 211 -7011 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 7211 -2 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
-  makeCell("RightLinear",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -2 -54 114  5 -16");
@@ -835,12 +840,14 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MID T
+  // middle wall with THz penetration
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 1003 -1004 -6112 5 -6 2007 (-5003:5004:-5005:5006)");
+				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1001 -1011 1003 -1104 5 -6 2007 (-5003:5004:-5005:5006)");
+  makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
   makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -849,7 +856,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidTAngleTip",System,cellIndex++,wallMat,0.0,Out);
 
   // Auxiliary cyliner to cure geometric problems in corners
   Out=ModelSupport::getComposite
@@ -893,6 +900,8 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
 
+  layerProcess(System, "MidT", 3, -4, midTNLayers, wallMat);
+
   return;
 }
 
@@ -906,6 +915,14 @@ InjectionHall::createLinks()
   */
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
+
+  const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
+
+  FixedComp::setConnect(2,MidPt-X*(midTThickX/2.0),-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
+
+  FixedComp::setConnect(3,MidPt+X*(midTThickX/2.0),X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1004));
 
   return;
 }
@@ -927,11 +944,79 @@ InjectionHall::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();
-  createObjects(System);
   createLinks();
+  createObjects(System);
   insertObjects(System);
 
   return;
+}
+void
+InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
+			    const long int& lpS, const long int& lsS,
+			    const size_t& N, const int& mat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param N :: number of layers to divide to
+    \param mat :: material
+  */
+{
+    ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+    if (N<=1)
+      return;
+
+    const long int pS(getLinkSurf(lpS));
+    const long int sS(getLinkSurf(lsS));
+
+    attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findObject(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = 1.0/N;
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<N;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/N;
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, buildIndex+100);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
+			     SMap.realSurf(static_cast<int>(sS)));
+
+    std::string OutA = getLinkString(lpS);
+    std::string OutB = getLinkString(-lsS);
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System,CM);
+
+    cellIndex=DA.getCellNum();
+
+    return;
 }
 
 }  // NAMESPACE tdcSystem

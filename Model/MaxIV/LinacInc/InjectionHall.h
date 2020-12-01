@@ -106,6 +106,7 @@ class InjectionHall :
   double midTRight;             ///< right flat
   double midTFrontAngleStep;    ///< angle at front extent from mid line
   double midTBackAngleStep;     ///< angle at back extent from mid line
+  size_t midTNLayers;           ///< Number of layers in the MidT wall [for cell-based biasing]
 
   double klysDivThick;      ///< Thickness of klystrong divder
 
@@ -146,6 +147,10 @@ class InjectionHall :
   int soilMat;                  ///< Earth material
 
   void createFloor(Simulation&);
+  void layerProcess(Simulation& System, const std::string& cellName,
+                    const long int& lpS, const long int& lsS, const size_t&,
+                    const int&);
+
 
   void populate(const FuncDataBase&);
   void createSurfaces();

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   processInc/surfDivide.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef ModelSupport_surfDivide_h
@@ -24,6 +24,11 @@
 
 class Simulation;
 class Token;
+
+namespace attachSystem
+{
+  class CellMap;
+}
 
 namespace MonteCarlo
 {
@@ -42,12 +47,12 @@ class surfRegister;
   \author S. Ansell
   \date March 2010
   \brief Divides objects
-*/			
-			
+*/
+
 class surfDivide
 {
  private:
-  
+
   int cellNumber;                   ///< Cell number
   MonteCarlo::Object* BaseObj;       ///< BaseObject
   int outCellN;                     ///< Output cell number
@@ -59,7 +64,7 @@ class surfDivide
   std::vector<int> material;        ///< Material list
   std::vector<double> frac;         ///< Fractions
   std::vector<int> cellBuilt;       ///< List of built cells
-  
+
   void preDivide(Simulation&);
   void populateSurfaces();
   void clearRules();
@@ -72,23 +77,23 @@ class surfDivide
   surfDivide(const surfDivide&);
   surfDivide& operator=(const surfDivide&);
   ~surfDivide();
-  
-  void setCellN(const int N) { cellNumber=N; }   ///< master cell number
-  void setOutCellN(const int N) { outCellN=N; }  ///< Output number 
-  void setOutSurfN(const int N) { outSurfN=N; }  ///< Output surface 
 
-  /// set output number 
-  void setOutNum(const int NC,const int NS) 
-    { outCellN=NC; outSurfN=NS; } 
+  void setCellN(const int N) { cellNumber=N; }   ///< master cell number
+  void setOutCellN(const int N) { outCellN=N; }  ///< Output number
+  void setOutSurfN(const int N) { outSurfN=N; }  ///< Output surface
+
+  /// set output number
+  void setOutNum(const int NC,const int NS)
+    { outCellN=NC; outSurfN=NS; }
 
   /// Access cell number
   int getCellNum() const { return outCellN; }
   /// accessor to built cells
   const std::vector<int>& getCells() const
   { return cellBuilt; }
-  
+
   void init();
-  
+
   template<typename T> void makePair(const int,const int);
   template<typename T> void makeMulti(const int,const int,const int);
   template<typename T> void makeSignPair(const int,const int,const int);
@@ -111,11 +116,11 @@ class surfDivide
   void addFrac(const double);
   /// Add a Material
   void addMaterial(const int M) { material.push_back(M); }
-  
+
   void divideAction(std::vector<Token>&,std::vector<Token>&);
 
   void activeDivide(Simulation&);
-  void activeDivideTemplate(Simulation&);
+  void activeDivideTemplate(Simulation&,attachSystem::CellMap* CM=nullptr);
 
   void addLayers(const size_t,const std::vector<double>&,
 		 const std::vector<int>&);
@@ -126,7 +131,7 @@ class surfDivide
   int procSimpleDivide(Simulation&,const ModelSupport::surfRegister&,
 		       const int,const int,const int,const int,
 		       const std::vector<std::pair<int,int>>&);
-  
+
 };
 
 
