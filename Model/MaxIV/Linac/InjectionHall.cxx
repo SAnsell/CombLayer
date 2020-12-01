@@ -972,7 +972,7 @@ InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
     const long int pS(getLinkSurf(lpS));
     const long int sS(getLinkSurf(lsS));
 
-    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(this);
     MonteCarlo::Object* wallObj(0);
     int wallCell(0);
 
@@ -1012,7 +1012,7 @@ InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
     surroundRule.setOuterRule(OutB);
 
     DA.addRule(&surroundRule);
-    DA.activeDivideTemplate(System);
+    DA.activeDivideTemplate(System,CM);
 
     cellIndex=DA.getCellNum();
 
