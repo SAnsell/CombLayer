@@ -153,7 +153,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
-  midTNLayers=Control.EvalDefVar<int>(keyName+"MidTNLayers", 1.0);
+  midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1.0);
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
@@ -722,7 +722,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
-  makeCell("SPFMazeVoidBehindSideWall",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
   makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
@@ -744,7 +744,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
-  makeCell("ParkingSideVoid",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
   makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
@@ -803,21 +803,21 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -211 53 -13 -213 5 -16");
-  makeCell("LeftOuter",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 211 -7011 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 7211 -2 53 -233 5 -16");
-  makeCell("LeftOuterLong",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
 
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -101 -54 14  5 -16 ");
-  makeCell("RightLinear",System,cellIndex++,soilMat,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -2 -54 114  5 -16");

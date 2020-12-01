@@ -106,7 +106,7 @@ class InjectionHall :
   double midTRight;             ///< right flat
   double midTFrontAngleStep;    ///< angle at front extent from mid line
   double midTBackAngleStep;     ///< angle at back extent from mid line
-  int midTNLayers;              ///< Number of layers in the MidT wall [for cell-based biasing]
+  size_t midTNLayers;           ///< Number of layers in the MidT wall [for cell-based biasing]
 
   double klysDivThick;      ///< Thickness of klystrong divder
 
