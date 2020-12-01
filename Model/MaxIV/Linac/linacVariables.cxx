@@ -3047,7 +3047,7 @@ Segment49(FuncDataBase& Control,
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-  PGen.generatePipe(Control,lKey+"PipeA",51.29);
+  PGen.generatePipe(Control,lKey+"PipeA",51.29-15); // TODO -15 is artificial to avoid clipping with BackWall
   PGen.generatePipe(Control,lKey+"PipeB",230.0);
 
   return;
@@ -3095,11 +3095,20 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
+  Control.addVariable(wallKey+"FemtoMAXWallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
 
-  Control.addVariable(wallKey+"BSP01WallThick",100.0); // K_01-0_010
+  Control.addVariable(wallKey+"BSPWallThick",100.0); // K_01-0_010
   Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"BSP01WallLength",1720.0); // derived from K_20-1_08G6b4
-  Control.addVariable(wallKey+"BSP01MazeWidth",100.0); // K_20-1_08G6c1
+  Control.addVariable(wallKey+"BSPMazeWidth",100.0); // K_20-1_08G6c1
+  Control.addVariable(wallKey+"BSPFrontMazeThick",100.0); // K_20-1_08G6b4: IV1.6 [K_01-0_010]
+  // calculated K_20-1_08G6c1 + email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeThick",120.0);
+  Control.addVariable(wallKey+"BSPMidMazeDoorHeight",250.0); // K_20-1_08G6b4: B-B [K_20-2_359]
+  Control.addVariable(wallKey+"BSPBackMazeThick",50.0); // K_20-1_08G6c1: IV1.12 [K_01-0_010]
+  Control.addVariable(wallKey+"BSPFrontMazeIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeIronThick1",20.0); // Email from AR 2020-11-17
+  Control.addVariable(wallKey+"BSPMidMazeIronThick2",30.0); // Email from AR 2020-11-17
 
   Control.addVariable(wallKey+"LinearWidth",990.0); // calculated based on K_20-1_08C6c1
   Control.addVariable(wallKey+"WallThick",40.0); // K_20-1_08C6c1
@@ -3140,6 +3149,9 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BackWallThick",200.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"BackWallMat","Concrete"); // K_01-0_010: IV1.10 - Bvägg = 2000, Betong
 
+  // K_20-1_08G6b[34] + email from AR 2020-11-1[79]
+  Control.addVariable(wallKey+"BackWallIronThick",20.0);
+
   const double klystronSideWall(150.0);  // K_20-1_08F6b4
   // adjusted so that the corner is at the correct x coordinate
   Control.addVariable(wallKey+"KlystronXStep",klystronSideWall/2.0+100.0);
@@ -3149,6 +3161,8 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"VoidMat","Void");
   Control.addVariable(wallKey+"WallMat","Concrete");
+  // WallIronMat is some unknown kind of steel with Co content <50 ppm [AR: 201120]
+  Control.addVariable(wallKey+"WallIronMat","Stainless304L");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");

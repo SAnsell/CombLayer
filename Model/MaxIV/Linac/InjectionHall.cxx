@@ -118,10 +118,17 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
-  bsp01WallThick=Control.EvalVar<double>(keyName+"BSP01WallThick");
+  bspWallThick=Control.EvalVar<double>(keyName+"BSPWallThick");
   bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
   bsp01WallLength=Control.EvalVar<double>(keyName+"BSP01WallLength");
-  bsp01MazeWidth=Control.EvalVar<double>(keyName+"BSP01MazeWidth");
+  bspMazeWidth=Control.EvalVar<double>(keyName+"BSPMazeWidth");
+  bspFrontMazeThick=Control.EvalVar<double>(keyName+"BSPFrontMazeThick");
+  bspMidMazeThick=Control.EvalVar<double>(keyName+"BSPMidMazeThick");
+  bspMidMazeDoorHeight=Control.EvalVar<double>(keyName+"BSPMidMazeDoorHeight");
+  bspBackMazeThick=Control.EvalVar<double>(keyName+"BSPBackMazeThick");
+  bspFrontMazeIronThick=Control.EvalVar<double>(keyName+"BSPFrontMazeIronThick");
+  bspMidMazeIronThick1=Control.EvalVar<double>(keyName+"BSPMidMazeIronThick1");
+  bspMidMazeIronThick2=Control.EvalVar<double>(keyName+"BSPMidMazeIronThick2");
   spfLongLength=Control.EvalVar<double>(keyName+"SPFLongLength");
   rightWallStep=Control.EvalVar<double>(keyName+"RightWallStep");
 
@@ -150,6 +157,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midGateWall=Control.EvalVar<double>(keyName+"MidGateWall");
   backWallYStep=Control.EvalVar<double>(keyName+"BackWallYStep");
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+  backWallIronThick=Control.EvalVar<double>(keyName+"BackWallIronThick");
   backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
 
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
@@ -190,6 +198,7 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  wallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"WallIronMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -374,32 +383,41 @@ InjectionHall::createSurfaces()
 
   // Back wall
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*backWallYStep,Y);
-  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+21));
 
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(backWallYStep+backWallThick),Y);
   SurfMap::setSurf("BackWallBack",SMap.realSurf(buildIndex+22));
 
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-backWallIronThick);
+  SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+31));
+
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6004,buildIndex+6003,X,femtoMAXWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6014,buildIndex+6004,X,bsp01MazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6014,buildIndex+6004,X,bspMazeWidth);
 
   // Wall between FemtoMAX and BSP01 beamline areas
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6103,buildIndex+223,X,bsp01WallOffset);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6104,buildIndex+6103,X,bsp01WallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6013,buildIndex+6103,X,-bsp01MazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6113,buildIndex+1003,X,-bsp01MazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6114,buildIndex+6104,X,bsp01MazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6104,buildIndex+6103,X,bspWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6013,buildIndex+6103,X,-bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6113,buildIndex+1003,X,-bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6114,buildIndex+6104,X,bspMazeWidth);
 
   // maze in the end of FemtoMAX/BSP01 areas
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6101,buildIndex+22,Y,bsp01WallLength);
   SurfMap::setSurf("FemtoMAXBack",SMap.realSurf(buildIndex+2));
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,Y,bsp01WallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bsp01MazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6112,buildIndex+6111,Y,bsp01WallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6102,buildIndex+6101,Y,bspFrontMazeThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6111,buildIndex+6102,Y,bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6112,buildIndex+6111,Y,bspMidMazeThick);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bsp01MazeWidth);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bsp01WallThick/2.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6121,buildIndex+6112,Y,bspMazeWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6122,buildIndex+6121,Y,bspBackMazeThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6106,buildIndex+5,Y,bspMidMazeDoorHeight);
+
+  // iron layers
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6201,buildIndex+6101,Y,-bspFrontMazeIronThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6211,buildIndex+6111,Y,bspMidMazeIronThick1);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6212,buildIndex+6111,Y,bspMidMazeIronThick2);
 
   // SPF hall access maze
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7013,buildIndex+223,X,-spfMazeLength);
@@ -525,12 +543,16 @@ InjectionHall::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "211 -21 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
+				 "211 -31 223 -1003 5 -6 97M 117M 127M 137M 147M 157M 167M ");
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "21 -22 7003 -1003 5 -6 ");
-  makeCell("BackWall",System,cellIndex++,backWallMat,0.0,Out);
+  makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+				 "31 -21 7003 -1003 5 -6 ");
+  makeCell("BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   // SPF hallway
   // C080012 is official room name
@@ -546,11 +568,11 @@ InjectionHall::createObjects(Simulation& System)
   // FemtoMAX (BSP02) beamline area
   // C080016 is official room name
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6101 6004 -6103 5 -6 ");
+  				 "22 -6201 6004 -6103 5 -6 ");
   makeCell("C080016",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6004 -6014 5 -6 ");
+  				 "6201 -6102 6004 -6014 5 -6 ");
   makeCell("C080016BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -558,16 +580,36 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("C080016BackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6201 -6101 6014 -6103 5 -6 ");
+  makeCell("C080016BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6004 -6103 5 -6 ");
   makeCell("C080016Maze",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6004 -6013 5 -6 ");
-  makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,Out);
+  				 "6111 -6211 6004 -6013 5 -6 ");
+  makeCell("C080016MidMazeIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6013 -6103 5 -6 ");
+  				 "6211  -6212 6004 -6014 5 -6 ");
+  makeCell("C080016MidMazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6212 -6112 6004 -6014 5 -6 ");
+  makeCell("C080016MidMazeWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6211  -6112 6014 -6013 5 -6 ");
+  makeCell("C080016MidMazeWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6111 -6112 6013 -6103 5 -6106 ");
   makeCell("C080016MazeWallVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6111 -6112 6013 -6103 6106 -6 ");
+  makeCell("C080016MazeWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6112 -6121 6003 -6103 5 -6 ");
@@ -596,15 +638,19 @@ InjectionHall::createObjects(Simulation& System)
 
   // BSP01 beamline area
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6101 6104 -1003 5 -6 ");
+  				 "22 -6201 6104 -1003 5 -6 ");
   makeCell("C080017",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6201 -6101 6104 -6113 5 -6 ");
+  makeCell("C080017IronWall",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6104 -6113 5 -6 ");
   makeCell("C080017BackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6101 -6102 6113 -1003 5 -6 ");
+  				 "6201 -6102 6113 -1003 5 -6 ");
   makeCell("C080017BackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -612,11 +658,27 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("C080017Maze",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6104 -6114 5 -6 ");
+  				 "6111 -6112 6104 -6114 5 -6106 ");
   makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6111 -6112 6114 -1003 5 -6 ");
+  				 "6111 -6112 6104 -6114 6106 -6 ");
+  makeCell("C080017MazeWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6111 -6211 6114 -1003 5 -6 ");
+  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6211 -6212 6113 -1003 5 -6 ");
+  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6212 -6112 6113 -1003 5 -6 ");
+  makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  				 "6211 -6112 6114 -6113 5 -6 ");
   makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -645,13 +707,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LongWallBeforeMaze",System,cellIndex++,wallMat,0.0,Out);
 
   // SPF hall access maze (room C080011)
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -21 7013 -223 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -31 7013 -223 5 -6");
   makeCell("SPFMazeTDCVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -7002 7023 -7013 5 -6");
   makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 7013 -7003 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -22 7013 -7003 5 -6");
   makeCell("SPFMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 5 -6");
