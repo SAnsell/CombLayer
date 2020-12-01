@@ -835,12 +835,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MID T
+  // middle wall with THz penetration
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1001 1003 -1004 -6112 5 -6 2007 (-5003:5004:-5005:5006)");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
   makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
@@ -849,7 +850,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("MidTAngle",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 1103 -1153 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidTAngleTip",System,cellIndex++,wallMat,0.0,Out);
 
   // Auxiliary cyliner to cure geometric problems in corners
   Out=ModelSupport::getComposite
