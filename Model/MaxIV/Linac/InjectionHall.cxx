@@ -153,6 +153,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
+  midTNLayers=Control.EvalDefVar<int>(keyName+"MidTNLayers", 1.0);
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
@@ -841,10 +842,11 @@ InjectionHall::createObjects(Simulation& System)
   // MID T
   // middle wall with THz penetration
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 1003 -1004 -6112 5 -6 2007 (-5003:5004:-5005:5006)");
+				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1004 -1104 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1001 -1011 1003 -1104 5 -6 2007 (-5003:5004:-5005:5006)");
   makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
@@ -898,7 +900,7 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
   addOuterSurf(Out);
 
-  layerProcess(System, "MidT", 3, -4, 10, wallMat);
+  layerProcess(System, "MidT", 3, -4, midTNLayers, wallMat);
 
   return;
 }
@@ -995,7 +997,7 @@ InjectionHall::layerProcess(Simulation& System, const std::string& cellName,
     DA.addMaterial(mat);
 
     DA.setCellN(wallCell);
-    DA.setOutNum(cellIndex, buildIndex+10000);
+    DA.setOutNum(cellIndex, buildIndex+100);
 
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;

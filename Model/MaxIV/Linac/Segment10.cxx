@@ -179,7 +179,7 @@ Segment10::constructHole(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"MidTAngle",Out);
-      IHall->insertComponent(System,"MidT",Out);
+      //      IHall->insertComponent(System,"FKGMazeFrontWall",Out);
       //      IHall->insertComponent(System,"MidTAuxCyl",Out);
 
       // This might not be the best place for this:::
