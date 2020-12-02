@@ -155,7 +155,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTRight=Control.EvalVar<double>(keyName+"MidTRight");
   midTFrontAngleStep=Control.EvalVar<double>(keyName+"MidTFrontAngleStep");
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
-  midTNLayers=Control.EvalVar<size_t>(keyName+"MidTNLayers");
+  midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1);
 
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
@@ -971,7 +971,7 @@ InjectionHall::layerProcess(Simulation& System,
   */
 {
     ELog::RegMethod RegA("InjectionHall","layerProcess");
-    
+
     if (NLayers<=1) return;
 
     // cellmap -> material
@@ -980,7 +980,7 @@ InjectionHall::layerProcess(Simulation& System,
     if (!wallObj)
       throw ColErr::InContainerError<int>
 	(wallCell,"Cell '" + cellName + "' not found");
-    
+
 
     const int mat=wallObj->getMatID();
     double baseFrac = 1.0/static_cast<double>(NLayers);
@@ -1002,7 +1002,7 @@ InjectionHall::layerProcess(Simulation& System,
 				Geometry::Plane> surroundRule;
 
     surroundRule.setSurfPair(primSurf,sndSurf);
-      
+
     surroundRule.setInnerRule(primSurf);
     surroundRule.setOuterRule(sndSurf);
 

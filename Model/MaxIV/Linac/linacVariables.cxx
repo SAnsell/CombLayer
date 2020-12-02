@@ -3137,8 +3137,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
-  Control.addVariable(wallKey+"MidTNLayers",4);  // Number of divisions
-    
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
