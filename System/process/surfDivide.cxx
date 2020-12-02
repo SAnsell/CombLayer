@@ -370,7 +370,7 @@ surfDivide::activeDivideTemplate(Simulation& System,
     PRules[rN]->setOutSurfNumber
       (outSurfN+100*static_cast<int>(rN));
 
-  std::string cellName = CM ? CM->getName(cellNumber) : "";
+  const std::string cellName = CM ? CM->getName(cellNumber) : "";
 
   for(size_t i=0;i<=frac.size();i++)
     {
