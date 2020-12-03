@@ -662,7 +662,7 @@ Segment2(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
 
-  setCylGateValve(Control,lKey+"GateTube", 180.0, false);
+  setCylGateValve(Control,lKey+"Gate", 180.0, false);
 
   PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
@@ -1040,7 +1040,7 @@ Segment10(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",453.0);
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  setRecGateValve(Control, lKey+"GateValve", false);
+  setRecGateValve(Control, lKey+"Gate", false);
 
   const double yAngle(-90.0);
   setIonPump2Port(Control, lKey+"PumpA",yAngle);

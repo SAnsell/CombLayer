@@ -94,7 +94,7 @@ Segment10::Segment10(const std::string& Key) :
   IHall(nullptr),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  gateValve(new constructSystem::GateValveCube(keyName+"GateValve")),
+  gateValve(new constructSystem::GateValveCube(keyName+"Gate")),
   pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),

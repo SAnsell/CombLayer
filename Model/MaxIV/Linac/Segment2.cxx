@@ -94,7 +94,7 @@ Segment2::Segment2(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  gateTube(new xraySystem::CylGateValve(keyName+"GateTube")),
+  gateTube(new xraySystem::CylGateValve(keyName+"Gate")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   beamArrivalMon(new tdcSystem::EArrivalMon(keyName+"BeamArrivalMon")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
