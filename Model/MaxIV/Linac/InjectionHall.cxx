@@ -166,6 +166,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
   backWallIronThick=Control.EvalVar<double>(keyName+"BackWallIronThick");
   backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
+  backWallNLayers=Control.EvalDefVar<size_t>(keyName+"BackWallNLayers", 1);
 
   klystronXStep=Control.EvalVar<double>(keyName+"KlystronXStep");
   klystronLen=Control.EvalVar<double>(keyName+"KlystronLen");
@@ -907,27 +908,18 @@ InjectionHall::createObjects(Simulation& System)
 	       -SMap.realSurf(buildIndex+1004),
 	       midTNLayers);
 
+  layerProcess(System,"BackWallConcrete",
+	       SMap.realSurf(buildIndex+21),
+	       -SMap.realSurf(buildIndex+22),
+	       backWallNLayers);
+
   return;
 }
 
 void
 InjectionHall::createLinks()
-  /*!
-    Determines the link points for the beam direction first:
-    This is special : each beamport has two coordinates (and axis)
-    First is the mid triangle point [ start of straight section]
-    The second is the mid point on the wall it points to
-  */
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
-
-  const Geometry::Vec3D MidPt(Origin+X*midTXStep+Y*midTYStep);
-
-  FixedComp::setConnect(2,MidPt-X*(midTThickX/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1003));
-
-  FixedComp::setConnect(3,MidPt+X*(midTThickX/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1004));
 
   return;
 }
@@ -965,8 +957,8 @@ InjectionHall::layerProcess(Simulation& System,
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: cell name
-    \param lpS :: link point of primary surface
-    \param lsS :: link point of secondary surface
+    \param primSurf :: primary surface
+    \param sndSurf  :: secondary surface
     \param NLayers :: number of layers to divide to
   */
 {
@@ -980,7 +972,6 @@ InjectionHall::layerProcess(Simulation& System,
     if (!wallObj)
       throw ColErr::InContainerError<int>
 	(wallCell,"Cell '" + cellName + "' not found");
-
 
     const int mat=wallObj->getMatID();
     double baseFrac = 1.0/static_cast<double>(NLayers);

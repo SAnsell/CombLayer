@@ -118,6 +118,7 @@ class InjectionHall :
   double backWallThick;         ///< Back wall thickness
   double backWallIronThick;     ///< Thickness of iron layer before the back wall
   int backWallMat;              ///< Back wall material
+  size_t backWallNLayers;       ///< Number of layers in the back wall
 
   double klystronXStep;         ///< Step of inner klystron wall
   double klystronLen;           ///< Length of klystron wall
