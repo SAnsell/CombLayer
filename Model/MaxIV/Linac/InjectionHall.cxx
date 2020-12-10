@@ -120,6 +120,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
+  btgNLayers=Control.EvalDefVar<int>(keyName+"BTGNLayers", 1);
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -928,6 +929,12 @@ InjectionHall::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+21),
 	       -SMap.realSurf(buildIndex+22),
 	       backWallNLayers);
+
+  layerProcess(System,"BTG",
+	       SMap.realSurf(buildIndex+1004),
+	       -SMap.realSurf(buildIndex+7403),
+	       btgNLayers);
+
 
   return;
 }

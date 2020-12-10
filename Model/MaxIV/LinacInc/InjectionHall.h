@@ -68,6 +68,7 @@ class InjectionHall :
   double btgLength;         ///< BTG-BLOCK length
   double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
   int btgMat;                   ///< BTG-BLOCK material
+  int btgNLayers;               ///< BTG-BLOCK number of imp layers
 
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
