@@ -3085,6 +3085,12 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
+  Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
+  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
+  Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
+  Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
+  Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
+
   Control.addVariable(wallKey+"SPFParkingFrontWallLength",100.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFParkingLength",335.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFParkingWidth",290.0); // derived from K_20-1_08G6b3: 620-330

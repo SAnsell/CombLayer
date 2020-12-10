@@ -115,6 +115,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   fkgMazeWidth=Control.EvalVar<double>(keyName+"FKGMazeWidth");
   fkgMazeLength=Control.EvalVar<double>(keyName+"FKGMazeLength");
   fkgMazeWallThick=Control.EvalVar<double>(keyName+"FKGMazeWallThick");
+  btgThick=Control.EvalVar<double>(keyName+"BTGThick");
+  btgHeight=Control.EvalVar<double>(keyName+"BTGHeight");
+  btgLength=Control.EvalVar<double>(keyName+"BTGLength");
+  btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
+  btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -462,6 +467,12 @@ InjectionHall::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7305,buildIndex+5,Z,fkgDoorHeight);
 
+  // PREFAB BTG-BLOCK
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7402,buildIndex+21,Y,btgYOffset);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -526,12 +537,20 @@ InjectionHall::createObjects(Simulation& System)
 				 " 201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M ");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -12 1004 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -7401 1004 -104 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,
-  // 				 " 1011 -2111 1004 -4 5 -6");
-  // makeCell("KlystronExit",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
+  makeCell("BTG",System,cellIndex++,btgMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 7406 -6");
+  makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7402 -12 1004 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 7403 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // Future klystron gallery maze
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -700,9 +719,6 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6121 -6122 6113 -1004 5 -6 ");
   makeCell("C080017MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -12 4 -104 5 -6");
-  makeCell("CutVoid",System,cellIndex++,voidMat,0.0,Out);
 
   //OUTER WALLS:
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -3 13 5 -6");

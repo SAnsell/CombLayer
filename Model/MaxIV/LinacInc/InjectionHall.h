@@ -63,6 +63,12 @@ class InjectionHall :
   double fkgMazeLength;         ///< Future klystron gallery maze length
   double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
 
+  double btgThick;          ///< PREFAB BTG-BLOCK thick
+  double btgHeight;         ///< BTG-BLOCK height
+  double btgLength;         ///< BTG-BLOCK length
+  double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
+  int btgMat;                   ///< BTG-BLOCK material
+
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
   double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)
