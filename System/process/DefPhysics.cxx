@@ -89,6 +89,7 @@
 #include "PhysicsCards.h"
 #include "cellValueSet.h"
 #include "pairValueSet.h"
+#include "Process.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
 #include "flukaImpConstructor.h"
@@ -487,6 +488,45 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
 }
 
 void
+setWImp(Simulation& System,const mainSystem::inputParam& IParam)
+  /*!
+    Set imp weigths for individual cells and regions
+    \param System :: Simulation to use
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setWImp");
+
+  const size_t nIMP=IParam.setCnt("wIMP");
+  for(size_t setIndex=0;setIndex<nIMP;setIndex++)
+    {
+      const size_t nItem=IParam.itemCnt("wIMP",setIndex);
+      double impValue(1.0);
+      const std::string type=IParam.getValueError<std::string>
+	("wIMP",setIndex,0,"No cell/object for wIMP ");
+      if (nItem==3)
+	impValue=IParam.getValueError<double>
+	  ("wIMP",setIndex,2," IMP value for wIMP");
+      else
+      	impValue=IParam.getValueError<double>
+	  ("wIMP",setIndex,1," IMP value for wIMP");
+
+      const std::set<int> cells=
+	ModelSupport::getActiveCell(System,type);
+      
+      for(const int CN : cells)
+	{
+	  MonteCarlo::Object* oPtr=
+	    System.findObject(CN);
+	  /// need a way to fix stuff for MCNP/FLUKA using double
+	  if (oPtr)
+	    oPtr->setImp(static_cast<int>(impValue)) ;
+	}
+    }
+  return;
+}
+
+void
 setGenericPhysics(SimMCNP& System,
 		  const std::string& PModel)
   /*!
@@ -533,6 +573,7 @@ setDefaultPhysics(SimMCNP& System,
     (3000.0,"maxEnergy");
 
   setGenericPhysics(System,PModel);
+  setWImp(System,IParam);
   
   PC.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
   PC.setRND(IParam.getValue<long int>("random"));	

@@ -3,7 +3,7 @@
  
  * File:   processInc/DefPhysics.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ namespace ModelSupport
 {
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
   void setGenericPhysics(SimMCNP&,const std::string&);
+  void setGenericPhysics(SimMCNP&,const mainSystem::inputParam&);
   
   void procOffset(const objectGroups&,const mainSystem::inputParam&,
 		  const std::string&,const size_t);
@@ -58,11 +59,13 @@ namespace ModelSupport
 			 const mainSystem::inputParam&); 
   void setDefRotation(const objectGroups&,const mainSystem::inputParam&);
 
+  void setWImp(Simulation&,const mainSystem::inputParam&);
   
   void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
   void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
   void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
+
 }
 
 
