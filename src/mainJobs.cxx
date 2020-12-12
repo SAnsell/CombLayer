@@ -172,6 +172,12 @@ createVTK(const mainSystem::inputParam& IParam,
 	IParam.getDefValue<std::string>("","vtkType",0);
       if (vType=="cell" || vType=="Cell")
 	VTK.setType(Visit::VISITenum::cellID);
+      else if (vType=="imp" || vType=="IMP")
+	VTK.setType(Visit::VISITenum::imp);
+      else if (vType=="dens" || vType=="density")
+	VTK.setType(Visit::VISITenum::density);
+      else if (vType=="weight" || vType=="wwg")
+	VTK.setType(Visit::VISITenum::weight);
       else if (vType.empty())
 	VTK.setType(Visit::VISITenum::material);
       else 
