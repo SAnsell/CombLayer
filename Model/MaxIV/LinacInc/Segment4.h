@@ -69,9 +69,9 @@ class Segment4 :
   /// exit pipe for corrector mags
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;    ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;    ///< corrector mag
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   ///< corrector mag
 
   void buildObjects(Simulation&);
   void createLinks();

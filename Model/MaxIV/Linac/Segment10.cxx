@@ -101,7 +101,7 @@ Segment10::Segment10(const std::string& Key) :
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
 
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key

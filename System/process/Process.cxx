@@ -73,15 +73,16 @@
 #include "Simulation.h"
 #include "Process.h"
 
-namespace System
+namespace ModelSupport
 {
 
 std::set<int>
-getActiveMaterial(const Simulation& System,std::string material)
+getActiveMaterial(const Simulation& System,
+		  std::string material)
   /*!
     Given a material find the active cells
     \param material : material name to use
-    \return set of active components
+    \return set of active materials (matching material)
   */
 {
   ELog::RegMethod RegA("Process[F]","getActiveMaterial");
@@ -89,7 +90,6 @@ getActiveMaterial(const Simulation& System,std::string material)
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
   
-    
   std::set<int> activeMat=System.getActiveMaterial();
   if (material=="All" || material=="all")
     return activeMat;
@@ -127,7 +127,7 @@ getActiveCell(const objectGroups& OGrp,
     Given a cell find the active cells
     \param OGrp :: Active group						
     \param cell : cell0 name to use
-    \return set of active components
+    \return set of active cell numbers 
   */
 {
   ELog::RegMethod RegA("Process[F]","getActiveCell");

@@ -40,11 +40,11 @@ my @mainLib=qw( visit src simMC  construct physics input process
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
     tally geometry mersenne src world work
-    xml poly support weights
+    xml poly support weightsf
     insertUnit md5 construct
     global constructVar physics simMC
     transport attachComp visit poly 
-    magnetic phitsPhysics
+    magnetic phitsPhysics process
     scatMat endf crystal );
 
 my $gM=new CMakeList;

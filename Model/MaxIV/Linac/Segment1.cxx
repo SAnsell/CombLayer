@@ -91,17 +91,17 @@ Segment1::Segment1(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  cMagHB(new tdcSystem::CorrectorMag(keyName+"CMagHB")),
-  cMagVB(new tdcSystem::CorrectorMag(keyName+"CMagVB")),
+  cMagHB(new xraySystem::CorrectorMag(keyName+"CMagHB")),
+  cMagVB(new xraySystem::CorrectorMag(keyName+"CMagVB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  cMagHC(new tdcSystem::CorrectorMag(keyName+"CMagHC")),
-  cMagVC(new tdcSystem::CorrectorMag(keyName+"CMagVC")),
+  cMagHC(new xraySystem::CorrectorMag(keyName+"CMagHC")),
+  cMagVC(new xraySystem::CorrectorMag(keyName+"CMagVC")),
   pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor

@@ -86,8 +86,8 @@ Segment24::Segment24(const std::string& Key) :
   ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   quad(new tdcSystem::LQuadH(keyName+"Quad"))

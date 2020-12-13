@@ -69,6 +69,7 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "Process.h"
 
 #include "flukaGenParticle.h"
 #include "SimFLUKA.h"
@@ -91,22 +92,22 @@ getActiveUnit(const Simulation& System,
     \param System :: Active Group
     \param typeFlag :: -1 : particle / cell /material 
     \param cellM :: string to use as id
-    \return set of index(s0
+    \return set of type units
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveUnit");
 
-  if (typeFlag==1)
-    const std::set<int> Item=getActiveMaterial(System,cellM);
 
   switch (typeFlag)
     {
     case -1:
       return getActiveParticle(cellM);
     case 0:
-      return getActiveCell(System,cellM);
+      return ModelSupport::getActiveCell(System,cellM);
+    default:
+      return ModelSupport::getActiveMaterial(System,cellM);
     }
-  return getActiveMaterial(System,cellM);
+
 }
   
 std::set<int>
@@ -125,70 +126,5 @@ getActiveParticle(const std::string& particle)
   activeOut.emplace(GP.flukaITYP(particle));
   return activeOut;
 }
-
-std::set<int>
-getActiveMaterial(const Simulation& System,std::string material)
-  /*!
-    Given a material find the active cells
-    \param material : material name to use
-    \return set of active components
-  */
-{
-  ELog::RegMethod RegA("flukaProcess[F]","getActiveMaterial");
-
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-  
-    
-  std::set<int> activeMat=System.getActiveMaterial();
-  if (material=="All" || material=="all")
-    return activeMat;
-  
-  bool negKey(0);
-  if (material.size()>1 && material.back()=='-')
-    {
-      negKey=1;
-      material.pop_back();
-    }
-  
-  if (!DB.hasKey(material))
-    throw ColErr::InContainerError<std::string>
-      (material,"Material not in material database");
-  const int matID=DB.getIndex(material);
-
-  if (negKey)
-    {
-      activeMat.erase(matID);
-      return activeMat;
-    }
-  if (activeMat.find(matID)==activeMat.end())
-    throw ColErr::InContainerError<std::string>
-      (material,"Not present in model");
-  
-  std::set<int> activeOut;
-  activeOut.insert(matID);
-  return activeOut;
-}
-
-std::set<int>
-getActiveCell(const objectGroups& OGrp,
-	      const std::string& cell)
-  /*!
-    Given a cell find the active cells
-    \param OGrp :: Active group						
-    \param cell : cell0 name to use
-    \return set of active components
-  */
-{
-  ELog::RegMethod RegA("flukaProcess[F]","getActiveCell");
-
-  const std::vector<int> Cells=OGrp.getObjectRange(cell);
-  std::set<int> activeCell(Cells.begin(),Cells.end());
-
-  activeCell.erase(1);
-  return activeCell;
-}
-  
-
 
 } // NAMESPACE flukaSystem

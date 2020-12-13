@@ -42,8 +42,8 @@ class Segment24 :
   std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #3 Ion Pump 75l cf63
   std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;         ///< #6 Horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;         ///< #6 Vertical corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;         ///< #6 Horizontal corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;         ///< #6 Vertical corrector magnet
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;           ///< #7 BPM - 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;     ///< #8 VC Ø10x1- Flanges 304L- Tube-316L
   std::shared_ptr<tdcSystem::LQuadH> quad;                ///< #9 type G

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Linac/CorrectorMag.cxx
+ * File:   commonBeam/CorrectorMag.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -82,7 +82,7 @@
 
 #include "CorrectorMag.h"
 
-namespace tdcSystem
+namespace xraySystem
 {
 
 CorrectorMag::CorrectorMag(const std::string& Key) :

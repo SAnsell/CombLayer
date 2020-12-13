@@ -39,11 +39,13 @@ namespace constructSystem
   class JawFlange;
 
 }
+namespace xraySystem
+{
+    class CorrectorMag;
+}
 
 namespace tdcSystem
 {
-  class CorrectorMag;
-
   
 int
 pipeTerminate(Simulation&,
@@ -68,8 +70,8 @@ int
 correctorMagnetPair(Simulation&,
 		    attachSystem::BlockZone&,
 		    const std::shared_ptr<attachSystem::FixedComp>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
+		    const std::shared_ptr<xraySystem::CorrectorMag>&,
+		    const std::shared_ptr<xraySystem::CorrectorMag>&);
 
 template<typename magTYPE>
 int

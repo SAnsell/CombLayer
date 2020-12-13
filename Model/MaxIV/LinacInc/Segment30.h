@@ -54,7 +54,7 @@ class Segment30 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
   /// #8 Corrector magnet type D - vertical
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;       
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;       
 
   void buildObjects(Simulation&);
   void createLinks();

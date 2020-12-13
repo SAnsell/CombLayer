@@ -46,7 +46,7 @@ class Segment31 :
   std::shared_ptr<tdcSystem::LQuadF> quad;              ///< #7 Quadropole magnet type F
   std::shared_ptr<constructSystem::Bellows> bellowC;    ///< #1 Bellows – 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #8 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;      ///< #9 Corrector magnet type D
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;      ///< #9 Corrector magnet type D
   std::shared_ptr<tdcSystem::IonPumpTube> ionPumpB; ///< #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;   ///< #8 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::Bellows> bellowD;    ///< #1 Bellows – 304L

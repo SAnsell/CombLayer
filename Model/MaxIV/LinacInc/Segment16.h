@@ -22,11 +22,15 @@
 #ifndef tdcSystem_Segment16_h
 #define tdcSystem_Segment16_h
 
+namespace xraySystem
+{
+  class CorrectorMag;
+}
+
 namespace tdcSystem
 {
   class StriplineBPM;
   class LQuadH;
-  class CorrectorMag;
   class IonPumpTube;
   /*!
     \class Segment16
@@ -48,10 +52,10 @@ class Segment16 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
 
   /// #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA; 
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA; 
   
   /// #6 - vertical corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;      
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;      
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows 304L  
   std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #7
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9

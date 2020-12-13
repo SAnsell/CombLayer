@@ -87,7 +87,7 @@ Segment13::Segment13(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),  
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
@@ -96,7 +96,7 @@ Segment13::Segment13(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key

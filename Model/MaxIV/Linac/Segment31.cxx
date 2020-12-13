@@ -93,7 +93,7 @@ Segment31::Segment31(const std::string& Key) :
   quad(new tdcSystem::LQuadF(keyName+"Quad")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   ionPumpB(new tdcSystem::IonPumpTube(keyName+"IonPumpB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellowD(new constructSystem::Bellows(keyName+"BellowD"))

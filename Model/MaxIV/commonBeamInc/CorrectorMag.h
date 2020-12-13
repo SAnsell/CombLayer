@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/CorrectorMag.h
+ * File:   commonBeamInc/CorrectorMag.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_CorrectorMag_h
-#define tdcSystem_CorrectorMag_h
+#ifndef xraySystem_CorrectorMag_h
+#define xraySystem_CorrectorMag_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 /*!
   \class CorrectorMag

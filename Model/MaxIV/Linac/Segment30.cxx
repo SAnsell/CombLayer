@@ -94,7 +94,7 @@ Segment30::Segment30(const std::string& Key) :
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key
