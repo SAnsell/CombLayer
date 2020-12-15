@@ -159,7 +159,7 @@ Segment49::constructHole(Simulation& System)
       pipeB->addInsertCell("FlangeB",IHall->getCell("C080016"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"BackWallConcrete",Out);
+      IHall->insertComponent(System,"BackWallFemtoMAXHole",Out);
       IHall->insertComponent(System,"BackWallIron",Out);
     }
 
