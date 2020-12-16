@@ -70,6 +70,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "WForm.h"

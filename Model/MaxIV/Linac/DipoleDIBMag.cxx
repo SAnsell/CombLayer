@@ -61,6 +61,7 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "ExternalCut.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "DipoleDIBMag.h"

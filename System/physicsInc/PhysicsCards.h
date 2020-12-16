@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +36,14 @@ namespace SDef
 
 namespace physicsSystem
 {
+  // funtions
+  std::string getMCNPparticleList(const std::set<int>&);
+  
   class dbcnCard;
   class nameCard;
   class ExtControl;
   class PWTControl;
+  class FCLControl;
   class DXTControl;
   
 /*!
@@ -75,11 +79,9 @@ class PhysicsCards
   std::set<std::string> wImpOut;          ///< wImp flag [wwg | wcell]
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
-  std::vector<PhysImp> ImpCards;          ///< Importance cards
   std::vector<PhysCard*> PCards;          ///< Physics cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
-  PhysImp Volume;                         ///< Volume stack
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
   std::unique_ptr<PWTControl> PWTCard;    ///< Photon Weight
   std::unique_ptr<DXTControl> DXTCard;    ///< Dxtran spheres
@@ -99,8 +101,7 @@ class PhysicsCards
   void clearHistpCells(); 
 
   // ALL systems setup
-  void setCellNumbers(const std::vector<int>&,const std::vector<double>&);
-  void setCellNumbers(const std::vector<std::pair<int,int>>&);
+  void setCellNumbers(const std::vector<int>&);
 
   // General [All particles] :
   void setCells(const std::string&,const std::vector<int>&,const double =1.0);
@@ -117,11 +118,6 @@ class PhysicsCards
   /// Get LEA card
   LSwitchCard& getLEA() { return LEA; } 
 
-  const PhysImp& getPhysImp(const std::string&,const std::string&) const;
-  PhysImp& getPhysImp(const std::string&,const std::string&);
-
-  PhysImp& addPhysImp(const std::string&,const std::string&,const double =1.0);
-  void removePhysImp(const std::string&,const std::string&);
   /// allows setting of flag
   void clearWImpFlag(const std::string&);
   void setWImpFlag(const std::string&);

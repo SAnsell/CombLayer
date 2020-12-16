@@ -58,6 +58,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "surfIndex.h"
+#include "Importance.h"
 #include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"

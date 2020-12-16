@@ -72,6 +72,7 @@
 #include "FixedComp.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -542,9 +543,11 @@ setGenericPhysics(SimMCNP& System,
 
   PC.setMode("n");
   setPhysicsModel(lea,PModel);
-  const std::vector<std::pair<int,int>> cellImp=
-    System.getCellImp();
-  PC.setCellNumbers(cellImp);
+  const std::vector<int> cellVec=System.getCellVector();
+
+  PC.setCellNumbers(cellVec);
+
+
   PC.setCells("imp",1,0);            // Set a zero cell 
 
 

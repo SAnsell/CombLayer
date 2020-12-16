@@ -61,6 +61,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "SurInter.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

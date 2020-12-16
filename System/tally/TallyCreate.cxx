@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,9 +145,7 @@ addFullHeatBlock(SimMCNP& System)
   ELog::RegMethod RegA("tallySystem","addFullHeatBlock");
 
   const std::vector<int> Units=System.getNonVoidCellVector();
-  const std::vector<int> CL=System.getCellVector();
-  System.getPC().setVolume(CL,1.0);
-  System.getPC().setVolume(1,0);
+
   tallySystem::heatTally TX(6);
   TX.setPlus(1);
   TX.setActive(1);                         /// Turn it on
@@ -1093,17 +1091,16 @@ changeParticleType(SimMCNP& Sim,const int tNumber,
 }
 
 void
-addPointPD(SimMCNP& ASim)
+addPointPD(SimMCNP& System)
   /*!
     Add point detector PD option to the tally
-    Assumed that calcAllVertex has been run on ASim
-    \param ASim :: SimMCNP value
+    Assumed that calcAllVertex has been run on System
+    \param System :: SimMCNP value
   */
 {
   ELog::RegMethod RegA("TallyCreate","addPointPD");
-
-
-  const SimMCNP::TallyTYPE& tmap=ASim.getTallyMap();
+  
+  const SimMCNP::TallyTYPE& tmap=System.getTallyMap();
   SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
@@ -1114,9 +1111,8 @@ addPointPD(SimMCNP& ASim)
 	  const masterRotate& MR=masterRotate::Instance();
 	  ModelSupport::pointDetOpt 
 	    PD(MR.reverseRotate(PTptr->getCentre()));
-	  PD.createObjAct(ASim);
-	  PD.addTallyOpt(PTptr->getKey(),ASim,
-			 ASim.getPC());
+	  PD.createObjAct(System);
+	  PD.addTallyOpt(System,PTptr->getKey());
 	}
     }
   

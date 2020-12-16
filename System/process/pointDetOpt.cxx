@@ -3,7 +3,7 @@
  
  * File:   process/pointDetOpt.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 #include "FuncDataBase.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Triple.h"
 #include "NList.h"
@@ -62,10 +63,14 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
+#include "Tally.h"
+#include "pointTally.h"
 #include "vertexCalc.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
+#include "PDControl.h"
 #include "pointDetOpt.h"
 
 
@@ -125,30 +130,32 @@ pointDetOpt::createObjAct(const Simulation& ASim)
 }
 
 void
-pointDetOpt::addTallyOpt(const int tallyN,
-			 const Simulation& ASim,
-			 physicsSystem::PhysicsCards& PC)
+pointDetOpt::addTallyOpt(SimMCNP& System,const int tallyN)
+			 
   /*!
     Adds an importance card to the physics of type PD
     with the corresponding weights for the distance
+    \param System :: Simulation to add component to
     \param tallyN :: tally nubmer
-    \param ASim :: Simulation to add component to
-    \param PC :: Physics cards
   */
 {
   ELog::RegMethod RegA("pointDetOpt","addTallyOpt");
 
-  // First get the physcis
-
-  std::ostringstream cx;
-  cx<<"pd"<<tallyN;
-  physicsSystem::PhysImp& PD=PC.addPhysImp(cx.str(),"");
-
+  // First get ally
+  tallySystem::pointTally* pointPTR=
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tallyN));
+  if (!pointPTR)
+    throw ColErr::InContainerError<int>(tallyN,"Tally Number");
+  
+  // This should be in tally ??
+  std::unique_ptr<tallySystem::PDControl> PDptr=
+    std::make_unique<tallySystem::PDControl>(tallyN);
+  
   // First loop to find minimum distance:
   double minV(1e38);
   double D;
 
-  const Simulation::OTYPE& Cells=ASim.getCells();
+  const Simulation::OTYPE& Cells=System.getCells();
   for(const auto& [cellNum,objPtr] : Cells)
     {
       (void) objPtr;
@@ -168,10 +175,14 @@ pointDetOpt::addTallyOpt(const int tallyN,
       (void) objPtr;
       const double D=OA.getMatSum(cellNum);
       if (D>1.0)
-	PD.setValue(cellNum,scale/D);
+	PDptr->addUnit(cellNum,scale/D);
       else
-	PD.setValue(cellNum,1.0);
+	PDptr->addUnit(cellNum,1.0);
     }
+
+  // move assignment
+  pointPTR->setPDControl(std::move(PDptr));
+
   return;
 }
 

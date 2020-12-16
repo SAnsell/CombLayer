@@ -3,7 +3,7 @@
  
  * File:   weights/ImportControl.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "FuncDataBase.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "LSwitchCard.h"
 #include "ModeCard.h"
@@ -83,7 +84,8 @@ namespace WeightSystem
 {
 
 void
-setWImp(physicsSystem::PhysicsCards& PC,const std::string& particleType)
+setWImp(physicsSystem::PhysicsCards& PC,
+	const std::string& particleType)
   /*!
     Control neutron importance for wwn/cell cards
     \param PC :: PhysicsCards
@@ -156,24 +158,19 @@ simulationImp(SimMCNP& System,
 	      const mainSystem::inputParam& IParam)
   /*!
     Control importances in individual cells
-    \param PC :: PhysicsCards
     \param System :: Simulation
     \param IParam :: input stream
    */
 {
-  ELog::RegMethod RegA("ImportControl[F]","simulationImport");
+  ELog::RegMethod RegA("ImportControl[F]","simulationImp");
 
   physicsSystem::PhysicsCards& PC=System.getPC();
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
-    {      
-      System.findObject(74123)->setImp(0);
-      PC.setCells("imp",74123,0);  // outer void to z	
-    }
-  
+    System.findObject(74123)->setImp(0);
+
   if (IParam.flag("volCard"))
-    {
-      PC.clearVolume();
-    }  
+    PC.clearVolume();
+
   return;
 }
 
@@ -253,31 +250,7 @@ FCL(const objectGroups& OGrp,
   return;
 }
 
-void
-IMP(SimMCNP& System,
-    const mainSystem::inputParam& IParam)
-  /*!
-    Control IMP card on the in individual cells
-    \param OGrp :: Object group
-    \param PC :: physics System
-    \param System :: Simulation
-    \param IParam :: input stream
-  */
-{
-  ELog::RegMethod RegA("ImportControl","IMP");
 
-  // currently only first item / get all
-
-  const size_t nSet=IParam.setCnt("wIMP");
-  if (nSet)
-    {
-      physicsSystem::IMPConstructor A;
-      for(size_t index=0;index<nSet;index++)
-        A.processUnit(System,IParam,index);
-    }
-  return;
-}
-  
 void
 SBias(const objectGroups& OGrp,
       physicsSystem::PhysicsCards& PC,

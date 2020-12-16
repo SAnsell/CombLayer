@@ -44,9 +44,8 @@ class PhysImp
  private:
   
   std::string type;                    ///< Type vol,imp etc
-  std::list<std::string> particles;    ///< Particle list (if any)
+  std::set<int> particles;             ///< Particle list [mclp]
   std::map<int,double> impNum;         ///< Scale factors etc
-  int nCutters;                        ///< number of cutter cells (0 at end)
 
  public:
 
@@ -60,29 +59,31 @@ class PhysImp
 
   /// set type
   void setType(const std::string& T) { type=T; }
-  int hasElm(const std::string&) const;
-  std::string getParticles() const;
-  const std::list<std::string>& getParticleList() const;
+  //  const std::list<std::string>& getParticleList() const;
   /// Type accessor
   const std::string& getType() const { return type; }
 
+  bool isEmpty() const { return impNum.empty(); }
+
+
   ///< Get particle count
   size_t particleCount() const { return particles.size(); }
-  bool isEmpty() const { return impNum.empty(); }
-  int removeParticle(const std::string&);
+  bool removeParticle(const std::string&);
   void setParticle(const std::string&);
+  void addParticle(const std::string&);
+  bool hasParticle(const std::string&) const;
+  std::string getParticles() const;
   
   double getValue(const int) const;
   void setValue(const int,const double);
 
-  void addElm(const std::string&);
   void setAllCells(const double =1.0);
   void setAllCells(const std::vector<int>&,const std::vector<double>&);
   void setAllCells(const std::vector<std::pair<int,int>>&);
   void setCells(const std::vector<int>&,const double =1.0);
 
   std::vector<int> getCellVector() const;
-  
+
   void updateCells(const ZoneUnit<double>&);
   void modifyCells(const std::vector<int>&,const double =1.0);
   void removeCell(const int);

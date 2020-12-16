@@ -51,6 +51,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -177,6 +178,8 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
       return ObjPtr->getMatID();
     case VISITenum::density:
       return ObjPtr->getDensity();
+    case VISITenum::imp:
+      return ObjPtr->getImp("neutron");
     case VISITenum::weight:
       return 0.0;
     }

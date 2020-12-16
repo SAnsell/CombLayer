@@ -60,6 +60,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Exception.h"
 #include "surfDivide.h"

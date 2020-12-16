@@ -68,6 +68,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"

@@ -63,6 +63,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "shutterBlock.h"
 #include "groupRange.h"

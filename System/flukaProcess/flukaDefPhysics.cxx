@@ -67,6 +67,7 @@
 #include "FixedRotate.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ObjectAddition.h"
 #include "groupRange.h"

@@ -62,6 +62,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "objectRegister.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "MaterialUpdate.h"

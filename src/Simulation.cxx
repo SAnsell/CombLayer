@@ -81,6 +81,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "weightManager.h"
@@ -595,27 +596,6 @@ Simulation::getOrderedMaterial() const
     }
 
   return orderedMat;
-}
-
-
-
-std::vector<std::pair<int,int>>
-Simulation::getCellImp() const
-  /*!
-    Now process Physics so importance/volume cards can be set.
-    \return pair of cellNumber : importance in cell 
-  */
-{
-  ELog::RegMethod RegA("Simulation","getCellImp");
-
-  std::vector<std::pair<int,int>> cellImp;
-
-  for(const auto& [cellNum,objPtr] : OList)
-    {
-      cellImp.push_back
-	(std::pair<int,int>(cellNum,(objPtr->getImp()>0 ? 1 : 0)));
-    }
-  return cellImp;
 }
 
 int

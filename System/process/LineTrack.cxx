@@ -56,6 +56,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ObjSurfMap.h"
 #include "Zaid.h"

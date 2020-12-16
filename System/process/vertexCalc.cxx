@@ -49,6 +49,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SurfVertex.h"
 #include "Line.h"

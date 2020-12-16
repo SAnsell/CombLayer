@@ -68,6 +68,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WorkData.h"
 #include "Zaid.h"

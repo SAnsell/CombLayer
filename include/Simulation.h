@@ -182,7 +182,7 @@ class Simulation : public objectGroups
   std::vector<int> getCellWithMaterial(const int) const;
   std::vector<int> getCellWithZaid(const size_t) const;
 
-  std::vector<std::pair<int,int>> getCellImp() const;            
+  std::vector<int> getCellVec() const;            
   std::set<int> getActiveMaterial() const;
   std::map<int,const MonteCarlo::Material*>
     getOrderedMaterial() const;
@@ -201,8 +201,6 @@ class Simulation : public objectGroups
   void validateObjSurfMap();
   /// Access surface map
   const ModelSupport::ObjSurfMap* getOSM() const;
-
-  // Tally processing
 
   virtual void setEnergy(const double);
   void setENDF7();

@@ -88,6 +88,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "weightManager.h"

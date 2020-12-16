@@ -67,6 +67,7 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "Debug.h"
@@ -91,7 +92,7 @@ operator<<(std::ostream& OX,const Object& A)
 Object::Object() :
   ObjName(0),listNum(-1),Tmp(300.0),
   matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
-  trcl(0),imp(1),populated(0),
+  trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
   objSurfValid(0)
    /*!
@@ -103,7 +104,7 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),
+  trcl(0),populated(0),activeMag(0),
   magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -120,7 +121,7 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),
+  trcl(0),populated(0),activeMag(0),
   magMinStep(1e-3),magMaxStep(1e-1),
   objSurfValid(0)
  /*!
@@ -364,7 +365,7 @@ Object::setObject(std::string Ln)
 	   StrFunc::convert(Value,lineTRCL) && lineTRCL>=0)  ||
 
 	  (Extract=="imp:n" && 
-	   StrFunc::convert(Value,lineTRCL) && lineIMP>=0)  )
+	   StrFunc::convert(Value,lineIMP) && lineIMP>=0)  )
 	{ } 
       else
 	throw ColErr::InvalidLine("Invalid key :: ",Extract+":"+Value);
@@ -387,7 +388,7 @@ Object::setObject(std::string Ln)
 
   setMaterial(matN);
   Tmp=lineTemp;
-  imp=lineIMP;
+  imp.setImp(static_cast<double>(lineIMP));
   trcl=lineTRCL;
 
   populated=0;
@@ -1359,7 +1360,6 @@ Object::str() const
   return cx.str();
 }
 
-
 std::string
 Object::cellStr(const std::map<int,Object*>& MList) const
   /*!
@@ -1449,7 +1449,7 @@ Object::writeFLUKAmat(std::ostream& OX) const
   cx<<"ASSIGNMAT ";
 
   const int matID=matPtr->getID();
-  if (!imp)
+  if (imp.isZero())
     cx<<"BLCKHOLE";
   else if (matID>0)
     cx<<"M"+std::to_string(matID);
@@ -1457,7 +1457,7 @@ Object::writeFLUKAmat(std::ostream& OX) const
     cx<<"VACUUM";
   
   cx<<" R"+std::to_string(ObjName);
-  if (imp && activeMag)
+  if (activeMag && !imp.isZero())
     cx<<" - - 1 ";
   
   
@@ -1523,7 +1523,7 @@ Object::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
 
   cx.precision(10);
-  if (ObjName==1 && imp==0)
+  if (ObjName==1 && !imp.isZero())
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);

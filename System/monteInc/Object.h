@@ -50,7 +50,7 @@ class Object
   double Tmp;              ///< Starting temperature (if given)
   const Material* matPtr;  ///< Material Number 
   int trcl;          ///< transform number
-  int imp;           ///< importance / 0 
+  Importance imp;           ///< importance / 0 
 
   int populated;     ///< Full population
 
@@ -105,7 +105,11 @@ class Object
   void setName(const int nx) { ObjName=nx; }           ///< Set Name 
   void setCreate(const int lx) { listNum=lx; }         ///< Set Creation point
   void setTemp(const double A) { Tmp=A; }              ///< Set temperature [Kelvin]
-  void setImp(const int A) { imp=A; }                  ///< Set imp
+
+  /// access to importance
+  void setImp(const double V) { imp.setImp(V); }
+  void setImp(const std::string& particle,const double V)
+  { imp.setImp(particle,V); }
   void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
   
   int setObject(std::string);
@@ -132,7 +136,11 @@ class Object
   
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
   double getDensity() const;                           ///< to be written
-  int getImp() const { return imp; }                   ///< Get importance
+  /// access to importance
+  double getImp(const std::string& particle) const
+  { return imp.getImp( particle); }
+  double getImp() const { return imp.getImp(); }
+  
 
   /// Return the top rule
   const Rule* topRule() const { return HRule.getTopRule(); }

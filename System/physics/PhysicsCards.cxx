@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "ModeCard.h"
-#include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 #include "PSimple.h"
@@ -60,6 +59,8 @@
 #include "ExtControl.h"
 #include "PWTControl.h"
 #include "DXTControl.h"
+#include "FCLControl.h"
+#include "ELPTControl.h"
 #include "particleConv.h"
 #include "PhysicsCards.h"
 
@@ -72,7 +73,9 @@ PhysicsCards::PhysicsCards() :
   PTRAC(new nameCard("PTRAC",0)),
   dbCard(new nameCard("dbcn",1)),
   voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
-  Volume("vol"),ExtCard(new ExtControl),
+  FCLCard(new FCLControl),
+  ExtCard(new ExtControl),
+  ELPTCard(new ELPTControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
@@ -123,9 +126,8 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   dbCard(new nameCard(*A.dbCard)),
   Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),wImpOut(A.wImpOut),printNum(A.printNum),
-  prdmp(A.prdmp),ImpCards(A.ImpCards),
+  prdmp(A.prdmp),
   PCards(),LEA(A.LEA),
-  Volume(A.Volume),
   ExtCard(new ExtControl(*A.ExtCard)),
   PWTCard(new PWTControl(*A.PWTCard)),
   DXTCard(new DXTControl(*A.DXTCard))
@@ -160,7 +162,6 @@ PhysicsCards::operator=(const PhysicsCards& A)
       voidCard=A.voidCard;
       printNum=A.printNum;
       prdmp=A.prdmp;
-      ImpCards=A.ImpCards;
       LEA=A.LEA;
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
@@ -206,7 +207,6 @@ PhysicsCards::clearAll()
   Basic.clear();
   mode.clear();
   printNum.clear();
-  ImpCards.clear();
   deletePCards();
   Volume.clear();
   RAND->reset();
@@ -251,21 +251,6 @@ PhysicsCards::hasWImpFlag(const std::string& particleType) const
   */
 {
   return (wImpOut.find(particleType) == wImpOut.end()) ? 0 : 1;
-}
-
-bool
-PhysicsCards::hasImpFlag(const std::string& particleType) const
-  /*!
-    Find the imp than are in the imp
-    \param particleType :: particle type
-    \return true if particle exists
-  */
-{
-  for(const PhysImp& PI : ImpCards)
-    if (PI.getType()=="imp" && PI.hasElm(particleType))
-      return 1;
-
-  return 0;
 }
 
 void
@@ -334,29 +319,6 @@ PhysicsCards::processCard(const std::string& Line)
       int pNum;
       while(StrFunc::section(Item,pNum))
 	printNum.push_back(pNum);
-    }
-
-  
-  pos=Comd.find("imp:");
-  if (pos!=std::string::npos)
-    {
-      Comd.erase(0,pos+4);
-      ImpCards.push_back(PhysImp("imp"));
-      // Ugly hack to get all the a,b,c,d items 
-      // since I can't think of the regular expression
-      unsigned int index;
-      for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
-	if (Comd[index]!=',')
-	  ImpCards.back().addElm(std::string(1,Comd[index]));
-      return 1;
-    }
-
-  pos=Comd.find("vol");
-  if (pos!=std::string::npos)
-    {
-      Comd.erase(0,pos+3);
-      Volume=PhysImp("vol");
-      return 1;
     }
   
   pos=Comd.find("histp");
@@ -454,74 +416,6 @@ PhysicsCards::setEnergyCut(const double E)
   return;
 }
 
-PhysImp&
-PhysicsCards::addPhysImp(const std::string& Type,
-			 const std::string& Particle,
-			 const double defValue)
-  /*!
-    Adds / returns the imporance and particle type
-    This can also separate a particular particle from 
-    a list
-    \param Type :: Type to use [imp:vol etc]
-    \param Particle :: Particle to add [n,p,e] etc
-    \param defValue :: default Value
-    \return PhysImp item
-  */
-{    
-  ELog::RegMethod RegA("PhysicsCards","addPhysImp");
-  try 
-    {
-      PhysImp& FImp=getPhysImp(Type,Particle);
-      if (FImp.particleCount()==1)
-	return FImp;
-      // remove particle so a new PhysImp can be specialised
-      FImp.removeParticle(Particle);
-      PhysImp isoPI(FImp);
-      isoPI.setParticle(Particle);
-      ImpCards.push_back(isoPI);
-      return ImpCards.back();
-    }
-  catch (ColErr::InContainerError<std::string>&)
-    { }       
-
-  // Create a new object (based on volume)
-  // use default value
-  PhysImp isoPI(Volume);
-  isoPI.setType(Type);
-  isoPI.setParticle(Particle);
-  isoPI.setAllCells(defValue);
-  ImpCards.push_back(isoPI);
-  return ImpCards.back();
-}
-
-void
-PhysicsCards::removePhysImp(const std::string& Type,
-			    const std::string& Particle)
-  /*!
-    Removes a given type/ particle  importance
-    \param Type :: Type to use [imp:vol etc]
-    \param Particle :: Particle to add [n,p,e] etc
-    \return PhysImp item
-  */
-{
-  ELog::RegMethod RegA("PhysicsCards","removePhysImp");
-  for(PhysImp& PI : ImpCards)
-    {
-      if (PI.getType()==Type)
-	PI.removeParticle(Particle);
-    }
-  // Remove singular:
-  ImpCards.erase
-    (std::remove_if
-     (ImpCards.begin(),ImpCards.end(),
-      [](const PhysImp& PI) { return PI.particleCount()==0; }),
-     ImpCards.end());
-
-  return;
-}
-
-  
-
 template<typename T>
 T*
 PhysicsCards::addPhysCard(const std::string& Key,
@@ -600,13 +494,11 @@ PhysicsCards::getPhysCard(const std::string& Key,
 
 // General All Importance
 void
-PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
-			     const std::vector<double>& impValue)
+PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo)
   /*!
     Process the list of the valid cells 
     over each importance group.
     \param cellInfo :: list of cells
-    \param impValue  :: Value of the important
   */
 
 {
@@ -617,16 +509,13 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
 				   impValue.size(),
 				   "cellInfo != impValue");
 
-  for(PhysImp& PI : ImpCards)
-    PI.setAllCells(cellInfo,impValue);
-
   Volume.setCells(cellInfo,1.0);
   return;
 }
 
 
 void
-PhysicsCards::setCellNumbers(const std::vector<std::pair<int,int>>& cellInfo)
+PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo)
 
   /*!
     Process the list of the valid cells 
@@ -636,9 +525,6 @@ PhysicsCards::setCellNumbers(const std::vector<std::pair<int,int>>& cellInfo)
 
 {
   ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
-
-  for(PhysImp& PI : ImpCards)
-    PI.setAllCells(cellInfo);  
   
   Volume.setAllCells(cellInfo);
   Volume.setAllCells(1.0);
@@ -653,7 +539,7 @@ PhysicsCards::setCells(const std::string& Type,
   /*!
     Process the list of the valid cells 
     over each importance group.
-    \param Type :: imp type (imp vol etc)
+    \param Type :: imp type (fcl etc) [not imp]
     \param cellInfo :: list of cells
     \param defValue :: default value
   */
@@ -1030,7 +916,6 @@ PhysicsCards::setMode(std::string Particles)
   return;
 }
       
-
 void
 PhysicsCards::rotateMaster()
   /*!
@@ -1234,7 +1119,8 @@ template PSimple*
 PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
 ///\endcond TEMPLATE
-  
+
+
 } // NAMESPACE physicsSystem
       
    

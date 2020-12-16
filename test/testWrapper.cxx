@@ -56,6 +56,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Surface.h"
 #include "surfIndex.h"

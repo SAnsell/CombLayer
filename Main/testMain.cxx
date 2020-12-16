@@ -78,6 +78,7 @@
 #include "EllipticCyl.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Convex.h"
 #include "Vert2D.h"

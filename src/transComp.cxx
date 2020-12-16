@@ -51,6 +51,7 @@
 #include "Plane.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "transComp.h"
 

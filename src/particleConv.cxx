@@ -389,6 +389,18 @@ particleConv::mcplToFLUKA(const int ID) const
  
 
 const std::string&
+particleConv::mcplToMCNP(const int particleIndex) const
+  /*!
+    Get MCNP name base on particle index (mcpl)
+    \param particleIndex :: mcpl index to find
+    \return mcnp name
+  */
+{
+  const pName& PN = getMCPLPItem(particleIndex);
+  return PN.mcnpName;
+}
+
+const std::string&
 particleConv::nameToMCNP(const std::string& particleName) const
   /*!
     Get MCNP name base on particle name

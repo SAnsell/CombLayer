@@ -66,6 +66,7 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

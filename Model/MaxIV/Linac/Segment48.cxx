@@ -42,6 +42,7 @@
 #include "LinkUnit.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Importance.h"
 #include "Object.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"

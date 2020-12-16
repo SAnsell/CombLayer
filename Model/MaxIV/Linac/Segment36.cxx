@@ -63,6 +63,7 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "VacuumPipe.h"

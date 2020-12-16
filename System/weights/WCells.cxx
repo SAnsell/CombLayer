@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "cellValueSet.h"
 #include "WForm.h"

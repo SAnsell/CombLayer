@@ -50,6 +50,7 @@
 #include "surfRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "varList.h"
 #include "Code.h"

@@ -49,6 +49,7 @@
 #include "BnId.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ObjSurfMap.h"
 #include "groupRange.h"

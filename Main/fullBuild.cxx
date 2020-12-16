@@ -62,6 +62,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "DefPhysics.h"
 #include "MainProcess.h"

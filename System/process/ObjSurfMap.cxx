@@ -46,6 +46,7 @@
 #include "Vec3D.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Surface.h"
 #include "Quadratic.h"

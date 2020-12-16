@@ -58,6 +58,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"

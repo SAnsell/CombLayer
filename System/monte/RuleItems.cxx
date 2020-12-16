@@ -48,6 +48,7 @@
 #include "Rules.h"
 #include "Token.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 
 

@@ -84,6 +84,7 @@
 #include "Rules.h"
 #include "Track.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Zaid.h"
 #include "MXcards.h"

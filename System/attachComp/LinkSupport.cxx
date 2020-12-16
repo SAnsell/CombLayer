@@ -48,6 +48,7 @@
 #include "support.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfRegister.h"
 #include "objectRegister.h"

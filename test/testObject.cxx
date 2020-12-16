@@ -56,6 +56,7 @@
 #include "Algebra.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "particle.h"
 #include "eTrack.h"

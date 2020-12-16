@@ -67,6 +67,7 @@
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "InjectionHall.h"

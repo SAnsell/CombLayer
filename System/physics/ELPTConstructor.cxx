@@ -3,7 +3,7 @@
  
  * File:   physics/ELPTConstructor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Line.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
@@ -78,13 +77,13 @@
 #include "SimMCNP.h"
 #include "inputParam.h"
 #include "ModeCard.h"
-#include "PhysImp.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
 #include "PhysicsCards.h"
 #include "ZoneUnit.h"
+#include "ELPTControl.h"
 #include "ELPTConstructor.h" 
 
 
@@ -140,6 +139,7 @@ ELPTConstructor::processUnit(SimMCNP& System,
   ZUnits.addData(ECutValue);
   ZUnits.sortZone();
 
+  
   physicsSystem::PhysImp& ECImp=PC.addPhysImp("elpt",particleStr);
   
   // care here : ECImp coule be a new particle value
