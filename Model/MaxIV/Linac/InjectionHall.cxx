@@ -624,23 +624,23 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6004 -6103 5 -6 ");
-  makeCell("C080016Maze",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("C080016MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6211 6004 -6013 5 -6 ");
-  makeCell("C080016MidMazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6212 6004 -6014 5 -6 ");
-  makeCell("C080016MidMazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6004 -6014 5 -6 ");
-  makeCell("C080016MidMazeWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("C080016MazeBack",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6112 6014 -6013 5 -6 ");
-  makeCell("C080016MidMazeWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("C080016Maze",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6013 -6103 5 -6106 ");
@@ -659,8 +659,8 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("C080016MazeBackWallVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6121 -6122 6014 -6103 5 -6 ");
-  makeCell("C080016MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
+  				 "6121 -6122 6014 -6113 5 -6 ");
+  makeCell("C08MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6122 -12 223 -1004 5 -6 ");
@@ -668,11 +668,11 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "12 -2 223 -104 5 -6 ");
-  makeCell("InjectionHallBack",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // FemtoMAX/BSP01 wall
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "22 -6122 6103 -6104 5 -6 ");
+  				 "22 -6121 6103 -6104 5 -6 ");
   makeCell("BSP01Wall",System,cellIndex++,wallMat,0.0,Out);
 
   // BSP01 beamline area
@@ -682,7 +682,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6201 -6101 6104 -6113 5 -6 ");
-  makeCell("C080017IronWall",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080017BackWallIron",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6101 -6102 6104 -6113 5 -6 ");
@@ -694,7 +694,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6102 -6111 6104 -1003 5 -6 ");
-  makeCell("C080017Maze",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6111 -6112 6104 -6114 5 -6106 ");
@@ -714,7 +714,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6113 -1003 5 -6 ");
-  makeCell("C080017Maze",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("C080017MazeBack",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211 -6112 6114 -6113 5 -6 ");
@@ -722,11 +722,11 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6112 -6121 6104 -1004 5 -6 ");
-  makeCell("C080017Maze",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("C080017MazeVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-  				 "6121 -6122 6104 -6113 5 -6 ");
-  makeCell("C080017MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex,SI,
+  // 				 "6121 -6122 6104 -6113 5 -6 ");
+  // makeCell("C080017MazeBackWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6121 -6122 6113 -1004 5 -6 ");
@@ -734,13 +734,13 @@ InjectionHall::createObjects(Simulation& System)
 
   //OUTER WALLS:
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -201 -3 13 5 -6");
-  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 -203 213 5 -6");
-  makeCell("SPFWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 211 -7001 233 -223 5 -6");
-  makeCell("LongWallBeforeMaze",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // SPF hall access maze (room C080011)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7001 -31 7013 -223 5 -6");
@@ -756,29 +756,29 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7001 7023  -233 5 -6");
-  makeCell("SPFMazeTDCWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -7002 7013 -223 5 -6");
   makeCell("SPFMazeSPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7012 7023 -7113 5 -6");
-  makeCell("SPFMazeSPFWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 7023 -233 6 -16 ");
-  makeCell("SPFMazeRoof",System,cellIndex++,roofMat,0.0,Out);
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7011 -7012 53 -7023 6 -16 ");
   makeCell("SPFMazeRoofVoid",System,cellIndex++,voidMat,0.0,Out);
 
   // SPF concrete door parking space (room C080012)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7002 -7101 7113 -223 5 -6");
-  makeCell("ParkingFrontWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SPFMazeSideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113  -233 5 -6");
   makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7202 -7103 7113 5 -6");
-  makeCell("ParkingSideWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7101 -7102 -223 7103 5 -6");
   makeCell("C080012",System,cellIndex++,voidMat,0.0,Out);
@@ -800,35 +800,33 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFEmergencyExitDoorRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7202 -7211 7113 -223 5 -6");
-  makeCell("SPFEmergencyExitWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 7113 -233 6 -16 ");
-  makeCell("SPFEmergencyExitRoof",System,cellIndex++,roofMat,0.0,Out);
+  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7012 -7211 53 -7113 6 -16 ");
   makeCell("SPFEmergencyExitRoofVoid",System,cellIndex++,voidMat,0.0,Out);
 
-
-
   Out=ModelSupport::getComposite(SMap,buildIndex," 7211 -2   233 -223 5 -6");
-  makeCell("LongWallAfterMaze",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -111 4 -14 5 -6");
-  makeCell("RightWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -111 14 -114 5 -6");
-  makeCell("CutWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -2 104 -114 5 -6");
-  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
   // Klystrong divivde
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
-  makeCell("KlystronDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("NewKlystronDoorVoid",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
-  makeCell("KlystronDoorWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("NewKlystronDoorWall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
-  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("NewKlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   // OUTER VOIDS:
 
@@ -910,10 +908,11 @@ InjectionHall::createObjects(Simulation& System)
 
   // KLYSTRONG WALLS
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
-  makeCell("KystronVoid",System,cellIndex++,voidMat,0.0,Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1 3 -3002 -3004 (3001:3014) 5 -6");
-  makeCell("KystronWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -3001 3014 -3004 5 -6");
+  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3001 -3002 3 -3004 5 -6");
+  makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,Out);
 
   // Pillars
   for (size_t i=0; i<nPillars; ++i)
@@ -945,6 +944,26 @@ InjectionHall::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+1004),
 	       -SMap.realSurf(buildIndex+7403),
 	       btgNLayers);
+
+  layerProcess(System,"C080016BackWall",
+	       SMap.realSurf(buildIndex+6101),
+	       -SMap.realSurf(buildIndex+6102),
+	       btgNLayers);
+
+  layerProcess(System,"C080016Maze",
+  	       SMap.realSurf(buildIndex+6211),
+  	       -SMap.realSurf(buildIndex+6112),
+  	       btgNLayers);
+
+  layerProcess(System,"C080017BackWall",
+	       SMap.realSurf(buildIndex+6101),
+	       -SMap.realSurf(buildIndex+6102),
+	       btgNLayers);
+
+  layerProcess(System,"C080017Maze",
+  	       SMap.realSurf(buildIndex+6211),
+  	       -SMap.realSurf(buildIndex+6112),
+  	       btgNLayers);
 
 
   return;
