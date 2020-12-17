@@ -48,29 +48,52 @@
 #include "MapSupport.h"
 #include "MapRange.h"
 #include "ZoneUnit.h"
+#include "PhysicsCardFunctions.h"
 
 #include "PhysImp.h"
 
 namespace physicsSystem
 {
 
-PhysImp::PhysImp() :
-  type("None")
-  /*!
-    Constructor
-  */
-{}
 
 PhysImp::PhysImp(const std::string& TP) :
-  type(TP)
+  fullName(TP),type(TP),defFlag(0),defValue(0.0)
   /*!
     Constructor with Type
     \param TP :: Type identifier
   */
 {}
 
+PhysImp::PhysImp(const std::string& TP,
+		 const std::string& particleList) :
+  type(TP),defFlag(0),defValue(0.0)
+  /*!
+    Constructor with Type
+    \param TP :: Type identifier
+  */
+{
+  setParticles(particleList);
+  fullName=type+getParticles();
+}
+
+PhysImp::PhysImp(const std::string& TP,
+		 const std::string& particleList,
+		 const double V) :
+  type(TP),defFlag(1),defValue(V)
+  /*!
+    Constructor with Type
+    \param TP :: Type identifier
+  */
+{
+  setParticles(particleList);
+  fullName=type+getParticles();
+}
+
 PhysImp::PhysImp(const PhysImp& A) :
-  type(A.type),particles(A.particles),
+  fullName(A.fullName),type(A.type),
+  defFlag(A.defFlag),
+  defValue(A.defValue),
+  particles(A.particles),
   impNum(A.impNum)
   /*!
     Copy Constructor
@@ -88,7 +111,10 @@ PhysImp::operator=(const PhysImp& A)
 {
   if (this!=&A)
     {
+      fullName=A.fullName;
       type=A.type;
+      defFlag=A.defFlag;
+      defValue=A.defValue;
       particles=A.particles;
       impNum=A.impNum;
     }
@@ -101,18 +127,37 @@ PhysImp::~PhysImp()
   */
 {}
 
-
-std::vector<int>
-PhysImp::getCellVector() const
+size_t
+PhysImp::commonParticles(const PhysImp& A) const
   /*!
-    Accessor to cells
-    \return list of cells
+    Given a particle list between two PhysImp. Count
+    the number of common particles
+    \return number of common particles						
+   */
+{
+  ELog::RegMethod RegA("PhysImp","commonParticles");
+  
+  size_t cnt(0);
+  for(const int PN : particles)
+    {
+      if (A.particles.find(PN)!=A.particles.end())
+	cnt++;
+    }
+  return cnt;
+}
+
+void
+PhysImp::copyValues(const PhysImp& A)
+  /*!
+    Copy over the values
+    \param A :: PhysImp to copy values from
   */
 {
-  std::vector<int> Out;
-  for(const std::map<int,double>::value_type& MC : impNum)
-    Out.push_back(MC.first);
-  return Out;
+  if (&A!=this)
+    {
+      impNum=A.impNum;
+    }
+  return;
 }
   
 void
@@ -127,7 +172,7 @@ PhysImp::clear()
 }
 
 void
-PhysImp::setValue(const int ID,const double value)
+PhysImp::setCell(const int ID,const double value)
   /*!
     Set a special interest in a cell ID
     The existance of the cell is only 
@@ -140,32 +185,49 @@ PhysImp::setValue(const int ID,const double value)
   return;
 }
 
-void
-PhysImp::setAllCells(const double value)
-  /*!
-    Set a special interest in a cell ID
-    The existance of the cell is only 
-    checked at the write out stage.
-    \param value :: new value
-  */
+
+std::string
+PhysImp::getParticles() const
+ /*!
+   Get the particle list as an mcnp name
+   \return particle ist
+ */
 {
-  std::map<int,double>::iterator mc;
-  for(mc=impNum.begin();mc!=impNum.end();mc++)
-    mc->second=value;
-  return;
+  ELog::RegMethod RegA("PhysImp","getParticle");
+
+  const particleConv& pConv=particleConv::Instance();
+
+  std::string separator;
+  std::ostringstream cx;
+  for(const int pIndex : particles)
+    {
+      const std::string mcnpPart=
+	pConv.mcplToMCNP(pIndex);
+      cx<<separator<<mcnpPart;
+      separator=",";
+    }
+  return cx.str();
 }
 
 void
-PhysImp::setParticle(const std::string& P)
+PhysImp::setParticles(const std::string& P)
  /*!
    Set the particles to be just P
-   \param P :: PArticle 
+   \param P :: Particle 
  */
 {
   ELog::RegMethod RegA("PhysImp","setParticle");
-  const int index=particleConv::Instance().mcplITYP(P);
+
   particles.clear();
-  particles.emplace(index);
+
+  const particleConv& pConv=particleConv::Instance();
+  std::string Line(P);
+  std::string item;
+  while(StrFunc::section(Line,item))
+    {
+      const int index=pConv.mcplITYP(item);
+      particles.emplace(index);
+    }
   return;
 }
 
@@ -203,6 +265,29 @@ PhysImp::hasParticle(const std::string& E) const
 }
 
 bool
+PhysImp::removeParticle(const PhysImp& A)
+  /*!
+    The particles using the particles from A
+    \param PT :: Particle type
+    \return 1 :: success (or zero for failure)    
+   */
+{
+  ELog::RegMethod RegA("PhysImp","removeParticle(PhysImp)");
+
+  size_t outFlag(0);
+  for(const int pIndex : A.particles)
+    outFlag+=particles.erase(pIndex);
+
+  if (outFlag)
+    {
+      fullName=type+getParticles();
+      return 1;
+    }
+  
+  return 0;
+}
+
+bool
 PhysImp::removeParticle(const std::string& PT)
   /*!
     Removes a particle type
@@ -215,33 +300,12 @@ PhysImp::removeParticle(const std::string& PT)
 
   const int index=particleConv::Instance().mcplITYP(PT);
   
-  std::set<int>::iterator vc=
-    particles.find(index);
+  std::set<int>::iterator vc= particles.find(index);
   if (vc==particles.end()) return 0;
   particles.erase(vc);
   return 1;
 }
 
-std::string
-PhysImp::getParticles() const
-  /*!
-    Convert the particle list to a string [MCNP style]
-    \return particle list as a comma separated list
-  */
-{
-  ELog::RegMethod RegA("PhysImp","getParticles");
-  
-  if (particles.empty()) return "";
-  const particleConv& pConv=particleConv::Instance();
-  
-  std::ostringstream cx;
-  for(const int pIndex : particles)
-    cx<<pConv.mcplToMCNP(pIndex)<<",";
-  
-  std::string Out(cx.str());
-  Out.pop_back();
-  return Out;
-}
   
 void
 PhysImp::removeCell(const int ID)
@@ -300,72 +364,6 @@ PhysImp::updateCells(const ZoneUnit<double>& ZU)
   return;
 }
 
-
-void
-PhysImp::setCells(const std::vector<int>& cellOrder,
-		  const double defValue)
-  /*!
-    Process the ordered list of the cells.
-    If the cell number does not exists a default value
-    of 1 is added.
-    \param cellOrder :: list of cells
-    \param defValue :: default value to use (set to 1.0)
-  */
-{
-  std::vector<int>::const_iterator vc;
-  std::map<int,double>::const_iterator ac;
-  std::map<int,double> nMap;
-  for(vc=cellOrder.begin();vc!=cellOrder.end();vc++)
-    {
-      ac=impNum.find(*vc);
-      nMap[*vc]=(ac!=impNum.end()) ? ac->second : defValue;
-    }
-  impNum=nMap;
-  return;
-}
-
-void
-PhysImp::setAllCells(const std::vector<int>& cellOrder,
-		     const std::vector<double>& impValue)
-  /*!
-    Process the ordered list of the cells.
-    If the cell number does not exists a default value
-    of 1 is added.
-    \param cellOrder :: list of cells
-    \param impValue :: list of importance values
-  */
-{
-  std::vector<double>::const_iterator ic;
-  std::map<int,double> nMap;
-
-  ic=impValue.begin();
-  for(const int cIndex : cellOrder)
-    {
-      nMap.emplace(cIndex,*ic++);
-    }
-  impNum=nMap;
-  return;
-}
-
-void
-PhysImp::setAllCells(const std::vector<std::pair<int,int>>& cellImp)
-  /*!
-    Process the ordered list of the cells.
-    If the cell number does not exists a default value
-    of 1 is added.
-    \param cellImp :: list of cells / 0:1 flag on importance
-  */
-{
-  std::map<int,double> newMap;
-  for(const std::pair<int,int>& cIndex : cellImp)
-    newMap.emplace(cIndex.first,static_cast<double>(cIndex.second));
-
-  impNum=newMap;
-  return;
-}
-
-
-
 double
 PhysImp::getValue(const int cellN) const
   /*!
@@ -380,6 +378,17 @@ PhysImp::getValue(const int cellN) const
   if (mc==impNum.end())
     throw ColErr::InContainerError<int>(cellN,"PhysImp::getValue");
   return mc->second;
+}
+
+void
+PhysImp::setValue(const int cellN,const double V) 
+  /*!
+    Get the Value  for a given cell.
+    \param cellN :: cell number to find
+   */
+{
+  impNum[cellN]=V;
+  return;
 }
 
 void
@@ -422,38 +431,16 @@ PhysImp::write(std::ostream& OX,
   */
 {
   ELog::RegMethod RegA("PhysImp","write");
-
-  const particleConv& pConv=particleConv::Instance();
   
   std::map<int,double>::const_iterator vc;
 
-  std::set<int> exclude;
-  for(const std::string& eP : excludeParticles)
-    exclude.emplace(pConv.mcplITYP(eP));
-  
   if (!impNum.empty())
     {
+      const std::string pList=getMCNPparticleList
+	(particles,excludeParticles);
+      
       std::ostringstream cx;
-      cx<<type;
-      // Write out imp:n,x list
-      if (!particles.empty())
-        {
-	  char separator(':');
-	  for(const int pIndex : particles)
-	    {
-	      if (exclude.find(pIndex)==exclude.end())
-		{
-		  const std::string mcnpPart=
-		    pConv.mcplToMCNP(pIndex);
-		  cx<<separator<<mcnpPart;
-		  separator=',';
-		}
-	    }
-	  // no work to do
-	  if (separator==':')
-	    return;
-	}
-      cx<<" ";
+      cx<<type<<pList;
 
       NRange A;
       std::vector<double> Index;
@@ -461,8 +448,15 @@ PhysImp::write(std::ostream& OX,
 	{
 	  vc=impNum.find(CN);
 	  if (vc==impNum.end())
-	    throw ColErr::InContainerError<int>(CN,"Cellnumber in i,pNum");
-	  Index.push_back(vc->second);
+	    {
+	      if (!defFlag)
+		throw ColErr::InContainerError<int>(CN,"Cellnumber in i,pNum");
+	      Index.push_back(defValue);
+	    }
+	  else
+	    {
+	      Index.push_back(vc->second);
+	    }
 	}
 
       A.setVector(Index);

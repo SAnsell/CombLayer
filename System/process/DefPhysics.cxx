@@ -516,13 +516,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
 	ModelSupport::getActiveCell(System,type);
       
       for(const int CN : cells)
-	{
-	  MonteCarlo::Object* oPtr=
-	    System.findObject(CN);
-	  /// need a way to fix stuff for MCNP/FLUKA using double
-	  if (oPtr)
-	    oPtr->setImp(static_cast<int>(impValue)) ;
-	}
+	System.setImp(CN,impValue);
     }
   return;
 }
@@ -545,11 +539,7 @@ setGenericPhysics(SimMCNP& System,
   setPhysicsModel(lea,PModel);
   const std::vector<int> cellVec=System.getCellVector();
 
-  PC.setCellNumbers(cellVec);
-
-
-  PC.setCells("imp",1,0);            // Set a zero cell 
-
+  System.setImp(1,0);
 
   return;
 }

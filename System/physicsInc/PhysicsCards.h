@@ -35,16 +35,13 @@ namespace SDef
 */
 
 namespace physicsSystem
-{
-  // funtions
-  std::string getMCNPparticleList(const std::set<int>&);
-  
+{  
   class dbcnCard;
   class nameCard;
   class ExtControl;
   class PWTControl;
-  class FCLControl;
   class DXTControl;
+  class PhysImp;
   
 /*!
   \class PhysicsCards
@@ -80,13 +77,15 @@ class PhysicsCards
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysCard*> PCards;          ///< Physics cards
+  std::vector<PhysImp*> PImpVec;          ///< Map of PhysImp cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
   std::unique_ptr<PWTControl> PWTCard;    ///< Photon Weight
-  std::unique_ptr<DXTControl> DXTCard;    ///< Dxtran spheres
+  std::unique_ptr<DXTControl> DXTCard;    ///< Dxtran spheres [move to tally]
   
   void deletePCards();
+  void deletePhysImp();
     
  public:
    
@@ -100,19 +99,9 @@ class PhysicsCards
   void addHistpCells(const std::vector<int>&);
   void clearHistpCells(); 
 
-  // ALL systems setup
-  void setCellNumbers(const std::vector<int>&);
-
   // General [All particles] :
-  void setCells(const std::string&,const std::vector<int>&,const double =1.0);
-  void setCells(const std::string&,const int,const double);
-  // Particle+Type
-  void setCells(const std::string&,const std::string&,
-		const int, const double);
   double getValue(const std::string&,const std::string&,const int) const;
 
-  void isolateCell(const std::string&,const std::string&);
-  
   /// Get Mode card
   ModeCard& getMode() { return mode; }
   /// Get LEA card
@@ -134,6 +123,17 @@ class PhysicsCards
   PWTControl& getPWTCard() { return *PWTCard; }
   /// Access DXTControl card
   DXTControl& getDXTCard() { return *DXTCard; }
+  /// Access DXTControl card
+  
+  PhysImp& getPhysImp(const std::string&);
+  PhysImp& getPhysImp(const std::string&,const std::string&);
+  PhysImp& getPhysImp(const std::string&,const std::string&,const double);
+  PhysImp& getPhysImp(const std::string&,const std::set<int>&);
+  PhysImp& getPhysImp(const std::string&,const std::set<int>&,const double);
+  const PhysImp& getPhysImp(const std::string&) const;
+  const PhysImp& getPhysImp(const std::string&,const std::string&) const;
+  const PhysImp& getPhysImp(const std::string&,const std::set<int>&) const;
+  
   /// Access to NPS
   size_t getNPS() const { return nps; }     
   // ALL Particle/Type
@@ -143,9 +143,6 @@ class PhysicsCards
   /// set MCNP version
   void setMCNPversion(const int V) { mcnpVersion=V;} 
   // Special for type: vol
-  void setVolume(const std::vector<int>&,const double =1.0);
-  void setVolume(const int,const double);
-  void clearVolume();
   
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);

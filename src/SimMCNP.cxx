@@ -639,6 +639,29 @@ SimMCNP::writePhysics(std::ostream& OX) const
 }
 
 
+void
+SimMCNP::writeImportance(std::ostream& OX) const
+  /*!
+    Write all the importances / voluems
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimMCNP","writePhysics");
+
+  std::ostringstream cx;
+  cx<<"vol 1.0 "<<cellOutOrder.size()-1<<"r";
+  StrFunc::writeMCNPX(cx.str(),OX);  
+
+  ELog::EM<<"Need something for object importances"<<ELog::endCrit;
+
+  NRange A;
+  for(const int CN : cellOutOrder)
+    {
+      
+  return;
+}
+
+
 void 
 SimMCNP::writeCinder() const
   /*!
@@ -697,6 +720,7 @@ SimMCNP::write(const std::string& Fname) const
   writeWeights(OX);
   writeTally(OX);
   writeSource(OX);
+  writeImportance(OX);
   writePhysics(OX);
   OX.close();
   return;

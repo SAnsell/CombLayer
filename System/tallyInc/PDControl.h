@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ExtConstructor.h
+ * File:   tallyInc/PDControl.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,52 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_ExtConstructor_h
-#define physicsSystem_ExtConstructor_h
+#ifndef tallySystem_PDControl_h
+#define tallySystem_PDControl_h
 
-namespace attachSystem
+namespace tallySystem
 {
-  class FixedComp;
-}
-
-
-class Simulation;
-
-namespace physicsSystem
-{
-  class ExtControl;
-  
 /*!
-  \class ExtConstructor
+  \class PDControl 
+  \version 1.0
+  \date June 2006
   \version 1.0
   \author S. Ansell
-  \date May 2015
-  \brief Processes and method of producing Ext card input
-
+  \brief Holds imp cards
+  
+  Holds any card which indexes.
+  Has a particle list ie imp:n,h nad
+  a cell mapping to number. The map is ordered
+  prior to being written.
 */
 
-class ExtConstructor 
+class PDControl
 {
  private:
 
-  ZoneUnit<double> ZUnits;   ///< Units of EXT scaling
+  const int tallyNumber;                 ///< Tally number
+  std::map<int,double> pdFactor;         ///< Scale factors etc
 
-  bool procType(const objectGroups&,std::vector<std::string>&,ExtControl&);
-  
-  void writeHelp(std::ostream&) const;
-    
  public:
 
-  ExtConstructor();
-  ExtConstructor(const ExtConstructor&);
-  ExtConstructor& operator=(const ExtConstructor&);
-  ~ExtConstructor() {}  ///< Destructor
+  PDControl(const int);
+  PDControl(const PDControl&);
+  PDControl& operator=(const PDControl&);
+  ~PDControl();
 
-  void processUnit(SimMCNP&,const mainSystem::inputParam&,
-		   const size_t);
+  void clear();
+
+  void setImp(const int,const double);
+  void renumberCell(const int,const int);
+
+  void write(std::ostream&) const;
+  
 };
 
 }
 
 #endif
- 

@@ -59,8 +59,7 @@
 #include "ExtControl.h"
 #include "PWTControl.h"
 #include "DXTControl.h"
-#include "FCLControl.h"
-#include "ELPTControl.h"
+#include "PhysImp.h"
 #include "particleConv.h"
 #include "PhysicsCards.h"
 
@@ -73,9 +72,7 @@ PhysicsCards::PhysicsCards() :
   PTRAC(new nameCard("PTRAC",0)),
   dbCard(new nameCard("dbcn",1)),
   voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
-  FCLCard(new FCLControl),
   ExtCard(new ExtControl),
-  ELPTCard(new ELPTControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
@@ -163,10 +160,13 @@ PhysicsCards::operator=(const PhysicsCards& A)
       printNum=A.printNum;
       prdmp=A.prdmp;
       LEA=A.LEA;
-      Volume=A.Volume;
       *ExtCard= *A.ExtCard;
       *PWTCard= *A.PWTCard;
       *DXTCard= *A.DXTCard;
+      
+      deletePhysImp();
+      for(const PhysImp* PI : A.PImpVec)
+	PImpVec.push_back(new PhysImp(*PI));      
 
       deletePCards();
       for(const PhysCard* PC : A.PCards)
@@ -182,6 +182,7 @@ PhysicsCards::~PhysicsCards()
     Destructor
   */
 {
+  deletePhysImp();
   deletePCards();
 }
 
@@ -196,6 +197,18 @@ PhysicsCards::deletePCards()
   PCards.clear();
   return;
 }
+
+void
+PhysicsCards::deletePhysImp()
+  /*!
+    Delete the memory
+  */
+{
+  for(PhysImp* PI : PImpVec)
+    delete PI;
+  PImpVec.clear();
+  return;
+}
   
 void
 PhysicsCards::clearAll()
@@ -208,12 +221,13 @@ PhysicsCards::clearAll()
   mode.clear();
   printNum.clear();
   deletePCards();
-  Volume.clear();
+  deletePhysImp();
   RAND->reset();
   PTRAC->reset();
   dbCard->reset();
   ExtCard->clear();
   PWTCard->clear();
+  DXTCard->clear();
   return;
 }
 
@@ -492,157 +506,74 @@ PhysicsCards::getPhysCard(const std::string& Key,
     (Key+":"+particle,"PhysCard search");
 }
 
-// General All Importance
-void
-PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo)
-  /*!
-    Process the list of the valid cells 
-    over each importance group.
-    \param cellInfo :: list of cells
-  */
-
-{
-  ELog::RegMethod RegA("PhysicsCards","setCellNumbers<Vec>");
-  
-  if(cellInfo.size()!=impValue.size())
-    throw ColErr::MisMatch<size_t>(cellInfo.size(),
-				   impValue.size(),
-				   "cellInfo != impValue");
-
-  Volume.setCells(cellInfo,1.0);
-  return;
-}
-
-
-void
-PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo)
-
-  /*!
-    Process the list of the valid cells 
-    over each importance group.
-    \param cellInfo :: list of cells/importance
-  */
-
-{
-  ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
-  
-  Volume.setAllCells(cellInfo);
-  Volume.setAllCells(1.0);
-  return;
-}
-
-// General object [All Particles]:
-void
-PhysicsCards::setCells(const std::string& Type,
-		       const std::vector<int>& cellInfo,
-		       const double defValue)
-  /*!
-    Process the list of the valid cells 
-    over each importance group.
-    \param Type :: imp type (fcl etc) [not imp]
-    \param cellInfo :: list of cells
-    \param defValue :: default value
-  */
-
-{
-  ELog::RegMethod RegA("PhysicsCards","setCells");
-
-  for(PhysImp& PI : ImpCards)
-      {
-	if (PI.getType()==Type)
-          PI.setCells(cellInfo,defValue);
-      }    
-  return;
-}
 
 // General object [All Particles]:
 
-void
-PhysicsCards::setCells(const std::string& Type,
-		       const int cellID,
-		       const double defValue)
+PhysImp&
+PhysicsCards::getPhysImp(const std::string& piType,
+			 const std::string& particleList,
+			 const double defValue)
   /*!
-    Process the list of the valid cells 
-    over each importance group.
-    \param Type :: imp type (imp vol etc)
-    \param cellID :: Cell number
-    \param defValue :: default value
-  */
+    Construct a PhysImp card based on type/particle list
+    \param piType :: PhysImp type
+    \param particleList :: ParticleList
+   */
 {
-  ELog::RegMethod RegA("PhysicsCards","setCells");
-  
-  for(PhysImp& PI : ImpCards)
+  PhysImp& PImp=getPhysImp(piType,particleList);
+  PImp.setDefValue(defValue);
+  return PImp;
+}
+
+
+PhysImp&
+PhysicsCards::getPhysImp(const std::string& piType,
+			 const std::string& particleList)
+  /*!
+    Construct a PhysImp card based on type/particle list
+    \param piType :: PhysImp type
+    \param particleList :: ParticleList
+   */
+{
+  ELog::RegMethod RegA("PhysicsCards","getPhysImp(s,s)");
+
+  // calculate the PhysImp to get the keyname [ugly but works]
+  std::unique_ptr<PhysImp> PIptr(new PhysImp(piType,particleList));
+
+  PhysImp* PMatch(nullptr);
+  for(PhysImp* currentPI : PImpVec)
     {
-      if (PI.getType()==Type)
-        {
-          PI.setValue(cellID,defValue);
-        }
-    }    
-  return;
+      if (piType==currentPI->getType())
+	{
+	  // full match
+	  if (PIptr->getName()==currentPI->getName())
+	    return *currentPI;
+
+	  if (currentPI->commonParticles(*PIptr))
+	    {
+	      if (PMatch)
+		throw ColErr::InContainerError<std::string>
+		  (PIptr->getName()+":"+PMatch->getName(),"Overlap");
+
+	      PMatch=currentPI;
+	    }
+	}
+    }
+
+  // We had ONE match (but not exact so at least one particle left)
+  if (PMatch)
+    {  
+      PMatch->removeParticle(*PIptr);
+      PIptr->copyValues(*PMatch);
+    }
+  
+  PImpVec.push_back(PIptr.release());
+  return *(PImpVec.back());
 }
 
 
 // Specific : Particle + Type
 
-void
-PhysicsCards::isolateCell(const std::string& Type,
-			  const std::string& Particle)
-  /*!
-    Build a PhysImp card for a given particle 
-    If it already exists as a equal value then remove
-    \param Type :: imp type (vol/imp)
-    \param Particle :: particle naem
-  */
-{
-  ELog::RegMethod RegA("PhysicsCards","isolateCells");
-
-  for(PhysImp& PI : ImpCards)
-    {
-      if (PI.getType()==Type &&
-	  PI.hasElm(Particle))
-	{
-	  if (PI.particleCount()!=1)
-	    {
-	      PhysImp isoPI(PI);
-	      isoPI.setParticle(Particle);
-	      PI.removeParticle(Particle);
-	      ImpCards.push_back(isoPI);
-	    }
-	  return;
-	}
-    }
-  throw ColErr::InContainerError<std::string>(Particle+":"+Type,
-					      "Particle not in list");
-}
   
-void
-PhysicsCards::setCells(const std::string& Type,
-		       const std::string& Particle,
-		       const int cellID,const double V)
-  /*!
-    Sets the value of a particular cell and type
-    \param Type :: type of physics card
-    \param Particle :: particle list 
-    \param cellID :: the particular cell number to set
-    \param V :: New importance value  
-  */
-{
-  ELog::RegMethod RegA("PhysicsCards","setCells(string,string,int,double)");
-
-  for(PhysImp& PI : ImpCards)
-    {
-      if (PI.getType()==Type &&
-	  PI.hasElm(Particle))
-	{
-	  PI.setValue(cellID,V);
-	  return;
-	}
-    }    
-
-  throw ColErr::InContainerError<std::string>(Type+"/"+Particle,
-				 "Type/Particle");
-}
-
 void
 PhysicsCards::removeCell(const int Index)
   /*!
@@ -652,8 +583,8 @@ PhysicsCards::removeCell(const int Index)
 {
   ELog::RegMethod RegA("PhysicsCards","removeCell");
   
-  for(PhysImp& PI : ImpCards)
-    PI.removeCell(Index);
+  for(PhysImp* PI : PImpVec)
+    PI->removeCell(Index);
   return;
 }
 
@@ -674,31 +605,6 @@ PhysicsCards::getValue(const std::string& Type,
   return AP.getValue(cellID);
 }
 
-PhysImp&
-PhysicsCards::getPhysImp(const std::string& Type,
-			 const std::string& particle)
-  /*!
-    Return the PhysImp for a particle type
-    \param Type :: Importance type
-    \param particle :: particular particle (in list)
-    \throw InContainerError if pType is not found
-    \return importance of the cell
-  */
-{
-
-  ELog::RegMethod RegA("PhysicsCards","getPhysImp");
-
-  for(PhysImp& PI : ImpCards)
-    {
-      if (PI.getType()==Type &&
-	  PI.hasElm(particle))
-	return PI;
-    }
-  throw ColErr::InContainerError<std::string>
-        (Type+"/"+particle,"type/particle not found");
-}
-
-
 const PhysImp&
 PhysicsCards::getPhysImp(const std::string& Type,
 			 const std::string& particle) const
@@ -712,53 +618,16 @@ PhysicsCards::getPhysImp(const std::string& Type,
 {
   ELog::RegMethod RegA("PhysicsCards","getPhysImp(const)");
     
-  for(const PhysImp& PI : ImpCards)
+  for(const PhysImp* PI : PImpVec)
     {
-      if (PI.getType()==Type &&
-	  PI.hasElm(particle))
-	return PI;
+      if (PI->getType()==Type &&
+	  PI->hasParticle(particle))
+	return *PI;
     }
   
   throw ColErr::InContainerError<std::string>
     (Type+"/"+particle,"type/particle not found");
 }
-
-void
-PhysicsCards::clearVolume()
-  /*!
-    Remove the volume card
-  */
-{
-  Volume.clear();
-  return;
-}
-
-void
-PhysicsCards::setVolume(const std::vector<int>& cellInfo,
-			const double defValue)
-  /*!
-    Process the list of the valid cells 
-    setting the volume list
-    \param cellInfo :: list of cells
-    \param defValue :: default value
-  */
-{
-  Volume.setCells(cellInfo,defValue);
-  return;
-}
-
-void
-PhysicsCards::setVolume(const int cellID,const double V)
-  /*!
-    Sets the volume of a particular cell
-    \param cellID :: the particular cell number to set
-    \param V :: New importance value  
-  */
-{
-  Volume.setValue(cellID,V);
-  return;
-}
-
 
 void
 PhysicsCards::setPWT(const int cellID,const double V)
@@ -869,12 +738,11 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
 {
   ELog::RegMethod RegA("PhysicsCards","substituteCell");
   histpCells.changeItem(oldCell,newCell);
-  for(PhysImp& PI : ImpCards)
-    {
-      const std::vector<int> CVec=PI.getCellVector();
-      PI.renumberCell(oldCell,newCell);
-    }
-  Volume.renumberCell(oldCell,newCell);
+
+  for(PhysImp* PI : PImpVec)
+    PI->renumberCell(oldCell,newCell);
+
+
   PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);
 
@@ -889,30 +757,11 @@ PhysicsCards::setMode(std::string Particles)
   */
 {
   ELog::RegMethod RegA("PhysicsCards","setMode");
-  if (!mode.isSet())
-    {
-      std::string item;
-      while(StrFunc::section(Particles,item))
-	{
-	  mode.addElm(item);
-	  addPhysImp("imp",item);
-	}
-    }
-  else
-    {
-      // complex as we need to keep importance for each 
-      const std::string AItem=mode.getFirstElm();
-      PhysImp& PI=getPhysImp("imp",AItem);
-      mode.clear();
 
-      std::string item;
+  mode.clear();
+  std::string item;
       while(StrFunc::section(Particles,item))
-	{
-	  mode.addElm(item);
-	  if (!hasImpFlag(item))
-	    PI.addElm(item);
-	}
-    }
+	mode.addElm(item);
   return;
 }
       
@@ -1057,9 +906,9 @@ PhysicsCards::write(std::ostream& OX,
   PTRAC->write(OX);
   
   mode.write(OX);
-  Volume.write(OX,std::set<std::string>(),cellOutOrder);
-  for(const PhysImp& PI : ImpCards)
-    PI.write(OX,wImpOut,cellOutOrder);
+
+  for(const PhysImp* PI : PImpVec)
+    PI->write(OX,wImpOut,cellOutOrder);
   
   PWTCard->write(OX,cellOutOrder,voidCells);
 

@@ -83,7 +83,7 @@
 #include "NRange.h"
 #include "PhysicsCards.h"
 #include "ZoneUnit.h"
-#include "ELPTControl.h"
+#include "PhysImp.h"
 #include "ELPTConstructor.h" 
 
 
@@ -123,7 +123,7 @@ ELPTConstructor::processUnit(SimMCNP& System,
     }
   const std::string particleStr=FStr;
   if (NParam<2)
-    throw ColErr::IndexError<size_t>(NParam,3,"particle not give");
+    throw ColErr::IndexError<size_t>(NParam,3,"Particle/cell/value not given");
   FStr=IParam.getValue<std::string>("wECut",Index,1);  
 
   // Get all other values:
@@ -132,6 +132,7 @@ ELPTConstructor::processUnit(SimMCNP& System,
     StrItem.push_back
       (IParam.getValue<std::string>("wECut",Index,j));
 
+  ZoneUnit<double> ZUnits;
   if (!StrFunc::section(FStr,ECutValue) ||
       !ZUnits.procZone(System,StrItem))
     throw ColErr::InvalidLine
@@ -139,19 +140,8 @@ ELPTConstructor::processUnit(SimMCNP& System,
   ZUnits.addData(ECutValue);
   ZUnits.sortZone();
 
-  
-  physicsSystem::PhysImp& ECImp=PC.addPhysImp("elpt",particleStr);
-  
-  // care here : ECImp coule be a new particle value
-  if (ECImp.isEmpty()) 
-    {
-      const std::vector<int> cellOrder=
-	System.getCellVector();
-      // Default is no cutting:
-      ECImp.setCells(cellOrder,0.0);
-    }      
-  
-  ECImp.updateCells(ZUnits);
+  PhysImp& ELPTimp=PC.getPhysImp("elpt",particleStr,0.0);  
+  ELPTimp.updateCells(ZUnits);
   return;
 }
   

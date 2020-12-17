@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ExtConstructor.h
+ * File:   monteInc/Importance.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,52 +19,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_ExtConstructor_h
-#define physicsSystem_ExtConstructor_h
+#ifndef MonteCarlo_Importance_h
+#define MonteCarlo_Importance_h
 
-namespace attachSystem
+namespace MonteCarlo
 {
-  class FixedComp;
-}
 
-
-class Simulation;
-
-namespace physicsSystem
-{
-  class ExtControl;
-  
 /*!
-  \class ExtConstructor
+  \class Importance
+  \brief Importance table for cells
   \version 1.0
+  \date December 2020
   \author S. Ansell
-  \date May 2015
-  \brief Processes and method of producing Ext card input
 
+  An object is a collection of Rules and
+  surface object
 */
 
-class ExtConstructor 
+class Importance
 {
  private:
 
-  ZoneUnit<double> ZUnits;   ///< Units of EXT scaling
-
-  bool procType(const objectGroups&,std::vector<std::string>&,ExtControl&);
+  bool zeroImp;      ///< True if all zero 
+  bool allSame;      ///< All values same
+  double defValue;   ///< Default all value
   
-  void writeHelp(std::ostream&) const;
-    
+  /// Map of particles (mcplNumber) / importance 
+  std::map<int,double> impMap;
+
  public:
 
-  ExtConstructor();
-  ExtConstructor(const ExtConstructor&);
-  ExtConstructor& operator=(const ExtConstructor&);
-  ~ExtConstructor() {}  ///< Destructor
+  Importance();
+  Importance(const Importance&);
+  Importance& operator=(const Importance&);
+  ~Importance() {}
 
-  void processUnit(SimMCNP&,const mainSystem::inputParam&,
-		   const size_t);
+  
+  void setImp(const double);
+  void setImp(const std::string&,const double);
+  
+  double getImp() const;
+  double getImp(const std::string&) const;
+
+  /// Check is a null object
+  bool isZero() const { return zeroImp; }
 };
+ 
+std::ostream& operator<<(std::ostream&,const Importance&);
 
 }
 
 #endif
- 

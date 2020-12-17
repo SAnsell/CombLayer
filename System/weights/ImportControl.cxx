@@ -110,24 +110,10 @@ clearWImp(physicsSystem::PhysicsCards& PC,const std::string& particleType)
   return;
 }
 
-void
-removePhysImp(physicsSystem::PhysicsCards& PC,const std::string& pType)
-  /*!
-    Removes particle importance if cell based system dominates
-    \param PC :: Physics Cards
-    \param pType :: Particle type
-  */
-{
-  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
-
-  PC.removePhysImp("imp",pType);
-  return;
-}
 
   
 void
-zeroImp(physicsSystem::PhysicsCards& PC,
-	Simulation& System,const int initCell,
+zeroImp(Simulation& System,const int initCell,
 	const int cellRange)
   /*!
     Zero cell importances in a range
@@ -145,7 +131,6 @@ zeroImp(physicsSystem::PhysicsCards& PC,
       MonteCarlo::Object* Obj=System.findObject(cellNum);
       if (Obj)
 	{
-	  PC.setCells("imp",cellNum,0); 
 	  Obj->setImp(0);
 	  Obj->setMaterial(0);
 	}
@@ -164,12 +149,8 @@ simulationImp(SimMCNP& System,
 {
   ELog::RegMethod RegA("ImportControl[F]","simulationImp");
 
-  physicsSystem::PhysicsCards& PC=System.getPC();
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
     System.findObject(74123)->setImp(0);
-
-  if (IParam.flag("volCard"))
-    PC.clearVolume();
 
   return;
 }
@@ -200,8 +181,7 @@ EnergyCellCut(SimMCNP& System,
 }
 
 void
-ExtField(const objectGroups& OGrp,
-	 physicsSystem::PhysicsCards& PC,
+ExtField(SimMCNP& System,
 	 const mainSystem::inputParam& IParam)
   /*!
     Control Ext card on the in individual cells
@@ -212,6 +192,7 @@ ExtField(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("ImportControl","ExtField");
 
+
   // currently only first item / get all
 
   const size_t NGrp=IParam.setCnt("wExt");
@@ -219,46 +200,40 @@ ExtField(const objectGroups& OGrp,
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
-      A.processUnit(OGrp,PC,IParam,grpIndex);
+      A.processUnit(System,IParam,grpIndex);
     }
   return;
 }
 
 void
-FCL(const objectGroups& OGrp,
-    physicsSystem::PhysicsCards& PC,
+FCL(SimMCNP& System,
     const mainSystem::inputParam& IParam)
   /*!
     Control FCL card on the in individual cells
-    \param OGrp :: Object group
-    \param PC :: Physics Cards
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: input stream
   */
 {
   ELog::RegMethod RegA("ImportControl","FCL");
 
   // currently only first item / get all
-
   const size_t nSet=IParam.setCnt("wFCL");
   if (nSet)
     {
       physicsSystem::FCLConstructor A;
       for(size_t index=0;index<nSet;index++)
-        A.processUnit(OGrp,PC,IParam,index);
+        A.processUnit(System,IParam,index);
     }
   return;
 }
 
 
 void
-SBias(const objectGroups& OGrp,
-      physicsSystem::PhysicsCards& PC,
+SBias(SimMCNP& System,
       const mainSystem::inputParam& IParam)
   /*!
     Control SBIAS card(s) on the 
-    \param OGrp :: Object Groups
-    \param PC :: Physics System
+    \param System :: Simulation
     \param IParam :: input stream
   */
 {
@@ -271,14 +246,13 @@ SBias(const objectGroups& OGrp,
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
-      A.processUnit(OGrp,PC,IParam,grpIndex);
+      A.processUnit(System,IParam,grpIndex);
     }
   return;
 }
 
 void
-DXT(const objectGroups& OGrp,
-    physicsSystem::PhysicsCards& PC,
+DXT(SimMCNP& System,
     const mainSystem::inputParam& IParam)
   /*!
     Control DXT card(s) on the 
@@ -288,30 +262,27 @@ DXT(const objectGroups& OGrp,
   */
 {
   ELog::RegMethod RegA("ImportControl[F]","DXT");
-
+  
   // currently only first item / get all
   physicsSystem::DXTConstructor A;
   
   const size_t NGrp=IParam.setCnt("wDXT");
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
-    A.processUnit(OGrp,PC,IParam,grpIndex);
+    A.processUnit(System,IParam,grpIndex);
 
   const size_t NGrpD=IParam.setCnt("wDD");
   for(size_t grpIndex=0;grpIndex<NGrpD;grpIndex++)
-    A.processDD(PC,IParam,grpIndex);
+    A.processDD(System,IParam,grpIndex);
 
   return;
 }
 
   
 void
-PWT(const objectGroups& OGrp,
-    physicsSystem::PhysicsCards& PC,
-    const mainSystem::inputParam& IParam)
+PWT(SimMCNP& System,const mainSystem::inputParam& IParam)
   /*!
     Control PWT card(s) on the 
-    \param OGrp :: Object group
-    \param PC :: Physics System
+    \param System :: Simulation
     \param IParam :: input stream
   */
 {
@@ -322,9 +293,8 @@ PWT(const objectGroups& OGrp,
   const size_t NGrp=IParam.setCnt("wPWT");
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
-
       physicsSystem::PWTConstructor A;
-      A.processUnit(OGrp,PC,IParam,grpIndex);
+      A.processUnit(System,IParam,grpIndex);
     }
   return;
 }

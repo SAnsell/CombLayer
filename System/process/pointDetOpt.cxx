@@ -168,16 +168,17 @@ pointDetOpt::addTallyOpt(SimMCNP& System,const int tallyN)
 	}
     }
 
-  // Second loop to create Pd values [in an importance card]
+  // Second loop to create Pd values [in an PhysImp]
   const double scale((minV<1.0) ? 1.0 : minV);
   for(const auto& [cellNum,objPtr] : Cells)
     {
       (void) objPtr;
       const double D=OA.getMatSum(cellNum);
+
       if (D>1.0)
-	PDptr->addUnit(cellNum,scale/D);
+	PDptr->setImp(cellNum,scale/D);
       else
-	PDptr->addUnit(cellNum,1.0);
+	PDptr->setImp(cellNum,1.0);
     }
 
   // move assignment

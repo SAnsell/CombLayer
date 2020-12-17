@@ -123,6 +123,8 @@ class Simulation : public objectGroups
   /// set cell CNF
   void setCellCNF(const size_t C) { cellCNF=C; }
 
+  void setImp(const int,const double);
+  
   MonteCarlo::Object* findObject(const int);         
   const MonteCarlo::Object* findObject(const int) const; 
 

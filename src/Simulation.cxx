@@ -493,7 +493,6 @@ Simulation::removeCell(const int cellNumber)
   delete vc->second;
 
   OList.erase(vc);
-
   objectGroups::removeActiveCell(cellNumber);
 
   return;
@@ -781,6 +780,25 @@ Simulation::applyTransforms()
     }
   return 0;
 }
+
+void
+Simulation::setImp(const int CellN,const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(V);
+  return;
+}
+
 
 MonteCarlo::Object*
 Simulation::findObject(const int CellN)

@@ -65,8 +65,11 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "objectRegister.h"
+#include "SimMCNP.h"
+#include "MapRange.h"
+#include "ZoneUnit.h"
 #include "inputParam.h"
+
 #include "FCLConstructor.h"
 
 namespace physicsSystem
@@ -76,50 +79,57 @@ namespace physicsSystem
 
   
 void
-FCLConstructor::processUnit(const objectGroups& OGrp,
-			    PhysicsCards& PC,
+FCLConstructor::processUnit(SimMCNP& System,
                             const mainSystem::inputParam& IParam,
-                            const size_t index)
+                            const size_t Index)
   /*!
     Set individual FCL based on Iparam
-    \param OGrp :: Object group						
-    \param PC :: Simulation
+    \param System :: simulation					
     \param IParam :: input stream
     \param index :: wFCL set card
   */
 {
   ELog::RegMethod RegA("FCLConstructor","processUnit");
 
-    
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  const size_t NParam=IParam.itemCnt("wFCL",Index);
+  if (NParam<1)
+    throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wFCL");
+
+  std::string FStr=IParam.getValue<std::string>("wFCL",Index,0);  
+  if (FStr=="help" || FStr=="Help")
+    {
+      ELog::EM<<"-wFCL particle value [ cells ]"<<ELog::endBasic;
+      return;
+    }
+  const std::string particle=FStr;
+  if (NParam<2)
+    throw ColErr::IndexError<size_t>(NParam,3,"Particle/value/cell not given");
+
   const double value=IParam.getValueError<double>
-    ("wFCL",index,0,"No fractional for wFCL");
+    ("wFCL",Index,0,"No fractional for wFCL");
   if (std::abs<double>(value)>1.0+Geometry::zeroTol)
     throw ColErr::RangeError<double>(value,-1.0,1.0,"Value for FCL");
 
-  const std::string particle=IParam.getValueError<std::string>
-    ("wFCL",index,1,"No particle for wFCL");
+  // Get all other values:
+  std::vector<std::string> StrItem;
+  for(size_t j=2;j<NParam;j++)
+    StrItem.push_back
+      (IParam.getValue<std::string>("wFCL",Index,j));
 
-  const std::string key=IParam.getValueError<std::string>
-    ("wFCL",index,2,"No keyname for wFCL");
+  double fclValue;
+  ZoneUnit<double> ZUnits;
+  
+  if (!StrFunc::section(FStr,fclValue) ||
+      !ZUnits.procZone(System,StrItem))
+    throw ColErr::InvalidLine
+      ("procZone ==> StrItems","-wFLC "+IParam.getFull("wFCL",Index),0);	
 
-  if (key=="Object" || key=="object")
-    {
-      const std::string objName=
-        IParam.getValueError<std::string>
-        ("wFCL",index,3,"No objName for wFCL");
-      
-      const std::vector<int> Cells=
-        OGrp.getObjectRange(objName);
-      
-      if (Cells.empty())
-        throw ColErr::InContainerError<std::string>
-          (objName,"Empty cell");
+  ZUnits.addData(fclValue);
+  ZUnits.sortZone();
 
-      ELog::EM<<"Particle == "<<particle<<ELog::endDiag;
-      PC.addPhysImp("fcl",particle,0.0);
-      for(const int CN : Cells)
-        PC.setCells("fcl",particle,CN,value);
-    }
+  PhysImp& FCLimp=PC.getPhysImp("fcl",particle,0.0);
+  FCLimp.updateCells(ZUnits);
   return;
 }
 

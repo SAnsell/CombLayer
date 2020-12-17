@@ -3,7 +3,7 @@
  
  * File:   physics/PWTConstructor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "ModeCard.h"
 
@@ -222,20 +223,20 @@ PWTConstructor::procType(std::vector<std::string>& StrItem,
 
 
 void
-PWTConstructor::processUnit(const objectGroups& OGrp,
-			    PhysicsCards& PC,
+PWTConstructor::processUnit(SimMCNP& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
     Add pwt component 
-    \param OGrp :: Object groups
-    \param PC :: Simulation to get physics/fixed points
+    \param System :: Simulation
     \param IParam :: Main input parameters
     \param Index :: index of the -wPWT card
    */
 {
   ELog::RegMethod RegA("PWTConstructor","processPoint");
 
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  
   const size_t NParam=IParam.itemCnt("wPWT",Index);
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wPWT");
@@ -253,7 +254,7 @@ PWTConstructor::processUnit(const objectGroups& OGrp,
       return;
     }
   
-  if (!procZone(OGrp,StrItem))
+  if (!procZone(System,StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wPWT "+IParam.getFull("wPWT",Index),0);	
 

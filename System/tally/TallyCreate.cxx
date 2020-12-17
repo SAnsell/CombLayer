@@ -197,8 +197,6 @@ addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
     }
   while(vc!=Tvalues.end());
   // Set volumes etx:
-  System.getPC().setVolume(CL,1.0);
-  System.getPC().setVolume(1,0);
   tallySystem::heatTally TX(6);
   TX.setPlus(1);
   TX.setActive(1);                         /// Turn it on

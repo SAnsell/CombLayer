@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ExtConstructor.h
+ * File:   physicsInc/PhysicsCardsFunctions.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,52 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_ExtConstructor_h
-#define physicsSystem_ExtConstructor_h
-
-namespace attachSystem
-{
-  class FixedComp;
-}
+#ifndef PhysicsSystem_PhysicsCardsFunctions_h
+#define PhysicsSystem_PhysicsCardsFunctions_h
 
 
-class Simulation;
 
 namespace physicsSystem
 {
-  class ExtControl;
-  
-/*!
-  \class ExtConstructor
-  \version 1.0
-  \author S. Ansell
-  \date May 2015
-  \brief Processes and method of producing Ext card input
-
-*/
-
-class ExtConstructor 
-{
- private:
-
-  ZoneUnit<double> ZUnits;   ///< Units of EXT scaling
-
-  bool procType(const objectGroups&,std::vector<std::string>&,ExtControl&);
-  
-  void writeHelp(std::ostream&) const;
-    
- public:
-
-  ExtConstructor();
-  ExtConstructor(const ExtConstructor&);
-  ExtConstructor& operator=(const ExtConstructor&);
-  ~ExtConstructor() {}  ///< Destructor
-
-  void processUnit(SimMCNP&,const mainSystem::inputParam&,
-		   const size_t);
-};
+  // funtions
+  std::string getMCNPparticleList(const std::set<int>&);
+  std::string getMCNPparticleList(const std::set<int>&,const std::set<int>&);
+  std::string getMCNPparticleList(const std::set<int>&,
+				  const std::set<std::string>&);
 
 }
 
 #endif
- 

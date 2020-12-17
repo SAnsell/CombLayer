@@ -179,7 +179,21 @@ ZoneUnit<T>::procZone(const objectGroups& OGrp,
       if (StrFunc::convert(StrItem[1],cNum) &&
 	  StrFunc::convert(StrItem[2],dNum) )
 	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,dNum));	
+	  int ACell=(OGrp.isActive(cNum) ? cNum : 0);
+	  for(int CN=cNum+1;CN<dNum;CN++)
+	    {
+	      if (ACell && !OGrp.isActive(CN))
+		{
+		  Zones.push_back(MapSupport::Range<int>(ACell,CN-1));
+		  ACell=0;
+		}
+	      else if (!ACell && OGrp.isActive(CN))
+		{
+		  ACell=CN;
+		}
+	    }
+	  if (ACell)
+	    Zones.push_back(MapSupport::Range<int>(ACell,dNum));
 	  cut=3;
 	}
     }

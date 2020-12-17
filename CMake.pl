@@ -40,7 +40,7 @@ my @mainLib=qw( visit src simMC  construct physics input process
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
     tally geometry mersenne src world work
-    xml poly support weightsf
+    xml poly support weights
     insertUnit md5 construct
     global constructVar physics simMC
     transport attachComp visit poly 
