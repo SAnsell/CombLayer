@@ -120,7 +120,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
-  btgNLayers=Control.EvalDefVar<size_t>(keyName+"BTGNLayers", 1);
+  btgNLayers=Control.EvalDefVar<int>(keyName+"BTGNLayers", 1);
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
@@ -130,9 +130,6 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   femtoMAXWallThick=Control.EvalVar<double>(keyName+"FemtoMAXWallThick");
   femtoMAXWallOffset=Control.EvalVar<double>(keyName+"FemtoMAXWallOffset");
-  femtoMAXHoleRadius=Control.EvalVar<double>(keyName+"FemtoMAXHoleRadius");
-  femtoMAXHoleXOffset=Control.EvalVar<double>(keyName+"FemtoMAXHoleXOffset");
-  femtoMAXHoleZOffset=Control.EvalVar<double>(keyName+"FemtoMAXHoleZOffset");
   bspWallThick=Control.EvalVar<double>(keyName+"BSPWallThick");
   bsp01WallOffset=Control.EvalVar<double>(keyName+"BSP01WallOffset");
   bsp01WallLength=Control.EvalVar<double>(keyName+"BSP01WallLength");
@@ -407,10 +404,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-backWallIronThick);
   SurfMap::setSurf("BackWallFront",SMap.realSurf(buildIndex+31));
 
-  ModelSupport::buildCylinder(SMap,buildIndex+27,
-			      Origin+X*femtoMAXHoleXOffset+Z*femtoMAXHoleZOffset,
-			      Y,femtoMAXHoleRadius);
-
   // Wall between SPF hallway and FemtoMAX beamline area
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6003,buildIndex+223,X,femtoMAXWallOffset);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+6004,buildIndex+6003,X,femtoMAXWallThick);
@@ -582,12 +575,8 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LongVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "21 -22 7003 -1003 5 -6 27 ");
+				 "21 -22 7003 -1003 5 -6 ");
   makeCell("BackWallConcrete",System,cellIndex++,backWallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
-				 "21 -22 -27 ");
-  makeCell("BackWallFemtoMAXHole",System,cellIndex++,backWallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "31 -21 7003 -1003 5 -6 ");

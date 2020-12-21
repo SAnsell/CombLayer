@@ -3102,10 +3102,6 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FemtoMAXWallThick",105.0); // K_01-0_010 IV1.13
   Control.addVariable(wallKey+"FemtoMAXWallOffset",405.0); // derived from K_20-1_08G6b[34]
   Control.addVariable(wallKey+"FemtoMAXWallIronThick",20.0); // K_20-1_08G6b4 + email from AR 2020-11-17
-  Control.addVariable(wallKey+"FemtoMAXHoleRadius", 5.0); // should be a bit more than SPF49PipeBRadius
-  // grep SPF49PipeB ObjectRegister.txt
-  Control.addVariable(wallKey+"FemtoMAXHoleXOffset", -735.0);
-  Control.addVariable(wallKey+"FemtoMAXHoleZOffset", 0.0);
 
   Control.addVariable(wallKey+"BSPWallThick",100.0); // K_01-0_010
   Control.addVariable(wallKey+"BSP01WallOffset",910.0); // derived from K_20-1_08G6b[34]

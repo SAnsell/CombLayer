@@ -68,7 +68,7 @@ class InjectionHall :
   double btgLength;         ///< BTG-BLOCK length
   double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
   int btgMat;                   ///< BTG-BLOCK material
-  size_t btgNLayers;               ///< BTG-BLOCK number of imp layers
+  int btgNLayers;               ///< BTG-BLOCK number of imp layers
 
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
@@ -80,9 +80,6 @@ class InjectionHall :
 
   double femtoMAXWallThick;      ///< SPF/FemtoMAX wall thickness
   double femtoMAXWallOffset;      ///< X-offset of the SPF/FemtoMAX wall
-  double femtoMAXHoleRadius;    ///< FemtoMAX hole radius in the back wall (just to avoid layer division)
-  double femtoMAXHoleXOffset;   ///< FemtoMAX back wall hall x offset
-  double femtoMAXHoleZOffset;   ///< FemtoMAX back wall hall z offset
 
   double bsp01WallOffset;       ///< BSP01 wall offset
   double bsp01WallLength;       ///< BSP01 wall length (before maze starts)
