@@ -563,7 +563,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("FKGMazeSideVoid",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 7301 -7302 7304 -4 5 -6");
-  makeCell("FKGMazeWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FKGMazeMidWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 7302 -2111 1004 -4 5 -6");
@@ -811,11 +811,11 @@ InjectionHall::createObjects(Simulation& System)
 
   // Klystrong divivde
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 5 -7305");
-  makeCell("NewKlystronDoorVoid",System,cellIndex++,voidMat,0.0,Out);
+  makeCell("FKGMazeBackDoorVoid",System,cellIndex++,voidMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 7303 -4 7305 -6");
-  makeCell("NewKlystronDoorWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FKGMazeBackDoorWall",System,cellIndex++,wallMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"2111 -111 1004 -7303 5 -6");
-  makeCell("NewKlystronWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FKGMazeBackWall",System,cellIndex++,wallMat,0.0,Out);
 
   // OUTER VOIDS:
 
@@ -864,7 +864,11 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1001 -1011 1003 -1104 5 -6 2007 (-5003:5004:-5005:5006)");
+				 "1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
+  makeCell("MidTFrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1001 -1011 1004 -1104 5 -6 ");
   makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
@@ -943,9 +947,21 @@ InjectionHall::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+6101),
 	       -SMap.realSurf(buildIndex+6102),
 	       btgNLayers);
+  layerProcess(System,"C080016BackWallIron",
+	       SMap.realSurf(buildIndex+6201),
+	       -SMap.realSurf(buildIndex+6101),
+	       btgNLayers);
 
   layerProcess(System,"C080016Maze",
   	       SMap.realSurf(buildIndex+6211),
+  	       -SMap.realSurf(buildIndex+6112),
+  	       btgNLayers);
+  layerProcess(System,"C080016MazeIron",
+  	       SMap.realSurf(buildIndex+6111),
+  	       -SMap.realSurf(buildIndex+6211),
+  	       btgNLayers);
+  layerProcess(System,"C080016MazeBack",
+  	       SMap.realSurf(buildIndex+6212),
   	       -SMap.realSurf(buildIndex+6112),
   	       btgNLayers);
 
@@ -953,17 +969,46 @@ InjectionHall::createObjects(Simulation& System)
 	       SMap.realSurf(buildIndex+6101),
 	       -SMap.realSurf(buildIndex+6102),
 	       btgNLayers);
+  layerProcess(System,"C080017BackWallIron",
+	       SMap.realSurf(buildIndex+6201),
+	       -SMap.realSurf(buildIndex+6101),
+	       btgNLayers);
 
   layerProcess(System,"C080017Maze",
   	       SMap.realSurf(buildIndex+6211),
   	       -SMap.realSurf(buildIndex+6112),
   	       btgNLayers);
+  layerProcess(System,"C080017MazeIron",
+  	       SMap.realSurf(buildIndex+6111),
+  	       -SMap.realSurf(buildIndex+6211),
+  	       btgNLayers);
+  layerProcess(System,"C080017MazeBack",
+  	       SMap.realSurf(buildIndex+6212),
+  	       -SMap.realSurf(buildIndex+6112),
+  	       btgNLayers);
 
-  layerProcess(System,"FKGMazeWall",
+  layerProcess(System,"C08MazeBackWall",
+  	       SMap.realSurf(buildIndex+6121),
+  	       -SMap.realSurf(buildIndex+6122),
+  	       btgNLayers);
+
+  // Future Klystron Gallery
+  layerProcess(System,"FKGMazeFrontWall",
+  	       SMap.realSurf(buildIndex+1001),
+  	       -SMap.realSurf(buildIndex+1011),
+  	       btgNLayers);
+  layerProcess(System,"FKGMazeMidWall",
   	       SMap.realSurf(buildIndex+7301),
   	       -SMap.realSurf(buildIndex+7302),
   	       btgNLayers);
-
+  layerProcess(System,"FKGMazeBackWall",
+  	       SMap.realSurf(buildIndex+2111),
+  	       -SMap.realSurf(buildIndex+111),
+  	       btgNLayers);
+  layerProcess(System,"FKGMazeBackDoorWall",
+  	       SMap.realSurf(buildIndex+2111),
+  	       -SMap.realSurf(buildIndex+111),
+  	       btgNLayers);
 
   return;
 }
