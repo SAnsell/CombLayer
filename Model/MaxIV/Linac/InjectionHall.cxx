@@ -120,7 +120,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   btgLength=Control.EvalVar<double>(keyName+"BTGLength");
   btgYOffset=Control.EvalVar<double>(keyName+"BTGYOffset");
   btgMat=ModelSupport::EvalMat<int>(Control,keyName+"BTGMat");
-  btgNLayers=Control.EvalDefVar<int>(keyName+"BTGNLayers", 1);
+  btgNLayers=Control.EvalDefVar<size_t>(keyName+"BTGNLayers", 1);
   spfParkingFrontWallLength=Control.EvalVar<double>(keyName+"SPFParkingFrontWallLength");
   spfParkingLength=Control.EvalVar<double>(keyName+"SPFParkingLength");
   spfParkingWidth=Control.EvalVar<double>(keyName+"SPFParkingWidth");
