@@ -161,13 +161,18 @@ Segment49::constructHole(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       const size_t nLayers = IHall->getBackWallNLayers();
       if (nLayers<=1)
-	IHall->insertComponent(System,"BackWallConcrete",Out);
+	{
+	  IHall->insertComponent(System,"BackWallConcrete",Out);
+	  IHall->insertComponent(System,"BackWallIron",Out);
+	}
       else
 	{
-	  for (size_t i=0; i<nLayers; ++i)
-	    IHall->insertComponent(System,"BackWallConcrete"+std::to_string(i),Out);
+	  for (size_t i=0; i<nLayers; ++i) {
+	    const std::string istr = std::to_string(i);
+	    IHall->insertComponent(System,"BackWallConcrete"+istr,Out);
+	    IHall->insertComponent(System,"BackWallIron"+istr,Out);
+	  }
 	}
-      IHall->insertComponent(System,"BackWallIron",Out);
     }
 
   return;

@@ -929,6 +929,11 @@ InjectionHall::createObjects(Simulation& System)
 	       -SMap.realSurf(buildIndex+22),
 	       backWallNLayers);
 
+  layerProcess(System,"BackWallIron",
+	       SMap.realSurf(buildIndex+31),
+	       -SMap.realSurf(buildIndex+21),
+	       backWallNLayers);
+
   layerProcess(System,"BTG",
 	       SMap.realSurf(buildIndex+1004),
 	       -SMap.realSurf(buildIndex+7403),
