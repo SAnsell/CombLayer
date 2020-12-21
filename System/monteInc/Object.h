@@ -138,7 +138,7 @@ class Object
   double getDensity() const;                           ///< to be written
   /// access to importance
   double getImp(const std::string& particle) const
-  { return imp.getImp( particle); }
+    { return imp.getImp(particle); }
   double getImp() const { return imp.getImp(); }
   
 

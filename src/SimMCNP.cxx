@@ -63,6 +63,7 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "NGroup.h"
 #include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
@@ -646,18 +647,24 @@ SimMCNP::writeImportance(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("SimMCNP","writePhysics");
+  ELog::RegMethod RegA("SimMCNP","writeImportance");
 
   std::ostringstream cx;
   cx<<"vol 1.0 "<<cellOutOrder.size()-1<<"r";
   StrFunc::writeMCNPX(cx.str(),OX);  
 
-  ELog::EM<<"Need something for object importances"<<ELog::endCrit;
 
-  NRange A;
+  RangeUnit::NGroup<int> IRange;
+  std::vector<int> import;
   for(const int CN : cellOutOrder)
     {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      import.push_back(static_cast<int>(OPtr->getImp()));
     }
+  IRange.condense(1e-6,import);
+  cx<<"imp:"<<IRange;
+  StrFunc::writeMCNPX(cx.str(),OX);    
+	
   return;
 }
 

@@ -183,9 +183,10 @@ class NGroup
 
   int processString(const std::string&);     
 
-  void condense(const double);     
+  void condense(const double);
+  void condense(const double,const std::vector<T>&);     
 
-  void setVector(std::vector<T>&) const;
+  void writeVector(std::vector<T>&) const;
   
   void write(std::ostream&) const;      
 

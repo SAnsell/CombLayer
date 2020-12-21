@@ -3,7 +3,7 @@
  
  * File:   test/testNRange.cxx
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,58 +123,44 @@ testNRange::testCondense()
 {
   ELog::RegMethod RegA("testNRange","testCondense");
 
-  const std::vector<std::string> TString=
-    {
-      "1 8log 1e+09 3r",
-      "1 3r 4 5i 8",
-      "1 8log 1e+09 3i 1.2e+09",
-      "1e-3 251log 1e+09"
-    };
+  typedef std::tuple<std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      {"1 8log 1e+09 3r ","1 8log 1e+09 3r"},
+      {"1 8log 1e+09 3i 1e10","1 8log 1e+09 3i 1e+10"},
 
-  for(size_t i=0;i<TString.size();i++)
+      {"1 8log 1e+09 3r 1e9 1e12 1e13 1.2e13",
+       "1 8log 1e+09 4r 1e+12 1e+13 1.2e+13"},
+      
+      {"1 8log 1e+09 3r 1e9","1 8log 1e+09 4r"},
+    });
+
+  for(const TTYPE& tc : Tests)
     {
-      NRange NE;
-      if (NE.processString(TString[i]))
+      const std::string input=std::get<0>(tc);
+      const std::string output=std::get<1>(tc);
+      RangeUnit::NGroup<double> NE;
+      if (NE.processString(input))
 	{
-	  ELog::EM<<"Error with processing:"<<TString[i]<<ELog::endCrit;
+	  ELog::EM<<"Error with processing:"<<input<<ELog::endCrit;
 	  return -1;
 	}
 
-      NE.condense(1e-6);
+      std::ostringstream px;
+      px<<NE;
+      const std::string PreC=px.str();
       std::ostringstream cx;
+      NE.condense(1e-6);
+
       cx<<NE;
-      if (StrFunc::removeOuterSpace(cx.str())!=TString[i])
+
+      if (StrFunc::removeOuterSpace(cx.str())!=output)
 	{
-	  // Strip into components and test:
-	  double VT,VC;
-	  std::string ST,SC;
-	  int flagT,flagC;
-	  int errFlag(0);
-	  std::string TItem=TString[i];
-	  std::string CItem=cx.str();
-	  do 
-	    {
-	      // Test if both numeric
-	      flagT=StrFunc::section(TItem,VT);
-	      flagC=StrFunc::section(CItem,VC);
-	      if (flagT!=flagC ||                    // not same  : not equal
-		  (flagT && fabs(VT-VC)>1e-6))       
-		errFlag=1;
-	      else if (!flagT)
-		{
-		  flagT=StrFunc::section(TItem,ST);
-		  flagC=StrFunc::section(CItem,SC);
-		  if ( flagT!=flagC || ST!=SC)
-		    errFlag=1;
-		}
-	    } while(!errFlag && (flagT+flagC));
-	    
-	  if (errFlag)
-	    {
-	      ELog::EM<<"Test string == "<<TString[i]<<ELog::endWarn;
-	      ELog::EM<<"NE == "<<NE<<ELog::endWarn;
-	      return -2;
-	    }
+	  ELog::EM<<"Test string == "<<input<<ELog::endWarn;
+	  ELog::EM<<"Pre string  == "<<PreC<<ELog::endWarn;
+	  ELog::EM<<"Cons string =="<<cx.str()<<ELog::endWarn;
+	  ELog::EM<<"Out  string == "<<output<<ELog::endWarn;
+	  return -1;
 	}
     }
   return 0;
@@ -248,7 +234,7 @@ testNRange::testOutput()
 	}
       // Basic string
       std::vector<double> values;
-      NE.setVector(values);
+      NE.writeVector(values);
       const double sum=accumulate(values.begin(),values.end(),0.0,
 				   std::plus<double>());
       if (std::abs(sum-std::get<1>(tc))>std::get<2>(tc))

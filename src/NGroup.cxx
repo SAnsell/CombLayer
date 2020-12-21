@@ -351,9 +351,9 @@ RLog<T>::getItem(const int index) const
   
   const double aLog=std::log(static_cast<double>(aValue));
   const double bLog=std::log(static_cast<double>(bValue));
-  const T step=(bLog-aLog)/static_cast<T>(count);
+  const double step=(bLog-aLog)/static_cast<double>(count);
 
-  return std::exp(aLog+index*step);
+  return static_cast<T>(std::exp(aLog+index*step));
 }
   
 template<typename T>  
@@ -361,6 +361,7 @@ void
 RLog<T>::writeVector(std::vector<T>& vItems) const
   /*!
     Write repeated item to vector
+    \param vItem :: Vector for output
    */
 {
   if (count && RUnit<T>::isFirst)
@@ -369,12 +370,12 @@ RLog<T>::writeVector(std::vector<T>& vItems) const
     {
       const double aLog=std::log(static_cast<double>(aValue));
       const double bLog=std::log(static_cast<double>(bValue));
-      const T step=(bLog-aLog)/static_cast<T>(count);
-      T AV(aLog);
+      const double step=(bLog-aLog)/static_cast<double>(count);
+      double AV(aLog);
       for(int i=0;i<count-1;i++)
 	{
 	  AV+=step;
-	  vItems.push_back(std::exp(AV));
+	  vItems.push_back(static_cast<T>(std::exp(AV)));
 	}
     }
   vItems.push_back(bValue);  
@@ -469,7 +470,6 @@ NGroup<T>::operator[](const int Index) const
   for(const RUnit<T>* unit : Items)
     {
       const int ISize=unit->getSize();
-      ELog::EM<<"ISize == "<<ISize<<" "<<Index<<":"<<*unit<<ELog::endDiag;
       if (cnt+ISize>Index)
 	return unit->getItem(Index-cnt);
       cnt+=ISize;
@@ -629,8 +629,8 @@ NGroup<T>::processString(const std::string& N)
   // From now on in we have a string type (definately)
   // check if the next number is a number or doesn't
   // exist.
-  double AValue(0.0);
-  double BValue(0.0);
+  T AValue(0);
+  T BValue(0);
   std::string Comp;
   int index;
 
@@ -672,21 +672,24 @@ NGroup<T>::processString(const std::string& N)
 	    }
 	}
     } 
-
+  if (tail)
+    Items.push_back(new RSingle<T>(AValue));
+  
   Items.front()->setFirstFlag(1);  
   return 0;
 }
 
 
+
 template<typename T>
 void
-NGroup<T>::setVector(std::vector<T>& Vec) const
+NGroup<T>::writeVector(std::vector<T>& Vec) const
   /*!
     Takes the vector and writes it into the NGroup.
     \param Vec :: Vector use
   */
 {
-  ELog::RegMethod RegA("NGroup","setVector");
+  ELog::RegMethod RegA("NGroup","writeVector");
 
   for(const RUnit<T>* RPtr  : Items)
     RPtr->writeVector(Vec);
@@ -704,29 +707,60 @@ NGroup<T>::condense(const double Tol)
   ELog::RegMethod RegA("NGroup","condence");
 
   std::vector<T> Values;
-  setVector(Values);
-  if (Values.size()<2)
-    return;
+  writeVector(Values);
+  if (Values.size()>2)
+    condense(Tol,Values);
+  return;
+}
 
+
+template<typename T>
+void
+NGroup<T>::condense(const double Tol,
+		    const std::vector<T>& Values)
+  /*!
+    Determine intervals 
+    \param Tol :: Tolerance value
+    \param Values :: Values to use
+  */
+{
+
+  ELog::RegMethod RegA("NGroup","condence(vec)");
+  
+  if (Values.size()<3)
+    {
+      clearItems();
+      for(const T& V : Values)
+	Items.push_back(new RSingle<T>(V));
+      return;
+    }
+  
   std::list<RUnit<T>*> OutList;
 
   // Extra value here a guard item
   std::vector<int> type(Values.size()+1,0);
+  type[0]=0;
   for(size_t i=1;i<Values.size();i++)
     {
       // Basic repeat:
       if (identVal(Tol,Values[i],Values[i-1]))
 	type[i]=1;
       else if (i>1 && intervalVal(Tol,Values[i-2],Values[i-1],Values[i]))
-	type[i-1]=2;    // linear interval
+	{
+	  type[i-1]=2;    // linear interval
+	  type[i]=2;    // linear interval
+	}
       else if (i>1 && logIntVal(Tol/100.0,Values[i-2],Values[i-1],Values[i]))
-	type[i-1]=3;   // log intervale
+	{
+	  type[i-1]=3;   // log interval
+	  type[i]=3;   // log interval
+	}
     }
-
 
   T AValue(Values[0]);
   size_t cnt(0);
-  while(cnt<Values.size())
+  const size_t VSize(Values.size());
+  while(cnt<VSize)
     {
       size_t repCnt=1;
       if (type[cnt]==0)
@@ -738,32 +772,28 @@ NGroup<T>::condense(const double Tol)
 	{
 	  // count repeats/interval/
 	  for(repCnt=1;type[cnt+repCnt]==type[cnt];repCnt++) ;
-	  if (repCnt>1)
+	  if (type[cnt]==3)  // log
 	    {
-	      if (type[cnt]==3)  // log
-		{
-		  OutList.push_back(new RLog(AValue,Values[cnt],
-				    static_cast<int>(repCnt)));
-		}
-	      if (type[cnt]==2)  // interval
-		{
-		  OutList.push_back(new RInterval(AValue,Values[cnt],
-					 static_cast<int>(repCnt)));
-		}
-	      if (type[cnt]==1)  // repeat
-		{
-		  OutList.push_back(new RRepeat(AValue,static_cast<int>(repCnt)));
-		}
-	      AValue=Values[cnt];
+	      OutList.push_back
+		(new RLog(AValue,Values[cnt+repCnt-1],
+			  static_cast<int>(repCnt)));
 	    }
-	  else
+	  if (type[cnt]==2)  // interval
 	    {
-	      OutList.push_back(new RSingle<T>(AValue));
-	      AValue=Values[cnt];
+	      OutList.push_back
+		(new RInterval(AValue,Values[cnt+repCnt-1],
+			       static_cast<int>(repCnt)));
 	    }
+	  if (type[cnt]==1)  // repeat
+	    {
+	      OutList.push_back
+		(new RRepeat(AValue,static_cast<int>(repCnt+1)));
+	    }
+	  AValue=Values[cnt+repCnt-1];
 	}
       cnt+=repCnt;
     }
+
   clearItems();
   Items=std::move(OutList);
   return;
@@ -789,6 +819,12 @@ template class RInterval<double>;
 template class RRepeat<double>;
 template class RLog<double>;
 template class NGroup<double>;
+
+template class RSingle<int>;
+template class RInterval<int>;
+template class RRepeat<int>;
+template class RLog<int>;
+template class NGroup<int>;
 
 template std::ostream&
 operator<<(std::ostream&,const NGroup<double>&);
