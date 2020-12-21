@@ -965,6 +965,11 @@ InjectionHall::createObjects(Simulation& System)
   	       -SMap.realSurf(buildIndex+6112),
   	       btgNLayers);
 
+  layerProcess(System,"FKGMazeWall",
+  	       SMap.realSurf(buildIndex+7301),
+  	       -SMap.realSurf(buildIndex+7302),
+  	       btgNLayers);
+
 
   return;
 }
