@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 
@@ -55,6 +56,7 @@ Importance::Importance(const Importance& A) :
   zeroImp(A.zeroImp),
   allSame(A.allSame),
   defValue(A.defValue),
+  particles(A.particles),
   impMap(A.impMap)
   /*!
     Copy constructor
@@ -75,6 +77,7 @@ Importance::operator=(const Importance& A)
       zeroImp=A.zeroImp;
       allSame=A.allSame;
       defValue=A.defValue;
+      particles=A.particles;
       impMap=A.impMap;
     }
   return *this;
@@ -93,7 +96,9 @@ Importance::setImp(const std::string& particle,const double V)
   const int index=particleConv::Instance().mcplITYP(particle);
   const double VV=(V<0) ? 0.0 : V;
 
+  particles.emplace(index);
   impMap[index]=VV;
+  
   if (allSame && std::abs<double>(VV-defValue)>zeroImpTol)
     allSame=0;
   
@@ -107,19 +112,22 @@ Importance::setImp(const double V)
     \param V :: Value to set
    */
 {
+  particles.clear();
   impMap.clear();
+  allSame=1;
   if (V<zeroImpTol)
     {
       defValue=0.0;
       zeroImp=0;
     }
-  defValue=V;
-  allSame=1;
+  else
+    defValue=V;
+
   return;
 }
 
 double
-Importance::getImp() const
+Importance::getAllImp() const
   /*!
     Get the standard importance for all particles
     \throw NumericalAbort :: if no general default value
@@ -131,6 +139,19 @@ Importance::getImp() const
   if (zeroImp) return 0.0;
   if (allSame) return defValue;
   throw ColErr::NumericalAbort("No default value");
+}
+
+std::tuple<bool,double>
+Importance::getAllPair() const
+  /*!
+    Get the standard importance for all particles
+    \throw NumericalAbort :: if no general default value
+    \return value
+   */
+{
+  if (zeroImp) return std::make_tuple(1,0.0);
+  if (allSame) return std::make_tuple(1,defValue);
+  return std::make_tuple(0,0.0);
 }
   
 double
@@ -150,6 +171,26 @@ Importance::getImp(const std::string& particle) const
   std::map<int,double>::const_iterator mc=impMap.find(index);
   if (mc!=impMap.end())
     throw ColErr::InContainerError<std::string>(particle,"Particle in ImpMap");
+
+  return mc->second;
+}
+
+double
+Importance::getImp(const int particleID) const
+  /*!
+    Get the standard importance for all particles
+    \throw NumericAbort :: if no general default value
+    \return value
+   */
+{
+  ELog::RegMethod RegA("Importance","getImp(particleID)");
+
+  if (zeroImp) return 0.0;
+  if (allSame) return defValue;
+
+  std::map<int,double>::const_iterator mc=impMap.find(particleID);
+  if (mc!=impMap.end())
+    throw ColErr::InContainerError<int>(particleID,"Particle in ImpMap");
 
   return mc->second;
 }

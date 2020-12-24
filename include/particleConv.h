@@ -110,6 +110,9 @@ class particleConv
   const std::string& mcplToFLUKA(const int) const;
   //  const std::string& mcnpToFluka(const int) const;
 
+  template<typename T>
+  std::string mcnpParticleList(const T&) const;
+  
   double wavelengthKE(const std::string&,const double) const;
   double KEWavelength(const std::string&,const double) const;
 

@@ -244,7 +244,7 @@ SimMonte::runMonteNeutron(const size_t Npts)
 	  //    -- B to track to track length point [inner]
 
 	  const MonteCarlo::Object* OPtr=this->findCell(n.Pos,defObj);
-	  while (OPtr && OPtr->getImp())
+	  while (OPtr && !OPtr->isZeroImp())
 	    {
 	      Transport::ParticleInObj<MonteCarlo::neutron> Cell(OPtr);
 	      double R=RNG.randExc();

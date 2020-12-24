@@ -136,10 +136,19 @@ class Object
   
   double getTemp() const { return Tmp; }               ///< Get Temperature [K]
   double getDensity() const;                           ///< to be written
+
+  /// acess
+  const Importance& getImportance() const { return imp; }
+  /// access to importance
+  std::tuple<bool,double> getImpPair() const
+    { return imp.getAllPair(); }
   /// access to importance
   double getImp(const std::string& particle) const
     { return imp.getImp(particle); }
-  double getImp() const { return imp.getImp(); }
+  double getImp(const int PNum) const
+    { return imp.getImp(PNum); }
+  double getAllImp() const { return imp.getAllImp(); }
+  bool isZeroImp() const { return imp.isZeroImp(); }
   
 
   /// Return the top rule

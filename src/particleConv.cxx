@@ -436,6 +436,28 @@ particleConv::nameToFLUKA(const std::string& particleName) const
   return PN.flukaName;
 }
 
+template<typename T>
+std::string
+particleConv::mcnpParticleList(const T& particles) const
+  /*!
+    Convert a set into a comma separated list
+    \param PSet :: stl container to convert (int)
+    \return 
+   */
+{
+  ELog::RegMethod RegA("particleConv","mcnpxParticleList");
+  std::string separator;
+  std::ostringstream cx;
+  for(const int pIndex : particles)
+    {
+      const std::string mcnpPart=
+	mcplToMCNP(pIndex);
+      cx<<separator<<mcnpPart;
+      separator=",";
+    }
+  
+  return cx.str();
+}
 
 double
 particleConv::momentumFromKE(const std::string& particleName,
@@ -559,3 +581,10 @@ particleConv::mass(const std::string& particleName) const
   const pName& PN = getNamePItem(particleName);
   return PN.mass;
 }
+
+///\cond template 
+
+template std::string
+particleConv::mcnpParticleList(const std::set<int>&) const;
+
+///\endcond template 

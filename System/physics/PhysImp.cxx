@@ -197,16 +197,7 @@ PhysImp::getParticles() const
 
   const particleConv& pConv=particleConv::Instance();
 
-  std::string separator;
-  std::ostringstream cx;
-  for(const int pIndex : particles)
-    {
-      const std::string mcnpPart=
-	pConv.mcplToMCNP(pIndex);
-      cx<<separator<<mcnpPart;
-      separator=",";
-    }
-  return cx.str();
+  return pConv.mcnpParticleList(particles);
 }
 
 void

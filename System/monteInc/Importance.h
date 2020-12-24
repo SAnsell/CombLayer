@@ -43,7 +43,8 @@ class Importance
   bool zeroImp;      ///< True if all zero 
   bool allSame;      ///< All values same
   double defValue;   ///< Default all value
-  
+
+  std::set<int> particles;   ///< particle list [not = all]
   /// Map of particles (mcplNumber) / importance 
   std::map<int,double> impMap;
 
@@ -57,10 +58,14 @@ class Importance
   
   void setImp(const double);
   void setImp(const std::string&,const double);
-  
-  double getImp() const;
-  double getImp(const std::string&) const;
 
+  const std::set<int>& getParticles() const { return particles; }
+  std::tuple<bool,double> getAllPair() const;
+  double getAllImp() const;
+  double getImp(const int) const;
+  double getImp(const std::string&) const;
+  bool isZeroImp() const { return zeroImp; }
+  
   /// Check is a null object
   bool isZero() const { return zeroImp; }
 };

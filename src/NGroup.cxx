@@ -243,6 +243,7 @@ T
 RInterval<T>::getItem(const int index) const
   /*!
     Get the value at index 
+    \param index :: Index value
   */
 {
   ELog::RegMethod RegA("RInterval","getItem");

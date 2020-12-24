@@ -3,7 +3,7 @@
  
  * File:   physics/ModeCard.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ ModeCard::addElm(const std::string& EN)
   return;
 }
 
-int
+bool
 ModeCard::hasElm(const std::string& E) const
   /*!
     Finds the item on the list if it exists
@@ -122,12 +122,10 @@ ModeCard::hasElm(const std::string& E) const
     \return 0 :: failure , 1 :: success
   */
 {
-  std::list<std::string>::const_iterator vc;
-  vc=find(particles.begin(),particles.end(),E);
-  return (vc==particles.end()) ? 0 : 1;
+  return (std::find(particles.begin(),particles.end(),E)!=particles.end());
 }
 
-int
+bool
 ModeCard::removeParticle(const std::string& PT)
   /*!
     Removes a particle type
@@ -135,8 +133,8 @@ ModeCard::removeParticle(const std::string& PT)
     \return 1 :: success (or zero for failure)
   */
 {
-  std::list<std::string>::iterator vc;
-  vc=find(particles.begin(),particles.end(),PT);
+  std::vector<std::string>::iterator vc=
+    std::find(particles.begin(),particles.end(),PT);
   if (vc==particles.end())
     return 0;
   particles.erase(vc);

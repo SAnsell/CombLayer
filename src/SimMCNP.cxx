@@ -47,6 +47,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "particleConv.h"
 #include "version.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -649,22 +650,64 @@ SimMCNP::writeImportance(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimMCNP","writeImportance");
 
+  const particleConv& pConv=particleConv::Instance();
+  
   std::ostringstream cx;
   cx<<"vol 1.0 "<<cellOutOrder.size()-1<<"r";
   StrFunc::writeMCNPX(cx.str(),OX);  
 
-
+  // make set of particle:
+  std::set<int> pList;
+  const std::vector<std::string>& pVec=
+    PhysPtr->getMode().getParticles();
+  for(const std::string& P : pVec)
+    pList.emplace(pConv.mcplITYP(P));
+		  
+  
+  std::map<int,std::vector<int>> ImpMap;
+  ImpMap.emplace(0,std::vector<int>());
+    
   RangeUnit::NGroup<int> IRange;
-  std::vector<int> import;
+  bool flag;
+  double Imp;
   for(const int CN : cellOutOrder)
     {
       const MonteCarlo::Object* OPtr=findObject(CN);
-      import.push_back(static_cast<int>(OPtr->getImp()));
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpMap.emplace(0,Imp);
+      if (!flag)
+	{
+	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
+	  std::map<int,std::vector<int>>::iterator mc;
+	  for(const int P : PSet)
+	    {
+	      const double ImpVal=OPtr->getImp(P);
+	      mc=ImpMap.find(P);
+	      if (mc==ImpMap.end())
+		{
+		  pList.erase(P);
+		  ImpMap.emplace(P,ImpMap[0]);   // copy existing list in
+		}
+	      ImpMap[P].push_back(static_cast<int>(ImpVal));
+	    }
+	}
+
     }
-  IRange.condense(1e-6,import);
-  cx<<"imp:"<<IRange;
-  StrFunc::writeMCNPX(cx.str(),OX);    
-	
+  cx.str("");
+  cx<<"imp:"<<pConv.mcnpParticleList(pList);
+  IRange.condense(1e-6,ImpMap[0]);
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  for(const auto& [ PN , IVec] : ImpMap)
+    if (PN)
+      {
+	cx.str("");
+	cx<<"imp:"<<pConv.mcplToMCNP(PN)<<" ";
+	IRange.condense(1e-6,ImpMap[0]);
+	cx<<IRange;
+	StrFunc::writeMCNPX(cx.str(),OX);    
+      }	  
   return;
 }
 

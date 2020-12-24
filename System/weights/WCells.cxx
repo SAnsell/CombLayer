@@ -153,7 +153,7 @@ WCells::populateCells(const std::map<int,MonteCarlo::Object*>& ObjMap)
 	    (cellN,WItem(cellN,ORef.getDensity(),ORef.getTemp()));
 	}
       
-      if (!ORef.getImp())
+      if (ORef.isZeroImp())
 	maskCell(cellN);
     }
   return;

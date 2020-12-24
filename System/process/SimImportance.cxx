@@ -26,7 +26,7 @@
 #include <complex> 
 #include <vector>
 #include <map> 
-#include <list> 
+#include <list>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -147,7 +147,6 @@ importanceSim(SimMCNP& System,
   System.populateCells();
   System.createObjSurfMap();
 
-  physicsSystem::PhysicsCards& PC=System.getPC();      
   WeightSystem::simulationImp(System,IParam);
 
   WeightSystem::ExtField(System,IParam);
