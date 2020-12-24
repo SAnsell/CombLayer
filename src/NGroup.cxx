@@ -727,10 +727,10 @@ NGroup<T>::condense(const double Tol,
 {
 
   ELog::RegMethod RegA("NGroup","condence(vec)");
-  
+
+  clearItems();
   if (Values.size()<3)
     {
-      clearItems();
       for(const T& V : Values)
 	Items.push_back(new RSingle<T>(V));
       return;
@@ -795,7 +795,6 @@ NGroup<T>::condense(const double Tol,
       cnt+=repCnt;
     }
 
-  clearItems();
   Items=std::move(OutList);
   return;
 }
@@ -808,6 +807,7 @@ NGroup<T>::write(std::ostream& OX) const
     \param OX :: string stream to write out
   */
 {
+  ELog::EM<<"WSize == "<<Items.size()<<ELog::endDiag;
   for(const RUnit<T>* RPtr : Items)
     RPtr->write(OX);
   return;

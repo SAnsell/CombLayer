@@ -675,7 +675,7 @@ SimMCNP::writeImportance(std::ostream& OX) const
       const MonteCarlo::Object* OPtr=findObject(CN);
       // flag indicates particles :
       std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
-      ImpMap.emplace(0,Imp);
+      ImpMap[0].push_back(Imp);
       if (!flag)
 	{
 	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
@@ -697,6 +697,8 @@ SimMCNP::writeImportance(std::ostream& OX) const
   cx.str("");
   cx<<"imp:"<<pConv.mcnpParticleList(pList);
   IRange.condense(1e-6,ImpMap[0]);
+  
+  cx<<IRange;
   StrFunc::writeMCNPX(cx.str(),OX);
   
   for(const auto& [ PN , IVec] : ImpMap)

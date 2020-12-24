@@ -46,7 +46,7 @@ namespace MonteCarlo
 constexpr double zeroImpTol(1e-12);
   
 Importance::Importance() :
-  zeroImp(0),allSame(1),defValue(0)
+  zeroImp(0),allSame(1),defValue(1.0)
   /*!
     Constructor 
   */
