@@ -454,7 +454,7 @@ mergeTemplate<T,U>::write(std::ostream& OX) const
 
 template class mergeTemplate<Geometry::Plane,Geometry::Plane>;
 template class mergeTemplate<Geometry::Cylinder,Geometry::Cylinder>;
-  //template class mergeTemplate<Geometry::Cylinder,Geometry::Plane>;
+template class mergeTemplate<Geometry::Cylinder,Geometry::Plane>;
 
 ///\endcond TEMPLATE
 

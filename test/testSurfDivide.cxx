@@ -67,7 +67,6 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "surfDBase.h"
-#include "mergeMulti.h"
 #include "mergeTemplate.h"
 #include "surfDivide.h"
 #include "surfCompare.h"

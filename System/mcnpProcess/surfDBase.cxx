@@ -59,6 +59,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "SurInter.h"
 #include "surfDBase.h"
 
 namespace ModelSupport
@@ -165,6 +166,42 @@ surfDBase::createSurf<Geometry::Cylinder,Geometry::Cylinder>
   Geometry::Cylinder* CPtr=
     SurI.createUniqSurf<Geometry::Cylinder>(newItem++);
   CPtr->setCylinder(CentB,NormB,RB);
+  return SurI.addSurface(CPtr);
+}
+
+template<>
+Geometry::Surface*
+surfDBase::createSurf<Geometry::Cylinder,Geometry::Plane>
+(const Geometry::Cylinder* cSurf,const Geometry::Plane* pSurf,
+   const double fraction,int& newItem)
+  /*!
+    Divides a cylinder and a plane to the required fraction. 
+    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    then we get a normal that is opposite to ON.
+    \param pSurf :: primary surface
+    \param sSurf :: secondary surface
+    \param newItem :: Plane number to start with
+    \param fraction :: Weight between the two surface
+    \return plane number created
+   */
+{
+  ELog::RegMethod RegA("surfDBase<Cylinder,Plane>","createSurf");
+
+  ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
+
+  const Geometry::Vec3D CentA=cSurf->getCentre();
+  const Geometry::Vec3D NormA=cSurf->getNormal();
+  const double RA=cSurf->getRadius();
+  
+  const Geometry::Vec3D NormB=pSurf->getNormal();
+  double RB=SurInter::getLineDistance(CentA,NormB,pSurf);
+  if (RB<0) RB*=-1;
+  RB*=fraction;
+  RB+=(1.0-fraction)*RA;
+  
+  Geometry::Cylinder* CPtr=
+    SurI.createUniqSurf<Geometry::Cylinder>(newItem++);
+  CPtr->setCylinder(CentA,NormA,RB);
   return SurI.addSurface(CPtr);
 }
 

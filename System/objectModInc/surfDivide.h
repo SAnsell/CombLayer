@@ -71,10 +71,6 @@ class surfDivide
 
   static std::string writeToken(const std::vector<Token>&);
 
-  template<typename T> void makePair(const int,const int);
-  template<typename T> void makeMulti(const int,const int,const int);
-  template<typename T> void makeSignPair(const int,const int,const int);
-
  public:
 
   surfDivide();
@@ -101,6 +97,8 @@ class surfDivide
 
   template<typename T> void makeTemplate(const int,const int);
   template<typename T> void makeTemplate(const int,const int,const int);
+
+  template<typename T,typename U> void makeTemplatePair(const int,const int);
   void addRule(const surfDBase*);
 
   void addPair(const int,const int);

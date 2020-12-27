@@ -129,6 +129,25 @@ getLinePoint(const Geometry::Vec3D& Origin,
   return trackLine.getPoint(PPtr);
 }
 
+double
+getLineDistance(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Plane* PPtr)
+  /*!
+    Calculate the line though a plane
+    This is a specialization of getLinePoint because
+    a plane will only have one (at most) intersection points
+
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param PPtr :: plane object
+    \return Distance between Origin and intersect
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  return trackLine.getDist(PPtr);
+}
+
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,
              const Geometry::Vec3D& Axis,
@@ -145,6 +164,28 @@ getLinePoint(const Geometry::Vec3D& Origin,
 {
   MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
   return trackLine.getPoint(SPtr,NPoint);
+}
+
+double
+getLineDistance(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Surface* SPtr,
+             const Geometry::Vec3D& NPoint)
+  /*!
+    Calculate the line though a surface
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param SPtr :: surface point
+    \param NPoint :: nearest point
+    \return Distance to point
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  Geometry::Vec3D Pt=trackLine.getPoint(SPtr,NPoint);
+  const double R=Pt.Distance(Origin);
+  // calc direction
+  Pt-=Origin;
+  return (Pt.dotProd(Axis)>0.0) ? R : -R;
 }
 
    

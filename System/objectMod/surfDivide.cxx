@@ -68,7 +68,6 @@
 #include "Simulation.h"
 #include "Token.h"
 #include "surfDBase.h"
-#include "mergeMulti.h"
 #include "mergeTemplate.h"
 #include "ModelSupport.h"
 #include "BaseMap.h"
@@ -174,85 +173,7 @@ surfDivide::addRule(const surfDBase* SBase)
   return;
 }
 
-template<typename T>
-void
-surfDivide::makeSignPair(const int iPt,const int oPt,const int dir)
-  /*!
-    Creates a simple two surface system with sign type
-    \param iPt :: inner Point
-    \param oPt :: outer Point
-    \param dir :: sign direction on replacement [Not sign effected :: Note]
-  */
-{
-  ELog::RegMethod RegA("surfDivide","makeSignPair<T>");
 
-  mergeMulti<T,T>* DR=new mergeMulti<T,T>();
-  DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
-  DR->addSecondarySurf(oPt);
-  DR->setSignReplace(dir);
-  PRules.push_back(DR);
-
-  return;
-}
-
-template<typename T>
-void
-surfDivide::makePair(const int iPt,const int oPt)
-  /*!
-    Creates a simple two surface system
-    \param iPt :: inner Point
-    \param oPt :: outer Point
-  */
-{
-  ELog::RegMethod RegA("surfDivide","makePair");
-
-  mergeMulti<T,T>* DR=new mergeMulti<T,T>();
-  DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
-  DR->addSecondarySurf(oPt);
-  PRules.push_back(DR);
-
-  return;
-}
-
-template<typename T,typename U>
-void
-surfDivide::makePair(const int iPt,const int oPt)
-  /*!
-    Creates a simple two surface system
-    \param iPt :: inner Point
-    \param oPt :: outer Point
-  */
-{
-  ELog::RegMethod RegA("surfDivide","makePair");
-
-  mergeMulti<T,U>* DR=new mergeMulti<T,U>();
-  DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
-  DR->addSecondarySurf(oPt);
-  PRules.push_back(DR);
-
-  return;
-}
-
-template<typename T>
-void
-surfDivide::makeMulti(const int iPt,const int oPtA,const int oPtB)
-  /*!
-    Creates a simple three surface system. All surfaces
-    must take a sign
-    \param iPt :: inner Point
-    \param oPtA :: outer Point (primary)
-    \param oPtB :: outer Point (secondary)
-  */
-{
-  ELog::RegMethod RegA("surfDivide","makeMulti");
-
-  mergeMulti<T,T>* DR=new mergeMulti<T,T>();
-  DR->setPrimarySurf(((iPt>0) ? 1 : 0),iPt);
-  DR->addSecondarySurf(oPtA);
-  DR->addSecondarySurf(oPtB);
-  PRules.push_back(DR);
-  return;
-}
 
 template<typename T>
 void
@@ -267,6 +188,26 @@ surfDivide::makeTemplate(const int iPt,const int oPtA)
   ELog::RegMethod RegA("surfDivide","makeTemplate");
 
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
+  DR->setSurfPair(iPt,oPtA);
+  DR->setInnerRule(iPt);
+  DR->setOuterRule(oPtA);
+  PRules.push_back(DR);
+  return;
+}
+
+template<typename T,typename U>
+void
+surfDivide::makeTemplatePair(const int iPt,const int oPtA)
+  /*!
+    Creates a simple three surface system. All surfaces
+    must take a sign
+    \param iPt :: inner Point
+    \param oPtA :: outer Point (primary)
+  */
+{
+  ELog::RegMethod RegA("surfDivide","makeTemplatePair");
+
+  mergeTemplate<T,U>* DR=new mergeTemplate<T,U>();
   DR->setSurfPair(iPt,oPtA);
   DR->setInnerRule(iPt);
   DR->setOuterRule(oPtA);
@@ -646,13 +587,7 @@ surfDivide::writeToken(const std::vector<Token>& TVec)
 }
 
 ///\cond TEMPLATE
-template void surfDivide::makePair<Geometry::Plane>(const int,const int);
-template void surfDivide::makePair<Geometry::Cylinder>(const int,const int);
-template void surfDivide::makeMulti<Geometry::Plane>(const int,const int,const int);
-template void surfDivide::makeSignPair<Geometry::Plane>(const int,const int,const int);
-template void surfDivide::makePair<Geometry::Cylinder,Geometry::Plane>(const int,const int);
-
-
+template void surfDivide::makeTemplatePair<Geometry::Cylinder,Geometry::Plane>(const int,const int);
 template void surfDivide::makeTemplate<Geometry::Plane>(const int,const int);
 template void surfDivide::makeTemplate<Geometry::Plane>(const int,const int,const int);
 

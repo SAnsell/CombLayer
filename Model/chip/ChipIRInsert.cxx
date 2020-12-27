@@ -409,13 +409,13 @@ ChipIRInsert::layerProcess(Simulation& System)
       // Cell Specific:
       DA.setCellN(CDivideList[static_cast<size_t>(i)]);
       DA.setOutNum(cellIndex,buildIndex+501+100*i);
-      DA.makePair<Geometry::Cylinder,Geometry::Plane>
+      DA.makeTemplatePair<Geometry::Cylinder,Geometry::Plane>
 	(SMap.realSurf(buildIndex+107),-SMap.realSurf(buildIndex+3+10*i));
       DA.addOuterSingle(SMap.realSurf(buildIndex+4+10*i));
       DA.addOuterSingle(SMap.realSurf(buildIndex+5+10*i));
       DA.addOuterSingle(SMap.realSurf(buildIndex+6+10*i));
        
-      DA.activeDivide(System);
+      DA.activeDivideTemplate(System);
       cellIndex=DA.getCellNum();
     }
   return;
