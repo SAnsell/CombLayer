@@ -419,7 +419,7 @@ TS2FlatTarget::layerProcess(Simulation& System)
       // Cell Specific:
       DA.setCellN(mainCell);
       DA.setOutNum(cellIndex,buildIndex+801);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+1),
 				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();

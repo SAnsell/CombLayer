@@ -35,7 +35,8 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
                scatMatInc specialInc transportInc testInclude );
 
 
-my @mainLib=qw( visit src simMC  construct physics input process
+my @mainLib=qw( visit src simMC  construct 
+    physics input generalProcess objectMod
     transport scatMat endf crystal source monte funcBase log monte
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
@@ -44,7 +45,7 @@ my @mainLib=qw( visit src simMC  construct physics input process
     insertUnit md5 construct
     global constructVar physics simMC
     transport attachComp visit poly 
-    magnetic phitsPhysics process
+    magnetic phitsPhysics mcnpProcess
     scatMat endf crystal );
 
 my $gM=new CMakeList;

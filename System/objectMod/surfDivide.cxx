@@ -167,7 +167,7 @@ surfDivide::addRule(const surfDBase* SBase)
     \param SBase :: Main rule.
   */
 {
-  ELog::RegMethod REgA("surfDivide","addRule");
+  ELog::RegMethod RegA("surfDivide","addRule");
 
   if (SBase)
     PRules.push_back(SBase->clone());
@@ -268,6 +268,8 @@ surfDivide::makeTemplate(const int iPt,const int oPtA)
 
   mergeTemplate<T,T>* DR=new mergeTemplate<T,T>();
   DR->setSurfPair(iPt,oPtA);
+  DR->setInnerRule(iPt);
+  DR->setOuterRule(oPtA);
   PRules.push_back(DR);
   return;
 }

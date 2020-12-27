@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomCollimator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -351,9 +351,9 @@ ZoomCollimator::layerProcess(Simulation& System)
       DA.setCellN(CDivideList[i]);
       DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+23),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+23),
 				   -SMap.realSurf(buildIndex+3));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+24),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+24),
        				   SMap.realSurf(buildIndex+4));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();

@@ -3,7 +3,7 @@
  
  * File:   chip/InnerWall.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,7 +268,7 @@ InnerWall::layerProcess(Simulation& System)
       // Cell Specific:
       DA.setCellN(CDivideList[static_cast<size_t>(i)]);
       DA.setOutNum(cellIndex,buildIndex+201+100*i);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+1),
 				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();

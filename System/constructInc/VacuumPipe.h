@@ -96,8 +96,6 @@ class VacuumPipe :
   int claddingMat;              ///< Pipe cladding material
   int flangeMat;                ///< Flange material
 
-  size_t nDivision;             ///< Number divisions
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -105,7 +103,6 @@ class VacuumPipe :
   void createLinks();
 
   void applyActiveFrontBack();
-  void createDivision(Simulation&);
 
  public:
 

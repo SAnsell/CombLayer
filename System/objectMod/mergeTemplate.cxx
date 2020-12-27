@@ -3,7 +3,7 @@
  
  * File:   process/mergeTemplate.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -326,8 +326,8 @@ mergeTemplate<T,U>::process(const double fA,
 			    HeadRule& HR) 
   /*!
     Process the cells 
-    \param fA :: Fraction  for top level
-    \param fB :: Fraction  for top level
+    \param fA :: Fraction for top level
+    \param fB :: Fraction for top level
     \param HR :: Head Rule
    */
 {
@@ -335,25 +335,17 @@ mergeTemplate<T,U>::process(const double fA,
 
   // transfer old to new and make surfaces
   PSPtr=OSPtr;
-
   if (fB<1.0) 
     createSurfaces(fB);
-  // Divide at level 1:
-  std::vector<const Rule*> RefItems=
-    HR.findNodes(0);
-
 
   HeadRule Result(HR);
   // Create Inner/Outer Units:
   if (fA>Geometry::zeroTol)
-    { 
-      Result.subMatched(InTemplate,makeOuterComp());
-    }
+    Result.subMatched(InTemplate,makeOuterComp());
 
   if ((1.0-fB)>Geometry::zeroTol)
-    {
-      Result.subMatched(OutTemplate,makeOuter());
-    }
+    Result.subMatched(OutTemplate,makeOuter());
+
   HR=Result;
   return;
 }

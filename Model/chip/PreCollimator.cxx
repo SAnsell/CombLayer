@@ -340,8 +340,8 @@ PreCollimator::layerProcess(Simulation& System)
       DA.setCellN(CDivideList[i]);
       DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
-				   SMap.realSurf(buildIndex+2));
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				       SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ralBuild/TS2target.cxx
+ * File:  ralBuild/TS2target.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -617,7 +617,7 @@ TS2target::layerProcess(Simulation& System)
       // Cell Specific:
       DA.setCellN(mainCell);
       DA.setOutNum(cellIndex,buildIndex+801);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+1),
 				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();

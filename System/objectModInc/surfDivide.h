@@ -54,7 +54,7 @@ class surfDivide
  private:
 
   int cellNumber;                   ///< Cell number
-  MonteCarlo::Object* BaseObj;       ///< BaseObject
+  MonteCarlo::Object* BaseObj;      ///< BaseObject
   int outCellN;                     ///< Output cell number
   int outSurfN;                     ///< Output surfNum [incremental]
 
@@ -70,6 +70,10 @@ class surfDivide
   void clearRules();
 
   static std::string writeToken(const std::vector<Token>&);
+
+  template<typename T> void makePair(const int,const int);
+  template<typename T> void makeMulti(const int,const int,const int);
+  template<typename T> void makeSignPair(const int,const int,const int);
 
  public:
 
@@ -94,9 +98,6 @@ class surfDivide
 
   void init();
 
-  template<typename T> void makePair(const int,const int);
-  template<typename T> void makeMulti(const int,const int,const int);
-  template<typename T> void makeSignPair(const int,const int,const int);
 
   template<typename T> void makeTemplate(const int,const int);
   template<typename T> void makeTemplate(const int,const int,const int);

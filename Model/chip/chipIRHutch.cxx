@@ -959,7 +959,7 @@ chipIRHutch::layerProcess(Simulation& System)
       
       DA.setCellN(layerCells["roof"]);
       DA.setOutNum(cellIndex,buildIndex+801);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+16),
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+16),
 				   SMap.realSurf(buildIndex+6));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
@@ -980,7 +980,7 @@ chipIRHutch::layerProcess(Simulation& System)
       
       DA.setCellN(layerCells["floor"]);
       DA.setOutNum(cellIndex,buildIndex+801);
-      DA.makePair<Geometry::Plane>(-SMap.realSurf(buildIndex+15),
+      DA.makeTemplate<Geometry::Plane>(-SMap.realSurf(buildIndex+15),
 				   SMap.realSurf(buildIndex+5));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
@@ -1002,7 +1002,7 @@ chipIRHutch::layerProcess(Simulation& System)
       if (layerCells.find("backWall")!=layerCells.end())
         {
 	  DA.setCellN(layerCells["backWall"]);
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+32),
+	  DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+32),
 				       SMap.realSurf(buildIndex+2));
 	  DA.activeDivide(System);
 	  cellIndex=DA.getCellNum();
