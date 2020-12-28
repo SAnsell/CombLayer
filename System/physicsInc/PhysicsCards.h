@@ -50,8 +50,8 @@ namespace physicsSystem
   \author S.Ansell
   \brief Processes the physics cards in the MCNPX .i file
 
-  Reads/Writes the physics cards. At the moment does
-  not process the special cards. 
+  Writes the physics cards. At the moment does
+  not process all the special cards. 
   It holds all types of "all cell" cards (imp,vol,fcl etc.)
   in ImpCards.  
 */
@@ -63,7 +63,7 @@ class PhysicsCards
   int mcnpVersion;                     ///< Version of MCNP(X) 
   size_t nps;                          ///< number of particles to run
   int histp;                           ///< Add a histp line
-  tallySystem::NList<int> histpCells;  ///< cells for the histp list
+  std::set<int> histpCells;            ///< cells for the histp list
 
   std::unique_ptr<nameCard> RAND;      ///< RAND card [MCNP6]
   std::unique_ptr<nameCard> PTRAC;     ///< Particle Track card [MCNP6]
@@ -173,8 +173,6 @@ class PhysicsCards
 
   void writeHelp(const std::string&) const;
   
-  void writeFLUKA(std::ostream&) const;
-  void writePHITS(std::ostream&);
   void write(std::ostream&,const std::vector<int>&,
 	     const std::set<int>&) const;   
 };

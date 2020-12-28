@@ -85,9 +85,8 @@ class Simulation : public objectGroups
 
   size_t cellDNF;                       ///< max size to convert into DNF
   size_t cellCNF;                       ///< max size to convert into CNF
-  OTYPE OList;   ///< List of objects  (allow to become hulls)
+  OTYPE OList;                          ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
-  //   std::set<int> voidCells;              ///< List of void cells
 
   std::string sourceName;               ///< Source name
   

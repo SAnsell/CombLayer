@@ -59,7 +59,6 @@
 #include "XMLobject.h"
 #include "XMLgroup.h"
 #include "XMLcollect.h"
-#include "NRange.h"
 #include "Vec3D.h"
 #include "SVD.h"
 #include "Transform.h"

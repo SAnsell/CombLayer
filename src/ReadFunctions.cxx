@@ -57,7 +57,7 @@
 #include "Quaternion.h"
 #include "Triple.h"
 #include "NList.h"
-#include "NRange.h"
+#include "NGroup.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"

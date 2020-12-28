@@ -276,7 +276,7 @@ PhysicsCards::addHistpCells(const std::vector<int>& AL)
 {
   ELog::RegMethod RegA("PhysicsCards","addHistpCells");
   for(const int CellN : AL)
-    histpCells.addComp(CellN);
+    histpCells.emplace(CellN);
   return;
 }
 
@@ -737,11 +737,16 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
    */
 {
   ELog::RegMethod RegA("PhysicsCards","substituteCell");
-  histpCells.changeItem(oldCell,newCell);
+
+  std::set<int>::iterator vc=histpCells.find(oldCell);
+  if (vc!=histpCells.end())
+    {
+      histpCells.erase(vc);
+      histpCells.emplace(newCell);
+    }
 
   for(PhysImp* PI : PImpVec)
     PI->renumberCell(oldCell,newCell);
-
 
   PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);
@@ -812,68 +817,6 @@ PhysicsCards::writeHelp(const std::string& keyName) const
   return;
 }
 
-void
-PhysicsCards::writeFLUKA(std::ostream& OX) const
-  /*!
-    Write out each of the physics-related cards
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("PhysicsCards","write");
-
-  dbCard->write(OX);
-
-  StrFunc::writeFLUKA("RANDOMIZE 1.0",OX);
-  StrFunc::writeFLUKA("START "+std::to_string(nps),OX);
-
-  return;
-}
-
-void 
-PhysicsCards::writePHITS(std::ostream& OX)
-  /*!
-    Write out each of the cards
-    \param OX :: Output stream
-    \param cellOutOrder :: Cell List
-    \param voidCell :: List of void cells
-    \todo Check that histp does not need a line cut.
-  */
-{
-  ELog::RegMethod RegA("PhyiscsCards","writePHITS");
-
-  const particleConv& pConv = particleConv::Instance();
-  
-  for(const PhysCard* PC : PCards)
-    {						
-      if (PC->getKey()=="cut")
-	{
-	  const PStandard* PS(dynamic_cast<const PStandard*>(PC));
-	  if (PS)
-	    {
-	      const double TCut  = PS->getValue(0);
-	      const double ECut  = PS->getValue(1);
-	      if (ECut>1e-12)
-		{
-		  for(const std::string& PItem : PS->getParticles())
-		    {
-		      OX<<" emin("<<std::setw(2)<<pConv.phitsITYP(PItem)
-			<<")    ="<<ECut;
-		      OX<<"   # "<<pConv.nameToPHITS(PItem)<<std::endl;
-		    }
-		}
-	      for(const std::string& PItem : PS->getParticles())
-		{
-		  OX<<" tmax("<<std::setw(2)<<pConv.phitsITYP(PItem)
-		    <<")    ="<<TCut;
-		  OX<<"   # "<<pConv.nameToPHITS(PItem)<<std::endl;
-		}
-	    }
-	}
-    }
-  
-  return;
-}
-
 void 
 PhysicsCards::write(std::ostream& OX,
 		    const std::vector<int>& cellOutOrder,
@@ -886,7 +829,7 @@ PhysicsCards::write(std::ostream& OX,
     \todo Check that histp does not need a line cut.
   */
 {
-  ELog::RegMethod RegA("PhyiscsCards","write");
+  ELog::RegMethod RegA("PhysicsCards","write");
 
   dbCard->write(OX);
 
@@ -899,7 +842,11 @@ PhysicsCards::write(std::ostream& OX,
       std::ostringstream cx;
       cx<<"histp";
       if (!histpCells.empty())
-	cx<<" -500000000 "<<histpCells;
+	{
+	  cx<<" -500000000 ";
+	  for(const int CN : histpCells)
+	    cx<<" "<<CN;
+	}
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   if (mcnpVersion!=10) RAND->write(OX);
