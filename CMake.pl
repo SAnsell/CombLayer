@@ -21,11 +21,11 @@ my @masterProg=getAllMain();
 
 
 ## Model Directory
-##my @modelLibDir=qw( bibBuild bnctBuild build chip
+##my @modelLibDir=qw( bibBuild build 
 ##                    cuBlock d4cModel delft epbBuild essBuild
 ##                    gammaBuild lensModel moderator
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
-##                    zoom );
+##                     );
 
 ##my @modelNames= @modelLibDir;
 
@@ -128,7 +128,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( moderator build chip  build ralBuild zoom  );
+	my @fullBuild = qw( moderator build build ralBuild );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }

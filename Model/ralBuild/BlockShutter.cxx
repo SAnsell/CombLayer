@@ -3,7 +3,7 @@
  
  * File:   build/BlockShutter.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,21 +77,20 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedGroup.h"
+#include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
-#include "collInsertCyl.h"
 #include "BlockShutter.h"
 
 namespace shutterSystem
 {
 
 BlockShutter::BlockShutter(const size_t ID,const std::string& K,
-			 const std::string& ZK) :
-  GeneralShutter(ID,K),b4cMat(47),
+			   const std::string& ZK) :
+  GeneralShutter(ID,K),
+  b4cMat(47),
   blockKey(ZK)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -101,42 +100,6 @@ BlockShutter::BlockShutter(const size_t ID,const std::string& K,
   */
 {}
 
-BlockShutter::BlockShutter(const BlockShutter& A) : 
-  GeneralShutter(A),b4cMat(A.b4cMat),
-  blockKey(A.blockKey),nBlock(A.nBlock),colletHGap(A.colletHGap),
-  colletVGap(A.colletVGap),colletFGap(A.colletFGap),
-  colletMat(A.colletMat),iBlock(A.iBlock),
-  colletInnerCell(A.colletInnerCell),
-  colletOuterCell(A.colletOuterCell)
-  /*!
-    Copy constructor
-    \param A :: BlockShutter to copy
-  */
-{}
-
-BlockShutter&
-BlockShutter::operator=(const BlockShutter& A)
-  /*!
-    Assignment operator
-    \param A :: BlockShutter to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      GeneralShutter::operator=(A);
-      blockKey=A.blockKey;
-      nBlock=A.nBlock;
-      colletHGap=A.colletHGap;
-      colletVGap=A.colletVGap;
-      colletFGap=A.colletFGap;
-      colletMat=A.colletMat;
-      iBlock=A.iBlock;
-      colletInnerCell=A.colletInnerCell;
-      colletOuterCell=A.colletOuterCell;
-    }
-  return *this;
-}
 
 BlockShutter::~BlockShutter() 
   /*!
@@ -169,7 +132,6 @@ BlockShutter::populate(const FuncDataBase& Control)
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");
   colletMat=ModelSupport::EvalMat<int>(Control,blockKey+"ColletMat");
 
-  populated|=2;
   return;
 }
 
@@ -218,121 +180,7 @@ BlockShutter::createSurfaces()
   return;
 }  
 
-BlockShutter::zbTYPE
-BlockShutter::makeBlockUnit(const FuncDataBase& Control,
-			    const int index) const
-  /*!
-    Create the correct block unit
-    \param Control :: Control object
-    \param index :: Index of block
-    \return shared_ptr to block type
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","makeBlockUnit");
 
-  const std::string tKey=
-    blockKey+"Block"+std::to_string(index+1)+"TYPE";
-  const int cylFlag=Control.EvalDefVar<int>(tKey,0);
-
-  return (!cylFlag) ?
-    zbTYPE(new collInsertBlock(blockKey+"Block",index)) 
-    :  zbTYPE(new collInsertCyl(blockKey+"Block",index));
-
-}
-
-void
-BlockShutter::createInsert(Simulation& System)
-  /*!
-    Create the insert
-    \param System :: Simulation to replace
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","createInsert");
-  const FuncDataBase& Control=System.getDataBase();
-  // Create
-  std::string Out;
-
-  
-  size_t cutPt(0);
-  // Get Test object
-  const MonteCarlo::Object* OuterCell=System.findObject(colletOuterCell);
-  // Create First Object: (or only object)
-   if (nBlock>1)
-    {
-      zbTYPE ItemZB=makeBlockUnit(Control,0);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"7 ")+divideStr();
-      ItemZB->initialize(System,*this);
-      ItemZB->setOrigin(frontPt+Y*0.01,xStep,xAngle,zStart,zAngle);
-      ItemZB->createAll(System,0,Out,"");
-      iBlock.push_back(ItemZB);
-    }
-  for(int i=1;i<nBlock-1;i++)
-    {
-      zbTYPE ItemZB=makeBlockUnit(Control,i);
-      ItemZB->createAll(System,*iBlock.back());
-      
-      iBlock.push_back(ItemZB);
-       // Nasty code to force using the system:
-      if (OuterCell && OuterCell->isValid(ItemZB->getLinkPt(2)))
-	{
-	  OuterCell=0;
-	  ItemZB->insertObjects(System);
-	  cutPt=iBlock.size();
-	  processColletExclude(System,colletInnerCell,0,cutPt);
-	  cutPt--;   // iBlocksize -1
-	}
-    }
-  // Outer Cell
-  if (nBlock>2)
-    {
-      zbTYPE ItemZB=makeBlockUnit(Control,nBlock-1);
-      const zbTYPE ZB= iBlock.back();  // previous block
-      ItemZB->initialize(System,*ZB);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ")+divideStr();
-      ItemZB->createAll(System,ZB->getLinkSurf(2),"",Out);
-      iBlock.push_back(ItemZB);
-    }
-  processColletExclude(System,colletOuterCell,cutPt,iBlock.size());	  
-  return;
-}
-
-
-void
-BlockShutter::processColletExclude(Simulation& System,const int cellN,
-				  const size_t indexA,const size_t indexB)
-  /*!
-    Builds and handles the collet holder, finding the minium number 
-    of surfaces that need to be tracked in
-    \param System :: Simulation to use
-    \param cellN :: shutterVoid cell 
-    \param indexA :: initial block number to check
-    \param indexB :: final block number to check
-   */
-{
-  // Get first point
-  ELog::RegMethod RegA("BlockShutter","processColletExclude");
-  size_t firstCell(0);
-  for(size_t i=indexA+1;i<indexB;i++)
-    {
-      const zbTYPE ZB=iBlock[i-1];
-      if (!iBlock[i]->equalExternal(*ZB))
-	{
-	  if (firstCell)
-	    ZB->addOuterSurf(iBlock[firstCell]->getLinkSurf(1));
-	  ZB->addOuterSurf(ZB->getLinkSurf(-2));
-	  ZB->setInsertCell(cellN);
-	  ZB->insertObjects(System);
-	  firstCell=i;
-	}
-    }
-  // Always add one block:
-  zbTYPE ZOut=iBlock.back();
-  if (firstCell)
-    ZOut->addOuterSurf(iBlock[firstCell]->getLinkSurf(-1));
-  ZOut->setInsertCell(cellN);
-  ZOut->insertObjects(System);
-  return;
-}
 
 void
 BlockShutter::createObjects(Simulation& System)
@@ -384,75 +232,9 @@ BlockShutter::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
     }
-  else
-    {
-      // single shutter object [worth doing?]  
-    }
   return;
 }
 
-Geometry::Vec3D
-BlockShutter::getExitTrack() const
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    \return Exit direction
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","getExitTrack");
-
-  std::vector<zbTYPE>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-
-  
-  std::vector<zbTYPE>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-
-  if (ac==iBlock.end() || bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endErr;
-      return Y;
-    }
-  const masterRotate& MR=masterRotate::Instance();
-  const Geometry::Vec3D PtA=(*bc)->getWindowCentre()-
-    (*ac)->getWindowCentre();
-  ELog::EM<<"Pt A == "<<MR.calcRotate((*ac)->getWindowCentre())<<ELog::endTrace;
-  ELog::EM<<"Pt B == "<<MR.calcRotate((*bc)->getWindowCentre())<<ELog::endTrace;
-  ELog::EM<<"Pt axis == "<<MR.calcAxisRotate(PtA.unit())<<ELog::endTrace;
-  return PtA.unit();
-}
-
-Geometry::Vec3D
-BlockShutter::getExitPoint() const
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    - Use the centre of the  
-    \return Exit direction
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","getExitPoint");
-  
-  std::vector<zbTYPE>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-  if (bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
-      return (iBlock.empty()) ? Origin : iBlock.back()->getCentre();
-    }
-  return (*bc)->getWindowCentre();
-}
 
 double
 BlockShutter::processShutterDrop() const
@@ -471,126 +253,6 @@ BlockShutter::processShutterDrop() const
   return drop-zStart;
 } 
 
-void
-BlockShutter::setTwinComp()
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    - Use the centre of the b4c
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","setTwinComp");
-
-
-  std::vector<zbTYPE>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-
-  std::vector<zbTYPE>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-
-  
-  if (ac==iBlock.end() || bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
-      return;
-    }
-  
-  const double zCShift=(closed % 2) ? 
-    closedZShift-openZShift : 0;
-
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  
-
-  Geometry::Vec3D bEnter=(*ac)->getWindowCentre()-Z*zCShift;
-  Geometry::Vec3D bExit=(*bc)->getWindowCentre()-Z*zCShift;
-
-  Geometry::Vec3D bX;
-  Geometry::Vec3D bY=(bExit-bEnter).unit();
-  Geometry::Vec3D bZ=Z;
-  Geometry::Quaternion::calcQRot(zAngle,X).rotate(bZ);
-  bX=bZ*bY;
-  
-  if (X.dotProd(bX)<0) bX*=-1;
-  beamFC.createUnitVector(bEnter,bX,bY,bZ);
-  beamFC.setConnect(0,bEnter,-bY);
-  beamFC.setConnect(1,bExit,bY);
-  
-  // Only amount to add is closed shutter offset:
-  
-  return;
-}
-
-std::vector<Geometry::Vec3D>
-BlockShutter::createFrontViewPoints() const
-  /*!
-    Given a point, make the back projection of the shutter view
-    \return String of surfaces [ADDED to SMAP]
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","createViewSurf");
-
-  std::vector<Geometry::Vec3D> Opts;
-
-  std::vector<zbTYPE>::const_iterator ba=
-    find_if(iBlock.begin(),iBlock.end(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-  if (ba!=iBlock.end())
-    {
-      std::vector<zbTYPE>::const_iterator bb=
-	find_if(ba+1,iBlock.end(),
-		std::bind(std::equal_to<int>(),
-		    std::bind<int>(&collInsertBase::getMat,
-				   std::placeholders::_1),b4cMat));
-      if (bb!=iBlock.end())
-	Opts=(*ba)->viewWindow(bb->get());
-      return Opts;
-    }
-
-  ELog::EM<<"Problem finding B4C blocks"<<ELog::endErr;
-  return Opts;
-}
-
-std::vector<Geometry::Vec3D>
-BlockShutter::createBackViewPoints() const
-  /*!
-    Given a point, make the back projection of the shutter view
-    \return String of surfaces [ADDED to SMAP]
-  */
-{
-  ELog::RegMethod RegA("BlockShutter","createViewSurf");
-
-  std::vector<Geometry::Vec3D> Opts;
-
-  std::vector<zbTYPE>::const_reverse_iterator ba=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    std::bind(std::equal_to<int>(),
-			std::bind<int>(&collInsertBase::getMat,
-				       std::placeholders::_1),b4cMat));
-  if (ba!=iBlock.rend())
-    {
-      std::vector<zbTYPE>::const_reverse_iterator bb=
-	find_if(ba+1,iBlock.rend(),
-		std::bind(std::equal_to<int>(),
-		    std::bind<int>(&collInsertBase::getMat,
-				   std::placeholders::_1),b4cMat));
-      if (bb!=iBlock.rend())
-	Opts=(*ba)->viewWindow(bb->get());
-      return Opts;
-    }
-
-  ELog::EM<<"Problem finding B4C blocks"<<ELog::endErr;
-  return Opts;
-}
-
   
 void
 BlockShutter::createAll(Simulation& System,
@@ -608,12 +270,9 @@ BlockShutter::createAll(Simulation& System,
   this->GeneralShutter::setZOffset(processShutterDrop());
   GeneralShutter::createAll(System,FC,sideIndex);
 
-
   createSurfaces();
   createObjects(System);  
-  createInsert(System);
-
-  BlockShutter::setTwinComp();
+  
   return;
 }
   

@@ -3,7 +3,7 @@
  
  * File:   buildInc/BlockShutter.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef BlockShutter_h
-#define BlockShutter_h
+#ifndef shutterSystem_BlockShutter_h
+#define shutterSystem_BlockShutter_h
 
 class Simulation;
 
@@ -34,8 +34,7 @@ class Simulation;
 
 namespace shutterSystem
 {
-  class shutterInfo;
-  class collInsertBase;
+  class collInsert;
 
 /*!
   \class BlockShutter
@@ -50,11 +49,7 @@ class BlockShutter : public GeneralShutter
 {
  private:
 
-  /// Storage for iBlock
-  typedef std::shared_ptr<collInsertBase> zbTYPE;
-
   const int b4cMat;                  ///< Search material for B4C
-
   std::string blockKey;              ///< Key Name
 
   int nBlock;                       ///< number of inner blocks    
@@ -69,8 +64,6 @@ class BlockShutter : public GeneralShutter
 
   int colletMat;                     ///< Collet material
 
-  std::vector<zbTYPE> iBlock;        ///< Inner block
-
   int colletInnerCell;               ///< Inner collet cell
   int colletOuterCell;               ///< Outer Collet cell
 
@@ -82,11 +75,7 @@ class BlockShutter : public GeneralShutter
   void createObjects(Simulation&);  
   void createSurfaces();  
   
-  void processColletExclude(Simulation&,const int,
-			    const size_t,const size_t);
   double processShutterDrop() const;
-  void setTwinComp();
-  zbTYPE makeBlockUnit(const FuncDataBase&,const int) const;
 
  public:
 
@@ -97,6 +86,7 @@ class BlockShutter : public GeneralShutter
 
   Geometry::Vec3D getExitTrack() const;
   Geometry::Vec3D getExitPoint() const;
+
   std::vector<Geometry::Vec3D>  createFrontViewPoints() const;
   std::vector<Geometry::Vec3D>  createBackViewPoints() const;
 

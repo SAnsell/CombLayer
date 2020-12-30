@@ -77,7 +77,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "chipDataStore.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,6 +86,7 @@
 #include "FixedUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -97,11 +97,7 @@
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
 #include "Torpedo.h"
-#include "ChipIRShutterFlat.h"
-#include "ChipIRInsert.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
-#include "ZoomShutter.h"
+#include "collInsert.h"
 #include "BlockShutter.h"
 #include "BulkShield.h"
 
@@ -296,28 +292,26 @@ BulkShield::createShutters(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const bool chipFlag(excludeSet.find("chipIR")==excludeSet.end());
-  const bool zoomFlag(excludeSet.find("zoom")==excludeSet.end());
-  const bool letFlag(excludeSet.find("LET")==excludeSet.end());
+  // const bool chipFlag(excludeSet.find("chipIR")==excludeSet.end());
+  // const bool zoomFlag(excludeSet.find("zoom")==excludeSet.end());
+  // const bool letFlag(excludeSet.find("LET")==excludeSet.end());
 
   GData.clear();
   for(size_t i=0;i<numberBeamLines;i++)
     {
-      if (i==chipShutter && chipFlag)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
-      else if (i==zoomShutter && zoomFlag)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ZoomShutter(i+1,"shutter","zoomShutter")));
-      else if (i==letShutter && letFlag)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i+1,"shutter","letShutter")));
-      else
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new GeneralShutter(i+1,"shutter")));
+      // if (i==chipShutter && chipFlag)
+      // 	GData.push_back(std::shared_ptr<GeneralShutter>
+      // 			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
+      // else if (i==zoomShutter && zoomFlag)
+      // 	GData.push_back(std::shared_ptr<GeneralShutter>
+      // 			(new ZoomShutter(i+1,"shutter","zoomShutter")));
+      // else if (i==letShutter && letFlag)
+      // 	GData.push_back(std::shared_ptr<GeneralShutter>
+      // 			(new BlockShutter(i+1,"shutter","letShutter")));
+      //      else
+      GData.push_back(std::shared_ptr<GeneralShutter>
+		      (new GeneralShutter(i+1,"shutter")));
       OR.addObject(GData.back());
-      //      OR.addObject(StrFunc::makeString(std::string("shutter"),i),
-      //      GData.back());
     }
 
   const int shutterCell=getCell("Shutter");
@@ -360,14 +354,14 @@ BulkShield::createBulkInserts(Simulation& System)
   for(size_t i=0;i<numberBeamLines;i++)
     {
       std::shared_ptr<BulkInsert> BItem;
-      if (i==chipShutter && chipFlag)
-	{
-	  BItem=std::shared_ptr<BulkInsert>
-	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
-	}
-      else
-	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
-
+      // if (i==chipShutter && chipFlag)
+      // 	{
+      // 	  BItem=std::shared_ptr<BulkInsert>
+      // 	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+      // 	}
+      // else
+      BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
+	
 
       BItem->setLayers(innerCell,outerCell);
       BItem->setExternal(SMap.realSurf(buildIndex+17),

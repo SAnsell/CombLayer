@@ -212,7 +212,9 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const size_t index,
 {
   boost::format FMT(keyName+"ShutterBlock%d%s");
   const std::string b4cMat("B4C");
-  double gapThick((b4cSpace+b4cThick)/2.0);     // normal is two b4c sheets this is one
+  // normal is two b4c sheets this is one
+  double gapThick((b4cSpace+b4cThick)/2.0);
+
 
   // B4C scrapper #1 
 

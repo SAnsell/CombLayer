@@ -78,8 +78,7 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
+#include "collInsert.h"
 #include "ZoomShutter.h"
 
 namespace shutterSystem
@@ -230,6 +229,7 @@ ZoomShutter::createInsert(Simulation& System)
   size_t cutPt(0);
   // Get Test object
   const MonteCarlo::Object* OuterCell=System.findObject(colletOuterCell);
+  /*
   // Create First Object:
   if (nBlock>1)
     {
@@ -268,45 +268,10 @@ ZoomShutter::createInsert(Simulation& System)
       iBlock.push_back(ItemZB);
     }
   processColletExclude(System,colletOuterCell,cutPt,iBlock.size());	  
+  */
   return;
 }
 
-void
-ZoomShutter::processColletExclude(Simulation& System,const int cellN,
-				  const size_t indexA,const size_t indexB)
-  /*!
-    Builds and handles the collet holder, finding the minium number 
-    of surfaces that need to be tracked in
-    \param System :: Simulation to use
-    \param cellN :: shutterVoid cell 
-    \param indexA :: initial block number to check
-    \param indexB :: final block number to check
-   */
-{
-  // Get first point
-  ELog::RegMethod RegA("ZoomShutter","processColletExclude");
-  size_t firstCell(0);
-  for(size_t i=indexA+1;i<indexB;i++)
-    {
-      collInsertBlock& ZB=iBlock[i-1];
-      if (!iBlock[i].equalExternal(ZB))
-	{
-	  if (firstCell)
-	    ZB.addOuterSurf(iBlock[firstCell].getLinkSurf(1));
-	  ZB.addOuterSurf(ZB.getLinkSurf(-2));
-	  ZB.setInsertCell(cellN);
-	  ZB.insertObjects(System);
-	  firstCell=i;
-	}
-    }
-  // Always add one block:
-  collInsertBlock& ZOut=iBlock.back();
-  if (firstCell)
-    ZOut.addOuterSurf(iBlock[firstCell].getLinkSurf(-1));
-  ZOut.setInsertCell(cellN);
-  ZOut.insertObjects(System);
-  return;
-}
 
 void
 ZoomShutter::createObjects(Simulation& System)
@@ -365,74 +330,7 @@ ZoomShutter::createObjects(Simulation& System)
   return;
 }
 
-Geometry::Vec3D
-ZoomShutter::getExitTrack() const
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    \return Exit direction
-  */
-{
-  ELog::RegMethod RegA("ZoomShutter","getExitTrack");
 
-  const int b4cMat(47);
-  std::vector<collInsertBlock>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    [b4cMat](const collInsertBlock& cb)
-	    {
-	      return (cb.getMat()==b4cMat);
-	    });
-
-  std::vector<collInsertBlock>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    [b4cMat](const collInsertBlock& cb)
-	    {
-	      return (cb.getMat()==b4cMat);
-	    });
-	    
-  if (ac==iBlock.end() || bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endErr;
-      return Y;
-    }
-  const masterRotate& MR=masterRotate::Instance();
-  const Geometry::Vec3D PtA=bc->getWindowCentre()-
-    ac->getWindowCentre();
-  ELog::EM<<"Pt A == "<<MR.calcRotate(ac->getWindowCentre())<<ELog::endTrace;
-  ELog::EM<<"Pt B == "<<MR.calcRotate(bc->getWindowCentre())<<ELog::endTrace;
-  ELog::EM<<"Pt axis == "<<MR.calcAxisRotate(PtA.unit())<<ELog::endTrace;
-  return PtA.unit();
-}
-
-Geometry::Vec3D
-ZoomShutter::getExitPoint() const
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    - Use the centre of the  
-    \return Exit direction
-  */
-{
-  ELog::RegMethod RegA("ZoomShutter","getExitPoint");
-  
-  const int b4cMat(47);
-
-  std::vector<collInsertBlock>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    [b4cMat](const collInsertBlock& cb)
-	    {
-	      return (cb.getMat()==b4cMat);
-	    });
-
-  if (bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
-      return (iBlock.empty()) ? Origin : iBlock.back().getCentre();
-    }
-  return bc->getWindowCentre();
-}
 
 double
 ZoomShutter::processShutterDrop() const
@@ -450,66 +348,6 @@ ZoomShutter::processShutterDrop() const
   const double drop=innerRadius*tan(zAngle);
   return drop-zStart;
 } 
-
-void
-ZoomShutter::setTwinComp()
-  /*!
-    Determine the effective direction from the shutter exit
-    - Constructed by taking the original point (centre) to the 
-      centre point of the last unit
-    - Use the centre of the b4c
-  */
-{
-  ELog::RegMethod RegA("ZoomShutter","setTwinComp");
-    
-  const int b4cMat(47);
-  std::vector<collInsertBlock>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    [b4cMat](const collInsertBlock& cb)
-	    {
-	      return (cb.getMat()==b4cMat);
-	    });
-
-
-  std::vector<collInsertBlock>::const_reverse_iterator bc=
-    find_if(iBlock.rbegin(),iBlock.rend(),
-	    [b4cMat](const collInsertBlock& cb)
-	    {
-	      return (cb.getMat()==b4cMat);
-	    });
-
-
-  if (ac==iBlock.end() || bc==iBlock.rend())
-    {
-      ELog::EM<<"Problem finding B4C blocks"<<ELog::endErr;
-      return;
-    }
-  
-  const double zCShift=(closed % 2) ? 
-    closedZShift-openZShift : 0;
-
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-  
-  Geometry::Vec3D bEnter=(*ac).getWindowCentre()-Z*zCShift;
-  Geometry::Vec3D bExit=(*bc).getWindowCentre()-Z*zCShift;
-  ELog::EM<<"ac == "<<ELog::endDiag;
-  ac->write(ELog::EM.Estream());
-
- 
-  ELog::EM<<"TC == "<<bEnter<<" "<<Z<<" "<<zCShift<<ELog::endDiag;
-  ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
-  ELog::EM<<"TC == "<<bExit<<ELog::endDiag;
-
-  beamFC.createUnitVector(bEnter,X,(bExit-bEnter).unit(),Z);
-  beamFC.applyAngleRotate(0,zAngle);
-
-  beamFC.setConnect(0,bEnter,beamFC.getY());
-  beamFC.setConnect(1,bExit,beamFC.getY());
-
-  ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
-  ELog::EM<<"TC == "<<bExit<<ELog::endDiag;
-  return;
-}
 
 void
 ZoomShutter::createAll(Simulation& System,
@@ -533,7 +371,6 @@ ZoomShutter::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);  
   createInsert(System);
-  setTwinComp();
 
   return;
 }

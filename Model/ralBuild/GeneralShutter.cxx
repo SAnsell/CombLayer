@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,7 +95,9 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
     \param ID :: Shutter number
     \param Key :: Variable keyword 
   */
-{}
+{
+  ELog::EM<<"GS["<<keyName<<"] == "<<cellIndex<<ELog::endDiag;
+}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),

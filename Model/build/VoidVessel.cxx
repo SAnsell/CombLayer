@@ -76,7 +76,6 @@
 #include "Simulation.h"
 #include "chipDataStore.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"

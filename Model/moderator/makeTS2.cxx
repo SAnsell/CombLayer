@@ -74,9 +74,6 @@
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
-#include "FBBlock.h"
-#include "makeChipIR.h"
-#include "makeZoom.h"
 
 #include "makeTS2Bulk.h"
 #include "makeReflector.h"
@@ -114,21 +111,7 @@ makeTS2::build(Simulation* SimPtr,
   int excludeCell(74123);
   moderatorSystem::makeTS2Bulk bulkObj;
   moderatorSystem::makeReflector refObj;
-  hutchSystem::makeChipIR chipObj;
-  zoomSystem::makeZoom zoomObj;
   
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("chipIR")))
-    {
-      chipObj.buildIsolated(*SimPtr,IParam);
-      return;
-    }
-
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
-    {
-      zoomObj.buildIsolated(*SimPtr);
-      return;
-    }
-
 
   bulkObj.build(SimPtr,IParam,excludeCell);
   refObj.build(*SimPtr,IParam,excludeCell);

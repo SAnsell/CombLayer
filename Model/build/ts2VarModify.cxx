@@ -3,7 +3,7 @@
  
  * File:   build/ts2VarModify.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,13 +71,13 @@ TS2InputModifications(Simulation* SimPtr,inputParam& IParam,
   //The big variable setting
   setVariable::TS2layout(SimPtr->getDataBase());
 
-  if (!IParam.flag("exclude") ||
-      !IParam.compValue("E",std::string("chipIR")))
-    setVariable::ChipVariables(SimPtr->getDataBase());
+  // if (!IParam.flag("exclude") ||
+  //     !IParam.compValue("E",std::string("chipIR")))
+  //   setVariable::ChipVariables(SimPtr->getDataBase());
 
-  if (!IParam.flag("exclude") ||
-      !IParam.compNoCaseValue("E",std::string("zoom")))
-    setVariable::ZoomVariables(IParam,SimPtr->getDataBase());
+  // if (!IParam.flag("exclude") ||
+  //     !IParam.compNoCaseValue("E",std::string("zoom")))
+  //   setVariable::ZoomVariables(IParam,SimPtr->getDataBase());
     
   if (IParam.flag("bolts"))
     setVariable::RefBolts(SimPtr->getDataBase());

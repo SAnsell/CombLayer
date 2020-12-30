@@ -76,7 +76,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -85,13 +84,13 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
+#include "collInsert.h"
 #include "GeneralShutter.h"
 #include "BlockShutter.h"
 #include "BulkInsert.h"
@@ -309,9 +308,11 @@ t1BulkShield::createShutters(Simulation& System)
       // Not registered under KeyName 
       OR.addObject(GData.back());
     }
+    
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
+      ELog::EM<<"I == "<<i<<ELog::endDiag;
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
@@ -324,6 +325,7 @@ t1BulkShield::createShutters(Simulation& System)
 
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
+  ELog::EM<<"I == END"<<ELog::endDiag;
 
   return;
 }
@@ -357,9 +359,8 @@ t1BulkShield::createBulkInserts(Simulation& System)
 void
 t1BulkShield::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the main bulk components
     \param System :: Simulation to create objects in
-    \param CC :: Excluded object to inner layers [Void vessel]
    */
 {
   ELog::RegMethod RegA("t1BulkShield","createObjects");
