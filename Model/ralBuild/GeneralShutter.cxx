@@ -87,7 +87,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
   FixedGroup(Key+std::to_string(ID),"Main",8,"Beam",2),
   ContainedComp(),
   shutterNumber(ID),baseName(Key),
-  populated(0),divideSurf(0),
+  divideSurf(0),
   DPlane(0),closed(0),reversed(0),upperCell(0),
   lowerCell(0),innerVoidCell(0)
   /*!
@@ -102,7 +102,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
-  populated(A.populated),divideSurf(A.divideSurf),
+  divideSurf(A.divideSurf),
   DPlane(A.DPlane),voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   totalHeight(A.totalHeight),totalDepth(A.totalDepth),
@@ -140,7 +140,6 @@ GeneralShutter::operator=(const GeneralShutter& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      populated=A.populated;
       divideSurf=A.divideSurf;
       voidXoffset=A.voidXoffset;
       innerRadius=A.innerRadius;
@@ -191,11 +190,11 @@ GeneralShutter::~GeneralShutter()
   */
 {}
 
-void
-GeneralShutter::setGlobalVariables(const double IRad,
-				   const double ORad,
-				   const double floorZ,
-				   const double topZ)
+  void
+  GeneralShutter::setGlobalVariables(const double IRad,
+				     const double ORad,
+				     const double floorZ,
+				     const double topZ)
   /*!
     Sets external variables:
     \param IRad :: Inner [void radius]
@@ -203,35 +202,29 @@ GeneralShutter::setGlobalVariables(const double IRad,
     \param floorZ :: Full extent of bulk shield
     \param topZ :: Full extent of bulk shield
   */
-{
-  innerRadius=IRad;
-  outerRadius=ORad;
-  totalHeight=topZ;
-  totalDepth=floorZ;
-  populated |= 2;
-  return;
-}
+  {
+    innerRadius=IRad;
+    outerRadius=ORad;
+    totalHeight=topZ;
+    totalDepth=floorZ;
+    return;
+  }
 				
 void
 GeneralShutter::populate(const FuncDataBase& Control)
-  /*!
-    Populate all the variables
-    \param Control :: Database to us
-  */
+/*!
+  Populate all the variables
+  \param Control :: Database to us
+*/
 {
   ELog::RegMethod RegA("GeneralShutter","populate");
 
   voidXoffset=Control.EvalPair<double>("voidYoffset","voidXoffset");
 
-  // Global from shutter size:
-  if (!(populated & 2))
-    {
-      innerRadius=Control.EvalVar<double>("bulkTorpedoRadius");
-      outerRadius=Control.EvalVar<double>("bulkShutterRadius");  
-      totalHeight=Control.EvalVar<double>("bulkRoof");
-      totalDepth=Control.EvalVar<double>("bulkFloor");
-      populated |= 2;
-    }
+  innerRadius=Control.EvalTail<double>(keyName,baseName,"InnerRadius");
+  outerRadius=Control.EvalTail<double>(keyName,baseName,"OuterRadius");
+  totalHeight=Control.EvalTail<double>(keyName,baseName,"TotalHeight");
+  totalDepth=Control.EvalTail<double>(keyName,baseName,"TotalDepth");
 
   closed=Control.EvalDefTail<int>(keyName,baseName,"Closed",0);
   reversed=Control.EvalDefTail<int>(keyName,baseName,"Reversed",0);
@@ -304,7 +297,6 @@ GeneralShutter::populate(const FuncDataBase& Control)
     } while (flag==shutterBlock::Size);
 
 
-  populated|=1;
   return;
 }
 
@@ -376,6 +368,12 @@ GeneralShutter::applyRotations(const double ZOffset)
   targetPt=Origin+XYAxis*outerRadius;
   frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
   endPt=frontPt+XYAxis*(outerRadius-innerRadius);
+
+    ELog::EM<<"IR == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
+  ELog::EM<<"Point["<<keyName<<"] == "<<targetPt<<ELog::endDiag;
+  ELog::EM<<"Front["<<keyName<<"] == "<<frontPt<<ELog::endDiag;
+  ELog::EM<<"End["<<keyName<<"] == "<<endPt<<ELog::endDiag;
+  ELog::EM<<"  ========== == "<<ELog::endDiag;
 
   // OUTPUT
   mainFC.setConnect(0,frontPt,-XYAxis);

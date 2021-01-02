@@ -55,8 +55,6 @@ class GeneralShutter :
   const size_t shutterNumber;         ///< number of the shutter
   const std::string baseName;         ///< Basic name
 
-  int populated;                      ///< populated / not
-
   int divideSurf;                     ///< Divider Number
   Geometry::Plane* DPlane;            ///< Divided plane [if set]
 

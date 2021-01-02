@@ -351,7 +351,6 @@ PlateTarget::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1004 3 -4 5 -6 -52");
-  //  Out+=ModelSupport::getComposite(SMap,surfNum," -52");
   addOuterSurf(Out);
 
 

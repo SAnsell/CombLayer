@@ -85,7 +85,7 @@ namespace ModelSupport
 {
 
 boxUnit::boxUnit(const std::string& Key,const size_t index) : 
-  attachSystem::FixedUnit(Key+std::to_string(index),6),
+  attachSystem::FixedUnit(6,Key+std::to_string(index)),
   attachSystem::ContainedComp(),
   prev(0),next(0),maxExtent(0.0),
   activeFlag(0),nSides(0)

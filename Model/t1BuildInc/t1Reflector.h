@@ -45,7 +45,8 @@ namespace ts1System
   \brief TS1 t1Reflector [insert object]
 */
 
-class t1Reflector : public attachSystem::ContainedComp,
+class t1Reflector :
+    public attachSystem::ContainedComp,
     public attachSystem::FixedOffset
 {
  private:

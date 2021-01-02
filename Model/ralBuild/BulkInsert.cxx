@@ -233,9 +233,9 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   FixedGroup::createUnitVector(FC,2);
-  ELog::EM<<"Side == "<<sideIndex<<ELog::endDiag;
-  ELog::EM<<"MC == "<<mainFC.getCentre()<<ELog::endDiag;
-  ELog::EM<<"BC == "<<beamFC.getCentre()<<ELog::endDiag;
+  // ELog::EM<<"Side == "<<sideIndex<<ELog::endDiag;
+  // ELog::EM<<"MC == "<<mainFC.getCentre()<<ELog::endDiag;
+  // ELog::EM<<"BC == "<<beamFC.getCentre()<<ELog::endDiag;
 
   const GeneralShutter& GS=dynamic_cast<const GeneralShutter&>(FC);
   mainFC.createUnitVector(GS.getKey("Main"),2);
@@ -329,7 +329,6 @@ BulkInsert::createObjects(Simulation& System)
   // Create divide string
   
   const std::string dSurf=divideStr();
-  ELog::EM<<"DSurf = "<<dSurf<<ELog::endDiag;
   // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"-5 6 3 -4 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));

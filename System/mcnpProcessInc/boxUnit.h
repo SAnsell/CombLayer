@@ -3,7 +3,7 @@
  
  * File:   processInc/boxUnit.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ class surfRegister;
   \brief A single unit of a pipe
 */
 
-class boxUnit : public attachSystem::FixedUnit,
-  public attachSystem::ContainedComp
+class boxUnit :
+    public attachSystem::FixedUnit,
+    public attachSystem::ContainedComp
 
 {
  private:
@@ -90,8 +91,6 @@ class boxUnit : public attachSystem::FixedUnit,
   void createOuterObjects();
   void insertObjects(Simulation&);
   
-
-
  public:
   
   boxUnit(const std::string&,const size_t);

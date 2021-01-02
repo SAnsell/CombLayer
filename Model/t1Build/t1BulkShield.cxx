@@ -192,6 +192,7 @@ t1BulkShield::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("t1BulkShield","populate");
 
   vYoffset=Control.EvalVar<double>("voidYoffset");
+  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   
   shutterRadius=Control.EvalVar<double>(keyName+"ShutterRadius");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
@@ -312,20 +313,17 @@ t1BulkShield::createShutters(Simulation& System)
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      ELog::EM<<"I == "<<i<<ELog::endDiag;
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
-
-      GData[i]->setGlobalVariables(voidRadius,shutterRadius,
-				   totalDepth,totalHeight);
+      ELog::EM<<"T == "<<totalDepth<<" "<<totalHeight<<ELog::endDiag;
       GData[i]->setDivide(50000);     /// ARRRHHH....
       GData[i]->createAll(System,*this,0);    
-
+      ELog::EM<<"Create["<<i<<"] "<<GData[i]->getCentre()<<
+	" : "<<GData[i]->getY()<<ELog::endDiag;
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
-  ELog::EM<<"I == END"<<ELog::endDiag;
 
   return;
 }

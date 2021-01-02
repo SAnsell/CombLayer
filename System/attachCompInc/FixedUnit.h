@@ -42,9 +42,13 @@ class FixedUnit : public FixedComp
   FixedUnit(const std::string& K) :
     FixedComp(0,K) {}
 
-  /// Simple constructor
+  /// Simple constructor [no objectregister]
   FixedUnit(const std::string& K,const size_t I) :
     FixedComp(I,K) {}
+
+  /// Simple constructor [with objectregister]
+  FixedUnit(const size_t I,const std::string& K) :
+    FixedComp(K,I) {}
 
   /// Simple constructor [extra range]
   FixedUnit(const std::string& K,const size_t I,const size_t S) :

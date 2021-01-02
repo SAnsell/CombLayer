@@ -79,7 +79,7 @@ namespace ModelSupport
 {
 
 pipeUnit::pipeUnit(const std::string& Key,const size_t Index) : 
-  attachSystem::FixedUnit(Key+std::to_string(Index),3),
+  attachSystem::FixedUnit(3,Key+std::to_string(Index)),
   attachSystem::ContainedComp(),
   nAngle(6),prev(0),next(0),
   activeFlag(511)

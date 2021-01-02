@@ -427,6 +427,7 @@ makeT1Real::build(Simulation& System,
       
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);
+      
       voidCell=VoidObj->getVoidCell();
     }
   else
