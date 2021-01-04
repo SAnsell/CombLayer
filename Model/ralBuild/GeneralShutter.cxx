@@ -203,6 +203,7 @@ GeneralShutter::~GeneralShutter()
     \param topZ :: Full extent of bulk shield
   */
   {
+    ELog::EM<<"ERRROR "<<ELog::endErr;
     innerRadius=IRad;
     outerRadius=ORad;
     totalHeight=topZ;
@@ -269,7 +270,6 @@ GeneralShutter::populate(const FuncDataBase& Control)
       const double CD=Control.EvalTail<double>(keyName,baseName,SCent);
       clearCent.push_back(CD);
     }
-    
 
   
   // This sets group of objects within the shutter
@@ -317,20 +317,6 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp& FC,
   mainFC.createUnitVector(FC,sideIndex);
   beamFC.createUnitVector(FC,sideIndex);
 
-  /* !  NOT (FC)
-     {
-     mainFC.createUnitVector
-     (Y*voidXoffset,
-     Geometry::Vec3D(0,1,0),
-     Geometry::Vec3D(0,0,-1),
-     Geometry::Vec3D(-1,0,0));
-     beamFC.createUnitVector
-	(Y*voidXoffset,
-	Geometry::Vec3D(0,1,0),
-	Geometry::Vec3D(0,0,-1),
-	Geometry::Vec3D(-1,0,0));
-	}
-  */
   setDefault("Main","Beam");
   return;
 }
@@ -368,8 +354,10 @@ GeneralShutter::applyRotations(const double ZOffset)
   targetPt=Origin+XYAxis*outerRadius;
   frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
   endPt=frontPt+XYAxis*(outerRadius-innerRadius);
-
-    ELog::EM<<"IR == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
+  
+  ELog::EM<<"IR == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
+  ELog::EM<<"HF == "<<totalHeight<<" "<<totalDepth<<ELog::endDiag;  
+  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin<<ELog::endDiag;
   ELog::EM<<"Point["<<keyName<<"] == "<<targetPt<<ELog::endDiag;
   ELog::EM<<"Front["<<keyName<<"] == "<<frontPt<<ELog::endDiag;
   ELog::EM<<"End["<<keyName<<"] == "<<endPt<<ELog::endDiag;
@@ -737,7 +725,7 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
 		       10*static_cast<int>(BN));
 
   // Front/Back (Y AXIS)
-
+  ELog::EM<<"Front PTX == "<<frontPt<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,surfOffset+3,
 			   frontPt+Y*(SB.centY-SB.length/2.0),Y);
   LCube[0]=TCube[0]=SMap.realSurf(surfOffset+3);

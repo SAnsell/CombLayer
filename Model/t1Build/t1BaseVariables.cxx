@@ -914,7 +914,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("t1BulkOutWidth",40);       // Bulk Width [cm] (from centre 
 
   // SHUTTERS [For TS1]
-  Control.addVariable("shutterInnerRadius",190.5);     // inner void radius
+  Control.addVariable("shutterInnerRadius",165.0);     // inner void radius
   Control.addVariable("shutterOuterRadius",366.0);     // outer shutter rad
   // outer shutter rad
   Control.addParse<double>("shutterTotalHeight","t1BulkRoof");
@@ -1010,6 +1010,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("bulkInsertZOffset",0.00);
 
   // Mono Plug
+  Control.addVariable("MonoTopXAngle",-90.0);  // rotate to + Z
   Control.addVariable("MonoTopNPlugs",3);
   Control.addVariable("MonoTopPlugClearance",3.0);
   Control.addVariable("MonoTopDivideLen",3.0);
@@ -1022,6 +1023,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("MonoTopPlugZLen2",264.0);  
   Control.addVariable("MonoTopPlugZLen3",381.0);  
 
+  Control.addVariable("MonoBaseXAngle",-90.0);  // rotate to y== -Z
   Control.addVariable("MonoBaseNPlugs",1);
   Control.addVariable("MonoBasePlugClearance",1.0);
   Control.addVariable("MonoBaseDivideLen",3.0);

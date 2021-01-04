@@ -65,6 +65,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"

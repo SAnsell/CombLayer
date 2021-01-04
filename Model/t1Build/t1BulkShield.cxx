@@ -311,17 +311,14 @@ t1BulkShield::createShutters(Simulation& System)
     }
     
 
-  for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
+  for(size_t i=0;i<static_cast<size_t>(numberBeamLines) && i<2;i++)
     {
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
-      ELog::EM<<"T == "<<totalDepth<<" "<<totalHeight<<ELog::endDiag;
       GData[i]->setDivide(50000);     /// ARRRHHH....
       GData[i]->createAll(System,*this,0);    
-      ELog::EM<<"Create["<<i<<"] "<<GData[i]->getCentre()<<
-	" : "<<GData[i]->getY()<<ELog::endDiag;
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
 
@@ -339,7 +336,7 @@ t1BulkShield::createBulkInserts(Simulation& System)
 
   const int innerCell=CellMap::getCell("innerCell");
   const int outerCell=CellMap::getCell("outerCell");
-  for(size_t i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines && i<2;i++)
     {
       BData.push_back(std::shared_ptr<BulkInsert>
 		      (new BulkInsert(i,"bulkInsert")));
@@ -363,9 +360,10 @@ t1BulkShield::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","createObjects");
 
-  const std::string innerComp=ExternalCut::getRuleStr("FullInner");
+  const std::string innerComp=ExternalCut::getComplementStr("FullInner");
   std::string Out;
 
+  ELog::EM<<"Inner == "<<innerComp<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
   makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
 
@@ -465,7 +463,6 @@ t1BulkShield::createAll(Simulation& System,
   // const t1CylVessel& CVoid)
 
   populate(System.getDataBase());
-  //  voidRadius=CVoid.getOuterRadius();
   createUnitVector(FC,sideIndex);
 
   createSurfaces();
