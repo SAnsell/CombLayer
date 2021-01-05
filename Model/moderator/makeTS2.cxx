@@ -69,6 +69,8 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ExternalCut.h"
 
 #include "shutterBlock.h"

@@ -76,7 +76,9 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
@@ -87,9 +89,9 @@ namespace shutterSystem
 BulkInsert::BulkInsert(const size_t ID,const std::string& Key) : 
   attachSystem::FixedGroup(Key+std::to_string(ID+1),"Main",6,"Beam",2),
   attachSystem::ContainedGroup("inner","outer"),
+  attachSystem::ExternalCut(),attachSystem::CellMap(),
   baseName(Key),
-  shutterNumber(ID),
-  divideSurf(0)
+  shutterNumber(ID)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -99,16 +101,14 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
 
 BulkInsert::BulkInsert(const BulkInsert& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedGroup(A),
+  attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   shutterNumber(A.shutterNumber),
-  divideSurf(A.divideSurf),DPlane(A.DPlane),
-  xyAngle(A.xyAngle),
-  innerRadius(A.innerRadius),midRadius(A.midRadius),
-  outerRadius(A.outerRadius),zOffset(A.zOffset),
+  zOffset(A.zOffset),
   innerHeight(A.innerHeight),innerWidth(A.innerWidth),
   outerHeight(A.outerHeight),outerWidth(A.outerWidth),
   innerCell(A.innerCell),
-  outerCell(A.outerCell),innerVoid(A.innerVoid),
-  outerVoid(A.outerVoid),innerInclude(A.innerInclude),
+  outerCell(A.outerCell),
+  innerInclude(A.innerInclude),
   outerInclude(A.outerInclude)
   /*!
     Copy constructor
@@ -128,11 +128,8 @@ BulkInsert::operator=(const BulkInsert& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
-      divideSurf=A.divideSurf;
-      xyAngle=A.xyAngle;
-      innerRadius=A.innerRadius;
-      midRadius=A.midRadius;
-      outerRadius=A.outerRadius;
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       zOffset=A.zOffset;
       innerHeight=A.innerHeight;
       innerWidth=A.innerWidth;
@@ -140,8 +137,6 @@ BulkInsert::operator=(const BulkInsert& A)
       outerWidth=A.outerWidth;
       innerCell=A.innerCell;
       outerCell=A.outerCell;
-      innerVoid=A.innerVoid;
-      outerVoid=A.outerVoid;
       innerInclude=A.innerInclude;
       outerInclude=A.outerInclude;
     }
@@ -153,24 +148,7 @@ BulkInsert::~BulkInsert()
     Destructor
   */
 {}
-		
-
-void
-BulkInsert::setGlobalVariables(const double SRad,
-			       const double IRad,
-			       const double ORad)
-  /*!
-    Sets external variables:
-    \param SRad :: Shutter radius
-   */
-{
-  innerRadius=SRad;
-  midRadius=IRad;
-  outerRadius=ORad;
-  return;
-}
-
-		
+				
 void
 BulkInsert::populate(const FuncDataBase& Control)
   /*!
@@ -184,11 +162,6 @@ BulkInsert::populate(const FuncDataBase& Control)
   impZero=Control.EvalDefPair<int>(numName+"ImpZero",keyName+"ImpZero",0);  
   // Global from shutter size:
 
-  innerRadius=Control.EvalDefVar<double>("bulkShutterRadius",innerRadius);
-  midRadius=Control.EvalDefVar<double>("bulkInnerRadius",midRadius);  
-  outerRadius=Control.EvalDefVar<double>("bulkOuterRadius",outerRadius);  
-
-  //  xyAngle=GS.getAngle();
 
   zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
   innerWidth=Control.EvalTail<double>(keyName,baseName,"IWidth");
@@ -233,15 +206,10 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   FixedGroup::createUnitVector(FC,2);
-  // ELog::EM<<"Side == "<<sideIndex<<ELog::endDiag;
-  // ELog::EM<<"MC == "<<mainFC.getCentre()<<ELog::endDiag;
-  // ELog::EM<<"BC == "<<beamFC.getCentre()<<ELog::endDiag;
 
   const GeneralShutter& GS=dynamic_cast<const GeneralShutter&>(FC);
   mainFC.createUnitVector(GS.getKey("Main"),2);
   beamFC.createUnitVector(GS.getKey("Beam"),2);
-  divideSurf=GS.getDivideSurf();
-  DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
   mainFC.setCentre(Origin);
   setDefault("Main","Beam");
@@ -249,27 +217,6 @@ BulkInsert::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-
-void
-BulkInsert::setExternal(const int rInner,const int rMid,
-			const int rOuter)
-/*!
-    Set the external surfaces
-    \param rInner :: inner cylinder surface
-    \param rMid :: Mid cylinder surface
-    \param rOuter :: outer cylinder surface
-  */
-{
-  ELog::RegMethod RegA("BulkInsert","setExternal");
-
-  SMap.addMatch(buildIndex+7,rInner);
-  SMap.addMatch(buildIndex+17,rMid);
-  SMap.addMatch(buildIndex+27,rOuter);
-  
-  //  setExitSurf(SMap.realSurf(buildIndex+27));
-
-  return;
-}
 
 void
 BulkInsert::createSurfaces()
@@ -299,22 +246,6 @@ BulkInsert::createSurfaces()
 			   Origin-Z*(outerHeight/2.0),Z);
   return;
 }
-
-std::string
-BulkInsert::divideStr() const
-  /*!
-    Construct the divide string
-    \return the +/- string form
-   */
-{
-  ELog::RegMethod RegA("BulkInsert","divideStr");
-  std::ostringstream cx;
-  if (xyAngle<0)
-    cx<<divideSurf;
-  else
-    cx<<-divideSurf;
-  return cx.str();
-}
   
 void
 BulkInsert::createObjects(Simulation& System)
@@ -325,19 +256,25 @@ BulkInsert::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BulkInsert","createObjects");
 
-  std::string Out;
-  // Create divide string
+  const HeadRule RInnerHR=ExternalCut::getRule("RInner");
+  const HeadRule RInnerComp=RInnerHR.complement();
+  const HeadRule RMidHR=ExternalCut::getRule("RMid");
+  const HeadRule RMidComp=RMidHR.complement();
+  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
+
   
-  const std::string dSurf=divideStr();
+  const HeadRule& dSurf=ExternalCut::getRule("Divider");
+
   // inner
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-5 6 3 -4 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
-  innerVoid=cellIndex-1;
+  HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 6 3 -4");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,
+	   HR*dSurf*RInnerComp*RMidHR);
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-15 16 13 -14 17 -27 ")+dSurf;
-  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
-  outerVoid=cellIndex-1;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-15 16 13 -14");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,
+	   HR*dSurf*RMidComp*ROuterHR);
 
   // ---------------
   // Add excludes
@@ -346,22 +283,27 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
+  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;  
   if (impZero) shutterObj->setImp(0);
-  innerInclude=ModelSupport::getComposite(SMap,buildIndex,"3 -4 -5 6 ")+dSurf;
-  HeadRule ExLiner(innerInclude);
-  ExLiner.makeComplement();
-  shutterObj->addSurfString(ExLiner.display());
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -5 6 ");
+
+  HR*=dSurf;   // intersection
+  HR.makeComplement();
+  shutterObj->addIntersection(HR);
+
   
   shutterObj=System.findObject(outerCell);  
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
-  if (impZero) shutterObj->setImp(0);
-  outerInclude=
-    ModelSupport::getComposite(SMap,buildIndex,"13 -14 -15 16 ")+dSurf;
 
-  ExLiner.procString(outerInclude);
-  ExLiner.makeComplement();
-  shutterObj->addSurfString(ExLiner.display());
+  ELog::EM<<"WARN == ZERO IMP SETTING CARE UPGRATE METHOD"<<ELog::endWarn;
+  if (impZero) shutterObj->setImp(0);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -15 16 ");
+  HR*=dSurf;
+  HR.makeComplement();
+  shutterObj->addIntersection(HR);
 
   return;
 }
@@ -381,16 +323,16 @@ BulkInsert::createLinks()
   
 
   MonteCarlo::LineIntersectVisit BeamLine(beamFC.getCentre(),beamFC.getY());
+  // not constant because of populate surfaces:
+  HeadRule HR=ExternalCut::getRule("ROuter");
   const Geometry::Vec3D bExit=
-    BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
-		      beamFC.getCentre());
+    BeamLine.getPoint(HR,beamFC.getCentre());
   
-  const int angleFlag((xyAngle>0) ? -1 : 1);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  mainFC.addLinkSurf(0,-angleFlag*divideSurf);
+  beamFC.setLinkSurf(0,ExternalCut::getRule("RInner"));
+  mainFC.addLinkSurf(0,ExternalCut::getRule("Divider"));
 
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
-  mainFC.addLinkSurf(1,angleFlag*divideSurf);
+  mainFC.setLinkSurf(1,ExternalCut::getRule("ROuter").complement());
+  mainFC.addLinkSurf(1,ExternalCut::getRule("Divider"));
 
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setConnect(1,bExit,Y);
@@ -406,17 +348,15 @@ BulkInsert::createLinks()
   mainFC.setConnect(5,Origin+Y*(outerHeight/2.0),Z);
 
   // Exit processed by calculating centre line to exit curve
-
-
   
   beamFC.setConnect(0,beamFC.getCentre(),-beamFC.getY());
   beamFC.setConnect(1,bExit,beamFC.getY());
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  beamFC.addLinkSurf(0,-angleFlag*divideSurf);
+  beamFC.setLinkSurf(0,ExternalCut::getRule("RInner"));
+  beamFC.addLinkSurf(0,ExternalCut::getRule("Divider").complement());
   
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
-  beamFC.addLinkSurf(1,angleFlag*divideSurf);
+  beamFC.setLinkSurf(1,ExternalCut::getRule("ROuter").complement());
+  beamFC.addLinkSurf(1,ExternalCut::getRule("Divider"));
 
   
   return;
@@ -439,6 +379,7 @@ BulkInsert::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
+  
   createLinks();
   return;
 }

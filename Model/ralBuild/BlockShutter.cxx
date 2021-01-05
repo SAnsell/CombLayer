@@ -194,7 +194,6 @@ BlockShutter::createObjects(Simulation& System)
   std::string Out,OutB;
   // Create divide string
 
-  const std::string dSurf=divideStr();  
   // Flightline
 
   if (voidDivide>0.0)
@@ -218,8 +217,9 @@ BlockShutter::createObjects(Simulation& System)
       VObjB->addSurfString(OutB);
       // Inner Collet
       colletInnerCell=cellIndex;
+      // divide surf
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
+	(SMap,buildIndex,"200 313 -314 -325 326 7 -401");
       System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;

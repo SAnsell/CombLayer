@@ -227,7 +227,6 @@ t1BulkShield::createSurfaces()
 			      Origin,Z,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin,Z,outerRadius);
-
   // INNER LAYER:
   const int SN=ExternalCut::getRule("Inner").getPrimarySurface();
   SMap.addMatch(buildIndex+7,SN);
@@ -311,17 +310,16 @@ t1BulkShield::createShutters(Simulation& System)
     }
     
 
-  for(size_t i=0;i<static_cast<size_t>(numberBeamLines) && i<2;i++)
+  for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
       GData[i]->setExternal(SMap.realSurf(buildIndex+7),
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
-      GData[i]->setDivide(50000);     /// ARRRHHH....
+      
       GData[i]->createAll(System,*this,0);    
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
-
   return;
 }
 
@@ -334,19 +332,27 @@ t1BulkShield::createBulkInserts(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","createBulkInserts");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   const int innerCell=CellMap::getCell("innerCell");
   const int outerCell=CellMap::getCell("outerCell");
-  for(size_t i=0;i<numberBeamLines && i<2;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
-      BData.push_back(std::shared_ptr<BulkInsert>
-		      (new BulkInsert(i,"bulkInsert")));
+      std::shared_ptr<BulkInsert> 
+	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
-      BData.back()->setLayers(innerCell,outerCell);
-      BData.back()->setExternal(SMap.realSurf(buildIndex+17),
-				SMap.realSurf(buildIndex+27),
-				SMap.realSurf(buildIndex+37) );
-      BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
-      BData.back()->createAll(System,*GData[i],0);    
+      BItem->setLayers(innerCell,outerCell);
+      BItem->setCutSurf("Divider",
+			GData[i]->getKey("Main").getLinkSurf("Divider"));
+      BItem->setCutSurf("RInner",-SMap.realSurf(buildIndex+17));
+      BItem->setCutSurf("RMid",-SMap.realSurf(buildIndex+27)); 
+      BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
+
+      OR.addObject(BItem->getKeyName(),BItem);
+      BItem->createAll(System,*GData[i],0);
+      
+      BData.push_back(BItem);
     }
   return;
 }
@@ -469,8 +475,11 @@ t1BulkShield::createAll(Simulation& System,
   createObjects(System); 
   processVoid(System);
   createShutters(System);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createBulkInserts(System);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createLinks();
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
 
   return;
 }

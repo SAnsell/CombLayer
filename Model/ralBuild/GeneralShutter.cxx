@@ -78,6 +78,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "GeneralShutter.h"
 
 namespace shutterSystem
@@ -87,8 +88,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
   FixedGroup(Key+std::to_string(ID),"Main",8,"Beam",2),
   ContainedComp(),
   shutterNumber(ID),baseName(Key),
-  divideSurf(0),
-  DPlane(0),closed(0),reversed(0),upperCell(0),
+  closed(0),reversed(0),upperCell(0),
   lowerCell(0),innerVoidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -102,8 +102,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
-  divideSurf(A.divideSurf),
-  DPlane(A.DPlane),voidXoffset(A.voidXoffset),
+  voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   totalHeight(A.totalHeight),totalDepth(A.totalDepth),
   totalWidth(A.totalWidth),upperSteel(A.upperSteel),
@@ -140,7 +139,6 @@ GeneralShutter::operator=(const GeneralShutter& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      divideSurf=A.divideSurf;
       voidXoffset=A.voidXoffset;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
@@ -355,13 +353,6 @@ GeneralShutter::applyRotations(const double ZOffset)
   frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
   endPt=frontPt+XYAxis*(outerRadius-innerRadius);
   
-  ELog::EM<<"IR == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
-  ELog::EM<<"HF == "<<totalHeight<<" "<<totalDepth<<ELog::endDiag;  
-  ELog::EM<<"Origin["<<keyName<<"] == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Point["<<keyName<<"] == "<<targetPt<<ELog::endDiag;
-  ELog::EM<<"Front["<<keyName<<"] == "<<frontPt<<ELog::endDiag;
-  ELog::EM<<"End["<<keyName<<"] == "<<endPt<<ELog::endDiag;
-  ELog::EM<<"  ========== == "<<ELog::endDiag;
 
   // OUTPUT
   mainFC.setConnect(0,frontPt,-XYAxis);
@@ -429,6 +420,9 @@ GeneralShutter::createSurfaces()
 {
   ELog::RegMethod RegA("GeneralShutter","createSurfaces");
 
+  // Divide:
+  //  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,Y);
+  
   // Fixed Steel  
   ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin+Z*(totalHeight-upperSteel),Z);
@@ -468,6 +462,8 @@ GeneralShutter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+226,
 	   frontPt-Z*(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);
 
+  // Forward Plane
+  ModelSupport::buildPlane(SMap,buildIndex+200,frontPt-Y*(innerRadius/4.0),Y);
   // Divide Plane
   ModelSupport::buildPlane(SMap,buildIndex+100,frontPt+Y*voidDivide,Y);
 
@@ -523,26 +519,11 @@ GeneralShutter::createSurfaces()
 			   Origin+X*(voidWidthOuter/2.0),X);
   return;
 }
-
-std::string
-GeneralShutter::divideStr() const
-  /*!
-    Construct the divide string
-    \return the +/- string form
-   */
-{
-  std::ostringstream cx;
-  if (xyAngle<0)
-    cx<<" "<<divideSurf<<" ";
-  else
-    cx<<" "<<-divideSurf<<" ";
-  return cx.str();
-}
   
 void
 GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
   /*!
-    Create the cutouts for teh shutter clearance
+    Create the cutouts for the shutter clearance
     \param System :: Simulation part
     \param ZUnit :: Unit for +/- Z section
   */
@@ -550,37 +531,37 @@ GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
   ELog::RegMethod RegA("GeneralShutter","createCutUnit");
 
   // CLEARANCE GAPS [Bulk Steel]:
-  const std::string addUnit(ZUnit+" "+divideStr());
+  const std::string addUnit(ZUnit);
   std::string OutA,OutB;
   int SN(buildIndex+2000);
   for(size_t i=0;i<clearCent.size();i++)
     {
       if (!i)
 	{
-	  OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-					  " (-3:4) 2003 -2004 7 -111M ")+addUnit;
-	  OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-					  " (-2003:2004) 2023 -2024 7 -111M ")+addUnit;
+	  OutA=ModelSupport::getComposite
+	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 7 -111M ")+addUnit;
+	  OutB=ModelSupport::getComposite
+	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 7 -111M ")+addUnit;
 	}
       else
 	{
-	  OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-					  "(-3:4) 2003 -2004 12M -111M")+addUnit;
-	  OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-					  "(-2003:2004) 2023 -2024 12M -111M ")+addUnit;
+	  OutA=ModelSupport::getComposite
+	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 12M -111M")+addUnit;
+	  OutB=ModelSupport::getComposite
+	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 12M -111M ")+addUnit;
 	}
       System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
       System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
 
       // Insert blocks:
       OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "(-3:4) 2013 -2014 101M -102M ")+addUnit;
+				      "200 (-3:4) 2013 -2014 101M -102M ")+addUnit;
       System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutA));
 
       OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "(-101M:102M:-2013) 2023 -3 111M -112M ")+addUnit;
+				      "200 (-101M:102M:-2013) 2023 -3 111M -112M ")+addUnit;
       OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "(-101M:102M:2014) -2024 4 111M -112M ")+addUnit;
+				      "200 (-101M:102M:2014) -2024 4 111M -112M ")+addUnit;
       System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
       System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutB));
 
@@ -589,9 +570,9 @@ GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
     }
   // END 
   OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				  "(-3:4) 2003 -2004 12M -17")+addUnit;
+				  "200 (-3:4) 2003 -2004 12M -17")+addUnit;
   OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-				  "(-2003:2004) 2023 -2024 12M -17 ")+addUnit;
+				  "200 (-2003:2004) 2023 -2024 12M -17 ")+addUnit;
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
   System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
   return;
@@ -609,17 +590,16 @@ GeneralShutter::createObjects(Simulation& System)
   std::string Out;
   // Create divide string
   
-  const std::string dSurf=divideStr();
   // top
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-10 5 2023 -2024 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -10 5 2023 -2024 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
   // void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-5 15 2023 -2024 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -5 15 2023 -2024 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Bulk Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-15 25 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -15 25 3 -4 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
   upperCell=cellIndex-1;
 
@@ -631,36 +611,36 @@ GeneralShutter::createObjects(Simulation& System)
     {
       innerVoidCell=cellIndex;
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,"-125 126 13 -14 7 -100 ")+dSurf;
+	(SMap,buildIndex,"-125 126 13 -14 7 -100 200");
       MonteCarlo::Object IVHi(cellIndex++,0,0.0,Out);
       if (closed>1) IVHi.setImp(0);
       System.addCell(IVHi);
 
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,"-225 226 113 -114 100 -17 ")+dSurf;
+	(SMap,buildIndex,"-225 226 113 -114 100 -17 ");
       MonteCarlo::Object IVHo(cellIndex++,0,0.0,Out);
       if (closed>1) IVHo.setImp(0);
       System.addCell(IVHo);
       // Surrounder
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-		     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 200");
       System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-	     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
+				     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ");
       System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
     }
   else
     {
       innerVoidCell=cellIndex;
       Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-125 126 13 -14 7 -17 ")+dSurf;
+				     "200 -125 126 13 -14 7 -17 ");
       MonteCarlo::Object IVH(cellIndex++,0,0.0,Out);
       if (closed>1) IVH.setImp(0);
       System.addCell(IVH);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-	     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
+	     " 200 -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ");
       System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
     }  
 
@@ -669,21 +649,20 @@ GeneralShutter::createObjects(Simulation& System)
   createCutUnit(System,Out);
 
   // Bulk Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-26 16 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -26 16 3 -4 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
   lowerCell=cellIndex-1;
 
   // Base void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-16 6 2023 -2024 7 -17 ")
-    +dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -16 6 2023 -2024 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Base Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 20 2023 -2024 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -6 20 2023 -2024 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
   // Add exclude
-  Out=ModelSupport::getComposite(SMap,buildIndex,"2023 -2024 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 2023 -2024 ");
   addOuterSurf(Out);
   return;
 }
@@ -801,21 +780,6 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
   return;
 }
 
-void
-GeneralShutter::setDivide(const int D) 
-  /*!
-    Set the dividePlane
-    \param D :: Plane [non-signed]
-  */
-{
-  ELog::RegMethod RegA("GeneralShutter","setDivide");
-
-  divideSurf=D;
-  DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
-  return;
-}
-
-
 int
 GeneralShutter::exitWindow(const double Dist,
 			   std::vector<int>& window,
@@ -866,6 +830,10 @@ GeneralShutter::createLinks()
 			(voidZOffset+voidHeightOuter/2.0-centZOffset),-zSlope);
   mainFC.setConnect(5,frontPt-Z*
 			(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);
+  /// divide
+  mainFC.nameSideIndex(6,"Divider");
+  mainFC.setConnect(6,Origin,Y);
+  mainFC.addLinkSurf(6,SMap.realSurf(buildIndex+200));
 
 
   return;

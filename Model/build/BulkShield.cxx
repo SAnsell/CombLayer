@@ -326,7 +326,8 @@ BulkShield::createShutters(Simulation& System)
 			    SMap.realSurf(buildIndex+17),
 			    SMap.realSurf(buildIndex+6),
 			    SMap.realSurf(buildIndex+5));
-      GData[i]->setDivide(50000); 
+
+      // GData[i]->setDivide(50000); 
       GData[i]->createAll(System,*this,0);
       shutterObj->addSurfString(GData[i]->getExclude());
     }
@@ -362,13 +363,18 @@ BulkShield::createBulkInserts(Simulation& System)
       // else
       BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 	
-
       BItem->setLayers(innerCell,outerCell);
-      BItem->setExternal(SMap.realSurf(buildIndex+17),
-			 SMap.realSurf(buildIndex+27),
-			 SMap.realSurf(buildIndex+37) );
-      BItem->createAll(System,*GData[static_cast<size_t>(i)],0);    
+      BItem->setCutSurf("Divider",
+			GData[i]->getKey("Main").getLinkSurf("Divider"));
+      BItem->setCutSurf("Divider",GData[i]->getLinkSurf("Divider"));
+      BItem->setCutSurf("RInner",-SMap.realSurf(buildIndex+17));
+      BItem->setCutSurf("RMid",-SMap.realSurf(buildIndex+27)); 
+      BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
+
+
       OR.addObject(BItem->getKeyName(),BItem);
+      BItem->createAll(System,*GData[static_cast<size_t>(i)],0);
+      
       BData.push_back(BItem);
     }
   return;
