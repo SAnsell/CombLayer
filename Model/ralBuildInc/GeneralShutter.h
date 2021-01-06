@@ -162,8 +162,6 @@ class GeneralShutter :
   /// Access outer limit
   double getORadius() const { return outerRadius; }
   
-  void setExternal(const int,const int,const int,const int);
-
   virtual int exitWindow(const double,std::vector<int>&,
 			 Geometry::Vec3D&) const;
 

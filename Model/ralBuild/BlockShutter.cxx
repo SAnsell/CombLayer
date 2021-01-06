@@ -193,45 +193,37 @@ BlockShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BlockShutter","constructObjects");
 
-  std::string Out,OutB;
-  // Create divide string
+  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
+
 
   // Flightline
-
+  HeadRule HR;
   if (voidDivide>0.0)
     {
       // exclude from flight line
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," (-313:314:325:-326) ");
-      OutB=ModelSupport::getComposite
-	(SMap,buildIndex," (-413:414:425:-426) ");
-      MonteCarlo::Object* VObjA=System.findObject(innerVoidCell);
-      MonteCarlo::Object* VObjB=System.findObject(innerVoidCell+1);
+      MonteCarlo::Object* VObjA=CellMap::getCellObject(System,"InnerVoid");
+      MonteCarlo::Object* VObjB=CellMap::getCellObject(System,"OuterVoid");
 
-      if (!VObjA || !VObjB)
-	{
-	  ELog::EM<<"Failed to find innerObject: "<<innerVoidCell
-		  <<ELog::endErr;
-	  return;
-	}
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-313:314:325:-326)");
+      VObjA->addIntersection(HR);
       
-      VObjA->addSurfString(Out);
-      VObjB->addSurfString(OutB);
-      // Inner Collet
-      colletInnerCell=cellIndex;
-      // divide surf
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"200 313 -314 -325 326 7 -401");
-      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-413:414:425:-426)");
+      VObjB->addIntersection(HR);
+      
+
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"200 313 -314 -325 326 -401");
+      makeCell("InnerCollet",System,cellIndex++,colletMat,0.0,HR*RInnerComp);
       // OuterCollet
-      colletOuterCell=cellIndex;
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"413 -414 -425 426 -17 401");
-      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
+
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"413 -414 -425 426 401");
+      makeCell("OuterCollet",System,cellIndex++,colletMat,0.0,HR*ROuterHR);
       // SPACER:
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      makeCell("Spacer",System,cellIndex++,0,0.0,HR);
       
     }
   return;

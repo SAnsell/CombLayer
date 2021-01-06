@@ -93,7 +93,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
   attachSystem::ExternalCut(),
   shutterNumber(ID),baseName(Key),
   closed(0),reversed(0),upperCell(0),
-  lowerCell(0),innerVoidCell(0)
+  lowerCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -125,7 +125,7 @@ GeneralShutter::GeneralShutter(const GeneralShutter& A) :
   reversed(A.reversed),SBlock(A.SBlock),XYAxis(A.XYAxis),
   BeamAxis(A.BeamAxis),zSlope(A.zSlope),targetPt(A.targetPt),
   frontPt(A.frontPt),endPt(A.endPt),upperCell(A.upperCell),
-  lowerCell(A.lowerCell),innerVoidCell(A.innerVoidCell)
+  lowerCell(A.lowerCell)
   /*!
     Copy constructor
     \param A :: GeneralShutter to copy
@@ -184,7 +184,6 @@ GeneralShutter::operator=(const GeneralShutter& A)
       endPt=A.endPt;
       upperCell=A.upperCell;
       lowerCell=A.lowerCell;
-      innerVoidCell=A.innerVoidCell;
     }
   return *this;
 }
@@ -379,24 +378,6 @@ GeneralShutter::getViewOrigin() const
   return Origin+Z*(zShift-voidZOffset);
 }
 
-void
-GeneralShutter::setExternal(const int rInner,const int rOuter,
-			    const int topP,const int baseP)
-/*!
-  Set the external surfaces
-  \param rInner :: inner cylinder surface
-  \param rOuter :: outer cylinder surface
-  \param topP :: top plane
-  \param baseP :: base plane
-*/
-{
-  ELog::RegMethod RegA("GeneralShutter","setExternal");
-  SMap.addMatch(buildIndex+7,rInner);
-  SMap.addMatch(buildIndex+17,rOuter);
-  SMap.addMatch(buildIndex+10,topP);
-  SMap.addMatch(buildIndex+20,baseP);
-  return;
-}
 
 void
 GeneralShutter::createSurfaces()
@@ -614,15 +595,17 @@ GeneralShutter::createObjects(Simulation& System)
       innerVoidCell=cellIndex;
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-125 126 13 -14 -100 200")*RInnerComp;
-      MonteCarlo::Object IVHi(cellIndex++,0,0.0,HR);
-      if (closed>1) IVHi.setImp(0);
-      System.addCell(IVHi);
+      makeCell("InnerVoid",System,cellIndex++,0,0.0,HR);
+
+      //if (closed>1) IVHi.setImp(0);
+
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-225 226 113 -114 100")*ROuterHR;
-      MonteCarlo::Object IVHo(cellIndex++,0,0.0,HR);
-      if (closed>1) IVHo.setImp(0);
-      System.addCell(IVHo);
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
+
+      //if (closed>1) IVHo.setImp(0);
+
       // Surrounder
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"-25 26 (125 : -126 : -13 : 14) 3 -4 -100 200")
@@ -666,7 +649,7 @@ GeneralShutter::createObjects(Simulation& System)
 
   // Base Steel
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"200 -6 20 2023 -2024")*RInnerComp*ROuterHR;
+    (SMap,buildIndex,"200 -6 2023 -2024")*RInnerComp*ROuterHR*BPlane;
   makeCell("BaseSteel",System,cellIndex++,shutterMat,0.0,HR);
 
   // Add exclude
@@ -822,11 +805,20 @@ GeneralShutter::createLinks()
   std::string Out;
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+
+  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -100 ");
-  mainFC.addLinkSurf(0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"17 100 ");
-  mainFC.addLinkSurf(1,Out);
+  const HeadRule dA=ModelSupport::getHeadRule(SMap,buildIndex,"-200");
+  const HeadRule dB=ModelSupport::getHeadRule(SMap,buildIndex,"200");
+
+  HeadRule HR;
+
+  HR=dA*RInnerComp;
+  mainFC.addLinkSurf(0,HR);
+  
+  HR=dB*ROuterHR;
+  mainFC.addLinkSurf(1,HR);
 
   mainFC.addLinkSurf(2,SMap.realSurf(buildIndex+113));
   mainFC.addLinkSurf(3,SMap.realSurf(buildIndex+114));

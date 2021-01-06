@@ -64,9 +64,6 @@ class BlockShutter : public GeneralShutter
 
   int colletMat;                     ///< Collet material
 
-  int colletInnerCell;               ///< Inner collet cell
-  int colletOuterCell;               ///< Outer Collet cell
-
   //--------------
   // FUNCTIONS:
   //--------------
