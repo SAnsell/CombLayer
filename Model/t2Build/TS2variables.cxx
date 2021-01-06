@@ -617,8 +617,32 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("tMolyCone1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("tMolyCone1Mat","Molydbimum");
 
+    // BULK VESSEL:
+  Control.addVariable("bulkTorpedoRadius",166.0);    // Torpedo level
+  Control.addVariable("bulkShutterRadius",366.0);    // Shield level
+  Control.addVariable("bulkInnerRadius",481.0);      // Inner Steel
+  Control.addVariable("bulkOuterRadius",600.6);      // Outer Steel
+  Control.addVariable("bulkFloor",1004.6);           // Bulk shield floor
+  Control.addVariable("bulkRoof",1171.1);            // Bulk shield top
+  Control.addVariable("bulkIronMat","CastIron");     // bulk material
+
+  Control.addVariable("bulkInThick",115.0);         // Bulk First compartment
+  Control.addVariable("bulkOutThick",119.0);        // Bulk Second compartment
+  Control.addVariable("bulkInTop",50.2);            // Bulk Height (from centre line)
+  Control.addVariable("bulkInBase",63.2);           // Bulk Base (from centre line)
+  Control.addVariable("bulkOutTop",52.2);           // Bulk Height (from centre line)
+  Control.addVariable("bulkOutBase",68.8);          // Bulk Base (from centre line)
+
+  Control.addVariable("bulkInWidth",36);        // Bulk Height [cm] (from centre line)
+  Control.addVariable("bulkOutWidth",40);       // Bulk Width [cm] (from centre line) 
+
   // SHUTTER VESSEL:
   Control.addVariable("voidXoffset",4.475);       // Shutter offset to target centre
+
+  Control.addParse<double>("shutterInnerRadius","bulkTorpedoRadius");
+  Control.addParse<double>("shutterOuterRadius","bulkShutterRadius");
+  Control.addParse<double>("shutterTotalHeight","bulkRoof");
+  Control.addParse<double>("shutterTotalDepth","bulkFloor");
 
   Control.addVariable("shutterUpperSteel",852.1);     // top thickness
   Control.addVariable("shutterLowerSteel",1000.0);    // base thickness
@@ -772,24 +796,6 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("torpedo16ZStep",11.86);
   Control.addVariable("torpedo17ZStep",11.86);
   
-  // BULK VESSEL:
-  Control.addVariable("bulkTorpedoRadius",166.0);    // Torpedo level
-  Control.addVariable("bulkShutterRadius",366.0);    // Shield level
-  Control.addVariable("bulkInnerRadius",481.0);      // Inner Steel
-  Control.addVariable("bulkOuterRadius",600.6);      // Outer Steel
-  Control.addVariable("bulkFloor",1004.6);           // Bulk shield floor
-  Control.addVariable("bulkRoof",1171.1);            // Bulk shield top
-  Control.addVariable("bulkIronMat","CastIron");     // bulk material
-
-  Control.addVariable("bulkInThick",115.0);         // Bulk First compartment
-  Control.addVariable("bulkOutThick",119.0);        // Bulk Second compartment
-  Control.addVariable("bulkInTop",50.2);            // Bulk Height (from centre line)
-  Control.addVariable("bulkInBase",63.2);           // Bulk Base (from centre line)
-  Control.addVariable("bulkOutTop",52.2);           // Bulk Height (from centre line)
-  Control.addVariable("bulkOutBase",68.8);          // Bulk Base (from centre line)
-
-  Control.addVariable("bulkInWidth",36);        // Bulk Height [cm] (from centre line)
-  Control.addVariable("bulkOutWidth",40);       // Bulk Width [cm] (from centre line) 
   // Control stuff
 
 

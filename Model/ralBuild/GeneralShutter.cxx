@@ -78,6 +78,8 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ExternalCut.h"
 #include "GeneralShutter.h"
 
@@ -86,7 +88,9 @@ namespace shutterSystem
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
   FixedGroup(Key+std::to_string(ID),"Main",8,"Beam",2),
-  ContainedComp(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut(),
   shutterNumber(ID),baseName(Key),
   closed(0),reversed(0),upperCell(0),
   lowerCell(0),innerVoidCell(0)
@@ -101,6 +105,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
   voidXoffset(A.voidXoffset),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -139,6 +144,8 @@ GeneralShutter::operator=(const GeneralShutter& A)
     {
       attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       voidXoffset=A.voidXoffset;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
@@ -187,27 +194,6 @@ GeneralShutter::~GeneralShutter()
     Destructor
   */
 {}
-
-  void
-  GeneralShutter::setGlobalVariables(const double IRad,
-				     const double ORad,
-				     const double floorZ,
-				     const double topZ)
-  /*!
-    Sets external variables:
-    \param IRad :: Inner [void radius]
-    \param ORad :: Outer [Edge radius]
-    \param floorZ :: Full extent of bulk shield
-    \param topZ :: Full extent of bulk shield
-  */
-  {
-    ELog::EM<<"ERRROR "<<ELog::endErr;
-    innerRadius=IRad;
-    outerRadius=ORad;
-    totalHeight=topZ;
-    totalDepth=floorZ;
-    return;
-  }
 				
 void
 GeneralShutter::populate(const FuncDataBase& Control)
@@ -521,60 +507,68 @@ GeneralShutter::createSurfaces()
 }
   
 void
-GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
+GeneralShutter::createCutUnit(Simulation& System,
+			      const HeadRule& zHR)
   /*!
     Create the cutouts for the shutter clearance
     \param System :: Simulation part
-    \param ZUnit :: Unit for +/- Z section
+    \param zHR :: Unit for +/- Z section
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createCutUnit");
 
+  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
+  //  const HeadRule TPlane=ExternalCut::getRule("TopPlane");
+  //  const HeadRule BPlane=ExternalCut::getRule("BasePlane");
+
   // CLEARANCE GAPS [Bulk Steel]:
-  const std::string addUnit(ZUnit);
-  std::string OutA,OutB;
+  HeadRule OutA,OutB;
   int SN(buildIndex+2000);
   for(size_t i=0;i<clearCent.size();i++)
     {
       if (!i)
 	{
-	  OutA=ModelSupport::getComposite
-	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 7 -111M ")+addUnit;
-	  OutB=ModelSupport::getComposite
-	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 7 -111M ")+addUnit;
+	  OutA=ModelSupport::getHeadRule
+	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 -111M ")
+	    *RInnerComp*zHR;
+
+	    OutB=ModelSupport::getHeadRule
+	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 -111M ")
+	    *RInnerComp*zHR;
 	}
       else
 	{
-	  OutA=ModelSupport::getComposite
-	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 12M -111M")+addUnit;
-	  OutB=ModelSupport::getComposite
-	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 12M -111M ")+addUnit;
+	  OutA=ModelSupport::getHeadRule
+	    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 12M -111M")*zHR;
+	  OutB=ModelSupport::getHeadRule
+	    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 12M -111M ")*zHR;
 	}
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
-      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
+      makeCell("Void",System,cellIndex++,0,0.0,OutA);
+      makeCell("Shutter",System,cellIndex++,shutterMat,0.0,OutB);
 
       // Insert blocks:
-      OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "200 (-3:4) 2013 -2014 101M -102M ")+addUnit;
-      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutA));
+      OutA=ModelSupport::getHeadRule
+	(SMap,buildIndex,SN,"200 (-3:4) 2013 -2014 101M -102M ")*zHR;
+      makeCell("ShutterIBlock",System,cellIndex++,shutterMat,0.0,OutA);
 
-      OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "200 (-101M:102M:-2013) 2023 -3 111M -112M ")+addUnit;
-      OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-				      "200 (-101M:102M:2014) -2024 4 111M -112M ")+addUnit;
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutB));
-
+      OutA=ModelSupport::getHeadRule
+	(SMap,buildIndex,SN,"200 (-101M:102M:-2013) 2023 -3 111M -112M")*zHR; 
+      OutB=ModelSupport::getHeadRule
+	(SMap,buildIndex,SN,"200 (-101M:102M:2014) -2024 4 111M -112M")*zHR;
+      
+      makeCell("InsertVoid",System,cellIndex++,0,0.0,OutA);
+      makeCell("InsertVoid",System,cellIndex++,0,0.0,OutB);
       SN+=100;
       
     }
   // END 
-  OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
-				  "200 (-3:4) 2003 -2004 12M -17")+addUnit;
-  OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
-				  "200 (-2003:2004) 2023 -2024 12M -17 ")+addUnit;
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
-  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
+  OutA=ModelSupport::getHeadRule
+    (SMap,buildIndex,SN,"200 (-3:4) 2003 -2004 12M")*zHR*ROuterHR;
+  OutB=ModelSupport::getHeadRule
+    (SMap,buildIndex,SN,"200 (-2003:2004) 2023 -2024 12M")*zHR*ROuterHR;
+  makeCell("Void",System,cellIndex++,0,0.0,OutA);
+  makeCell("Shutter",System,cellIndex++,shutterMat,0.0,OutB);
   return;
 }
 
@@ -587,83 +581,97 @@ GeneralShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GeneralShutter","createObjects");
 
-  std::string Out;
   // Create divide string
-  
+  const HeadRule RInnerComp=ExternalCut::getComplementRule("RInner");
+  const HeadRule ROuterHR=ExternalCut::getRule("ROuter");
+  const HeadRule TPlane=ExternalCut::getRule("TopPlane");
+  const HeadRule BPlane=ExternalCut::getRule("BasePlane");
+
+  HeadRule HR;
   // top
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -10 5 2023 -2024 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 5 2023 -2024")*RInnerComp*ROuterHR*TPlane;
+  makeCell("Top",System,cellIndex++,shutterMat,0.0,HR);
 
   // void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -5 15 2023 -2024 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 -5 15 2023 -2024")*RInnerComp*ROuterHR;
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+
 
   // Bulk Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -15 25 3 -4 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 -15 25 3 -4")*RInnerComp*ROuterHR;
+  makeCell("UpperCell",System,cellIndex++,shutterMat,0.0,HR);  
   upperCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-15 25");
-  createCutUnit(System,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-15 25");
+  createCutUnit(System,HR);
 
   // Flightline
   if (voidDivide>0.0)
     {
       innerVoidCell=cellIndex;
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"-125 126 13 -14 7 -100 200");
-      MonteCarlo::Object IVHi(cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-125 126 13 -14 -100 200")*RInnerComp;
+      MonteCarlo::Object IVHi(cellIndex++,0,0.0,HR);
       if (closed>1) IVHi.setImp(0);
       System.addCell(IVHi);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"-225 226 113 -114 100 -17 ");
-      MonteCarlo::Object IVHo(cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-225 226 113 -114 100")*ROuterHR;
+      MonteCarlo::Object IVHo(cellIndex++,0,0.0,HR);
       if (closed>1) IVHo.setImp(0);
       System.addCell(IVHo);
       // Surrounder
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 200");
-      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-25 26 (125 : -126 : -13 : 14) 3 -4 -100 200")
+	*RInnerComp;
+      makeCell("Surround",System,cellIndex++,shutterMat,0.0,HR);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"-25 26 (225 : -226 : -113 : 114) 3 -4 100")*
+	ROuterHR;
+      makeCell("Surround",System,cellIndex++,shutterMat,0.0,HR);
     }
   else
     {
       innerVoidCell=cellIndex;
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "200 -125 126 13 -14 7 -17 ");
-      MonteCarlo::Object IVH(cellIndex++,0,0.0,Out);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"200 -125 126 13 -14")*RInnerComp*ROuterHR;
+      MonteCarlo::Object IVH(cellIndex++,0,0.0,HR);
       if (closed>1) IVH.setImp(0);
       System.addCell(IVH);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-	     " 200 -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"200 -25 26 (125:-126:-13:14) 3 -4")
+	*RInnerComp*ROuterHR;
+      makeCell("Surround",System,cellIndex++,shutterMat,0.0,HR);
     }  
 
   // Insert Clearance Gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-25 16");
-  createCutUnit(System,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-25 16");
+  createCutUnit(System,HR);
 
   // Bulk Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -26 16 3 -4 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 -26 16 3 -4")*RInnerComp*ROuterHR;
+  makeCell("LowerCell",System,cellIndex++,shutterMat,0.0,HR);
   lowerCell=cellIndex-1;
 
   // Base void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -16 6 2023 -2024 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 -16 6 2023 -2024")*RInnerComp*ROuterHR;
+  makeCell("BaseVoid",System,cellIndex++,0,0.0,HR);
 
   // Base Steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 -6 20 2023 -2024 7 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 -6 20 2023 -2024")*RInnerComp*ROuterHR;
+  makeCell("BaseSteel",System,cellIndex++,shutterMat,0.0,HR);
 
   // Add exclude
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 2023 -2024 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 2023 -2024");
+  addOuterSurf(HR);
   return;
 }
 

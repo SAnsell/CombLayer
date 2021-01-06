@@ -117,6 +117,22 @@ Object::Object(const int N,const int M,
   HRule.procString(Line);
 }
 
+Object::Object(const int N,const int M,
+	       const double T,const HeadRule& HR) :
+  ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),HRule(HR),
+  objSurfValid(0)
+ /*!
+   Constuctor, set temperature to 300C 
+   \param N :: number
+   \param M :: material
+   \param T :: temperature (K)
+   \param HR :: HeadRule
+ */
+{}
+
 Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
@@ -134,6 +150,23 @@ Object::Object(const std::string& FCName,const int N,const int M,
 {
   HRule.procString(Line);
 }
+
+Object::Object(const std::string& FCName,const int N,const int M,
+	       const double T,const HeadRule& HR) :
+  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),
+  HRule(HR),
+  objSurfValid(0)
+ /*!
+   Constuctor, set temperature to 300C 
+   \param N :: number
+   \param M :: material
+   \param T :: temperature (K)
+   \param HR :: HeadRule of object
+ */
+{}
 
 Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),

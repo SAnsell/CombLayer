@@ -83,7 +83,8 @@ namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedUnit(Key,8)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedUnit(8,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -394,7 +395,6 @@ VacVessel::createLinks()
   */
 {
   ELog::RegMethod RegA("VacVessel","createLinks");
-
 
   FixedComp::setConnect(0,BVec[0]+Y*(vacPosGap+alPos+terPos+
                                     outPos+clearNeg),Y);

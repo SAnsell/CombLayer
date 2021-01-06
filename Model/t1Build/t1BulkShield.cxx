@@ -312,11 +312,10 @@ t1BulkShield::createShutters(Simulation& System)
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      GData[i]->setExternal(SMap.realSurf(buildIndex+7),
-			    SMap.realSurf(buildIndex+17),
-			    SMap.realSurf(buildIndex+6),
-			    SMap.realSurf(buildIndex+5));
-      
+      GData[i]->setCutSurf("RInner",-SMap.realSurf(buildIndex+7));
+      GData[i]->setCutSurf("ROuter",-SMap.realSurf(buildIndex+17));
+      GData[i]->setCutSurf("TopPlane",-SMap.realSurf(buildIndex+6));
+      GData[i]->setCutSurf("BasePlane",SMap.realSurf(buildIndex+5));
       GData[i]->createAll(System,*this,0);    
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }

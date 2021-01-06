@@ -48,7 +48,9 @@ namespace shutterSystem
 
 class GeneralShutter :
   public attachSystem::FixedGroup,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  protected:
 
@@ -118,7 +120,7 @@ class GeneralShutter :
   void createObjects(Simulation&);
   
   void createStopBlocks(Simulation&,const size_t);
-  void createCutUnit(Simulation&,const std::string&);
+  void createCutUnit(Simulation&,const HeadRule&);
   void createBlocks(Simulation&);
   void createLinks();
   void applyRotations(const double);
@@ -160,8 +162,6 @@ class GeneralShutter :
   /// Access outer limit
   double getORadius() const { return outerRadius; }
   
-  void setGlobalVariables(const double,const double,
-			  const double,const double);
   void setExternal(const int,const int,const int,const int);
 
   virtual int exitWindow(const double,std::vector<int>&,

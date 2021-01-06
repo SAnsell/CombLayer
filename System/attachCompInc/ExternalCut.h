@@ -100,6 +100,7 @@ class ExternalCut
   std::string getBridgeStr(const std::string&) const;
   
   const HeadRule& getRule(const std::string&) const;
+  HeadRule getComplementRule(const std::string&) const;
   const HeadRule& getDivider(const std::string&) const;
 
   

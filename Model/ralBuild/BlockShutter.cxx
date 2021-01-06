@@ -79,6 +79,8 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"

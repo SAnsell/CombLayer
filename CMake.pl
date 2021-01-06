@@ -108,7 +108,7 @@ foreach my $mainProg (@masterProg)
 				  qw(balder cosaxs danmax R3Common 
 				  flexpes formax maxpeem  micromax
 				  softimax
-				  commonGenerator commonBeam Linac
+			x5f	  commonGenerator commonBeam Linac
 				  R3Common R1Common species)]);
       }
     
@@ -128,7 +128,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( moderator build build ralBuild );
+	my @fullBuild = qw( moderator t2Build ralBuild );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }

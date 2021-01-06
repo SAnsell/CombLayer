@@ -365,7 +365,7 @@ ExternalCut::getRule(const std::string& extName) const
   /*!
     Accessor to main rule
     \param extName :: external-cut name
-    \return frontRule with divider
+    \return frontRule without divider
   */
 {
   ELog::RegMethod RegA("ExternalCut","getRule");
@@ -373,6 +373,18 @@ ExternalCut::getRule(const std::string& extName) const
   
   const cutUnit* CU=findUnit(extName);
   return (CU) ? CU->main :  nullOut;    
+}
+
+HeadRule
+ExternalCut::getComplementRule(const std::string& extName) const
+  /*!
+    Accessor to main rule
+    \param extName :: external-cut name
+    \return frontRule without divider (in complement form)
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","getComplementRule");
+  return getRule(extName).complement();
 }
 
 const HeadRule&
