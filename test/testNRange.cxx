@@ -3,7 +3,7 @@
  
  * File:   test/testNRange.cxx
 *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ testNRange::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testNRange::testCondense,
+      &testNRange::testInteger,
       &testNRange::testOperator,
       &testNRange::testOutput,
       &testNRange::testRange
@@ -84,6 +85,7 @@ testNRange::applyTest(const int extra)
   const std::string TestName[]=
     {
       "Condense",
+      "Integer",
       "Operator",
       "Output",
       "Range"
@@ -133,6 +135,7 @@ testNRange::testCondense()
        "1 8log 1e+09 4r 1e+12 1e+13 1.2e+13"},
       
       {"1 8log 1e+09 3r 1e9","1 8log 1e+09 4r"},
+      {"0 1 1 1 1 1 1 ","0 1 3r"}
     });
 
   for(const TTYPE& tc : Tests)
@@ -158,6 +161,47 @@ testNRange::testCondense()
 	{
 	  ELog::EM<<"Test string == "<<input<<ELog::endWarn;
 	  ELog::EM<<"Pre string  == "<<PreC<<ELog::endWarn;
+	  ELog::EM<<"Cons string =="<<cx.str()<<ELog::endWarn;
+	  ELog::EM<<"Out  string == "<<output<<ELog::endWarn;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testNRange::testInteger()
+  /*!
+    Test the processsing with intervals 
+    \retval -1 :: Unable to process line
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testNRange","testCondense");
+
+  typedef std::tuple<std::vector<int>,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      {{0,0,1,1,1,1,1,1},"0 0 1 5r"}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const std::vector<int>& input=std::get<0>(tc);
+      const std::string output=std::get<1>(tc);
+
+      RangeUnit::NGroup<int> NE;
+      NE.condense(1e-6,input);
+
+      std::ostringstream cx;
+      cx<<NE;
+
+      if (StrFunc::removeOuterSpace(cx.str())!=output)
+	{
+	  std::ostringstream vx;
+	  for(const int CN : input)
+	    vx<<CN<<" ";
+	  ELog::EM<<"Test string == "<<vx.str()<<ELog::endWarn;
 	  ELog::EM<<"Cons string =="<<cx.str()<<ELog::endWarn;
 	  ELog::EM<<"Out  string == "<<output<<ELog::endWarn;
 	  return -1;

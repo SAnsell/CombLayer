@@ -75,7 +75,6 @@
 #include "SimPHITS.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "World.h"
@@ -89,7 +88,6 @@ MTRand RNG(12345UL);
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }

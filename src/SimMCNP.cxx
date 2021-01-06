@@ -697,7 +697,7 @@ SimMCNP::writeImportance(std::ostream& OX) const
   cx.str("");
   cx<<"imp:"<<pConv.mcnpParticleList(pList);
   IRange.condense(1e-6,ImpMap[0]);
-  
+  ELog::EM<<"Size == "<<ImpMap[0].size()<<ELog::endDiag;
   cx<<IRange;
   StrFunc::writeMCNPX(cx.str(),OX);
   

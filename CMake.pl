@@ -108,7 +108,7 @@ foreach my $mainProg (@masterProg)
 				  qw(balder cosaxs danmax R3Common 
 				  flexpes formax maxpeem  micromax
 				  softimax
-			x5f	  commonGenerator commonBeam Linac
+				  commonGenerator commonBeam Linac
 				  R3Common R1Common species)]);
       }
     

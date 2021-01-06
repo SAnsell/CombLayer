@@ -3,7 +3,7 @@
  
  * File:   src/NGroup.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,84 @@ operator<<(std::ostream& OX,const RUnit<T>& RU)
   return OX;
 }
 
+template<typename T>
+bool
+identVal(const double tol,const T& VA,const T& VB) 
+  /*!
+    Determine if the values are equal within the tolerance
+    \param T :: Tolerance
+    \param VA :: Value 1
+    \param VB :: Mid value
+    \return 1 if identical
+  */
+{
+  if constexpr (std::is_same<int,T>::value)
+    {
+      return VA==VB;
+    }
+  
+  // Zero test:
+  if (std::abs(VA)<tol*tol && std::abs(VB)<tol*tol)
+    return 1;
+  return (std::abs(VA-VB)/(std::abs(VA)+std::abs(VB))<tol);
+}
+
+template<typename T>
+bool
+intervalVal(const double tol,const T& VA,
+		       const T& VB,const T& VC) 
+  /*!
+    Determine if the values are equal within the tolerance
+    \param T :: Tolerance
+    \param VA :: Value 1
+    \param VB :: Mid value
+    \param VC :: End
+    \return 1 if a valid interval
+  */
+{
+  return identVal<double>(tol,static_cast<double>(VB),
+			  static_cast<double>(VA+VC)/2.0);
+}
+
+
+template<>
+bool
+logIntVal(const double tol,const double& VA,
+		  const double& VB,const double& VC) 
+  /*!
+    Determine if the values are in a log range within the tolerance
+    \param T :: Tolerance
+    \param VA :: Value 1
+    \param VB :: Mid value
+    \param VC :: End
+    \return 1 if a valid interval
+  */
+{
+  const double tol3(tol*tol*tol);
+
+  if (VA<=tol3 || VB<=tol3 || VC<=tol3 || VC<=VA)
+    return 0;
+  if ((VC-VA)/(VA+VC)<tol) return 0;
+
+  return identVal(tol,log(VB),(log(VA)+log(VC))/2.0);
+}
+
+template<>
+bool
+logIntVal(const double,const int&,
+		       const int&,const int&) 
+  /*!
+    Determine if the values are in a log range within the tolerance
+    \param tol :: Tolerance
+    \param VA :: Value 1
+    \param VB :: Mid value
+    \param VC :: End
+    \return 1 if a valid interval
+  */
+{
+  return 0;
+}
+  
 template<typename T>  
 RSingle<T>::RSingle(const T& V) :
   RUnit<T>(),value(V)
@@ -192,8 +270,10 @@ RRepeat<T>::write(std::ostream& OX) const
 {
   if (count && RUnit<T>::isFirst)
     OX<<" "<<value;
-  if (count>1)
+  if (count>2)
     OX<<" "<<count-1<<"r";
+  else
+    OX<<" "<<value;
   return;
 }
 
@@ -524,81 +604,8 @@ NGroup<T>::count() const
 }
 
 
-template<typename T>
-bool
-NGroup<T>::identVal(const double tol,const T& VA,const T& VB) 
-  /*!
-    Determine if the values are equal within the tolerance
-    \param T :: Tolerance
-    \param VA :: Value 1
-    \param VB :: Mid value
-    \return 1 if identical
-  */
-{
-  if constexpr (std::is_same<int,T>::value)
-    {
-      return VA==VB;
-    }
-  
-  // Zero test:
-  if (std::abs(VA)<tol*tol && std::abs(VB)<tol*tol)
-    return 1;
-  return (std::abs(VA-VB)/(std::abs(VA)+std::abs(VB))<tol);
-}
 
-template<typename T>
-bool
-NGroup<T>::intervalVal(const double tol,const T& VA,
-		       const T& VB,const T& VC) 
-  /*!
-    Determine if the values are equal within the tolerance
-    \param T :: Tolerance
-    \param VA :: Value 1
-    \param VB :: Mid value
-    \param VC :: End
-    \return 1 if a valid interval
-  */
-{  
-  return identVal(tol,VB,(VA+VC)/static_cast<T>(2));
-}
 
-template<>
-bool
-NGroup<double>::logIntVal(const double tol,const double& VA,
-		  const double& VB,const double& VC) 
-  /*!
-    Determine if the values are in a log range within the tolerance
-    \param T :: Tolerance
-    \param VA :: Value 1
-    \param VB :: Mid value
-    \param VC :: End
-    \return 1 if a valid interval
-  */
-{
-  const double tol3(tol*tol*tol);
-
-  if (VA<=tol3 || VB<=tol3 || VC<=tol3 || VC<=VA)
-    return 0;
-  if ((VC-VA)/(VA+VC)<tol) return 0;
-
-  return identVal(tol,log(VB),(log(VA)+log(VC))/2.0);
-}
-
-template<>
-bool
-NGroup<int>::logIntVal(const double,const int&,
-		       const int&,const int&) 
-  /*!
-    Determine if the values are in a log range within the tolerance
-    \param tol :: Tolerance
-    \param VA :: Value 1
-    \param VB :: Mid value
-    \param VC :: End
-    \return 1 if a valid interval
-  */
-{
-  return 0;
-}
 
 template<typename T>
 int 
@@ -748,6 +755,7 @@ NGroup<T>::condense(const double Tol,
 	type[i]=1;
       else if (i>1 && intervalVal(Tol,Values[i-2],Values[i-1],Values[i]))
 	{
+	  ELog::EM<<"In value == "<<Values[i-2]<<ELog::endDiag;
 	  type[i-1]=2;    // linear interval
 	  type[i]=2;    // linear interval
 	}
@@ -807,7 +815,6 @@ NGroup<T>::write(std::ostream& OX) const
     \param OX :: string stream to write out
   */
 {
-  ELog::EM<<"WSize == "<<Items.size()<<ELog::endDiag;
   for(const RUnit<T>* RPtr : Items)
     RPtr->write(OX);
   return;

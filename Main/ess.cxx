@@ -72,7 +72,6 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "mainJobs.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"

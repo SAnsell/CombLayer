@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/DefPhysics.h
+ * File:   mcnpProcessInc/McnpDefPhysics.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_DefPhysics_h
-#define ModelSupport_DefPhysics_h
+#ifndef ModelSupport_McnpDefPhysics_h
+#define ModelSupport_McnpDefPhysics_h
 
 class objectGroups;
 class Simulation;
@@ -46,26 +46,11 @@ namespace ModelSupport
   void setGenericPhysics(SimMCNP&,const std::string&);
   void setGenericPhysics(SimMCNP&,const mainSystem::inputParam&);
   
-  void procOffset(const objectGroups&,const mainSystem::inputParam&,
-		  const std::string&,const size_t);
-  void procAngle(const objectGroups&,const mainSystem::inputParam&,
-		 const size_t);
-
-
-
+ 
   void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
 			 const double); 
   void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
 			 const mainSystem::inputParam&); 
-  void setDefRotation(const objectGroups&,const mainSystem::inputParam&);
-
-  void setWImp(Simulation&,const mainSystem::inputParam&);
-  
-  void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
-  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
-
 }
 
 

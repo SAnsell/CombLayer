@@ -53,7 +53,6 @@
 #include "Transform.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "Quadratic.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -74,10 +73,8 @@
 #include "FixedComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "maxivVariables.h"
 #include "ImportControl.h"
-#include "World.h"
 
 #include "DefUnitsMaxIV.h"
 #include "makeMaxIV.h"

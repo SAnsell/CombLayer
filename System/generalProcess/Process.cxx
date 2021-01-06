@@ -70,6 +70,8 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 
 #include "Simulation.h"
 #include "Process.h"
@@ -140,6 +142,227 @@ getActiveCell(const objectGroups& OGrp,
   return activeCell;
 }
   
+void
+setDefRotation(const objectGroups& OGrp,
+	       const mainSystem::inputParam& IParam)
+  /*!
+    Apply a standard rotation to the simulation
+    \param OGrp :: Object group
+    \param IParam :: Parameter set
+   */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefRotation");
 
+  masterRotate& MR = masterRotate::Instance();
+  if (IParam.flag("axis"))
+    {
+      // Move X to Z:
+      MR.addRotation(Geometry::Vec3D(0,1,0),
+		     Geometry::Vec3D(0,0,0),
+		     90.0);
+      //Move XY to -X-Y 
+      MR.addRotation(Geometry::Vec3D(0,0,1),
+		     Geometry::Vec3D(0,0,0),
+		     -90.0);
+      MR.addMirror(Geometry::Plane
+		   (1,0,Geometry::Vec3D(0,0,0),
+		    Geometry::Vec3D(1,0,0)));
+    }
+
+  if (IParam.flag("offset"))
+    {
+      const size_t nP=IParam.setCnt("offset");
+      for(size_t i=0;i<nP;i++)
+        procOffset(OGrp,IParam,"offset",i);
+    }
+  if (IParam.flag("angle"))
+    {
+      const size_t nP=IParam.setCnt("angle");
+      for(size_t i=0;i<nP;i++)
+        procAngle(OGrp,IParam,i);
+    }
+  if (IParam.flag("postOffset"))
+    {
+      const size_t nP=IParam.setCnt("postOffset");
+      for(size_t i=0;i<nP;i++)
+        procOffset(OGrp,IParam,"postOffset",i);
+    }
+  return;
+}
+
+void
+procAngle(const objectGroups& OGrp,
+	  const mainSystem::inputParam& IParam,
+          const size_t index)
+  /*!
+    Process an angle unit
+    \param OGrp :: Object group
+    \param IParam :: Input param
+    \param index :: set index
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","procAngle");
+  
+  masterRotate& MR = masterRotate::Instance();
+
+  const std::string AItem=
+    IParam.getValue<std::string>("angle",index,0);
+  const std::string BItem=(IParam.itemCnt("angle",index)>1) ?
+    IParam.getValue<std::string>("angle",index,1) : "";
+
+  if (AItem=="object" || AItem=="Object")
+    {
+      const attachSystem::FixedComp* GIPtr=
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+      const std::string CItem=
+        IParam.getDefValue<std::string>("2","angle",index,2);
+      const int ZFlag=IParam.getDefValue<int>(1,"angle",index,3);
+      const long int axisIndex=GIPtr->getSideIndex(CItem);
+
+      const Geometry::Vec3D AxisVec=
+        GIPtr->getLinkAxis(axisIndex);
+
+      // Align item such that we put the object linkPt at +ve X
+      const Geometry::Vec3D ZRotAxis=GIPtr->getZ();
+
+      const double angle=180.0*acos(AxisVec[0])/M_PI;
+      MR.addRotation(GIPtr->getZ(),
+                     Geometry::Vec3D(0,0,0),ZFlag*angle);
+      // Z rotation.
+      const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
+      MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+      ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "
+              <<AxisVec<<ELog::endDiag;
+
+    }
+  else  if (AItem=="objPoint" || AItem=="ObjPoint")
+    {
+      const attachSystem::FixedComp* GIPtr=
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+      const std::string CItem=
+        IParam.getDefValue<std::string>("2","angle",index,2);
+
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+          
+      Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
+      LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
+      LP.makeUnit();
+
+      double angleZ=180.0*acos(LP[0])/M_PI;
+      if (LP[1]>0.0) angleZ*=-1;
+      MR.addRotation(Geometry::Vec3D(0,0,1),
+                     Geometry::Vec3D(0,0,0),angleZ);
+    }
+  else  if (AItem=="objAxis" || AItem=="ObjAxis" ||
+	    AItem=="objYAxis" || AItem=="ObjYAxis")
+    {
+      const attachSystem::FixedComp* GIPtr=
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+      const std::string CItem=
+        IParam.getDefValue<std::string>("2","angle",index,2);
+      
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+      
+      Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
+      GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
+
+      if (AItem=="objYAxis" || AItem=="ObjYAxis")
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(0,1,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+      else
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+
+    }
+  else if (AItem=="free" || AItem=="FREE")
+    {
+      const double rotAngle=
+        IParam.getValue<double>("angle",index,1);
+      MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
+                     -rotAngle);
+      ELog::EM<<"ADDING ROTATION "<<rotAngle<<ELog::endDiag;
+    }
+  else if (AItem=="freeAxis" || AItem=="FREEAXIS")
+    {
+      size_t itemIndex(1);
+      const Geometry::Vec3D rotAxis=
+        IParam.getCntVec3D("angle",index,itemIndex,"Axis need [Vec3D]");
+      const double rotAngle=
+        IParam.getValue<double>("angle",index,itemIndex);
+      MR.addRotation(rotAxis,Geometry::Vec3D(0,0,0),
+                     -rotAngle);		  
+    }
+  else if (AItem=="help" || AItem=="Help")
+    {
+      ELog::EM<<"Angle help ::\n"
+              <<"  free rotAngle :: Rotate about Z axis \n"
+              <<"  freeAxis Vec3D rotAngle :: Rotate about Axis \n"
+              <<"  objPoint  FC link :: Rotate linkPt to (X,0,0) \n"
+              <<"  objAxis  FC link :: Rotate link-axit to X \n"
+              <<"  object  FC link :: Rotate Axis about Z to "
+              <<ELog::endDiag;
+    }
+  else
+    throw ColErr::InContainerError<std::string>(AItem,"angle input error");
+      
+  return;
+}
+
+
+void
+procOffset(const objectGroups& OGrp,
+	   const mainSystem::inputParam& IParam,
+	   const std::string& keyID,
+           const size_t index)
+  /*!
+    Process an offset unit
+    \param OGrp :: Object group
+    \param IParam :: Input param
+    \param index :: set index
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","procOffset");
+  masterRotate& MR = masterRotate::Instance();  
+
+  const std::string AItem=
+    IParam.getValue<std::string>(keyID,index);
+  const std::string BItem=(IParam.itemCnt(keyID,index)>1) ?
+    IParam.getValue<std::string>(keyID,index,1) : "";
+
+  if (AItem=="object" || AItem=="Object")
+    {
+      const attachSystem::FixedComp* GIPtr=
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+      const std::string CItem=
+        IParam.getDefValue<std::string>("0",keyID,index,2);
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+      ELog::EM<<"Main Offset at "<<GIPtr->getLinkPt(sideIndex)
+              <<ELog::endDiag;
+      MR.addDisplace(-GIPtr->getLinkPt(sideIndex));
+    }
+  else if (AItem=="free" || AItem=="FREE")
+    {
+      size_t itemIndex(1);
+      const Geometry::Vec3D OffsetPos=
+        IParam.getCntVec3D(keyID,index,itemIndex,keyID+" need vec3D");
+      MR.addDisplace(-OffsetPos);
+    }
+  else
+    throw ColErr::InContainerError<std::string>(AItem,keyID+": input error");
+
+  return;
+}
+  
+  
 
 } // NAMESPACE ModelSupport

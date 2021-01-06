@@ -77,7 +77,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
-#include "chipDataStore.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -178,7 +177,6 @@ BulkShield::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("BulkShield","populate");
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   
   vXoffset=Control.EvalVar<double>("voidXoffset");
   
@@ -190,8 +188,6 @@ BulkShield::populate(const FuncDataBase& Control)
   totalDepth=Control.EvalVar<double>(keyName+"Floor");
   
   ironMat=ModelSupport::EvalMat<int>(Control,keyName+"IronMat");
-
-  CS.setVNum(chipIRDatum::torpedoRing,torpedoRadius);
 
   return;
 }
@@ -314,11 +310,10 @@ BulkShield::createShutters(Simulation& System)
       OR.addObject(GData.back());
     }
 
-  const int shutterCell=getCell("Shutter");
-  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
-  if (!shutterObj)
-    throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
-
+  // const int shutterCell=getCell("Shutter");
+  // MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
+  // if (!shutterObj)
+  //   throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
@@ -327,9 +322,8 @@ BulkShield::createShutters(Simulation& System)
       GData[i]->setCutSurf("TopPlane",-SMap.realSurf(buildIndex+6));
       GData[i]->setCutSurf("BasePlane",SMap.realSurf(buildIndex+5));
 
-      // GData[i]->setDivide(50000); 
       GData[i]->createAll(System,*this,0);
-      shutterObj->addSurfString(GData[i]->getExclude());
+      CellMap::insertComponent(System,"Shutter",GData[i]->getExclude());
     }
 
   return;
@@ -366,7 +360,6 @@ BulkShield::createBulkInserts(Simulation& System)
       BItem->setLayers(innerCell,outerCell);
       BItem->setCutSurf("Divider",
 			GData[i]->getKey("Main").getLinkSurf("Divider"));
-      BItem->setCutSurf("Divider",GData[i]->getLinkSurf("Divider"));
       BItem->setCutSurf("RInner",-SMap.realSurf(buildIndex+17));
       BItem->setCutSurf("RMid",-SMap.realSurf(buildIndex+27)); 
       BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));

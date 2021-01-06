@@ -128,7 +128,7 @@ makeTS2Bulk::build(Simulation* SimPtr,
     {
       // void vessel
 
-      //      VObj->createAll(*SimPtr,World::masterOrigin(),0);
+      VObj->createAll(*SimPtr,World::masterOrigin(),0);
       BulkObj->addInsertCell(excludeCell);
       BulkObj->createAll(*SimPtr,World::masterOrigin(),0);
       excludeCell=BulkObj->getCell("Torpedo");

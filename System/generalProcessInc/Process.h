@@ -26,6 +26,10 @@ class objectGroups;
 class Simulation;
 class FuncDataBase;
 
+class SimMCNP;
+class SimFLUKA;
+class SimPHITS;
+
 namespace mainSystem
 {
   class inputParam;
@@ -33,9 +37,23 @@ namespace mainSystem
 
 namespace ModelSupport
 {
-
+  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
+  
   std::set<int> getActiveMaterial(const Simulation&,std::string);
   std::set<int> getActiveCell(const objectGroups&,const std::string&);
+
+  void setWImp(Simulation&,const mainSystem::inputParam&);
+  void procOffset(const objectGroups&,const mainSystem::inputParam&,
+		  const std::string&,const size_t);
+  void procAngle(const objectGroups&,const mainSystem::inputParam&,
+		 const size_t);
+
+  void setDefRotation(const objectGroups&,const mainSystem::inputParam&);
+    
+
 
 }
 

@@ -29,7 +29,14 @@ namespace RangeUnit
     \tparam T :: double/int storage type
     \brief 
   */
-  
+
+template<typename T>
+bool identVal(const double,const T&,const T&);
+template<typename T>
+bool intervalVal(const double,const T&,const T&,const T&);
+template<typename T>
+bool logIntVal(const double,const T&,const T&,const T&);
+
 template<typename T>
 class RUnit
 {
@@ -161,10 +168,6 @@ class NGroup
   
   std::list< RangeUnit::RUnit<T>* > Items;
   
-  static bool identVal(const double,const T&,const T&);
-  static bool intervalVal(const double,const T&,const T&,const T&);
-  static bool logIntVal(const double,const T&,const T&,const T&);
-
   void clearItems();
   
  public:

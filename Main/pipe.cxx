@@ -3,7 +3,7 @@
  
  * File:   Main/pipe.cxx
  *
- * Copyright (c) 2004-20120 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
 #include "defaultConfig.h"
 #include "DefUnitsPipe.h"

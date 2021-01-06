@@ -66,7 +66,7 @@
 #include "defaultConfig.h"
 #include "DBModify.h"
 #include "SimProcess.h"
-#include "DefPhysics.h"
+#include "Process.h"
 #include "TallySelector.h"
 #include "TallyBuilder.h"
 #include "flukaTallyBuilder.h"
