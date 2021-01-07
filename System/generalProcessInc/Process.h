@@ -38,10 +38,7 @@ namespace mainSystem
 namespace ModelSupport
 {
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
-  
+
   std::set<int> getActiveMaterial(const Simulation&,std::string);
   std::set<int> getActiveCell(const objectGroups&,const std::string&);
 

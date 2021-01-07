@@ -3,7 +3,7 @@
  
  * File:   test/testSimulation.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "Process.h"
-#include "McnpDefPhysics.h"
+#include "mcnpDefPhysics.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -338,7 +338,7 @@ testSimulation::testSplitCell()
       SurI.createSurface(1001,std::get<0>(tc));
 
       ASim.splitObject(std::get<1>(tc),std::get<1>(tc)+100,1001);
-      ModelSupport::setGenericPhysics(ASim,"CEM03");
+      mcnpSystem::setGenericPhysics(ASim,"CEM03");
       ASim.prepareWrite();
       ASim.write(std::get<2>(tc));
     }

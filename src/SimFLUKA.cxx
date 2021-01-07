@@ -552,6 +552,35 @@ SimFLUKA::writeWeights(std::ostream& OX) const
   return;
 }
 
+void
+SimFLUKA::prepareImportance()
+  /*!
+    This needs to set a BIAS card for the appropaiate particles
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","prepareImportance");
+
+  ELog::EM<<"PREPARE"<<ELog::endDiag;
+  
+  bool flag;
+  double Imp;
+  std::vector<std::pair<int,double>> ImpVec;
+  ImpVec.push_back(std::pair<int,double>(1,0.0));
+  for(const int CN : cellOutOrder)
+    {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpVec.push_back(std::pair<int,double>(CN,Imp));
+    }
+
+  for(const auto& [CN,V] : ImpVec)
+    {
+      if (std::abs(V-1.0)>Geometry::zeroTol)
+	PhysPtr->setTHR("bias",CN,"3.0",std::to_string(V),"3.0");
+    }	  
+  return;
+}
 
 void
 SimFLUKA::writePhysics(std::ostream& OX) const
@@ -714,6 +743,7 @@ SimFLUKA::prepareWrite()
   std::set<int> matActive=getActiveMaterial();
   matActive.erase(0);
   PhysPtr->setMatNumbers(matActive);
+  prepareImportance();
 
   return;
 }

@@ -42,7 +42,7 @@ my @mainLib=qw( visit src simMC  construct
     phitsProcess phitsTally phitsSupport 
     tally geometry mersenne src world work
     xml poly support weights
-    insertUnit md5 construct
+    insertUnit md5 construct modelSupport
     global constructVar physics simMC
     transport attachComp visit poly 
     magnetic phitsPhysics mcnpProcess

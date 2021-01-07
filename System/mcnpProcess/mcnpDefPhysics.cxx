@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/DefPhysics.cxx
+ * File:   mcnpProcess/mcnpDefPhysics.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,24 +90,24 @@
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "Process.h"
-#include "McnpDefPhysics.h"
+#include "mcnpDefPhysics.h"
 
-namespace ModelSupport
+namespace mcnpSystem
 {
 
 
-
 void
-setPhysicsModel(physicsSystem::LSwitchCard& lea,
+setPhysicsModel(SimMCNP& System,
 		const std::string& PModel)
   /*!
     Set the physics model based on the input parameter set
-    \param lea :: Physics system
+    \param System :: Simulation for physics system
     \param PModel :: Physics model to choose 
   */
 {
   ELog::RegMethod RegA("DefPhysics[F]","setPhysicsModel");
 
+  physicsSystem::LSwitchCard& lea=System.getPC().getLEA();
 // Goran
 
   ELog::EM<<"Physics Model == "<<PModel<<ELog::endBasic;
@@ -196,6 +196,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");
 
+
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
   ELog::EM<<"ECL == "<<elcAdd<<ELog::endDiag;
   PC.setMode("n p "+PList+elcAdd);
@@ -253,50 +254,6 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
 }
 
 void
-setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
-  /*!
-    Catch all for non-specialized Simulation units
-   */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(default)");
-  ELog::EM<<"NO OP in base call"<<ELog::endErr;
-  return;
-}
-
-void
-setWImp(Simulation& System,const mainSystem::inputParam& IParam)
-  /*!
-    Set imp weigths for individual cells and regions
-    \param System :: Simulation to use
-    \param IParam :: Input param
-  */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setWImp");
-
-  const size_t nIMP=IParam.setCnt("wIMP");
-  for(size_t setIndex=0;setIndex<nIMP;setIndex++)
-    {
-      const size_t nItem=IParam.itemCnt("wIMP",setIndex);
-      double impValue(1.0);
-      const std::string type=IParam.getValueError<std::string>
-	("wIMP",setIndex,0,"No cell/object for wIMP ");
-      if (nItem==3)
-	impValue=IParam.getValueError<double>
-	  ("wIMP",setIndex,2," IMP value for wIMP");
-      else
-      	impValue=IParam.getValueError<double>
-	  ("wIMP",setIndex,1," IMP value for wIMP");
-
-      const std::set<int> cells=
-	ModelSupport::getActiveCell(System,type);
-      
-      for(const int CN : cells)
-	System.setImp(CN,impValue);
-    }
-  return;
-}
-
-void
 setGenericPhysics(SimMCNP& System,
 		  const std::string& PModel)
   /*!
@@ -308,11 +265,10 @@ setGenericPhysics(SimMCNP& System,
   ELog::RegMethod RegA("DefPhysics[F]","setGenericPhysics");
   
   physicsSystem::PhysicsCards& PC=System.getPC();
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
 
   PC.setMode("n");
-  setPhysicsModel(lea,PModel);
-  const std::vector<int> cellVec=System.getCellVector();
+  setPhysicsModel(System,PModel);
+  //  const std::vector<int> cellVec=System.getCellVector();
 
   System.setImp(1,0);
 
@@ -341,7 +297,6 @@ setDefaultPhysics(SimMCNP& System,
     (3000.0,"maxEnergy");
 
   setGenericPhysics(System,PModel);
-  setWImp(System,IParam);
   
   PC.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
   PC.setRND(IParam.getValue<long int>("random"));	
@@ -445,42 +400,6 @@ setDefaultPhysics(SimMCNP& System,
   return; 
 }
 
-void 
-setDefaultPhysics(SimFLUKA& System,
-		  const mainSystem::inputParam& IParam)
-  /*!
-    Set the default Physics
-    \param System :: Simulation
-    \param IParam :: Input parameter
-  */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
 
-  // trick to allow 1e8 entries etc.
-  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
-  System.setRND(IParam.getValue<long int>("random"));
-  if (IParam.flag("basicGeom"))
-    System.setBasicGeom();
-  if (IParam.flag("geomPrecision"))
-    System.setGeomPrecision(IParam.getValue<double>("geomPrecision"));
-  return;
-}
-
-void 
-setDefaultPhysics(SimPHITS& System,
-		  const mainSystem::inputParam& IParam)
-  /*!
-    Set the default Physics for phits
-    \param System :: Simulation
-    \param IParam :: Input parameter
-  */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(phits)");
-
-  // trick to allow 1e8 entries etc.
-  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
-  System.setRND(IParam.getValue<long int>("random"));
-  return;
-}
 
 } // NAMESPACE ModelSupport

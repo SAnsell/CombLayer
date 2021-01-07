@@ -79,8 +79,10 @@
 #include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "mcnpDefPhysics.h"
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
+#include "phitsDefPhysics.h"
 #include "ObjectAddition.h"
 #include "MaterialUpdate.h"
 #include "World.h"
@@ -529,7 +531,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
 
-  ModelSupport::setDefaultPhysics(*SimFLUKAPtr,IParam);
+  flukaSystem::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
 
@@ -571,7 +573,7 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
 
-  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
+  phitsSystem::setDefaultPhysics(*SimPHITSPtr,IParam);
   SimPHITSPtr->prepareWrite();  // this can be deleteted??
   
   phitsSystem::tallySelection(*SimPHITSPtr,IParam);
@@ -611,13 +613,15 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   const int multi=IParam.getValue<int>("multi");
 
   
-  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+  
+  mcnpSystem::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);
    //
-
+  
+  
   SimProcess::importanceSim(*SimMCPtr,IParam);
 
   SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
@@ -681,6 +685,7 @@ buildFullSimulation(Simulation* SimPtr,
   
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces();
+
   
   ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
@@ -688,10 +693,14 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
+
   SimPtr->minimizeObject("All");
   if (createVTK(IParam,SimPtr,OName))
     return;
 
+  // generalized setting:
+  ModelSupport::setWImp(*SimPtr,IParam);
+  
   //  UGLY CASTS to be removed
   SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
   if (SimMCPtr)

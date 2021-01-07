@@ -79,6 +79,7 @@ class SimFLUKA : public Simulation
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
 
+  void prepareImportance();
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;

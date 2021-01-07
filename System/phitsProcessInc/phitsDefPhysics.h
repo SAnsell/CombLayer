@@ -3,7 +3,7 @@
  
  * File:   phitsProcessInc/phitsDefPhysics.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ namespace mainSystem
 namespace phitsSystem
 {
   class phitsPhysics;
+
+  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
 
   void setModelPhysics(SimPHITS&, const mainSystem::inputParam&);
     

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   mcnpProcessInc/McnpDefPhysics.h
+ * File:   mcnpProcessInc/mcnpProcess.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -19,14 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_McnpDefPhysics_h
-#define ModelSupport_McnpDefPhysics_h
+#ifndef flukaSystem_mcnpProcess_h
+#define flukaSystem_mcnpProcess_h
 
 class objectGroups;
 class Simulation;
-class SimMCNP;
 class SimFLUKA;
-class SimPHITS;
 class FuncDataBase;
 
 namespace mainSystem
@@ -34,23 +32,11 @@ namespace mainSystem
   class inputParam;
 }
 
-namespace physicsSystem
+namespace flukaSystem
 {
-  class LSwitchCard;
-  class PhysicsCards;
-}
-
-namespace ModelSupport
-{
-  void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
-  void setGenericPhysics(SimMCNP&,const std::string&);
-  void setGenericPhysics(SimMCNP&,const mainSystem::inputParam&);
-  
- 
-  void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
-			 const double); 
-  void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
-			 const mainSystem::inputParam&); 
+  std::set<int> getActiveUnit(const Simulation&,const int,const std::string&);
+  std::set<int> getActiveParticle(const std::string&);
+  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
 }
 
 

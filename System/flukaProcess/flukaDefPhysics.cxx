@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaDefPhysics.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,6 +87,27 @@
 namespace flukaSystem
 {  
 
+void 
+setDefaultPhysics(SimFLUKA& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  if (IParam.flag("basicGeom"))
+    System.setBasicGeom();
+  if (IParam.flag("geomPrecision"))
+    System.setGeomPrecision(IParam.getValue<double>("geomPrecision"));
+  return;
+}
+  
 void
 setUserFlags(SimFLUKA& System,
 	      const mainSystem::inputParam& IParam)
@@ -183,15 +204,6 @@ setModelPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processBIAS(System,IParam,index);
     }
-
-  nSet=IParam.setCnt("wIMP");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processIMP(System,IParam,index);
-    }
-
   return; 
 }
 

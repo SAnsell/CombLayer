@@ -72,6 +72,7 @@
 #include "DBMaterial.h"
 #include "localRotate.h"
 #include "masterRotate.h"
+#include "particleConv.h"
 
 #include "Simulation.h"
 #include "Process.h"
@@ -79,6 +80,54 @@
 namespace ModelSupport
 {
 
+void
+setWImp(Simulation& System,const mainSystem::inputParam& IParam)
+  /*!
+    Set imp weigths for individual cells and regions
+    \param System :: Simulation to use
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setWImp");
+
+  const particleConv& pConv=particleConv::Instance();
+  
+  const size_t nIMP=IParam.setCnt("wIMP");
+
+  std::string cellName;
+  for(size_t setIndex=0;setIndex<nIMP;setIndex++)
+    {
+      const size_t nItem=IParam.itemCnt("wIMP",setIndex);
+      double impValue(1.0);
+
+      const std::string pType=IParam.getValueError<std::string>
+	("wIMP",setIndex,0,"No cell/object for wIMP ");
+
+      if (!pConv.hasName(pType))
+	{
+	  cellName=IParam.getValueError<std::string>
+	    ("wIMP",setIndex,1,"No cell/object for wIMP ");
+	  impValue=IParam.getValueError<double>
+	    ("wIMP",setIndex,2," IMP value for wIMP");
+	  const std::set<int> cells=
+	    ModelSupport::getActiveCell(System,cellName);
+	  for(const int CN : cells)
+	    System.setImp(CN,pType,impValue);
+	}
+      else
+	{
+	  cellName=pType;
+	  impValue=IParam.getValueError<double>
+	    ("wIMP",setIndex,1," IMP value for wIMP");
+	  const std::set<int> cells=
+	    ModelSupport::getActiveCell(System,cellName);
+	  for(const int CN : cells)
+	    System.setImp(CN,pType,impValue);
+	}
+    }
+  return;
+}
+  
 std::set<int>
 getActiveMaterial(const Simulation& System,
 		  std::string material)
@@ -129,7 +178,7 @@ getActiveCell(const objectGroups& OGrp,
   /*!
     Given a cell find the active cells
     \param OGrp :: Active group						
-    \param cell : cell0 name to use
+    \param cell : cell name to use
     \return set of active cell numbers 
   */
 {
@@ -151,7 +200,7 @@ setDefRotation(const objectGroups& OGrp,
     \param IParam :: Parameter set
    */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setDefRotation");
+  ELog::RegMethod RegA("Process[F]","setDefRotation");
 
   masterRotate& MR = masterRotate::Instance();
   if (IParam.flag("axis"))
@@ -201,7 +250,7 @@ procAngle(const objectGroups& OGrp,
     \param index :: set index
   */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","procAngle");
+  ELog::RegMethod RegA("Process[F]","procAngle");
   
   masterRotate& MR = masterRotate::Instance();
 
@@ -331,7 +380,7 @@ procOffset(const objectGroups& OGrp,
     \param index :: set index
   */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","procOffset");
+  ELog::RegMethod RegA("Process[F]","procOffset");
   masterRotate& MR = masterRotate::Instance();  
 
   const std::string AItem=

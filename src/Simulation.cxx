@@ -799,6 +799,26 @@ Simulation::setImp(const int CellN,const double V)
   return;
 }
 
+void
+Simulation::setImp(const int CellN,const std::string& pName,
+		   const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param pName :: particleName
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp(particle)");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(pName,V);
+  return;
+}
+
 
 MonteCarlo::Object*
 Simulation::findObject(const int CellN)
