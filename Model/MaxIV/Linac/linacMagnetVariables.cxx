@@ -70,7 +70,7 @@ LINACmagnetVariables(FuncDataBase& Control,
 	"Seg1QuadA  L2SPF1PipeD:Void",
 	"Seg1CMagHC L2SPF1PipeE:Void",
 	"Seg1CMagVC L2SPF1PipeE:Void",
-	
+
 	"Seg2QuadA L2SPF2PipeA:Void",
 	"Seg2QuadB L2SPF1PipeB:Void",
 	"Seg2QuadC L2SPF1PipeE:Void",
@@ -81,7 +81,7 @@ LINACmagnetVariables(FuncDataBase& Control,
 	"Seg3CMagHA  L2SPF3PipeA:Void",
 	"Seg3CMagVA  L2SPF3PipeA:Void",
 	"Seg3DipoleB L2SPF3FlatB:Void",
- 
+
 	"Seg4QuadA   L2SPF4PipeB:Void",
 	"Seg4SexuA   L2SPF4PipeB:Void",
 	"Seg4QuadB   L2SPF4PipeB:Void",
@@ -124,30 +124,30 @@ LINACmagnetVariables(FuncDataBase& Control,
 	  "Seg13SexuA L2SPF13PipeB:Void",
 	  "Seg13QuadB L2SPF13PipeB:Void",
 	  "Seg13CMagVA L2SPF13PipeC:Void",
-	  
+
 	  "Seg14DipoleA TDC14FlatA:Void",
 	  "Seg14DipoleB TDC14FlatB:Void",
-	  
+
 	  "Seg16Quad TDC16PipeA:Void",
 	  "Seg16CMagHA TDC16PipeB:Void",
 	  "Seg16CMagVA TDC16PipeB:Void",
-	  
+
 	  "Seg18Quad TDC18PipeA:Void",
 	  "Seg18CMagHA TDC18PipeB:Void",
 	  "Seg18CMagVA TDC18PipeB:Void",
-	  
+
 	  "Seg21Quad TDC21PipeA:Void",
 	  "Seg21CMagHA TDC21PipeB:Void",
 	  "Seg21CMagVA TDC21PipeB:Void",
-	  
+
 	  "Seg23Quad TDC23PipeA:Void",
 	  "Seg23CMagHA TDC23PipeB:Void",
 	  "Seg23CMagVA TDC23PipeB:Void",
-	  
+
 	  "Seg24CMagHA TDC24PipeB:Void",
 	  "Seg24CMagVA TDC24PipeB:Void",
 	  "Seg24Quad TDC24PipeC:Void",
-	  
+
 	  "Seg25DipoleA TDC25TriPipeA:Void",
 	});
       for(const std::string& Item : TDCname)
@@ -160,38 +160,38 @@ LINACmagnetVariables(FuncDataBase& Control,
       const std::vector<std::string> SPFname
 	({
 	  "Seg30CMagVA SPF30PipeB:Void",
-	  
+
 	  "Seg31Quad SPF31PipeA:Void",
 	  "Seg31CMagHA SPF31PipeB:Void",
-	  
+
 	  "Seg32DipoleA SPF32FlatA:Void",
 	  "Seg32DipoleB SPF32FlatB:Void",
-	  
+
 	  "Seg33CMagHA SPF33PipeA:Void",
 	  "Seg33QuadA SPF33PipeB:Void",
 	  "Seg33SexuA SPF33PipeB:Void",
 	  "Seg33QuadB SPF33PipeB:Void",
 	  "Seg33CMagVA SPF33PipeC:Void",
-	  
+
 	  "Seg34DipoleA SPF34FlatA:Void",
 	  "Seg34DipoleB SPF34FlatB:Void",
-	  
+
 	  "Seg35QuadA SPF35PipeA:Void",
 	  "Seg35QuadB SPF35PipeB:Void",
 	  "Seg35CMagHA SPF35PipeB:Void",
 	  "Seg35CMagVA SPF35PipeB:Void",
-	  
+
 	  "Seg36QuadA SPF36PipeA:Void",
 	  "Seg36CMagHA SPF36PipeA:Void",
 	  "Seg36CMagVA SPF35PipeA:Void",
 	  "Seg36QuadB SPF36PipeA:Void",
-	  
+
 	  "Seg43CMagHA SPF43Pipe:Void"
 	});
       for(const std::string& Item : SPFname)
 	Control.pushVariable<std::string>("MagUnitList",Item);
     }
-      
+
   MagnetGenerator MUdipole;
   // SEGMENT 1
   MUdipole.generateCorMag(Control,1,"CMagHA",90.0);
@@ -202,14 +202,14 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateCorMag(Control,1,"CMagHC",90.0);
   MUdipole.generateCorMag(Control,1,"CMagVC",0.0);
 
-  // SEGMENT 2 
+  // SEGMENT 2
   MUdipole.generateCorMag(Control,2,"QuadA",0.0);
   MUdipole.generateCorMag(Control,2,"QuadB",0.0);
   MUdipole.generateCorMag(Control,2,"QuadC",0.0);
   MUdipole.generateCorMag(Control,2,"QuadD",0.0);
   MUdipole.generateCorMag(Control,2,"QuadE",0.0);
- 
-  
+
+
   // SEGMENT 3
   MUdipole.generateDipole(Control,3,"DipoleA",-90.0,0.8575);  // 0.86
   MUdipole.generateCorMag(Control,3,"CMagHA",90.0);
@@ -262,57 +262,57 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateDipole(Control,12,"DipoleA",90.0,0.78);
       MUdipole.setOffset(Geometry::Vec3D(0,-10.0,0));
       MUdipole.generateDipole(Control,12,"DipoleB",-90.0,0.945);
-      
+
       // SEGMENT 13
       MUdipole.generateCorMag(Control,13,"CMagHA",90.0);
       MUdipole.generateQuad(Control,13,"QuadA",0.0,0.0);
       MUdipole.generateSexupole(Control,13,"SexuA",0.0,0.0);
       MUdipole.generateQuad(Control,13,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,13,"CMagVA",0.0);
-      
+
       // SEGMENT 14
       MUdipole.setPreName("TDC");
       MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.855);
       MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.855);
-      
+
       // SEGMENT 15
-      
+
       // SEGMENT 16
       MUdipole.generateQuad(Control,16,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,16,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,16,"CMagVA",0.0);
-      
+
       // SEGMENT 17
-      
+
       // SEGMENT 18
       MUdipole.generateQuad(Control,18,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,18,"CMagHA",0.0);
       MUdipole.generateCorMag(Control,18,"CMagVA",0.0);
-      
+
       // SEGMENT 19
       // SEGMENT 20
-      
+
       // SEGMENT 21
       MUdipole.generateQuad(Control,21,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,21,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,21,"CMagVA",0.0);
-      
+
       // SEGMENT 23
       MUdipole.generateQuad(Control,23,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,23,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,23,"CMagVA",0.0);
-      
+
       // SEGMENT 24
       MUdipole.generateCorMag(Control,24,"CMagHA",0.0);
       MUdipole.generateCorMag(Control,24,"CMagVA",0.0);
       MUdipole.generateQuad(Control,24,"Quad",0.0,0.0);
-      
+
       // SEGMENT 25
       if (magField=="TDCline" || magField=="TDClineB")
-	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.780);
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.81);
       if (magField=="TDClineC")
-	MUdipole.generateDipole(Control,25,"DipoleA",90.0,1.560);
-      
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,1.59);
+
       // SEGMENT 26
       // SEGMENT 27
       // SEGMENT 28
@@ -340,33 +340,33 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateSexupole(Control,33,"SexuA",0.0,0.0);
       MUdipole.generateQuad(Control,33,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,33,"CMagVA",0.0);
-      
+
       // SEGMENT 34
       MUdipole.generateDipole(Control,34,"DipoleA",90.0,0.858);
       MUdipole.generateDipole(Control,34,"DipoleB",90.0,0.858);
-      
-      
+
+
       // SEGMENT 35
       MUdipole.generateQuad(Control,35,"QuadA",0.0,0.0);
       MUdipole.generateQuad(Control,35,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,35,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,35,"CMagVA",0.0);
-      
+
       // SEGMENT 36
       MUdipole.generateQuad(Control,36,"QuadA",0.0,0.0);
       MUdipole.generateCorMag(Control,36,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,36,"CMagVA",0.0);
       MUdipole.generateQuad(Control,36,"QuadB",0.0,0.0);
-      
+
       // SEGMENT 37/38/39/40/41/42
-      
-      
+
+
       // SEGMENT 43
       MUdipole.generateCorMag(Control,43,"CMagHA",90.0);
-      
+
       // SEGMENT 44 [THIS IS a curved dipole -- check sized]
       MUdipole.generateDipole(Control,44,"CMag",0.0,0.0);
-      
+
       // SEGMENT 45
       // SEGMENT 46
       // SEGMENT 47
