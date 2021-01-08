@@ -266,7 +266,6 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 
   if (materialFlag>=0)
     {
-      ELog::EM<<"Active Cell == "<<cellM<<ELog::endDiag;
       // gets set of cells/materials [0:cells/1 materials]
       const std::set<int> activeCell=
 	getActiveUnit(System,materialFlag,cellM);

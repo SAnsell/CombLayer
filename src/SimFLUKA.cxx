@@ -560,8 +560,8 @@ SimFLUKA::prepareImportance()
 {
   ELog::RegMethod RegA("SimFLUKA","prepareImportance");
 
-  ELog::EM<<"PREPARE"<<ELog::endDiag;
   
+  const double minFlukaImportance(1e-5);
   bool flag;
   double Imp;
   std::vector<std::pair<int,double>> ImpVec;
@@ -576,7 +576,9 @@ SimFLUKA::prepareImportance()
 
   for(const auto& [CN,V] : ImpVec)
     {
-      if (std::abs(V-1.0)>Geometry::zeroTol)
+      if (std::abs(V-1.0)>Geometry::zeroTol &&
+	  std::abs(V) > minFlukaImportance)         // min for FLUKA
+	
 	PhysPtr->setTHR("bias",CN,"3.0",std::to_string(V),"3.0");
     }	  
   return;

@@ -3,7 +3,7 @@
  
  * File:   Process/Process.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
     \param IParam :: Input param
   */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setWImp");
+  ELog::RegMethod RegA("Process[F]","setWImp");
 
   const particleConv& pConv=particleConv::Instance();
   
@@ -103,7 +103,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
       const std::string pType=IParam.getValueError<std::string>
 	("wIMP",setIndex,0,"No cell/object for wIMP ");
 
-      if (!pConv.hasName(pType))
+      if (pConv.hasName(pType))
 	{
 	  cellName=IParam.getValueError<std::string>
 	    ("wIMP",setIndex,1,"No cell/object for wIMP ");
@@ -122,7 +122,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
 	  const std::set<int> cells=
 	    ModelSupport::getActiveCell(System,cellName);
 	  for(const int CN : cells)
-	    System.setImp(CN,pType,impValue);
+	    System.setImp(CN,impValue);
 	}
     }
   return;
