@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,6 +134,17 @@ class InjectionHall :
 
   double boundaryWidth;           ///< Width after walls
   //  double boundaryHeight;          ///< Height after roof
+
+  double bdRoomHeight;          ///< Under-the-floor beam dump room void height
+  double bdRoomWidth;           ///< Beam dump room void width
+  double bdRoomLength;          ///< Beam dump room void length
+  double bdRoomFloorThick;      ///< Beam dump room floor thickness
+  double bdRoomRoofThick;       ///< Beam dump room steel roof thickness
+  double bdRoomFrontWallThick;  ///< Beam dump room front wall thickness
+  double bdRoomSideWallThick;   ///< Thickness of the beam dump room side walls
+  double bdRoomBackSteelThick;  ///< Beam dump room back steel layer thickness
+  double bdRoomHatchLength;     ///< Length of penetration in the floor to the beam dump room
+  double bdRoomXStep;           ///< Beam dump room x-offset
 
   size_t nPillars;              ///< Number of pillars
   std::vector<double> pRadii;   ///< Pillar radii

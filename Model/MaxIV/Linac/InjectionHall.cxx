@@ -3,7 +3,7 @@
 
  * File:   Linac/InjectionHall.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,24 +35,10 @@
 #include <array>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "surfRegister.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -60,11 +46,25 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "Object.h"
-#include "Exception.h"
 #include "surfDivide.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
+#include "Exception.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Quaternion.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "Object.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
 
 #include "InjectionHall.h"
 
@@ -180,6 +180,16 @@ InjectionHall::populate(const FuncDataBase& Control)
   klystronSideWall=Control.EvalVar<double>(keyName+"KlystronSideWall");
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
+  bdRoomHeight=Control.EvalVar<double>(keyName+"BDRoomHeight");
+  bdRoomWidth=Control.EvalVar<double>(keyName+"BDRoomWidth");
+  bdRoomLength=Control.EvalVar<double>(keyName+"BDRoomLength");
+  bdRoomFloorThick=Control.EvalVar<double>(keyName+"BDRoomFloorThick");
+  bdRoomRoofThick=Control.EvalVar<double>(keyName+"BDRoomRoofThick");
+  bdRoomFrontWallThick=Control.EvalVar<double>(keyName+"BDRoomFrontWallThick");
+  bdRoomSideWallThick=Control.EvalVar<double>(keyName+"BDRoomSideWallThick");
+  bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
+  bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
+  bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
   //  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
 
   nPillars=Control.EvalDefVar<size_t>(keyName+"NPillars", 0);
@@ -473,6 +483,23 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7401,buildIndex+7402,Y,-btgLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
+
+  // Under-the-floor beam dump and its room
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
+				  -(bdRoomLength+bdRoomFrontWallThick));
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7505,buildIndex+5,Z,
+				  -(bdRoomRoofThick+bdRoomHeight+bdRoomFloorThick));
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7506,buildIndex+7505,Z,bdRoomFloorThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7516,buildIndex+5,Z,-bdRoomRoofThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7511,buildIndex+7501,Y,bdRoomFrontWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+7511,Y,bdRoomHatchLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
+				  bdRoomLength-bdRoomBackSteelThick);
+
+  ModelSupport::buildPlane(SMap,buildIndex+7503,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7504,Origin+X*(bdRoomXStep+bdRoomWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7513,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7514,Origin+X*(bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -842,7 +869,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("RightCut",System,cellIndex++,voidMat,0.0,Out);
 
   // ROOF/FLOOR
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7511 53 -54 -5 15 ");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 53 -7503 -5 15 ");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7504 -54 -5 15 ");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 53 -54 -5 15 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -201 13 -14 6 -16 ");
@@ -920,7 +953,40 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1001 1003 5003 -5004 5005 -5006 ");
   makeCell("THz",System,cellIndex++,thzMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 15 -16 ");
+  // Under-the-floor beam dump and its room
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7501 53 -54 7505 -15 ");
+  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 53 -54 7505 -15 ");
+  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 7514 -54 7505 -15 ");
+  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 53 -7513 7505 -15 ");
+  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -7511 7513 -7514 7505 -15 ");
+  makeCell("BDFrontWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 7513 -7514 7505 -15 ");
+  makeCell("BDBackWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7514 7505 -7506 ");
+  makeCell("BDFloor",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7522 -21 7503 -7504 7506 -7516 ");
+  makeCell("BDBackWallSteel",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7504 -7514 7506 -15 ");
+  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7503 7506 -15 ");
+  makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
+  makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7503 -7504 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7522 7503 -7504 7506 -7516 ");
+  makeCell("BD",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
   addOuterSurf(Out);
 
   layerProcess(System,"MidT",

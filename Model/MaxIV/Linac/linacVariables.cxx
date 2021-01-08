@@ -3217,6 +3217,17 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"THzZAngle",7.35); // measured with liner on K_20-1_08F6c1
   Control.addVariable(wallKey+"THzMat","Void"); // AR 201106: currently it's lead or concrete, but eventually it will be empty
 
+  Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
+  Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
+  Control.addVariable(wallKey+"BDRoomLength",880.0); // dummy
+  Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
+  Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
+  Control.addVariable(wallKey+"BDRoomFrontWallThick",100.0); // dummy
+  Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
+  Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
+  Control.addVariable(wallKey+"BDRoomHatchLength",620.0); // dummy
+  Control.addVariable(wallKey+"BDRoomXStep",-362.9); // TDC line center
+
   return;
 }
 
