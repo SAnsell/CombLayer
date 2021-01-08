@@ -67,7 +67,9 @@ void writePHITSComment(std::ostream&,const size_t,const std::string&);
 void writePHITSOpen(std::ostream&,const size_t,const std::string&);
 void writePHITSTableHead(std::ostream&,const size_t,
 			 const std::vector<std::string>&);
-		  
+
+void writePHITSCellSet(std::ostream&,const size_t,
+		       const std::map<int,double>&);
 
 template<typename T>
 void writePHITS(std::ostream&,const size_t,

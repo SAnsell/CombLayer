@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -387,6 +387,20 @@ particleConv::mcplToFLUKA(const int ID) const
   return particleVec[index-1].flukaName;
 }
  
+const std::string&
+particleConv::mcplToPHITS(const int ID) const
+  /*!
+    Get PHTIS name base on mcnp id number
+    \param ID :: mcpl ID number
+    \return fluka name						
+  */
+{
+  const size_t index=getMCPLIndex(ID);
+  if (!index)
+    throw ColErr::InContainerError<int>(ID,"MCPL ID no in particleDataBase");
+  return particleVec[index-1].phitsName;
+}
+ 
 
 const std::string&
 particleConv::mcplToMCNP(const int particleIndex) const
@@ -454,6 +468,29 @@ particleConv::mcnpParticleList(const T& particles) const
 	mcplToMCNP(pIndex);
       cx<<separator<<mcnpPart;
       separator=",";
+    }
+  
+  return cx.str();
+}
+
+template<typename T>
+std::string
+particleConv::phitsParticleList(const T& particles) const
+  /*!
+    Convert a set into a comma separated list
+    \param PSet :: stl container to convert (int)
+    \return 
+   */
+{
+  ELog::RegMethod RegA("particleConv","mcnpxParticleList");
+  std::string separator;
+  std::ostringstream cx;
+  for(const int pIndex : particles)
+    {
+      const std::string mcnpPart=
+	mcplToPHITS(pIndex);
+      cx<<separator<<mcnpPart;
+      separator=" ";
     }
   
   return cx.str();
@@ -586,5 +623,8 @@ particleConv::mass(const std::string& particleName) const
 
 template std::string
 particleConv::mcnpParticleList(const std::set<int>&) const;
+
+template std::string
+particleConv::phitsParticleList(const std::set<int>&) const;
 
 ///\endcond template 

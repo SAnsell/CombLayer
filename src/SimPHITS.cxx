@@ -83,6 +83,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "magnetUnit.h"
+#include "particleConv.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
@@ -468,6 +469,71 @@ SimPHITS::writeMagnet(std::ostream& OX) const
 }
 
 void
+SimPHITS::writeImportance(std::ostream& OX) const
+  /*!
+    Write all the importances / voluems
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimMCNP","writeImportance");
+
+  const particleConv& pConv=particleConv::Instance();
+  
+  std::ostringstream cx;
+
+  // make set of particle:
+  std::set<int> pList;
+
+  // PHITS uses integer importance
+  // zero for all:
+  std::map<int,std::map<int,double>> ImpMap;
+  ImpMap.emplace(0,std::map<int,double>());
+    
+  bool flag;
+  double Imp;
+  for(const int CN : cellOutOrder)
+    {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpMap[0].emplace(CN,Imp);
+      if (!flag)
+	{
+	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
+	  for(const int P : PSet)
+	    {
+	      const double ImpVal=OPtr->getImp(P);
+	      std::map<int,std::map<int,double>>::iterator mc;
+	      mc=ImpMap.find(P);
+	      if (mc==ImpMap.end())
+		{
+		  pList.erase(P);
+		  ImpMap.emplace(P,ImpMap[0]);   // copy existing list in
+		}
+	      ImpMap[P].emplace(CN,ImpVal);
+	    }
+	}
+    }
+
+  for(const auto& [particleNumber,allMap] : ImpMap)
+    {
+      if (!allMap.empty())   // Note this can be empty if all cells assigned.
+	{
+	  OX<<"[Importance]"<<std::endl;
+	  if (particleNumber==0)
+	    OX<<"  part = all"<<std::endl;
+	  else
+	    OX<<"  part = "<<pConv.mcplToPHITS(particleNumber)<<std::endl;
+			      
+	  StrFunc::writePHITSTableHead(OX,1,{"reg","imp"});
+	  StrFunc::writePHITSCellSet(OX,2,allMap);
+	}
+    }
+
+  return;
+}
+
+void
 SimPHITS::write(const std::string& Fname) const
   /*!
     Write out all the system (in PHITS output format)
@@ -487,6 +553,7 @@ SimPHITS::write(const std::string& Fname) const
   writeTransform(OX);
   writeTally(OX);
   writeSource(OX);
+  writeImportance(OX);
   writeMagnet(OX);
 
   OX<<"[end]"<<std::endl; 
