@@ -3219,14 +3219,14 @@ wallVariables(FuncDataBase& Control,
 
   Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
   Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
-  Control.addVariable(wallKey+"BDRoomLength",880.0); // dummy
+  Control.addVariable(wallKey+"BDRoomLength",570); // measured on K_15-6_011
   Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
   Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFrontWallThick",100.0); // dummy
+  Control.addVariable(wallKey+"BDRoomFrontWallThick",150.0); // measured on K_15-6_011
   Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
   Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomHatchLength",620.0); // dummy
-  Control.addVariable(wallKey+"BDRoomXStep",-362.9); // TDC line center
+  Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
 
   return;
 }
