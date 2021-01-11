@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment30.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,13 @@
  ****************************************************************************/
 #ifndef tdcSystem_Segment30_h
 #define tdcSystem_Segment30_h
+
+
+namespace xraySystem
+{
+  class GaugeTube;
+  class IonPumpTube;
+}
 
 namespace tdcSystem
 {
@@ -40,7 +47,7 @@ class Segment30 :
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
 
   /// #2 Vacuum gauge PTR18751
-  std::shared_ptr<tdcSystem::GaugeTube> gauge;
+  std::shared_ptr<xraySystem::GaugeTube> gauge;
   /// #3 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
@@ -48,7 +55,7 @@ class Segment30 :
   std::shared_ptr<constructSystem::Bellows> bellow;
 
   /// #4 Ion pump 75l cf63 1 port
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;
+  std::shared_ptr<xraySystem::IonPumpTube> ionPump;
 
   /// #7 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;

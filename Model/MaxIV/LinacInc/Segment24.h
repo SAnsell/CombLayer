@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment24.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef tdcSystem_Segment24_h
 #define tdcSystem_Segment24_h
 
+namespace xraySystem
+{
+  class IonPumpTube;
+}
+
 namespace tdcSystem
 {
   class StriplineBPM;
@@ -39,7 +44,7 @@ class Segment24 :
  private:
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #1 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #3 Ion Pump 75l cf63
+  std::shared_ptr<xraySystem::IonPumpTube> ionPump;    ///< #3 Ion Pump 75l cf63
   std::shared_ptr<constructSystem::Bellows> bellow;       ///< #4 Bellows -304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;     ///< #5 VC- Flanges 304L- Tube-316L
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;         ///< #6 Horizontal corrector magnet

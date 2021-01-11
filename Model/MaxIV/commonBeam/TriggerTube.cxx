@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Linac/IonPumpTube.cxx
+ * File:   commonBeam/TriggerTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,12 +81,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "IonPumpTube.h"
+#include "TriggerTube.h"
 
-namespace tdcSystem
+namespace xraySystem
 {
 
-IonPumpTube::IonPumpTube(const std::string& Key) :
+TriggerTube::TriggerTube(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -99,38 +99,43 @@ IonPumpTube::IonPumpTube(const std::string& Key) :
 {}
 
 
-IonPumpTube::~IonPumpTube() 
+TriggerTube::~TriggerTube() 
   /*!
     Destructor
   */
 {}
 
 void
-IonPumpTube::populate(const FuncDataBase& Control)
+TriggerTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("IonPumpTube","populate");
+  ELog::RegMethod RegA("TriggerTube","populate");
 
   FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
+  xRadius=Control.EvalVar<double>(keyName+"XRadius");  // beam axis
   yRadius=Control.EvalVar<double>(keyName+"YRadius");  // beam axis
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
 
+  flangeXRadius=Control.EvalVar<double>(keyName+"FlangeXRadius");
   flangeYRadius=Control.EvalVar<double>(keyName+"FlangeYRadius");
   flangeZRadius=Control.EvalVar<double>(keyName+"FlangeZRadius");
 
+  flangeXLength=Control.EvalVar<double>(keyName+"FlangeXLength");
   flangeYLength=Control.EvalVar<double>(keyName+"FlangeYLength");
   flangeZLength=Control.EvalVar<double>(keyName+"FlangeZLength");
 
+  sideZOffset=Control.EvalVar<double>(keyName+"SideZOffset");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -142,12 +147,12 @@ IonPumpTube::populate(const FuncDataBase& Control)
 
 
 void
-IonPumpTube::createSurfaces()
+TriggerTube::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("IonPumpTube","createSurfaces");
+  ELog::RegMethod RegA("TriggerTube","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -185,106 +190,112 @@ IonPumpTube::createSurfaces()
     (SMap,buildIndex+425,Origin-Z*(depth+plateThick),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*height,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+416,Origin+Z*(height+wallThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+416,Origin+Z*(height-flangeZLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+426,Origin+Z*(height+plateThick),Z);
   
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,radius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,flangeZRadius);
 
-   return;
+  return;
 }
 
 void
-IonPumpTube::createObjects(Simulation& System)
+TriggerTube::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("IonPumpTube","createObjects");
+  ELog::RegMethod RegA("TriggerTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   
-  const std::string frontStr=getRuleStr("front");
-  const std::string backStr=getRuleStr("back");
+  const HeadRule frontHR=getRule("front");
+  const HeadRule backHR=getRule("back");
 
   // inner void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 407 ");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 407 ");
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-101 17 -107 ");
-  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 17 -107 ");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 202 17 -107 ");
-  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107 ");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  // base part
+  // BASE part
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -407 405 7 ");
-  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -300 -407 405 7 ");
+  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -300 -417 407 405 17 ");
-  makeCell("LowWall",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -300 -417 407 405 17 ");
+  makeCell("LowWall",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 417 -427 405 -415 ");
-  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 405 -415 ");
+  makeCell("LowFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 425 -405");
-  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 425 -405");
+  makeCell("LowPlate",System,cellIndex++,plateMat,0.0,HR);
 
-  // TOP
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -407 -406 7  ");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,Out);
+  // TOP part
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 300 -417 407 -406 17 ");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 300 -407 -406 7 ");
+  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -417 -416 406 ");
-  makeCell("TopBlank",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 300 -417 407 -406 17 ");
+  makeCell("TopWall",System,cellIndex++,wallMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 -406 416 ");
+  makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 -426 406");
+  makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // vert void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -427 415 -416 17 417  ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 415 -416 17 417  ");
   if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
     {
       if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-	Out+=ModelSupport::getComposite(SMap,buildIndex," ((101 -202):107) ");
+	HR+=ModelSupport::getHeadRule(SMap,buildIndex," ((101 -202):107) ");
       else
-	Out+=ModelSupport::getComposite(SMap,buildIndex," (101:107) ");
+	HR+=ModelSupport::getHeadRule(SMap,buildIndex," (101:107) ");
     }
   else if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-    Out+=ModelSupport::getComposite(SMap,buildIndex," (-202:107) ");
+    HR+=ModelSupport::getHeadRule(SMap,buildIndex," (-202:107) ");
 
-  makeCell("VertOuter",System,cellIndex++,0,0.0,Out);
+  makeCell("VertOuter",System,cellIndex++,0,0.0,HR);
   
   // front void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -200 17  427 -107 101");
-  makeCell("FrontOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -200 17  427 -107 101");
+  makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
 
   // back void
-  Out=ModelSupport::getComposite(SMap,buildIndex," 200 17  427 -207 -202 ");
-  makeCell("BackOuter",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 200 17  427 -207 -202 ");
+  makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 ");
-  addOuterSurf(Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 ");
+  addOuterSurf(HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(425 -416 -427)");
-  addOuterUnionSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(425 -426 -427)");
+  addOuterUnionSurf(HR);
 
   return;
 }
 
 void 
-IonPumpTube::createLinks()
+TriggerTube::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("IonPumpTube","createLinks");
+  ELog::RegMethod RegA("TriggerTube","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -305,7 +316,7 @@ IonPumpTube::createLinks()
 }
 
 void
-IonPumpTube::createAll(Simulation& System,
+TriggerTube::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -315,7 +326,7 @@ IonPumpTube::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("IonPumpTube","createAll");
+  ELog::RegMethod RegA("TriggerTube","createAll");
   
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,2.0*frontLength);

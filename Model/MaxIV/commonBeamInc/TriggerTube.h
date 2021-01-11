@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/IonPumpTube.h
+ * File:   commonBeamInc/TriggerTube.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_IonPumpTube_h
-#define tdcSystem_IonPumpTube_h
+#ifndef tdcSystem_TriggerTube_h
+#define tdcSystem_TriggerTube_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 
   /*!
-  \class IonPumpTube
+  \class TriggerTube
   \version 1.0
   \author S. Ansell
   \date May 2020
 
-  \brief IonPumpTube for Max-IV
+  \brief TriggerTube for Max-IV
 */
 
-class IonPumpTube :
+class TriggerTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -46,8 +46,9 @@ class IonPumpTube :
 {
  private:
 
-  double radius;                ///< void radius
-  double yRadius;               ///< radiu of Y (Beam) port
+  double radius;                ///< void radius [vertical]
+  double xRadius;               ///< radius of X (Side) port
+  double yRadius;               ///< radius of Y (Beam) port
 
   double wallThick;             ///< pipe thickness
 
@@ -57,14 +58,16 @@ class IonPumpTube :
   double frontLength;           ///< full to flange length (-ve Y)
   double backLength;            ///< full to flange length
 
-  double flangeXRadius;         ///< Joining Flange radius
-  double flangeYRadius;         ///< Joining Flange radius
-  double flangeZRadius;         ///< Joining Flange radius
+  double flangeXRadius;         ///< Side join flange
+  double flangeYRadius;         ///< Beam flange radius
+  double flangeZRadius;         ///< Main radius
 
-  double flangeYLength;         ///< Joining Flange radius
-  double flangeZLength;         ///< Joining Flange radius
-  
-  double plateThick;            ///< Joining Flange radius
+  double flangeXLength;         ///< Side Flange length
+  double flangeYLength;         ///< Beam Flange length
+  double flangeZLength;         ///< Main Flange length
+
+  double sideZOffset;           ///< Second Z lift
+  double plateThick;            ///< Top/Base plate thick
 
   int voidMat;                  ///< void material
   int wallMat;                  ///< main material
@@ -77,11 +80,11 @@ class IonPumpTube :
 
  public:
 
-  IonPumpTube(const std::string&);
-  IonPumpTube(const std::string&,const std::string&);
-  IonPumpTube(const IonPumpTube&);
-  IonPumpTube& operator=(const IonPumpTube&);
-  virtual ~IonPumpTube();
+  TriggerTube(const std::string&);
+  TriggerTube(const std::string&,const std::string&);
+  TriggerTube(const TriggerTube&);
+  TriggerTube& operator=(const TriggerTube&);
+  virtual ~TriggerTube();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

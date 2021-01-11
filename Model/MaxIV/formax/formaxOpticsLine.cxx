@@ -3,7 +3,7 @@
  
  * File: formax/formaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +74,14 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
+#include "generalConstruct.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -105,6 +107,7 @@
 #include "MonoBox.h"
 #include "MonoShutter.h"
 #include "DiffPumpXIADP03.h"
+#include "GaugeTube.h"
 #include "formaxOpticsLine.h"
 
 namespace xraySystem
@@ -119,13 +122,15 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
-  buildZone(*this,cellIndex),
+  buildZone(Key+"BuildZone"),
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
-  gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
+  triggerPipe(new xraySystem::GaugeTube(newName+"TriggerPipe")),
+  gateTubeA(new xraySystem::GaugeTube(newName+"GateTubeA")),
+  gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  gateA(new constructSystem::GateValveCube(newName+"GateA")),
+
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -184,9 +189,11 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
-  OR.addObject(gaugeA);
+  OR.addObject(gateTubeA);
+  OR.addObject(gateTubeAItem);
+  OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(gateA);
+
   OR.addObject(bremCollA);
   OR.addObject(filterBoxA);
   OR.addObject(filterStick);
@@ -257,16 +264,17 @@ formaxOpticsLine::createSurfaces()
 
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      std::string Out;
       ModelSupport::buildPlane
 	(SMap,buildIndex+3,Origin-X*outerLeft,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+4,Origin+X*outerRight,X);
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-      const HeadRule HR(Out+getRuleStr("floor"));
-      buildZone.setSurround(HR);
+      const HeadRule HR=
+	ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+
+     buildZone.setSurround(HR*getRule("floor"));
+     buildZone.setFront(getRule("front"));
     }
   return;
 }
@@ -287,7 +295,7 @@ formaxOpticsLine::constructMonoShutter
   ELog::RegMethod RegA("formaxOpticsLine","constructMonoShutter");
 
   int outerCell;
-  
+  /*
   gateI->setFront(FC,linkPt);
   gateI->createAll(System,FC,linkPt);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
@@ -316,7 +324,7 @@ formaxOpticsLine::constructMonoShutter
   gateJ->createAll(System,*bellowJ,2);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
   gateJ->insertInCell(System,outerCell);
-  
+  */  
   return outerCell;
 }
 
@@ -341,7 +349,7 @@ formaxOpticsLine::constructDiag
   ELog::RegMethod RegA("formaxOpticsLine","constructDiag");
 
   int outerCell;
-
+  /*
   // fake insert
 
   diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());  
@@ -370,7 +378,7 @@ formaxOpticsLine::constructDiag
   diagBoxItem.splitObject(System,12,outerCell);
   diagBoxItem.splitObject(System,2001,outerCell);
   cellIndex+=3;
-    
+  */    
   return outerCell;
 }
   
@@ -387,23 +395,21 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   int outerCell;
   
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));
-  buildZone.setInsertCells(this->getInsertCells());
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System);
-
-
+  buildZone.addInsertCells(this->getInsertCells());
+  
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
-  // dump cell for joinPipe
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
-  // real cell for initPipe
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
+  outerCell=buildZone.createUnit(System,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
+  if (preInsert)
+    preInsert->insertAllInCell(System,outerCell);
 
+  constructSystem::constructUnit
+    (System,buildZone,*pipeInit,"back",*triggerPipe);
+				 
+  /*
   triggerPipe->setFront(*pipeInit,2);
   triggerPipe->createAll(System,*pipeInit,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
@@ -634,8 +640,10 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,&masterCell,*bellowI,2);
 
-  setCell("LastVoid",masterCell->getName());
+  */
+//  setCell("LastVoid",masterCell->getName());
   lastComp=gateJ;
+
   return;
 }
 
@@ -648,7 +656,7 @@ formaxOpticsLine::createLinks()
   ELog::RegMethod RControl("formaxOpticsLine","createLinks");
   
   setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  //  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
   
@@ -669,7 +677,7 @@ formaxOpticsLine::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  
+
   buildObjects(System);
   createLinks();
   return;

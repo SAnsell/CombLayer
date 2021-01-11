@@ -90,10 +90,10 @@ namespace tdcSystem
 Segment30::Segment30(const std::string& Key) :
   TDCsegment(Key,2),
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
-  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
+  gauge(new xraySystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
-  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
+  ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!

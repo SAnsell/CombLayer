@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment12.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@
 
 namespace constructSystem
 {
+}
+namespace xraySystem
+{
+  class IonPumpTube;
 }
 
 namespace tdcSystem
@@ -60,7 +64,7 @@ class Segment12 :
   std::shared_ptr<constructSystem::Bellows> bellowLA;
 
   /// Ion pump
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPumpLA;
+  std::shared_ptr<xraySystem::IonPumpTube> ionPumpLA;
 
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeLA;

@@ -84,9 +84,9 @@ namespace tdcSystem
 Segment19::Segment19(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
+  gauge(new xraySystem::GaugeTube(keyName+"Gauge")),
   gateA(new constructSystem::GateValveCube(keyName+"GateA")),
-  ionPump(new tdcSystem::GaugeTube(keyName+"IonPump")),
+  ionPump(new xraySystem::GaugeTube(keyName+"IonPump")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!

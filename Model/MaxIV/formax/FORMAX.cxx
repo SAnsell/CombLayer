@@ -171,7 +171,6 @@ FORMAX::build(Simulation& System,
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
-
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
@@ -191,10 +190,9 @@ FORMAX::build(Simulation& System,
 
 
   if (stopPoint=="opticsHut") return;
-  return;
+
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
   // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
@@ -203,6 +201,7 @@ FORMAX::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
   return;  
 

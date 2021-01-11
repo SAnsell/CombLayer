@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment9.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,17 @@
 #ifndef tdcSystem_Segment9_h
 #define tdcSystem_Segment9_h
 
+namespace xraySystem
+{
+  class IonPumpTube;
+}
+
 namespace tdcSystem
 {
+  class CeramicGap;
+  class CorrectorMag;
+  class StriplineBPM;
+  
   /*!
     \class Segment9
     \version 1.0
@@ -40,7 +49,7 @@ class Segment9 :
   /// first bellow [actually ceramic gap]
   std::shared_ptr<tdcSystem::CeramicGap> ceramicBellowA;
   /// ion pump 
-  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
+  std::shared_ptr<xraySystem::IonPumpTube> pumpA;
   /// first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 

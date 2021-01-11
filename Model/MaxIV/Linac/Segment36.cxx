@@ -3,7 +3,7 @@
 
  * File: Linac/Segment36.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ namespace tdcSystem
 
 Segment36::Segment36(const std::string& Key) :
   TDCsegment(Key,2),
-  gauge(new tdcSystem::GaugeTube(keyName+"Gauge")),
+  gauge(new xraySystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),

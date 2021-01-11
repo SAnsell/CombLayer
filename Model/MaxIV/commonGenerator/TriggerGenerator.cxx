@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/IonPTubeGenerator.cxx
+ * File:   commonGenerator/TriggerGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -52,22 +52,26 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "IonPTubeGenerator.h"
+#include "TriggerGenerator.h"
 
 namespace setVariable
 {
 
 
-IonPTubeGenerator::IonPTubeGenerator() :
-  radius(CF66_TDC::innerRadius),
-  yRadius(CF35_TDC::innerRadius),
+TriggerGenerator::TriggerGenerator() :
+  radius(CF100::innerRadius),
+  xRadius(CF40::innerRadius),
+  yRadius(CF40::innerRadius),
   wallThick(CF40::wallThick),
-  height(3.8),depth(6.4),
-  frontLength(8.5),backLength(7.5),
-  flangeYRadius(CF35_TDC::flangeRadius),
-  flangeZRadius(CF66_TDC::flangeRadius),
-  flangeYLength(CF35_TDC::flangeLength),
-  flangeZLength(CF66_TDC::flangeLength),
+  height(25.0),depth(15.0),
+  frontLength(10.0),backLength(10.0),
+  flangeXRadius(CF40::flangeRadius),
+  flangeYRadius(CF40::flangeRadius),
+  flangeZRadius(CF100::flangeRadius),
+  flangeXLength(CF40::flangeLength),
+  flangeYLength(CF40::flangeLength),
+  flangeZLength(CF100::flangeLength),
+  sideZOffset(5.0),
   plateThick(CF40::flangeLength),
   voidMat("Void"),wallMat("Stainless304L"),
   plateMat("Stainless304L")
@@ -76,7 +80,7 @@ IonPTubeGenerator::IonPTubeGenerator() :
   */
 {} 
 
-IonPTubeGenerator::~IonPTubeGenerator()
+TriggerGenerator::~TriggerGenerator()
  /*!
    Destructor
  */
@@ -84,46 +88,47 @@ IonPTubeGenerator::~IonPTubeGenerator()
 
 template<typename CF>
 void
-IonPTubeGenerator::setCF()
+TriggerGenerator::setCF()
   /*!
     Setter for flange A
    */
 {
   radius=CF::innerRadius;
-  yRadius=CF::innerRadius;
-  wallThick=CF::wallThick;
-
-  setMainCF<CF>();
-  return;
-}
-
-template<typename CF>
-void
-IonPTubeGenerator::setMainCF()
-  /*!
-    Setter for flange A
-   */
-{
   flangeZRadius=CF::flangeRadius;
   flangeZLength=CF::flangeLength;
+  wallThick=CF::wallThick;
+
   return;
 }
 
 template<typename CF>
 void
-IonPTubeGenerator::setPortCF()
+TriggerGenerator::setPortCF()
   /*!
     Setter for flange beam direction flanges
   */
 {
   yRadius=CF::innerRadius;
-  flangeYLength=CF::flangeLength;
   flangeYRadius=CF::flangeRadius;
+  flangeYLength=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+TriggerGenerator::setSideCF()
+  /*!
+    Setter for flange beam direction flanges
+  */
+{
+  yRadius=CF::innerRadius;
+  flangeYRadius=CF::flangeRadius;
+  flangeYLength=CF::flangeLength;
   return;
 }
 
 void
-IonPTubeGenerator::setMainLength(const double F,const double B)
+TriggerGenerator::setMainLength(const double F,const double B)
   /*!
     Setter for front / back port length
     \param F :: Front length
@@ -136,7 +141,7 @@ IonPTubeGenerator::setMainLength(const double F,const double B)
 }
 
 void
-IonPTubeGenerator::generateTube(FuncDataBase& Control,
+TriggerGenerator::generateTube(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary function for setting the variables
@@ -144,10 +149,11 @@ IonPTubeGenerator::generateTube(FuncDataBase& Control,
     \param keyName :: head name for variable
   */
 {
-  ELog::RegMethod RegA("IonPTubeGenerator","generateIonPTube");
+  ELog::RegMethod RegA("TriggerGenerator","generateTrigger");
 
 
   Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"XRadius",xRadius);
   Control.addVariable(keyName+"YRadius",yRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
 
@@ -156,12 +162,15 @@ IonPTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
 
+  Control.addVariable(keyName+"FlangeXRadius",flangeYRadius);
   Control.addVariable(keyName+"FlangeYRadius",flangeYRadius);
   Control.addVariable(keyName+"FlangeZRadius",flangeZRadius);
 
+  Control.addVariable(keyName+"FlangeXLength",flangeYLength);
   Control.addVariable(keyName+"FlangeYLength",flangeYLength);
   Control.addVariable(keyName+"FlangeZLength",flangeZLength);
 
+  Control.addVariable(keyName+"SideZOffset",sideZOffset);
   Control.addVariable(keyName+"PlateThick",plateThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
@@ -174,15 +183,11 @@ IonPTubeGenerator::generateTube(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void IonPTubeGenerator::setCF<CF35_TDC>();
-template void IonPTubeGenerator::setCF<CF63>();
-template void IonPTubeGenerator::setCF<CF66_TDC>();
+template void TriggerGenerator::setCF<CF100>();
 
-template void IonPTubeGenerator::setMainCF<CF35_TDC>();
-template void IonPTubeGenerator::setMainCF<CF66_TDC>();
+template void TriggerGenerator::setSideCF<CF40>();
 
-template void IonPTubeGenerator::setPortCF<CF35_TDC>();
-template void IonPTubeGenerator::setPortCF<CF66_TDC>();
+template void TriggerGenerator::setPortCF<CF40>();
 
 
 ///\endcond TEPLATE

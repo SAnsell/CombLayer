@@ -3,7 +3,7 @@
  
  * File:   formaxInc/formaxOpticsLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ namespace xraySystem
   class BremColl;
   class BremMonoColl;
   class FlangeMount;
+  class GaugeTube;
   class Mirror;
   class MonoCrystals;
   class MonoBox;
@@ -72,22 +73,31 @@ class formaxOpticsLine :
   public attachSystem::CellMap
 {
  private:
+
+  /// string for pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
+  int innerMat;                         ///< inner material if used
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
-  /// vauucm trigger system
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::GaugeTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
-  /// bellows after ion pump to filter
+  std::shared_ptr<xraySystem::GaugeTube> gateTubeA;
+  /// Gate block [item]
+  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
+
+  /// Addaptor to connect from pumpint point to diffuser
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
+
+
   /// Vacuum pipe for collimator
   std::shared_ptr<xraySystem::BremColl> bremCollA;
   /// Filter tube
@@ -208,6 +218,12 @@ class formaxOpticsLine :
   formaxOpticsLine(const formaxOpticsLine&);
   formaxOpticsLine& operator=(const formaxOpticsLine&);
   ~formaxOpticsLine();
+
+  /// Assignment to inner void
+  void setInnerMat(const int M) { innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

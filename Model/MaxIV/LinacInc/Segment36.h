@@ -22,6 +22,11 @@
 #ifndef tdcSystem_Segment36_h
 #define tdcSystem_Segment36_h
 
+namespace xraySystem
+{
+  class GaugeTube;
+}
+
 namespace tdcSystem
 {
   class StriplineBPM;
@@ -37,7 +42,7 @@ class Segment36 :
   public TDCsegment
 {
  private:
-  std::shared_ptr<tdcSystem::GaugeTube> gauge;   // #3
+  std::shared_ptr<xraySystem::GaugeTube> gauge;   // #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #4
   std::shared_ptr<tdcSystem::LQuadF> quadA;           // #5
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;     // #6

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment1.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ Segment1::Segment1(const std::string& Key) :
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   cMagHC(new xraySystem::CorrectorMag(keyName+"CMagHC")),
   cMagVC(new xraySystem::CorrectorMag(keyName+"CMagVC")),
-  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
+  pumpA(new xraySystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key

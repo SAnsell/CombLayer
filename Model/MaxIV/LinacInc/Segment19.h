@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment19.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,15 @@
 #ifndef tdcSystem_Segment19_h
 #define tdcSystem_Segment19_h
 
-namespace tdcSystem
+
+namespace xraySystem
 {
   class GaugeTube;
+}
+
+
+namespace tdcSystem
+{
   /*!
     \class Segment19
     \version 1.0
@@ -39,9 +45,9 @@ class Segment19 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellow
-  std::shared_ptr<tdcSystem::GaugeTube> gauge;        ///< #3 Vacuum gauge PTR18751
+  std::shared_ptr<xraySystem::GaugeTube> gauge;        ///< #3 Vacuum gauge PTR18751
   std::shared_ptr<constructSystem::GateValveCube> gateA;   ///< #4 Fast closing valve
-  std::shared_ptr<tdcSystem::GaugeTube> ionPump;     ///< #4 Ion pump 45l cf40
+  std::shared_ptr<xraySystem::GaugeTube> ionPump;     ///< #4 Ion pump 45l cf40
   std::shared_ptr<xraySystem::CylGateValve> gateB;   ///< #6 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellow
 

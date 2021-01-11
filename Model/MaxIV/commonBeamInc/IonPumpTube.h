@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/GaugeTube.h
+ * File:   commonBeamInc/IonPumpTube.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_GaugeTube_h
-#define tdcSystem_GaugeTube_h
+#ifndef tdcSystem_IonPumpTube_h
+#define tdcSystem_IonPumpTube_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 
   /*!
-  \class GaugeTube
+  \class IonPumpTube
   \version 1.0
   \author S. Ansell
   \date May 2020
 
-  \brief GaugeTube for Max-IV
+  \brief IonPumpTube for Max-IV
 */
 
-class GaugeTube :
+class IonPumpTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -46,22 +46,23 @@ class GaugeTube :
 {
  private:
 
+  double radius;                ///< void radius
   double yRadius;               ///< radiu of Y (Beam) port
-  double xRadius;               ///< radius of x port 
 
   double wallThick;             ///< pipe thickness
-  
-  double length;                ///< full to flange length (Y axis)
 
-  double sideYStep;             ///< step in Y direction from centre
-  double sideLength;            ///< beam to flange length
-  double sideAngle;             ///< rotation angle of side
-  
+  double height;                ///< full to blank
+  double depth;                 ///< full to flange depth below beam
+
+  double frontLength;           ///< full to flange length (-ve Y)
+  double backLength;            ///< full to flange length
+
   double flangeXRadius;         ///< Joining Flange radius
   double flangeYRadius;         ///< Joining Flange radius
+  double flangeZRadius;         ///< Joining Flange radius
 
-  double flangeXLength;         ///< Joining Flange radius
-  double flangeYLength;         ///< Joining Flange radius
+  double flangeYLength;         ///< Joining Flange length
+  double flangeZLength;         ///< Joining Flange length
   
   double plateThick;            ///< Joining Flange radius
 
@@ -76,11 +77,11 @@ class GaugeTube :
 
  public:
 
-  GaugeTube(const std::string&);
-  GaugeTube(const std::string&,const std::string&);
-  GaugeTube(const GaugeTube&);
-  GaugeTube& operator=(const GaugeTube&);
-  virtual ~GaugeTube();
+  IonPumpTube(const std::string&);
+  IonPumpTube(const std::string&,const std::string&);
+  IonPumpTube(const IonPumpTube&);
+  IonPumpTube& operator=(const IonPumpTube&);
+  virtual ~IonPumpTube();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

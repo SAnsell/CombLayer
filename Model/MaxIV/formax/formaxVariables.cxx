@@ -80,6 +80,7 @@
 #include "DiffPumpGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
+#include "GaugeGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
 
@@ -542,16 +543,20 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
+  setVariable::GaugeGenerator GGen;
 
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",6.0);
 
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,preName+"TriggerPipe",0.0,15.0,15.0);  // ystep/height/depth
+  // will be rotated vertical
+  GGen.setCF<CF100>();
+  GGen.setLength(40.0);
+  GGen.setSidePortCF<setVariable::CF40>(10.0); // add centre distance?
+  GGen.setPlateThick(setVariable::CF40::flangeLength,"Stainless304L");
+  GGen.generateGauge(Control,preName+"TriggerTube",0.0,0);
+
   
   CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>

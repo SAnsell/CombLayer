@@ -3,7 +3,7 @@
 
  * File: Linac/Segment10.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ Segment10::Segment10(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gateValve(new constructSystem::GateValveCube(keyName+"GateValve")),
-  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
+  pumpA(new xraySystem::IonPumpTube(keyName+"PumpA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),

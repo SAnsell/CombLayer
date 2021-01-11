@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment1.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,13 +31,14 @@ namespace constructSystem
 namespace xraySystem
 {
   class CorrectorMag;
+  class IonPumpTube;
 }
 
 namespace tdcSystem
 {
   class LQuadF;
   class StriplineBPM;
-  class IonPumpTube;
+
   /*!
     \class Segment1
     \version 1.0
@@ -72,7 +73,7 @@ class Segment1 :
   std::shared_ptr<xraySystem::CorrectorMag> cMagHC;   ///< corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagVC;   ///< corrector mag
   /// ion pump [rotated]
-  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
+  std::shared_ptr<xraySystem::IonPumpTube> pumpA;
 
   void buildObjects(Simulation&);
   void createLinks();

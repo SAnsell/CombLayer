@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,6 +122,7 @@
 #include "portItem.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
+#include "TriggerTube.h"
 #include "LBeamStop.h"
 
 #include "makeSingleItem.h"
@@ -169,7 +170,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","LBeamStop","MagTube",
+      "IonPTube","LBeamStop","MagTube","TriggerTube",
       "Help","help"
     });
 
@@ -720,8 +721,8 @@ makeSingleItem::build(Simulation& System,
     }
   if (item=="GaugeTube")
     {
-      std::shared_ptr<tdcSystem::GaugeTube>
-	SP(new tdcSystem::GaugeTube("GaugeTube"));
+      std::shared_ptr<xraySystem::GaugeTube>
+	SP(new xraySystem::GaugeTube("GaugeTube"));
 
       OR.addObject(SP);
 
@@ -732,8 +733,20 @@ makeSingleItem::build(Simulation& System,
     }
   if (item=="IonPTube")
     {
-      std::shared_ptr<tdcSystem::IonPumpTube>
-	SP(new tdcSystem::IonPumpTube("IonPTube"));
+      std::shared_ptr<xraySystem::IonPumpTube>
+	SP(new xraySystem::IonPumpTube("IonPTube"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="TriggerTube")
+    {
+      std::shared_ptr<xraySystem::TriggerTube>
+	SP(new xraySystem::TriggerTube("TriggerTube"));
 
       OR.addObject(SP);
 

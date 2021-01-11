@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment31.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef tdcSystem_Segment31_h
 #define tdcSystem_Segment31_h
 
+namespace xraySystem
+{
+  class IonPumpTube;
+}
+
 namespace tdcSystem
 {
   /*!
@@ -38,7 +43,7 @@ class Segment31 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< #1 Bellows – 304L
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPumpA; ///< #3
+  std::shared_ptr<xraySystem::IonPumpTube> ionPumpA; ///< #3
   std::shared_ptr<xraySystem::CylGateValve> gate;       ///< #4 Gate valve 48132 CE44
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows – 304L
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;         ///< #5 BPM – 304L
@@ -47,7 +52,7 @@ class Segment31 :
   std::shared_ptr<constructSystem::Bellows> bellowC;    ///< #1 Bellows – 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   ///< #8 VC- Flanges 304L- Tube-316L
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;      ///< #9 Corrector magnet type D
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPumpB; ///< #3
+  std::shared_ptr<xraySystem::IonPumpTube> ionPumpB; ///< #3
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;   ///< #8 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::Bellows> bellowD;    ///< #1 Bellows – 304L
 

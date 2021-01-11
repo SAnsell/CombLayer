@@ -3,7 +3,7 @@
 
  * File: Linac/Segment31.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ Segment31::Segment31(const std::string& Key) :
   TDCsegment(Key,2),
   
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  ionPumpA(new tdcSystem::IonPumpTube(keyName+"IonPumpA")),
+  ionPumpA(new xraySystem::IonPumpTube(keyName+"IonPumpA")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
@@ -94,7 +94,7 @@ Segment31::Segment31(const std::string& Key) :
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
-  ionPumpB(new tdcSystem::IonPumpTube(keyName+"IonPumpB")),
+  ionPumpB(new xraySystem::IonPumpTube(keyName+"IonPumpB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellowD(new constructSystem::Bellows(keyName+"BellowD"))
   /*!
