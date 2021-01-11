@@ -243,10 +243,9 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",894.6);
   Control.addVariable(hutName+"OutWidth",250.0);
-  Control.addVariable(hutName+"RingWidth",60.0);
-  Control.addVariable(hutName+"RingWallLen",105.0);
-  Control.addVariable(hutName+"RingWallAngle",18.50);
-  Control.addVariable(hutName+"RingConcThick",100.0);
+  Control.addVariable(hutName+"RingExtra",40.0);
+  Control.addVariable(hutName+"RingFlat",60.0);
+
   
   Control.addVariable(hutName+"InnerThick",0.3);
   
@@ -265,10 +264,11 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
+  Control.addVariable(hutName+"VoidMat","Void");
 
   Control.addVariable(hutName+"HoleXStep",0.0);
   Control.addVariable(hutName+"HoleZStep",5.0);
-  //Control.addVariable(hutName+"HoleRadius",3.5);
+  Control.addVariable(hutName+"HoleRadius",3.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);

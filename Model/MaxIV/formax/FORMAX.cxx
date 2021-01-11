@@ -191,7 +191,7 @@ FORMAX::build(Simulation& System,
 
 
   if (stopPoint=="opticsHut") return;
-
+  return;
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));

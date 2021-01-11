@@ -167,6 +167,8 @@ class HeadRule
   HeadRule getLevel(const size_t) const;
   size_t countNLevel(const size_t) const;
 
+  HeadRule makeValid(const Geometry::Vec3D&) const;
+  
   bool Intersects(const HeadRule&) const;
 
   std::string display() const;

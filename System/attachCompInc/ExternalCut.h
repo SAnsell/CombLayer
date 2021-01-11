@@ -103,6 +103,8 @@ class ExternalCut
   HeadRule getComplementRule(const std::string&) const;
   const HeadRule& getDivider(const std::string&) const;
 
+
+  HeadRule getValidRule(const std::string&,const Geometry::Vec3D&) const;
   
   Geometry::Vec3D interPoint(const std::string&,
 			     const Geometry::Vec3D&,

@@ -2568,6 +2568,20 @@ HeadRule::procComp(Rule* RItem)
   return CG;
 }
 
+HeadRule
+HeadRule::makeValid(const Geometry::Vec3D& Pt) const
+  /*!
+    Return the rule which makes Pt valid [either rule / complement]
+   \param Pt :: Point to test
+   \return HeadRule in which Pt is valid
+  */
+{
+  ELog::RegMethod RegA("HeadRule","makeValid");
+
+  if (!HeadNode) return HeadRule();
+  return (HeadNode->isValid(Pt)) ? *this : complement();
+}
+
 bool
 HeadRule::Intersects(const HeadRule& A) const
    /*!
