@@ -14,3 +14,4 @@ The current build has models that cover the ISIS neutron facility, the ESS, and 
 
 Contributions, comments and bug issues welcome. Please see the documents section for an introduction to the program philosophy and useage.
 
+Some basic tutorials and a bit of a gettting started guide is available at http://plone.esss.lu.se/
