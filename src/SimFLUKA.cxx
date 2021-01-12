@@ -627,6 +627,7 @@ SimFLUKA::writeSource(std::ostream& OX) const
   OX<<"* --------------- SOURCE CARDS --------------------------"<<std::endl;
   OX<<"* -------------------------------------------------------"<<std::endl;
 
+  ELog::EM<<"Sources == "<<sourceName<<" :: "<<sourceExtraName<<ELog::endDiag;
   if (!sourceName.empty())
     {
       SDef::SourceBase* SPtr=

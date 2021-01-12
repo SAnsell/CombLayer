@@ -3,7 +3,7 @@
  
  * File:   source/flukaSourceSelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,7 +144,7 @@ flukaSourceSelection(Simulation& System,
       else if (sdefType=="external" || sdefType=="External" ||
 	       sdefType=="source" || sdefType=="Source")
 	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
-      
+	 
       else
 	{
 	  ELog::EM<<"sdefType :\n"
@@ -155,26 +155,31 @@ flukaSourceSelection(Simulation& System,
 	}
     }
 
-  ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
-  processPolarization(inputMap,sName);
   
-
+  ELog::EM<<"Source name(s) == "<<sName<<" "<<eName<<ELog::endDiag;
+  processPolarization(inputMap,sName);
   
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
   if (!eName.empty())
-    System.setExtraSourceName(eName);
+    {
+      if (sName.empty())
+	throw ColErr::EmptyValue<std::string>
+	  ("sourceName empty and extraName valid:"+eName);
+      
+      System.setExtraSourceName(eName);
+    }
   
   return;
 }
 
-
 void
 processPolarization(const mainSystem::MITYPE& inputMap,
 		    const std::string& sourceName)
-/*!
+  /*!
     Process the polarization vector
-*/
+    \param inputMap :: IParam input stream
+  */
 {
   ELog::RegMethod RegA("SourceSelector[F]","processPolarization");
 
