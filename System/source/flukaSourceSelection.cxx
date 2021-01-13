@@ -154,7 +154,6 @@ flukaSourceSelection(Simulation& System,
 		  <<ELog::endBasic;
 	}
     }
-
   
   ELog::EM<<"Source name(s) == "<<sName<<" "<<eName<<ELog::endDiag;
   processPolarization(inputMap,sName);
