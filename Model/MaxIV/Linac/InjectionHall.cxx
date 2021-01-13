@@ -190,6 +190,10 @@ InjectionHall::populate(const FuncDataBase& Control)
   bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
   bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
   bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
+  wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
+  wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
+  wasteRoomWallThick=Control.EvalVar<double>(keyName+"WasteRoomWallThick");
+  wasteRoomYStep=Control.EvalVar<double>(keyName+"WasteRoomYStep");
   //  boundaryHeight=Control.EvalVar<double>(keyName+"BoundaryHeight");
 
   nPillars=Control.EvalDefVar<size_t>(keyName+"NPillars", 0);
@@ -501,6 +505,14 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+7513,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+7514,Origin+X*(bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
 
+  // Radioactive waste room (in Future Klystron Gallery)
+  ModelSupport::buildPlane(SMap,buildIndex+7601,Origin+Y*(wasteRoomYStep+wasteRoomWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+7611,Origin+Y*(wasteRoomYStep),Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7602,buildIndex+7601,Y,wasteRoomLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7612,buildIndex+7602,Y,wasteRoomWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7604,buildIndex+1004,Y,wasteRoomWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7614,buildIndex+7604,Y,wasteRoomWallThick);
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -565,7 +577,13 @@ InjectionHall::createObjects(Simulation& System)
 				 " 201 -211 203 -1003 5 -6 47M 57M 67M 77M 87M 97M 107M ");
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -7401 1004 -104 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -7611 1004 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7612 7614 -104 5 -6");
+  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7612 -7401 1004 -104 5 -6");
   makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7401 -7402 1004 -7403 5 -7406");
@@ -985,6 +1003,19 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7522 7503 -7504 7506 -7516 ");
   makeCell("BD",System,cellIndex++,0,0.0,Out);
+
+  // Radioactive waste room
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7601 -7602 1004 -7604 5 -6 ");
+  makeCell("WasteRoom",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7601 1004 -7604 5 -6 ");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7602 -7612 1004 -7604 5 -6 ");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7611 -7612 7604 -7614 5 -6 ");
+  makeCell("WasteRoomWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
   addOuterSurf(Out);

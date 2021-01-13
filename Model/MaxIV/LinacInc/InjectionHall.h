@@ -146,6 +146,11 @@ class InjectionHall :
   double bdRoomHatchLength;     ///< Length of penetration in the floor to the beam dump room
   double bdRoomXStep;           ///< Beam dump room x-offset
 
+  double wasteRoomLength;       ///< Inner length of the radioactive waste room
+  double wasteRoomWidth;        ///< Inner width of the radioactive waste room
+  double wasteRoomWallThick;    ///< WallThick of the radioactive waste room
+  double wasteRoomYStep;        ///< Offset to Origin
+
   size_t nPillars;              ///< Number of pillars
   std::vector<double> pRadii;   ///< Pillar radii
   std::vector<int> pMat;        ///< Pillar materials

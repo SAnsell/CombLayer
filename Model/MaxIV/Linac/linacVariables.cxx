@@ -3235,6 +3235,11 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
   Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
 
+  Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
+  Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2
+  Control.addVariable(wallKey+"WasteRoomWallThick",40.0); // K_20-1_08G6b1
+  Control.addVariable(wallKey+"WasteRoomYStep",7534.0); // derived from K_20-1_08G6b1
+
   return;
 }
 
