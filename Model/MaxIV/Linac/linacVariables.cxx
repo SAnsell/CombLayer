@@ -3149,6 +3149,18 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
+  Control.addVariable(wallKey+"MidTNDucts",2);
+  // Duct1 is the TDC modulator klystron duct
+  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruller
+  Control.addVariable(wallKey+"MidTDuct1YStep",7234.0);  // dummy
+  Control.addVariable(wallKey+"MidTDuct1ZStep",100.0);  // dummy
+
+  Control.addVariable(wallKey+"MidTDuct2Radius",7.5); // dummy
+  Control.addVariable(wallKey+"MidTDuct2YStep",7250.0);  // dummy
+  Control.addVariable(wallKey+"MidTDuct2ZStep",100.0);  // dummy
+  Control.addVariable(wallKey+"MidTDuct2Mat","Lead");  // dummy
+
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3

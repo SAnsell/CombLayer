@@ -163,6 +163,21 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
   midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1);
 
+  midTNDucts=Control.EvalVar<size_t>(keyName+"MidTNDucts");
+
+  for (size_t i=1; i<=midTNDucts; ++i)
+    {
+      const std::string stri = std::to_string(i);
+      const double R=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"Radius");
+      const double y=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"YStep");
+      const double z=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"ZStep");
+      const int mat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidTDuct"+stri+"Mat",0);
+      midTDuctRadius.push_back(R);
+      midTDuctYStep.push_back(y);
+      midTDuctZStep.push_back(z);
+      midTDuctMat.push_back(mat);
+    }
+
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
   midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
@@ -512,6 +527,17 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7612,buildIndex+7602,Y,wasteRoomWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7604,buildIndex+1004,Y,wasteRoomWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7614,buildIndex+7604,Y,wasteRoomWallThick);
+
+  // MidT ducts
+  int SJ = buildIndex+7700;
+  for (size_t i=0; i<midTNDucts; ++i)
+    {
+      ModelSupport::buildCylinder(SMap,SJ+7,
+				  Origin+Y*midTDuctYStep[i]+Z*midTDuctZStep[i],
+				  X,midTDuctRadius[i]);
+      SJ += 10;
+    }
+
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -908,10 +934,24 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 14 -114 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
+  // MidT wall ducts
+  HeadRule MidTDucts;
+  int SJ = buildIndex+7700;
+  for (size_t i=0; i<midTNDucts; ++i)
+    {
+      Out = ModelSupport::getComposite(SMap,buildIndex,SJ, " 1003 -1004 -7M ");
+      makeCell("MidTDuct",System,cellIndex++,midTDuctMat[i],0.0,Out);
+
+      MidTDucts.addIntersection(SJ+7);
+
+      SJ += 10;
+    }
+
   // MID T
   // middle wall with THz penetration
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
+				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
+  Out += MidTDucts.display();
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
