@@ -3,7 +3,7 @@
  
  * File:   monte/Importance.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,11 @@ Importance::setImp(const std::string& particle,const double V)
 {
   ELog::RegMethod RegA("Importance","setImp(particle)");
 
+  if (particle=="all" || particle=="All")
+    {
+      setImp(V);
+      return;
+    }
   const int index=particleConv::Instance().mcplITYP(particle);
   const double VV=(V<0) ? 0.0 : V;
 

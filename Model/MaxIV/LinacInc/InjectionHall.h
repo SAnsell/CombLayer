@@ -3,7 +3,7 @@
 
  * File: LinacInc/InjectionHall.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,13 @@ class InjectionHall :
   double fkgMazeLength;         ///< Future klystron gallery maze length
   double fkgMazeWallThick;      ///< Future klystron gallery maze wall thickness
 
+  double btgThick;          ///< PREFAB BTG-BLOCK thick
+  double btgHeight;         ///< BTG-BLOCK height
+  double btgLength;         ///< BTG-BLOCK length
+  double btgYOffset; ///< BTG-BLOCK Y+ offset (relative to the back wall front concrete surface 21)
+  int btgMat;                   ///< BTG-BLOCK material
+  size_t btgNLayers;               ///< BTG-BLOCK number of imp layers
+
   double spfParkingFrontWallLength; ///< Wall thickness between C080011 and C080012
   double spfParkingLength;      ///< Length of SPF concrete door parking space (C080012)
   double spfParkingWidth;       ///< Width  of SPF concrete door parking space (C080012)
@@ -118,6 +125,7 @@ class InjectionHall :
   double backWallThick;         ///< Back wall thickness
   double backWallIronThick;     ///< Thickness of iron layer before the back wall
   int backWallMat;              ///< Back wall material
+  size_t backWallNLayers;       ///< Number of layers in the back wall
 
   double klystronXStep;         ///< Step of inner klystron wall
   double klystronLen;           ///< Length of klystron wall
@@ -126,6 +134,22 @@ class InjectionHall :
 
   double boundaryWidth;           ///< Width after walls
   //  double boundaryHeight;          ///< Height after roof
+
+  double bdRoomHeight;          ///< Under-the-floor beam dump room void height
+  double bdRoomWidth;           ///< Beam dump room void width
+  double bdRoomLength;          ///< Beam dump room void length
+  double bdRoomFloorThick;      ///< Beam dump room floor thickness
+  double bdRoomRoofThick;       ///< Beam dump room steel roof thickness
+  double bdRoomFrontWallThick;  ///< Beam dump room front wall thickness
+  double bdRoomSideWallThick;   ///< Thickness of the beam dump room side walls
+  double bdRoomBackSteelThick;  ///< Beam dump room back steel layer thickness
+  double bdRoomHatchLength;     ///< Length of penetration in the floor to the beam dump room
+  double bdRoomXStep;           ///< Beam dump room x-offset
+
+  double wasteRoomLength;       ///< Inner length of the radioactive waste room
+  double wasteRoomWidth;        ///< Inner width of the radioactive waste room
+  double wasteRoomWallThick;    ///< WallThick of the radioactive waste room
+  double wasteRoomYStep;        ///< Offset to Origin
 
   size_t nPillars;              ///< Number of pillars
   std::vector<double> pRadii;   ///< Pillar radii
@@ -163,6 +187,8 @@ class InjectionHall :
   InjectionHall(const InjectionHall&);
   InjectionHall& operator=(const InjectionHall&);
   virtual ~InjectionHall();
+
+  size_t getBackWallNLayers() const {return backWallNLayers; }
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

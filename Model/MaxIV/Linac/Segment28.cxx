@@ -90,7 +90,7 @@ Segment28::Segment28(const std::string& Key) :
 
   pipeAB(new constructSystem::VacuumPipe(keyName+"PipeAB")),
   pipeBB(new constructSystem::VacuumPipe(keyName+"PipeBB")),
-  
+
   bellowAB(new constructSystem::Bellows(keyName+"BellowAB")),
   bellowBB(new constructSystem::Bellows(keyName+"BellowBB"))
   /*!
@@ -151,10 +151,19 @@ Segment28::createSplitInnerZone()
     {
       SurfMap::addSurf("TopDivider",prevSegPtr->getSurf("TopDivider"));
     }
- 
+
+  if (prevSegPtr && prevSegPtr->hasSurf("LowDivider"))
+    {
+      SurfMap::addSurf("LowDivider",prevSegPtr->getSurf("LowDivider"));
+      SurfMap::addSurf("backLower",prevSegPtr->getLinkSurf("backLower"));
+      HeadRule HR(SurfMap::getSurf("LowDivider"));
+      HR.addUnion(SurfMap::getSurf("backLower"));
+      HSurroundB.addIntersection(HR);
+    }
+
   const Geometry::Vec3D ZEffective(FA.getZ());
   HSurroundA.removeMatchedPlanes(ZEffective,0.9);   // remove base
-  HSurroundB.removeMatchedPlanes(-ZEffective,0.9); 
+  HSurroundB.removeMatchedPlanes(-ZEffective,0.9);
 
   HSurroundA.addIntersection(SurfMap::getSurf("TopDivider"));
   HSurroundB.addIntersection(-SurfMap::getSurf("TopDivider"));
@@ -181,19 +190,19 @@ Segment28::buildObjects(Simulation& System)
   int outerCellA,outerCellB;
 
   if (isActive("front"))
-    pipeAA->copyCutSurf("front",*this,"front");
-  
+      pipeAA->copyCutSurf("front",*this,"front");
+
   if (firstItemVec.size()>=2)
     {
       if (prevSegPtr && prevSegPtr->hasLinkSurf("backMid"))
-	pipeBA->setFront(*prevSegPtr,"backMid");
+	  pipeBA->setFront(*prevSegPtr,"backMid");
     }
 
   pipeAA->createAll(System,*this,0);
   pipeBA->createAll(System,*this,0);
 
   createSplitInnerZone();
-  
+
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZFlat->createUnit(System,*pipeBA,2);
 
@@ -254,7 +263,7 @@ Segment28::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 
   buildZone->setBack(FixedComp::getFullRule("backMid"));
-  
+
   return;
 }
 

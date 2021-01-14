@@ -85,6 +85,7 @@
 #include "PrismaChamberGenerator.h"
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
+#include "LBeamStopGenerator.h"
 
 namespace setVariable
 {
@@ -662,7 +663,7 @@ Segment2(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",113.96); // No_2_00.pdf
   LQGen.generateQuad(Control,lKey+"QuadB",73.66); // No_2_00.pdf
 
-  setCylGateValve(Control,lKey+"GateTube", 180.0, false);
+  setCylGateValve(Control,lKey+"Gate", 180.0, false);
 
   PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
@@ -1040,7 +1041,7 @@ Segment10(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",453.0);
   setBellow26(Control,lKey+"BellowA",7.5);
 
-  setRecGateValve(Control, lKey+"GateValve", false);
+  setRecGateValve(Control, lKey+"Gate", false);
 
   const double yAngle(-90.0);
   setIonPump2Port(Control, lKey+"PumpA",yAngle);
@@ -1918,6 +1919,7 @@ Segment27(FuncDataBase& Control,
 
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::LBeamStopGenerator BSGen;
 
   const Geometry::Vec3D startPtA(-637.608,8173.261,0.0);
   const Geometry::Vec3D startPtB(-637.608,8180.263,-37.887);
@@ -1993,6 +1995,9 @@ Segment27(FuncDataBase& Control,
 
   setBellow37(Control,lKey+"BellowAC");
   setBellow37(Control,lKey+"BellowBC");
+
+  BSGen.generateBStop(Control,lKey+"BeamStopC");
+  Control.addVariable(lKey+"BeamStopCYStep",25.0);
 
   return;
 }
@@ -3085,6 +3090,12 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FKGMazeLength",280.0); // derived from K_20-1_08F6c1 (110+170)
   Control.addVariable(wallKey+"FKGMazeWallThick",200.0); // K_20-1_08F6c1
 
+  Control.addVariable(wallKey+"BTGThick",90.0); // calculated from K_20-1_08G6b4: 2700-1800
+  Control.addVariable(wallKey+"BTGHeight",200.0); // derived from K_20-6_075
+  Control.addVariable(wallKey+"BTGLength",1000.0); // K_20-1_08G6b[14]: 495000-489000-1416+5416
+  Control.addVariable(wallKey+"BTGYOffset",180.0); // calculated from K_20-1_08G6b4: 5416-3616
+  Control.addVariable(wallKey+"BTGMat","Concrete"); // AR 2020-11-17
+
   Control.addVariable(wallKey+"SPFParkingFrontWallLength",100.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFParkingLength",335.0); // K_20-1_08G6b3
   Control.addVariable(wallKey+"SPFParkingWidth",290.0); // derived from K_20-1_08G6b3: 620-330
@@ -3137,8 +3148,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTFrontAngleStep",277.0);  //  flat
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
-  Control.addVariable(wallKey+"MidTNLayers",4);  // Number of divisions
-    
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
@@ -3210,7 +3220,25 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
   Control.addVariable(wallKey+"THzZStep",-10.0); // K_20-2_348: 130-120 = 10
   Control.addVariable(wallKey+"THzZAngle",7.35); // measured with liner on K_20-1_08F6c1
-  Control.addVariable(wallKey+"THzMat","Void"); // AR 201106: currently it's lead or concrete, but eventually it will be empty
+  // AR 201106: currently it's lead or concrete, but eventually it will be empty
+  // Update 210112: there is Lead (see photo)
+  Control.addVariable(wallKey+"THzMat","Lead");
+
+  Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
+  Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
+  Control.addVariable(wallKey+"BDRoomLength",570); // measured on K_15-6_011
+  Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
+  Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
+  Control.addVariable(wallKey+"BDRoomFrontWallThick",150.0); // measured on K_15-6_011
+  Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
+  Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
+  Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
+
+  Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
+  Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2
+  Control.addVariable(wallKey+"WasteRoomWallThick",40.0); // K_20-1_08G6b1
+  Control.addVariable(wallKey+"WasteRoomYStep",7534.0); // derived from K_20-1_08G6b1
 
   return;
 }

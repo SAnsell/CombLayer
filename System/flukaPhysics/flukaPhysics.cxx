@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaPhysics/flukaPhysics.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -55,7 +55,7 @@
 
 namespace flukaSystem
 {
-		       
+
 flukaPhysics::flukaPhysics() :
 
   // note flag: -1 particle / 0 cell / 1 material / -100 : generic
@@ -97,7 +97,7 @@ flukaPhysics::flukaPhysics() :
     }),
 
   threeFlag({
-      { "bias",cellValueSet<3>("bias","BIASING","") },
+      { "bias",cellValueSet<3>("bias","BIASING","PRINT") },
       { "bias-user",cellValueSet<3>("bias-user","BIASING","USER")},
       { "elpothr",cellValueSet<3>("elpothr","EMFCUT","ELPO-THR",
 	{1e-3,1e-3,1e-3}) },
@@ -116,7 +116,7 @@ flukaPhysics::flukaPhysics() :
 				    {1.0,1.0,1.0,1.0,1.0,1.0}) }
 
     }),
-  
+
   formatMap({
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
@@ -126,10 +126,10 @@ flukaPhysics::flukaPhysics() :
       { "bias-user", unitTYPE(0,"%2 %3 %4 R0 R1 1.0 ") },
       { "bias-off", unitTYPE(0,"%2 1.0 1.0 R0 R1 1.0 ") },
       { "coalescence", unitTYPE(-100,"1.0 - - - - - ") },
-      { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
+      { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
-      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
-	
+      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
+
       { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
       { "emffluo", unitTYPE(1,"%2 M0 M1 1.0 - - ") },
       { "evaporation", unitTYPE(-100,"3.0 - - - - - ") },
@@ -165,7 +165,7 @@ flukaPhysics::flukaPhysics() :
   */
 {}
 
-flukaPhysics::flukaPhysics(const flukaPhysics& A) : 
+flukaPhysics::flukaPhysics(const flukaPhysics& A) :
   cellVec(A.cellVec),matVec(A.matVec),
   flagValue(A.flagValue),impValue(A.impValue),
   emfFlag(A.emfFlag),threeFlag(A.threeFlag),
@@ -186,7 +186,7 @@ flukaPhysics::operator=(const flukaPhysics& A)
 {
   if (this!=&A)
     {
-      cellVec=A.cellVec;      
+      cellVec=A.cellVec;
       matVec=A.matVec;
       flagValue=A.flagValue;
       impValue=A.impValue;
@@ -205,7 +205,7 @@ flukaPhysics::~flukaPhysics()
     Destructor
   */
 {}
-  
+
 void
 flukaPhysics::clearAll()
   /*!
@@ -228,7 +228,7 @@ flukaPhysics::clearAll()
     mc.second.clearAll();
 
   polarVec=Geometry::Vec3D(0,0,0);
-  
+
   return;
 }
 
@@ -236,7 +236,7 @@ flukaPhysics::clearAll()
 void
 flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
   /*!
-    Process the list of the valid cells 
+    Process the list of the valid cells
     over each importance group.
     \param cellInfo :: list of cells
   */
@@ -251,7 +251,7 @@ flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
 void
 flukaPhysics::setMatNumbers(const std::set<int>& matInfo)
   /*!
-    Process the list of the valid cells 
+    Process the list of the valid cells
     over each importance group.
     \param matInfo :: list of materials
   */
@@ -274,7 +274,7 @@ flukaPhysics::setLAMPair(const std::string& keyName,
     \param pName :: particle number
     \param cellNumber :: Cell number
     \param V1 :: Electron cut values
-    \param V2 :: Cur of energy 
+    \param V2 :: Cur of energy
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setLAMPair(int)");
@@ -289,27 +289,27 @@ flukaPhysics::setLAMPair(const std::string& keyName,
   return;
 }
 
-  
+
 void
 flukaPhysics::setFlag(const std::string& keyName,
 		      const std::string& nameID)
   /*!
     Set the importance list
-    \param keyName :: typename 
+    \param keyName :: typename
     \param nameID :: Name of particle/object
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setFlag(string)");
-  
+
   std::map<std::string,cellValueSet<0>>::iterator mc=
     flagValue.find(keyName);
   if (mc==flagValue.end())
     throw ColErr::InContainerError<std::string>(keyName,"flagValue");
-  
+
   mc->second.setValues(nameID);
   return;
 }
-  
+
 
 void
 flukaPhysics::setIMP(const std::string& keyName,
@@ -323,10 +323,10 @@ flukaPhysics::setIMP(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setIMP(string)");
-  
+
   std::map<std::string,cellValueSet<1>>::iterator mc=
     impValue.find(keyName);
-  
+
   if (mc==impValue.end())
     throw ColErr::InContainerError<std::string>(keyName,"impValue");
 
@@ -376,7 +376,7 @@ flukaPhysics::setTHR(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setTHR(str)");
-  
+
   std::map<std::string,cellValueSet<3>>::iterator mc=
     threeFlag.find(keyName);
 
@@ -386,7 +386,7 @@ flukaPhysics::setTHR(const std::string& keyName,
   return;
 }
 
-  
+
 void
 flukaPhysics::setFlag(const std::string& keyName,
 		      const int cellID)
@@ -397,7 +397,7 @@ flukaPhysics::setFlag(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setFlag");
-  
+
   std::map<std::string,cellValueSet<0>>::iterator mc=
     flagValue.find(keyName);
   if (mc==flagValue.end())
@@ -406,7 +406,7 @@ flukaPhysics::setFlag(const std::string& keyName,
   mc->second.setValues(cellID);
   return;
 }
-  
+
 void
 flukaPhysics::setIMP(const std::string& keyName,
 		     const int cellID,
@@ -419,7 +419,7 @@ flukaPhysics::setIMP(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setIMP");
-  
+
   std::map<std::string,cellValueSet<1>>::iterator mc=
     impValue.find(keyName);
   if (mc==impValue.end())
@@ -443,7 +443,7 @@ flukaPhysics::setEMF(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setEMF(int)");
-  
+
   std::map<std::string,cellValueSet<2>>::iterator mc=
     emfFlag.find(keyName);
 
@@ -470,7 +470,7 @@ flukaPhysics::setTHR(const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setTHR");
-  
+
   std::map<std::string,cellValueSet<3>>::iterator mc=
     threeFlag.find(keyName);
 
@@ -481,7 +481,7 @@ flukaPhysics::setTHR(const std::string& keyName,
   return;
 }
 
-  
+
 void
 flukaPhysics::writeFLUKA(std::ostream& OX) const
   /*!
@@ -503,9 +503,9 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 	flagV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)
 	flagV.second.writeFLUKA(OX,matVec,fmtSTR);
-      else 
+      else
 	flagV.second.writeFLUKA(OX,fmtSTR);
-      
+
     }
 
   for(const std::map<std::string,cellValueSet<1>>::value_type& impV : impValue)
@@ -517,7 +517,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 	impV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)
 	impV.second.writeFLUKA(OX,matVec,fmtSTR);
-      else 
+      else
 	impV.second.writeFLUKA(OX,fmtSTR);
     }
 
@@ -526,7 +526,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       FMAP::const_iterator mc=formatMap.find(empV.first);
       const int materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
-      
+
       if (!materialFlag)  // cell
 	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)       // mat
@@ -561,7 +561,5 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
   return;
 }
 
-  
+
 } // NAMESPACE flukaSystem
-      
-   

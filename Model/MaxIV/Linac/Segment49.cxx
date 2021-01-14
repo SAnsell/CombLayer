@@ -159,8 +159,20 @@ Segment49::constructHole(Simulation& System)
       pipeB->addInsertCell("FlangeB",IHall->getCell("C080016"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"BackWallConcrete",Out);
-      IHall->insertComponent(System,"BackWallIron",Out);
+      const size_t nLayers = IHall->getBackWallNLayers();
+      if (nLayers<=1)
+	{
+	  IHall->insertComponent(System,"BackWallConcrete",Out);
+	  IHall->insertComponent(System,"BackWallIron",Out);
+	}
+      else
+	{
+	  for (size_t i=0; i<nLayers; ++i) {
+	    const std::string istr = std::to_string(i);
+	    IHall->insertComponent(System,"BackWallConcrete"+istr,Out);
+	    IHall->insertComponent(System,"BackWallIron"+istr,Out);
+	  }
+	}
     }
 
   return;

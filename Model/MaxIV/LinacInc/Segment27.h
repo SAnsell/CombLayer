@@ -37,7 +37,8 @@ namespace tdcSystem
   class DipoleDIBMag;
   class YagUnit;
   class YagScreen;
-  
+  class LBeamStop;
+
 
   /*!
     \class Segment27
@@ -55,13 +56,13 @@ class Segment27 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Upper inner zone
   std::unique_ptr<attachSystem::BlockZone> IZFlat;       ///< Flat inner zone
   std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
-  
+
   /// init bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::Bellows> bellowCA;
 
-  /// Join pipe 
+  /// Join pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
@@ -84,13 +85,15 @@ class Segment27 :
   std::shared_ptr<constructSystem::Bellows> bellowAC;
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 
+  std::shared_ptr<tdcSystem::LBeamStop> beamStopC;
+
   void buildObjects(Simulation&);
   void buildFrontSpacer(Simulation&);
   void createLinks();
 
   void createSplitInnerZone();
   void constructVoid(Simulation&,const attachSystem::FixedComp&) const;
-  
+
  public:
 
   Segment27(const std::string&);

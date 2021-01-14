@@ -75,6 +75,7 @@
 #include "ContainedGroup.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
+#include "LBeamStop.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"
@@ -112,7 +113,9 @@ Segment27::Segment27(const std::string& Key) :
   yagScreenC(new tdcSystem::YagScreen(keyName+"YagScreenC")),
 
   bellowAC(new constructSystem::Bellows(keyName+"BellowAC")),
-  bellowBC(new constructSystem::Bellows(keyName+"BellowBC"))
+  bellowBC(new constructSystem::Bellows(keyName+"BellowBC")),
+
+  beamStopC(new tdcSystem::LBeamStop(keyName+"BeamStopC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -143,6 +146,8 @@ Segment27::Segment27(const std::string& Key) :
 
   OR.addObject(bellowAC);
   OR.addObject(bellowBC);
+
+  OR.addObject(beamStopC);
 
   setFirstItems(bellowAA);
   setFirstItems(bellowBA);
@@ -292,19 +297,19 @@ Segment27::buildObjects(Simulation& System)
   yagScreenC->insertInCell("Connect",System,yagUnitC->getCell("Void"));
   yagScreenC->insertInCell("Payload",System,yagUnitC->getCell("Void"));
 
-
   constructSystem::constructUnit
     (System,*IZTop,*yagUnitA,"back",*bellowAC);
   constructSystem::constructUnit
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
 
+  constructSystem::constructUnit
+  (System,*IZLower,*yagUnitC,"back",*beamStopC);
 
-  outerCellA=IZTop->createUnit(System,*bellowBC,"back");
+  outerCellA=IZTop->createUnit(System,*beamStopC,"back");
   CellMap::addCell("SpaceFiller",outerCellA);
 
-  outerCellC=IZLower->createUnit(System,*bellowBC,"back");
-  CellMap::addCell("LowerFiller",outerCellC);
-
+  outerCellB=IZFlat->createUnit(System,*beamStopC,"back");
+  CellMap::addCell("SpaceFiller",outerCellB);
 
   return;
 }
@@ -352,7 +357,7 @@ Segment27::createLinks()
   setLinkSignedCopy(3,*bellowBC,2);
 
   setLinkSignedCopy(4,*bellowCA,1);
-  setLinkSignedCopy(5,*yagUnitC,2);
+  setLinkSignedCopy(5,*beamStopC,2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");
@@ -366,7 +371,7 @@ Segment27::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backMid"));
   joinItems.push_back(FixedComp::getFullRule("backLower"));
 
-  buildZone->setBack(FixedComp::getFullRule("backMid"));
+  buildZone->setBack(FixedComp::getFullRule("backLower"));
   return;
 }
 

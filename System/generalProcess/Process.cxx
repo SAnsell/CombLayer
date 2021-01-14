@@ -91,39 +91,38 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("Process[F]","setWImp");
 
   const particleConv& pConv=particleConv::Instance();
-  
+
   const size_t nIMP=IParam.setCnt("wIMP");
 
-  std::string cellName;
+  std::string pType,cellName;
   for(size_t setIndex=0;setIndex<nIMP;setIndex++)
     {
       const size_t nItem=IParam.itemCnt("wIMP",setIndex);
       double impValue(1.0);
 
-      const std::string pType=IParam.getValueError<std::string>
+      pType=IParam.getValueError<std::string>
 	("wIMP",setIndex,0,"No cell/object for wIMP ");
 
+      size_t index(2);
       if (pConv.hasName(pType))
 	{
 	  cellName=IParam.getValueError<std::string>
 	    ("wIMP",setIndex,1,"No cell/object for wIMP ");
 	  impValue=IParam.getValueError<double>
 	    ("wIMP",setIndex,2," IMP value for wIMP");
-	  const std::set<int> cells=
-	    ModelSupport::getActiveCell(System,cellName);
-	  for(const int CN : cells)
-	    System.setImp(CN,pType,impValue);
 	}
       else
 	{
 	  cellName=pType;
+	  pType="all";
 	  impValue=IParam.getValueError<double>
 	    ("wIMP",setIndex,1," IMP value for wIMP");
-	  const std::set<int> cells=
-	    ModelSupport::getActiveCell(System,cellName);
-	  for(const int CN : cells)
-	    System.setImp(CN,impValue);
 	}
+      
+      const std::set<int> cells=
+	ModelSupport::getActiveCell(System,cellName);
+      for(const int CN : cells)
+	    System.setImp(CN,pType,impValue);
     }
   return;
 }
