@@ -43,6 +43,19 @@
 namespace MonteCarlo
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const Importance& A)
+  /*!
+    Basic write operator
+    \param OX :: Output stream
+    \param A :: Importance to write
+   */
+{
+  A.write(OX);
+  return OX;
+}
+ 
+  
 constexpr double zeroImpTol(1e-12);
   
 Importance::Importance() :
@@ -106,7 +119,9 @@ Importance::setImp(const std::string& particle,const double V)
   
   if (allSame && std::abs<double>(VV-defValue)>zeroImpTol)
     allSame=0;
-  
+
+  zeroImp=(allSame && std::abs<double>(VV)<zeroImpTol) ? 1 : 0;
+    
   return;
 }
   
@@ -123,7 +138,7 @@ Importance::setImp(const double V)
   if (V<zeroImpTol)
     {
       defValue=0.0;
-      zeroImp=0;
+      zeroImp=1;
     }
   else
     defValue=V;
@@ -200,5 +215,28 @@ Importance::getImp(const int particleID) const
   return mc->second;
 }
   
+void
+Importance::write(std::ostream& OX) const
+  /*!
+    Write out importance
+    \param OX :: Output stream
+   */
+{
+  const particleConv& pConv=particleConv::Instance();
+  
+  OX<<"zFlag "<<zeroImp<<" allFlag "<<allSame<<" D="<<defValue<<"\n";
+  for(const int PN : particles)
+    {
+      const std::string pName=pConv.mcplToFLUKA(PN);
+      std::map<int,double>::const_iterator mc=
+	impMap.find(PN);
+      
+      OX<<pName<<"["<<PN<<"] : "<<mc->second<<"\n";
+    }
+  if (particles.empty())
+    OX<<"No particles\n";
 
+  return;
+}
+  
 }  // NAMESPACE MonteCarlo

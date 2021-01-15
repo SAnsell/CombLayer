@@ -566,6 +566,7 @@ SimFLUKA::prepareImportance()
   double Imp;
   std::vector<std::pair<int,double>> ImpVec;
   ImpVec.push_back(std::pair<int,double>(1,0.0));
+
   for(const int CN : cellOutOrder)
     {
       const MonteCarlo::Object* OPtr=findObject(CN);

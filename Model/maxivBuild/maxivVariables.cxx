@@ -98,7 +98,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
                        "maxivInstrumentVariables");
 
   const std::set<std::string> magnetConfigs
-    ({"TDCline","SPFline","TDClineA","TDClineB","TDClineC","NONE","None"});
+    ({"TDCline","SPFline","TDClineA","TDClineB",
+      "TDClineC","NONE","None"});
   
   const std::set<std::string> Linac
     ({"LINAC","SPF"});
