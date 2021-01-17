@@ -95,6 +95,7 @@
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
+#include "BremBlock.h"
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
@@ -165,7 +166,7 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","DipoleExtract","DipoleSndBend",
       "EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
@@ -728,6 +729,18 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="BremBlock")
+    {
+      std::shared_ptr<xraySystem::BremBlock>
+	BB(new xraySystem::BremBlock("BremBlock"));
+
+      OR.addObject(BB);
+
+      BB->addInsertCell(voidCell);
+      BB->createAll(System,World::masterOrigin(),0);
 
       return;
     }

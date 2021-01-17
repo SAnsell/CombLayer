@@ -84,6 +84,7 @@
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
 #include "GaugeGenerator.h"
+#include "BremBlockGenerator.h"
 #include "PrismaChamberGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
@@ -278,7 +279,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::GaugeGenerator GTGen;
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
-
+ 
+  setVariable::BremBlockGenerator BBGen;
+  BBGen.generateBlock(Control,"BremBlock",0,15.0);
+ 
+  
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
   CWBlankGen.setMainLength(2.4,13.6);

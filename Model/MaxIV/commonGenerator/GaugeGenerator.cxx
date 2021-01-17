@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/SixPortGenerator.cxx
+ * File:   commonGenerator/GaugeGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *

@@ -108,7 +108,8 @@
 #include "MonoShutter.h"
 #include "DiffPumpXIADP03.h"
 #include "TriggerTube.h"
-#include "GaugeTube.h"
+#include "CylGateValve.h"
+#include "SquareFMask.h"
 #include "formaxOpticsLine.h"
 
 namespace xraySystem
@@ -127,12 +128,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
-  gateTubeA(new xraySystem::GaugeTube(newName+"GateTubeA")),
-  gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-
-  bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
+  bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
@@ -191,11 +190,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
   OR.addObject(gateTubeA);
-  OR.addObject(gateTubeAItem);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
-
   OR.addObject(bremCollA);
+  
   OR.addObject(filterBoxA);
   OR.addObject(filterStick);
   OR.addObject(gateB);
@@ -408,29 +406,22 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
-				 
-  /*
-  triggerPipe->setFront(*pipeInit,2);
-  triggerPipe->createAll(System,*pipeInit,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
-  triggerPipe->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,*triggerPipe,"back",*gateTubeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeA,"back",*pipeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeA,"back",*bellowA);
+
   
-  gaugeA->setFront(*triggerPipe,2);
-  gaugeA->createAll(System,*triggerPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
-  gaugeA->insertInCell(System,outerCell);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowA,"back",*bremCollA);
 
-
-  bellowA->setFront(*gaugeA,2);
-  bellowA->createAll(System,*gaugeA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
-
-  gateA->setFront(*bellowA,2);
-  gateA->createAll(System,*bellowA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
-
+  /*
+      
 
   bremCollA->setCutSurf("front",*gateA,2);
   bremCollA->createAll(System,*gateA,2);

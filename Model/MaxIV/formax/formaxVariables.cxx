@@ -80,8 +80,9 @@
 #include "DiffPumpGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
-#include "GaugeGenerator.h"
 #include "TriggerGenerator.h"
+#include "CylGateValveGenerator.h"
+
 
 #include "R3ChokeChamberGenerator.h"
 
@@ -545,7 +546,9 @@ opticsVariables(FuncDataBase& Control,
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
   setVariable::TriggerGenerator TGen;
-
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::SqrFMaskGenerator FMaskGen;
+  
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
@@ -553,25 +556,30 @@ opticsVariables(FuncDataBase& Control,
 
   // will be rotated vertical
   TGen.setCF<CF100>();
-  TGen.setMainLength(15.0,25.0);
+  TGen.setVertical(15.0,25.0);
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,preName+"TriggerUnit");
 
+  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
   
-  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,preName+"GaugeA",0.0,11.0,11.0);  // ystep/height/depth
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,preName+"PipeA",20.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",17.6);
 
+  const double FM2dist(1624.2);
+  FMaskGen.setCF<CF40>();
+  FMaskGen.setFrontGap(2.13,2.146);
+  FMaskGen.setBackGap(0.756,0.432);
+  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
+  FMaskGen.generateColl(Control,preName+"BremCollA",0.0,15.0);
+
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
-  
-  BremGen.setCF<CF63>();
-  BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipe(7.5,0.5);

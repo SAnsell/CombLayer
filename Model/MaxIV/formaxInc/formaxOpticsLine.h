@@ -45,8 +45,9 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class CylGateValve;
   class BremColl;
+  class SquareFMask;
   class BremMonoColl;
   class FlangeMount;
   class GaugeTube;
@@ -89,18 +90,15 @@ class formaxOpticsLine :
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<xraySystem::GaugeTube> gateTubeA;
-  /// Gate block [item]
-  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
 
   /// Addaptor to connect from pumpint point to diffuser
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
-
   /// Vacuum pipe for collimator
-  std::shared_ptr<xraySystem::BremColl> bremCollA;
+  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
   /// Filter tube
   std::shared_ptr<constructSystem::PortTube> filterBoxA;
   /// Filter stick [only one blade type -- fix]

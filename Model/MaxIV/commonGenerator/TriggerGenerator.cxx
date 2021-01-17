@@ -144,7 +144,7 @@ TriggerGenerator::setMainLength(const double F,const double B)
 void
 TriggerGenerator::generateTube(FuncDataBase& Control,
 				  const std::string& keyName) const
-/*!
+  /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
