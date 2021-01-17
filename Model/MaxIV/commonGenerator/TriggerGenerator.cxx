@@ -71,7 +71,7 @@ TriggerGenerator::TriggerGenerator() :
   flangeXLength(CF40::flangeLength),
   flangeYLength(CF40::flangeLength),
   flangeZLength(CF100::flangeLength),
-  sideZOffset(5.0),
+  sideZOffset(12.0),sideLength(12.0),
   plateThick(CF40::flangeLength),
   voidMat("Void"),wallMat("Stainless304L"),
   plateMat("Stainless304L")
@@ -116,12 +116,13 @@ TriggerGenerator::setPortCF()
 
 template<typename CF>
 void
-TriggerGenerator::setSideCF()
+TriggerGenerator::setSideCF(const double L)
   /*!
     Setter for flange beam direction flanges
   */
 {
   yRadius=CF::innerRadius;
+  sideLength=L;
   flangeYRadius=CF::flangeRadius;
   flangeYLength=CF::flangeLength;
   return;
@@ -171,6 +172,7 @@ TriggerGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeZLength",flangeZLength);
 
   Control.addVariable(keyName+"SideZOffset",sideZOffset);
+  Control.addVariable(keyName+"SideLength",sideLength);
   Control.addVariable(keyName+"PlateThick",plateThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
@@ -185,7 +187,7 @@ TriggerGenerator::generateTube(FuncDataBase& Control,
 
 template void TriggerGenerator::setCF<CF100>();
 
-template void TriggerGenerator::setSideCF<CF40>();
+template void TriggerGenerator::setSideCF<CF40>(const double);
 
 template void TriggerGenerator::setPortCF<CF40>();
 

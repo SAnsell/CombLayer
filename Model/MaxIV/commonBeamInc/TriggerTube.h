@@ -67,6 +67,7 @@ class TriggerTube :
   double flangeZLength;         ///< Main Flange length
 
   double sideZOffset;           ///< Second Z lift
+  double sideLength;           ///< Second Z lift
   double plateThick;            ///< Top/Base plate thick
 
   int voidMat;                  ///< void material

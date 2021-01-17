@@ -136,6 +136,7 @@ TriggerTube::populate(const FuncDataBase& Control)
   flangeZLength=Control.EvalVar<double>(keyName+"FlangeZLength");
 
   sideZOffset=Control.EvalVar<double>(keyName+"SideZOffset");
+  sideLength=Control.EvalVar<double>(keyName+"SideLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -166,6 +167,7 @@ TriggerTube::createSurfaces()
     }
 
   // vertical/horizontal dividers
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+300,Origin,Z);
 
@@ -199,6 +201,32 @@ TriggerTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,radius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,flangeZRadius);
 
+  // Side Tubes 2 -ve X  :: 1 +ve X
+  
+
+  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,X,xRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,X,xRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+527,Origin,X,flangeXRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+503,Origin-X*sideLength,X);
+  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*sideLength,X);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+513,Origin-X*(sideLength-flangeXLength),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+514,Origin+X*(sideLength-flangeXLength),X);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+523,Origin-X*(sideLength+plateThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+524,Origin+X*(sideLength+plateThick),X);
+  
+  Geometry::Vec3D sideOrg(Origin+Z*sideZOffset);
+  ModelSupport::buildCylinder(SMap,buildIndex+607,sideOrg,X,xRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+617,sideOrg,X,xRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+627,sideOrg,X,flangeXRadius);
+
+  
   return;
 }
 
@@ -229,13 +257,14 @@ TriggerTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 17 -107 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 405 -406 7");
+  makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(607:100) 507 -417 407 405 -406 17 ");
+  makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
+
   // BASE part
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -300 -407 405 7 ");
-  makeCell("LowVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -300 -417 407 405 17 ");
-  makeCell("LowWall",System,cellIndex++,wallMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 405 -415 ");
   makeCell("LowFlange",System,cellIndex++,wallMat,0.0,HR);
@@ -244,13 +273,6 @@ TriggerTube::createObjects(Simulation& System)
   makeCell("LowPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // TOP part
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 300 -407 -406 7 ");
-  makeCell("TopVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 300 -417 407 -406 17 ");
-  makeCell("TopWall",System,cellIndex++,wallMat,0.0,HR);
-  
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 -406 416 ");
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
 
@@ -258,7 +280,8 @@ TriggerTube::createObjects(Simulation& System)
   makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR);
 
   // vert void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -427 415 -416 17 417  ");
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"(617:100)517 -427 415 -416 17 417  ");
   if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
     {
       if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
@@ -272,19 +295,71 @@ TriggerTube::createObjects(Simulation& System)
   makeCell("VertOuter",System,cellIndex++,0,0.0,HR);
   
   // front void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -200 17  427 -107 101");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 17 427 -107 101");
   makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
 
   // back void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 200 17  427 -207 -202 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 17 427 -207 -202 ");
   makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
-  // outer void box:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-107 ");
-  addOuterSurf(HR*frontHR*backHR);
+  // Side objects
+  // left side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 407 -507 503 ");
+  makeCell("LeftVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(425 -426 -427)");
-  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 417 -517 507 503 ");
+  makeCell("LeftWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"517 -527 503 -513");
+  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 523 -503");
+  makeCell("LeftPlate",System,cellIndex++,plateMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 427 517 -527 513 ");
+  makeCell("LeftOuter",System,cellIndex++,0,0.0,HR);
+  
+  // left top
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 407 -607 503 ");
+  makeCell("LTopVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 417 -617 607 503 ");
+  makeCell("LTopWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"617 -627 503 -513");
+  makeCell("LTopFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-627 523 -503");
+  makeCell("LTopPlate",System,cellIndex++,plateMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 427 617 -627 513 ");
+  makeCell("LTopOuter",System,cellIndex++,0,0.0,HR);
+  
+  // Right side
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 407 -507 -504 ");
+  makeCell("RightVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 417 -517 507 -504 ");
+  makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"517 -527 -504 514");
+  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 -524 504");
+  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 427 517 -527 -514 ");
+  makeCell("RightOuter",System,cellIndex++,0,0.0,HR);
+
+
+  // Outer boxes:
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"523 -524 425 -426 427 527 107 (100:627)");
+  makeCell("MainOuter",System,cellIndex++,0,0.0,HR*frontHR*backHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"523 -524 425 -426");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }

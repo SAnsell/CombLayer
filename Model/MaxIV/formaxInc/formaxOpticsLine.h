@@ -56,6 +56,7 @@ namespace xraySystem
   class MonoShutter;
   class PipeShield;
   class ShutterUnit;
+  class TriggerTube;
     
   /*!
     \class formaxOpticsLine
@@ -86,7 +87,7 @@ class formaxOpticsLine :
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
-  std::shared_ptr<xraySystem::GaugeTube> triggerPipe;
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
   std::shared_ptr<xraySystem::GaugeTube> gateTubeA;
   /// Gate block [item]
@@ -196,12 +197,10 @@ class formaxOpticsLine :
   double outerTop;     ///< Top lift for cut rectangle
 
   int constructMonoShutter
-    (Simulation&,MonteCarlo::Object**,
-     const attachSystem::FixedComp&,const long int);
+    (Simulation&,const attachSystem::FixedComp&,const long int);
 
   int constructDiag
     (Simulation&,
-     MonteCarlo::Object**,
      constructSystem::PortTube&,
      std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
      const attachSystem::FixedComp&,

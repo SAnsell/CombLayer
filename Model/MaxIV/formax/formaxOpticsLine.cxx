@@ -107,6 +107,7 @@
 #include "MonoBox.h"
 #include "MonoShutter.h"
 #include "DiffPumpXIADP03.h"
+#include "TriggerTube.h"
 #include "GaugeTube.h"
 #include "formaxOpticsLine.h"
 
@@ -125,7 +126,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   buildZone(Key+"BuildZone"),
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  triggerPipe(new xraySystem::GaugeTube(newName+"TriggerPipe")),
+  triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   gateTubeA(new xraySystem::GaugeTube(newName+"GateTubeA")),
   gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -280,10 +281,10 @@ formaxOpticsLine::createSurfaces()
 }
 
 int
-formaxOpticsLine::constructMonoShutter
-  (Simulation& System,MonteCarlo::Object** masterCellPtr,
-   const attachSystem::FixedComp& FC,const long int linkPt)
-/*!
+formaxOpticsLine::constructMonoShutter(Simulation& System,
+				       const attachSystem::FixedComp& FC,
+				       const long int linkPt)
+  /*!
     Construct a monoshutter system
     \param System :: Simulation for building
     \param masterCellPtr Pointer to mast cell
@@ -332,7 +333,6 @@ formaxOpticsLine::constructMonoShutter
 int
 formaxOpticsLine::constructDiag
   (Simulation& System,
-   MonteCarlo::Object** masterCellPtr,
    constructSystem::PortTube& diagBoxItem,
    std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
    const attachSystem::FixedComp& FC,const long int linkPt)

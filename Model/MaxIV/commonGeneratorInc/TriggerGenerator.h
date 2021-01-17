@@ -3,7 +3,7 @@
  
  * File:   commonGeneratorInc/TriggerGenerator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ class TriggerGenerator
   double flangeZLength;         ///< Main Flange length
 
   double sideZOffset;           ///< Second Z lift
+  double sideLength;           ///< side distance from centre
   double plateThick;            ///< Top/Base plate thick
 
 
@@ -76,7 +77,7 @@ class TriggerGenerator
 
   template<typename T> void setCF();
   template<typename T> void setPortCF();
-  template<typename T> void setSideCF();
+  template<typename T> void setSideCF(const double);
   void setMainLength(const double,const double);
 
   void setRadius(const double R) { radius=R; }
