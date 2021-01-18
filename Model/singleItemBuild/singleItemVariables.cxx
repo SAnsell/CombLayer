@@ -106,6 +106,7 @@
 #include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
+#include "IonGaugeGenerator.h"
 #include "TriggerGenerator.h"
 #include "LBeamStopGenerator.h"
 
@@ -295,6 +296,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::IonPTubeGenerator IonPGen;
   IonPGen.generateTube(Control,"IonPTube");
+
+  
+  setVariable::IonGaugeGenerator IonGGen;
+  IonGGen.generateTube(Control,"IonGauge");
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");

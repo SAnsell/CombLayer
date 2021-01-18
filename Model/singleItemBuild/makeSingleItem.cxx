@@ -123,6 +123,7 @@
 #include "portItem.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
+#include "IonGauge.h"
 #include "TriggerTube.h"
 #include "LBeamStop.h"
 
@@ -171,7 +172,7 @@ makeSingleItem::build(Simulation& System,
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","LBeamStop","MagTube","TriggerTube",
+      "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "Help","help"
     });
 
@@ -753,6 +754,18 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="IonGauge")
+    {
+      std::shared_ptr<xraySystem::IonGauge>
+	IG(new xraySystem::IonGauge("IonGauge"));
+
+      OR.addObject(IG);
+
+      IG->addInsertCell(voidCell);
+      IG->createAll(System,World::masterOrigin(),0);
 
       return;
     }

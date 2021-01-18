@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/TriggerTube.cxx
+ * File:   commonBeam/IonGauge.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -55,6 +55,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+
 #include "Line.h"
 #include "Rules.h"
 #include "SurInter.h"
@@ -81,12 +82,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "TriggerTube.h"
+#include "IonGauge.h"
 
 namespace xraySystem
 {
 
-TriggerTube::TriggerTube(const std::string& Key) :
+IonGauge::IonGauge(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
@@ -99,20 +100,20 @@ TriggerTube::TriggerTube(const std::string& Key) :
 {}
 
 
-TriggerTube::~TriggerTube() 
+IonGauge::~IonGauge() 
   /*!
     Destructor
   */
 {}
 
 void
-TriggerTube::populate(const FuncDataBase& Control)
+IonGauge::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("TriggerTube","populate");
+  ELog::RegMethod RegA("IonGauge","populate");
 
   FixedRotate::populate(Control);
 
@@ -135,8 +136,17 @@ TriggerTube::populate(const FuncDataBase& Control)
   flangeYLength=Control.EvalVar<double>(keyName+"FlangeYLength");
   flangeZLength=Control.EvalVar<double>(keyName+"FlangeZLength");
 
+  
   sideZOffset=Control.EvalVar<double>(keyName+"SideZOffset");
   sideLength=Control.EvalVar<double>(keyName+"SideLength");
+   
+  gaugeZOffset=Control.EvalVar<double>(keyName+"GaugeZOffset");
+  gaugeRadius=Control.EvalVar<double>(keyName+"GaugeRadius");
+  gaugeLength=Control.EvalVar<double>(keyName+"GaugeLength");
+  gaugeHeight=Control.EvalVar<double>(keyName+"GaugeHeight");
+  gaugeFlangeRadius=Control.EvalVar<double>(keyName+"GaugeFlangeRadius");
+  gaugeFlangeLength=Control.EvalVar<double>(keyName+"GaugeFlangeLength");
+  
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -148,12 +158,12 @@ TriggerTube::populate(const FuncDataBase& Control)
 
 
 void
-TriggerTube::createSurfaces()
+IonGauge::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("TriggerTube","createSurfaces");
+  ELog::RegMethod RegA("IonGauge","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -201,43 +211,56 @@ TriggerTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,radius+wallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,flangeZRadius);
 
-  // Side Tubes 2 -ve X  :: 1 +ve X
-  
+  // Side Tubes 
+  const Geometry::Vec3D sideOrg(Origin+Z*sideZOffset);
+  ModelSupport::buildCylinder(SMap,buildIndex+507,sideOrg,X,xRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+517,sideOrg,X,xRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+527,sideOrg,X,flangeXRadius);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,X,xRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,X,xRadius+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+527,Origin,X,flangeXRadius);
-
-  ModelSupport::buildPlane(SMap,buildIndex+503,Origin-X*sideLength,X);
-  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*sideLength,X);
-
+  ModelSupport::buildPlane(SMap,buildIndex+503,sideOrg-X*sideLength,X);
   ModelSupport::buildPlane
     (SMap,buildIndex+513,Origin-X*(sideLength-flangeXLength),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+514,Origin+X*(sideLength-flangeXLength),X);
-
-  ModelSupport::buildPlane
     (SMap,buildIndex+523,Origin-X*(sideLength+plateThick),X);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+524,Origin+X*(sideLength+plateThick),X);
+
+  // Gauge tube
+  Geometry::Vec3D gaugeOrg(Origin+Z*gaugeZOffset);
+  ModelSupport::buildCylinder(SMap,buildIndex+607,gaugeOrg,X,gaugeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+617,gaugeOrg,X,gaugeRadius+wallThick);
+
+
+  gaugeOrg+=X*gaugeLength;
+  // divider
+  ModelSupport::buildPlane(SMap,buildIndex+600,gaugeOrg,(X+Z)/2.0);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+657,gaugeOrg,Z,gaugeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+667,gaugeOrg,Z,gaugeRadius+wallThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+677,gaugeOrg,Z,gaugeFlangeRadius);
   
-  Geometry::Vec3D sideOrg(Origin+Z*sideZOffset);
-  ModelSupport::buildCylinder(SMap,buildIndex+607,sideOrg,X,xRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+617,sideOrg,X,xRadius+wallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+627,sideOrg,X,flangeXRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+606,gaugeOrg+Z*gaugeLength,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+616,gaugeOrg+Z*(gaugeLength-gaugeFlangeLength),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+626,gaugeOrg+Z*(gaugeLength+plateThick),Z);
+  // outer plane
+  ModelSupport::buildPlane
+    (SMap,buildIndex+694,gaugeOrg+X*(gaugeFlangeRadius+Geometry::zeroTol),X);
 
   
   return;
 }
 
 void
-TriggerTube::createObjects(Simulation& System)
+IonGauge::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("TriggerTube","createObjects");
+  ELog::RegMethod RegA("IonGauge","createObjects");
 
   HeadRule HR;
   
@@ -261,7 +284,7 @@ TriggerTube::createObjects(Simulation& System)
   makeCell("MainVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(607:100) 507 -417 407 405 -406 17 ");
+    (SMap,buildIndex,"(507:100) -417 407 405 -406 17 (607:-100)");
   makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
 
   // BASE part
@@ -281,11 +304,12 @@ TriggerTube::createObjects(Simulation& System)
 
   // vert void
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(617:100) 517 -427 415 -416 17 417  ");
+    (SMap,buildIndex," (517:100) -427 415 -416 17 417  (617:-100) ");
+
   if (flangeZRadius-Geometry::zeroTol > frontLength-flangeYLength)
     {
       if (flangeZRadius-Geometry::zeroTol > backLength-flangeYLength)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex," ((101 -202):107) ");
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex," ((101 -202) : 107) ");
       else
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex," (101:107) ");
     }
@@ -297,11 +321,11 @@ TriggerTube::createObjects(Simulation& System)
   makeCell("VertOuter",System,cellIndex++,0,0.0,HR);
   
   // front void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 17 427 -107 101");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-200 427 17 -107 101");
   makeCell("FrontOuter",System,cellIndex++,0,0.0,HR);
 
   // back void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 17 427 -207 -202 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"200 427 17 -207 -202 ");
   makeCell("BackOuter",System,cellIndex++,0,0.0,HR);
 
   // Side objects
@@ -320,59 +344,60 @@ TriggerTube::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 427 517 -527 513 ");
   makeCell("LeftOuter",System,cellIndex++,0,0.0,HR);
-  
-  // left top
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 407 -607 503 ");
-  makeCell("LTopVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 417 -617 607 503 ");
-  makeCell("LTopWall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"617 -627 503 -513");
-  makeCell("LTopFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-627 523 -503");
-  makeCell("LTopPlate",System,cellIndex++,plateMat,0.0,HR);
+  // // Right side
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 427 617 -627 513 ");
-  makeCell("LTopOuter",System,cellIndex++,0,0.0,HR);
-  
-  // Right side
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 407 -507 -504 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 407 -607 -600 ");
   makeCell("RightVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 417 -517 507 -504 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 417 -617 607 -600 ");
   makeCell("RightWall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"517 -527 -504 514");
-  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-606 -657 600 ");
+  makeCell("RVertVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527 -524 504");
-  makeCell("RightPlate",System,cellIndex++,plateMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-606 -667 657 600 ");
+  makeCell("RVertWall",System,cellIndex++,wallMat,0.0,HR);
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"667 -677 -606 616");
+  makeCell("RVertFlange",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 427 517 -527 -514 ");
-  makeCell("RightOuter",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-677 606 -626");
+  makeCell("RVert",System,cellIndex++,plateMat,0.0,HR);
 
 
   // Outer boxes:
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"523 -524 425 -426 427 527 107 (100:627)");
+    (SMap,buildIndex,"523 -694 425 -426 427 (527:100) 107 -694 ");
+  const HeadRule HRX=
+    ModelSupport::getHeadRule(SMap,buildIndex,"(677:626:-616)");
+  const HeadRule HRY=
+    ModelSupport::getHeadRule(SMap,buildIndex,"(617:-100:600");
+  const HeadRule HRZ=
+    ModelSupport::getHeadRule(SMap,buildIndex,"(667:626:-600)");
+  HR*=HRX;
+  HR*=HRY;
+  HR*=HRZ;
+
   makeCell("MainOuter",System,cellIndex++,0,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"523 -524 425 -426");
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"523 -694 425 -426  ");
   addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
 
 void 
-TriggerTube::createLinks()
+IonGauge::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("TriggerTube","createLinks");
+  ELog::RegMethod RegA("IonGauge","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
@@ -393,7 +418,7 @@ TriggerTube::createLinks()
 }
 
 void
-TriggerTube::createAll(Simulation& System,
+IonGauge::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int sideIndex)
   /*!
@@ -403,7 +428,7 @@ TriggerTube::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("TriggerTube","createAll");
+  ELog::RegMethod RegA("IonGauge","createAll");
   
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,2.0*frontLength);

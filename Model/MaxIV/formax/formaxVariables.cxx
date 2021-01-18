@@ -567,16 +567,17 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeA",20.0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",17.6);
 
   const double FM2dist(1624.2);
   FMaskGen.setCF<CF40>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
-  FMaskGen.generateColl(Control,preName+"BremCollA",0.0,15.0);
+  FMaskGen.setMinAngleSize(10.0,FM2dist, 100.0,100.0 );
+  // step to +7.5 to make join with fixedComp:linkpt
+  FMaskGen.generateColl(Control,preName+"BremCollA",7.5,15.0);
 
+  
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
