@@ -378,6 +378,7 @@ IonGauge::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"(617:-100:600");
   const HeadRule HRZ=
     ModelSupport::getHeadRule(SMap,buildIndex,"(667:626:-600)");
+
   HR*=HRX;
   HR*=HRY;
   HR*=HRZ;

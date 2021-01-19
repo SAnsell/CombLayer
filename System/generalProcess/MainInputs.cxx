@@ -86,6 +86,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("C","ECut");
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
+  IParam.regFlag("fullOR","fullOR");
   IParam.regItem("geomPrecision","geomPrecision");
   IParam.regItem("mode","mode");
   IParam.regMulti("MagStep","MagStep",1000,0);
@@ -237,6 +238,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("c","Cells to protect");
   IParam.setDesc("cutWeight","Set the cut weights (wc1/wc2)" );
   IParam.setDesc("ECut","Cut energy");
+  IParam.setDesc("fullOR","Write out full X/Y/Z basis in objectRegister.txt");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");
   IParam.setDesc("dbcn","DBCN card values");

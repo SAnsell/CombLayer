@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/VacBoxGenerator.h
+ * File:   constructVarInc/PortTubeGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,8 @@ class PortTubeGenerator
   double flangeBLen;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
   
-  std::string voidMat;          ///< Primary default mat
-  std::string wallMat;          ///< Primary default mat
+  std::string voidMat;        ///< Primary default mat
+  std::string wallMat;        ///< Primary default mat
 
  public:
 

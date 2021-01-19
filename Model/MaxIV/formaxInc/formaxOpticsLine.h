@@ -57,6 +57,7 @@ namespace xraySystem
   class MonoShutter;
   class PipeShield;
   class ShutterUnit;
+  class IonGauge;
   class TriggerTube;
     
   /*!
@@ -96,9 +97,23 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-
   /// Vacuum pipe for collimator
   std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  /// Ion Gauge
+  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// mini-Brem Collimator
+  std::shared_ptr<constructSystem::VacuumPipe> bremPipeB;
+
+  /// Diagnostic unit 3:
+  std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Diag Box C :: Jaw units
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompA;
+
+
+  
+  /*
   /// Filter tube
   std::shared_ptr<constructSystem::PortTube> filterBoxA;
   /// Filter stick [only one blade type -- fix]
@@ -170,10 +185,6 @@ class formaxOpticsLine :
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowH;
 
-  /// Diagnostic unit 3:
-  std::shared_ptr<constructSystem::PortTube> diagBoxC;
-  /// Diag Box C :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
 
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
@@ -189,7 +200,8 @@ class formaxOpticsLine :
 
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateJ;
-
+  */
+  
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle

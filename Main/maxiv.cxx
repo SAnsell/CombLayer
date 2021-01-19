@@ -3,7 +3,7 @@
  
  * File:   Main/maxiv.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,8 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
 
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt",
+				  IParam.flag("fullOR"));
     }
   
   catch (ColErr::ExitAbort& EA)

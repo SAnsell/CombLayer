@@ -3,7 +3,7 @@
  
  * File:   include/objectGroups.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ class objectGroups
 
   void removeObject(const std::string&);
   
-  void write(const std::string&) const;
+  void write(const std::string&,const bool =0) const;
 
   std::ostream& writeRange(std::ostream&,const std::string&) const;
   
