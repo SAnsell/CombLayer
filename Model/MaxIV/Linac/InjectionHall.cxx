@@ -530,6 +530,15 @@ InjectionHall::createSurfaces()
 
   // MidT ducts
   int SJ = buildIndex+7700;
+
+  // separators to split the midT wall into cells with ducts
+  ModelSupport::buildPlane(SMap,SJ+1,Origin+Y*(midTDuctYStep[0]-midTDuctRadius[4]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+2,Origin+Y*(midTDuctYStep[4]+midTDuctRadius[4]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+11,Origin+Y*(midTDuctYStep[5]-midTDuctRadius[5]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+12,Origin+Y*(midTDuctYStep[8]+midTDuctRadius[8]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+21,Origin+Y*(midTDuctYStep[9]-midTDuctRadius[9]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+22,Origin+Y*(midTDuctYStep[13]+midTDuctRadius[13]*2),Y);
+
   for (size_t i=0; i<midTNDucts; ++i)
     {
       ModelSupport::buildCylinder(SMap,SJ+7,
@@ -537,7 +546,6 @@ InjectionHall::createSurfaces()
 				  X,midTDuctRadius[i]);
       SJ += 10;
     }
-
 
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
@@ -935,24 +943,64 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
   // MidT wall ducts
-  HeadRule MidTDucts;
   int SJ = buildIndex+7700;
+
+  // middle wall (part with THz penetration)
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
+				 "1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  HeadRule MidTDucts1; // TDC modulator klystron duct and D1-D4
+  HeadRule MidTDucts2; // 4 ducts near floor level
+  HeadRule MidTDucts3; // ducts near the BTG wall
+
   for (size_t i=0; i<midTNDucts; ++i)
     {
       Out = ModelSupport::getComposite(SMap,buildIndex,SJ, " 1003 -1004 -7M ");
       makeCell("MidTDuct",System,cellIndex++,midTDuctMat[i],0.0,Out);
-
-      MidTDucts.addIntersection(SJ+7);
+      if (i<=4)
+	MidTDucts1.addIntersection(SJ+7);
+      else if (i<=8)
+	MidTDucts2.addIntersection(SJ+7);
+      else
+	MidTDucts3.addIntersection(SJ+7);
 
       SJ += 10;
     }
 
   // MID T
-  // middle wall with THz penetration
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
-  Out += MidTDucts.display();
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "1M -2M 1003 -1004 5 -6 ");
+  Out += MidTDucts1.display();
   makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  // between ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "2M -11M 1003 -1004 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  // floor ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "11M -12M 1003 -1004 5 -6 ");
+  Out += MidTDucts2.display();
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  // between ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "12M -21M 1003 -1004 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "21M -22M 1003 -1004 5 -6 ");
+  Out += MidTDucts3.display();
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+  // after ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+  				 "22M -6112 1003 -1004 5 -6 ");
+  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
