@@ -409,6 +409,18 @@ global_settings {
     #declare cameraAngle = 50;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"D1Duct")) // D1-D4 ducts in FKG
+    #declare cameraLocation = <550, 6640, 100>;
+    #declare cameraLookAt   = <65, 7450, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"BTG")) // BTG wall
+    #declare cameraLocation = <430, 10429, 100>;
+    #declare cameraLookAt   = <240, 10100, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
