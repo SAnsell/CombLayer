@@ -3149,17 +3149,34 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
-  Control.addVariable(wallKey+"MidTNDucts",2);
-  // Duct1 is the TDC modulator klystron duct
-  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruller
-  Control.addVariable(wallKey+"MidTDuct1YStep",7234.0);  // dummy
-  Control.addVariable(wallKey+"MidTDuct1ZStep",100.0);  // dummy
-
-  Control.addVariable(wallKey+"MidTDuct2Radius",7.5); // dummy
-  Control.addVariable(wallKey+"MidTDuct2YStep",7250.0);  // dummy
-  Control.addVariable(wallKey+"MidTDuct2ZStep",100.0);  // dummy
-  Control.addVariable(wallKey+"MidTDuct2Mat","Lead");  // dummy
-
+  Control.addVariable(wallKey+"MidTNDucts",5);
+  // Duct D1 is the TDC modulator klystron duct
+  const double D1YStep = 6402.4; // K_20-2_354 - the leftmost duct [email from AR 2021-01-15]
+  const double D1ZStep =  158.0; // measured on K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct1Radius",5.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct1YStep",D1YStep);
+  Control.addVariable(wallKey+"MidTDuct1ZStep",D1ZStep);
+  Control.addVariable(wallKey+"MidTDuct1Mat","StbTCABL");  // dummy
+  // D2
+  Control.addVariable(wallKey+"MidTDuct2Radius",5.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct2YStep",D1YStep+30.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct2ZStep",D1ZStep);
+  Control.addVariable(wallKey+"MidTDuct2Mat","StbTCABL");  // dummy
+  // D3
+  Control.addVariable(wallKey+"MidTDuct3Radius",5.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct3YStep",D1YStep+60.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct3ZStep",D1ZStep);
+  Control.addVariable(wallKey+"MidTDuct3Mat","StbTCABL");  // dummy
+  // D4
+  Control.addVariable(wallKey+"MidTDuct4Radius",5.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct4YStep",D1YStep+90.0); // K_20-2_354
+  Control.addVariable(wallKey+"MidTDuct4ZStep",D1ZStep);
+  Control.addVariable(wallKey+"MidTDuct4Mat","StbTCABL");  // dummy
+  // TDC modulator klystron duct
+  Control.addVariable(wallKey+"MidTDuct5Radius",7.5); // measured with ruller
+  Control.addVariable(wallKey+"MidTDuct5YStep",D1YStep-210.0); // measured with ruller
+  Control.addVariable(wallKey+"MidTDuct5ZStep",D1ZStep);
+  Control.addVariable(wallKey+"MidTDuct5Mat","Void");  // dummy
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
