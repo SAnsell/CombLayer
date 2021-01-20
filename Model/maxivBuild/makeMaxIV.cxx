@@ -414,7 +414,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
        {"COSAXS","OpticCentre1"},
        {"SOFTIMAX","OpticCentre1"},
        {"DANMAX","OpticCentre1"},
-       {"FORMAX","OpticCentre8"},
+       {"FORMAX","OpticCentre1"},  // was 8
        {"MICROMAX","OpticCentre1"}
     });
 

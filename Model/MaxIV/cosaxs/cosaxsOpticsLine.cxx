@@ -3,7 +3,7 @@
 
  * File: cosaxs/cosaxsOpticsLine.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -419,6 +419,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   filterBoxA->setFront(*bremCollA,2);
   filterBoxA->createAll(System,*bremCollA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBoxA,2);
+  
   filterBoxA->insertAllInCell(System,outerCell);
   filterBoxA->splitObject(System,1001,outerCell,
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
@@ -428,9 +429,9 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));
   filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
+    filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
   filterStick->setBladeCentre(PI,0);
   filterStick->createAll(System,PI,PI.getSideIndex("-InnerPlate"));
-
 
   gateB->setFront(*filterBoxA,2);
   gateB->createAll(System,*filterBoxA,2);

@@ -79,7 +79,7 @@ namespace xraySystem
 class R3FrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap

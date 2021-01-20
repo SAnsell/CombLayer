@@ -66,7 +66,6 @@
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
-#include "JawFlangeGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
@@ -602,7 +601,6 @@ opticsSlitPackage(FuncDataBase& Control,
    */
 {
   setVariable::PortTubeGenerator PortTubeGen;
-  setVariable::JawValveGenerator JawGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BeamPairGenerator BeamMGen;
 
@@ -689,7 +687,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
-  setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
   setVariable::JawValveGenerator JawGen;
 

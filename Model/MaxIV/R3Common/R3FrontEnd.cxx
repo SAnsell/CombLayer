@@ -118,7 +118,7 @@ namespace xraySystem
 R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -246,7 +246,7 @@ R3FrontEnd::populate(const FuncDataBase& Control)
     \param Control :: DataBase
    */
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   frontOffset=Control.EvalDefVar<double>(keyName+"FrontOffset",0.0);
   return;

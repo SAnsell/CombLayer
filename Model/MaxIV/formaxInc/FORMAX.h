@@ -54,7 +54,6 @@ namespace xraySystem
   class R3FrontEndCave;
   class ConnectZone;
   class formaxFrontEnd;
-  class PipeShield;
   class WallLead;
   
   /*!

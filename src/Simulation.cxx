@@ -1611,11 +1611,14 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   if (AX.constructShannonDivision(-SN))
     {
       if (AX.isEmpty())
-	throw ColErr::EmptyContainer
-	  ("Cell Pair has empty cell:"+
-	   std::to_string(CA)+"/"+std::to_string(CB));
+	{
+	  throw ColErr::EmptyContainer
+	    ("Cell Pair has empty cell:"+
+	     std::to_string(CA)+"/"+std::to_string(CB));
+	}
       CPtr->procString(AX.writeMCNPX());
     }
+
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))

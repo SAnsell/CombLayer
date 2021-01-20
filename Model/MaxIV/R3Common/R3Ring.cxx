@@ -326,6 +326,37 @@ R3Ring::createObjects(Simulation& System)
 }
 
 void
+R3Ring::createDoor(Simulation& System)
+  /*!
+    Build if a ring-door is required [ access to area outside of ring]
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("R3Ring","createDoor");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+    
+
+  if (doorActive)
+    {
+      doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
+      OR.addObject(doorPtr);
+
+      doorPtr->setCutSurf
+	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
+      doorPtr->setCutSurf
+	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
+      doorPtr->setCutSurf("floor",SurfMap::getSurf("Floor"));
+
+      doorPtr->addAllInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
+      doorPtr->createAll(System,*this,doorActive+1);
+    }
+  return;
+}
+
+
+void
 R3Ring::createLinks()
   /*!
     Determines the link points for the beam direction first:
@@ -366,36 +397,6 @@ R3Ring::createLinks()
       FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
 					
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
-    }
-  return;
-}
-
-void
-R3Ring::createDoor(Simulation& System)
-  /*!
-    Build if a ring-door is required [ access to area outside of ring]
-    \param System :: Simulation to use
-  */
-{
-  ELog::RegMethod RegA("R3Ring","createDoor");
-  
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-    
-
-  if (doorActive)
-    {
-      doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
-      OR.addObject(doorPtr);
-
-      doorPtr->setCutSurf
-	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
-      doorPtr->setCutSurf
-	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
-      doorPtr->setCutSurf("floor",SurfMap::getSurf("Floor"));
-
-      doorPtr->addAllInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
-      doorPtr->createAll(System,*this,doorActive+1);
     }
   return;
 }

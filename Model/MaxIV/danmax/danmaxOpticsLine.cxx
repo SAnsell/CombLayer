@@ -472,7 +472,7 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","buildMono");
+  ELog::RegMethod RegA("danmaxOpticsLine","buildMirrorMono");
 
   int outerCell;
 

@@ -99,7 +99,7 @@ FixedComp::splitObject(Simulation& System,
   ELog::RegMethod RegA("FixedComp","splitObject(org,axis)");
 
   std::vector<int> OutCell;
-  
+
   const Geometry::Vec3D O=Origin+X*Org[0]+Y*Org[1]+Z*Org[2];
   Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
   Axis.makeUnit();
@@ -111,7 +111,7 @@ FixedComp::splitObject(Simulation& System,
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
-  
+
   OutCell.push_back(cellN);
   OutCell.push_back(cellExtra);
     
@@ -195,6 +195,7 @@ FixedComp::splitObject(Simulation& System,
       OutCell.push_back(CN);
 
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+
       if (CMapPtr)	
 	CMapPtr->registerExtra(cellN,CN);
       SN++;
@@ -236,6 +237,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
       ModelSupport::buildPlane(SMap,buildIndex+SN,O,Axis);
       CN=System.splitObject(CN,cellIndex++,SMap.realSurf(buildIndex+SN));
       OutCell.push_back(CN);
+      
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
       if (CMapPtr)

@@ -179,6 +179,9 @@ getDefInput(const MITYPE&,const std::string&,const size_t,const std::string&);
 
 
 template bool
+findInput(const MITYPE&,const std::string&,const size_t,int&);
+
+template bool
 findInput(const MITYPE&,const std::string&,const size_t,size_t&);
 
 template bool

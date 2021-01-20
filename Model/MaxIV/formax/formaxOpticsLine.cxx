@@ -106,11 +106,15 @@
 #include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoShutter.h"
-#include "DiffPumpXIADP03.h"
 #include "TriggerTube.h"
 #include "CylGateValve.h"
 #include "SquareFMask.h"
 #include "IonGauge.h"
+#include "BeamPair.h"
+#include "MonoBlockXstals.h"
+#include "MLMono.h"
+#include "DCMTank.h"
+
 #include "formaxOpticsLine.h"
 
 namespace xraySystem
@@ -137,12 +141,26 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   bremPipeB(new constructSystem::VacuumPipe(newName+"BremPipeB")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
-  jawCompA({
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxAJawUnit0"),
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxAJawUnit1")
-	})
+  jaws({
+      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawX"),
+      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawZ")
+    }),
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
+  MLM(new xraySystem::MLMono(newName+"MLM")),
   
-  //  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+
+  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals"))
+
+  
+  //  bellowJ(new constructSyst\em::Bellows(newName+"BellowJ")),
   //  gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
     Constructor
@@ -154,6 +172,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
+
   OR.addObject(gateTubeA);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
@@ -162,7 +181,20 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(ionGaugeA);
   OR.addObject(bremPipeB);
   OR.addObject(diagBoxA);
-  
+  OR.addObject(jaws[0]);
+  OR.addObject(jaws[1]);
+
+  OR.addObject(gateTubeB);
+  OR.addObject(pipeB);
+  OR.addObject(bellowC);
+  OR.addObject(MLMVessel);
+  OR.addObject(MLM);
+
+  OR.addObject(bellowD);
+  OR.addObject(pipeC);
+  OR.addObject(gateTubeC);
+  OR.addObject(bellowE);
+
 }
   
 formaxOpticsLine::~formaxOpticsLine()
@@ -209,6 +241,31 @@ formaxOpticsLine::createSurfaces()
      buildZone.setSurround(HR*getRule("floor"));
      buildZone.setFront(getRule("front"));
     }
+  return;
+}
+
+void
+formaxOpticsLine::constructMirrorMono(Simulation& System,
+				      const attachSystem::FixedComp& initFC, 
+				      const std::string& sideName)
+/*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("formaxOpticsLine","buildMirrorMono");
+
+  int outerCell;
+
+  MLMVessel->createAll(System,initFC,sideName);
+  outerCell=buildZone.createUnit(System,*MLMVessel,2);
+  MLMVessel->insertInCell(System,outerCell);
+  
+  MLM->addInsertCell(MLMVessel->getCell("Void"));
+  MLM->createAll(System,*MLMVessel,0);
+
   return;
 }
 
@@ -359,10 +416,50 @@ formaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*ionGaugeA,"back",*bellowB);
 
-
   constructSystem::constructUnit
     (System,buildZone,*bellowB,"back",*diagBoxA);
   diagBoxA->intersectPorts(System,0,1);
+
+
+  for(size_t i=0;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=diagBoxA->getPort(i);
+      jaws[i]->createAll(System,*diagBoxA,0,
+			 PI,PI.getSideIndex("InnerPlate"));
+
+      diagBoxA->splitObjectAbsolute(System,1501+i*10,
+				    diagBoxA->getCell("Void",i),
+				    jaws[i]->getCentre(),
+				    diagBoxA->getY());
+      jaws[i]->insertInCell("SupportA",System,PI.getCell("Void"));
+      jaws[i]->insertInCell("SupportB",System,PI.getCell("Void"));
+      cellIndex++;
+    }
+  
+  jaws[0]->insertInCell("SupportB",System,diagBoxA->getCell("Void",0));
+  jaws[0]->insertInCell("SupportA",System,diagBoxA->getCell("Void",1));
+  jaws[0]->insertInCell("BlockB",System,diagBoxA->getCell("Void",0));
+  jaws[0]->insertInCell("BlockA",System,diagBoxA->getCell("Void",1));
+
+  jaws[1]->insertInCell("SupportA",System,diagBoxA->getCell("Void",2));
+  jaws[1]->insertInCell("SupportB",System,diagBoxA->getCell("Void",1));
+  jaws[1]->insertInCell("BlockA",System,diagBoxA->getCell("Void",2));
+  jaws[1]->insertInCell("BlockB",System,diagBoxA->getCell("Void",1));
+
+
+  // exit:
+
+  constructSystem::constructUnit
+    (System,buildZone,*diagBoxA,"back",*pipeB);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeB,"back",*gateTubeB);
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeB,"back",*bellowC);
+
+
+  constructMirrorMono(System,*bellowC,"back");
+  
+  
   //  screenPipeB->insertAllInCell(System,outerCell);
   //  screenPipeB->intersectPorts(System,0,1);
 
@@ -578,9 +675,6 @@ formaxOpticsLine::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  ELog::EM<<"Oriing == "<<Origin<<":"<<X<<ELog::endDiag;
-  ELog::EM<<"Oriing == "<<Origin<<":"<<Y<<ELog::endDiag;
-  ELog::EM<<"Oriing == "<<Origin<<":"<<Z<<ELog::endDiag;
   createSurfaces();
 
   buildObjects(System);

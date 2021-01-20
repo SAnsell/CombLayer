@@ -494,20 +494,22 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
 
   // BlankTube
+  SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateBlank(Control,"BlankTube",0.0,20.0);
   // Control.addVariable("BlankTubeFlangeCapThick",setVariable::CF63::flangeLength);
   // Control.addVariable("BlankTubeFlangeCapMat","Lead");
   //  Control.addVariable("BlankTubeYAngle", 30.0);
-  Control.addVariable("BlankTubeNPorts",2);
-  PItemGen.setCF<setVariable::CF40>(6.0);
+  Control.addVariable("BlankTubeNPorts",1);
+  PItemGen.setCF<setVariable::CF40>(16.0);
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Aluminium");
   PItemGen.generatePort(Control,"BlankTubePort0",
 			Geometry::Vec3D(0.0, 3.0, 0.0),
-			Geometry::Vec3D(0.5, -0.5, 0.866));
+			Geometry::Vec3D(1,0,0));
+  //			Geometry::Vec3D(0.5, -0.5, 0.866));
 
   PItemGen.setNoPlate();
   //  PItemGen.setCF<setVariable::CF40>(7.0);
-  PItemGen.setLength(7.0);
+  PItemGen.setLength(17.0);
   PItemGen.generatePort(Control,"BlankTubePort1",
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));

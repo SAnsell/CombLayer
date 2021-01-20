@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,7 +268,6 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.setSize(8.0,80.0,45.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
-
 
   return;
 }
