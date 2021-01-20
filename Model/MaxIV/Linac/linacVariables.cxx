@@ -3149,6 +3149,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
+  /////////////////////////////////////////////// DUCTS ///////////////
   const size_t nDucts = 19;
   Control.addVariable(wallKey+"MidTNDucts",nDucts);
   // Duct D1 is the TDC modulator klystron duct
@@ -3163,11 +3164,11 @@ wallVariables(FuncDataBase& Control,
 
   // D1 - D4
   // K_20-2_354, A-A view, leftmost ducts
-  for (size_t i=2; i<=5; ++i)
+  for (size_t i=0; i<=4; ++i)
     {
-      const std::string name = wallKey+"MidTDuct" + std::to_string(i);
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+2);
       Control.addVariable(name+"Radius",5.0); // K_20-2_354
-      Control.addVariable(name+"YStep",D1YStep+30*(i-2)); // K_20-2_354
+      Control.addVariable(name+"YStep",D1YStep+30*i); // K_20-2_354
       Control.addVariable(name+"ZStep",D1ZStep); // K_20-2_354
     }
 
@@ -3177,11 +3178,11 @@ wallVariables(FuncDataBase& Control,
   // Water pipes go through them, but to be conservative we leave them empty
   // [email from AR 2021-01-19]
   const double floorDuctY = D1YStep+200.0; // approx
-  for (size_t i=6; i<=9; ++i)
+  for (size_t i=0; i<=4; ++i)
     {
-      const std::string name = wallKey+"MidTDuct" + std::to_string(i);
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
       Control.addVariable(name+"Radius",5.0); // dummy
-      Control.addVariable(name+"YStep",floorDuctY+35*(i-6)); // dummy
+      Control.addVariable(name+"YStep",floorDuctY+35*i); // dummy
       Control.addVariable(name+"ZStep",-115); // dummy
     }
 
@@ -3190,23 +3191,24 @@ wallVariables(FuncDataBase& Control,
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
   const double BTGductY = 9839.035; // K_20-2_355
-  for (size_t i=10; i<=15; ++i)
+  for (size_t i=0; i<=5; ++i)
     {
-      const std::string name = wallKey+"MidTDuct" + std::to_string(i);
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
       Control.addVariable(name+"Radius",7.5); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductY+35*(i-10)); // distance: K_20-2_355
+      Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
       Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
     }
   // Upper tier
   // Electric cables, but now we put void to be conservative
   const double BTGductYup = BTGductY + 105.0; // K_20-2_355: 105 = 241.6-136.6
-  for (size_t i=16; i<=19; ++i)
+  for (size_t i=0; i<=4; ++i)
     {
-      const std::string name = wallKey+"MidTDuct" + std::to_string(i);
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
       Control.addVariable(name+"Radius",5.0); // K_20-2_355
-      Control.addVariable(name+"YStep",BTGductYup+30*(i-16)); // distance: K_20-2_355
+      Control.addVariable(name+"YStep",BTGductYup+30*i); // distance: K_20-2_355
       Control.addVariable(name+"ZStep",158.0); // measured in K_20-2_355
     }
+  ///////////////////////////////////////////////
 
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
