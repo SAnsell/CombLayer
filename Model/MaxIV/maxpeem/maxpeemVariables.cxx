@@ -3,7 +3,7 @@
  
  * File:   maxpeem/maxpeemVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "JawValveGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
+#include "CrossWayGenerator.h"
 
 #include "MirrorGenerator.h"
 #include "PipeGenerator.h"
@@ -558,24 +559,16 @@ opticsBeamVariables(FuncDataBase& Control,
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
-  
-  // will be rotated vertical
-  const std::string gateName=opticKey+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
-  Control.addVariable(gateName+"NPorts",2);   // beam ports
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(4.45);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  setVariable::CrossWayGenerator MSPGen;
+  MSPGen.generateCrossWay(Control,opticKey+"GateTubeA");
 
   BellowGen.generateBellow(Control,opticKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,opticKey+"PipeA",50.0);
 
+  const Geometry::Vec3D ZVec(0,0,1);
   // will be rotated vertical
   const std::string florName=opticKey+"FlorTubeA";
   SimpleTubeGen.setCF<CF150>();

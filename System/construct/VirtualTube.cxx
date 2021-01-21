@@ -225,14 +225,21 @@ VirtualTube::createPorts(Simulation& System,
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
       for(const int CN : CC.getInsertCells())
-	Ports[i]->addInsertCell(CN);
+	{
+	  ELog::EM<<"C == "<<CN<<ELog::endDiag;
+	  Ports[i]->addInsertCell(CN);
+	}
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
 
-      
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      if (outerVoid && CellMap::hasCell("OuterVoid"))
+	Ports[i]->constructTrack(System,
+				 CellMap::getCellObject(System,"OuterVoid"),
+				 innerSurf,outerSurf);
+	
       Ports[i]->insertObjects(System);
     }
 

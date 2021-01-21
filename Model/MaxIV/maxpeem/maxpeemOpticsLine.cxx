@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemOpticsBeamline.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@
 #include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -96,6 +95,7 @@
 
 #include "BlockStand.h"
 #include "CrossPipe.h"
+#include "CrossWayTube.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveBase.h"
@@ -105,14 +105,14 @@
 #include "GratingMono.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
-#include "maxpeemOpticsBeamline.h"
+#include "maxpeemOpticsLine.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
+maxpeemOpticsLine::maxpeemOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -122,7 +122,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   gateRing(new constructSystem::GateValveCube(newName+"GateRing")),
-  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
+  gateTubeA(new xraySystem::CrossWayTube(newName+"GateTubeA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
@@ -230,20 +230,20 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(outPipeB);
 }
   
-maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
+maxpeemOpticsLine::~maxpeemOpticsLine()
   /*!
     Destructor
    */
 {}
 
 void
-maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
+maxpeemOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","populate");
+  ELog::RegMethod RegA("maxpeemOpticsLine","populate");
   FixedOffset::populate(Control);
 
   outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
@@ -255,12 +255,12 @@ maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
 
 
 void
-maxpeemOpticsBeamline::createSurfaces()
+maxpeemOpticsLine::createSurfaces()
   /*!
     Create surfaces
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","createSurfaces");
+  ELog::RegMethod RegA("maxpeemOpticsLine","createSurfaces");
 
   if (outerRadius>Geometry::zeroTol)
     {
@@ -296,8 +296,8 @@ maxpeemOpticsBeamline::createSurfaces()
 
 
 void
-maxpeemOpticsBeamline::insertFlanges(Simulation& System,
-				     const constructSystem::PipeTube& PT)
+maxpeemOpticsLine::insertFlanges(Simulation& System,
+				 const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
     that extend past the linkzone in to ther neighbouring regions.
@@ -305,7 +305,7 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
     \param PT :: PipeTube
    */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","insertFlanges");
+  ELog::RegMethod RegA("maxpeemOpticsLine","insertFlanges");
   
   const size_t voidN=this->getNItems("OuterVoid")-3;
 
@@ -318,7 +318,7 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildSplitter(Simulation& System,
+maxpeemOpticsLine::buildSplitter(Simulation& System,
 				     MonteCarlo::Object* masterCellA,
 				     MonteCarlo::Object* masterCellB,
 				     const attachSystem::FixedComp& initFC,
@@ -403,7 +403,7 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 
 
 void
-maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
+maxpeemOpticsLine::buildM3Mirror(Simulation& System,
 				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC, 
 				     const long int sideIndex)
@@ -415,7 +415,7 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM3Mirror");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildM3Mirror");
 
   int outerCell;
   
@@ -459,7 +459,7 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildMono(Simulation& System,
+maxpeemOpticsLine::buildMono(Simulation& System,
 				 MonteCarlo::Object* masterCell,
 				 const attachSystem::FixedComp& initFC, 
 				 const long int sideIndex)
@@ -472,7 +472,7 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildMono");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildMono");
 
   int outerCell;
   
@@ -500,7 +500,7 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
 
 
 void
-maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
+maxpeemOpticsLine::buildSlitPackage(Simulation& System,
 					MonteCarlo::Object* masterCell,
 					const attachSystem::FixedComp& initFC, 
 					const long int sideIndex)
@@ -512,7 +512,7 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildSlitPackage");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildSlitPackage");
 
   int outerCell;
   
@@ -574,7 +574,7 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 }
  
 void
-maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
+maxpeemOpticsLine::buildM1Mirror(Simulation& System,
 				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC, 
 				     const long int sideIndex)
@@ -586,7 +586,7 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM1Mirror");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildM1Mirror");
 
   int outerCell;
 
@@ -628,14 +628,14 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildObjects(Simulation& System)
+maxpeemOpticsLine::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildObjects");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildObjects");
 
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -663,22 +663,16 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   gateRing->insertInCell(System,outerCell);
   gateRing->setCell("OuterVoid",outerCell);
 
-  // FAKE insertcell: required
-  gateTubeA->addAllInsertCell(masterCellA->getName());
-  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeA->createAll(System,*gateRing,2);  
-  
-  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCellA,GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertAllInCell(System,outerCell);
+  gateTubeA->createAll(System,*gateRing,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCellA,*gateTubeA,2);
+  gateTubeA->insertInCell(System,outerCell);
 
-  bellowB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
+  bellowB->createAll(System,*gateTubeA,"back");
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCellA,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
 
-  insertFlanges(System,*gateTubeA);
+  //  insertFlanges(System,*gateTubeA);
 
   pipeA->createAll(System,*bellowB,2);
   outerCell=buildZone.createOuterVoidUnit
@@ -744,7 +738,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
 }
 
 void
-maxpeemOpticsBeamline::createLinks()
+maxpeemOpticsLine::createLinks()
   /*!
     Create a front/back link
    */
@@ -755,7 +749,7 @@ maxpeemOpticsBeamline::createLinks()
 }
   
 void
-maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
+maxpeemOpticsLine::buildOutGoingPipes(Simulation& System,
 					  const int leftCell,
 					  const int rightCell,
 					  const std::vector<int>& hutCells)
@@ -767,7 +761,7 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
     \param hutCell :: Cells for construction in hut [common to both pipes]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+  ELog::RegMethod RegA("maxpeemOpticsLine","buildOutgoingPipes");
 
   outPipeA->addAllInsertCell(hutCells);
   outPipeA->addAllInsertCell(leftCell);
@@ -790,7 +784,7 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
 
 
 void 
-maxpeemOpticsBeamline::createAll(Simulation& System,
+maxpeemOpticsLine::createAll(Simulation& System,
 				 const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
@@ -801,7 +795,7 @@ maxpeemOpticsBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("maxpeemOpticsBeamline","build");
+  ELog::RegMethod RControl("maxpeemOpticsLine","build");
 
   populate(System.getDataBase());
   

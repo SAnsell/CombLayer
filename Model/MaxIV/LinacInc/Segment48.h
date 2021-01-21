@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment48.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,12 @@
  ****************************************************************************/
 #ifndef tdcSystem_Segment48_h
 #define tdcSystem_Segment48_h
+
+namespace xraySystem
+{
+  class CylGateValve;
+  class CrossWayTube;
+}
 
 namespace tdcSystem
 {
@@ -44,7 +50,7 @@ class Segment48 :
   std::shared_ptr<constructSystem::PortTube> slitTube; // #4
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #4
   std::shared_ptr<constructSystem::Bellows> bellowB;  // #5
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC;  // #5
 
   void buildObjects(Simulation&);

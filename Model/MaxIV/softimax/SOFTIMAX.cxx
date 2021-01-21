@@ -3,7 +3,7 @@
 
   * File: softimax/SOFTIMAX.cxx
   *
-  * Copyright (c) 2004-2020 by Konstantin Batkov
+  * Copyright (c) 2004-2021 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -125,6 +125,7 @@ SOFTIMAX::build(Simulation& System,
 
   frontBeam->deactivateFM3();
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -149,6 +150,7 @@ SOFTIMAX::build(Simulation& System,
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
+
   // Ugly HACK to get the two objects to merge
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
@@ -163,6 +165,7 @@ SOFTIMAX::build(Simulation& System,
   joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
+
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
@@ -176,7 +179,8 @@ SOFTIMAX::build(Simulation& System,
 
   std::vector<int> cells(opticsHut->getCells("BackWall"));
   cells.emplace_back(opticsHut->getCell("Extension"));
-  
+
+  return;
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
 				 opticsBeam->getCell("RightVoid"),
 				 cells);

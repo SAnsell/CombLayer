@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment47.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,12 @@
  ****************************************************************************/
 #ifndef tdcSystem_Segment47_h
 #define tdcSystem_Segment47_h
+
+namespace xraySystem
+{
+  class CylGateValve;
+  class CrossWayTube;
+}
 
 namespace tdcSystem
 {
@@ -41,11 +47,11 @@ class Segment47 :
   
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #4
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberB; ///< #4
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberB; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #5
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberC; ///< #4
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberC; ///< #4
   std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #6
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #7
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8

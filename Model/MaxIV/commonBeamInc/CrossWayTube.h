@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_CrossWayTube_h
-#define tdcSystem_CrossWayTube_h
+#ifndef xraySystem_CrossWayTube_h
+#define xraySystem_CrossWayTube_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 
   /*!

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/maxpeemOpticsBeamline.h
+ * File:   maxpeemInc/maxpeemOpticsLine.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_maxpeemOpticsBeamline_h
-#define xraySystem_maxpeemOpticsBeamline_h
+#ifndef xraySystem_maxpeemOpticsLine_h
+#define xraySystem_maxpeemOpticsLine_h
 
 namespace insertSystem
 {
@@ -52,25 +52,27 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class BeamMount;
   class BlockStand;
-  class OpticsHutch;
+  class CrossWayTube;
   class GrateMonoBox;
   class GratingMono;
-  class BeamMount;
-  class Mirror;
-  class PipeShield;
   class JawValveCube;
+  class Mirror;
+  class OpticsHutch;
+  class PipeShield;
   class TwinPipe;
+
     
   /*!
-    \class maxpeemOpticsBeamline
+    \class maxpeemOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class maxpeemOpticsBeamline :
+class maxpeemOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -92,7 +94,7 @@ class maxpeemOpticsBeamline :
   /// Gate valve for ring
   std::shared_ptr<constructSystem::GateValveCube> gateRing;
   /// Gate block
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  std::shared_ptr<xraySystem::CrossWayTube> gateTubeA;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Pipe to some stuff
@@ -221,10 +223,10 @@ class maxpeemOpticsBeamline :
   
  public:
   
-  maxpeemOpticsBeamline(const std::string&);
-  maxpeemOpticsBeamline(const maxpeemOpticsBeamline&);
-  maxpeemOpticsBeamline& operator=(const maxpeemOpticsBeamline&);
-  ~maxpeemOpticsBeamline();
+  maxpeemOpticsLine(const std::string&);
+  maxpeemOpticsLine(const maxpeemOpticsLine&);
+  maxpeemOpticsLine& operator=(const maxpeemOpticsLine&);
+  ~maxpeemOpticsLine();
 
   void buildOutGoingPipes(Simulation&,const int,const int,
 			  const std::vector<int>&);

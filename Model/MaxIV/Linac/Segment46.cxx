@@ -3,7 +3,7 @@
 
  * File: Linac/Segment46.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ Segment46::Segment46(const std::string& Key) :
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   prismaChamber(new tdcSystem::PrismaChamber(keyName+"PrismaChamber")),
-  mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
+  mirrorChamberA(new xraySystem::CrossWayTube(keyName+"MirrorChamberA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   cleaningMag(new tdcSystem::CleaningMagnet(keyName+"CleaningMagnet")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
@@ -108,7 +108,7 @@ Segment46::Segment46(const std::string& Key) :
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
     }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  mirrorChamberB(new tdcSystem::CrossWayTube(keyName+"MirrorChamberB")),
+  mirrorChamberB(new xraySystem::CrossWayTube(keyName+"MirrorChamberB")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB")),
   bellowD(new constructSystem::Bellows(keyName+"BellowD"))

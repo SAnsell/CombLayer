@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -739,9 +739,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
+
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
+
 
   // FAKE insertcell: required due to rotation ::
   triggerPipe->addAllInsertCell(masterCell->getName());
@@ -757,6 +759,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,TPI,TPI.getSideIndex("OuterPlate"));
 
+
   const constructSystem::portItem& GPI1=gateTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,GPI1,GPI1.getSideIndex("OuterPlate"));
@@ -766,6 +769,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
+
   constructSystem::constructUnit
     (System,buildZone,masterCell,GPI1,"OuterPlate",*bellowA);
 
@@ -773,7 +777,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,*bellowA,"back",*pipeA);
 
   // FAKE insertcell: required
-  pumpM1->addAllInsertCell(masterCell->getName());
+  //  pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
@@ -818,6 +822,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   //  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
 
+  lastComp=pipeInit;
+  setCell("LastVoid",masterCell->getName());
+  return;
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);

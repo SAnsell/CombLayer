@@ -775,6 +775,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
+  ELog::EM<<"ASDFASFSF"<<ELog::endErr;
   AIndex=0;
   BIndex=0;
   // no point checking first value
@@ -861,6 +862,7 @@ portItem::constructTrack(Simulation& System,
 {
   ELog::RegMethod RegA("portItem","constructTrack(HR,HR)");
 
+
   if (!statusFlag)
     {
       ELog::EM<<"Failed to set orientation in port:"<<keyName<<ELog::endCrit;
@@ -938,7 +940,7 @@ portItem::createAll(Simulation& System,
   ELog::RegMethod RegA("portItem","createAll");
 
   constructAxis(System,FC,sideIndex);
-  constructTrack(System);
+  constructTrack(System); 
   return;
 }
 

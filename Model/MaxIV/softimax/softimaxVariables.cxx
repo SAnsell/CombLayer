@@ -3,7 +3,7 @@
 
  * File:   softimax/softimaxVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -454,20 +454,21 @@ splitterVariables(FuncDataBase& Control,
 
   const Geometry::Vec3D ZVec(0,0,1);
   constexpr double port0Length(5.95);
-  PItemGen.setCF<setVariable::CF50>(port0Length);
+  PItemGen.setCF<setVariable::CF50>(CF200::outerRadius+port0Length);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port0",Geometry::Vec3D(-5.02,0,0),ZVec);
 
   const Geometry::Vec3D ZVec2(-sin(splitAngle*2*M_PI/180),0,cos(splitAngle*2*M_PI/180));
-  PItemGen.setCF<setVariable::CF50>(port0Length*cos(splitAngle*4*M_PI/180)+0.03);
+  PItemGen.setCF<setVariable::CF50>
+    (CF200::outerRadius+port0Length*cos(splitAngle*4*M_PI/180)+0.03);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port1",Geometry::Vec3D(5.02,0,0),ZVec2);
 
-  PItemGen.setCF<setVariable::CF40>(4.95);
+  PItemGen.setCF<setVariable::CF40>(CF200::outerRadius+4.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port2",Geometry::Vec3D(-4,0,0),-ZVec);
 
-  PItemGen.setCF<setVariable::CF40>(4.95);
+  PItemGen.setCF<setVariable::CF40>(CF200::outerRadius+4.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,m3PumpName+"Port3",Geometry::Vec3D(4,0,0),-ZVec2);
 
@@ -618,7 +619,7 @@ opticsSlitPackage(FuncDataBase& Control,
   Control.addVariable(sName+"WallMat", "Aluminium");
 
   Control.addVariable(sName+"NPorts",3);
-  PItemGen.setCF<setVariable::CF100>(7.1);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+7.1);
   PItemGen.setPlate(setVariable::CF100::flangeLength,"Aluminium");
 
   const Geometry::Vec3D topJaw(0.0,16.0-tLen/2.0,0.0);
@@ -632,10 +633,10 @@ opticsSlitPackage(FuncDataBase& Control,
 
   PItemGen.setOuterVoid(1); ///
   PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
-  PItemGen.setCF<setVariable::CF50>(6.1);
+  PItemGen.setCF<setVariable::CF50>(CF150::outerRadius+6.1);
   PItemGen.setPlate(setVariable::CF40::flangeLength,"SiO2");
   PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
-  PItemGen.setCF<setVariable::CF100>(7.1);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+7.1);
   PItemGen.generatePort(Control,sName+"Port2",vacPort,-XVec);
 
   // Jaw units:
@@ -706,7 +707,7 @@ opticsVariables(FuncDataBase& Control,
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports
   // const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+5.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pipeName+"Port0",Geometry::Vec3D(0,5.0,0),ZVec);
   PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,5.0,0),-ZVec);
@@ -718,7 +719,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,gateAName,0.0,30.0);
   Control.addVariable(gateAName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF40>(3.45);
+  PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+3.45);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,gateAName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateAName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -743,37 +744,37 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,pumpName,0.0,39.2); // full length (+caps)
   Control.addVariable(pumpName+"NPorts",7);
 
-  PItemGen.setCF<setVariable::CF40>(5.3); // port length
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.3); // port length
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(4.7);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+4.7);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0.75,0.0,cos(M_PI*60.0/180.0));
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(PLen);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen);
   PItemGen.setOuterVoid(1);
   PItemGen.setPlate(setVariable::CF40::flangeLength,"Stainless304");
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
 
-  PItemGen.setCF<setVariable::CF40>(5.4); // port length
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
   PItemGen.generatePort(Control,pumpName+"Port3",Geometry::Vec3D(0,0,0),XVec);
 
-  PItemGen.setCF<setVariable::CF40>(5.4); // port length
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
   PItemGen.generatePort(Control,pumpName+"Port4",Geometry::Vec3D(0,10,0),XVec);
 
   // above port 2
-  PItemGen.setCF<setVariable::CF40>(5.4); // port length
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.4); // port length
   PItemGen.generatePort(Control,pumpName+"Port5",Geometry::Vec3D(0,10,0),-XVec);
 
   constexpr double xyAngle6(70.0*M_PI/180.0);
   const Geometry::Vec3D pAngVec6(sin(xyAngle6),0.0,-cos(xyAngle6));
   const double PLen6(14.0-8.05/cos(M_PI*37.0/180.0));
-  PItemGen.setCF<setVariable::CF40>(PLen6);
+  PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+PLen6);
   PItemGen.generatePort(Control,pumpName+"Port6",
 			Geometry::Vec3D(0,0,0),-pAngVec6);
 
@@ -799,11 +800,11 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,collName,0.0,30.8);
   Control.addVariable(collName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF63>(4.15);
+  PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+4.15);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(3.65);
+  PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+3.65);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
@@ -839,11 +840,11 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,pumpTubeBname,0.0,31.2);
   Control.addVariable(pumpTubeBname+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF63>(4.45);
+  PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+4.45);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeBname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(3.45);
+  PItemGen.setCF<setVariable::CF63>(CF100::outerRadius+3.45);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeBname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
@@ -876,10 +877,10 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,gateName,0.0,40.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF100>(6.0);
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+6.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
@@ -912,11 +913,11 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,pumpTubeCname,0.0,31.2);
   Control.addVariable(pumpTubeCname+"NPorts",2);   // beam ports
 
-  PItemGen.setCF<setVariable::CF100>(7.95);
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+7.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF100>(7.95);
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+7.95);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpTubeCname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
