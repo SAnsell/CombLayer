@@ -3187,6 +3187,9 @@ wallVariables(FuncDataBase& Control,
     }
 
   // Ducts above the BTG blocks
+  // Photo of these ducts from the SPF hall:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view
+
   // Lower tier - AR: 210119: I would
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
@@ -3285,13 +3288,15 @@ wallVariables(FuncDataBase& Control,
   // Update 210112: there is Lead (see photo)
   Control.addVariable(wallKey+"THzMat","Lead");
 
+  // Main beam dump room
+  // Top view: K_15-6_010
   Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
-  Control.addVariable(wallKey+"BDRoomLength",570); // measured on K_15-6_011
+  Control.addVariable(wallKey+"BDRoomWidth",1200.0); // dummy
+  Control.addVariable(wallKey+"BDRoomLength",540); // K_15-6_011
   Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
   Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFrontWallThick",150.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
+  Control.addVariable(wallKey+"BDRoomFrontWallThick",100.0); // K_15-6_011
+  Control.addVariable(wallKey+"BDRoomSideWallThick",200.0); // K_15-6_010
   Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
   Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
   Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
