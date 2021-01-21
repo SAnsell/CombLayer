@@ -422,7 +422,7 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
-    #declare cameraLocation = <-80, 9500, 100>;
+    #declare cameraLocation = <-80, 9500, 50>;
     #declare cameraLookAt   = <-740, 9870, -300>;
     #declare cameraAngle = 90;
     #declare projection = 0;

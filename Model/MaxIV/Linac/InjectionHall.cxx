@@ -1121,7 +1121,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
-  makeCell("HatchNew",System,cellIndex++,0,0.0,Out);
+  makeCell("HatchNew",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
@@ -1139,10 +1139,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
-  makeCell("HatchTDC",System,cellIndex++,0,0.0,Out);
+  makeCell("HatchTDC",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7564 -7504 -5 7516 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7564 -7504 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516 ");
+  makeCell("BDEntrance",System,cellIndex++,0,0.0,Out);
 
 
 
@@ -1154,13 +1157,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDNew",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7534 -7524 7506 -7516 ");
-  makeCell("BDInnerWall",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7524 -7525 7506 -7516 ");
   makeCell("BDSPF",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7525 -7535 7506 -7516 ");
-  makeCell("BDInnerWall",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7535 -7504 7506 -7516 ");
   makeCell("BDTDC",System,cellIndex++,0,0.0,Out);
