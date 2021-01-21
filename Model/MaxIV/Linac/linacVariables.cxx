@@ -3158,8 +3158,8 @@ wallVariables(FuncDataBase& Control,
   const double D1ZStep =  158.0; // measured on K_20-2_354
 
   // TDC modulator klystron duct
-  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruller
-  Control.addVariable(wallKey+"MidTDuct1YStep",D1YStep-210.0); // measured with ruller
+  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruler
+  Control.addVariable(wallKey+"MidTDuct1YStep",D1YStep-210.0); // measured with ruler
   Control.addVariable(wallKey+"MidTDuct1ZStep",D1ZStep);
 
   // D1 - D4
@@ -3279,6 +3279,7 @@ wallVariables(FuncDataBase& Control,
       Control.addVariable(wallKey+"Pillar"+n+"Y",y[i]);
     }
 
+  // THz penetration
   Control.addVariable(wallKey+"THzHeight",5.0); // K_20-2_348
   Control.addVariable(wallKey+"THzWidth",30.0); // K_20-2_348
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
@@ -3290,16 +3291,22 @@ wallVariables(FuncDataBase& Control,
 
   // Main beam dump room
   // Top view: K_15-6_010
-  Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomWidth",1200.0); // dummy
-  Control.addVariable(wallKey+"BDRoomLength",540); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFrontWallThick",100.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomSideWallThick",200.0); // K_15-6_010
-  Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
+  const std::string bdRoom=wallKey+"BDRoom";
+  Control.addVariable(bdRoom+"XStep",-735); // SPF line center
+  Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"Length",540); // K_15-6_011
+  Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"RoofThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
+  Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
+  Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
+  Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"HatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
+  Control.addVariable(bdRoom+"InnerWallLength",365.0); // K_15-6_010
+  Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
+  Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
+  Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2

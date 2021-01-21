@@ -196,15 +196,20 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   bdRoomHeight=Control.EvalVar<double>(keyName+"BDRoomHeight");
-  bdRoomWidth=Control.EvalVar<double>(keyName+"BDRoomWidth");
   bdRoomLength=Control.EvalVar<double>(keyName+"BDRoomLength");
   bdRoomFloorThick=Control.EvalVar<double>(keyName+"BDRoomFloorThick");
   bdRoomRoofThick=Control.EvalVar<double>(keyName+"BDRoomRoofThick");
+  bdRoomRoofSteelWidth=Control.EvalVar<double>(keyName+"BDRoomRoofSteelWidth");
   bdRoomFrontWallThick=Control.EvalVar<double>(keyName+"BDRoomFrontWallThick");
   bdRoomSideWallThick=Control.EvalVar<double>(keyName+"BDRoomSideWallThick");
   bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
   bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
   bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
+  bdRoomInnerWallThick=Control.EvalVar<double>(keyName+"BDRoomInnerWallThick");
+  bdRoomInnerWallLength=Control.EvalVar<double>(keyName+"BDRoomInnerWallLength");
+  bdRoomTDCWidth=Control.EvalVar<double>(keyName+"BDRoomTDCWidth");
+  bdRoomSPFWidth=Control.EvalVar<double>(keyName+"BDRoomSPFWidth");
+  bdRoomNewWidth=Control.EvalVar<double>(keyName+"BDRoomNewWidth");
   wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
   wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
   wasteRoomWallThick=Control.EvalVar<double>(keyName+"WasteRoomWallThick");
@@ -503,7 +508,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
 
-  // Under-the-floor beam dump and its room
+  // Under-the-floor - main beam dump room
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
 				  -(bdRoomLength+bdRoomFrontWallThick));
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7505,buildIndex+5,Z,
@@ -514,11 +519,35 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+7511,Y,bdRoomHatchLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
 				  bdRoomLength-bdRoomBackSteelThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7521,buildIndex+21,Y,
+				  -bdRoomInnerWallLength);
 
-  ModelSupport::buildPlane(SMap,buildIndex+7503,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7504,Origin+X*(bdRoomXStep+bdRoomWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7513,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7514,Origin+X*(bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
+  const double bdRoomWidth(bdRoomTDCWidth+bdRoomSPFWidth+bdRoomNewWidth+bdRoomInnerWallThick*2.0);
+
+  // planes for the inner walls of Main beam dump room
+  ModelSupport::buildPlane(SMap,buildIndex+7524,Origin+X*(bdRoomXStep-bdRoomSPFWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7525,Origin+X*(bdRoomXStep+bdRoomSPFWidth/2.0),X);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7534,buildIndex+7524,X,-bdRoomInnerWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7535,buildIndex+7525,X,bdRoomInnerWallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7503,buildIndex+7534,X,-bdRoomNewWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7504,buildIndex+7535,X,bdRoomTDCWidth);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7513,buildIndex+7503,X,-bdRoomSideWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7514,buildIndex+7504,X,bdRoomSideWallThick);
+
+  // center of the steel plate above the Future beam line beam dump
+  double xstep=bdRoomXStep-bdRoomSPFWidth/2.0-bdRoomInnerWallThick-bdRoomNewWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+7543,Origin+X*(xstep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7544,Origin+X*(xstep+bdRoomRoofSteelWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+7553,Origin+X*(bdRoomXStep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7554,Origin+X*(bdRoomXStep+bdRoomRoofSteelWidth/2.0),X);
+
+  xstep=bdRoomXStep+bdRoomSPFWidth/2.0+bdRoomInnerWallThick+bdRoomTDCWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+7563,Origin+X*(xstep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7564,Origin+X*(xstep+bdRoomRoofSteelWidth/2.0),X);
 
   // Radioactive waste room (in Future Klystron Gallery)
   ModelSupport::buildPlane(SMap,buildIndex+7601,Origin+Y*(wasteRoomYStep+wasteRoomWallThick),Y);
@@ -1083,14 +1112,63 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7503 7506 -15 ");
   makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
-  makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
+  // makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7503 -7504 -5 7516 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7522 7503 -7504 7506 -7516 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
+  makeCell("HatchNew",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
+  makeCell("HatchSPF",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
+  makeCell("HatchTDC",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7564 -7504 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7521 7503 -7504 7506 -7516 ");
   makeCell("BD",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7503 -7534 7506 -7516 ");
+  makeCell("BDNew",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7534 -7524 7506 -7516 ");
+  makeCell("BDInnerWall",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7524 -7525 7506 -7516 ");
+  makeCell("BDSPF",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7525 -7535 7506 -7516 ");
+  makeCell("BDInnerWall",System,cellIndex++,wallIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7535 -7504 7506 -7516 ");
+  makeCell("BDTDC",System,cellIndex++,0,0.0,Out);
+
+
+
+
 
   // Radioactive waste room
   Out=ModelSupport::getComposite(SMap,buildIndex," 7601 -7602 1004 -7604 5 -6 ");
