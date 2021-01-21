@@ -522,8 +522,6 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7521,buildIndex+21,Y,
 				  -bdRoomInnerWallLength);
 
-  const double bdRoomWidth(bdRoomTDCWidth+bdRoomSPFWidth+bdRoomNewWidth+bdRoomInnerWallThick*2.0);
-
   // planes for the inner walls of Main beam dump room
   ModelSupport::buildPlane(SMap,buildIndex+7524,Origin+X*(bdRoomXStep-bdRoomSPFWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+7525,Origin+X*(bdRoomXStep+bdRoomSPFWidth/2.0),X);
@@ -581,6 +579,7 @@ InjectionHall::createSurfaces()
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
+  SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
   SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
   SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
@@ -1128,10 +1127,10 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDRoofSPF",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
-  makeCell("HatchSPF",System,cellIndex++,0,0.0,Out);
+  makeCell("HatchSPF",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516 ");
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);

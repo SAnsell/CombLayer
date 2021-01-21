@@ -3303,7 +3303,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
   Control.addVariable(bdRoom+"HatchLength",200.0); // measured on K_15-6_011
   Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
-  Control.addVariable(bdRoom+"InnerWallLength",365.0); // K_15-6_010
+  Control.addVariable(bdRoom+"InnerWallLength",365.0+2.0); // K_15-6_010, +2 just to avoid cutting SPF45PipeB
   Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
   Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
   Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
