@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -347,7 +347,8 @@ portItem::createSurfaces()
   ELog::RegMethod RegA("portItem","createSurfaces");
   // divider surface if needeed :
 
-
+  if (buildIndex==7310000)
+    ELog::EM<<"Build["<<keyName<<"] == "<<buildIndex<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   if (flangeRadius-Geometry::zeroTol<=radius+wall)
     throw ColErr::SizeError<double>(flangeRadius,wall+radius,
@@ -564,12 +565,13 @@ portItem::constructFlange(Simulation& System,
 
   if (outerFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 17  -27 -102");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,
 	       Out+outerSurf.display());
       Out= (capFlag) ?
 	ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
 	ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
+
 
       addOuterSurf(Out+outerSurf.display());
     }
@@ -701,6 +703,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   if (outerFlag)
     {
+      ELog::EM<<"Outer["<<keyName<<"] == "<<ELog::endDiag;
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,Out+midSurf);
       Out= (capFlag) ?
@@ -869,7 +872,7 @@ portItem::constructTrack(Simulation& System,
       return;
     }
   createSurfaces();
-  
+
   constructFlange(System,innerSurf,outerSurf);
   addPortCut(insertObj);
   

@@ -181,7 +181,9 @@ PipeTube::createSurfaces()
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  SurfMap::addSurf("FlangeACyl",SMap.realSurf(buildIndex+107));
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
+  SurfMap::addSurf("FlangeBCyl",SMap.realSurf(buildIndex+207));
   
   return;
 }
@@ -362,7 +364,7 @@ PipeTube::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("VirtualTube","createAll(FC)");
+  ELog::RegMethod RegA("PipeTube","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
@@ -376,8 +378,12 @@ PipeTube::createAll(Simulation& System,
 
   const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
   const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+  const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
 
-  createPorts(System,OPtr,innerSurf,outerSurf);
+  if (outerVoid)
+    createPorts(System,OPtr,innerSurf,flangeSurf);
+  else
+    createPorts(System,OPtr,innerSurf,outerSurf);
   insertObjects(System);
     
   return;
