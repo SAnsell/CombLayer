@@ -3,7 +3,7 @@
 
  * File:   species/TankMonoVessel.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "portItem.h"
 
@@ -82,7 +83,9 @@ namespace xraySystem
 
 TankMonoVessel::TankMonoVessel(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
   centreOrigin(0),delayPortBuild(0)
   /*!
@@ -197,23 +200,6 @@ TankMonoVessel::populate(const FuncDataBase& Control)
 }
 
 void
-TankMonoVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("TankMonoVessel","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  Origin+=Y*(portATubeLength+wallThick+voidRadius);
-  return;
-}
-
-void
 TankMonoVessel::createSurfaces()
   /*!
     Create the surfaces
@@ -239,7 +225,7 @@ TankMonoVessel::createSurfaces()
   // mid-line
 
   const double maxPortWidth
-    (std::max(std::abs(portAXStep)+flangeARadius,
+    (1.01*std::max(std::abs(portAXStep)+flangeARadius,
 	      std::abs(portBXStep)+flangeBRadius));
   // mid layer divider
   ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
@@ -298,6 +284,7 @@ TankMonoVessel::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+607,BCentre,Y,portBTubeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+617,BCentre,Y,
 			      portBTubeRadius+portBWallThick);
+
   const Geometry::Vec3D BFCentre(BCentre+X*flangeBXStep+Z*flangeBZStep);
   ModelSupport::buildCylinder(SMap,buildIndex+627,BFCentre,Y,flangeBRadius);
 
@@ -321,12 +308,11 @@ TankMonoVessel::createObjects(Simulation& System)
 
   const std::string FPortStr(ExternalCut::getRuleStr("front"));
   const std::string BPortStr(ExternalCut::getRuleStr("back"));
-
+  ELog::EM<<"FRont == "<<FPortStr<<ELog::endDiag;
 
   // Main Void
   Out=ModelSupport::getComposite(SMap,buildIndex," (5:-208) (-6:-108) -7 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 6 -118 108 ");
   CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,Out);
@@ -372,6 +358,7 @@ TankMonoVessel::createObjects(Simulation& System)
 
   // OUTER VOID SPACE
   const std::string fbCut=FPortStr+BPortStr;
+
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "527 1013 -1014 5 -25 17 -1000 ");
   CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,Out+FPortStr);
@@ -445,8 +432,9 @@ TankMonoVessel::createPorts(Simulation& System)
     \param System :: Simulation to use
    */
 {
-   ELog::RegMethod RegA("TankMonoVessel","createPorts");
-
+  ELog::RegMethod RegA("TankMonoVessel","createPorts");
+  ELog::EM<<"NOT BUILDING X PORTS "<<Ports.size()<<ELog::endDiag;
+  return;
   for(size_t i=0;i<Ports.size();i++)
     {
 
@@ -454,6 +442,10 @@ TankMonoVessel::createPorts(Simulation& System)
 	Ports[i].addOuterCell(CN);
 
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
+
+      const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
+      const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+      
       Ports[i].constructTrack(System);
     }
   return;
@@ -474,7 +466,8 @@ TankMonoVessel::createAll(Simulation& System,
   ELog::RegMethod RegA("TankMonoVessel","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  createCentredUnitVector(FC,FIndex,
+			  2.0*(portATubeLength+wallThick+voidRadius));
   createSurfaces();
   createObjects(System);
 

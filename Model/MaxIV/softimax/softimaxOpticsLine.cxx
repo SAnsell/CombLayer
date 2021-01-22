@@ -781,7 +781,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
   pumpM1->createAll(System,*pipeA,"back");
-  //pumpM1->intersectPorts(System,1,2);
 
   ///////////// split for FLUKA
   //  const constructSystem::portItem& VP0=pumpM1->getPort(0);
@@ -810,7 +809,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   const std::vector<int> cellUnit=this->getCells("OuterVoid");
   pumpM1->insertMainInCell(System,cellUnit);
-  //  VP0.insertInCell(System,this->getCell("OuterVoid"));
 
   pumpM1->insertPortInCell
     (System,{{outerCell+4,outerCell},{outerCell,outerCell+1,outerCell+2},{outerCell+3},{outerCell},
@@ -820,11 +818,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   cellIndex+=5;
   /////////////////////////////////////////
 
-  //  setCell("LastVoid",masterCell->getName());  lastComp=pumpM1;  return;
-
-  lastComp=pipeInit;
-  setCell("LastVoid",masterCell->getName());
-  return;
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,VP1,"OuterPlate",*gateA);
@@ -833,6 +826,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,masterCell,*gateA,"back",*bellowB);
 
   buildM1Mirror(System,masterCell,*bellowB,"back");
+
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,*M1TubeBack,"back",*bellowC);
@@ -880,7 +874,10 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,pumpTubeBCPI,pumpTubeBCPI.getSideIndex("OuterPlate"));
   pumpTubeB->insertAllInCell(System,outerCell);
-  //  pumpTubeB->intersectPorts(System,1,2);
+
+    lastComp=pipeInit;
+  setCell("LastVoid",masterCell->getName());
+  return;
 
   constructSystem::constructUnit
     (System,buildZone,masterCell,pumpTubeBCPI,"OuterPlate",*gateD);

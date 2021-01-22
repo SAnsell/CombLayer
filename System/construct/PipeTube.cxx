@@ -378,10 +378,12 @@ PipeTube::createAll(Simulation& System,
 
   const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
   const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
-  const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
 
   if (outerVoid)
-    createPorts(System,OPtr,innerSurf,flangeSurf);
+    {
+      const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
+      createPorts(System,OPtr,innerSurf,flangeSurf);
+    }
   else
     createPorts(System,OPtr,innerSurf,outerSurf);
   insertObjects(System);
