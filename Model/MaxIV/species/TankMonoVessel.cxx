@@ -242,8 +242,10 @@ TankMonoVessel::createSurfaces()
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
+  SurfMap::makeCylinder("VoidCyl",SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
+
+  SurfMap::makeCylinder("OuterCyl",SMap,buildIndex+7,Origin,Z,voidRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
 
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,lidRadius);
@@ -434,7 +436,7 @@ TankMonoVessel::createPorts(Simulation& System)
 {
   ELog::RegMethod RegA("TankMonoVessel","createPorts");
   ELog::EM<<"NOT BUILDING X PORTS "<<Ports.size()<<ELog::endDiag;
-  return;
+
   for(size_t i=0;i<Ports.size();i++)
     {
 
@@ -445,8 +447,10 @@ TankMonoVessel::createPorts(Simulation& System)
 
       const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
       const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
-      
-      Ports[i].constructTrack(System);
+      MonteCarlo::Object* OPtr=
+	CellMap::getCellObject(System,"Wall");
+
+      Ports[i].constructTrack(System,OPtr,innerSurf,outerSurf);
     }
   return;
 }
