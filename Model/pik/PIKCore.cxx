@@ -175,6 +175,15 @@ PIKCore::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0+1),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0+1),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+1),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+1),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+1),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+1),Z);
+
   return;
 }
 
@@ -191,6 +200,10 @@ PIKCore::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  makeCell("Wall",System,cellIndex++,94,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
 
   return;
