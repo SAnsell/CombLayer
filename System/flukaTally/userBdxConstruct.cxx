@@ -63,6 +63,7 @@
 #include "LinkSupport.h"
 #include "inputParam.h"
 
+#include "Importance.h"
 #include "Object.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
@@ -131,6 +132,8 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     -- particle FixedComp index
     -- particle cellA  cellB
     -- particle SurfMap name
+    -- particle FixedComp:CellMapName FixedComp:CellMapName 
+
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
@@ -138,7 +141,8 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userBdxConstruct","processBDX");
 
-
+  System.createObjSurfMap();
+  
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
   const std::string FCname=
@@ -153,27 +157,11 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       (!StrFunc::convert(FCname,cellA) ||
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
-      
+      !constructCellMapPair(System,FCname,FCindex,cellA,cellB) &&
       !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
       )
-    
     {
-
-      // special class because must give regions
-      itemIndex+=2;
-
-      const std::string errKey("No region from "+FCname+":"+FCindex);
-      const size_t regionIndexA=
-	IParam.getValueError<size_t>("tally",Index,4,errKey);
-
-      const size_t regionIndexB=
-	IParam.getValueError<size_t>("tally",Index,6,errKey);
-
-
-      if (!constructSurfRegion(System,FCname,FCindex,
-			       regionIndexA,regionIndexB,cellA,cellB))
-	throw ColErr::InContainerError<std::string>
-	  (FCname+":"+FCindex,"No connecting surface on regions");
+      throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
     }
   ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 
@@ -204,11 +192,15 @@ userBdxConstruct::writeHelp(std::ostream& OX)
   */
 {
   OX<<
-    "recordType filename \n"
-    "  --recordType avaiable:\n"
-    "    source : trajectory : local : continuous\n"
-    "    sourceLoss : trajLoss : user";
-
+    "-T surface \n"
+    "  particleType : name of particle / energy to tally\n"
+    "  Option A : \n"
+    "       FixedComp + linkPoint (using % to mean -ve)\n"
+    "  Option B : \n"
+    "       FixedComp:CellMap:Index (index optional) \n"
+    "  Emin EMax NE \n"
+    "  AMin AngleMax NA (all optional) \n"
+    <<std::endl;
   return;
 }
 

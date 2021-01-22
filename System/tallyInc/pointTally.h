@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/pointTally.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 namespace tallySystem
 {
+  class PDControl;
+  
 /*!
   \class pointTally
   \version 1.0
@@ -46,6 +48,8 @@ class pointTally : public Tally
   double secondDist;             ///< second distance
   bool mcnp6Out;                 ///< MCNP6 output 
 
+  std::unique_ptr<PDControl> PDptr;              ///< Pointer to PD fractions
+  
   void orderWindow();
   void writeMCNP6(std::ostream&) const;
 
@@ -77,7 +81,11 @@ class pointTally : public Tally
   /// back step distance 
   double getSecondDist() const 
   { return (secondDFlag) ? secondDist : 0.0; }
- 
+
+  // 
+  void setPDControl(std::unique_ptr<PDControl>);
+
+  
   /// Access centre
   const Geometry::Vec3D& getCentre() const { return Centre; } 
   double calcArea() const;

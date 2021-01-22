@@ -48,7 +48,6 @@
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -62,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -253,6 +253,7 @@ Sexupole::createObjects(Simulation& System)
   const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 
 
+  std::vector<HeadRule> CoilExclude;
   std::vector<HeadRule> PoleExclude; 
   int BN(buildIndex); // base
   int PN(buildIndex);
@@ -271,33 +272,36 @@ Sexupole::createObjects(Simulation& System)
 	(SMap,PN," 2003 -2004 2001 (-2103:2104) ");
       makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
       Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
-      PoleExclude.back().addUnion(Out);
+      CoilExclude.push_back(HeadRule(Out));
       BN+=2;
       PN+=10;
     }
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,BN,"501 -502 -1000M -1001 -1002 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[0].complement().display()+ICell);
-  int CN(buildIndex+1);
-  int TN(buildIndex+1);
-  for(size_t i=1;i<NPole-1;i++)
+
+
+  std::string OutA,OutB;
+  PN=buildIndex;
+  int aOffset(-1);
+  int bOffset(0);
+  for(size_t i=0;i<NPole;i++)
     {
-      // three index points
-      Out=ModelSupport::getComposite
-	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
-      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
+      const HeadRule triCut=ModelSupport::getHeadRule(SMap,PN,"2001");
+
+      OutA=ModelSupport::getRangeComposite
+	(SMap,501,506,bOffset,buildIndex,"501R -502R ");
+      OutB=ModelSupport::getRangeComposite
+	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R ");
+
+      makeCell("Triangle",System,cellIndex++,0,0.0,OutA+OutB+FB+
+	       triCut.display()+
+	   CoilExclude[i].complement().display());
+      makeCell("InnerTri",System,cellIndex++,0,0.0,OutA+FB+
+      	       triCut.complement().display()+
 	       PoleExclude[i].complement().display()+ICell);
-      CN+=2;
-      TN++;
+
+      aOffset+=2;
+      bOffset+=1;
+      PN+=10;
     }
-
-  Out=ModelSupport::getComposite
-	  (SMap,buildIndex,"506 -501 -1010 -1011 -1012 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[5].complement().display()+ICell);	
-
-  ELog::EM<<"Out:"<<Out<<ELog::endDiag;
   return;
 }
 

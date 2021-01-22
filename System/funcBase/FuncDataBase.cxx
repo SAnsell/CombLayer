@@ -3,7 +3,7 @@
  
  * File:   funcBase/FuncDataBase.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,6 +117,69 @@ FuncDataBase::hasVariable(const std::string& Key) const
   return (FI) ? 1 : 0;
 }
 
+
+std::string
+FuncDataBase::EvalVarString(const std::string& Key) const
+  /*!
+    Get the whole vector/value into a string
+    \param Key :: string to search
+    \return string of value(s)
+    \throw InContainterError if no variable exists
+  */
+{
+  const FItem* FI=findItem(Key);
+  if (!FI)
+    throw ColErr::InContainerError<std::string>
+      (Key,"FuncDataBase::EvalVector variable not found");
+
+  return FI->getString();
+}
+
+template<typename T>
+std::vector<T>
+FuncDataBase::EvalVector(const std::string& Key) const
+  /*!
+    Finds the vector of a variable item(s)
+    This is incomplete on list, as only track direct 
+    transfer and not double->int etc.
+    \param Key :: string to search
+    \return Value of variable 
+    \throw InContainterError if no variable exists
+  */
+{
+  const FItem* FI=findItem(Key);
+  if (!FI)
+    throw ColErr::InContainerError<std::string>
+      (Key,"FuncDataBase::EvalVector variable not found");
+
+  std::vector<T> Out;
+  if (!FI->getVector(Out))
+    throw ColErr::TypeMatch(typeid(T).name(),FI->typeKey(),"EvalVector");
+
+  return Out;
+}
+
+template<typename T>
+std::vector<T>
+FuncDataBase::EvalDefVector(const std::string& Key) const
+  /*!
+    Finds the vector of a variable item(s)
+    This is incomplete on list, as only track direct 
+    transfer and not double->int etc.
+    \param Key :: string to search
+    \return Value of variable 
+    \throw InContainterError if no variable exists
+  */
+{
+  std::vector<T> Out;
+  const FItem* FI=findItem(Key);
+
+  if (FI)
+    FI->getVector(Out);   // no need to check result
+
+  return Out;
+}
+
 template<typename T>
 T
 FuncDataBase::EvalVar(const std::string& Key) const
@@ -131,7 +194,7 @@ FuncDataBase::EvalVar(const std::string& Key) const
   if (!FI)
     throw ColErr::InContainerError<std::string>
       (Key,"FuncDataBase::EvalVar variable not found");
-
+  
   T Out;
   FI->getValue(Out);
   return Out;
@@ -345,6 +408,37 @@ FuncDataBase::subProcVar(std::string& Var) const
        EvalVar<std::string>(Var) : Var);
   Var="";
   return Out;
+}
+
+template<typename T>
+FList<T>*
+FuncDataBase::convertToList(const std::string& Name)
+  /*!
+    Convert a single value to a list
+    \throw excpetion if type mis-match
+    \param Name :: Name of variable
+   */
+{
+  ELog::RegMethod RegA("FuncDataBase","converToList");
+  
+  FItem* FPtr=VList.findVar(Name);
+  if (!FPtr)
+    throw ColErr::InContainerError<std::string>(Name,"Name to FList");
+  
+  FList<T>* OutPtr=dynamic_cast<FList<T>*>(FPtr);
+  
+  if (OutPtr) return OutPtr;
+
+  T Value;
+  if (FPtr->getValue(Value))
+    {
+      FList<T>* FListPtr=
+	dynamic_cast<FList<T>*>(VList.createList<T>(Name));
+
+      // This should not be possible(?)
+      if (FListPtr) return FListPtr;
+    }
+  throw ColErr::TypeMatch(FPtr->typeKey(),typeid(T).name(),"List/Var");
 }
 
 int 
@@ -915,6 +1009,28 @@ FuncDataBase::removeVariable(const std::string& Name)
 
 template<typename T>
 void
+FuncDataBase::pushVariable(const std::string& Name,
+			   const T& V)
+  /*!
+    Extends a string (space deliminated) [specialiszed for string]
+    \param Name :: Name of the variable
+    \param V :: Variable to add
+  */
+{
+  FItem* FPtr=VList.findVar(Name);
+  if (!FPtr)
+    {
+      VList.addVar<T>(Name,V);
+      return;
+    }
+
+  FList<T>* FListPtr=convertToList<T>(Name);
+  FListPtr->pushValue(V);
+  
+}
+
+template<typename T>
+void
 FuncDataBase::addParse(const std::string& Name,const std::string& VParse)
   /*!
     Adds this function if the Code system has been 
@@ -1282,6 +1398,41 @@ template int FuncDataBase::EvalTriple
 template
 void FuncDataBase::addParse<double>(const std::string&,const std::string&);
 
+
+// PUSH
+template void
+FuncDataBase::pushVariable<double>(const std::string&,const double&);
+template void
+FuncDataBase::pushVariable<size_t>(const std::string&,const size_t&);
+template void
+FuncDataBase::pushVariable<int>(const std::string&,const int&);
+template void
+FuncDataBase::pushVariable<std::string>(const std::string&,const std::string&);
+
+// EVAL VECTOR
+
+template std::vector<double>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<int>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<long int>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<size_t>
+FuncDataBase::EvalVector(const std::string&) const;
+template std::vector<std::string>
+FuncDataBase::EvalVector(const std::string&) const;
+
+// EVAL DEF VECTOR
+template std::vector<double>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<int>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<long int>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<size_t>
+FuncDataBase::EvalDefVector(const std::string&) const;
+template std::vector<std::string>
+FuncDataBase::EvalDefVector(const std::string&) const;
 
 /// \endcond TEMPLATE
  

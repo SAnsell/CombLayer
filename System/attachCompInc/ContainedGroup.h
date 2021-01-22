@@ -23,6 +23,7 @@
 #define attachSystem_ContainedGroup_h
 
 class Simulation;
+class HeadRule;
 
 namespace Geometry
 {
@@ -71,22 +72,28 @@ class ContainedGroup
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
 
+  virtual std::string getAllExclude() const;
+  
   virtual const HeadRule& getOuterSurf(const std::string&) const;
+
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getContainer(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;
   virtual std::string getCompContainer(const std::string&) const;
 
   void clearRules();
+  void clearRule(const std::string&);
   /// Test if has rule
   bool hasOuterSurf(const std::string&) const;
   bool hasBoundary(const std::string&) const;
   
   void addOuterSurf(const std::string&,const int);
   void addOuterSurf(const std::string&,const std::string&);
+  void addOuterSurf(const std::string&,const HeadRule&);
   void addOuterSurf(const std::string&,const ContainedComp&);
 
   void addOuterUnionSurf(const std::string&,const std::string&);
+  void addOuterUnionSurf(const std::string&,const HeadRule&);
   void addOuterUnionSurf(const std::string&,const ContainedComp&);
 
   void addBoundarySurf(const std::string&,const int);

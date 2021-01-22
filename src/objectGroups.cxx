@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,6 +138,29 @@ objectGroups::hasRegion(const std::string& Name) const
   
   MTYPE::const_iterator mc=regionMap.find(Name);
   return (mc==regionMap.end()) ? 0 : 1;
+}
+
+bool
+objectGroups::builtFCName(const std::string& itemName) const
+  /*!
+    returns true if the FixedComp part of item name 
+    has been built
+    \param itemName :: FixedComp / cell name
+   */
+{
+  ELog::RegMethod RegA("objectGroups","buildFCName");
+  
+  std::string FCname,tail;
+  if (!StrFunc::splitUnit(itemName,FCname,tail,":"))
+    FCname=itemName;
+
+  const attachSystem::FixedComp* FCPtr=
+	getObject<attachSystem::FixedComp>(FCname);
+
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(FCname,"FC unknown");
+
+  return FCPtr->hasActiveCells();
 }
 
 bool
@@ -522,6 +545,22 @@ objectGroups::hasObject(const std::string& Name) const
   return (mc!=Components.end()) ? 1 : 0;
 }
 
+bool
+objectGroups::hasActiveObject(const std::string& Name) const
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return true (object exists
+  */
+{
+  ELog::RegMethod RegA("objectGroups","hasObject");
+
+  cMapTYPE::const_iterator mc=Components.find(Name);
+  if (mc==Components.end()) return 0;
+  
+  return mc->second->hasActiveCells();
+}
+
 attachSystem::FixedComp*
 objectGroups::getInternalObject(const std::string& Name) 
   /*!
@@ -721,6 +760,7 @@ objectGroups::getLastCell(const std::string& objName) const
   return (mc==regionMap.end()) ? 0 : mc->second.getLast();
 }
 
+
 std::vector<int>
 objectGroups::getObjectRange(const std::string& objName) const
   /*!
@@ -735,7 +775,6 @@ objectGroups::getObjectRange(const std::string& objName) const
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-
 
   // CELLMAP Range ::  objectName:cellName
   // FixedComp :: OffsetIndex
@@ -815,9 +854,7 @@ objectGroups::getObjectRange(const std::string& objName) const
     }
 
   throw ColErr::InContainerError<std::string>
-    (objName,"objectName does not convert to cells");
-
-  
+    (objName,"objectName does not convert to cells");  
 }
   
 void
@@ -854,11 +891,12 @@ objectGroups::writeRange(std::ostream& OX,
 }
   
 void
-objectGroups::write(const std::string& OFile) const
+objectGroups::write(const std::string& OFile,
+		    const bool fullFlag) const
   /*!
     Write out to a file 
     \param OFile :: output file
-  */
+    \param fullFlag :: write out all the info					  */
 {
   ELog::RegMethod RegA("objectGroups","write");
   if (!OFile.empty())
@@ -867,20 +905,48 @@ objectGroups::write(const std::string& OFile) const
       std::ofstream OX(OFile.c_str());
 
       boost::format FMT("%s%|40t|(%s)");
+      boost::format FMTVec("%|3t| %s %g %|40t|");
       MTYPE::const_iterator mc;
       for(mc=regionMap.begin();mc!=regionMap.end();mc++)
 	{
 	  const CTYPE::element_type* FPTR=
 	    getObject<CTYPE::element_type>(mc->first);
+
 	  const int flag=(FPTR) ? 1 : 0;
 	  OX<<(FMT % mc->first) % FStatus[flag];
+
 	  if (flag)
-	    OX<<" "<<FPTR->getCentre();
-	  OX<<" :: "<<mc->second<<std::endl;
+	    OX<<(FMTVec % "C: " % FPTR->getCentre());
+
+	  if (fullFlag && FPTR)
+	    OX<<(FMTVec % "X:" % FPTR->getX())
+	      <<(FMTVec % "Y:" % FPTR->getY())
+	      <<(FMTVec % "Z:" % FPTR->getZ());
+
+
+	  OX<<" :: "<<mc->second;
+	  
+	  OX<<std::endl;
 	}
     }
   return;
 }
+
+std::set<std::string>
+objectGroups::getAllObjectNames() const
+  /*!
+    Produce list of all object names
+    \return Full set of names
+   */
+{
+  std::set<std::string> Out;
+
+  for(const auto& [name,grpRange] : regionMap)
+    Out.emplace(name);
+
+  return Out;
+}
+
 
 ///\cond TEMPLATE
   

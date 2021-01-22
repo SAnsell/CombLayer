@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/cspec/CSPEC.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -188,13 +189,13 @@ CSPEC::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
   
@@ -210,7 +211,7 @@ CSPEC::build(Simulation& System,
   BWDiskA->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*BWDiskA);
   
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));

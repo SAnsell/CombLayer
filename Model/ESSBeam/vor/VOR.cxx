@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/VOR.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -210,13 +211,13 @@ VOR::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("VOR","buildBunkerUnits");
   
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
@@ -233,7 +234,7 @@ VOR::buildBunkerUnits(Simulation& System,
   DDisk->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DDisk);
 
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
@@ -273,7 +274,7 @@ VOR::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      /*      VPipeWall->addInsertCell(voidCell);
+      /*      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
@@ -351,7 +352,7 @@ VOR::build(Simulation& System,
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
 
-  VPipeWall->addInsertCell(BInsert->getCell("Void"));
+  VPipeWall->addAllInsertCell(BInsert->getCell("Void"));
   VPipeWall->createAll(System,*BInsert,-1);
 
     // using 7 : mid point
@@ -408,7 +409,7 @@ VOR::build(Simulation& System,
   ShieldA->setBack(OutPitB->getKey("Mid"),1);
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,*ShieldA,-1);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -431,7 +432,7 @@ VOR::build(Simulation& System,
   ShieldB->setBack(Cave->getKey("Mid"),1);
   ShieldB->createAll(System,OutPitB->getKey("Inner"),0);
 
-  VPipeOutC->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutC->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutC->createAll(System,*ShieldB,-1);
 
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));

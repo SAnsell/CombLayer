@@ -307,7 +307,7 @@ testEllipsoid::testSet()
 		     std::get<3>(tc),std::get<4>(tc),std::get<5>(tc));
       A.normalizeGEQ(9);
       
-      if ((G!=A) && (C.Quadratic::operator!=(A)))  //StrFunc::fullBlock(cx.str())!=std::get<5>(tc))
+      if ((G!=A) && (C.Quadratic::operator!=(A)))  //StrFunc::removeOuterSpace(cx.str())!=std::get<5>(tc))
 	{
 	  ELog::EM<<"Cylinder        == "<<C;
 	  ELog::EM<<"General         == "<<G;

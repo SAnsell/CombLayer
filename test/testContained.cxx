@@ -50,6 +50,7 @@
 #include "Rules.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -217,7 +218,7 @@ testContained::testAddSurfString()
   for(const TTYPE& tc : Tests)
     {
       C.addOuterUnionSurf(std::get<0>(tc));
-      if (StrFunc::fullBlock(C.getExclude())!=std::get<1>(tc))
+      if (StrFunc::removeOuterSpace(C.getExclude())!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Exclude == "<<C.getExclude()<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<std::get<1>(tc)<<ELog::endTrace;

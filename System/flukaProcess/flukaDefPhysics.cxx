@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaDefPhysics.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "FixedRotate.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ObjectAddition.h"
 #include "groupRange.h"
@@ -80,18 +81,32 @@
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "flukaPhysics.h"
-#include "magnetUnit.h"
-#include "magnetDipole.h"
-#include "magnetQuad.h"
-#include "magnetHexapole.h"
-#include "magnetOctopole.h"
 #include "flukaDefPhysics.h"
 
 
 namespace flukaSystem
 {  
 
-  void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
+void 
+setDefaultPhysics(SimFLUKA& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  if (IParam.flag("basicGeom"))
+    System.setBasicGeom();
+  if (IParam.flag("geomPrecision"))
+    System.setGeomPrecision(IParam.getValue<double>("geomPrecision"));
+  return;
+}
   
 void
 setUserFlags(SimFLUKA& System,
@@ -117,131 +132,8 @@ setUserFlags(SimFLUKA& System,
   return;
 }
 
-void
-setMagneticPhysics(SimFLUKA& System,
-		   const mainSystem::inputParam& IParam)
-  /*!
-    Currently very simple but expect to get complex.
-    \param System :: Simulation
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
-
-  if (IParam.flag("MAG"))
-    {
-      const Geometry::Vec3D MF=
-	IParam.getValue<Geometry::Vec3D>("MAG",0);  
-      System.setMagField(MF);
-    }
-
-  const size_t nSet=IParam.setCnt("MagField");
-  for(size_t setIndex=0;setIndex<nSet;setIndex++)
-    {
-      const size_t NIndex=IParam.itemCnt("MagField",setIndex);
-      
-      for(size_t index=0;index<NIndex;index++)
-	{
-	  
-	  const std::set<MonteCarlo::Object*> Cells=
-	    mainSystem::getNamedObjects
-	    (System,IParam,"MagField",0,0,"MagField Cells");
-
-	  for(MonteCarlo::Object* OPtr : Cells)
-	    OPtr->setMagFlag();
-	}
-    }
-  if (nSet) setMagneticExternal(System,IParam);
-  return;
-}
 
   
-void
-setMagneticExternal(SimFLUKA& System,
-		    const mainSystem::inputParam& IParam)
-  /*!
-    Sets the external magnetic fields in object(s) 
-    \param System :: Simulation
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
-
-  if (IParam.flag("MagStep"))
-    {
-      const size_t nSet=IParam.setCnt("MagStep");
-      for(size_t index=0;index<nSet;index++)
-	{
-	  const std::set<MonteCarlo::Object*> Cells=
-	    mainSystem::getNamedObjects
-	    (System,IParam,"MagStep",index,0,"MagStep");
-	  const double minV=IParam.getValueError<double>("MagStep",index,1,"MinStep not found");
-	  const double maxV=IParam.getValueError<double>("MagStep",index,2,"MaxStep not found");
-	  for(MonteCarlo::Object* mc : Cells)
-	    mc->setMagStep(minV,maxV);
-	}
-    }
-
-  if (IParam.flag("MagUnit"))
-    {
-      const size_t nSet=IParam.setCnt("MagUnit");
-      for(size_t setIndex=0;setIndex<nSet;setIndex++)
-	{
-	  Geometry::Vec3D AOrg;
-	  Geometry::Vec3D AY;
-	  Geometry::Vec3D AZ;
-	  
-	  // General form is ::  Type : location : Param
-	  size_t index(1);
-	  const std::string typeName=IParam.getValueError<std::string>
-	    ("MagUnit",setIndex,0,"typeName");
-	  ModelSupport::getObjectAxis(System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
-	  const Geometry::Vec3D Extent=IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
-	  const double KV=
-	    IParam.getValueError<double> ("MagUnit",setIndex,index,"K Value");
-
-
-	  if (typeName=="Octopole")
-	    {
-	      std::shared_ptr<flukaSystem::magnetOctopole>
-		OPtr(new magnetOctopole("Octo",setIndex));
-	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(OPtr);
-	    }
-	  else if (typeName=="Hexapole")
-	    {
-	      std::shared_ptr<flukaSystem::magnetHexapole>
-		OPtr(new magnetHexapole("Hexa",setIndex));
-	      OPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(OPtr);
-	    }
-
-	  else if (typeName=="Quad")
-	    {
-	      std::shared_ptr<flukaSystem::magnetQuad>
-		QPtr(new magnetQuad("Quad",setIndex));
-	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
-	      System.addMagnetObject(QPtr);
-	    }
-
-	  else if (typeName=="Dipole")
-	    {
-	      const double Radius=IParam.getValueError<double>
-		("MagUnit",setIndex,index,"Radius");
-	      std::shared_ptr<flukaSystem::magnetDipole>
-		QPtr(new magnetDipole("Dipl",setIndex));
-	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV,Radius);
-	      System.addMagnetObject(QPtr);
-	    }
-	  else
-	    {
-	      throw ColErr::InContainerError<std::string>
-		(typeName,"Magnet type not known");
-	    }
-	}
-    }
-  return;
-}
   
 void
 setModelPhysics(SimFLUKA& System,
@@ -255,7 +147,6 @@ setModelPhysics(SimFLUKA& System,
   ELog::RegMethod RegA("flukaDefPhysics","setModelPhysics");
   
   setXrayPhysics(System,IParam);
-  setMagneticPhysics(System,IParam);
   setUserFlags(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
@@ -313,7 +204,6 @@ setModelPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processBIAS(System,IParam,index);
     }
-
   return; 
 }
 

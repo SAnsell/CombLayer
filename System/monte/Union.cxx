@@ -50,6 +50,7 @@
 #include "Rules.h"
 #include "Token.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 
 Union::Union() : 
@@ -288,6 +289,18 @@ Union::pairValid(const int SN,const Geometry::Vec3D& Vec) const
   const int flagA=(A) ? A->pairValid(SN,Vec) : 0;
   const int flagB=(B) ? B->pairValid(SN,Vec) : 0;
   return flagA | flagB;
+}
+
+bool
+Union::isEmpty() const
+  /*!
+    Calculates if valid surface
+    \return if A/B have a valid surface rule
+  */
+{
+  if ((A && !A->isEmpty()) ||
+      (B && !B->isEmpty())) return 0;
+  return 1;
 }
 
 bool

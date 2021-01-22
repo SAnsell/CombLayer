@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physics/flukaImpConstructor.cxx
+ * File:   flukaProcess/flukaImpConstructor.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -51,6 +51,7 @@
 #include "HeadRule.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -253,8 +254,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
     Handler for constructor of physics cards
     \param System :: Fluke Phays
     \param VVlist :: string array
-    \param keyName :: wTYPE card
-    \param cellSize :: number of extra cells 
+    \param cellSize :: number of extra values from VVList
     \param materialFlag :: material/region/particle [-1/0/1] (-100 for none)
     \param cardName :: card name for flukaPhysics to write
   */
@@ -274,7 +274,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VVList);
     }
-  else if (materialFlag==-1) // particile
+  else if (materialFlag==-1) // particle
     {
       const flukaGenParticle& FG=flukaGenParticle::Instance();
       const std::string& pName=FG.nameToFLUKA(cellM);
@@ -308,7 +308,7 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
       { "electron", 2 }, { "photon", 2 }, { "positron", 2 },
       { "neutron", 3 }, { "low", 3 }
     });
-  // cell/mat : tag name 
+  // cell/mat : tag name  
   typedef std::tuple<size_t,int,std::string> biasTYPE;
   static const std::map<std::string,biasTYPE> IBias
     ({
@@ -466,6 +466,7 @@ flukaImpConstructor::processEXP(SimFLUKA& System,
 }
 
 
+
 void
 flukaImpConstructor::processLAM(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
@@ -583,7 +584,6 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
-  ELog::EM<<"Process " <<mc->first<<ELog::endDiag;
   processGeneral(System,IParam,setIndex,"wEMF",mc->second);
   return;
 }

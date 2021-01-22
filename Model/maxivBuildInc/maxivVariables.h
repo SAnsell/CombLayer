@@ -12,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMAXIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -22,6 +22,7 @@
 #ifndef setVariable_maxivVariables_h
 #define setVariable_maxivVariables_h
 
+class FuncDataBase;
 
 namespace mainSystem
 {
@@ -30,9 +31,14 @@ namespace mainSystem
 
 namespace setVariable
 {
+  void MaxIVVariables(FuncDataBase&,
+		      const std::string&,
+		      const std::set<std::string>&);
 
   void maxivInstrumentVariables
-    (const std::set<std::string>&,FuncDataBase&);
+    (const std::set<std::string>&,
+     const std::string&,
+     FuncDataBase&);
     
   // MAXIV Beamlines 1.5GeV Ring
   void R1RingVariables(FuncDataBase&);
@@ -50,9 +56,11 @@ namespace setVariable
 
   void R3FrontEndVariables(FuncDataBase&,const std::string&,
 			   const double);
+  void R1FrontEndVariables(FuncDataBase&,const std::string&,
+			   const double);
 
   void LINACvariables(FuncDataBase&);
-    
+  void LINACmagnetVariables(FuncDataBase&,const std::string&);
 }
 
 

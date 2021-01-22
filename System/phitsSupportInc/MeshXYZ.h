@@ -3,7 +3,7 @@
  
  * File:   phitsSupportInc/MeshXYZ.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ class MeshXYZ
   Geometry::Vec3D minPoint;    ///< lower point
   Geometry::Vec3D maxPoint;    ///< top point
 
-  Geometry::Transform* TransPtr;
+  Geometry::Transform* TransPtr;  
   
   static double getCoordinate(const std::vector<double>&,
 			      const std::vector<size_t>&,
@@ -75,8 +75,11 @@ class MeshXYZ
   void setLog(const size_t index) { logSpace[index % 3]=1; }
   void setLinear(const size_t index) { logSpace[index % 3]=0; }
   void setSize(const size_t,const size_t,const size_t);
+  void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
+
   
+  void writeAxis(std::ostream&,const size_t) const;
   void write2D(std::ostream&) const;
   void write(std::ostream&) const;
 

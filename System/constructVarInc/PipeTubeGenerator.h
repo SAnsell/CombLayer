@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/VacBoxGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,8 @@ class PipeTubeGenerator
   void setVoidMat(const std::string& M) { voidMat=M; }
   /// set wall material
   void setMat(const std::string& M) { wallMat=M; }
+  /// set wall material
+  void setCapMat(const std::string& M) { capMat=M; }
 
   
   void generateTube(FuncDataBase&,const std::string&,

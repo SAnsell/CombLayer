@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "Source.h"
@@ -97,9 +98,9 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
-  defType("PRECISION"),writeVariable(1),
-  lowEnergyNeutron(1),
-  nps(1000),rndSeed(2374891),BVec(0,0,0),
+  defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
+  writeVariable(1),lowEnergyNeutron(1),
+  nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
   RadDecayPtr(new flukaSystem::radDecay())
   /*!
@@ -110,9 +111,10 @@ SimFLUKA::SimFLUKA() :
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
   alignment(A.alignment),defType(A.defType),
+  basicGeom(A.basicGeom),geomPrecision(A.geomPrecision),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
-  nps(A.nps),rndSeed(A.rndSeed),BVec(A.BVec),
+  nps(A.nps),rndSeed(A.rndSeed),
   sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr)),
   RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
@@ -134,11 +136,11 @@ SimFLUKA::operator=(const SimFLUKA& A)
     {
       Simulation::operator=(A);
       defType=A.defType;
+      basicGeom=A.basicGeom;
       writeVariable=A.writeVariable;
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
-      BVec=A.BVec;
       sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
@@ -368,40 +370,29 @@ SimFLUKA::writeMagField(std::ostream& OX) const
   OX<<"* ------------------------------------------------------"<<std::endl;
 
   std::ostringstream cx;
-  // Simple case - flat field
-  if (MagItem.empty())
+  if (!MagItem.empty())
     {
-      if (BVec.abs()<Geometry::zeroTol)
-	cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
-      else
-	cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
-      
+      // Need to set mgnfield to zero
+      cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
       StrFunc::writeFLUKA(cx.str(),OX);
       
-      return;
-    }
-
-  // Need to set mgnfield to zero
-  cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
-  StrFunc::writeFLUKA(cx.str(),OX);
-
-  flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
-  for(const OTYPE::value_type& mp : OList)
-    {
-      if (mp.second->hasMagField())
+      flukaSystem::cellValueSet<2> Steps("stepsize","STEPSIZE");
+      for(const OTYPE::value_type& mp : OList)
 	{
-	  const std::pair<double,double> magStep=
-	    mp.second->getMagStep();
-	  Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	  if (mp.second->hasMagField())
+	    {
+	      const std::pair<double,double> magStep=
+		mp.second->getMagStep();
+	      Steps.setValues(mp.second->getName(),magStep.first,magStep.second);
+	    }
 	}
+      const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
+      const std::vector<int> cellInfo=this->getCellVector();
+      Steps.writeFLUKA(OX,cellInfo,fmtSTR);
+      
+      for(const MagTYPE::value_type& MI : MagItem)
+	MI.second->writeFLUKA(OX);
     }
-  const std::string fmtSTR("%2 %3 R0 R1 1.0 - ");
-  const std::vector<int> cellInfo=this->getCellVector();
-  Steps.writeFLUKA(OX,cellInfo,fmtSTR);
-
-  for(const MagTYPE::value_type& MI : MagItem)
-    MI.second->writeFLUKA(OX);
-
   return;
 }
 
@@ -536,6 +527,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
     matPtr->writeFLUKA(OX);
 
   OX<<alignment<<std::endl;
+
   if (magField)
     writeMagField(OX);
   return;
@@ -560,6 +552,38 @@ SimFLUKA::writeWeights(std::ostream& OX) const
   return;
 }
 
+void
+SimFLUKA::prepareImportance()
+  /*!
+    This needs to set a BIAS card for the appropaiate particles
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","prepareImportance");
+
+  
+  const double minFlukaImportance(1e-5);
+  bool flag;
+  double Imp;
+  std::vector<std::pair<int,double>> ImpVec;
+  ImpVec.push_back(std::pair<int,double>(1,0.0));
+
+  for(const int CN : cellOutOrder)
+    {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpVec.push_back(std::pair<int,double>(CN,Imp));
+    }
+
+  for(const auto& [CN,V] : ImpVec)
+    {
+      if (std::abs(V-1.0)>Geometry::zeroTol &&
+	  std::abs(V) > minFlukaImportance)         // min for FLUKA
+	
+	PhysPtr->setTHR("bias",CN,"3.0",std::to_string(V),"3.0");
+    }	  
+  return;
+}
 
 void
 SimFLUKA::writePhysics(std::ostream& OX) const
@@ -696,7 +720,7 @@ SimFLUKA::getLowMat(const size_t Z,const size_t,
 
 void
 SimFLUKA::addMagnetObject
-(const std::shared_ptr<flukaSystem::magnetUnit>& MUnit)
+(const std::shared_ptr<magnetSystem::magnetUnit>& MUnit)
   /*!
     Add an object to this data base
     \param MUnit :: Magnetic unit
@@ -704,6 +728,7 @@ SimFLUKA::addMagnetObject
 {
   ELog::RegMethod RegA("SimFLUKA","addMagnetObject");
   addObject(MUnit);
+  MUnit->setIndex(MagItem.size());
   MagItem.emplace(MUnit->getKeyName(),MUnit);
   return;
 }
@@ -721,6 +746,7 @@ SimFLUKA::prepareWrite()
   std::set<int> matActive=getActiveMaterial();
   matActive.erase(0);
   PhysPtr->setMatNumbers(matActive);
+  prepareImportance();
 
   return;
 }
@@ -760,9 +786,15 @@ SimFLUKA::write(const std::string& Fname) const
   
   if (writeVariable)
     Simulation::writeVariables(OX,'*');
+
   
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
-  StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
+  std::ostringstream cx;
+  cx<<"GEOBEGIN";
+  cx<<((basicGeom) ? " - " : " 1.0 ");
+  cx<<geomPrecision<<" - - - - COMBNAME";
+  StrFunc::writeFLUKA(cx.str(),OX);
+
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);

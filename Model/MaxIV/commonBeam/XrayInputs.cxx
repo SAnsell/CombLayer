@@ -60,11 +60,17 @@ createXrayInputs(inputParam& IParam)
   ELog::RegMethod RegA("XrayInputs[F]","createXrayInputs");
 
   createInputs(IParam);
+  
+  IParam.regFlag("noLengthCheck","noLengthCheck");
+  IParam.regFlag("pointCheck","pointCheck");
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regMulti("stopPoint","stopPoint",1000);
 
-  
-  IParam.setValue("sdefType",std::string("Wiggler"));  
+  IParam.setValue("sdefType",std::string("Wiggler"));
+
+  // IParam.setDesc("defaultMag",
+  // 		 "Chooses which version of the magnetic fields are required\n"
+  // 		 "This allows different tracks through a magnetic chicane");
   return;
 }
 

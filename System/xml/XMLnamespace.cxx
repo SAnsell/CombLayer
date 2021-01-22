@@ -192,7 +192,7 @@ getGroupContent(XMLload& IFile,std::string& Key,
   // Ok found either (a) a close group (b) a new open group
   // (c) a comment
   if (!Line.empty())
-    Data=StrFunc::fullBlock(Line);
+    Data=StrFunc::removeOuterSpace(Line);
   if (c!='<') return 0;
 
   while(IFile.get(c) && c!='>')

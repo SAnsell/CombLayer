@@ -51,6 +51,7 @@
 #include "Plane.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -761,6 +762,34 @@ addToInsertForced(Simulation& System,
   return;
 }  
 
+void
+addToInsertForced(Simulation& System,
+		  const std::vector<int>& cellVec,
+		  attachSystem::ContainedGroup& CG)
+ /*!
+   Force CC into the BaseFC objects
+   \param System :: Simulation to use
+   \param cellA :: First cell to use
+   \param cellB :: last cell to use
+   \param CC :: ContainedComp object to add to the BaseFC
+ */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertForce(int,int,CG)");
+
+  const HeadRule HR(CG.getAllExclude());
+  for(const int CN : cellVec)
+    {
+      MonteCarlo::Object* CRPtr=System.findObject(CN);
+      if (CRPtr)
+	{
+	  CRPtr->populate();
+	  CRPtr->createSurfaceList();
+	  CRPtr->addUnion(HR);
+	}
+    }
+  return;
+}  
+
 
 void
 addToInsertForced(Simulation& System,
@@ -778,6 +807,25 @@ addToInsertForced(Simulation& System,
   const std::vector<int> cellVec=
     System.getObjectRange(BaseFC.getKeyName());
   addToInsertForced(System,cellVec,CC);
+  return;
+}  
+
+void
+addToInsertForced(Simulation& System,
+		  const attachSystem::FixedComp& BaseFC,
+		  attachSystem::ContainedGroup& CG)
+ /*!
+   Force CC into the BaseFC objects
+  \param System :: Simulation to use
+  \param BaseFC :: Object to get range for cells
+  \param CG :: ContainedComp object to add to the BaseFC
+ */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertForced(FC,CC)");
+
+  const std::vector<int> cellVec=
+    System.getObjectRange(BaseFC.getKeyName());
+  addToInsertForced(System,cellVec,CG);
   return;
 }  
 

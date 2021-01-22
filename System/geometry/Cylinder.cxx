@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,20 +172,21 @@ Cylinder::operator==(const Cylinder& A) const
   ELog::RegMethod RegA("Cylinder","operator==");
 
   if (&A==this) return 1;
-
-  if (fabs(Radius-A.Radius)>Geometry::zeroTol)
+  if (std::abs(Radius-A.Radius)>Geometry::zeroTol)
     return 0;
 
   // Ok Normal can only be + -
   if (A.Normal!=Normal && A.Normal!= -Normal)
     return 0;
+
   // Now centre 
   if (Centre==A.Centre) return 1;
   // Centres can be displaced along the normal
-  Geometry::Vec3D X=Centre-A.Centre;
-  X.makeUnit();
-  const double D=fabs(X.dotProd(Normal));
-  return (fabs(D-1.0)<Geometry::zeroTol) ? 1 : 0;
+  const Geometry::Vec3D cutACentre=Centre.cutComponent(Normal);
+  const Geometry::Vec3D cutBCentre=A.Centre.cutComponent(Normal);
+
+  const double D=cutACentre.Distance(cutBCentre);
+  return (std::abs<double>(D-1.0)<Geometry::zeroTol) ? 1 : 0;
 }
 
 int

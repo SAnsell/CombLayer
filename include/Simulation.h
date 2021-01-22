@@ -85,9 +85,8 @@ class Simulation : public objectGroups
 
   size_t cellDNF;                       ///< max size to convert into DNF
   size_t cellCNF;                       ///< max size to convert into CNF
-  OTYPE OList;   ///< List of objects  (allow to become hulls)
+  OTYPE OList;                          ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
-  //   std::set<int> voidCells;              ///< List of void cells
 
   std::string sourceName;               ///< Source name
   
@@ -123,6 +122,9 @@ class Simulation : public objectGroups
   /// set cell CNF
   void setCellCNF(const size_t C) { cellCNF=C; }
 
+  void setImp(const int,const double);
+  void setImp(const int,const std::string&,const double);
+  
   MonteCarlo::Object* findObject(const int);         
   const MonteCarlo::Object* findObject(const int) const; 
 
@@ -182,13 +184,15 @@ class Simulation : public objectGroups
   std::vector<int> getCellWithMaterial(const int) const;
   std::vector<int> getCellWithZaid(const size_t) const;
 
-  std::vector<std::pair<int,int>> getCellImp() const;            
+  std::vector<int> getCellVec() const;            
   std::set<int> getActiveMaterial() const;
   std::map<int,const MonteCarlo::Material*>
     getOrderedMaterial() const;
 
   int removeDeadSurfaces(); 
+ 
   virtual void removeCell(const int);
+  virtual void removeCell(const MonteCarlo::Object*);
   virtual void removeCell(const attachSystem::FixedComp&);
   int removeAllSurface(const int);
 
@@ -199,8 +203,6 @@ class Simulation : public objectGroups
   void validateObjSurfMap();
   /// Access surface map
   const ModelSupport::ObjSurfMap* getOSM() const;
-
-  // Tally processing
 
   virtual void setEnergy(const double);
   void setENDF7();

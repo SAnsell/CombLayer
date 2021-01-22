@@ -3,7 +3,7 @@
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -372,12 +372,10 @@ Cone::distance(const Geometry::Vec3D& Pt) const
   if(Px.abs()<Geometry::parallelTol)
     return Px.abs();
   double Pangle=Px.dotProd(Normal)/Px.abs();
-  if (Pangle<0.0)
-    Pangle=acos(-Pangle);
-  else
-    Pangle=acos(Pangle);
-  
+
+  Pangle=acos(std::abs(Pangle));
   Pangle-=M_PI*alpha/180.0;
+  
   return Px.abs()*sin(Pangle);
 }
 
@@ -415,7 +413,7 @@ Cone::side(const Geometry::Vec3D& Pt) const
   if (rptAngle<0.0) 
     rptAngle*=-1.0;
   // touch test
-  if (fabs(rptAngle-cangle)<Geometry::zeroTol) return 0;
+  if (std::abs(rptAngle-cangle)<Geometry::zeroTol) return 0;
   return (rptAngle>cangle) ? -1 : 1;  
 }
 
@@ -433,8 +431,6 @@ Cone::onSurface(const Geometry::Vec3D& R) const
 {
   return (side(R)==0) ? 1 : 0;
 }
-
-
   
 void
 Cone::write(std::ostream& OX) const

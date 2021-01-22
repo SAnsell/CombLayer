@@ -51,6 +51,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "BnId.h"
 #include "AttachSupport.h"
@@ -69,7 +70,7 @@ LinkUnit::LinkUnit() :
 LinkUnit::LinkUnit(const LinkUnit& A) : 
   populated(A.populated),Axis(A.Axis),
   ConnectPt(A.ConnectPt),linkSurf(A.linkSurf),
-  bridgeSurf(A.bridgeSurf)
+  mainSurf(A.mainSurf),bridgeSurf(A.bridgeSurf)
   /*!
     Copy constructor
     \param A :: LinkUnit to copy

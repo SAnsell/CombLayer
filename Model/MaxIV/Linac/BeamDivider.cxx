@@ -62,6 +62,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -72,7 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -87,7 +88,7 @@ namespace tdcSystem
 {
 
 BeamDivider::BeamDivider(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedGroup
   ("Box","Main","Exit","FlangeB","FlangeE","FlangeA"),
   attachSystem::FrontBackCut(),
@@ -115,7 +116,7 @@ BeamDivider::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamDivider","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   boxLength=Control.EvalVar<double>(keyName+"BoxLength");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -123,6 +124,7 @@ BeamDivider::populate(const FuncDataBase& Control)
   exitWidth=Control.EvalVar<double>(keyName+"ExitWidth");
   height=Control.EvalVar<double>(keyName+"Height");
 
+  mainXStep=Control.EvalVar<double>(keyName+"MainXStep");
   exitXStep=Control.EvalVar<double>(keyName+"ExitXStep");
   exitAngle=Control.EvalVar<double>(keyName+"ExitAngle");
   
@@ -174,6 +176,7 @@ BeamDivider::createSurfaces()
   const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
   const Geometry::Vec3D RNorm(X*cos(ang)-Y*sin(ang));
   const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
+
   
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*boxLength,Y);
   ModelSupport::buildPlane
@@ -198,16 +201,19 @@ BeamDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*flangeALength,Y);
 
   // Main [400]
-  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Y,mainRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Y,
+  const Geometry::Vec3D mainOrg(Origin+X*mainXStep);
+  ModelSupport::buildCylinder(SMap,buildIndex+407,mainOrg,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+417,mainOrg,Y,
 			      mainThick+mainRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+427,mainOrg,Y,flangeBRadius);
   ModelSupport::buildPlane(SMap,buildIndex+422,
-			   Origin+Y*(boxLength+mainLength-flangeBLength),Y);
+			   mainOrg+Y*(boxLength+mainLength-flangeBLength),Y);
 			   
   // Exit [500]
   ModelSupport::buildPlane(SMap,buildIndex+502,
 			   exitOrg+RAxis*(boxLength+exitLength),RAxis);
+  Geometry::Vec3D YY(0,1,0);
+
   ModelSupport::buildCylinder
     (SMap,buildIndex+507,exitOrg,RAxis,exitRadius);
   ModelSupport::buildCylinder
@@ -232,6 +238,7 @@ BeamDivider::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamDivider","createObjects");
 
   std::string Out;
+
   
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
@@ -315,12 +322,19 @@ BeamDivider::createLinks()
    */
 {
   ELog::RegMethod RegA("BeamDivider","createLinks");
-
+  const Geometry::Vec3D mainOrg(Origin+X*mainXStep);
+  const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
+  const double ang(M_PI*exitAngle/180.0);
+  const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
+  
   //front and back
   ExternalCut::createLink("front",*this,0,Origin,Y);  
-  ExternalCut::createLink("back",*this,1,Origin+X*mainXStep,Y);
+  ExternalCut::createLink("back",*this,1,mainOrg,Y);
 
-      
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
+  FixedComp::setLineConnect(2,exitOrg,RAxis);
+
+  FixedComp::nameSideIndex(2,"exit");
   return;
 }
 
@@ -336,9 +350,11 @@ BeamDivider::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BeamDivider","createAll");
-  
+  Geometry::Vec3D YA(0,1,0);
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();

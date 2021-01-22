@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallySelector.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,23 @@
 #define TallySelector_h
 
 class SimMCNP;
+
+bool checkLinkCells(const Simulation&,const int,const int);
+bool constructCellMapPair(const Simulation&,
+			  const std::string&,
+			  const std::string&,
+			  int&,int&);
+bool
+constructLinkRegion(const Simulation&,
+		    const std::string&,
+		    const std::string&,
+		    int&,int&);
+
+bool
+constructSurfRegion(const Simulation&,
+		    const std::string&,const std::string&,
+		    const size_t,const size_t,
+		    int&,int&);
 
 void pointTallyWeights(SimMCNP&,const mainSystem::inputParam&);
 void tallyModification(SimMCNP&,const mainSystem::inputParam&);

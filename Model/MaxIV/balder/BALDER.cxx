@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -74,6 +75,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
@@ -166,9 +168,10 @@ BALDER::build(Simulation& System,
  
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+  frontBeam->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
@@ -196,9 +199,9 @@ BALDER::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
   
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new
@@ -211,7 +214,7 @@ BALDER::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   if (stopPoint=="opticsBeam") return;
   

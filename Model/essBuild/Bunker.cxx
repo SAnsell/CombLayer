@@ -61,6 +61,7 @@
 #include "FuncDataBase.h"
 #include "inputParam.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -102,10 +103,12 @@ namespace essSystem
 {
 
 Bunker::Bunker(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   leftWallFlag(1),rightWallFlag(1),
-  roofObj(new BunkerRoof(Key)),wallObj(new BunkerWall(Key))
+  roofObj(new BunkerRoof(Key)),
+  wallObj(new BunkerWall(Key))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -540,8 +543,9 @@ Bunker::createMainWall(Simulation& System)
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," 1 ");
 
-  wallObj->initialize(System.getDataBase(),*this,0);
-  wallObj->setVertSurf(SMap.realSurf(buildIndex+5),SMap.realSurf(buildIndex+106));
+  wallObj->createAll(System,*this,0);
+  wallObj->setVertSurf(SMap.realSurf(buildIndex+5),
+		       SMap.realSurf(buildIndex+106));
   wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   wallObj->setDivider(Out);
 
@@ -677,6 +681,7 @@ Bunker::createAll(Simulation& System,
   
   createLinks(FC,linkIndex);
   createObjects(System,FC,linkIndex);
+
   //  layerProcess(System);
   insertObjects(System);              
 

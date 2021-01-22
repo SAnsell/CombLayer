@@ -79,6 +79,23 @@ class FixedOffsetUnit : public FixedOffset
     createUnitVector(FC,FC.getSideIndex(linkName));
   }
 
+  FixedOffsetUnit(const std::string& K,
+		  const Geometry::Vec3D& OG,
+		  const Geometry::Vec3D& YAxis,
+		  const Geometry::Vec3D& ZAxis) :
+    FixedOffset(0,K)
+    /*
+      Create a vector based on existing basis set
+      \param K :: keyame
+      \param OG :: Origin
+      \param YAxis :: Direction for Y
+      \param ZAxis :: Direction for Z
+    */
+
+  {
+    FixedComp::createUnitVector(OG,YAxis,ZAxis);
+  }
+
   FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
   FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}
   virtual ~FixedOffsetUnit() {}     ///< Destructor

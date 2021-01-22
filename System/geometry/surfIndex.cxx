@@ -768,7 +768,7 @@ surfIndex::processSurfaces(const std::string& InputLine)
 {
   ELog::RegMethod RegItem("SurfData","processSurface");
 
-  std::string Line=StrFunc::fullBlock(InputLine);
+  std::string Line=StrFunc::removeOuterSpace(InputLine);
   StrFunc::stripComment(Line);
   if (Line.size()<1 ||               // comments blank line, ^c or ^c<spc> 
       (tolower(Line[0])=='c' && 

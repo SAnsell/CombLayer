@@ -3,7 +3,7 @@
 
  * File:   constructVar/CrossGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,6 +210,8 @@ CrossGenerator::generateDoubleCF
      const double yStep, const double height,const double depth)
   /*!
     Primary funciton for setting the variables
+    \tparam HCF :: flange CF (horrizontal)
+    \tparam VCF :: main CF (vertical)
     \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: y-offset
@@ -253,6 +255,7 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
+
   const double FL=(frontLen<0.0) ? VRad-frontLen : frontLen;
   const double BL=(backLen<0.0) ? VRad-backLen : backLen;
 
@@ -264,7 +267,11 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"BasePlate",baseThick);
 
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLen);
+
+  if (FL-VRad-wallThick>flangeLen+Geometry::zeroTol)
+    Control.addVariable(keyName+"FlangeLength",flangeLen);
+  else
+    Control.addVariable(keyName+"FlangeLength",(FL-VRad-wallThick)*0.9);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"FeMat",wallMat);

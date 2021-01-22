@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nnBar/NNBAR.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -171,21 +172,21 @@ NNBAR::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("NNBAR","buildBunkerUnits");
   
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
   // pipe from gamma shield to 10m
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
 
   // pipe to 30m
-  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->addAllInsertCell(bunkerVoid);
   VPipeD->createAll(System,FocusC->getKey("Guide0"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
@@ -213,10 +214,10 @@ NNBAR::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->createAll(System,FW,startIndex);
 
-  VPipeD->addInsertCell(ShieldA->getCell("Void"));
+  VPipeD->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeD->insertObjects(System);   
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,FW,startIndex);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -327,7 +328,7 @@ NNBAR::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
 
-  VPipeD->addInsertCell(BInsert->getCell("Void"));
+  VPipeD->addAllInsertCell(BInsert->getCell("Void"));
   VPipeD->insertObjects(System);   
 
   ShieldA->setFront(bunkerObj,2);

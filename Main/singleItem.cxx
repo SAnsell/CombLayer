@@ -3,7 +3,7 @@
  
  * File:   Main/singleItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
@@ -69,7 +70,6 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "mainJobs.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "DefUnitsESS.h"
@@ -94,7 +94,7 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
+    
   std::string Oname;
   std::vector<std::string> Names;  
 
@@ -105,16 +105,16 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createSingleItemInputs(IParam);
-      
+	  
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
+
       // The big variable setting
       setVariable::SingleItemVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
+
       singleItemSystem::makeSingleItem singleItemObj;
       singleItemObj.build(*SimPtr,IParam);
       

@@ -81,6 +81,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "weightManager.h"
@@ -449,6 +450,30 @@ Simulation::removeCell(const attachSystem::FixedComp& FC)
 }
 
 void
+Simulation::removeCell(const MonteCarlo::Object* OPtr)
+  /*!
+    Removes the cell [Must exist]
+    This needs to check that OPtr->getName points
+    to the SAME object Ptr that is in OList
+    \param cellNumber :: cell to remove
+  */
+{
+  ELog::RegMethod RegItem("Simulation","removeCell(Obj)");
+
+  if (!OPtr) return;
+  const int cellNumber(OPtr->getName());
+
+  OTYPE::iterator vc=OList.find(cellNumber);
+  if (vc==OList.end())
+    throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
+  if (vc->second!=OPtr)
+    throw ColErr::InContainerError<int>(cellNumber,"Object different in OList");
+
+  removeCell(cellNumber);
+  return;
+}
+
+void
 Simulation::removeCell(const int cellNumber)
   /*!
     Removes the cell [Must exist]
@@ -468,7 +493,6 @@ Simulation::removeCell(const int cellNumber)
   delete vc->second;
 
   OList.erase(vc);
-
   objectGroups::removeActiveCell(cellNumber);
 
   return;
@@ -571,27 +595,6 @@ Simulation::getOrderedMaterial() const
     }
 
   return orderedMat;
-}
-
-
-
-std::vector<std::pair<int,int>>
-Simulation::getCellImp() const
-  /*!
-    Now process Physics so importance/volume cards can be set.
-    \return pair of cellNumber : importance in cell 
-  */
-{
-  ELog::RegMethod RegA("Simulation","getCellImp");
-
-  std::vector<std::pair<int,int>> cellImp;
-
-  for(const auto& [cellNum,objPtr] : OList)
-    {
-      cellImp.push_back
-	(std::pair<int,int>(cellNum,(objPtr->getImp()>0 ? 1 : 0)));
-    }
-  return cellImp;
 }
 
 int
@@ -778,6 +781,45 @@ Simulation::applyTransforms()
   return 0;
 }
 
+void
+Simulation::setImp(const int CellN,const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(V);
+  return;
+}
+
+void
+Simulation::setImp(const int CellN,const std::string& pName,
+		   const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param pName :: particleName
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp(particle)");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(pName,V);
+  return;
+}
+
+
 MonteCarlo::Object*
 Simulation::findObject(const int CellN)
   /*!
@@ -789,7 +831,7 @@ Simulation::findObject(const int CellN)
 {
   ELog::RegMethod RegA("Simulation","findObject");
   OTYPE::iterator mp=OList.find(CellN);
-  return (mp==OList.end()) ? 0 : mp->second;
+  return (mp==OList.end()) ? nullptr : mp->second;
 }
 
 const MonteCarlo::Object*
@@ -1569,11 +1611,14 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   if (AX.constructShannonDivision(-SN))
     {
       if (AX.isEmpty())
-	throw ColErr::EmptyContainer
-	  ("Cell Pair has empty cell:"+
-	   std::to_string(CA)+"/"+std::to_string(CB));
+	{
+	  throw ColErr::EmptyContainer
+	    ("Cell Pair has empty cell:"+
+	     std::to_string(CA)+"/"+std::to_string(CB));
+	}
       CPtr->procString(AX.writeMCNPX());
     }
+
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
@@ -1622,28 +1667,28 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
-  // DEBUG
-
-  
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   CPtr->populate();
   CPtr->createSurfaceList();
-  const std::vector<std::pair<int,int>>
+  std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs();
   
-  //  CPtr->createLogicOpp();
+  CPtr->createLogicOpp();
   const std::set<int> SPair=CPtr->getSelfPairs();
-
+  
   bool activeFlag(0);
+  bool activeSD(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CPtr->cellCompStr());
+  AX.addImplicates(IP);
+    
   for(const int SN : SPair)
     activeFlag |= AX.constructShannonDivision(SN);
 
-  AX.addImplicates(IP);
   activeFlag |= AX.constructShannonExpansion();
+
 
   if (activeFlag)
     {
@@ -1652,12 +1697,15 @@ Simulation::minimizeObject(const int CN)
 	  Simulation::removeCell(CN);
 	  return -1;
 	}
+
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
+
       CPtr->populate();
       CPtr->createSurfaceList();
       OSMPtr->updateObject(CPtr);
+
 
       return 1;
     }

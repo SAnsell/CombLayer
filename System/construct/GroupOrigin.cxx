@@ -57,6 +57,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

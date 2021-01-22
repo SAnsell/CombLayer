@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BlockStand.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -187,7 +188,7 @@ BlockStand::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,1,Z,height);
+  ExternalCut::makeShiftedSurf(SMap,"floor",buildIndex+6,Z,height);
   
   return;
 }

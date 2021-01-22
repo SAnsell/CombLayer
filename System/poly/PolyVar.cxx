@@ -1000,7 +1000,7 @@ PolyVar<VCount>::read(const std::string& Line)
   */
 {
   const char Variable("xyzabc"[VCount-1]);
-  std::string CLine=StrFunc::removeSpace(Line);
+  std::string CLine=StrFunc::removeAllSpace(Line);
 
   setDegree(PolyFunction::getMaxSize(CLine,Variable)); 
   zeroPoly();

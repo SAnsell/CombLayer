@@ -66,7 +66,7 @@ class userBinConstruct
   static void processMesh(SimFLUKA&,const mainSystem::inputParam&,
 			  const size_t);
   
-  static void writeHelp(std::ostream&);
+  static std::string writeHelp();
 };
 
 }

@@ -682,11 +682,11 @@ testXML::testLoadSystem()
   std::ostringstream cx; 
   CO.writeXML(cx);
   In="<?xmlversion=\"1.0\"encoding=\"ISO-8859-1\"?>"+In;
-  if (StrFunc::removeSpace(cx.str())!=
-      StrFunc::removeSpace(In))
+  if (StrFunc::removeAllSpace(cx.str())!=
+      StrFunc::removeAllSpace(In))
     {
-      ELog::EM<<"String == "<<StrFunc::removeSpace(In)<<ELog::endWarn;
-      ELog::EM<<"Out == "<<StrFunc::removeSpace(cx.str())<<ELog::endWarn;
+      ELog::EM<<"String == "<<StrFunc::removeAllSpace(In)<<ELog::endWarn;
+      ELog::EM<<"Out == "<<StrFunc::removeAllSpace(cx.str())<<ELog::endWarn;
       return -1;
     }
   return 0;
@@ -814,7 +814,8 @@ testXML::testPartLoad()
 
   int flag=CO.loadXML("test.xml","Beta3");
   CO.writeXML(cx);
-  if (flag || StrFunc::removeSpace(cx.str())!=StrFunc::removeSpace(Out))
+  if (flag || StrFunc::removeAllSpace(cx.str())!=
+      StrFunc::removeAllSpace(Out))
     {
       ELog::EM<<"Flag == "<<flag<<ELog::endDiag;
       ELog::EM<<"Out == "<<cx.str()<<ELog::endDiag;
@@ -831,7 +832,8 @@ testXML::testPartLoad()
   flag=CO.loadXML("test.xml","Gamma");
   cx.str("");
   CO.writeXML(cx);
-  if (flag || StrFunc::removeSpace(cx.str())!=StrFunc::removeSpace(Out))
+  if (flag || StrFunc::removeAllSpace(cx.str())!=
+      StrFunc::removeAllSpace(Out))
     {
       ELog::EM<<"Flag == "<<flag<<ELog::endDiag;
       ELog::EM<<"Out == "<<cx.str()<<ELog::endDiag;
@@ -1062,8 +1064,8 @@ testXML::testDeleteObj()
     }
   std::ostringstream cx;
   XOut.writeXML(cx);
-  const std::string Result=StrFunc::removeSpace(cx.str());
-  if (Result!=StrFunc::removeSpace(Out))
+  const std::string Result=StrFunc::removeAllSpace(cx.str());
+  if (Result!=StrFunc::removeAllSpace(Out))
     {
       ELog::EM<<"Result == "<<cx.str()<<ELog::endDiag;
       ELog::EM<<"Expect == "<<Out<<ELog::endDiag;

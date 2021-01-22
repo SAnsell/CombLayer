@@ -365,7 +365,7 @@ CifStore::readFile(const std::string& Fname)
       do 
         {
 	  Line=StrFunc::getLine(IX);
-	  Line=StrFunc::fullBlock(Line);
+	  Line=StrFunc::removeOuterSpace(Line);
 	  if (Line.empty())
 	    flag=1;
 	  else 

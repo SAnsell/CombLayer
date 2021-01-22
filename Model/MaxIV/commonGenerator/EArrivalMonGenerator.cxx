@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/EArrivalMonGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,22 +58,23 @@ namespace setVariable
 {
 
 EArrivalMonGenerator::EArrivalMonGenerator() :
-  radius(CF63::innerRadius),length(3.67),
+  radius(3.167), // No_2_00.pdf
+  length(4.75),
   thick(1.0),faceThick(1.0),
-  frontPipeILen(1.0),frontPipeLen(2.75),
-  frontPipeRadius(CF40_22::innerRadius),
-  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.5),
-  backPipeRadius(CF40_22::innerRadius),backPipeThick(0.8),
+  frontPipeILen(1.0),frontPipeLen(3.13),
+  frontPipeRadius(1.0), // No_2_00.pdf
+  frontPipeThick(0.8),backPipeILen(0.5),backPipeLen(3.13),
+  backPipeRadius(1.0),backPipeThick(0.8),
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
   windowThick(0.7),voidMat("Void"),mainMat("Copper"),
-  windowMat("SiO2"),flangeMat("Stainless304")
+  windowMat("SiO2"),flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
-EArrivalMonGenerator::~EArrivalMonGenerator() 
+
+EArrivalMonGenerator::~EArrivalMonGenerator()
  /*!
    Destructor
  */
@@ -87,6 +88,8 @@ EArrivalMonGenerator::setCF()
   */
 {
   radius=CF63::innerRadius;
+  frontPipeRadius=CF::innerRadius;
+  backPipeRadius=CF::innerRadius;
   setFlangeCF<CF>();
   return;
 }
@@ -103,14 +106,14 @@ EArrivalMonGenerator::setFlangeCF()
   return;
 }
 
-    
+
 void
 EArrivalMonGenerator::generateMon(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double yStep)  const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
   */
@@ -152,12 +155,14 @@ EArrivalMonGenerator::generateMon(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+template void EArrivalMonGenerator::setCF<CF18_TDC>();
 template void EArrivalMonGenerator::setCF<CF40_22>();
 template void EArrivalMonGenerator::setCF<CF40>();
 
+template void EArrivalMonGenerator::setFlangeCF<CF18_TDC>();
 template void EArrivalMonGenerator::setFlangeCF<CF40_22>();
 template void EArrivalMonGenerator::setFlangeCF<CF40>();
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable

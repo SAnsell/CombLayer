@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "Debug.h"
@@ -91,7 +92,7 @@ operator<<(std::ostream& OX,const Object& A)
 Object::Object() :
   ObjName(0),listNum(-1),Tmp(300.0),
   matPtr(ModelSupport::DBMaterial::Instance().getVoidPtr()),
-  trcl(0),imp(1),populated(0),
+  trcl(0),populated(0),
   activeMag(0),magMinStep(1e-3),magMaxStep(1e-1),
   objSurfValid(0)
    /*!
@@ -103,7 +104,7 @@ Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),
+  trcl(0),populated(0),activeMag(0),
   magMinStep(1e-3),magMaxStep(1e-1),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -116,11 +117,27 @@ Object::Object(const int N,const int M,
   HRule.procString(Line);
 }
 
+Object::Object(const int N,const int M,
+	       const double T,const HeadRule& HR) :
+  ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),HRule(HR),
+  objSurfValid(0)
+ /*!
+   Constuctor, set temperature to 300C 
+   \param N :: number
+   \param M :: material
+   \param T :: temperature (K)
+   \param HR :: HeadRule
+ */
+{}
+
 Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
   matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
-  trcl(0),imp(1),populated(0),activeMag(0),
+  trcl(0),populated(0),activeMag(0),
   magMinStep(1e-3),magMaxStep(1e-1),
   objSurfValid(0)
  /*!
@@ -134,13 +151,30 @@ Object::Object(const std::string& FCName,const int N,const int M,
   HRule.procString(Line);
 }
 
+Object::Object(const std::string& FCName,const int N,const int M,
+	       const double T,const HeadRule& HR) :
+  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),
+  matPtr(ModelSupport::DBMaterial::Instance().getMaterialPtr(M)),
+  trcl(0),populated(0),activeMag(0),
+  magMinStep(1e-3),magMaxStep(1e-1),
+  HRule(HR),
+  objSurfValid(0)
+ /*!
+   Constuctor, set temperature to 300C 
+   \param N :: number
+   \param M :: material
+   \param T :: temperature (K)
+   \param HR :: HeadRule of object
+ */
+{}
+
 Object::Object(const Object& A) :
   FCUnit(A.FCUnit),ObjName(A.ObjName),
   listNum(A.listNum),Tmp(A.Tmp),matPtr(A.matPtr),
   trcl(A.trcl),imp(A.imp),populated(A.populated),
   activeMag(A.activeMag),
   magMinStep(A.magMinStep),magMaxStep(A.magMaxStep),
-  magVec(A.magVec),HRule(A.HRule),objSurfValid(0),
+  HRule(A.HRule),objSurfValid(0),
   SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
@@ -169,7 +203,6 @@ Object::operator=(const Object& A)
       activeMag=A.activeMag;
       magMinStep=A.magMinStep;
       magMaxStep=A.magMaxStep;
-      magVec=A.magVec;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -365,7 +398,7 @@ Object::setObject(std::string Ln)
 	   StrFunc::convert(Value,lineTRCL) && lineTRCL>=0)  ||
 
 	  (Extract=="imp:n" && 
-	   StrFunc::convert(Value,lineTRCL) && lineIMP>=0)  )
+	   StrFunc::convert(Value,lineIMP) && lineIMP>=0)  )
 	{ } 
       else
 	throw ColErr::InvalidLine("Invalid key :: ",Extract+":"+Value);
@@ -388,7 +421,7 @@ Object::setObject(std::string Ln)
 
   setMaterial(matN);
   Tmp=lineTemp;
-  imp=lineIMP;
+  imp.setImp(static_cast<double>(lineIMP));
   trcl=lineTRCL;
 
   populated=0;
@@ -542,18 +575,6 @@ Object::addSurfString(const std::string& XE)
   populated=0;
   objSurfValid=0;
   return flag;
-}
-
-void
-Object::setMagField(const Geometry::Vec3D& M)
-  /*!
-    Simple setter for magnetic field in an object
-    \param M :: Magnetic vector
-  */
-{
-  magVec=M;
-  activeMag=1;
-  return;
 }
 
 int
@@ -715,10 +736,9 @@ Object::isValid(const Geometry::Vec3D& Pt,
 std::set<int>
 Object::getSelfPairs() const
   /*!
-    Determine all the implicate pairs for the object
-    The map is plane A has (sign A) implies plane B has (sign B)
-    \param SN :: Number of force side
-    \return Map of surf -> surf
+    Determine the set of surfaces that are represented
+    twice in the model and as both signs (+/-)
+    \return Set of opposite surfaces
   */
 {
   ELog::RegMethod RegA("Object","getSelfPairs(int)");
@@ -773,7 +793,7 @@ Object::getImplicatePairs() const
   /*!
     Determine all the implicate pairs for the object
     The map is plane A has (sign A) implies plane B has (sign B)
-    \return Map of surf -> surf
+    \return vector of implicate pairs
   */
 {
   ELog::RegMethod RegA("Object","getImplicatePairs");
@@ -784,18 +804,20 @@ Object::getImplicatePairs() const
   std::vector<std::pair<int,int>> Out;
 
   for(size_t i=0;i<SurList.size();i++)
-    for(size_t j=i+1;j<SurList.size();j++)
+    for(size_t j=0;j<SurList.size();j++)
       {
-	const Geometry::Surface* APtr=SurList[i];
-	const Geometry::Surface* BPtr=SurList[j];
-
-	// This is JUST surface SIGNS:
-	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
-	if (dirFlag.first)
+	if (j!=i)
 	  {
-	    Out.push_back(std::pair<int,int>
-			(dirFlag.first * APtr->getName(),
-			 dirFlag.second * BPtr->getName()));
+	    const Geometry::Surface* APtr=SurList[i];
+	    const Geometry::Surface* BPtr=SurList[j];
+	    // This is JUST surface SIGNS:
+	    const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+	    if (dirFlag.first)
+	      {
+		Out.push_back(std::pair<int,int>
+			      (dirFlag.first * APtr->getName(),
+			       dirFlag.second * BPtr->getName()));
+	      }
 	  }
       }
   return Out;
@@ -1371,7 +1393,6 @@ Object::str() const
   return cx.str();
 }
 
-
 std::string
 Object::cellStr(const std::map<int,Object*>& MList) const
   /*!
@@ -1461,7 +1482,7 @@ Object::writeFLUKAmat(std::ostream& OX) const
   cx<<"ASSIGNMAT ";
 
   const int matID=matPtr->getID();
-  if (!imp)
+  if (imp.isZero())
     cx<<"BLCKHOLE";
   else if (matID>0)
     cx<<"M"+std::to_string(matID);
@@ -1469,7 +1490,7 @@ Object::writeFLUKAmat(std::ostream& OX) const
     cx<<"VACUUM";
   
   cx<<" R"+std::to_string(ObjName);
-  if (imp && activeMag)
+  if (activeMag && !imp.isZero())
     cx<<" - - 1 ";
   
   
@@ -1535,7 +1556,7 @@ Object::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
 
   cx.precision(10);
-  if (ObjName==1 && imp==0)
+  if (ObjName==1 && !imp.isZero())
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);

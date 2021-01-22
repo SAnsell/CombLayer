@@ -54,6 +54,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -72,7 +73,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -115,7 +116,6 @@ micromaxFrontEnd::~micromaxFrontEnd()
 
 const attachSystem::FixedComp&
 micromaxFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
   /*!
@@ -132,7 +132,7 @@ micromaxFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
   undulatorPipe->insertInCell("FFlange",System,outerCell);
@@ -145,8 +145,8 @@ micromaxFrontEnd::buildUndulator(Simulation& System,
 
   dipolePipe->setFront(*undulatorPipe,2);
   dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*dipolePipe,2);
+  dipolePipe->insertAllInCell(System,outerCell);
 
   return *dipolePipe;
 }

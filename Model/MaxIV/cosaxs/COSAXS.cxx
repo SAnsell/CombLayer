@@ -3,7 +3,7 @@
  
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
@@ -62,6 +63,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "VacuumPipe.h"
 
@@ -172,9 +174,9 @@ COSAXS::build(Simulation& System,
   if (stopPoint=="opticsHut") return;
 
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
   // new
@@ -187,11 +189,11 @@ COSAXS::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
   
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
-  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
-  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
-  joinPipeB->addInsertCell(r3Ring->getCell("OuterSegment", PIndex));
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  joinPipeB->addAllInsertCell(r3Ring->getCell("OuterSegment", PIndex));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
@@ -208,7 +210,7 @@ COSAXS::build(Simulation& System,
 
   if (stopPoint=="exptHut")
     {
-      joinPipeB->insertInCell(System,exptHut->getCell("Void"));
+      joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
       return;
     }
 
@@ -242,7 +244,7 @@ COSAXS::build(Simulation& System,
   exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
   exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
 
-  joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
+  joinPipeB->insertAllInCell(System,exptBeam->getCell("OuterVoid",0));
 
   return;
 }

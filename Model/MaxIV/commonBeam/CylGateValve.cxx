@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CylGateValve.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell 
+ * Copyright (c) 2004-2021 by Stuart Ansell 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -279,7 +280,6 @@ CylGateValve::createObjects(Simulation& System)
     (SMap,buildIndex,"(-401:402:407) 405 -206 -507 ");
   makeCell("BladeSupport",System,cellIndex++,bladeMat,0.0,Out);
 
-  ELog::EM<<"front == "<<frontStr<<ELog::endDiag;
   // top flange [artifical cut on port flanges for FLUKA convinence]
   Out=ModelSupport::getComposite(SMap,buildIndex,"6 -106 -207 217");
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
@@ -334,9 +334,9 @@ CylGateValve::createLinks()
   
 void
 CylGateValve::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
- /*!
+			const attachSystem::FixedComp& FC,
+			const long int FIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

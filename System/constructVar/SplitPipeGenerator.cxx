@@ -174,7 +174,6 @@ SplitPipeGenerator::setMat(const std::string& M)
 void
 SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,
 				const double length) const
   /*!
     Primary funciton for setting the variables
@@ -193,7 +192,6 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
     pipeRadius-flangeBRadius : flangeBRadius;
 
     // VACUUM PIPES:
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
   Control.addVariable(keyName+"Radius",pipeRadius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
@@ -212,6 +210,9 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
+  template void SplitPipeGenerator::setCF<CF18_TDC>();
+  template void SplitPipeGenerator::setCF<CF26_TDC>();
+  template void SplitPipeGenerator::setCF<CF37_TDC>();
   template void SplitPipeGenerator::setCF<CF40_22>();
   template void SplitPipeGenerator::setCF<CF40>();
   template void SplitPipeGenerator::setCF<CF50>();

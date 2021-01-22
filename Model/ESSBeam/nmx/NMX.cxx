@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMX.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -190,7 +191,7 @@ NMX::build(Simulation& System,
 
 
   // PIPE after gamma shield
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->createAll(System,FocusA->getKey("Guide0"),2);
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
@@ -198,7 +199,7 @@ NMX::build(Simulation& System,
 
 
   // PIPE from 10m to 14m
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->setJoinFront(*VPipeA,2);
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
 
@@ -207,7 +208,7 @@ NMX::build(Simulation& System,
 		   BendA->getKey("Guide0"),2);
 
   // PIPE from 14m to 18m
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->setJoinFront(*VPipeB,2);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
@@ -216,7 +217,7 @@ NMX::build(Simulation& System,
 		   BendB->getKey("Guide0"),2);
 
   // PIPE from 18m to 22m
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->setJoinFront(*VPipeC,2);
   VPipeD->createAll(System,BendC->getKey("Guide0"),2);
 
@@ -225,7 +226,7 @@ NMX::build(Simulation& System,
 		   BendC->getKey("Guide0"),2);
 
   // PIPE from 22m to Wall
-  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE->setJoinFront(*VPipeD,2);
   VPipeE->createAll(System,BendD->getKey("Guide0"),2);
 

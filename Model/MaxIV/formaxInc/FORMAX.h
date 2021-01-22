@@ -3,7 +3,7 @@
  
  * File:   formaxInc/FORMAX.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,14 +47,13 @@ namespace constructSystem
 namespace xraySystem
 {
   class BeamMount;
-  class bladerOpticsHutch;
+  class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class formaxOpticsLine;
   class R3FrontEndCave;
   class ConnectZone;
   class formaxFrontEnd;
-  class PipeShield;
   class WallLead;
   
   /*!
@@ -79,7 +78,7 @@ class FORMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
+  std::shared_ptr<OpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<formaxOpticsLine> opticsBeam;

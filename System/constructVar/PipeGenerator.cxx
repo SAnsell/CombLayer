@@ -322,12 +322,11 @@ PipeGenerator::setBFlangeCF()
 
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
-                            const double yStep,const double length) const
+                            const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset
     \param length :: length of pipe
   */
 {
@@ -349,7 +348,6 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
 
     // VACUUM PIPES:
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)
     Control.addVariable(keyName+"Radius",pipeRadius);
   else
@@ -384,24 +382,38 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 }
 
 ///\cond TEMPLATE
+  template void PipeGenerator::setCF<CF8_TDC>();
+  template void PipeGenerator::setCF<CF16_TDC>();
+  template void PipeGenerator::setCF<CF16>();
+  template void PipeGenerator::setCF<CF18_TDC>();
   template void PipeGenerator::setCF<CF25>();
+  template void PipeGenerator::setCF<CF34_TDC>();
+  template void PipeGenerator::setCF<CF35_TDC>();
+  template void PipeGenerator::setCF<CF37_TDC>();
   template void PipeGenerator::setCF<CF40_22>();
   template void PipeGenerator::setCF<CF40>();
   template void PipeGenerator::setCF<CF50>();
   template void PipeGenerator::setCF<CF63>();
+  template void PipeGenerator::setCF<CF66_TDC>();
   template void PipeGenerator::setCF<CF100>();
   template void PipeGenerator::setCF<CF120>();
   template void PipeGenerator::setCF<CF150>();
   template void PipeGenerator::setAFlangeCF<CF25>();
+  template void PipeGenerator::setAFlangeCF<CF34_TDC>();
+  template void PipeGenerator::setAFlangeCF<CF37_TDC>();
   template void PipeGenerator::setAFlangeCF<CF40_22>();
   template void PipeGenerator::setAFlangeCF<CF63>();
+  template void PipeGenerator::setAFlangeCF<CF66_TDC>();
   template void PipeGenerator::setAFlangeCF<CF100>();
   template void PipeGenerator::setAFlangeCF<CF120>();
   template void PipeGenerator::setAFlangeCF<CF150>();
   template void PipeGenerator::setBFlangeCF<CF25>();
+  template void PipeGenerator::setBFlangeCF<CF34_TDC>();
+  template void PipeGenerator::setBFlangeCF<CF37_TDC>();
   template void PipeGenerator::setBFlangeCF<CF40_22>();
   template void PipeGenerator::setBFlangeCF<CF40>();
   template void PipeGenerator::setBFlangeCF<CF63>();
+  template void PipeGenerator::setBFlangeCF<CF66_TDC>();
   template void PipeGenerator::setBFlangeCF<CF100>();
   template void PipeGenerator::setBFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF150>();

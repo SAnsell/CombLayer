@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -161,7 +162,6 @@ PipeTube::createSurfaces()
       setBack(-SMap.realSurf(buildIndex+2));
     }
   
-  
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
@@ -254,8 +254,6 @@ PipeTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
 
-
-
   if (flangeACapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
@@ -321,7 +319,8 @@ PipeTube::createLinks()
     {
       innerFrontSurf = getFrontRule().getPrimarySurface();
       innerFrontVec = Origin-Y*(length/2.0);
-    } else
+    }
+  else
     {
       innerFrontSurf = buildIndex+201;
       innerFrontVec = Origin-Y*(length/2.0-flangeACapThick);
@@ -352,6 +351,37 @@ PipeTube::createLinks()
   return;
 }
 
+void
+PipeTube::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int FIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","createAll(FC)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+
+  // both OUTWARD
+  MonteCarlo::Object* OPtr=
+    CellMap::getCellObject(System,"MainTube");
+
+  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
+  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+
+  createPorts(System,OPtr,innerSurf,outerSurf);
+  insertObjects(System);
+    
+  return;
+}
   
 
   

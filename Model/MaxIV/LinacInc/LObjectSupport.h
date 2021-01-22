@@ -43,6 +43,13 @@ namespace constructSystem
 namespace tdcSystem
 {
   class CorrectorMag;
+  class YagUnit;
+  class YagScreen;
+
+void
+constructYagScreen(Simulation&,const tdcSystem::YagUnit&,
+		   tdcSystem::YagScreen&,const int);
+
   
 int
 pipeTerminate(Simulation&,
@@ -54,13 +61,21 @@ pipeTerminateGroup(Simulation&,
 		   const std::shared_ptr<attachSystem::FixedComp>&,
 		   const std::set<std::string>&);
 
+int
+pipeTerminateGroup(Simulation&,
+		   attachSystem::InnerZone&,
+		   const std::shared_ptr<attachSystem::FixedComp>&,
+		   const std::string&,
+		   const std::set<std::string>&);
+
+
 
 int
 correctorMagnetPair(Simulation&,
 		    attachSystem::InnerZone&,
 		    const std::shared_ptr<attachSystem::FixedComp>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
+		    const std::shared_ptr<xraySystem::CorrectorMag>&,
+		    const std::shared_ptr<xraySystem::CorrectorMag>&);
 
 template<typename magTYPE>
 int

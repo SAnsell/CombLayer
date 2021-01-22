@@ -3,7 +3,7 @@
  
  * File:   formaxInc/formaxOpticsLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,16 +45,20 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class CylGateValve;
   class BremColl;
+  class BeamPair;
   class BremMonoColl;
+  class DCMTank;
   class FlangeMount;
+  class GaugeTube;
   class Mirror;
-  class MonoCrystals;
-  class MonoBox;
-  class MonoShutter;
-  class PipeShield;
+  class MLMono;
+  class MonoBlockXstals;
   class ShutterUnit;
+  class SquareFMask;
+  class IonGauge;
+  class TriggerTube;
     
   /*!
     \class formaxOpticsLine
@@ -72,126 +76,86 @@ class formaxOpticsLine :
   public attachSystem::CellMap
 {
  private:
+
+  /// string for pre-insertion into mastercell:0
+  std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
+  int innerMat;                         ///< inner material if used
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
-  /// vauucm trigger system
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+  /// vacuum trigger system
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
-  /// bellows after ion pump to filter
-  std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
-  /// Vacuum pipe for collimator
-  std::shared_ptr<xraySystem::BremColl> bremCollA;
-  /// Filter tube
-  std::shared_ptr<constructSystem::PortTube> filterBoxA;
-  /// Filter stick [only one blade type -- fix]
-  std::shared_ptr<xraySystem::FlangeMount> filterStick;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateB;
-  /// bellows after gateA ->view
-  std::shared_ptr<constructSystem::Bellows> bellowB;
-  
-  /// diamond screen(?)
-  std::shared_ptr<constructSystem::PipeTube> screenPipeA;
-  /// View/something(?)/Ion pump
-  std::shared_ptr<constructSystem::PipeTube> screenPipeB;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
+
   /// Addaptor to connect from pumpint point to diffuser
-  std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
-  /// Diffusion pump
-  std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
-  
-  /// Primary jaw (Box)
-  std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
-  /// Bellow to gate on mono
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateC;
-  /// Mono box
-  std::shared_ptr<xraySystem::MonoBox> monoBox;
-  /// Mono Xstal 
-  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
-  // Gate to isolate mono
-  std::shared_ptr<constructSystem::GateValveCube> gateD;
-  /// Bellow to diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Diagnostic unit 1:
-  std::shared_ptr<constructSystem::PortTube> diagBoxA;
-  /// Mono-Collimator for collimator
-  std::shared_ptr<xraySystem::BremMonoColl> bremMonoCollA;
-  /// Bellow from diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowE;
-  // Gate for first mirror
-  std::shared_ptr<constructSystem::GateValveCube> gateE;
-
-  /// Mirror box 
-  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
-  /// Mirror front
-  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
-  /// Mirror back
-  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
-  // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValveCube> gateF;
-  /// Bellow to diagnositics
-  std::shared_ptr<constructSystem::Bellows> bellowF;
-  /// Diagnostic unit 2:
-  std::shared_ptr<constructSystem::PortTube> diagBoxB;
-  /// Diag Box B :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompB;
-
-  /// Bellow to mirror B
-  std::shared_ptr<constructSystem::Bellows> bellowG;
-  // Gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateG;
-  /// Mirror box B
-  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxB;
-  /// Mirror Front B
-  std::shared_ptr<xraySystem::Mirror> mirrorFrontB;
-  /// Mirror Back B
-  std::shared_ptr<xraySystem::Mirror> mirrorBackB;
-  /// Gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateH;
-  /// Bellow to mirror B
-  std::shared_ptr<constructSystem::Bellows> bellowH;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+  /// Vacuum pipe for collimator
+  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  /// Ion Gauge
+  std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// mini-Brem Collimator
+  std::shared_ptr<constructSystem::VacuumPipe> bremPipeB;
 
   /// Diagnostic unit 3:
-  std::shared_ptr<constructSystem::PortTube> diagBoxC;
-  /// Diag Box C :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
+  std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
 
-  /// Bellow to end station
-  std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// mini pipe out of diag box
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  /// bellow to to mono
+  std::shared_ptr<constructSystem::Bellows> bellowC;
 
-  /// Gate valve before mono shutter
-  std::shared_ptr<constructSystem::GateValveCube> gateI;
+  // PART 4: [MML]
+  /// MirrorMonoBox 
+  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  /// Mirror-Mono system
+  std::shared_ptr<xraySystem::MLMono> MLM;
 
-  /// Shutter pipe
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-    
-  /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  // PART 5: [connection pipe]
+
+  /// bellow from MLM
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
+  /// bellow to diag2
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+
+  /// H-res mono vessel
+  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  /// Grating
+  std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+
 
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateJ;
-
+  
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
   int constructMonoShutter
-    (Simulation&,MonteCarlo::Object**,
-     const attachSystem::FixedComp&,const long int);
+    (Simulation&,const attachSystem::FixedComp&,const long int);
 
+  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
+			   const std::string&);
+  
   int constructDiag
     (Simulation&,
-     MonteCarlo::Object**,
      constructSystem::PortTube&,
      std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
      const attachSystem::FixedComp&,
@@ -208,6 +172,12 @@ class formaxOpticsLine :
   formaxOpticsLine(const formaxOpticsLine&);
   formaxOpticsLine& operator=(const formaxOpticsLine&);
   ~formaxOpticsLine();
+
+  /// Assignment to inner void
+  void setInnerMat(const int M) { innerMat=M; }
+  /// Assignment to extra for first volume
+  void setPreInsert
+    (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

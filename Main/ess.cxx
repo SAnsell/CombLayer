@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
@@ -71,7 +72,6 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "mainJobs.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
@@ -122,6 +122,7 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       essSystem::makeESS ESSObj;
+
       ESSObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

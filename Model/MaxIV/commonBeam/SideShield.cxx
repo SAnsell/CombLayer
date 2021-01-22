@@ -58,6 +58,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -67,7 +68,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -83,7 +84,7 @@ namespace xraySystem
 
 SideShield::SideShield(const std::string& mainKey) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(mainKey,6),
+  attachSystem::FixedRotate(mainKey,6),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(mainKey)
@@ -96,7 +97,7 @@ SideShield::SideShield(const std::string& mainKey) :
 SideShield::SideShield(const std::string& baseKey,
 		       const std::string& mainKey) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(mainKey,6),
+  attachSystem::FixedRotate(mainKey,6),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(baseKey)
@@ -116,12 +117,11 @@ SideShield::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SideShield","populate");
 
-  FixedOffset::populate(baseName,Control);
+  FixedRotate::populate(baseName,Control);
   
   depth=Control.EvalTail<double>(keyName,baseName,"Depth");
   height=Control.EvalTail<double>(keyName,baseName,"Height");
   length=Control.EvalTail<double>(keyName,baseName,"Length");
-  outStep=Control.EvalDefTail<double>(keyName,baseName,"OutStep",0.0);
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
   
@@ -168,11 +168,10 @@ SideShield::createSurfaces()
   ELog::RegMethod RegA("SideShield","createSurface");
 
   // InnerWall and OuterWall MUST be set
-  if (!ExternalCut::isActive("Wall") || std::abs(outStep)>Geometry::zeroTol)
+  if (!ExternalCut::isActive("Wall"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*outStep,Y);
-      if (outStep>-Geometry::zeroTol)
-	ExternalCut::setCutSurf("Wall",SMap.realSurf(buildIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ExternalCut::setCutSurf("Wall",SMap.realSurf(buildIndex+1));
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
       
@@ -196,21 +195,11 @@ SideShield::createObjects(Simulation& System)
 
   std::string Out;
 
-  if (outStep < -Geometry::zeroTol)  // outStep step into wall:
-    {
-      const std::string wallStr=ExternalCut::getRuleStr("Wall");
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6");
-      makeCell("Slab",System,cellIndex++,mat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex," -1  3 -4 5 -6");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+wallStr);
-      Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6");
-    }
-  else
-    {
-      const std::string wallStr=ExternalCut::getRuleStr("Wall");
-      Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6");
-      makeCell("Slab",System,cellIndex++,mat,0.0,Out+wallStr);
-    }
+  const std::string wallStr=ExternalCut::getRuleStr("Wall");
+  const std::string clipStr=ExternalCut::getRuleStr("Clip");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6");
+  makeCell("Slab",System,cellIndex++,mat,0.0,Out+wallStr+clipStr);
+
   addOuterSurf(Out);
   return;
 }
@@ -225,13 +214,8 @@ SideShield::createLinks()
   
   ELog::RegMethod RegA("SideShield","createLinks");
 
-  if (outStep>-Geometry::zeroTol)
-    ExternalCut::createLink("Wall",*this,0,Origin-Y*outStep,-Y);
-  else
-    {
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-      FixedComp::setConnect(0,Origin,-Y);
-    }
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect(0,Origin,-Y);
 
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   FixedComp::setConnect(1,Origin+Y*depth,Y);

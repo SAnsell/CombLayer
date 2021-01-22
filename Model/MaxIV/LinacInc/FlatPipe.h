@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/FlatPipe.h
+ * File:   LinacInc/FlatPipe.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
  *
@@ -44,8 +44,10 @@ class FlatPipe :
 {
  private:
   
-  double width;                  ///< void width [inner]
-  double height;                 ///< void height [inner]
+  double frontWidth;             ///< void width at front  [inner]
+  double backWidth;              ///< void width at back [inner]
+  double frontHeight;            ///< void height [front/inner]
+  double backHeight;             ///< void height [back/inner]
   double length;                 ///< void length [total]
   
   double wallThick;              ///< pipe thickness

@@ -74,12 +74,12 @@ testSource::checkSDef(const std::string& Res,const std::string& Expect)
   */
 {
   
-  if (StrFunc::fullBlock(Res)!=Expect)
+  if (StrFunc::removeOuterSpace(Res)!=Expect)
     {
       ELog::EM<<"Test Failed"<<ELog::endDiag;
       ELog::EM<<"Expect:"<<Expect<<":"<<ELog::endDiag;
-      ELog::EM<<"Out   :"<<StrFunc::fullBlock(Res)<<":"<<ELog::endDiag;
-      const std::string Out=StrFunc::fullBlock(Res);
+      ELog::EM<<"Out   :"<<StrFunc::removeOuterSpace(Res)<<":"<<ELog::endDiag;
+      const std::string Out=StrFunc::removeOuterSpace(Res);
       for(size_t i=0;i<Out.size();i++)
 	if (isspace(Out[i]))
 	  ELog::EM<<"<spc>";

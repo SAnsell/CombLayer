@@ -170,7 +170,6 @@ class OutputLog
 
 ///\cond EXTERN
 extern OutputLog<EReport> EM;         ///< Global Error log
-extern OutputLog<FileReport> FM;      ///< Global Error to a file
 extern OutputLog<FileReport> RN;      ///< Renumbering
 extern OutputLog<StreamReport> CellM; ///< Global Stream Report
 ///\endcond EXTERN

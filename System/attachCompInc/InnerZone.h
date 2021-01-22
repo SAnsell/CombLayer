@@ -33,6 +33,7 @@ namespace attachSystem
 {
   class FixedComp;
   class CellMap;
+
   
 /*!
   \class InnerZone
@@ -63,6 +64,7 @@ class InnerZone
   HeadRule surroundHR;               ///< Rule of surround
   HeadRule frontHR;                  ///< Rule of front
   HeadRule backHR;                   ///< Rule of back
+
   HeadRule middleHR;                 ///< Rule of middle 
 
   HeadRule frontDivider;             ///< Local front divider [if needed]
@@ -80,13 +82,28 @@ class InnerZone
   ~InnerZone() {}         ///< Destructor
 
   void setExtra();
-  void removeExtra() { extraHR.reset(); };
+  void removeExtra() { extraHR.reset(); };  
   void setSurround(const HeadRule&);
   void addMiddleToSurround(const int);
   void setFront(const HeadRule&);
   void setBack(const HeadRule&);
   void setMiddle(const HeadRule&);
+  void clearDivider() { frontDivider.reset(); }
 
+  const std::string& getName() const { return FCName; }
+  /// access surround
+  const HeadRule& getSurround() const { return surroundHR; }
+  /// access front
+  const HeadRule& getFront() const { return frontHR; }
+  /// access front
+  const HeadRule& getBack() const { return backHR; }
+  /// access front
+  const HeadRule& getDivider() const { return frontDivider; }
+  /// access volume-back
+  HeadRule getVolumeExclude() const;
+  /// access full volume
+  HeadRule getVolume() const;
+  
   /// set the void material
   void setInnerMat(const int M) { voidMat=M; }
   
@@ -176,6 +193,11 @@ class InnerZone
 		     const HeadRule&) const;
 
   void setInsertCells(const std::vector<int>&);
+  void addInsertCells(const std::vector<int>&);
+
+  /// InsertCell number accessor
+  const std::vector<int>& getInsertCell() const
+    { return insertCN; }
   
   MonteCarlo::Object* constructMasterCell(Simulation&);
   MonteCarlo::Object* constructMasterCell(Simulation&,
@@ -185,13 +207,19 @@ class InnerZone
 					  const attachSystem::FixedComp&,
 					  const std::string&);
   
-  
   void removeLastMaster(Simulation&);
+  void removeLastMasterNoInsert(Simulation&);
   
   /// accessor to local master cell
   MonteCarlo::Object* getMaster() const { return masterCell; }
-  
+  /// accessor to local master cell
+  const attachSystem::CellMap* getCellMap() const { return CellPtr; }
+
+  void write(std::ostream&) const;
 };
+
+std::ostream&
+operator<<(std::ostream&,const InnerZone&);
 
 }
 

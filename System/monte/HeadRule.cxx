@@ -49,6 +49,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "surfIndex.h"
 #include "BnId.h"
 #include "AcompTools.h"
@@ -131,7 +133,7 @@ HeadRule::HeadRule(HeadRule&& A) :
     \param A :: Head rule to move
   */
 {
-  A.HeadNode=nullptr;   // This is deleted so must re
+  A.HeadNode=nullptr;   // This is deleted so must reset
 }
 
 HeadRule&
@@ -690,6 +692,16 @@ HeadRule::populateSurf()
 }
 
 bool
+HeadRule::isEmpty() const
+  /*!
+    Is rule empty [i.e. without surfaces]
+    \return true/false on surfaces present
+  */
+{
+   return (HeadNode) ? HeadNode->isEmpty() : 0;
+}
+
+bool
 HeadRule::isUnion() const
   /*!
     Is a union object
@@ -863,7 +875,7 @@ HeadRule::getOppositeSurfaces() const
 const Geometry::Surface*
 HeadRule::getSurface(const int SN) const
   /*!
-    Get a specific surface 
+    Get a specific surface [unsigned] 
     \param SN :: Surface number
     \return Pointer to surface
    */
@@ -1114,6 +1126,92 @@ HeadRule::removeUnsignedItems(const int SN)
 }
 
 int
+HeadRule::removeOuterPlane(const Geometry::Vec3D& LOrig,
+			   const Geometry::Vec3D& LAxis,
+			   const double normTol)
+  /*!
+    Removes the most outer surface in direction of line
+    NOTE : there is currenty NO expectation that the 
+    intersect point is VALID.
+    \param LAxis :: Origin of line
+    \param LAxis :: Directionally matched surface 
+    \param normTol :: How close the line/plane-normal must be
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  1
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeOuterPlane");
+
+  if (!HeadNode) return -1;
+
+  populateSurf();
+
+  const Geometry::Line ATrack(LOrig,LAxis);
+
+  const std::set<int> allSurf=getSurfSet();
+  double maxDist(Geometry::zeroTol);
+  int SN(0);
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+
+      std::vector<Geometry::Vec3D> Pt;
+      if (PPtr && ATrack.intersect(Pt,*PPtr))
+	{
+	  // only one point of intersection with plane
+	  const Geometry::Vec3D dVec(Pt[0]-LOrig);
+	  const double D=dVec.dotProd(LAxis);
+	  if (D>maxDist) // ensures is +ve
+	    {
+	      // Note : LAxis is in OPPOSITE direction to surface normal if +ve surf.
+	      //   and is in SAME direction if a -ve surf.
+	      const Geometry::Vec3D& Pnorm=PPtr->getNormal();
+	      const double DU=Pnorm.dotProd(LAxis);
+	      if ((DU>normTol && SNum<0) || (DU < -normTol && SNum>0))
+		{
+		  maxDist=D;
+		  SN=SNum;
+		}
+	    } 
+	}
+    }
+  if (!SN) return 0;
+  
+  removeItems(SN);
+  return SN;
+
+}
+
+int
+HeadRule::removeMatchedPlanes(const Geometry::Vec3D& ZAxis,
+			      const double tolValue)
+  /*!
+    Removes the first instance of a palne which matchs
+    closely to the vector ZAxis
+    of that surface from the Rule
+    \param ZAxis :: Directionally matched surface 
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeMatchedPlanes");
+
+  if (!HeadNode) return -1;
+
+  const std::set<int> activePlane=
+    findAxisPlanes(ZAxis,tolValue);
+
+  int cnt(0);
+  for(const int SN : activePlane)
+    cnt+=removeItems(SN);
+
+  return cnt;
+}
+
+int
 HeadRule::removeItems(const int SN) 
   /*!
     Given a signed surface SN , removes the first instance 
@@ -1159,6 +1257,70 @@ HeadRule::removeItems(const int SN)
 	}
     }
   return cnt;
+}
+
+std::set<int>
+HeadRule::findAxisPlanes(const Geometry::Vec3D& Axis,
+			 const double tolValue) 
+  /*!
+    Removes the first instance of a palne which matchs
+    closely to the vector Axis
+    of that surface from the Rule
+    \param Axis :: Directionally matched surface 
+    \param tolValue :: Tolerance value
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findAxisPlanes");
+
+  std::set<int> activePlane;
+  if (!HeadNode) return activePlane;
+
+  populateSurf();
+  const std::set<int> allSurf=getSurfSet();
+
+
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+      if (PPtr)
+	{
+	  if ((SNum>0 && PPtr->getNormal().dotProd(Axis) > tolValue) ||
+	      (SNum<0 && PPtr->getNormal().dotProd(Axis) < -tolValue))
+	    {
+	      activePlane.emplace(SNum);
+	    } 
+	}
+    }
+
+  return activePlane;
+}
+
+int
+HeadRule::findAxisPlane(const Geometry::Vec3D& Axis,
+			const double tolValue) 
+  /*!
+    Removes the first instance of a palne which matchs
+    closely to the vector Axis. The requirment is that 
+    the axis would effectively intersect the surface as 
+    if coming from the middle of the object.
+    \param Axis :: Directionally matched surface 
+    \param tolValue :: Tolerance value
+    \return active surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","axisPlane");
+
+
+  const std::set<int> activePlane=
+    findAxisPlanes(Axis,tolValue);
+  if (activePlane.size()!=1)
+    throw ColErr::MisMatch<size_t>(activePlane.size(),1,"activePlanes");
+
+  return *(activePlane.begin());
 }
 
 const SurfPoint*
@@ -2258,16 +2420,16 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
-
+ 
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
   
-  // IPTS contains non-exit points
+  // IPTS contains both non-exit and invalid points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  
+ 
   // Clear data
   Pts.clear();
   SNum.clear();
@@ -2321,7 +2483,7 @@ HeadRule::procPair(std::string& Ln,std::map<int,Rule*>& Rlist,
   std::vector<int> Joins;
   int Rnum;
   int flag(1);
-  Ln=StrFunc::fullBlock(Ln);
+  Ln=StrFunc::removeOuterSpace(Ln);
   while(!Ln.empty())
     {
       if (flag)
@@ -2404,6 +2566,20 @@ HeadRule::procComp(Rule* RItem)
       Pptr->setLeaf(CG,Ln);
     }
   return CG;
+}
+
+HeadRule
+HeadRule::makeValid(const Geometry::Vec3D& Pt) const
+  /*!
+    Return the rule which makes Pt valid [either rule / complement]
+   \param Pt :: Point to test
+   \return HeadRule in which Pt is valid
+  */
+{
+  ELog::RegMethod RegA("HeadRule","makeValid");
+
+  if (!HeadNode) return HeadRule();
+  return (HeadNode->isValid(Pt)) ? *this : complement();
 }
 
 bool

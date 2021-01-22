@@ -51,6 +51,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -162,7 +163,7 @@ SimValid::diagnostics(const Simulation& System,
 	{
 	  ELog::EM<<"ETRack == "<<TNeut<<ELog::endDiag;
 	  ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
-	  ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
+	  ELog::EM<<" IMP == "<<NOPtr->isZeroImp()<<ELog::endDiag;
 	}
       ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
       ELog::EM<<"--------------"<<ELog::endDiag;
@@ -176,7 +177,7 @@ SimValid::diagnostics(const Simulation& System,
 int
 SimValid::runPoint(const Simulation& System,
 		   const Geometry::Vec3D& CP,
-		   const size_t  nAngle) const
+		   const size_t nAngle) const
   /*!
     Calculate the tracking
     \param System :: Simulation to use
@@ -203,8 +204,11 @@ SimValid::runPoint(const Simulation& System,
   const int initSurfNum=InitObj->isOnSide(CP);
 
   // check surfaces
+  ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
   for(size_t i=0;i<nAngle;i++)
     {
+      if (nAngle>10000 && i*10==nAngle)
+	ELog::EM<<"ValidPoint == "<<i<<ELog::endDiag;
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
       phi=RNG.rand()*M_PI;
@@ -218,7 +222,7 @@ SimValid::runPoint(const Simulation& System,
       int SN(-initSurfNum);
 
       Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-      while(OPtr && OPtr->getImp())
+      while(OPtr && !OPtr->isZeroImp())
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
 	  SN= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));

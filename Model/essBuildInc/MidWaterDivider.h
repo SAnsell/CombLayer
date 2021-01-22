@@ -39,7 +39,7 @@ namespace essSystem
 class MidWaterDivider : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedUnit
+  public attachSystem::FixedComp
 {
  private:
 
@@ -60,13 +60,14 @@ class MidWaterDivider :
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
 
+  const H2Wing* AWingPtr;            ///< Wings
+  const H2Wing* BWingPtr;            ///< Wing
+  
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
-  void createObjects(Simulation&,const H2Wing&,const H2Wing&);
-  void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
-  void createLinks(const H2Wing&,const H2Wing&);
+  void createObjects(Simulation&);
+  void cutOuterWing(Simulation&) const;
+  void createLinks();
 
  public:
 
@@ -79,8 +80,15 @@ class MidWaterDivider :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
+
+  void setH2Wing(const H2Wing& A,const H2Wing& B)
+  {
+    AWingPtr=&A;
+    BWingPtr=&B;
+  }
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const H2Wing&,const H2Wing&);
+		 const long int);
 };
 
 }

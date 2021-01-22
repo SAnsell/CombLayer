@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ particleConv::particleConv() :
   {"%", 23, "kaonzero",  24,  "kaon0",      9,     311,   493.677,    1},  // k0 version
   {"^", 24, "kaonlong",  12,  "kaon0",      9,     130,   497.611,    1},  // long version
   {"?", 36, "kaon-",     16,  "kaon-",     10,    -321,   493.677,    1},
-  {"e", 3,  "electron",   3,  "electron",  11,      11,   0.5109989461, 1},
+  {"e", 3,  "electron",   3,  "electron",  12,      11,   0.5109989461, 1},
   {"f", 8,  "positron",   4,  "positron",  13,     -11,   0.5109989461, 1},
   {"p", 2,  "photon",     7,  "photon",    14,      22,   0.0,          1},
   {"d", 31, "deuteron",  -3,  "deuteron",  15, 1000002,   1875.612793,  2},
@@ -387,6 +387,32 @@ particleConv::mcplToFLUKA(const int ID) const
   return particleVec[index-1].flukaName;
 }
  
+const std::string&
+particleConv::mcplToPHITS(const int ID) const
+  /*!
+    Get PHTIS name base on mcnp id number
+    \param ID :: mcpl ID number
+    \return fluka name						
+  */
+{
+  const size_t index=getMCPLIndex(ID);
+  if (!index)
+    throw ColErr::InContainerError<int>(ID,"MCPL ID no in particleDataBase");
+  return particleVec[index-1].phitsName;
+}
+ 
+
+const std::string&
+particleConv::mcplToMCNP(const int particleIndex) const
+  /*!
+    Get MCNP name base on particle index (mcpl)
+    \param particleIndex :: mcpl index to find
+    \return mcnp name
+  */
+{
+  const pName& PN = getMCPLPItem(particleIndex);
+  return PN.mcnpName;
+}
 
 const std::string&
 particleConv::nameToMCNP(const std::string& particleName) const
@@ -424,6 +450,51 @@ particleConv::nameToFLUKA(const std::string& particleName) const
   return PN.flukaName;
 }
 
+template<typename T>
+std::string
+particleConv::mcnpParticleList(const T& particles) const
+  /*!
+    Convert a set into a comma separated list
+    \param PSet :: stl container to convert (int)
+    \return 
+   */
+{
+  ELog::RegMethod RegA("particleConv","mcnpxParticleList");
+  std::string separator;
+  std::ostringstream cx;
+  for(const int pIndex : particles)
+    {
+      const std::string mcnpPart=
+	mcplToMCNP(pIndex);
+      cx<<separator<<mcnpPart;
+      separator=",";
+    }
+  
+  return cx.str();
+}
+
+template<typename T>
+std::string
+particleConv::phitsParticleList(const T& particles) const
+  /*!
+    Convert a set into a comma separated list
+    \param PSet :: stl container to convert (int)
+    \return 
+   */
+{
+  ELog::RegMethod RegA("particleConv","mcnpxParticleList");
+  std::string separator;
+  std::ostringstream cx;
+  for(const int pIndex : particles)
+    {
+      const std::string mcnpPart=
+	mcplToPHITS(pIndex);
+      cx<<separator<<mcnpPart;
+      separator=" ";
+    }
+  
+  return cx.str();
+}
 
 double
 particleConv::momentumFromKE(const std::string& particleName,
@@ -547,3 +618,13 @@ particleConv::mass(const std::string& particleName) const
   const pName& PN = getNamePItem(particleName);
   return PN.mass;
 }
+
+///\cond template 
+
+template std::string
+particleConv::mcnpParticleList(const std::set<int>&) const;
+
+template std::string
+particleConv::phitsParticleList(const std::set<int>&) const;
+
+///\endcond template 

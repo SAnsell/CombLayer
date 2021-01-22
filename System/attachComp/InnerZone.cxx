@@ -60,6 +60,7 @@
 #include "SurInter.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
@@ -82,7 +83,20 @@
 
 namespace attachSystem
 {
- 
+
+std::ostream&
+operator<<(std::ostream& OX,const InnerZone& A)
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+    \param A :: Inner zone to write
+    return Stream after use.
+  */
+{
+  A.write(OX);
+  return OX;
+}
+  
 InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 		     int& cRef) :
   FCName(FRef.getKeyName()),cellIndex(cRef),
@@ -147,6 +161,10 @@ InnerZone::operator=(const InnerZone& A)
   if (this!=&A)
     {
       FCName=A.FCName;
+
+      FCPtr=A.FCPtr;
+      CellPtr=A.CellPtr;
+      insertCN=A.insertCN;
       
       insertCells=A.insertCells;
       extraHR=A.extraHR;
@@ -160,6 +178,33 @@ InnerZone::operator=(const InnerZone& A)
   return *this;
 }
 
+HeadRule
+InnerZone::getVolumeExclude() const
+  /*!
+    Get the full excluded volume
+   */
+{
+  HeadRule Out(surroundHR);
+  Out *= frontHR;
+  Out *= frontDivider.complement();
+
+  return Out.complement();
+}
+
+HeadRule
+InnerZone::getVolume() const
+  /*!
+    Get the full excluded volume
+   */
+{
+  HeadRule Out(surroundHR);
+  Out*=frontHR;
+  Out*=backHR;
+  Out *= frontDivider.complement();
+
+  return Out;
+}
+  
 InnerZone
 InnerZone::buildMiddleZone(const int flag) const
   /*!
@@ -223,6 +268,7 @@ InnerZone::setFront(const HeadRule& HR)
   */
 {
   frontHR=HR;
+  frontDivider=HR;
   return;
 }
   
@@ -256,6 +302,20 @@ InnerZone::setInsertCells(const std::vector<int>& CN)
    */
 {
   insertCN=CN;
+  return;
+}
+
+void
+InnerZone::addInsertCells(const std::vector<int>& CN)
+  /*!
+    ADD the insert cells
+    \param CN :: List of cells to set for insert
+   */
+{
+  insertCN.insert(insertCN.end(),CN.begin(),CN.end());
+  std::sort(insertCN.begin(),insertCN.end());
+  insertCN.resize(std::distance(insertCN.begin(),
+				std::unique(insertCN.begin(),insertCN.end())));
   return;
 }
 
@@ -749,7 +809,7 @@ InnerZone::constructMasterCell(Simulation& System)
   ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   HeadRule MCell(extraHR*surroundHR*backHR*frontHR);
-  
+
   CellPtr->makeCell("MasterVoid",System,
 		    cellIndex++,voidMat,0.0,MCell.display());  
   masterCell= System.findObject(cellIndex-1);
@@ -795,6 +855,37 @@ InnerZone::removeLastMaster(Simulation& System)
   System.removeCell(masterCell->getName());
   masterCell=0;
   
+  return;
+}
+
+void
+InnerZone::removeLastMasterNoInsert(Simulation& System)
+ /*! 
+   This effectively removes the tail of the insert
+   from all of the cells. 
+ */
+{
+  ELog::RegMethod RegA("InnerZone","removeLastMaster");
+
+
+  System.removeCell(masterCell->getName());
+  masterCell=0;
+  
+  return;
+}
+
+void
+InnerZone::write(std::ostream& OX) const
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+  */
+{
+  OX<<"-------------"<<std::endl;
+  OX<<"Front:"<<frontHR<<"\n";
+  OX<<"Back :"<<backHR<<"\n";
+  OX<<"Surround:"<<surroundHR<<"\n";
+  OX<<"-------------"<<std::endl;
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "surfIndex.h"
+#include "generateSurf.h"
 #include "SurInter.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -185,7 +186,7 @@ SurfMap::getSurfRules(const std::string& Key) const
   ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 
 
   HeadRule Out;
-  if (!Key.empty() && Key[0]=='-')
+  if (!Key.empty() && (Key[0]=='-' || Key[0]=='#'))
     {
       const std::vector<int> sVec=getItems(Key.substr(1));
       for(const int sn : sVec)
@@ -278,7 +279,7 @@ SurfMap::combine(const std::string& surfStr) const
       if (std::isdigit(static_cast<int>(C)) || 
 	  std::isalpha(static_cast<int>(C)))
 	part+=C;
-      else if (C=='-')
+      else if (C=='-' || C=='#')
 	complement=1;
       else if (!part.empty())
 	{
@@ -328,6 +329,49 @@ SurfMap::createLink(const std::string& surfName,
   return;
 }
 
+void
+SurfMap::makePlane(const std::string& Key,
+		   ModelSupport::surfRegister& SMap,const int N,
+		   const Geometry::Vec3D& O,const Geometry::Vec3D& D) 
+  /*!
+    Simple constructor to build a surface [type plane] and add to 
+    SurfMap.
+    \param Key :: KeyName
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param O :: Origin
+    \param D :: Direction
+   */
+{
+  ELog::RegMethod RegA("SurfMap","makePlane");
+
+  ModelSupport::buildPlane(SMap,N,O,D);
+  setSurf(Key,SMap.realSurf(N));
+  return;
+}
+
+void
+SurfMap::makeCylinder(const std::string& Key,
+		      ModelSupport::surfRegister& SMap,const int N,
+		      const Geometry::Vec3D& O,const Geometry::Vec3D& A,
+		      const double R) 
+  /*!
+    Simple constructor to build a surface [type plane] and add to 
+    SurfMap.
+    \param Key :: KeyName
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param O :: Origin
+    \param A :: Axis
+    \param R :: Radius
+   */
+{
+  ELog::RegMethod RegA("SurfMap","makeCylinder");
+
+  ModelSupport::buildCylinder(SMap,N,O,A,R);
+  setSurf(Key,SMap.realSurf(N));
+  return;
+}
 
 ///\cond template
 template Geometry::Plane*

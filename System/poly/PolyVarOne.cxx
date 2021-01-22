@@ -1141,7 +1141,7 @@ PolyVar<1>::read(const std::string& Line)
   */
 {
   const char Variable('x');
-  std::string CLine=StrFunc::removeSpace(Line);
+  std::string CLine=StrFunc::removeAllSpace(Line);
   setDegree(PolyFunction::getMaxSize(CLine,Variable));
   std::string::size_type pos=CLine.find(Variable);
   double cV;

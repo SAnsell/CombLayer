@@ -3,7 +3,7 @@
  
  * File:   funcBase/FItem.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,5 +164,18 @@ FItem::setValue(const Code&)
   ELog::RegMethod RegA("FItem","setValue(Code)");
   throw ColErr::ExBase(0,"Incorrect Type");
   return;
+}
+
+
+std::string
+FItem::getString() const
+  /*!
+    Write out the variable
+    \param OX :: Output stream
+   */
+{
+  std::ostringstream cx;
+  this->write(cx);
+  return cx.str();
 }
 

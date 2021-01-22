@@ -35,10 +35,10 @@ namespace ts1System
   \brief WaterPipe [insert object]
 */
 
-class WaterPipe : public attachSystem::FixedComp
+class WaterPipe :
+    public attachSystem::FixedComp
 {
  private:
-  
   
   ModelSupport::PipeLine Inlet;   ///< Inlet water pipe
   ModelSupport::PipeLine Outlet;  ///< Outlet water pipe

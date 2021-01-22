@@ -66,6 +66,8 @@ class surfImplicates
 				   const Geometry::Surface*) const;
   std::pair<int,int> cylinderPlane(const Geometry::Surface*,
 				   const Geometry::Surface*) const;
+  std::pair<int,int> cylinderCylinder(const Geometry::Surface*,
+				      const Geometry::Surface*) const;
   
   
  public:

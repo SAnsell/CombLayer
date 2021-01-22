@@ -25,6 +25,8 @@
 namespace phitsSystem
 {
 
+  class eType;
+  class aType;
   
 /*!
   \class phitsTally
@@ -43,11 +45,18 @@ class phitsTally
   const int idNumber;               ///< iD number
   std::string comments;             ///< comment line
 
-  bool epsFlag;                     ///< Write an eps file
-  bool vtkFlag;                     ///< Write a vtk file
-  bool vtkFormat;                   ///< Write VTK in binary
-  std::string fileName;             ///< file name
+  std::string particle;             ///< particle(s)
 
+  std::string title;              ///< title
+  std::string xTxt;               ///< x-text
+  std::string yTxt;               ///< y-Text
+
+  bool epsFlag;                     ///< Write an eps file
+  bool vtkout;                     ///< Write a vtk file
+  bool vtkBinary;                   ///< Write VTK in binary
+
+  static std::string convertParticleType(const std::string&);
+  
  public:
   
   explicit phitsTally(const int);
@@ -59,19 +68,23 @@ class phitsTally
   
   void setComment(const std::string&);
 
+  /// no op renumber 
+  virtual void renumberCell(const int,const int) {}
+  
   virtual void setParticle(const std::string&);
-  virtual void setEnergy(const bool,const double,const double,const size_t);
-  virtual void setAngle(const bool,const double,const double,const size_t);
+  virtual void setEnergy(const eType&);
+  virtual void setAngle(const aType&);
+  virtual void setVTKout();
+  virtual void setBinary();
 
   /// accessor to keyname
-  const std::string& getKey() const { return keyName; }
+  const std::string& getKeyName() const { return keyName; }
+  /// accessor to keyname
+  int getID() const { return idNumber; }
   
-  virtual void write(std::ostream&) const;
+  virtual void write(std::ostream&,const std::string&) const;
 
 };
-
-std::ostream&
-operator<<(std::ostream&,const phitsTally&);
   
 }  // NAMESPACE phitsSystem
 

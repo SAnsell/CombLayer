@@ -39,7 +39,7 @@ namespace essSystem
 */
 
 class BunkerWall : public attachSystem::ContainedComp,
-  public attachSystem::FixedUnit,
+  public attachSystem::FixedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -76,8 +76,6 @@ class BunkerWall : public attachSystem::ContainedComp,
   int baseSurf;                     ///< Real outer surf
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
  public:
 
@@ -93,9 +91,9 @@ class BunkerWall : public attachSystem::ContainedComp,
   void createSector(Simulation&,const size_t,const int,
 		    const int,const int);
   
-  void initialize(const FuncDataBase&,
-		  const attachSystem::FixedComp&,
-		  const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

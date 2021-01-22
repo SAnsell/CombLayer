@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/varList.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 */
 
 class FItem;
+template<typename T> class FList;
 
 class varList
 {
@@ -74,11 +75,22 @@ class varList
   void setValue(const int,const T&);
 
   template<typename T>
-  void addVar(const std::string&,const T&);
-  template<typename T>
-  void setVar(const std::string&,const T&);
-  void removeVar(const std::string&);
+  FList<T>* createList(const std::string&);
 
+  template<typename T>
+  void pushList(const std::string&,const T&);
+
+  template<typename T>
+  void addVar(const std::string&,const T&);
+
+  template<typename T>    
+  void setVar(const std::string&,const T&);
+
+  void setVarItem(const std::string&,FItem*);
+  
+  void removeVar(const std::string&);
+  
+  
   /// Accessors to begin
   varStore::const_iterator begin() const { return varName.begin(); }
   /// Accessors to end

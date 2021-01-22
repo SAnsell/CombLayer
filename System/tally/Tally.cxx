@@ -3,7 +3,7 @@
  
  * File:   tally/Tally.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ Tally::processParticles(std::string& Line)
   if (pos!=std::string::npos)
     {
       Line.erase(0,pos+1);
-      Line=StrFunc::fullBlock(Line);
+      Line=StrFunc::removeOuterSpace(Line);
       pos=Line.find_first_of(", ");
       while(!Line.empty())
         {

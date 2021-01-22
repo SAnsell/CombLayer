@@ -34,11 +34,12 @@ namespace xraySystem
     \brief Chicanes in the optics/expt hutches
   */
   
-class PortChicane : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::ExternalCut
+class PortChicane :
+    public attachSystem::ContainedGroup,
+    public attachSystem::FixedOffset,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
 

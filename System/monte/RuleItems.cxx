@@ -48,6 +48,7 @@
 #include "Rules.h"
 #include "Token.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 
 
@@ -158,6 +159,15 @@ CompObj::findKey(const int)
   */
 {
   return 0;
+}
+
+bool
+CompObj::isEmpty() const
+/*!
+  Rule always empty [no surf]
+ */
+{
+  return 1;
 }
 
 int
@@ -1425,6 +1435,15 @@ ContObj::pairValid(const int SN,const Geometry::Vec3D& Pt) const
   */
 {
   return (key) ? key->pairValid(SN,Pt) : 0;
+}
+
+bool
+ContObj::isEmpty() const
+  /*!
+    Group always empty [no surfaces]
+   */
+{
+  return 1;
 }
 
 bool

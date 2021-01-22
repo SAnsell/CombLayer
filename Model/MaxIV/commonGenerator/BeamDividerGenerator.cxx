@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/BeamDividerGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -57,13 +57,18 @@
 namespace setVariable
 {
 
-BeamDividerGenerator::BeamDividerGenerator() :
-  boxLength(60.0),wallThick(0.2),
-  mainWidth(1.0),exitWidth(1.0),
-  height(3.0),mainXStep(-0.675),exitXStep(0.0),
-  exitAngle(2.86),mainLength(93.0),
-  mainRadius(CF40_22::innerRadius),mainThick(CF40_22::wallThick),
-  exitLength(14.5), exitRadius(CF16::innerRadius),
+template<>
+BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
+  boxLength(56.1),wallThick(0.4),
+  mainWidth(3.0),exitWidth(2.0),
+  height(3.0),
+  mainXStep(-1.37),
+  exitXStep(0.0),
+  exitAngle(3.6),mainLength(32.71),
+  mainRadius(CF40_22::innerRadius),
+  mainThick(CF40_22::wallThick),
+  exitLength(5.1),
+  exitRadius(CF16::innerRadius),
   exitThick(CF16::wallThick),
   flangeARadius(CF63::innerRadius),flangeALength(CF63::flangeLength),
   flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),
@@ -74,8 +79,27 @@ BeamDividerGenerator::BeamDividerGenerator() :
     Constructor and defaults
   */
 {}
-  
-BeamDividerGenerator::~BeamDividerGenerator() 
+
+template<>
+BeamDividerGenerator::BeamDividerGenerator(const CF40&) :
+  boxLength(60.0),wallThick(0.2),
+  mainWidth(1.0),exitWidth(1.0),
+  height(3.0),mainXStep(0.0),exitXStep(0.0),
+  exitAngle(2.86),mainLength(35.5),
+  mainRadius(CF40_22::innerRadius),mainThick(CF40_22::wallThick),
+  exitLength(14.0), exitRadius(CF40_22::innerRadius),
+  exitThick(CF40_22::wallThick),
+  flangeARadius(CF50::innerRadius),flangeALength(CF50::flangeLength),
+  flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),
+  flangeERadius(CF40::innerRadius),flangeELength(CF40::flangeLength),
+  voidMat("Void"),wallMat("Stainless304L"),
+  flangeMat("Stainless304")
+  /*!
+    Constructor and defaults
+  */
+{}
+
+BeamDividerGenerator::~BeamDividerGenerator()
  /*!
    Destructor
  */
@@ -118,17 +142,50 @@ BeamDividerGenerator::setEFlangeCF()
   return;
 }
 
-    
+void
+BeamDividerGenerator::setMainSize(const double BL,const double BAng)
+  /*!
+    Set the main box diveder angles
+   */
+{
+  boxLength=BL;
+  exitAngle=BAng;
+  return;
+}
+
+
+
 void
 BeamDividerGenerator::generateDivider(FuncDataBase& Control,
-				      const std::string& keyName) const
+				      const std::string& keyName,
+				      const double ZAngle,
+				      const bool reverseFlag,
+				      int normalSide) const
+
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param ZAngle :: angle of Beamdivider
+    \param normalSide :: -ver reversed / +ve normal [1 : left : 2 right]
   */
 {
   ELog::RegMethod RegA("BeamDividerGenerator","generateDivider");
+
+  if (reverseFlag)
+    {
+      Control.addVariable(keyName+"YAngle",180.0);  // flip over
+      normalSide*=-1;
+    }
+  if (normalSide>0)
+    Control.addVariable(keyName+"ZAngle",ZAngle+exitAngle);
+  else if (normalSide<0)
+    Control.addVariable(keyName+"ZAngle",ZAngle-exitAngle);
+  else
+    Control.addVariable(keyName+"ZAngle",ZAngle);
+
+  Control.addVariable(keyName+"XStep",-1.1);
+
 
   Control.addVariable(keyName+"BoxLength",boxLength);
   Control.addVariable(keyName+"WallThick",wallThick);
@@ -165,16 +222,18 @@ BeamDividerGenerator::generateDivider(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-
 template void BeamDividerGenerator::setAFlangeCF<CF63>();
+template void BeamDividerGenerator::setAFlangeCF<CF50>();
 template void BeamDividerGenerator::setAFlangeCF<CF40>();
 
+template void BeamDividerGenerator::setBFlangeCF<CF18_TDC>();
 template void BeamDividerGenerator::setBFlangeCF<CF40_22>();
 template void BeamDividerGenerator::setBFlangeCF<CF40>();
 
+template void BeamDividerGenerator::setEFlangeCF<CF18_TDC>();
 template void BeamDividerGenerator::setEFlangeCF<CF40_22>();
 template void BeamDividerGenerator::setEFlangeCF<CF40>();
 
 ///\endcond TEMPLATE
-  
+
 }  // NAMESPACE setVariable

@@ -3,7 +3,7 @@
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -200,11 +201,12 @@ PlateTarget::populate(const FuncDataBase& Control)
   
 void
 PlateTarget::createUnitVector(const attachSystem::FixedComp& FC,
-			      const int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed compontent [front of target void vessel]
     - Y Down the beamline
+    \param sideIndex :: link pint
   */
 {
   ELog::RegMethod RegA("PlateTarget","createUnitVector");
@@ -349,7 +351,6 @@ PlateTarget::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1004 3 -4 5 -6 -52");
-  //  Out+=ModelSupport::getComposite(SMap,surfNum," -52");
   addOuterSurf(Out);
 
 

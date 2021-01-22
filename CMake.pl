@@ -21,11 +21,11 @@ my @masterProg=getAllMain();
 
 
 ## Model Directory
-##my @modelLibDir=qw( bibBuild bnctBuild build chip
+##my @modelLibDir=qw( bibBuild build
 ##                    cuBlock d4cModel delft epbBuild essBuild
 ##                    gammaBuild lensModel moderator
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
-##                    zoom );
+##                     );
 
 ##my @modelNames= @modelLibDir;
 
@@ -35,17 +35,17 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
                scatMatInc specialInc transportInc testInclude );
 
 
-my @mainLib=qw( visit src simMC  construct physics input process
+my @mainLib=qw( visit src simMC  construct
+    physics input generalProcess objectMod
     transport scatMat endf crystal source monte funcBase log monte
-    flukaProcess flukaPhysics
-    flukaTally phitsProcess
-    phitsTally phitsSupport tally
-    geometry mersenne src world work
+    flukaProcess flukaPhysics flukaTally
+    phitsProcess phitsTally phitsSupport
+    tally geometry mersenne src world work
     xml poly support weights
-    insertUnit md5 construct
+    insertUnit md5 construct modelSupport
     global constructVar physics simMC
     transport attachComp visit poly
-    flukaMagnetic phitsPhysics
+    magnetic phitsPhysics mcnpProcess
     scatMat endf crystal );
 
 my $gM=new CMakeList;
@@ -74,8 +74,8 @@ foreach my $mainProg (@masterProg)
 			     beer  bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
-			     trex  vor  vespa shortOdin shortNmx
-			     shortDream simpleItem beamline instrument );
+			     trex  vor  vespa
+			     simpleItem beamline instrument );
 
 	push(@ess,@mainLib);
 	$gM->addDepUnit("ess", [@ess,@essSupport]);
@@ -87,8 +87,8 @@ foreach my $mainProg (@masterProg)
 			     beer  bifrost  cspec  dream  estia
 			     freia  heimdal  loki  magic  miracles
 			     nmx  nnbar  odin  skadi  testBeam
-			     trex  vor  vespa shortOdin shortNmx
-			     shortDream simpleItem beamline instrument );
+			     trex  vor  vespa
+			     simpleItem beamline instrument );
 
 	push(@essBeam,@mainLib);
 	$gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
@@ -128,7 +128,7 @@ foreach my $mainProg (@masterProg)
 
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( moderator build chip  build ralBuild zoom  );
+	my @fullBuild = qw( moderator t2Build ralBuild );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }

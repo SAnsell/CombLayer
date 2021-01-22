@@ -3,7 +3,7 @@
  
  * File:   source/flukaSourceSelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedUnit.h"
 #include "FixedOffsetUnit.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
@@ -94,6 +95,16 @@ flukaSourceSelection(Simulation& System,
   ELog::RegMethod RegA("flukaSourceSelector[F]","flukaSourceSelection");
   
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
+
+  attachSystem::FixedUnit beamAxis("beamAxis");
+  const bool axisFlag(IParam.flag("sdefVec"));
+  if (axisFlag)
+    {
+      const Geometry::Vec3D Org=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),"sdefVec",0);
+      const Geometry::Vec3D Axis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,1,0),"sdefVec",1);
+      const Geometry::Vec3D ZAxis=IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,1),"sdefVec",2);
+      beamAxis.createUnitVector(Org,Axis,ZAxis);
+    }
   
   const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
   const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
@@ -105,8 +116,8 @@ flukaSourceSelection(Simulation& System,
       StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
   
-  const attachSystem::FixedComp& FC=
-    (DObj.empty()) ?  World::masterOrigin() :
+  const attachSystem::FixedComp& FC= (DObj.empty()) ?
+    ((axisFlag) ? beamAxis : World::masterOrigin()) :
     *(System.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
   const long int linkIndex=(DSnd.empty()) ? 0 :  FC.getSideIndex(DSnd);
@@ -128,11 +139,12 @@ flukaSourceSelection(Simulation& System,
       
       else if (sdefType=="Beam" || sdefType=="beam")
 	sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
+
       
       else if (sdefType=="external" || sdefType=="External" ||
 	       sdefType=="source" || sdefType=="Source")
 	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
-      
+	 
       else
 	{
 	  ELog::EM<<"sdefType :\n"
@@ -142,27 +154,31 @@ flukaSourceSelection(Simulation& System,
 		  <<ELog::endBasic;
 	}
     }
-
-  ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
-  processPolarization(inputMap,sName);
   
-
+  ELog::EM<<"Source name(s) == "<<sName<<" "<<eName<<ELog::endDiag;
+  processPolarization(inputMap,sName);
   
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
   if (!eName.empty())
-    System.setExtraSourceName(eName);
+    {
+      if (sName.empty())
+	throw ColErr::EmptyValue<std::string>
+	  ("sourceName empty and extraName valid:"+eName);
+      
+      System.setExtraSourceName(eName);
+    }
   
   return;
 }
 
-
 void
 processPolarization(const mainSystem::MITYPE& inputMap,
 		    const std::string& sourceName)
-/*!
+  /*!
     Process the polarization vector
-*/
+    \param inputMap :: IParam input stream
+  */
 {
   ELog::RegMethod RegA("SourceSelector[F]","processPolarization");
 

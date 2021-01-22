@@ -3,7 +3,7 @@
 
  * File: cosaxs/cosaxsExptLine.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -245,7 +246,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
   gateB->createAll(System,*diagUnit,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
   gateB->insertInCell(System,outerCell);
-  
+
   //diffPump->setCutSurf("front",*gateB,2);
   diffPump->createAll(System,*gateB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
@@ -255,8 +256,8 @@ cosaxsExptLine::buildObjects(Simulation& System)
   telescopicSystem->createAll(System,*diffPump,-7);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*telescopicSystem,2);
-  telescopicSystem->insertInCell(System,outerCell);
-  telescopicSystem->insertInCell(System,diffPump->getCell("FlangeFrontVoid"));
+  telescopicSystem->insertAllInCell(System,outerCell);
+  telescopicSystem->insertAllInCell(System,diffPump->getCell("FlangeFrontVoid"));
 
 
   // GOOD ABOVE this point:
@@ -271,11 +272,13 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*sampleArea,2);
   sampleArea->insertInCell(System,outerCell);
 
+  
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
 
   
   tube->insertInCell(System,outerCell);
-  tube->createPorts(System);  
+
+  //  tube->createPorts(System);  
   setCell("SurroundVoid",outerCell);
   lastComp=tube;
 

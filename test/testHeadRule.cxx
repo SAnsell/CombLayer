@@ -53,6 +53,7 @@
 #include "Rules.h"
 #include "RuleBinary.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfIndex.h"
 #include "mapIterator.h"
@@ -210,8 +211,8 @@ testHeadRule::testAddInterUnion()
 
       const std::string& IStr=std::get<1>(tc);
       const std::string& UStr=std::get<2>(tc);
-      if (StrFunc::fullBlock(B.display())!=UStr ||
-	  StrFunc::fullBlock(A.display())!=IStr)
+      if (StrFunc::removeOuterSpace(B.display())!=UStr ||
+	  StrFunc::removeOuterSpace(A.display())!=IStr)
 	{
 	  ELog::EM<<"Failed on test:"<<ELog::endDiag;
 	  ELog::EM<<"A   == "<<A.display()<<ELog::endDiag;
@@ -459,7 +460,7 @@ testHeadRule::testGetComponent()
 	  return -1;
 	}
       HeadRule ARes=tmp.getComponent(std::get<1>(tc),std::get<2>(tc));
-      const std::string AStr=StrFunc::fullBlock(ARes.display());
+      const std::string AStr=StrFunc::removeOuterSpace(ARes.display());
       if (AStr!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Test Failed: "<<cnt<<ELog::endDiag;

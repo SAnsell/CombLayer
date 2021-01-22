@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/GrateMonoBox.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -59,6 +59,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -66,7 +67,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
@@ -93,7 +94,7 @@ GrateMonoBox::GrateMonoBox(const std::string& Key) :
   */
 {}
 
-GrateMonoBox::~GrateMonoBox() 
+GrateMonoBox::~GrateMonoBox()
   /*!
     Destructor
   */
@@ -107,7 +108,7 @@ GrateMonoBox::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("GrateMonoBox","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -142,7 +143,7 @@ GrateMonoBox::populate(const FuncDataBase& Control)
   portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
 					   keyName+"PortTubeRadius");
 
-  
+
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
@@ -162,12 +163,12 @@ GrateMonoBox::populate(const FuncDataBase& Control)
       (flangeBRadius,portBWallThick+portBTubeRadius,
        "Flange to small for "+keyName+" port B");
 
-  
+
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,CT;
-  int capMat;
-  int OFlag;
+  //  double L,R,W,FR,FT,CT;
+  //  int capMat;
+  //  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -177,14 +178,14 @@ GrateMonoBox::populate(const FuncDataBase& Control)
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-      
+
 
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
-    }					    
+    }
 
-  
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -229,7 +230,7 @@ GrateMonoBox::createSurfaces()
 	    Origin+Y*(portBTubeLength+wallThick+voidLength/2.0),Y);
       setBack(-SMap.realSurf(buildIndex+102));
     }
-  
+
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
@@ -237,7 +238,7 @@ GrateMonoBox::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
   ModelSupport::buildCylinder
     (SMap,buildIndex+7,Origin-Z*voidDepth,Y,voidRadius);
 
@@ -271,8 +272,8 @@ GrateMonoBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,Y,flangeBRadius);
 
   // Flange cut
-  FrontBackCut::getShiftedFront(SMap,buildIndex+111,1,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+211,-1,Y,flangeBLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+111,Y,flangeALength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+211,Y,-flangeBLength);
 
 
   // Top plate:
@@ -288,7 +289,7 @@ GrateMonoBox::createSurfaces()
 			   Origin+Z*(voidHeight-overHangDepth),Z);
   ModelSupport::buildCylinder
     (SMap,buildIndex+1007,Origin-Z*voidDepth,Y,voidRadius+overHangExtent);
-    
+
   return;
 }
 
@@ -305,11 +306,11 @@ GrateMonoBox::createObjects(Simulation& System)
 
   const std::string FPortStr(frontRule());
   const std::string BPortStr(backRule());
-  
-  // Main Void 
+
+  // Main Void
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  // Base Void 
+  // Base Void
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 -5");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
@@ -345,7 +346,7 @@ GrateMonoBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"1001 -11  1003 -1004 (-1007:5) -6 127 ");
   CellMap::makeCell("FrontScreen",System,cellIndex++,voidMat,0.0,Out);
-				 
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 -1002  1003 -1004 (-1007:5) -6 227 ");
   CellMap::makeCell("BackScreen",System,cellIndex++,voidMat,0.0,Out);
@@ -409,19 +410,19 @@ GrateMonoBox::createLinks()
 
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-  
-  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  FrontBackCut::createBackLinks(*this,BCentre,Y);  
+
+  FrontBackCut::createFrontLinks(*this,ACentre,Y);
+  FrontBackCut::createBackLinks(*this,BCentre,Y);
   // FixedComp::setConnect(2,Origin-X*((width+voidWidth)/2.0),-X);
   // FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   // FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
-  // FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
+  // FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);
 
   // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
   // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
   // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
   // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
-  
+
   return;
 }
 
@@ -440,13 +441,13 @@ GrateMonoBox::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

@@ -45,8 +45,7 @@ class BeamDividerGenerator
   double exitWidth;                ///< box width on right from exitOrg
   double height;                   ///< box height
 
-  double mainXStep;                ///< Main step [from box end]
-  
+  double mainXStep;                ///< Main step
   double exitXStep;                ///< Exit step [from box end]
   double exitAngle;                ///< angle on right
 
@@ -73,17 +72,23 @@ class BeamDividerGenerator
   
  public:
 
-  BeamDividerGenerator();
+  template<typename CF>
+  BeamDividerGenerator(const CF&);
   BeamDividerGenerator(const BeamDividerGenerator&);
   BeamDividerGenerator& operator=(const BeamDividerGenerator&);
   virtual ~BeamDividerGenerator();
 
+  void setMainSize(const double,const double);
+  
   template<typename T> void setAFlangeCF();
   template<typename T> void setBFlangeCF();
   template<typename T> void setEFlangeCF();
   
   virtual void generateDivider(FuncDataBase&,
-			       const std::string&)  const;
+			       const std::string&,
+			       const double =0.0,          // angle
+			       const bool =0,
+			       int =0)  const;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   include/SimPHITS.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
 
 class localRotate;
 
+namespace magnetSystem
+{
+  class magnetUnit;
+}
+
 namespace phitsSystem
 {
   class phitsTally;
@@ -43,14 +48,20 @@ class SimPHITS : public Simulation
 
   /// Tally  : tally
   typedef std::map<std::string,phitsSystem::phitsTally*> PTallyTYPE;
+  /// Name : magnet
+  typedef std::map<std::string,
+    std::shared_ptr<magnetSystem::magnetUnit>> MagTYPE;
 
  private:
 
+  std::string fileName;                ///< Output file name [for tallies]
   int icntl;                           ///< ICNTL
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
 
   PTallyTYPE PTItem;                   ///< Phits tally map
+
+  MagTYPE MagItem;                ///< Fluka magnetic map
   
   phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics 
   
@@ -58,6 +69,8 @@ class SimPHITS : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeSource(std::ostream&) const;
+  void writeImportance(std::ostream&) const;
+  void writeMagnet(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
@@ -81,12 +94,22 @@ class SimPHITS : public Simulation
   /// access to physics
   phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
 
-
+  virtual std::map<int,int>
+  renumberCells(const std::vector<int>&,const std::vector<int>&);
+  
   // TALLY Processing 
   void addTally(const phitsSystem::phitsTally&);
   phitsSystem::phitsTally* getTally(const int) const;
   PTallyTYPE& getTallyMap() { return PTItem; }            ///< Access tally map
   const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
+  int getNextTallyID() const;
+
+  void addMagnetObject(const MagTYPE::mapped_type&);
+  
+  /// set generic filename
+  void setFileName(const std::string& FN) { fileName=FN; }
+  /// access generic filename
+  const std::string&  getFileName() const { return fileName; }
   
   virtual void write(const std::string&) const;
 

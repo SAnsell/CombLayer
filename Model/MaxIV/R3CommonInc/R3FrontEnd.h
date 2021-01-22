@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/R3FrontEnd.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ namespace constructSystem
 namespace xraySystem
 {
 
+  class CylGateValve;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -78,7 +79,7 @@ namespace xraySystem
 class R3FrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::FrontBackCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -87,8 +88,9 @@ class R3FrontEnd :
 
   /// point to stop [normal none]
   std::string stopPoint;          
+
   /// Inner buildzone
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -107,7 +109,6 @@ class R3FrontEnd :
 
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeInsert> chokeInsert;
-
 
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
@@ -139,7 +140,7 @@ class R3FrontEnd :
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
@@ -198,16 +199,15 @@ class R3FrontEnd :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   MonteCarlo::Object*,
 		   const attachSystem::FixedComp&,
 		   const long int) =0;
 
 
-  void buildHeatTable(Simulation&,MonteCarlo::Object*,
+  void buildHeatTable(Simulation&,
 		      const attachSystem::FixedComp&,const long int);
-  void buildApertureTable(Simulation&,MonteCarlo::Object*,
+  void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&,MonteCarlo::Object*,
+  void buildShutterTable(Simulation&,
 			 const attachSystem::FixedComp&,const long int);  
 
   

@@ -59,11 +59,12 @@ namespace setVariable
 
 GateValveGenerator::GateValveGenerator() :
   length(7.0),radius(-1.0),width(24.0),height(46.0),depth(10.5),
-  wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.0),
-  portBRadius(5.0),portBThick(1.0),portBLen(1.0),
+  wallThick(0.5),portARadius(CF40::flangeRadius),
+  portAThick(1.0),portALen(1.0),
+  portBRadius(CF40::flangeRadius),portBThick(1.0),portBLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
-  bladeMat("Aluminium"),wallMat("Stainless304")
+  bladeMat("Aluminium"),wallMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -126,10 +127,11 @@ GateValveGenerator::setOuter(const double L,const double W,
     \param D :: Depth
    */
 {
-  length=L;
-  width=W;
-  height=H;
-  depth=D;
+  length=(L>Geometry::zeroTol) ? L : length;
+  width=(W>Geometry::zeroTol) ? W : width;
+  height=(H>Geometry::zeroTol) ? H : height;
+  depth=(D>Geometry::zeroTol) ? D : depth;
+	
   return;
 }
 
@@ -180,6 +182,26 @@ GateValveGenerator::setBPort(const double R,const double L,
   return;
 }
 
+template<typename innerCF,typename outerCF>
+void
+GateValveGenerator::setPortPairCF()
+  /*!
+    Setter for ports based on two radii
+  */
+{
+  if (outerCF::flangeRadius>innerCF::innerRadius+Geometry::zeroTol)
+    {
+      portARadius=innerCF::innerRadius;
+      portALen=innerCF::flangeLength;
+      portAThick=outerCF::flangeRadius-innerCF::innerRadius;
+      portBRadius=innerCF::innerRadius;
+      portBLen=innerCF::flangeLength;
+      portBThick=outerCF::flangeRadius-innerCF::innerRadius;
+    }
+
+  return;
+}
+
 template<typename CF>
 void
 GateValveGenerator::setAPortCF()
@@ -212,7 +234,8 @@ GateValveGenerator::setBPortCF()
 void
 GateValveGenerator::generateValve(FuncDataBase& Control,
 				  const std::string& keyName,
-				  const double yStep,const int closedFlag) const
+				  const double yStep,
+				  const int closedFlag) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -285,6 +308,8 @@ template void GateValveGenerator::setBPortCF<CF40>();
 template void GateValveGenerator::setBPortCF<CF40_22>();
 template void GateValveGenerator::setBPortCF<CF63>();
 template void GateValveGenerator::setBPortCF<CF100>();
+
+template void GateValveGenerator::setPortPairCF<CF40,CF63>();
 
 ///\endcond TEMPLATE
 

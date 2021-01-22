@@ -1,3 +1,5 @@
+// Usage:
+// povray povray/singleItem.pov <<< '"CorrectorMag"'
 #version 3.7;
 #include "colors.inc"
 #include "metals.inc"
@@ -6,7 +8,12 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 0;
+#fopen STDIN "/dev/stdin" read
+#read (STDIN, ITEM)
+
+// #fopen STDOUT "/dev/stdout" write
+// #write (STDOUT, ITEM)
+
 // PROJECTION:
 // 0=perspective
 // 1=panoramic - good to display whole beam line
@@ -15,10 +22,67 @@
 #declare projection = 0;
 #declare cameraAngle = 90;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
+#switch (0)
+  #case (strcmp(ITEM,"ButtonBPM"))
+    #declare cameraLocation = <-10, -10.0, 10.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 0.0>;
+    #declare cameraAngle = 40;
+  #break
+  #case (strcmp(ITEM,"CeramicGap"))
+    #declare cameraLocation = <-15, 20.0, 17.0>;
+    #declare cameraLookAt   = <3.0, 5, -4.0>;
+    #declare cameraAngle = 40;
+  #break
+  #case (strcmp(ITEM,"CleaningMagnet"))
+    #declare cameraLocation = <50, 70, 50>;
+    #declare cameraLookAt   = <0, 20, -5>;
+    #declare cameraAngle = 35;
+  #break
+  #case(strcmp(ITEM,"CorrectorMag"))
+    #declare cameraLocation = <-30, -30.0, 20.0>;
+    #declare cameraLookAt   = <0, -3, 0.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"Jaws"))
+    #declare cameraLocation = <50, -30, 50>;
+    #declare cameraLookAt   = <0, 13, -3>;
+    #declare cameraAngle = 30;
+  #break
+  #case (strcmp(ITEM,"LSexupole"))
+    #declare cameraLocation = <-30, 70.0, 30.0>;
+    #declare cameraLookAt   = <10.0, 0.0, -10.0>;
+    #declare cameraAngle = 40;
+  #break
+  #case (strcmp(ITEM,"Sexupole"))
+    #declare cameraLocation = <-30, 70.0, 30.0>;
+    #declare cameraLookAt   = <10.0, 5.0, -11.0>;
+    #declare cameraAngle = 25;
+  #break
+  #case (strcmp(ITEM,"uVac")) // UndulatorVacuum
+    #declare cameraLocation = <-200, -50.0, 100.0>;
+    #declare cameraLookAt   = <0.0, 140.0, 0.0>;
+    #declare cameraAngle = 60;
+  #break
+  #case (strcmp(ITEM,"YagUnit"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+  #case (strcmp(ITEM,"YagUnitBig"))
+    #declare cameraLocation = <-30, -30.0, 40.0>;
+    #declare cameraLookAt   = <0.0, 0.0, 10.0>;
+    #declare cameraAngle = 50;
+  #break
+#else
+    #declare cameraLocation = <100, 100, 100>;
+    #declare cameraLookAt   = <0, 0, 0>;
+#end
+
+#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   #declare RadOK=0;
@@ -62,20 +126,6 @@ global_settings {
     }
   #end
 }
-
-#switch ( view )
-  #case(0)
-    #declare cameraLocation = <20, -10.0, 30.0>;
-    #declare cameraLookAt   = <0, 10, 0>;
-    #declare cameraAngle = 60;
-  #break
-  #else
-    #declare cameraLocation = <100, 100, 100>;
-    #declare cameraLookAt   = <0, 0, 0>;
-#break
-#end
-
-#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   light_source { // front
@@ -122,4 +172,4 @@ camera {
 
 background { color White }
 
-#include "b.inc"
+#include "a.inc"

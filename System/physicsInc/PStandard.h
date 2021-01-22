@@ -34,7 +34,7 @@ namespace physicsSystem
   \brief Holds cut cards
   
   Holds any card which indexes.
-  Has a particle list ie imp:n,h nad
+  Has a particle list ie cut:n,h nad
   a cell mapping to number. The map is ordered
   prior to being written.
 */

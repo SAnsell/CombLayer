@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -193,7 +194,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
 
   outerCell=buildZone.createFinalVoidUnit(System,masterCell,*pipeB,2);
 
-  JPipe->addInsertCell(outerCell);
+  JPipe->addAllInsertCell(outerCell);
   JPipe->setFront(*pipeB,2);
   JPipe->createAll(System,*pipeB,2);
     

@@ -48,17 +48,14 @@ namespace shutterSystem
 
 class GeneralShutter :
   public attachSystem::FixedGroup,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::ExternalCut
 {
  protected:
 
   const size_t shutterNumber;         ///< number of the shutter
   const std::string baseName;         ///< Basic name
-
-  int populated;                      ///< populated / not
-
-  int divideSurf;                     ///< Divider Number
-  Geometry::Plane* DPlane;            ///< Divided plane [if set]
 
   double voidXoffset;                 ///< Main void vessel offset 
   double innerRadius;                 ///< Inner radius
@@ -121,10 +118,9 @@ class GeneralShutter :
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
-  std::string divideStr() const;
   
   void createStopBlocks(Simulation&,const size_t);
-  void createCutUnit(Simulation&,const std::string&);
+  void createCutUnit(Simulation&,const HeadRule&);
   void createBlocks(Simulation&);
   void createLinks();
   void applyRotations(const double);
@@ -142,8 +138,6 @@ class GeneralShutter :
   /// Set closed/open
   void setClosed(const int C) { closed=C; }
 
-  /// Access plane
-  const Geometry::Plane* getDPlane() const { return DPlane; }
   /// Access Origin
   const Geometry::Vec3D& getOrigin() const { return Origin; }
   /// Get target Center
@@ -161,8 +155,6 @@ class GeneralShutter :
   
   /// Access flat-angle
   double getAngle() const { return xyAngle; }
-  /// Access divide surface 
-  int getDivideSurf() const { return divideSurf; }
   /// Access Axis
   const Geometry::Vec3D& getXYAxis() const { return XYAxis; }
   /// Access Beam Axis
@@ -170,11 +162,6 @@ class GeneralShutter :
   /// Access outer limit
   double getORadius() const { return outerRadius; }
   
-  void setDivide(const int);
-  void setGlobalVariables(const double,const double,
-			  const double,const double);
-  void setExternal(const int,const int,const int,const int);
-
   virtual int exitWindow(const double,std::vector<int>&,
 			 Geometry::Vec3D&) const;
 

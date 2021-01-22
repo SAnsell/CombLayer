@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -375,7 +376,7 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
 
   pipeA->createAll(System,initFC,sideIndex);
   outerCell= buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
+  pipeA->insertAllInCell(System,outerCell);
 
   // FAKE insertcell: reqruired
   M1Tube->addAllInsertCell(masterCell->getName());
@@ -401,7 +402,7 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
 
   pipeB->createAll(System,*bellowC,2);
   outerCell= buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
+  pipeB->insertAllInCell(System,outerCell);
 
   screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
@@ -436,7 +437,7 @@ speciesOpticsBeamline::buildSlitPackage(Simulation& System,
   pipeC->createAll(System,*gateA,2);
   outerCell=buildZone.createNamedOuterVoidUnit
     (System,"PipeCOuterVoid",masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+  pipeC->insertAllInCell(System,outerCell);
 
   // FAKE insertcell: required
   slitTube->addAllInsertCell(masterCell->getName());
@@ -465,7 +466,7 @@ speciesOpticsBeamline::buildSlitPackage(Simulation& System,
 
   pipeD->createAll(System,*slitTube,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeD,2);
-  pipeD->insertInCell(System,outerCell);
+  pipeD->insertAllInCell(System,outerCell);
 
   const constructSystem::portItem& SPI=slitTube->getPort(3);
   // this needs the plate as well if constructed
@@ -505,7 +506,7 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   monoVessel->createAll(System,*offPipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
-  
+
   grating->addInsertCell(monoVessel->getCell("Void"));
   grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
@@ -540,7 +541,7 @@ speciesOpticsBeamline::buildM3Mirror(Simulation& System,
 
   pipeE->createAll(System,*bellowD,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeE,2);
-  pipeE->insertInCell(System,outerCell);
+  pipeE->insertAllInCell(System,outerCell);
 
 
   bellowE->createAll(System,*pipeE,2);
@@ -549,7 +550,7 @@ speciesOpticsBeamline::buildM3Mirror(Simulation& System,
   
   pipeF->createAll(System,*bellowE,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
-  pipeF->insertInCell(System,outerCell);
+  pipeF->insertAllInCell(System,outerCell);
 
   mirrorJaws->createAll(System,*pipeF,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorJaws,2);
@@ -687,12 +688,12 @@ speciesOpticsBeamline::buildOutGoingPipes(Simulation& System,
 {
   ELog::RegMethod RegA("speciesOpticsBeamline","buildOutgoingPipes");
 
-  outPipeA->addInsertCell(hutCells);
-  outPipeA->addInsertCell(leftCell);
+  outPipeA->addAllInsertCell(hutCells);
+  outPipeA->addAllInsertCell(leftCell);
   outPipeA->createAll(System,*bellowAC,2);
   
-  outPipeB->addInsertCell(hutCells);
-  outPipeB->addInsertCell(rightCell);
+  outPipeB->addAllInsertCell(hutCells);
+  outPipeB->addAllInsertCell(rightCell);
   outPipeB->createAll(System,*bellowBC,2);
 
   screenC->addAllInsertCell(leftCell);
@@ -744,11 +745,11 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
   addLeadBrick(System);
-
-
+  
   buildMono(System,masterCellA,*pipeD,2);
   buildM3Mirror(System,masterCellA,*offPipeB,2);
 
+  
   MonteCarlo::Object* masterCellB(0);
   const constructSystem::portItem& API=M3Tube->getPort(1);
   const long int sideIndex=API.getSideIndex("OuterPlate");

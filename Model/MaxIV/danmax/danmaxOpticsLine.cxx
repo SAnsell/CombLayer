@@ -3,7 +3,7 @@
  
  * File: danmax/danmaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -471,7 +472,7 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","buildMono");
+  ELog::RegMethod RegA("danmaxOpticsLine","buildMirrorMono");
 
   int outerCell;
 
@@ -645,7 +646,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   // dump cell for joinPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
   if (preInsert)
-    preInsert->insertInCell(System,outerCell);
+    preInsert->insertAllInCell(System,outerCell);
 
   // real cell for initPipe
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);

@@ -3,7 +3,7 @@
  
  * File:   physics/ZoneUnit.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,7 +179,21 @@ ZoneUnit<T>::procZone(const objectGroups& OGrp,
       if (StrFunc::convert(StrItem[1],cNum) &&
 	  StrFunc::convert(StrItem[2],dNum) )
 	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,dNum));	
+	  int ACell=(OGrp.isActive(cNum) ? cNum : 0);
+	  for(int CN=cNum+1;CN<dNum;CN++)
+	    {
+	      if (ACell && !OGrp.isActive(CN))
+		{
+		  Zones.push_back(MapSupport::Range<int>(ACell,CN-1));
+		  ACell=0;
+		}
+	      else if (!ACell && OGrp.isActive(CN))
+		{
+		  ACell=CN;
+		}
+	    }
+	  if (ACell)
+	    Zones.push_back(MapSupport::Range<int>(ACell,dNum));
 	  cut=3;
 	}
     }

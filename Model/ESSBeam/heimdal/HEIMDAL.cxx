@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -216,7 +217,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FTA,thermalIndex);
 
   // Offset from VPipeB center
@@ -230,7 +231,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 	  <<ELog::endDiag;
   ELog::EM<<"Thermal = "<<FocusTB->getKey("Guide0").getLinkAxis(2)
 	  <<ELog::endDiag;
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
 
   FocusTC->addInsertCell(VPipeC->getCells("Void"));
@@ -255,13 +256,13 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   TChopA->insertAxle(System,*ADiskOne);
   TChopA->insertAxle(System,*ADiskTwo);
   
-  VPipeTD->addInsertCell(bunkerVoid);
+  VPipeTD->addAllInsertCell(bunkerVoid);
   VPipeTD->createAll(System,TChopA->getKey("Beam"),2);
 
   FocusTD->addInsertCell(VPipeTD->getCells("Void"));
   FocusTD->createAll(System,*VPipeTD,0,*VPipeTD,0);
 
-  VPipeCD->addInsertCell(bunkerVoid);
+  VPipeCD->addAllInsertCell(bunkerVoid);
   VPipeCD->createAll(System,FocusCC->getKey("Guide0"),2);
 
   // First part of cold guide
@@ -279,7 +280,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   BDisk->createAll(System,TChopB->getKey("Main"),0);
   TChopB->insertAxle(System,*BDisk);
   
-  VPipeTE->addInsertCell(bunkerVoid);
+  VPipeTE->addAllInsertCell(bunkerVoid);
   VPipeTE->createAll(System,TChopB->getKey("Beam"),2);
 
   FocusTE->addInsertCell(VPipeTE->getCells("Void"));
@@ -293,7 +294,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
                     ChopperT0->getKey("BuildBeam"),0);
   ChopperT0->insertAxle(System,*T0Disk);
 
-  VPipeTF->addInsertCell(bunkerVoid);
+  VPipeTF->addAllInsertCell(bunkerVoid);
   VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);
 
   FocusTF->addInsertCell(VPipeTF->getCells("Void"));

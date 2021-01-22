@@ -24,11 +24,18 @@
 
 class Simulation;
 
+namespace insertSystem
+{
+  class insertCylinder;
+  class insertPlate;
+}
 
 namespace xraySystem
 {
   class QuadUnit;
   class DipoleChamber;
+  class DipoleExtract;
+  class DipoleSndBend;
   class VacuumPipe;
   
 /*!
@@ -44,12 +51,15 @@ namespace xraySystem
 
 class MagnetBlock :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
 
+  std::string stopPoint;        ///< Stop point (option -> Quadrupole")
+  
+  double blockXStep;            ///< Step across of main block
   double blockYStep;            ///< Step forward of main block
   double aLength;               ///< first length  (x2)
   double bLength;               ///< second length (x2)
@@ -68,7 +78,19 @@ class MagnetBlock :
 
   /// Dipole chamber
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+  /// Dipole extraction [no field]
+  std::shared_ptr<xraySystem::DipoleExtract> dipoleExtract;
+  /// Dipole bend 2
+  std::shared_ptr<xraySystem::DipoleSndBend> dipoleSndBend;
+  /// Dipole extraction [no field]
+  std::shared_ptr<xraySystem::DipoleExtract> dipoleOut;
 
+  /// electron cut cell [straight line]
+  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -77,7 +99,9 @@ class MagnetBlock :
   void createEndPieces();
 
   void buildInner(Simulation&);
-  
+  void insertInner(Simulation&);
+  void buildElectronCut(Simulation&);
+    
  public:
 
   MagnetBlock(const std::string&);
@@ -85,6 +109,10 @@ class MagnetBlock :
   MagnetBlock& operator=(const MagnetBlock&);
   virtual ~MagnetBlock();
 
+  /// setter for stop point
+  void setStopPoint(const std::string& S) { stopPoint=S; }
+  
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

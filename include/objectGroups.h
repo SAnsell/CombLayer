@@ -3,7 +3,7 @@
  
  * File:   include/objectGroups.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,6 +87,7 @@ class objectGroups
   
   std::string inRange(const int) const;
   bool hasCell(const std::string&,const int) const;
+  bool builtFCName(const std::string&) const;
 
   int calcRenumber(const int) const;
     
@@ -105,6 +106,7 @@ class objectGroups
 
   bool hasRegion(const std::string&) const;
   bool hasObject(const std::string&) const;
+  bool hasActiveObject(const std::string&) const;  
 
   bool isActive(const int) const;
   
@@ -123,15 +125,15 @@ class objectGroups
   int getFirstCell(const std::string&) const;
   int getLastCell(const std::string&) const;
   std::vector<int> getObjectRange(const std::string&) const;
+
   const groupRange& getGroup(const std::string&) const;
   
-
-
+  std::set<std::string> getAllObjectNames() const;
   void rotateMaster();
 
   void removeObject(const std::string&);
   
-  void write(const std::string&) const;
+  void write(const std::string&,const bool =0) const;
 
   std::ostream& writeRange(std::ostream&,const std::string&) const;
   

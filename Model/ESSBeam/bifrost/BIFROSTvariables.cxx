@@ -99,7 +99,8 @@ BIFROSTvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"bifrostFA",350.0,8.0,5.0 ,10.0,5.0);
   
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"bifrostPipeB",8.0,46.0);
+  PipeGen.generatePipe(Control,"bifrostPipeB",46.0);
+  Control.addVariable("bifrostPipeBYStep",8.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFB",44.0, 5.0,4.0, 5.0,4.0);
@@ -134,7 +135,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeC",2.0,400.0);
+  PipeGen.generatePipe(Control,"bifrostPipeC",400.0);
+  Control.addVariable("bifrostPipeCYStep",2.0);
   Control.addVariable("bifrostPipeCNDivision",1);
 
   FGen.clearYOffset();
@@ -154,7 +156,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeD",2.0,500.0);
+  PipeGen.generatePipe(Control,"bifrostPipeD",500.0);
+  Control.addVariable("bifrostPipeDYStep",2.0);
 
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"bifrostFD",496.0, 13.0,13.0);   
@@ -163,7 +166,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeE",2.0,400.0);
+  PipeGen.generatePipe(Control,"bifrostPipeE",400.0);
+  Control.addVariable("bifrostPipeEYStep",2.0);
 
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"bifrostFE",396.0, 13.0,13.0);   
@@ -181,7 +185,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeF",2.0,481.5);
+  PipeGen.generatePipe(Control,"bifrostPipeF",481.5);
+  Control.addVariable("bifrostPipeFYStep",2.0);
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFF",477.5, 13.0,4.0, 13.0,4.0);   
@@ -227,7 +232,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeWall",1.0,348.0);
+  PipeGen.generatePipe(Control,"bifrostPipeWall",348.0);
+  Control.addVariable("bifrostPipeWallYStep",1.0);
   // Guide in wall
   FGen.generateTaper(Control,"bifrostFWall",344.0,4.0,5.232, 4.0,5.232);
 
@@ -240,7 +246,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeOutA",4.0,600);
+  PipeGen.generatePipe(Control,"bifrostPipeOutA",600);
+  Control.addVariable("bifrostPipeOutAYStep",4.0);
 
   // Guide at 9.2m (part of a 4->8cm in 20m)
   FGen.clearYOffset();
@@ -250,7 +257,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeOutB",4.0,600);
+  PipeGen.generatePipe(Control,"bifrostPipeOutB",600);
+  Control.addVariable("bifrostPipeOutBYStep",4.0);
 
   // Guide at 9.2m (part of a 4->8cm in 20m)
 
@@ -261,7 +269,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(7.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeOutC",4.0,480.0);
+  PipeGen.generatePipe(Control,"bifrostPipeOutC",480.0);
+  Control.addVariable("bifrostPipeOutCYStep",4.0);
 
   // Guide at 9.2m (part of a 4->8cm in 20m)
   FGen.clearYOffset();
@@ -270,8 +279,9 @@ BIFROSTvariables(FuncDataBase& Control)
   // ARRAY SECTION
   for(size_t i=0;i<8;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
-      PipeGen.generatePipe(Control,"bifrostPipeR"+strNum,4.0,600.0);
+      const std::string strNum(std::to_string(i));
+      PipeGen.generatePipe(Control,"bifrostPipeR"+strNum,600.0);
+      Control.addVariable("bifrostPipeR"+strNum+"YStep",4.0);
       FGen.generateRectangle(Control,"bifrostFOutR"+strNum,596.0,8.0,8.0);   
     }
 
@@ -302,8 +312,9 @@ BIFROSTvariables(FuncDataBase& Control)
   double yStep(14.0);
   for(size_t i=0;i<7;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
-      PipeGen.generatePipe(Control,"bifrostPipeS"+strNum,yStep,600.0);
+      const std::string strNum(std::to_string(i));
+      PipeGen.generatePipe(Control,"bifrostPipeS"+strNum,600.0);      
+      Control.addVariable("bifrostPipeS"+strNum+"YStep",yStep);
       FGen.generateRectangle(Control,"bifrostFOutS"+strNum,596.0,8.0,8.0);
       yStep=4.0;
     }
@@ -312,8 +323,9 @@ BIFROSTvariables(FuncDataBase& Control)
   double gap(8.0);
   for(size_t i=0;i<4;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
-      PipeGen.generatePipe(Control,"bifrostPipeE"+strNum,yStep,500.0);
+      const std::string strNum(std::to_string(i));
+      PipeGen.generatePipe(Control,"bifrostPipeE"+strNum,500.0);
+      Control.addVariable("bifrostPipeE"+strNum+"YStep",yStep);
       FGen.generateTaper(Control,"bifrostFOutE"+strNum,496.0,
                          gap,gap-1.0,gap,gap-1.0);
       gap-=1.0;
@@ -354,7 +366,8 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeCave",2.0,250.0);
+  PipeGen.generatePipe(Control,"bifrostPipeCave",250.0);
+  Control.addVariable("bifrostPipeCaveYStep",2.0);
 
   return;
 }

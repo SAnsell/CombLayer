@@ -70,7 +70,7 @@ class PlateTarget : public attachSystem::ContainedComp,
   double feedHeight;
   double feedWidth;
 
-  void createUnitVector(const attachSystem::FixedComp&,const int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
   void createObjects(Simulation&);

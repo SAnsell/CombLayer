@@ -48,6 +48,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Line.h"
 #include "varList.h"
@@ -208,6 +209,19 @@ ContainedGroup::clearRules()
   return;
 }
 
+void
+ContainedGroup::clearRule(const std::string& Key) 
+  /*!
+    Clear a specific rule
+    \param Key :: Key name for rule
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","clearRule");
+  
+  getCC(Key).clearRules();
+  return;
+}
+
 bool
 ContainedGroup::hasKey(const std::string& Key) const
   /*!
@@ -284,6 +298,20 @@ ContainedGroup::addOuterSurf(const std::string& Key,const int SN)
   getCC(Key).addOuterSurf(SN);
   return;
 }
+
+void
+ContainedGroup::addOuterSurf(const std::string& Key,const HeadRule& HR) 
+  /*!
+    Add a surface to the output
+    \param Key :: Key name for rule
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterSurf(HR)");
+  
+  getCC(Key).addOuterSurf(HR);
+  return;
+}
   
 void
 ContainedGroup::addOuterSurf(const std::string& Key,
@@ -313,6 +341,21 @@ ContainedGroup::addOuterSurf(const std::string& Key,
   return;
 }
   
+void
+ContainedGroup::addOuterUnionSurf(const std::string& Key,
+				  const HeadRule& HR) 
+/*!
+  Add a set of surfaces to the output
+  \param Key :: Key name for rule
+  \param HR ::  HeadRule of surfaces
+*/
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterUnionSurf(HR)");
+  
+  getCC(Key).addOuterUnionSurf(HR);
+  return;
+}
+
 void
 ContainedGroup::addOuterUnionSurf(const std::string& Key,
 				  const std::string& SList) 
@@ -415,6 +458,23 @@ ContainedGroup::getOuterSurf(const std::string& Key) const
   return getCC(Key).getOuterSurf();
 }
   
+std::string
+ContainedGroup::getAllExclude() const
+  /*!
+    Calculate the write out the excluded surface.
+    This allows the object to be inserted in a larger
+    object.
+    \return Exclude string [union]
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","getExclude");
+  HeadRule Out;
+  for(const auto& [key,CC] : CMap)
+    Out.addUnion(CC.getOuterSurf());
+		 
+  return Out.complement().display();
+}
+
 std::string
 ContainedGroup::getExclude(const std::string& Key) const
   /*!
@@ -692,10 +752,8 @@ ContainedGroup::insertObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ContainedGroup","insertObjects");
   
-  CTYPE::iterator mc;
-
-  for(mc=CMap.begin();mc!=CMap.end();mc++)
-    mc->second.insertObjects(System);
+  for(auto [keyUnit,CC] : CMap)
+    CC.insertObjects(System);
 
   return;
 }

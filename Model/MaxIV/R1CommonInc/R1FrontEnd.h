@@ -22,12 +22,6 @@
 #ifndef xraySystem_R1FrontEnd_h
 #define xraySystem_R1FrontEnd_h
 
-namespace insertSystem
-{
-  class insertCylinder;
-  class insertPlate;
-}
-
 namespace constructSystem
 {
   class Bellows;
@@ -56,10 +50,12 @@ namespace xraySystem
 {
   class BremBlock;
   class BeamMount;
+  class CylGateValve;
   class DipoleChamber;
   class FlangeMount;
   class HeatDump;
   class LCollimator;
+  class MagnetBlock;
   class QuadUnit;
   class Quadrupole;
   class SquareFMask;
@@ -84,7 +80,10 @@ class R1FrontEnd :
 {
  protected:   
 
-    /// point to stop [normal none]
+  /// insert cells for magnet block
+  std::set<int> magnetCells;
+  
+  /// point to stop [normal none]
   std::string stopPoint;          
   /// Inner buildzone
   attachSystem::InnerZone buildZone;
@@ -92,18 +91,14 @@ class R1FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
+  /// Gate unit
+  std::shared_ptr<constructSystem::GateValveCube> elecGateA;
+
   /// Quad unit
-  std::shared_ptr<xraySystem::QuadUnit> quadUnit;
-  /// dipole connection pipe
-  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+  std::shared_ptr<xraySystem::MagnetBlock> magnetBlock;
+
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
-  /// electron cut cell [straight line]
-  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1
@@ -123,7 +118,7 @@ class R1FrontEnd :
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
@@ -160,7 +155,7 @@ class R1FrontEnd :
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
-  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
@@ -174,7 +169,9 @@ class R1FrontEnd :
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  double outerRadius;   ///< radius of tube for divisions
+  double outerLeft;     ///< left size of tube for divisions
+  double outerRight;    ///< right of tube for divisions
+  double outerTop;      ///< up/donw of tube for divisions
     
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
 
@@ -201,6 +198,8 @@ class R1FrontEnd :
   R1FrontEnd& operator=(const R1FrontEnd&);
   virtual ~R1FrontEnd();
 
+  /// insert a magnet cells
+  void addInsertMagnetCell(const int CN) { magnetCells.emplace(CN); }
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

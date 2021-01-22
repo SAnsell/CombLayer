@@ -3,7 +3,7 @@
  
  * File:   t1Build/WaterDividers.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -71,7 +72,8 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
+#include "ExternalCut.h"
+
 #include "ContainedComp.h"
 #include "PlateTarget.h"
 #include "WaterDividers.h"
@@ -80,7 +82,9 @@ namespace ts1System
 {
 
 WaterDividers::WaterDividers(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedUnit(Key,0)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,0),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,25 +92,27 @@ WaterDividers::WaterDividers(const std::string& Key)  :
 {}
 
 WaterDividers::WaterDividers(const WaterDividers& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
-  conHeight(A.conHeight),
-  fblkConnect(A.fblkConnect),fblkSize(A.fblkSize),
-  fblkSndStep(A.fblkSndStep),fblkSndOut(A.fblkSndOut),
-  fblkSndWidth(A.fblkSndWidth),fblkSndLen(A.fblkSndLen),
-  fblkWallThick(A.fblkWallThick),fblkEndLen(A.fblkEndLen),
-  fblkEndThick(A.fblkEndThick),mblkConnect(A.mblkConnect),
-  mblkSize(A.mblkSize),mblkOutRad(A.mblkOutRad),
-  mblkInRad(A.mblkInRad),mblkExtLen(A.mblkExtLen),
-  mblkExtWidth(A.mblkExtWidth),mblkWallThick(A.mblkWallThick),
-  mblkEndLen(A.mblkEndLen),mblkEndThick(A.mblkEndThick),
-  bblkConnect(A.bblkConnect),bblkSize(A.bblkSize),
-  bblkOutRad(A.bblkOutRad),bblkInRad(A.bblkInRad),
-  bblkExtLen(A.bblkExtLen),bblkExtWidth(A.bblkExtWidth),
-  bblkWallThick(A.bblkWallThick),bblkEndLen(A.bblkEndLen),
-  bblkEndThick(A.bblkEndThick),
-  insOutThick(A.insOutThick),insInThick(A.insInThick),insWidth(A.insWidth),
-  insHeight(A.insHeight),insRad(A.insRad),dMat(A.dMat),insMat(A.insMat),
-  cornerThick(A.cornerThick),cornerWidth(A.cornerWidth)       
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedComp(A),
+  attachSystem::ExternalCut(A),  
+  conHeight(A.conHeight),fblkConnect(A.fblkConnect),
+  fblkSize(A.fblkSize),fblkSndStep(A.fblkSndStep),
+  fblkSndOut(A.fblkSndOut),fblkSndWidth(A.fblkSndWidth),
+  fblkSndLen(A.fblkSndLen),fblkWallThick(A.fblkWallThick),
+  fblkEndLen(A.fblkEndLen),fblkEndThick(A.fblkEndThick),
+  mblkConnect(A.mblkConnect),mblkSize(A.mblkSize),
+  mblkOutRad(A.mblkOutRad),mblkInRad(A.mblkInRad),
+  mblkExtLen(A.mblkExtLen),mblkExtWidth(A.mblkExtWidth),
+  mblkWallThick(A.mblkWallThick),mblkEndLen(A.mblkEndLen),
+  mblkEndThick(A.mblkEndThick),bblkConnect(A.bblkConnect),
+  bblkSize(A.bblkSize),bblkOutRad(A.bblkOutRad),
+  bblkInRad(A.bblkInRad),bblkExtLen(A.bblkExtLen),
+  bblkExtWidth(A.bblkExtWidth),bblkWallThick(A.bblkWallThick),
+  bblkEndLen(A.bblkEndLen),bblkEndThick(A.bblkEndThick),
+  insOutThick(A.insOutThick),insInThick(A.insInThick),
+  insWidth(A.insWidth),insHeight(A.insHeight),insRad(A.insRad),
+  dMat(A.dMat),insMat(A.insMat),cornerThick(A.cornerThick),
+  cornerWidth(A.cornerWidth)
   /*!
     Copy constructor
     \param A :: WaterDividers to copy
@@ -125,6 +131,7 @@ WaterDividers::operator=(const WaterDividers& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       conHeight=A.conHeight;
       fblkConnect=A.fblkConnect;
       fblkSize=A.fblkSize;
@@ -156,12 +163,12 @@ WaterDividers::operator=(const WaterDividers& A)
       insOutThick=A.insOutThick;
       insInThick=A.insInThick;
       insWidth=A.insWidth;
-      insHeight=A.insHeight;              
-      insRad=A.insRad;                   
+      insHeight=A.insHeight;
+      insRad=A.insRad;
       dMat=A.dMat;
       insMat=A.insMat;
       cornerThick=A.cornerThick;
-      cornerWidth=A.cornerWidth;            
+      cornerWidth=A.cornerWidth;
     }
   return *this;
 }
@@ -665,7 +672,7 @@ WaterDividers::build(Simulation& System,
   ELog::RegMethod RegA("WaterDividers","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(PT);
+  createUnitVector(PT,0);
   createSurfaces(PT,Vessel);
   createObjects(System);
   createLinks();
@@ -673,6 +680,29 @@ WaterDividers::build(Simulation& System,
 
   return;
 }
+
+void
+WaterDividers::createAll(Simulation& System,
+			 const attachSystem::FixedComp& PT,
+			 const long int sideIndex)
+  /*!
+    Global creation of the hutch
+    \param System :: Simulation to add vessel to
+    \param PT :: Plate target
+  */
+{
+  ELog::RegMethod RegA("WaterDividers","createAll");
+  populate(System.getDataBase());
+
+  createUnitVector(PT,sideIndex);
+  //  createSurfaces(PT,Vessel);
+  //  createObjects(System);
+  //  createLinks();
+  //  insertObjects(System);       
+
+  return;
+}
+
 
   
 }  // NAMESPACE ts1System

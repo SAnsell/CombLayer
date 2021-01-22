@@ -204,7 +204,7 @@ PipeTubeGenerator::setBFlange(const double R,const double L)
 void
 PipeTubeGenerator::setFlangeCap(const double AC,const double BC)
   /*!
-    Set the flange cap values
+    Set the flange cap thicknesses
     \param AC :: Flange cap A
     \param BC :: Flange cap B
    */
@@ -217,7 +217,7 @@ PipeTubeGenerator::setFlangeCap(const double AC,const double BC)
 void
 PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
   /*!
-    Set the flange cap values
+    Set the flange cap thickness to standared flange thickness
     \param AFlag :: First Cap true
     \param BFlag :: Second Cap true
    */
@@ -304,9 +304,13 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
 }
 
 ///\cond TEMPLATE
+  template void PipeTubeGenerator::setCF<CF34_TDC>();
+  template void PipeTubeGenerator::setCF<CF35_TDC>();
+  template void PipeTubeGenerator::setCF<CF37_TDC>();
   template void PipeTubeGenerator::setCF<CF40_22>();
   template void PipeTubeGenerator::setCF<CF40>();
   template void PipeTubeGenerator::setCF<CF63>();
+  template void PipeTubeGenerator::setCF<CF66_TDC>();
   template void PipeTubeGenerator::setCF<CF100>();
   template void PipeTubeGenerator::setCF<CF120>();
   template void PipeTubeGenerator::setCF<CF150>();

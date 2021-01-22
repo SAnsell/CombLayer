@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTallyBuilder.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@
 #include "phitsTally.h"
 #include "TGShow.h"
 #include "tgshowConstruct.h"
+#include "tcrossConstruct.h"
+#include "ttrackMeshConstruct.h"
 #include "phitsTallyBuilder.h"
 
 namespace phitsSystem
@@ -96,6 +98,12 @@ tallySelection(SimPHITS& System,
       
       else if (TType=="gshow")
 	tgshowConstruct::processMesh(System,IParam,i);
+
+      else if (TType=="surface")
+	tcrossConstruct::processSurface(System,IParam,i);
+
+      else if (TType=="mesh")
+	ttrackMeshConstruct::processMesh(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
@@ -121,6 +129,8 @@ helpTallyType(const std::string& HType)
   else
     {
       ELog::EM<<"Tally Types:\n\n";
+      ELog::EM<<"-- gshow : \n";
+      ELog::EM<<"-- surface : \n";
       ELog::EM<<"-- mesh : \n";
       ELog::EM<<"-- dump : \n";
     }

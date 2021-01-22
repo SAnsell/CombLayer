@@ -22,6 +22,13 @@
 #ifndef constructSystem_generalConstruct_h
 #define constructSystem_generalConstruct_h
 
+namespace attachSystem
+{
+  class ContainerComp;
+  class ContainedGroup;
+  class InnerZone;
+  class BlockZone;
+}
 
 namespace constructSystem
 {
@@ -52,6 +59,9 @@ namespace xraySystem
 namespace constructSystem
 {
 
+  //
+  //   INNERZONE
+  // 
 int
 internalUnit(Simulation&,
 	     attachSystem::InnerZone&,
@@ -61,7 +71,17 @@ internalUnit(Simulation&,
 	     attachSystem::FixedComp&,
 	     attachSystem::ExternalCut&,
 	     attachSystem::ContainedComp&);
-
+int
+internalGroup(Simulation&,
+	      attachSystem::InnerZone&,
+	      MonteCarlo::Object*,
+	      const attachSystem::FixedComp&,
+	      const std::string&,
+	      attachSystem::FixedComp&,
+	      attachSystem::ExternalCut&,
+	      attachSystem::ContainedGroup&,
+	      const std::set<std::string>&);
+ 
 template<typename T>
 int constructUnit(Simulation& System,
 		  attachSystem::InnerZone& buildZone,
@@ -70,10 +90,74 @@ int constructUnit(Simulation& System,
 		  const std::string& sideName,
 		  T& buildUnit)
 {
-  return internalUnit(System,buildZone,masterCell,linkUnit,sideName,
-		 buildUnit,buildUnit,buildUnit);
+  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
+
+    return internalUnit(System,buildZone,masterCell,linkUnit,sideName,
+			buildUnit,buildUnit,buildUnit);
+
+  else
+    
+    return internalGroup(System,buildZone,masterCell,linkUnit,sideName,
+			 buildUnit,buildUnit,buildUnit,{"All"});
+
 }
 
+
+
+//  --------------------------------------------------------
+//                BLOCKZONE
+//  --------------------------------------------------------
+
+
+int
+internalUnit(Simulation&,
+	     attachSystem::BlockZone&,
+	     const attachSystem::FixedComp&,
+	     const std::string&,
+	     attachSystem::FixedComp&,
+	     attachSystem::ExternalCut&,
+	     attachSystem::ContainedComp&);
+int
+internalGroup(Simulation&,
+	      attachSystem::BlockZone&,
+	      const attachSystem::FixedComp&,
+	      const std::string&,
+	      attachSystem::FixedComp&,
+	      attachSystem::ExternalCut&,
+	      attachSystem::ContainedGroup&,
+	      const std::set<std::string>&);
+ 
+template<typename T>
+int constructUnit(Simulation& System,
+		  attachSystem::BlockZone& buildZone,
+		  const attachSystem::FixedComp& linkUnit,
+		  const std::string& sideName,
+		  T& buildUnit)
+{
+  if constexpr (std::is_base_of<attachSystem::ContainedComp,T>::value)
+
+    return internalUnit(System,buildZone,linkUnit,sideName,
+			buildUnit,buildUnit,buildUnit);
+
+  else
+    
+    return internalGroup(System,buildZone,linkUnit,sideName,
+			 buildUnit,buildUnit,buildUnit,{"All"});
+
+}
+
+template<typename T>
+int constructGroup(Simulation& System,
+		  attachSystem::BlockZone& buildZone,
+		  const attachSystem::FixedComp& linkUnit,
+		  const std::string& sideName,
+    	          T& buildUnit,const std::set<std::string>& CGunits)
+{
+  return internalGroup(System,buildZone,linkUnit,sideName,
+		       buildUnit,buildUnit,buildUnit,CGunits);
+}
+
+  
 }  // NAMEPSACE constructSystem
 
 #endif

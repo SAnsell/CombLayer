@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "TallyCreate.h"
 #include "Code.h"
 #include "varList.h"
@@ -54,6 +53,17 @@
 #include "MainProcess.h"
 #include "inputParam.h"
 #include "addInsertObj.h"
+#include "surfRegister.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
+#include "ObjSurfMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -61,6 +71,179 @@
 
 #include "TallySelector.h"
 
+bool
+constructLinkRegion(const Simulation& System,
+		      const std::string& FCname,
+		      const std::string& FCindex,
+		      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the FixedComp link unit
+    \param System :: Simulation to use	
+    \param FCname :: name of fixed comp
+    \param FCindex :: name of link point
+    \param cellA :: Cell from the -ve side
+    \param cellB :: Cell from the +ve side
+    \return true if constructed correctly
+  */
+{
+  ELog::RegMethod RegA("flukaTallySelector[F]","constructLinkRegion");
+
+  const attachSystem::FixedComp* FCPtr=
+    System.getObject<attachSystem::FixedComp>(FCname);
+
+
+  if (!FCPtr) return 0;
+
+  if (!FCPtr->hasSideIndex(FCindex)) return 0;
+      
+  const long int FCI=FCPtr->getSideIndex(FCindex);
+  const int surfN=FCPtr->getLinkSurf(FCI);    
+  if (!surfN) return 0;
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
+  
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
+}
+
+bool
+constructSurfRegion(const Simulation& System,
+		      const std::string& FCname,
+		      const std::string& surfName,
+		      const size_t indexA,
+		      const size_t indexB,
+		      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param surfName :: name of surface [signed]
+    \param indexA :: Index of region found in primary
+    \param indexB :: Index region found in secondary
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  ELog::RegMethod RegA("TallySelector[F]","constructSurfRegion");
+
+  const attachSystem::SurfMap* SMPtr=
+    System.getObject<attachSystem::SurfMap>(FCname);
+
+  if (!SMPtr || surfName.empty()) return 0;
+  
+  const int surfN=SMPtr->getSignedSurf(surfName);
+  if (!surfN) return 0;
+  // throws on error [unlikely because SurfMap is good]
+  const groupRange& activeGrp=System.getGroup(FCname);
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(surfN,activeGrp,indexA,indexB);
+  
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
+}
+
+bool
+constructCellMapPair(const Simulation& System,
+		     const std::string& CellAName,
+		     const std::string& CellBName,
+		     int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param CellAName :: name of CellMap:Cell
+    \param CellBName :: name of CellMap:Cell
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+    \return 0 on failure
+  */
+{
+  ELog::RegMethod RegA("flukaTallySelector[F]","constructCellMapPair");
+
+  std::string::size_type posA=CellAName.find(':');
+  std::string::size_type posB=CellBName.find(':');
+  if (posA==std::string::npos || posB==std::string::npos)
+    return 0;
+  const std::string FCnameA=CellAName.substr(0,posA);
+  const std::string FCnameB=CellBName.substr(0,posB);
+
+  std::string unitA=CellAName.substr(posA+1);
+  std::string unitB=CellBName.substr(posB+1);
+  // specific cell index
+  size_t indexA(0),indexB(0);
+  posA=unitA.find(':');
+  posB=unitB.find(':');
+  if (posA!=std::string::npos &&
+      StrFunc::convert(unitA.substr(posA+1),indexA))
+    unitA=unitA.substr(posA);
+
+
+  if (posB!=std::string::npos &&
+      StrFunc::convert(unitB.substr(posB+1),indexB))
+    unitB=unitB.substr(posB);
+
+  ELog::EM<<"Find == "<<unitA<<" -- "<<unitB<<ELog::endDiag;
+  
+  const attachSystem::CellMap* CAPtr=
+    System.getObject<attachSystem::CellMap>(FCnameA);
+  const attachSystem::CellMap* CBPtr=
+    System.getObject<attachSystem::CellMap>(FCnameA);
+
+  if (!CAPtr || !CAPtr->hasCell(unitA,indexA) ||
+      !CBPtr || !CBPtr->hasCell(unitB,indexB))
+    return 0;
+  
+  cellA=CAPtr->getCell(unitA,indexA);
+  cellB=CBPtr->getCell(unitB,indexB);
+  if (!System.getOSM()->isConnected(cellA,cellB))
+    ELog::EM<<"WARNING : Regions "<<cellA<<" "<<cellB<<" not connected"
+	    <<ELog::endDiag;
+  return 1;
+}
+
+bool
+checkLinkCells(const Simulation& System,
+	       const int cellA,
+	       const int cellB)
+/*!
+    Determine if two cells are connected via a common surface
+    \param System :: Simulation for objects
+    \param cellA :: Cell A 
+    \param cellB :: Cell B
+    \return true if cellA-cellB share common surf
+  */
+{
+  ELog::RegMethod RegA("TallySelector[F]","checkLinkCells");
+  
+  const MonteCarlo::Object* APtr=System.findObject(cellA);
+  const MonteCarlo::Object* BPtr=System.findObject(cellB);
+  if (!APtr || !BPtr)
+    return 0;
+
+  const std::set<int>& ASurf=APtr->getSurfSet();
+  const std::set<int>& BSurf=BPtr->getSurfSet();
+
+  for(const int CN : ASurf)
+    if (BSurf.find(-CN)!=BSurf.end())
+      return 1;
+
+  return 0;
+}
 
 void
 pointTallyWeights(SimMCNP& System,

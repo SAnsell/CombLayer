@@ -59,6 +59,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -70,6 +71,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -77,6 +79,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "insertObject.h"
 #include "insertPlate.h"
 
@@ -88,10 +91,11 @@ namespace xraySystem
 {
 
 R1Ring::R1Ring(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key,24),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
+  attachSystem::PointMap(),
   NPoints(0),concaveNPoints(0),
   doorActive(0)
   /*!
@@ -136,6 +140,8 @@ R1Ring::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
+  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
 
   NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
   for(size_t i=0;i<NPoints;i++)
@@ -188,7 +194,22 @@ R1Ring::populate(const FuncDataBase& Control)
       plateShields.emplace(ID,platePtr);
     }
 
+  // OUTER SHIELD
+  const size_t nOuter=Control.EvalVar<size_t>(keyName+"NOutShield");
+  for(size_t i=0;i<nOuter;i++)
+    {
+      const std::string outerKey=
+	Control.EvalVar<std::string>(keyName+"OutShieldName"+std::to_string(i));
+      
+      const size_t ID=Control.EvalVar<size_t>(outerKey+"ID");
+      std::shared_ptr<insertSystem::insertPlate>
+	shieldPtr(new insertSystem::insertPlate(keyName+"OutShield",outerKey));
+      OR.addObject(shieldPtr);
+      outShields.emplace(ID,shieldPtr);
+    }
+
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
+  
   return;
 }
  
@@ -264,11 +285,12 @@ R1Ring::createSurfaces()
 	{
 	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
 	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
-
+	  PointMap::addPoint("OutCorner",AP);
 	  if (cIndex)
 	    {
 	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
 	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
+
 	    }
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
@@ -286,11 +308,17 @@ R1Ring::createSurfaces()
       const size_t aI=concavePts[i];
       const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
       const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
+      PointMap::addPoint("OutSideWall",BP);
       // going round ring clockwize 
       const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+      // Joint Plane error cylinders:
+      ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,0.1);
+      ModelSupport::buildCylinder(SMap,surfN+8,Origin+BP,Z,0.1);
+
+
       surfN+=10;
     } 
 
@@ -307,9 +335,14 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+9,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
-      surfN+=10;
-    }
+      SurfMap::addSurf("InnerCut",SMap.realSurf(surfN+9));
 
+      ModelSupport::buildPlane(SMap,surfN+1001,
+			       Origin+AP,Origin,
+			       Origin+Z,BP-AP);
+      SurfMap::addSurf("DivideCut",SMap.realSurf(surfN+1001));
+      surfN+=10;      
+    }  
   
   return;
 }
@@ -341,54 +374,27 @@ R1Ring::createRoof(Simulation& System)
 
   std::string Out;
   
-  int surfN(buildIndex);
-
-  // Create inner roof
-  std::string Unit;
-  surfN=5000;
-  for(size_t i=0;i<concaveNPoints;i++)
-    {
-      Unit+=std::to_string(surfN+9)+" ";
-      surfN+=10;
-    }
 
   const std::string TBase=
     ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
   const std::string EBase=
     ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,Unit+"(103:113:123:133:143:153)");
+    // Create inner voids
+  std::ostringstream unitCX;
+  int surfN=0;
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      unitCX<<surfN+5009<<" "<<surfN+3007<<" ";
+      surfN+=10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,unitCX.str());
+  Out+=ModelSupport::getComposite
+    (SMap,buildIndex,"(103:113:123:133:143:153)");
   makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,Out+TBase);
   makeCell("InnerExtra",System,cellIndex++,0,0.0,Out+EBase);  
-
-     // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
-    {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-	      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
-	      convexN+=10;
-	    }
-
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
-    }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-  makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
+  
   return;
 }
 
@@ -406,6 +412,8 @@ R1Ring::createObjects(Simulation& System)
   createRoof(System);
   createFloor(System);
 
+  const std::string roofBase=
+    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
   const std::string wallBase=
     ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
   const std::string extraBase=
@@ -426,113 +434,130 @@ R1Ring::createObjects(Simulation& System)
   makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
 
 
-
-  // Create inner voids
-  std::string Unit;
-  int surfN=5000;
+  // loop to make individual units:
+  const std::vector<std::string> MidZone
+    ({
+      "5099 103 6091 -6001 3097 3007",
+      "5009 (103:113) 6001 -6011 3007 3017",
+      "5019 (113:123) 6011 -6021 3017 3027",
+      "5029 (113:123) 6021 -6031 3027 3037",
+      "5039 (123:133) 6031 -6041 3037 3047",
+      "5049 (133:143) 6041 -6051 3047 3057",
+      "5059       143 6051 -6061 3057 3067",
+      "5069 (143:153) 6061 -6071 3067 3077",
+      "5079      153  6071 -6081 3077 3087",
+      "5089 (153:103) 6081 -6091 3087 3097",
+	});
+  for(const std::string& Item : MidZone)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,Item);
+      makeCell("Void",System,cellIndex++,innerMat,0.0,Out+innerBase);
+    }
+  
+  // loop to make individual units:
+  const std::vector<std::string> Voids
+    ({
+      "1013 1023 1033 -5009 3007 3017",
+	"1043 1053 -5019 3017 3017 3027",
+	"1063 1073 -5029 3027 3027 3037",
+	"1083 1093 1103 -5039 3037 3047",
+	"1113 1123 -5049 3037 3047 3057",
+	"1133 1143 -5059 3047 3057 3067",
+	"1153 1163 -5069 3057 3067 3077",
+	"1173 1183 -5079 3067 3077 3087",
+	"1193 1203 -5089 3077 3087 3097",
+	"1213 1003 -5099 3087 3097 3007"
+	});
+  // cylinder exludes:
+  int BI=buildIndex+3000;
   for(size_t i=0;i<concaveNPoints;i++)
     {
-      Unit+=std::to_string(surfN+9)+" ";
-      surfN+=10;
+      Out=ModelSupport::getComposite(SMap,BI," -7 ");
+      std::string OutB=ModelSupport::getComposite(SMap,BI," -8 ");
+      makeCell("VoidCyl",System,cellIndex++,0,0.0,Out+innerBase);
+      makeCell("RoofCyl",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      makeCell("SkyCyl",System,cellIndex++,0,0.0,Out+extraBase);
+      makeCell("VoidCylB",System,cellIndex++,0,0.0,OutB+innerBase);
+      makeCell("RoofCylB",System,cellIndex++,roofMat,0.0,OutB+roofBase);
+      makeCell("SkyCylB",System,cellIndex++,0,0.0,OutB+extraBase);
+      BI+=10;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,Unit);
-  Out+=ModelSupport::getComposite
-    (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);  
-
-   // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
+    
+  for(const std::string& item : Voids)
     {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
-	      convexN+=10;
-	    }
-
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
+      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
     }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
+
 
   // WALLS:
+  const std::vector<std::string> frontWalls
+    ({  " 2213 -1003 -1013  2003 3007 3008",
+	"-1033  2023  2033 -3011 3017 3018",
+	"-1053  2043  2053 -3021 3027 3028",
+	" 2063 -1073 -1083  2073 3037 3038",
+	"-1103  2093  2103 -3041 3047 3048",
+	"-1123  2113  2123 -3051 3057 3058",
+	"-1143  2133  2143 -3061 3067 3068",
+	"-1163  2153  2163 -3071 3077 3078",
+	"-1183  2173  2183 -3081 3087 3088",
+	"-1203  2193  2203 -3091 3097 3098"       
+      });
 
-  int divN=buildIndex+3000;
-  surfN=buildIndex-10;
-  for(size_t index=0;index<10;index++)
+  const std::vector<std::string> walls
+    ({
+      "-2003 (-1013 : -1023) 1033 2013 2023 3008 ",
+      "(3011 : -2033) -1043 1053 2043 3017 3018",   
+      "(3021 : -2053) -1063 1073 2063 3027 3028 ",  
+      "-2073 (-1083 : -1093) 1103 2083 2093 3038",
+      "(3041 : -2103) -1113 1123 2113 3047 3048",        
+      "(3051 : -2123) -1133 1143 2133 3057 3058",        
+      "(3061 : -2143) -1153 1163 2153 3067 3068",
+      "(3071 : -2163) -1173 1183 2173 3077 3078",
+      "(3081 : -2183) -1193 1203 2193 3087 3088",
+      "3091 -1213 1003 2213 3097 3098"  
+    });
+
+  // Front walls:
+  for(const std::string& item : frontWalls)
     {
-      if (index==0 || index==3)
-	{
-	  const int prevN=(!index) ? buildIndex+210 : buildIndex+60;
-	  const int fwdN=(!index) ? buildIndex : buildIndex+70;
-	  // LONG SEGMENT 1:
-	  Out=ModelSupport::getComposite    // s=1000 
-	    (SMap,buildIndex,prevN,fwdN," 2003M -1003N -1013N 2003N ");
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
+      makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
+    }      
 
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex,fwdN," -2003M (-1013M:-1023M) 1033M 2013M 2023M ");
+  // Main walls:
+  for(const std::string& item : walls)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
+      makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
+      //      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+roofBase);
+      //      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+extraBase);
+    }      
 
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=30;
-	  divN+=10;
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,divN," -1013M 2003M 2013M -1N ");
-
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
-	  if (index!=9)
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN,"(1N:-2013M) -1023M 1033M 2023M ");
-	  else
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN," 1N -1023M 1003 2023M  ");
-
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=20;
-	  divN+=10;
-	}
-    }
-
-  // NOW DO external void-triangles:
-  int prevN=buildIndex+2200;
-  surfN=buildIndex+2000;
-  
-  for(size_t i=0;i<12;i++)
-    {      
-      if (i==1 || i==5)
-	{
-	  // long segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M 13N ");
-	  surfN+=10;
-	}
-      else
-	{
-	  // short segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M -13M 13N ");
-	  surfN+=20;
-	}
-      prevN=surfN-20;
-      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullBase);
+  // EXTERNAL void-triangles:
+  const std::vector<std::string> extTriangle
+    ({
+      "-9007 -2003 -2013 2213 3008",
+      "-9007 -2023 2013 ",        
+      "-9007 -2033 -2043 2023 3018",
+      "-9007 -2053 -2063 2043 3028",
+      "-9007 -2073 -2083 2063 3038",
+      "-9007 -2093 2083 ",         
+      "-9007 -2103 -2113 2093 3048",
+      "-9007 -2123 -2133 2113 3058",
+      "-9007 -2143 -2153 2133 3068",
+      "-9007 -2163 -2173 2153 3078",
+      "-9007 -2183 -2193 2173 3088",
+      "-9007 -2203 -2213 2193 3098" 
+    });
+  for(const std::string& item : extTriangle)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,item);
+      makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,Out+fullBase);
     }
 	  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -26");
@@ -555,11 +580,11 @@ R1Ring::createLinks()
   
   const double beamStepOut(1510.55);  // from origin
   // Main beam start points DONT have a surface [yet]
-  
+
+  size_t index(0);
   for(size_t i=1;i<concaveNPoints+1;i++)
     {
-      const size_t index(i-1);
-
+      // InnerWall
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamInner",((i+1) % concaveNPoints)));
       if (!BInner)
@@ -572,7 +597,27 @@ R1Ring::createLinks()
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
       FixedComp::setConnect(index+2,PtX,Beam);
-      
+      index++;
+    }
+
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+
+      const Geometry::Plane* SOuter=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("SideOuter",i));
+      if (!SOuter)
+	throw ColErr::InContainerError<std::string>
+	  ("SideOuter"+std::to_string(index),"Surf map no found");
+
+      const Geometry::Vec3D& APt=
+	PointMap::getPoint("OutCorner",(i+1) % concaveNPoints);
+      const Geometry::Vec3D& BPt(PointMap::getPoint("OutSideWall",i));
+      const Geometry::Vec3D Beam= -SOuter->getNormal();
+
+      FixedComp::nameSideIndex(index+2,"SideWall"+std::to_string(i));
+      FixedComp::setLinkSurf(index+2,-SOuter->getName());
+      FixedComp::setConnect(index+2,(APt+BPt)/2.0,Beam);
+      index++;
     }
   return;
 }
@@ -588,7 +633,6 @@ R1Ring::createDoor(Simulation& System)
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
 
   if (doorActive)
     {
@@ -620,8 +664,9 @@ R1Ring::createSideShields(Simulation& System)
   // int : shared_ptr<SideShield>
   for(auto& [ id , SWPtr ] : sideShields)
     {
-      SWPtr->addInsertCell(CellMap::getCell("Wall",id+1));
-      SWPtr->setCutSurf("Wall",SurfMap::getSurf("SideInner",id));
+      SWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      SWPtr->setCutSurf("Wall",-SurfMap::getSurf("SideInner",id));
+      SWPtr->setCutSurf("Clip",-SurfMap::getSurf("InnerCut",id));
       SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      
     }
   return;
@@ -642,6 +687,13 @@ R1Ring::createFreeShields(Simulation& System)
       PWPtr->setNoInsert();
       PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
       PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+    }
+
+  for(auto& [ id , PWPtr ] : outShields)
+    {
+      //      PWPtr->setNoInsert();
+      //      PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
+      PWPtr->createAll(System,*this,"SideWall"+std::to_string(id));      
     }
   return;
 }

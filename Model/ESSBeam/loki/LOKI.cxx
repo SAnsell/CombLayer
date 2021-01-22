@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetUnit.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
@@ -242,7 +243,7 @@ LOKI::buildBunkerUnits(Simulation& System,
   ELog::RegMethod RegA("LOKI","buildBunkerUnits");
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());  
 
-  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
@@ -255,7 +256,7 @@ LOKI::buildBunkerUnits(Simulation& System,
   ShutterA->insertComponent(System,"Main",*VPipeB);
 
   // Link as gamma shield must move up and down
-  VPipeBLink->addInsertCell(bunkerVoid);
+  VPipeBLink->addAllInsertCell(bunkerVoid);
   VPipeBLink->createAll(System,BendB->getKey("Guide0"),2);
 
   BendBLink->addInsertCell(VPipeBLink->getCells("Void"));
@@ -273,7 +274,7 @@ LOKI::buildBunkerUnits(Simulation& System,
   DDiskA->createAll(System,ChopperA->getKey("Main"),0);
   ChopperA->insertAxle(System,*DDiskA);
 
-  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
@@ -326,9 +327,9 @@ LOKI::buildOutGuide(Simulation& System,
   ShieldA->setFront(OutPitA->getKey("Mid"),2);
   ShieldA->createAll(System,OutPitA->getKey("Mid"),2);
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->addInsertCell(OutPitA->getCell("Void"));
-  VPipeOutA->addInsertCell(PitACut->getCell("Void")); 
+  VPipeOutA->addAllInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(OutPitA->getCell("Void"));
+  VPipeOutA->addAllInsertCell(PitACut->getCell("Void")); 
   VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
@@ -354,8 +355,8 @@ LOKI::buildOutGuide(Simulation& System,
   ShieldB->createAll(System,*ShieldA,2);
 
   //Vacuum pipe and guide
-  VPipeOutB->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldA->getCell("Void"));
+  VPipeOutB->addAllInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*AppA,2);
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
@@ -403,7 +404,7 @@ LOKI::buildIsolated(Simulation& System,const int voidCell)
 
   if (startPoint<2)
     {
-      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->addAllInsertCell(voidCell);
       VPipeWall->createAll(System,*FStart,startIndex);
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
@@ -491,9 +492,9 @@ LOKI::build(Simulation& System,
   ShieldB->addInsertCell(Cave->getCells("FrontWall"));
   ShieldB->insertObjects(System);
 
-  VPipeOutC->addInsertCell(ShieldB->getCell("Void"));
-  VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
-  VPipeOutC->addInsertCell(Cave->getCells("Void"));
+  VPipeOutC->addAllInsertCell(ShieldB->getCell("Void"));
+  VPipeOutC->addAllInsertCell(Cave->getCells("FrontWall"));
+  VPipeOutC->addAllInsertCell(Cave->getCells("Void"));
   VPipeOutC->createAll(System,*AppB,2);
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
   FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);

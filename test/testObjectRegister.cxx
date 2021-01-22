@@ -48,6 +48,7 @@
 #include "Vec3D.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfRegister.h"
 #include "LinkUnit.h"

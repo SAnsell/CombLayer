@@ -56,6 +56,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -68,14 +69,13 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ExternalCut.h"
 
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
-#include "FBBlock.h"
-#include "makeChipIR.h"
-#include "makeZoom.h"
 
 #include "makeTS2Bulk.h"
 #include "makeReflector.h"
@@ -113,21 +113,7 @@ makeTS2::build(Simulation* SimPtr,
   int excludeCell(74123);
   moderatorSystem::makeTS2Bulk bulkObj;
   moderatorSystem::makeReflector refObj;
-  hutchSystem::makeChipIR chipObj;
-  zoomSystem::makeZoom zoomObj;
   
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("chipIR")))
-    {
-      chipObj.buildIsolated(*SimPtr,IParam);
-      return;
-    }
-
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
-    {
-      zoomObj.buildIsolated(*SimPtr);
-      return;
-    }
-
 
   bulkObj.build(SimPtr,IParam,excludeCell);
   refObj.build(*SimPtr,IParam,excludeCell);

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/EArrivalMon.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -62,6 +62,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -70,15 +71,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "EArrivalMon.h"
 
@@ -98,7 +99,7 @@ EArrivalMon::EArrivalMon(const std::string& Key) :
 {}
 
 
-EArrivalMon::~EArrivalMon() 
+EArrivalMon::~EArrivalMon()
   /*!
     Destructor
   */
@@ -136,7 +137,7 @@ EArrivalMon::populate(const FuncDataBase& Control)
   windowRotAngle=Control.EvalVar<double>(keyName+"WindowRotAngle");
   windowRadius=Control.EvalVar<double>(keyName+"WindowRadius");
   windowThick=Control.EvalVar<double>(keyName+"WindowThick");
-  
+
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -194,10 +195,10 @@ EArrivalMon::createSurfaces()
     (SMap,buildIndex+151,Origin-Y*(-frontPipeILen+length/2.0),Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+152,Origin+Y*(-backPipeILen+length/2.0),Y);
-  
+
   // flange
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,flangeRadius);
-  
+
   // front exit
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontPipeRadius);
   ModelSupport::buildCylinder
@@ -211,7 +212,7 @@ EArrivalMon::createSurfaces()
   const Geometry::Vec3D winAxis(X*cos(M_PI*windowRotAngle/180.0)+
 				Z*sin(M_PI*windowRotAngle/180.0));
 
-  
+
   const Geometry::Vec3D midWindow(Origin+winAxis*(radius+thick/2.0));
   // mid divider
   ModelSupport::buildPlane(SMap,buildIndex+500,Origin,winAxis);
@@ -219,7 +220,7 @@ EArrivalMon::createSurfaces()
     (SMap,buildIndex+501,midWindow-winAxis*(windowThick/2.0),winAxis);
   ModelSupport::buildPlane
     (SMap,buildIndex+502,midWindow+winAxis*(windowThick/2.0),winAxis);
-  
+
   ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,winAxis,windowRadius);
   // cut plates
 
@@ -236,14 +237,14 @@ EArrivalMon::createObjects(Simulation& System)
   ELog::RegMethod RegA("EArrivalMon","createObjects");
 
   std::string Out;
-  
+
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
   // inner void
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 -7 (117:151) (217:-152) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 7 -17 (507:-500)");
   makeCell("Wall",System,cellIndex++,mainMat,0.0,Out);
 
@@ -254,7 +255,7 @@ EArrivalMon::createObjects(Simulation& System)
   // back plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 217 -17 ");
   makeCell("BPlate",System,cellIndex++,mainMat,0.0,Out);
-  
+
   // front Main pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," -151  -107 ");
   makeCell("FPipeVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
@@ -263,7 +264,7 @@ EArrivalMon::createObjects(Simulation& System)
   makeCell("FPipe",System,cellIndex++,mainMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 117 -307 ");
-  makeCell("FFlange",System,cellIndex++,mainMat,0.0,Out+frontStr);
+  makeCell("FFlange",System,cellIndex++,flangeMat,0.0,Out+frontStr);
 
 
   // back Main pipe
@@ -274,8 +275,8 @@ EArrivalMon::createObjects(Simulation& System)
   makeCell("BPipe",System,cellIndex++,mainMat,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 217 -307 ");
-  makeCell("BFlange",System,cellIndex++,mainMat,0.0,Out+backStr);
-  
+  makeCell("BFlange",System,cellIndex++,flangeMat,0.0,Out+backStr);
+
   Out=ModelSupport::getComposite(SMap,buildIndex," -21 101 -307 117 ");
   makeCell("AFlangeOut",System,cellIndex++,0,0.0,Out);
 
@@ -301,11 +302,11 @@ EArrivalMon::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17  ");
   addOuterSurf(Out+frontStr+backStr);
-  
+
   return;
 }
 
-void 
+void
 EArrivalMon::createLinks()
   /*!
     Create the linked units
@@ -315,7 +316,7 @@ EArrivalMon::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-      
+
   return;
 }
 
@@ -326,20 +327,20 @@ EArrivalMon::createAll(Simulation& System,
 /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("EArrivalMon","createAll");
-  
+
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length+2*frontPipeLen);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

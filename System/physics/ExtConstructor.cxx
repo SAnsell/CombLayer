@@ -75,6 +75,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "ModeCard.h"
 
@@ -166,8 +167,7 @@ ExtConstructor::procType(const objectGroups& OGrp,
 
 
 void
-ExtConstructor::processUnit(const objectGroups& OGrp,
-			    PhysicsCards& PC,
+ExtConstructor::processUnit(SimMCNP& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
@@ -179,6 +179,8 @@ ExtConstructor::processUnit(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("ExtConstructor","processPoint");
 
+
+  
   const size_t NParam=IParam.itemCnt("wExt",Index);
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wExt");
@@ -196,14 +198,16 @@ ExtConstructor::processUnit(const objectGroups& OGrp,
       return;
     }
   
-  if (!ZUnits.procZone(OGrp,StrItem))
+  if (!ZUnits.procZone(System,StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 
   ZUnits.sortZone();
+
+  physicsSystem::PhysicsCards& PC=System.getPC();
   ExtControl& EC=PC.getExtCard();
     
-  if (!procType(OGrp,StrItem,EC))
+  if (!procType(System,StrItem,EC))
     throw ColErr::InvalidLine
       ("procType ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 

@@ -26,14 +26,7 @@
 namespace tdcSystem
 {
 
-  class L2SPFsegment1;
-  class L2SPFsegment2;
-  class L2SPFsegment3;
-  class L2SPFsegment4;
-
-  class TDCsegment14;
-  class TDCsegment15;
-  class TDCsegment16;
+  class TDCsegment;
 
   /*!
     \class TDC
@@ -52,26 +45,43 @@ class TDC :
 {
  private:
 
+  // storage of segments
+  typedef std::map<std::string,std::shared_ptr<TDCsegment>> SegTYPE;
+  typedef std::map<std::string,std::shared_ptr<attachSystem::BlockZone>> IZTYPE;
+
+  /// to stop end-build check (length etc) 
+  bool noCheck;
+  /// stop producing a full list of objects/datum points
+  bool pointCheck;
+  
   std::set<std::string> activeINJ;   ///< active components
 
-  /// All the build units
-  std::map<std::string,attachSystem::InnerZone> buildUnits;
-
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
-  std::shared_ptr<L2SPFsegment1> l2spf1;           ///< segment 1
-  std::shared_ptr<L2SPFsegment2> l2spf2;           ///< segment 2
-  std::shared_ptr<L2SPFsegment3> l2spf3;           ///< segment 3
-  std::shared_ptr<L2SPFsegment4> l2spf4;           ///< segment 3
-  std::shared_ptr<TDCsegment14> tdc14;         ///< TDC segment 14
-  std::shared_ptr<TDCsegment15> tdc15;         ///< TDC segment 15
-  std::shared_ptr<TDCsegment16> tdc16;         ///< TDC segment 16
 
+  /// Map of segmentName : TDCsegmetn
+  SegTYPE SegMap; 
+
+  /// Map of segmentName : BlockZone
+  IZTYPE bZone;
+
+  /// HeadRules of original spaces:
+  std::map<int,HeadRule> originalSpaces;
+  
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
+  
+  std::shared_ptr<attachSystem::BlockZone>
+  buildInnerZone(Simulation&,
+		 const std::string&,
+		 const std::string&);
 
-  std::unique_ptr<attachSystem::InnerZone>
-  buildInnerZone(const FuncDataBase&,const std::string&);
-
+  void setVoidSpace(const Simulation&,
+		    const std::shared_ptr<attachSystem::BlockZone>&,
+		    const std::string&);
+  
+  void reconstructInjectionHall(Simulation&);
+  
+  
  public:
 
   TDC(const std::string&);
@@ -79,6 +89,10 @@ class TDC :
   TDC& operator=(const TDC&);
   virtual ~TDC();
 
+  /// Do not carry out end point checks:
+  void setNoLengthCheck() { noCheck=1; }
+  /// Write out all the end points of internal objects
+  void setPointCheck() { pointCheck=1; }
   /// set active range
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
 

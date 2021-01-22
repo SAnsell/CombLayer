@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremMonoColl.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -179,7 +180,7 @@ BremMonoColl::createSurfaces()
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   ExternalCut::makeShiftedSurf
-    (SMap,"front",buildIndex+111,1,Y,flangeLength);
+    (SMap,"front",buildIndex+111,Y,flangeLength);
 
   if (!isActive("wallRadius"))
     {

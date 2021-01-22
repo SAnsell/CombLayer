@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,10 @@ class FixedComp
 
   const LinkUnit& operator[](const size_t) const; 
 
+  /// have cells been built
+  bool hasActiveCells() const
+  { return (buildIndex+1)!=cellIndex; }
+
   void reOrientate();
   void reOrientate(const size_t,const Geometry::Vec3D&);
   
@@ -129,6 +133,7 @@ class FixedComp
   void linkAngleRotate(const size_t,const double,const double,const double);
   void linkShift(const size_t,const double,const double,const double);
 
+  void reverseX();
   void reverseZ();
   
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -194,6 +199,9 @@ class FixedComp
 
   bool hasLinkPt(const long int) const;
   bool hasLinkPt(const std::string&) const;
+
+  bool hasLinkSurf(const long int) const;
+  bool hasLinkSurf(const std::string&) const;
   
   Geometry::Vec3D getLinkPt(const std::string&) const;
   Geometry::Vec3D getLinkAxis(const std::string&) const;

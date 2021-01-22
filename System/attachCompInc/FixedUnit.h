@@ -39,7 +39,15 @@ class FixedUnit : public FixedComp
  public:
 
   /// Simple constructor
+  FixedUnit(const std::string& K) :
+    FixedComp(0,K) {}
+
+  /// Simple constructor [no objectregister]
   FixedUnit(const std::string& K,const size_t I) :
+    FixedComp(I,K) {}
+
+  /// Simple constructor [with objectregister]
+  FixedUnit(const size_t I,const std::string& K) :
     FixedComp(K,I) {}
 
   /// Simple constructor [extra range]
@@ -50,17 +58,20 @@ class FixedUnit : public FixedComp
   FixedUnit(const std::string& K,const size_t I,
 	    const Geometry::Vec3D& OO,const Geometry::Vec3D& XX, 
 	    const Geometry::Vec3D& YY,const Geometry::Vec3D& ZZ) :
-    FixedComp(K,I,OO,XX,YY,ZZ) {}
+    FixedComp(I,K)
+  {
+    FixedComp::createUnitVector(OO,XX,YY,ZZ);
+  }
 
   /// System to get axis from existing FC
   FixedUnit(const std::string& K,const FixedComp& FC,
 	    const long int index) :
-    FixedComp(K,0) { createUnitVector(FC,index); }
+    FixedComp(0,K) { createUnitVector(FC,index); }
 
   /// System to get axis from existing FC
   FixedUnit(const std::string& K,const FixedComp& FC,
 	    const std::string linkName) :
-    FixedComp(K,0)
+    FixedComp(0,K)
   { createUnitVector(FC,FC.getSideIndex(linkName)); }
       
   FixedUnit(const FixedUnit& A) : FixedComp(A) {}

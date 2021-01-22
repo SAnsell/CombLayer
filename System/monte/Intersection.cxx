@@ -50,6 +50,7 @@
 #include "Rules.h"
 #include "Token.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 
 Intersection::Intersection() : Rule(),
@@ -406,6 +407,18 @@ Intersection::displayAddress() const
   else
     cx<<" ] ( 0x0 0x0 ) ";
   return cx.str();
+}
+
+bool
+Intersection::isEmpty() const
+  /*!
+    Calculates if valid surface
+    \return if A/B have a valid surface rule
+  */
+{
+  if ((A && !A->isEmpty()) ||
+      (B && !B->isEmpty())) return 0;
+  return 1;
 }
 
 bool

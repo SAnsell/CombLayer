@@ -56,6 +56,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -200,10 +201,10 @@ testWrapper::testBox()
       Geometry::Surface* SPtrO=SurI.getSurf(std::get<2>(tc));
 
       std::string Out =StrFunc::stringWrite(*SPtrN);
-      if (StrFunc::fullBlock(Out)!=std::get<3>(tc))
+      if (StrFunc::removeOuterSpace(Out)!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Old   :"<<*SPtrO;
-	  ELog::EM<<"New   :"<<StrFunc::fullBlock(Out)<<std::endl;
+	  ELog::EM<<"New   :"<<StrFunc::removeOuterSpace(Out)<<std::endl;
 	  ELog::EM<<"Expect:"<<std::get<3>(tc)<<ELog::endErr;
 	  return -2;
 	}

@@ -3,7 +3,7 @@
  
  * File:   test/testNRange.cxx
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@
 #include "support.h"
 #include "Triple.h"
 #include "NRange.h"
+#include "NGroup.h"
 
 #include "testFunc.h"
 #include "testNRange.h"
@@ -76,6 +77,7 @@ testNRange::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testNRange::testCondense,
+      &testNRange::testInteger,
       &testNRange::testOperator,
       &testNRange::testOutput,
       &testNRange::testRange
@@ -83,6 +85,7 @@ testNRange::applyTest(const int extra)
   const std::string TestName[]=
     {
       "Condense",
+      "Integer",
       "Operator",
       "Output",
       "Range"
@@ -122,58 +125,86 @@ testNRange::testCondense()
 {
   ELog::RegMethod RegA("testNRange","testCondense");
 
-  const std::vector<std::string> TString=
-    {
-      "1 8log 1e+09 3r",
-      "1 3r 4 5i 8",
-      "1 8log 1e+09 3i 1.2e+09",
-      "1e-3 251log 1e+09"
-    };
+  typedef std::tuple<std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      {"1 8log 1e+09 3r ","1 8log 1e+09 3r"},
+      {"1 8log 1e+09 3i 1e10","1 8log 1e+09 3i 1e+10"},
 
-  for(size_t i=0;i<TString.size();i++)
+      {"1 8log 1e+09 3r 1e9 1e12 1e13 1.2e13",
+       "1 8log 1e+09 4r 1e+12 1e+13 1.2e+13"},
+      
+      {"1 8log 1e+09 3r 1e9","1 8log 1e+09 4r"},
+      {"0 1 1 1 1 1 1 ","0 1 3r"}
+    });
+
+  for(const TTYPE& tc : Tests)
     {
-      NRange NE;
-      if (NE.processString(TString[i]))
+      const std::string input=std::get<0>(tc);
+      const std::string output=std::get<1>(tc);
+      RangeUnit::NGroup<double> NE;
+      if (NE.processString(input))
 	{
-	  ELog::EM<<"Error with processing:"<<TString[i]<<ELog::endCrit;
+	  ELog::EM<<"Error with processing:"<<input<<ELog::endCrit;
 	  return -1;
 	}
 
+      std::ostringstream px;
+      px<<NE;
+      const std::string PreC=px.str();
+      std::ostringstream cx;
       NE.condense(1e-6);
+
+      cx<<NE;
+
+      if (StrFunc::removeOuterSpace(cx.str())!=output)
+	{
+	  ELog::EM<<"Test string == "<<input<<ELog::endWarn;
+	  ELog::EM<<"Pre string  == "<<PreC<<ELog::endWarn;
+	  ELog::EM<<"Cons string =="<<cx.str()<<ELog::endWarn;
+	  ELog::EM<<"Out  string == "<<output<<ELog::endWarn;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testNRange::testInteger()
+  /*!
+    Test the processsing with intervals 
+    \retval -1 :: Unable to process line
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testNRange","testCondense");
+
+  typedef std::tuple<std::vector<int>,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      {{0,0,1,1,1,1,1,1},"0 0 1 5r"}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const std::vector<int>& input=std::get<0>(tc);
+      const std::string output=std::get<1>(tc);
+
+      RangeUnit::NGroup<int> NE;
+      NE.condense(1e-6,input);
+
       std::ostringstream cx;
       cx<<NE;
-      if (StrFunc::fullBlock(cx.str())!=TString[i])
+
+      if (StrFunc::removeOuterSpace(cx.str())!=output)
 	{
-	  // Strip into components and test:
-	  double VT,VC;
-	  std::string ST,SC;
-	  int flagT,flagC;
-	  int errFlag(0);
-	  std::string TItem=TString[i];
-	  std::string CItem=cx.str();
-	  do 
-	    {
-	      // Test if both numeric
-	      flagT=StrFunc::section(TItem,VT);
-	      flagC=StrFunc::section(CItem,VC);
-	      if (flagT!=flagC ||                    // not same  : not equal
-		  (flagT && fabs(VT-VC)>1e-6))       
-		errFlag=1;
-	      else if (!flagT)
-		{
-		  flagT=StrFunc::section(TItem,ST);
-		  flagC=StrFunc::section(CItem,SC);
-		  if ( flagT!=flagC || ST!=SC)
-		    errFlag=1;
-		}
-	    } while(!errFlag && (flagT+flagC));
-	    
-	  if (errFlag)
-	    {
-	      ELog::EM<<"Test string == "<<TString[i]<<ELog::endWarn;
-	      ELog::EM<<"NE == "<<NE<<ELog::endWarn;
-	      return -2;
-	    }
+	  std::ostringstream vx;
+	  for(const int CN : input)
+	    vx<<CN<<" ";
+	  ELog::EM<<"Test string == "<<vx.str()<<ELog::endWarn;
+	  ELog::EM<<"Cons string =="<<cx.str()<<ELog::endWarn;
+	  ELog::EM<<"Out  string == "<<output<<ELog::endWarn;
+	  return -1;
 	}
     }
   return 0;
@@ -188,13 +219,17 @@ testNRange::testOperator()
   */
 {
   ELog::RegMethod RegA("testNRange","testOperator");
+
+
+
   double results[]={0.001,0.01,0.1,1.0,10,100,
                   100,100,100,
 		  1000,1001,1002,1003,1004,1005,
 		  1006,1007,1008,1009,1010,1011  };
 
   const std::string testString("0.001 4log 100 3r 1000 49i 1050");
-  NRange NE;
+  RangeUnit::NGroup<double> NE;
+  
   if (NE.processString(testString))
     {
       ELog::EM<<"Error with processing:"<<testString<<ELog::endCrit;
@@ -203,7 +238,7 @@ testNRange::testOperator()
   // Basic string
   for(int i=0;i<20;i++)
     {
-      if (fabs(results[i]-NE[i])/results[i]>1e-5)
+      if (std::abs(results[i]-NE[i])/results[i]>1e-5)
 	{
 	  ELog::EM<<NE<<ELog::endBasic;
 	  ELog::EM<<"NE["<<i<<"]=="<<NE[i]<<ELog::endTrace;
@@ -225,48 +260,36 @@ testNRange::testOutput()
 {
   ELog::RegMethod RegA("testNRange","testOutput");
 
-  std::string testString("1.0 8log 1e9 3r");
-  std::string testStringB("1000.0 49i 1050.0");
-  NRange NE;
-  if (NE.processString(testString))
-    {
-      ELog::EM<<"Error with processing:"<<testString<<ELog::endCrit;
-      return -1;
-    }
-  // Basic string
-  std::vector<double> values;
-  NE.writeVector(values);
-  const double sum=accumulate(values.begin(),values.end(),0.0,
-				   std::plus<double>());
-  if (std::abs(sum-4.11111111e9)>1e3)
-    {
-      ELog::EM<<"Sum == "<<sum<<" from:"<<testString<<ELog::endWarn;
-      ELog::EM<<"Data == ";
-      copy(values.begin(),values.end(),
-	   std::ostream_iterator<double>(ELog::EM.Estream(),","));
-      ELog::EM<<ELog::endCrit;
-      return -2;
-    }
+  typedef std::tuple<std::string,double,double> TTYPE;
+  std::vector<TTYPE> tests
+    ({
+      { "1.0 8log 1e9 3r",4.11111111e9,1e3 },
+      { "1000.0 49i 1050.0",52275.0,1e-3}
+    });
 
-  NE.clear();
-  if (NE.processString(testStringB))
+  for(const TTYPE& tc : tests)
     {
-      ELog::EM<<"Error with processing (B):"<<testStringB<<ELog::endCrit;
-      return -1;
-    }
-  // Basic string
-  NE.writeVector(values);
-  const double sumB=accumulate(values.begin(),values.end(),0.0,
+      RangeUnit::NGroup<double> NE;
+      const std::string testString=std::get<0>(tc);
+      if (NE.processString(testString))
+	{
+	  ELog::EM<<"Error with processing:"<<testString<<ELog::endCrit;
+	  return -1;
+	}
+      // Basic string
+      std::vector<double> values;
+      NE.writeVector(values);
+      const double sum=accumulate(values.begin(),values.end(),0.0,
 				   std::plus<double>());
-  if (std::abs(sumB-52275.0)>1e-3)
-    {
-      ELog::EM<<"Sum == "<<sumB<<" ("<<std::abs(sumB-52275.0)<<ELog::endWarn;
-      ELog::EM<<" from:"<<testStringB<<ELog::endWarn;
-      ELog::EM<<"Data == ";
-      copy(values.begin(),values.end(),
-	   std::ostream_iterator<double>(ELog::EM.Estream(),","));
-      ELog::EM<<ELog::endCrit;
-      return -3;
+      if (std::abs(sum-std::get<1>(tc))>std::get<2>(tc))
+	{
+	  ELog::EM<<"Sum == "<<sum<<" from:"<<testString<<ELog::endWarn;
+	  ELog::EM<<"Data == ";
+	  copy(values.begin(),values.end(),
+	       std::ostream_iterator<double>(ELog::EM.Estream(),","));
+	  ELog::EM<<ELog::endCrit;
+	  return -2;
+	}
     }
   return 0;
 }
@@ -283,25 +306,38 @@ testNRange::testRange()
 {
   ELog::RegMethod RegA("testNRange","testRange");
 
-  const std::string testString("1.3e2 100i 1.6e6 5r 12e8 10log 3.7e9");
-  const std::string expectString("130 100i 1.6e+06 5r 1.2e+09 10log 3.7e+09");
 
-  NRange NE;
-  if (NE.processString(testString))
+  typedef std::tuple<std::string,std::string> TTYPE;
+
+  const std::vector<TTYPE> Tests
+    ({
+      {"1.3e2 100i 1.6e6 5r 0.8e9 12e8 10log 3.7e9",
+	  "130 100i 1.6e+06 5r 8e+08 1.2e+09 10log 3.7e+09"}
+    });
+	
+
+  for(const TTYPE& tc : Tests)
     {
-      ELog::EM<<"Error with NRange "<<ELog::endCrit;
-      return -1;
+      RangeUnit::NGroup<double> NE;
+      const std::string testString=std::get<0>(tc);
+      const std::string expectString=std::get<0>(tc);
+
+      if (NE.processString(testString))
+	{
+	  ELog::EM<<"Error with NRange "<<ELog::endCrit;
+	  return -1;
+	}
+
+      std::ostringstream cx;
+      NE.write(cx);
+      if (StrFunc::removeOuterSpace(cx.str())!=expectString)
+	{
+	  ELog::EM<<"Failed on string match"<<ELog::endDiag;
+	  ELog::EM<<"Result == "<<cx.str()<<ELog::endDiag;
+	  ELog::EM<<"Expect == "<<expectString<<ELog::endDiag;
+	  return -1;
+	}
     }
-  std::ostringstream cx;
-  NE.write(cx);
-  if (StrFunc::fullBlock(cx.str())!=expectString)
-    {
-      ELog::EM<<"Failed on string match"<<ELog::endDiag;
-      ELog::EM<<"Result == "<<cx.str()<<ELog::endDiag;
-      ELog::EM<<"Expect == "<<expectString<<ELog::endDiag;
-      return -1;
-    }
-  
   return 0;
 }
 

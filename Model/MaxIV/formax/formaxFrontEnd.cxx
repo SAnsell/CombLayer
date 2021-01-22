@@ -3,7 +3,7 @@
  
  * File: formax/formaxFrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -73,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
@@ -125,14 +127,12 @@ formaxFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
-  /*!
+			       const attachSystem::FixedComp& preFC,
+			       const long int preSideIndex)
+/*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -142,7 +142,7 @@ formaxFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
   undulatorPipe->insertInCell("FFlange",System,outerCell);

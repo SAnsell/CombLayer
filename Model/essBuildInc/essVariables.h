@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/essVariables.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,13 +64,6 @@ namespace setVariable
   void TREXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
   void VESPAvariables(FuncDataBase&);
-
-  // MODIFIED ESS Beamlines
-  void shortDREAMvariables(FuncDataBase&);
-  void shortDREAM2variables(FuncDataBase&);
-  void shortNMXvariables(FuncDataBase&);
-  void shortODINvariables(FuncDataBase&);
-  void longLOKIvariables(FuncDataBase&);
 
   // SIMPLE TEST ITEMS
   void simpleITEMvariables(FuncDataBase&);

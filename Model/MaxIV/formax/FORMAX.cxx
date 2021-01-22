@@ -3,7 +3,7 @@
  
  * File: formax/FORMAX.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -75,6 +76,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -86,7 +88,7 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "balderOpticsHutch.h"
+#include "OpticsHutch.h"
 
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
@@ -111,7 +113,7 @@ FORMAX::FORMAX(const std::string& KN) :
   frontBeam(new formaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new formaxOpticsLine(newName+"OpticsLine"))
   /*!
     Constructor
@@ -149,13 +151,18 @@ FORMAX::build(Simulation& System,
   ELog::RegMethod RControl("FORMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
+
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->deactivateFM3();
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
@@ -165,7 +172,6 @@ FORMAX::build(Simulation& System,
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
-
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
@@ -173,8 +179,9 @@ FORMAX::build(Simulation& System,
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
 
-  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   // Ugly HACK to get the two objects to merge
@@ -185,9 +192,8 @@ FORMAX::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->createAll(System,*frontBeam,2);
   // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
@@ -196,10 +202,12 @@ FORMAX::build(Simulation& System,
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
+
   return;  
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   return;
 }

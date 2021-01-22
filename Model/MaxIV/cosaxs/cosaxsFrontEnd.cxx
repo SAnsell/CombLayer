@@ -3,7 +3,7 @@
  
  * File: cosaxs/cosaxsFrontEnd.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -53,7 +54,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 
 #include "UTubePipe.h"
 #include "Undulator.h"
@@ -103,14 +104,12 @@ cosaxsFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 cosaxsFrontEnd::buildUndulator(Simulation& System,
-			       MonteCarlo::Object* masterCell,
 			       const attachSystem::FixedComp& preFC,
 			       const long int preSideIndex)
 /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -120,7 +119,7 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
 

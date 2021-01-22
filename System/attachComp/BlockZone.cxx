@@ -1,0 +1,433 @@
+ /********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   attachComp/BlockZone.cxx
+ *
+ * Copyright (c) 2004-2020 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <cstddef>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <deque>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <functional>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "writeSupport.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Sphere.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "SurInter.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "Line.h"
+#include "LineIntersectVisit.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "AttachSupport.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "generateSurf.h"
+
+#include "BlockZone.h"
+
+namespace attachSystem
+{
+
+std::ostream&
+operator<<(std::ostream& OX,const BlockZone& A)
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+    \param A :: Inner zone to write
+    return Stream after use.
+  */
+{
+  A.write(OX);
+  return OX;
+}
+
+BlockZone::BlockZone() :
+  attachSystem::FixedComp(0,"BZtemp"),
+  attachSystem::CellMap(),
+  voidMat(0),fakeCell(0)
+  /*!
+    Simple constructor
+  */
+{}
+  
+BlockZone::BlockZone(const std::string& key) :
+  attachSystem::FixedComp(key,6),
+  attachSystem::CellMap(),
+  voidMat(0),fakeCell(0)
+  /*!
+    Simple constructor
+  */
+{}
+
+
+BlockZone::BlockZone(const BlockZone& A) : 
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  surroundHR(A.surroundHR),frontHR(A.frontHR),backHR(A.backHR),
+  maxExtentHR(A.maxExtentHR),voidMat(A.voidMat),
+  fakeCell(A.fakeCell),insertCells(A.insertCells)
+  /*!
+    Copy constructor
+    \param A :: BlockZone to copy
+  */
+{}
+
+BlockZone&
+BlockZone::operator=(const BlockZone& A)
+  /*!
+    Assignment operator
+    \param A :: BlockZone to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      surroundHR=A.surroundHR;
+      frontHR=A.frontHR;
+      backHR=A.backHR;
+      maxExtentHR=A.maxExtentHR;
+      voidMat=A.voidMat;
+      fakeCell=A.fakeCell;
+      insertCells=A.insertCells;
+    }
+  return *this;
+}
+
+int
+BlockZone::merge(const BlockZone& BZ)
+  /*!
+    Merge two Block zones if BOTH have common
+    surround and if both have reversed front+back
+    \retval 1 if normal direction merge   [ this -- BZ]
+    \retval -1 if reversed direction merge [BZ -- this ]
+    \retval 0 no merge
+   */
+{
+  ELog::RegMethod RegA("BlockZone","merge");
+
+  if(surroundHR==BZ.surroundHR)
+    {
+      if (backHR==BZ.frontHR)
+	{
+	  backHR=BZ.backHR;
+	  return 1;
+	}
+
+      if (BZ.backHR==frontHR)
+	{
+	  frontHR=BZ.frontHR;
+	  return -1;
+	}
+    }
+  return 0;
+}
+  
+HeadRule
+BlockZone::getVolume() const
+  /*!
+    Get the full excluded volume
+   */
+{
+  HeadRule Out(surroundHR);
+  Out*=frontHR;
+  Out*=backHR.complement();
+  return Out;
+}
+  
+
+void
+BlockZone::setSurround(const HeadRule& HR)
+  /*!
+    Set the capture/surround rule
+    \param HR :: Surround rule [inward]
+  */
+{
+  surroundHR=HR;
+  return;
+}
+  
+void
+BlockZone::setFront(const HeadRule& HR)
+  /*!
+    Set the front facing rule AND the back rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  frontHR=HR;
+  backHR=HR;
+  return;
+}
+
+void
+BlockZone::initFront(const HeadRule& HR)
+  /*!
+    Set the front facing rule AND the back rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  frontHR=HR;
+  maxExtentHR=HR;
+  backHR=HR;
+  return;
+}
+
+void
+BlockZone::setBack(const HeadRule& HR)
+  /*!
+    Set the back rule [for delayed insert]
+    \param HR :: Rule at back [outward]
+  */
+{
+  backHR=HR;
+  return;
+}
+
+void
+BlockZone::setMaxExtent(const HeadRule& HR)
+  /*!
+    Set the maximum outward rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  maxExtentHR=HR;
+  return;
+}
+
+void
+BlockZone::addInsertCell(const int CN)
+  /*!
+    Insert the cell [Check needed for uniqueness?]
+    \param CN :: Cell number
+   */
+{
+  insertCells.push_back(CN);
+  return;
+}
+
+void
+BlockZone::addInsertCells(const std::vector<int>& CVec)
+  /*!
+    Insert the cell [Check needed for uniqueness?]
+    \param CN :: Cell number
+   */
+{
+  for(const int CN : CVec)
+    insertCells.push_back(CN);
+  return;
+}
+		 
+void
+BlockZone::insertCell(Simulation& System,const HeadRule& HR)
+  /*!
+    Insert the new volume into the cell(s) : 
+    \todo Check HR fits in 
+    \param System :: simulation for cells
+    \param HR :: Volume to be exclude [not complemented yet]
+   */
+{
+  ELog::RegMethod RegA("BlockZone","insertCell");
+
+  if (HR.hasRule())
+    {
+      for(const int cellN : insertCells)
+	{
+	  MonteCarlo::Object* outerObj=System.findObject(cellN);
+	  if (outerObj)
+	    outerObj->addIntersection(HR.complement());
+	  else
+	    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+	}
+    }
+  return;
+}
+  
+void
+BlockZone::removeFakeCell(Simulation& System)
+  /*!
+    Removes the fakecell 
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("BlockZone","removeFakeCell");
+
+  
+  System.removeCell(fakeCell);
+  fakeCell=0;
+  return;
+}
+  
+int
+BlockZone::createFakeCell(Simulation& System)
+
+  /*!
+    Construct the cell from current back out to the max-Extent.
+    The cell is for rotation calc units [that should all be removed]
+    but needs a valid  tempory cell. The cell is delete as soon as
+    createUnit is called. [Essential that it is called as the emplacement
+    cell cant exists for long or after reinsertion.
+    \param System :: Simulation
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("BlockZone","createFakeCell");
+
+  const HeadRule Volume=surroundHR * backHR * maxExtentHR;
+  makeCell("Fake",System,cellIndex+1001,voidMat,0.0,Volume);
+  fakeCell=cellIndex+1001;
+  return fakeCell;
+}
+
+int
+BlockZone::createUnit(Simulation& System)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("BlockZone","createUnit(System)");
+
+  if (fakeCell) removeFakeCell(System);
+  // alway outgoing [so use complement]
+
+  // maxEXTENT is INWARDS FACING
+  const HeadRule newBackFC=maxExtentHR;
+  HeadRule Volume=surroundHR * backHR * newBackFC;
+  makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
+  backHR=newBackFC.complement();
+
+  insertCell(System,Volume);
+
+  return cellIndex-1;
+}
+
+int
+BlockZone::createUnit(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const std::string& linkName)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param FC :: FixedComp
+    \param linkName :: link point
+    \return cell nubmer
+  */
+{
+  return createUnit(System,FC,FC.getSideIndex(linkName));
+}
+  
+int
+BlockZone::createUnit(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("BlockZone","createUnit");
+
+  if (fakeCell) removeFakeCell(System);
+  // alway outgoing [so use complement]
+  const HeadRule newBackFC=FC.getFullRule(sideIndex);
+  HeadRule Volume=surroundHR * backHR * newBackFC.complement();
+  makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
+  backHR=newBackFC;
+
+  insertCell(System,Volume);
+
+  return cellIndex-1;
+}
+
+
+
+void
+BlockZone::write(std::ostream& OX) const
+  /*!
+    Debug write out function
+    \param OX :: Output stream
+  */
+{
+  OX<<"-------------"<<std::endl;
+  OX<<"Front:"<<frontHR<<"\n";
+  OX<<"Back :"<<backHR<<"\n";
+  OX<<"Surround:"<<surroundHR<<"\n";
+  OX<<"-------------"<<std::endl;
+  return;
+}
+
+void
+BlockZone::createAll(Simulation&,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
+  /*!
+    Simplified create all. Is an origin necessary ??
+    \param System :: Simulation
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+  */
+{
+  createUnitVector(FC,sideIndex);
+  return;
+}
+  
+  
+}  // NAMESPACE attachSystem

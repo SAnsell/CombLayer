@@ -60,6 +60,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -78,7 +79,8 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
-#include "InnerZone.h" 
+#include "InnerZone.h"
+#include "BlockZone.h" 
 
 #include "PreDipole.h"
 

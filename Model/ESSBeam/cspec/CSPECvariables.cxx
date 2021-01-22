@@ -92,12 +92,14 @@ CSPECvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"cspecFA",350.0, 9.1,10.6, 10.0,14.8);
 
 
-  PipeGen.generatePipe(Control,"cspecPipeB",8.0,46.0);
+  PipeGen.generatePipe(Control,"cspecPipeB",46.0);
+  Control.addVariable("cspecPipeBYStep",8.0);
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"cspecFB",44.0, 10.6,14.8);   
 
-  PipeGen.generatePipe(Control,"cspecPipeC",4.0,1260.0);
+  PipeGen.generatePipe(Control,"cspecPipeC",1260.0);
+  Control.addVariable("cspecPipeCYStep",4.0);
   FGen.generateRectangle(Control,"cspecFC",1256.0, 10.6,14.8);   
 
   CGen.setMainRadius(38.122);   // diameter 70.0 internal
@@ -110,7 +112,8 @@ CSPECvariables(FuncDataBase& Control)
   BGen.addPhase({120},{35.74});
   BGen.generateBlades(Control,"cspecBWDiskA",0.0,20.0,35.0);
 
-  PipeGen.generatePipe(Control,"cspecPipeD",4.0,510.0);
+  PipeGen.generatePipe(Control,"cspecPipeD",510.0);
+  Control.addVariable("cspecPipeDYStep",4.0);
   FGen.generateBender(Control,"cspecBD",506.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
     
   return;

@@ -68,8 +68,8 @@ class PWTConstructor
   PWTConstructor& operator=(const PWTConstructor&);
   ~PWTConstructor() {}  ///< Destructor
 
-  void processUnit(const objectGroups&,
-		   PhysicsCards&,const mainSystem::inputParam&,
+  void processUnit(SimMCNP&,
+		   const mainSystem::inputParam&,
 		   const size_t);
 };
 

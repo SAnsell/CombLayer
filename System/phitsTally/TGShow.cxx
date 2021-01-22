@@ -3,7 +3,7 @@
  
  * File:   phitsTally/TGShow.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "writeSupport.h"
+#include "phitsWriteSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -55,8 +55,8 @@ namespace phitsSystem
 {
 
 TGShow::TGShow(const int ID) :
-  phitsTally(ID),output(6),
-  axisDirection(1),lineWidth(0.5)
+  phitsTally("TGShow",ID),output(6),
+  lineWidth(0.5)
   /*!
     Constructor
     \param ID :: Identity number of tally 
@@ -66,9 +66,9 @@ TGShow::TGShow(const int ID) :
 }
 
 TGShow::TGShow(const TGShow& A) : 
-  phitsTally(A),grid(A.grid),
+  phitsTally(A),xyzGrid(A.xyzGrid),
   output(A.output),
-  axisDirection(A.axisDirection),lineWidth(A.lineWidth),
+  lineWidth(A.lineWidth),
   title(A.title),xTxt(A.xTxt),yTxt(A.yTxt)
   /*!
     Copy constructor
@@ -87,9 +87,8 @@ TGShow::operator=(const TGShow& A)
   if (this!=&A)
     {
       phitsTally::operator=(A);
-      grid=A.grid;
+      xyzGrid=A.xyzGrid;
       output=A.output;
-      axisDirection=A.axisDirection;
       lineWidth=A.lineWidth;
       title=A.title;
       xTxt=A.xTxt;
@@ -125,10 +124,29 @@ TGShow::setIndex(const std::array<size_t,3>& A)
 {
   ELog::RegMethod RegA("TGShow","setIndex");
 
-  grid.setSize(A[0],A[1],A[2]);
+  xyzGrid.setSize(A[0],A[1],A[2]);
   return;
 }
 
+void
+TGShow::setOutputStyle(const bool materialName,
+		       const bool regionName)
+  /*!
+    Set the output name
+    \param materialName :: Write material name
+    \param regionName :: Write region name
+   */
+{
+  if (regionName)
+    output=6;
+  else
+    {
+      output= (materialName) ? 4 : 2;
+    }
+  return;
+}
+    
+  
 void
 TGShow::setCoordinates(const Geometry::Vec3D& A,const Geometry::Vec3D& B)
   /*!
@@ -138,32 +156,34 @@ TGShow::setCoordinates(const Geometry::Vec3D& A,const Geometry::Vec3D& B)
    */
 {
   ELog::RegMethod RegA("TGShow","setCoordinates");
-  grid.setCoordinates(A,B);
+  xyzGrid.setCoordinates(A,B);
   return;
 }
 
 
 void
-TGShow::write(std::ostream& OX) const
+TGShow::write(std::ostream& OX,const std::string& fileHead) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream
    */
 {
   ELog::RegMethod RegA("TGShow","write");
-
   
   OX<<"[T-gshow]\n";
-  grid.write2D(OX);
+  xyzGrid.write(OX);
+  xyzGrid.writeAxis(OX,1);
   if (!title.empty())
-    OX<<"  title = "<<title<<"\n";
-  if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";
-  if (!yTxt.empty())  OX<<"  y-txt = "<<yTxt<<"\n";
-  OX<<"  output = "<<output<<"\n";
-  OX<<"  epsout = "<<epsFlag<<"\n";
-  OX<<"  vtkout = "<<vtkFlag<<"\n";
-  OX<<"  vtkfmt = "<<vtkFormat<<"\n";
-  OX<<"  file = "<<keyName<<"\n";
+    StrFunc::writePHITS(OX,1,"title",title);
+  if (!xTxt.empty()) StrFunc::writePHITS(OX,1,"x-txt",xTxt);
+  if (!yTxt.empty()) StrFunc::writePHITS(OX,1,"y-txt",yTxt);
+  StrFunc::writePHITS(OX,1,"epsout",epsFlag);
+  StrFunc::writePHITS(OX,1,"file",fileHead+keyName+".out");
+  if (vtkout)
+    {
+      StrFunc::writePHITS(OX,1,"vtkout",vtkout);
+      StrFunc::writePHITS(OX,1,"vtkfmt",vtkBinary);
+    }
   OX.flush();
   return;
 }

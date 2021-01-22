@@ -187,16 +187,18 @@ t1PlateTarget::createAll(Simulation& System,
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);
 
+
   PlateTarObj->addInsertCell(PressVObj->getInnerVoid());
   PlateTarObj->addInsertCell(PressVObj->getOuterWall());
   PlateTarObj->createAll(System,*PressVObj,0);
 
   DivObj->addInsertCell(PressVObj->getInnerVoid());
+  //  DivObj->createAll(System,*PlateTarObj,*PressVObj,0);
   DivObj->build(System,*PlateTarObj,*PressVObj);
 
   insertObjects(System);
   PlateTarObj->buildFeedThrough(System);
-  PressVObj->buildFeedThrough(System);
+  //  PressVObj->buildFeedThrough(System);
 
   return;
 }

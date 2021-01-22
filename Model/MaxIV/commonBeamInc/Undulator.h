@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Undulator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,31 +38,33 @@ namespace xraySystem
 */
 
 class Undulator :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
 
-  double vGap;                    ///< Vertical gap
+  double vGap;                     ///< Vertical gap
   
-  double length;                  ///< Main length
+  double length;                   ///< Main length
   double magnetWidth;              ///< Block [quad unit] width
   double magnetDepth;              ///< Depth of unit
+  double magnetCorner;             ///< Depth of unit
+  double magnetCutSurf;            ///< Cut surface at front of magnet
 
-  double sVOffset;                  ///< suppor offset in z
-  double supportThick;              ///< support thick [z axis]
-  double supportWidth;              ///< support width [x axis]
-  double supportLength;             ///< Support length [y axis]
+  double sVOffset;                 ///< suppor offset in z
+  double supportThick;             ///< support thick [z axis]
+  double supportWidth;             ///< support width [x axis]
+  double supportLength;            ///< Support length [y axis]
 
-  double standHeight;                ///< stand depth [z] 
-  double standWidth;                ///< support thick [z axis]
+  double standHeight;              ///< stand depth [z] 
+  double standWidth;               ///< support thick [z axis]
 
-  int voidMat;                    ///< Void material
+  int voidMat;                     ///< Void material
   int magnetMat;                   ///< Block material
-  int supportMat;                 ///< support material
-  int standMat;                   ///< stand material
+  int supportMat;                  ///< support material
+  int standMat;                    ///< stand material
   
   
   void populate(const FuncDataBase&);
@@ -77,6 +79,7 @@ class Undulator :
   Undulator& operator=(const Undulator&);
   virtual ~Undulator();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

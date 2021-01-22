@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -439,7 +440,7 @@ insertPlate::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
-  
+
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/CellMap.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,16 @@
 #define attachSystem_CellMap_h
 
 class Simulation;
+namespace MonteCarlo
+{
+  class Object;
+}
 
 namespace attachSystem
 {
 
   class ContainedComp;
+  class ContainedGroup;
 
 /*!
   \class CellMap
@@ -135,6 +140,8 @@ class CellMap  : public BaseMap
 		       const CellMap&,const std::string&,const size_t) const;
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const ContainedGroup&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,
@@ -150,10 +157,18 @@ class CellMap  : public BaseMap
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
+
+  MonteCarlo::Object*
+  getCellObject(Simulation&,const std::string&,
+		const size_t =0) const;
+
   
   void makeCell(const std::string&,
 		Simulation&,const int,const int,const double,
 		const std::string&);
+  void makeCell(const std::string&,
+		Simulation&,const int,const int,const double,
+		const HeadRule&);
   
   void deleteCell(Simulation&,const std::string&,const size_t =0);
 

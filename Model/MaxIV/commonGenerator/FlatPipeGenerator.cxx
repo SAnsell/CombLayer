@@ -58,17 +58,20 @@ namespace setVariable
 {
 
 FlatPipeGenerator::FlatPipeGenerator() :
-  width(2.7),height(1.0),wallThick(0.75),
+  frontWidth(2.7),frontHeight(1.0),
+  backWidth(2.7),backHeight(1.0),
+  wallThick(0.75),
   flangeARadius(CF40::flangeRadius),
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
   flangeBLength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L")
+  voidMat("Void"),wallMat("Stainless304L"),
+  flangeMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
+
 FlatPipeGenerator::~FlatPipeGenerator() 
  /*!
    Destructor
@@ -100,7 +103,6 @@ FlatPipeGenerator::setBFlangeCF()
 }
 
 
-  
 void
 FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 				const std::string& keyName,
@@ -116,8 +118,10 @@ FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 
 
   Control.addVariable(keyName+"Length",length);   
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"FrontWidth",frontWidth);
+  Control.addVariable(keyName+"FrontHeight",frontHeight);
+  Control.addVariable(keyName+"BackWidth",backWidth);
+  Control.addVariable(keyName+"BackHeight",backHeight);
 
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
@@ -127,10 +131,12 @@ FlatPipeGenerator::generateFlat(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
   
   return;
 
 }
 
+  
   
 }  // NAMESPACE setVariable

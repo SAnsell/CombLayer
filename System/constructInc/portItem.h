@@ -56,8 +56,8 @@ class portItem :
   bool statusFlag;             ///< Flag to check object correct
   bool outerFlag;              ///< Make outer void
 
-  Geometry::Vec3D centreOffset;
-  Geometry::Vec3D axisOffset;
+  Geometry::Vec3D centreOffset;  ///< Centre axis
+  Geometry::Vec3D axisOffset;    ///< axis Offset
   
   double externalLength;     ///< Length of item 
   double radius;             ///< radius of pipe
@@ -81,6 +81,10 @@ class portItem :
   virtual void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
+  void createLinks();
+
+  void constructFlange(Simulation&,const HeadRule&,
+		       const HeadRule&);
 
   virtual void constructOuterFlange(Simulation&,
 				    const ModelSupport::LineTrack&,
@@ -101,6 +105,8 @@ class portItem :
   virtual void populate(const FuncDataBase&);
   
   double getExternalLength() const { return externalLength; }
+  double getCapLength() const
+    { return std::max(capThick,0.0); }
   
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void setCentLine(const attachSystem::FixedComp&,
@@ -115,10 +121,20 @@ class portItem :
   void setWrapVolume() { outerFlag=1; }
   
   void constructTrack(Simulation&);
+  void constructTrack(Simulation&,MonteCarlo::Object*,
+		      const HeadRule&,const HeadRule&);
   
   void intersectPair(Simulation&,portItem&) const;
   void intersectVoidPair(Simulation&,const portItem&) const;
 
+
+  void constructAxis(Simulation&,
+		     const attachSystem::FixedComp&,
+		     const long int);
+
+  void addPortCut(MonteCarlo::Object*) const;
+
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

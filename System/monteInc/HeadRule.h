@@ -85,7 +85,9 @@ class HeadRule
   void reset();
 
   /// Has a valid rule
-  bool hasRule() const { return (HeadNode) ? 1 : 0; } 
+  bool hasRule() const { return (HeadNode) ? 1 : 0; }
+  /// has valid filled rule [non-empty]
+  bool isEmpty() const;
   bool isComplementary() const;
   bool isUnion() const;
 
@@ -133,10 +135,16 @@ class HeadRule
   
   int removeItems(const int);
   int removeUnsignedItems(const int);
+  int removeMatchedPlanes(const Geometry::Vec3D&,const double);
+  int removeOuterPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		       const double);
   void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
   void removeCommon();
+
+  std::set<int> findAxisPlanes(const Geometry::Vec3D&,const double);
+  int findAxisPlane(const Geometry::Vec3D&,const double);
   
   void makeComplement();
   HeadRule complement() const;
@@ -159,6 +167,8 @@ class HeadRule
   HeadRule getLevel(const size_t) const;
   size_t countNLevel(const size_t) const;
 
+  HeadRule makeValid(const Geometry::Vec3D&) const;
+  
   bool Intersects(const HeadRule&) const;
 
   std::string display() const;

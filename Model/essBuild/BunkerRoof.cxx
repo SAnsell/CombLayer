@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerRoof.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,6 +61,7 @@
 #include "FuncDataBase.h"
 #include "inputParam.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -92,7 +92,7 @@ namespace essSystem
 
 BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedUnit(bunkerName+"Roof",6),
+  attachSystem::FixedComp(bunkerName+"Roof",6),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
   baseSurf(0),topSurf(0),innerSurf(0),outerSurf(0)
   /*!
@@ -102,7 +102,7 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
 {}
 
 BunkerRoof::BunkerRoof(const BunkerRoof& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedUnit(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   baseName(A.baseName),
@@ -260,7 +260,7 @@ BunkerRoof::createSector(Simulation& System,
 
   std::vector<double> empty;
   ModelSupport::LayerDivide3D LD3(keyName+"Main"+
-				  StrFunc::makeString(sectNum));
+				  std::to_string(sectNum));
 
   // Front/back??
   LD3.setSurfPair(0,innerSurf,outerSurf);
@@ -288,7 +288,7 @@ BunkerRoof::createSector(Simulation& System,
     }
   
   LD3.divideCell(System,cellN);
-  addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
+  addCells("Sector"+std::to_string(sectNum),LD3.getCells());
   return;
 }
 

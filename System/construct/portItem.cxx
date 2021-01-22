@@ -59,6 +59,7 @@
 #include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Line.h"
 #include "varList.h"
@@ -86,7 +87,8 @@ namespace constructSystem
 portItem::portItem(const std::string& baseKey,
 		   const std::string& Key) :
   attachSystem::FixedComp(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   portBase(baseKey),
   statusFlag(0),outerFlag(0),
   externalLength(0.0),radius(0.0),wall(0.0),
@@ -423,6 +425,182 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
 }
 
 void
+portItem::createLinks()
+  /*!
+    Determines the link point on the outgoing plane.
+    It must follow the beamline, but exit at the plane.
+    Port position are used for first two link points
+    Note that 0/1 are the flange surfaces
+    \param LT :: Line track
+    \param AIndex :: start of high density material
+    \param BIndex :: end of high density material
+  */
+{
+  ELog::RegMethod RegA("portItem","createLinks");
+
+  FixedComp::nameSideIndex(0,"BasePoint");
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(1,"OuterPlate");
+  if (capThick>Geometry::zeroTol)
+    {
+      FixedComp::setConnect(1,Origin+Y*(externalLength+capThick),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
+    }
+  else
+    {
+      FixedComp::setConnect(1,Origin+Y*externalLength,Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+    }
+
+  FixedComp::nameSideIndex(2,"InnerRadius");
+  FixedComp::setConnect(2,Origin+Y*(externalLength/2.0)+X*radius,X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
+  FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(3,"OuterRadius");
+  FixedComp::setConnect(3,Origin+Y*(externalLength/2.0)+X*(wall+radius),X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(4,"InnerPlate");
+  FixedComp::setConnect(4,Origin+Y*externalLength,-Y);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
+
+  FixedComp::nameSideIndex(5,"VoidRadius");
+  FixedComp::setConnect(5,Origin+Y*externalLength,-Y);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
+
+  return;
+}
+
+void
+portItem::constructFlange(Simulation& System,
+			  const HeadRule& innerSurf,
+			  const HeadRule& outerSurf)
+  /*!
+    Construct a flange from the centre point
+    \parma System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("portItem","constructFlange");
+
+  // Final outer
+  ModelSupport::buildPlane(SMap,buildIndex+2,
+			   Origin+Y*externalLength,Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   Origin+Y*(externalLength-flangeLength),Y);
+
+  const bool capFlag(capThick>Geometry::zeroTol);
+  const bool windowFlag (capFlag &&
+			 windowThick>Geometry::zeroTol &&
+			 windowThick+Geometry::zeroTol <capThick &&
+			 windowRadius>Geometry::zeroTol &&
+			 windowRadius+Geometry::zeroTol < flangeRadius);
+
+
+  // 
+  // This builds a window cap if required:
+  // 
+  if (capFlag)
+    {
+      Geometry::Vec3D capPt(Origin+Y*(externalLength+capThick));
+      ModelSupport::buildPlane(SMap,buildIndex+202,capPt,Y);
+      // if we have a cap we might have a window:
+      if (windowFlag)
+	{
+	  capPt-= Y*(capThick/2.0);   // move to mid point
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+211,capPt-Y*(windowThick/2.0),Y);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+212,capPt+Y*(windowThick/2.0),Y);
+	  ModelSupport::buildCylinder
+	    (SMap,buildIndex+207,capPt,Y,windowRadius);
+	}
+    }
+  /// ----  END : Cap/Window
+ 
+  // determine start surface:
+
+  // construct inner volume:
+  std::string Out;
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+innerSurf.display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+innerSurf.display());
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
+
+  if (capFlag)
+    {
+      // we have window AND flange:
+      if (windowFlag)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 -211 2 ");
+	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 212 -202 ");
+	  makeCell("AbovePlate",System,cellIndex++,outerVoidMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -207 211 -212 ");
+	  makeCell("Plate",System,cellIndex++,windowMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 207 -202 2 ");
+	  makeCell("PlateSurround",System,cellIndex++,capMat,0.0,Out);
+	}
+      else // just a cap
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -27 2 -202 ");
+	  makeCell("AbovePlate",System,cellIndex++,capMat,0.0,Out);
+	}
+    }
+
+  if (outerFlag)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
+      makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,
+	       Out+outerSurf.display());
+      Out= (capFlag) ?
+	ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
+	ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
+
+      addOuterSurf(Out+outerSurf.display());
+    }
+  else
+    {
+      Out= (capFlag) ?
+	ModelSupport::getComposite(SMap,buildIndex," -202 -27 102 ") :
+	ModelSupport::getComposite(SMap,buildIndex," -2 -27 102 ");
+      addOuterSurf(Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 -102 1 ");
+      addOuterUnionSurf(Out+outerSurf.display());
+    }
+  return;
+}
+
+void
+portItem::addPortCut(MonteCarlo::Object* mainTube) const
+  /*!
+    Adds the port exclude to the main tube
+    \param mainTube :: object for main tube
+  */
+{
+  // Mid port exclude
+  const HeadRule HR
+    (ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )"));
+
+  mainTube->addIntersection(HR);
+  return;
+}
+
+void
 portItem::constructOuterFlange(Simulation& System,
 			       const ModelSupport::LineTrack& LT,
 			       const size_t startIndex,
@@ -597,6 +775,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
+  ELog::EM<<"ASDFASFSF"<<ELog::endErr;
   AIndex=0;
   BIndex=0;
   // no point checking first value
@@ -669,6 +848,36 @@ portItem::intersectVoidPair(Simulation& System,
 }
 
 void
+portItem::constructTrack(Simulation& System,
+			 MonteCarlo::Object* insertObj,
+			 const HeadRule& innerSurf,
+			 const HeadRule& outerSurf)
+  /*!
+    Construct a track system
+    \param System :: Simulation of model
+    \param insertObj :: Object to insert port cut into
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
+  */
+{
+  ELog::RegMethod RegA("portItem","constructTrack(HR,HR)");
+
+
+  if (!statusFlag)
+    {
+      ELog::EM<<"Failed to set orientation in port:"<<keyName<<ELog::endCrit;
+      return;
+    }
+  createSurfaces();
+  
+  constructFlange(System,innerSurf,outerSurf);
+  addPortCut(insertObj);
+  
+  createLinks();
+  return;
+}
+
+void
 portItem::constructTrack(Simulation& System)
   /*!
     Construct a track system
@@ -698,6 +907,26 @@ portItem::constructTrack(Simulation& System)
 }
 
 void
+portItem::constructAxis(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+  /*!
+    Construct the centre line components
+    \param System :: Simulation to use
+    \param FC :: Fixed comp
+    \param sideIndex :: Link point
+   */
+{
+  ELog::RegMethod RegA("portItem","constructAxis");
+  
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  setCentLine(FC,centreOffset,axisOffset);
+  return;
+}
+
+
+void
 portItem::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
@@ -710,10 +939,8 @@ portItem::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("portItem","createAll");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-  setCentLine(FC,centreOffset,axisOffset);
-  constructTrack(System);
+  constructAxis(System,FC,sideIndex);
+  constructTrack(System); 
   return;
 }
 

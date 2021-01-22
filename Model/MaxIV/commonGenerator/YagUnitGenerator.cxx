@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/YagUnitGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -64,22 +64,22 @@ YagUnitGenerator::YagUnitGenerator() :
   flangeLength(CF63::flangeLength),
   plateThick(CF63::flangeLength),
   viewZStep(3.2),viewRadius(CF63::innerRadius),
-  viewLength(9.27),viewThick(CF63::wallThick),
+  viewThick(CF63::wallThick),viewLength(9.27),
   viewFlangeRadius(CF63::flangeRadius),
   viewFlangeLength(CF63::flangeLength),
   viewPlateThick(CF63::flangeLength),
-  portRadius(CF40::innerRadius),portThick(CF40::wallThick),
+  portRadius(1.7),portThick(0.2),
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
-  frontLength(9.0),backLength(11.2),
+  frontLength(7.0),backLength(13.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304")
+  voidMat("Void"),mainMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
-  
-YagUnitGenerator::~YagUnitGenerator() 
+
+YagUnitGenerator::~YagUnitGenerator()
  /*!
    Destructor
  */
@@ -110,15 +110,20 @@ YagUnitGenerator::setFlangeCF()
 
 void
 YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
-				  const std::string& keyName) const
+				  const std::string& keyName,
+				  const bool flip) const
 /*!
     Primary function for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param flip    :: flag to flip front/back
   */
 {
   ELog::RegMethod RegA("YagUnitGenerator","generateYagUnit");
-  
+
+  // if (flip)
+  //   std::swap(frontLength,backLength);
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
@@ -140,13 +145,22 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
   Control.addVariable(keyName+"PortFlangeRadius",portFlangeRadius);
   Control.addVariable(keyName+"PortFlangeLength",portFlangeLength);
 
-  Control.addVariable(keyName+"FrontLength",frontLength);
-  Control.addVariable(keyName+"BackLength",backLength);
+  if (flip)
+    {
+      Control.addVariable(keyName+"FrontLength",backLength);
+      Control.addVariable(keyName+"BackLength",frontLength);
+    }
+  else
+    {
+      Control.addVariable(keyName+"FrontLength",frontLength);
+      Control.addVariable(keyName+"BackLength",backLength);
+    }
+
   Control.addVariable(keyName+"OuterRadius",outerRadius);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MainMat",mainMat);
-  
+
   return;
 
 }
@@ -155,13 +169,15 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
 
 template void YagUnitGenerator::setCF<CF40_22>();
 template void YagUnitGenerator::setCF<CF40>();
+template void YagUnitGenerator::setCF<CF50>();
 template void YagUnitGenerator::setCF<CF63>();
 
 template void YagUnitGenerator::setFlangeCF<CF40_22>();
 template void YagUnitGenerator::setFlangeCF<CF40>();
+template void YagUnitGenerator::setFlangeCF<CF50>();
 template void YagUnitGenerator::setFlangeCF<CF63>();
 
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable

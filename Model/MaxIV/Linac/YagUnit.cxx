@@ -62,6 +62,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -72,7 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h" 
@@ -86,7 +87,7 @@ namespace tdcSystem
 {
 
 YagUnit::YagUnit(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -113,7 +114,7 @@ YagUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("YagUnit","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -123,6 +124,10 @@ YagUnit::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
+  if (radius+wallThick>flangeRadius-Geometry::zeroTol)
+    throw ColErr::OrderError(radius+wallThick,flangeRadius,
+			     "Radius+wall bigger than FlangeRadius");
+  
   viewZStep=Control.EvalVar<double>(keyName+"ViewZStep");
   viewRadius=Control.EvalVar<double>(keyName+"ViewRadius");
   viewThick=Control.EvalVar<double>(keyName+"ViewThick");
@@ -329,7 +334,13 @@ YagUnit::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-      
+  
+  FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));
+
+  FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+156));
+
   return;
 }
 

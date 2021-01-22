@@ -71,6 +71,7 @@
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

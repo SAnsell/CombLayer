@@ -3,7 +3,7 @@
  
  * File:   include/particleConv.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,7 @@ class particleConv
 
   bool hasName(const std::string&) const;
 
+  const std::string& mcplToMCNP(const int) const;
   const std::string& nameToMCNP(const std::string&) const;
   const std::string& nameToPHITS(const std::string&) const;
   const std::string& nameToFLUKA(const std::string&) const;
@@ -109,6 +110,14 @@ class particleConv
   const std::string& mcplToFLUKA(const int) const;
   //  const std::string& mcnpToFluka(const int) const;
 
+  const std::string& mcplToPHITS(const int) const;
+  
+  template<typename T>
+  std::string mcnpParticleList(const T&) const;
+
+  template<typename T>
+  std::string phitsParticleList(const T&) const;
+  
   double wavelengthKE(const std::string&,const double) const;
   double KEWavelength(const std::string&,const double) const;
 

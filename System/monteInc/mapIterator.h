@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/mapIterator.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ namespace MapSupport
   \version 0.5
   \author S. Ansell
   \date May 2013
-  \brief Holds an iteration of a groupd
+  \brief Holds an iteration of a group based on +/- values
 
   This constructs a set of values based on the idea of
   switches. E.g. initial state for 6 keys would be

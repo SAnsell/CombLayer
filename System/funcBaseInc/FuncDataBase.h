@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FuncDataBase.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 
 
 class FItem;
+template<typename T> class FList;
 
 /*!
   \class FuncDataBase 
@@ -63,6 +64,9 @@ class FuncDataBase
   int stripEqual(std::string&);
   std::string subProcVar(std::string&) const;
 
+  template<typename T>
+  FList<T>* convertToList(const std::string&);
+
  public:
 
   FuncDataBase();
@@ -76,14 +80,23 @@ class FuncDataBase
   //  int hasItem(const std::string&) const;
   const FItem* findItem(const std::string&) const;
   //  void setFuncParser(const std::string&,const FuncDataBase&);
-  
+
   int Parse(const std::string&);
   template<typename T>
   T Eval();
+
   template<typename T>
-  T EvalVar(const std::string&) const;      
+  std::vector<T> EvalVector(const std::string&) const;
+
   template<typename T>
-  T EvalDefVar(const std::string&,const T&) const;      
+  std::vector<T> EvalDefVector(const std::string&) const;
+  
+  template<typename T>
+  T EvalVar(const std::string&) const;
+  
+  template<typename T>
+  T EvalDefVar(const std::string&,const T&) const;
+  
   template<typename T>
   T EvalPair(const std::string&,const std::string&) const;      
 
@@ -113,7 +126,8 @@ class FuncDataBase
   T EvalTriple(const std::string&,const std::string&,
 	       const std::string&,const std::string&) const;      
   
-
+  std::string EvalVarString(const std::string&) const;
+  
   template<typename T>
   void addParse(const std::string&,const std::string&);
   void copyVar(const std::string&,const std::string&);
@@ -129,6 +143,9 @@ class FuncDataBase
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
 
+  template<typename T>
+  void pushVariable(const std::string&,const T&);
+  
   void removeVariable(const std::string&);
   
   int hasVariable(const std::string&) const;
@@ -142,6 +159,8 @@ class FuncDataBase
   /// access keys
   std::vector<std::string> getKeys() const { return VList.getKeys(); }
   std::string variableHash() const;
+
+
 
   // RESET of active
   void resetActive();

@@ -3,7 +3,7 @@
  
  * File:   support/fileSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "doubleErr.h"
 #include "mathSupport.h"
 #include "support.h"
@@ -299,7 +298,7 @@ writeColumn(const std::string& Fname,const V<T,A>& Y,const V<T,A>& E)
   while(IX.good())
     {
       std::string line=StrFunc::getLine(IX,512);
-      line=StrFunc::removeSpace(line);
+      line=StrFunc::removeAllSpace(line);
       if (!line.empty())
 	Lines.push_back(line);
     }

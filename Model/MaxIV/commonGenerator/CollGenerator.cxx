@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CollGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,9 +142,9 @@ CollGenerator::setMinAngleSize(const double L,
     \param angZ :: angle full opening [urad]
    */
 {
-  minLength=L;
-  minWidth = 2.0*Dist*tan(1e-6*angX/2.0);
-  minHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
+  minLength = L;
+  minWidth  = 2.0*Dist*tan(1e-6*angX/2.0);
+  minHeight = 2.0*Dist*tan(1e-6*angZ/2.0);
   return;
 }
 

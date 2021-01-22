@@ -56,10 +56,9 @@ class DXTConstructor
   DXTConstructor& operator=(const DXTConstructor&);
   ~DXTConstructor() {}  ///< Destructor
 
-  void processUnit(const objectGroups&,
-		   PhysicsCards&,const mainSystem::inputParam&,
+  void processUnit(SimMCNP&,const mainSystem::inputParam&,
 		   const size_t);
-  void processDD(PhysicsCards&,const mainSystem::inputParam&,
+  void processDD(SimMCNP&,const mainSystem::inputParam&,
 		   const size_t);
 };
 

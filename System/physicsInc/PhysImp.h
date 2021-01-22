@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysImp.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,46 +43,51 @@ class PhysImp
 {
  private:
   
+  std::string fullName;                ///< Type vol,imp etc
   std::string type;                    ///< Type vol,imp etc
-  std::list<std::string> particles;    ///< Particle list (if any)
+  bool defFlag;                        ///< default flag set
+  double defValue;                     ///< default value
+  std::set<int> particles;             ///< Particle list [mclp]
   std::map<int,double> impNum;         ///< Scale factors etc
-  int nCutters;                        ///< number of cutter cells (0 at end)
 
  public:
 
-  PhysImp();
   explicit PhysImp(const std::string&);
+  PhysImp(const std::string&,const std::string&);
+  PhysImp(const std::string&,const std::string&,const double);
   PhysImp(const PhysImp&);
   PhysImp& operator=(const PhysImp&);
   ~PhysImp();
 
+  const std::string& getType() const { return type; }
+  const std::string& getName() const { return fullName; }
+
+  /// set default value
+  void setDefValue(const double V) { defFlag=1; defValue=V; }
   void clear();
 
-  /// set type
-  void setType(const std::string& T) { type=T; }
-  int hasElm(const std::string&) const;
-  std::string getParticles() const;
-  const std::list<std::string>& getParticleList() const;
-  /// Type accessor
-  const std::string& getType() const { return type; }
-
+  bool isEmpty() const { return impNum.empty(); }
+  size_t commonParticles(const PhysImp&) const;
+  bool removeParticle(const PhysImp&);
+  
   ///< Get particle count
   size_t particleCount() const { return particles.size(); }
-  bool isEmpty() const { return impNum.empty(); }
-  int removeParticle(const std::string&);
-  void setParticle(const std::string&);
+  bool removeParticle(const std::string&);
+  void setParticles(const std::string&);
+  void addParticle(const std::string&);
+  bool hasParticle(const std::string&) const;
+  bool hasParticle(const int) const;
+  std::string getParticles() const;
+
+  void copyValues(const PhysImp&);
   
   double getValue(const int) const;
   void setValue(const int,const double);
 
-  void addElm(const std::string&);
-  void setAllCells(const double =1.0);
-  void setAllCells(const std::vector<int>&,const std::vector<double>&);
-  void setAllCells(const std::vector<std::pair<int,int>>&);
-  void setCells(const std::vector<int>&,const double =1.0);
 
   std::vector<int> getCellVector() const;
-  
+
+  void setCell(const int,const double);
   void updateCells(const ZoneUnit<double>&);
   void modifyCells(const std::vector<int>&,const double =1.0);
   void removeCell(const int);

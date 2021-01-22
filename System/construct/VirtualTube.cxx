@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/VirtualTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -68,7 +69,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
@@ -93,17 +94,17 @@ VirtualTube::VirtualTube(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
-  
+
   outerVoid(0),delayPortBuild(0),portConnectIndex(1),
-  rotAxis(0,1,0)
+  rotAxis(0,1,0),postYRotation(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-  
-VirtualTube::~VirtualTube() 
+
+VirtualTube::~VirtualTube()
   /*!
     Destructor
   */
@@ -117,21 +118,21 @@ VirtualTube::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("VirtualTube","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-    
+
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT,LExt,RB;
@@ -144,7 +145,7 @@ VirtualTube::populate(const FuncDataBase& Control)
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-      
+
       L=Control.EvalTail<double>(portName,portBase,"Length");
       R=Control.EvalTail<double>(portName,portBase,"Radius");
       W=Control.EvalTail<double>(portName,portBase,"Wall");
@@ -157,9 +158,9 @@ VirtualTube::populate(const FuncDataBase& Control)
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
       // Key two variables to get a DoublePort:
       LExt=Control.EvalDefTail<double>
-	(portName,portBase,"ExternPartLength",-1.0);      
+	(portName,portBase,"ExternPartLength",-1.0);
       RB=Control.EvalDefTail<double>
-	(portName,portBase,"RadiusB",-1.0);      
+	(portName,portBase,"RadiusB",-1.0);
 
       std::shared_ptr<portItem> windowPort;
 
@@ -183,13 +184,13 @@ VirtualTube::populate(const FuncDataBase& Control)
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
       OR.addObject(windowPort);
-    }					    
+    }
   return;
 }
 
 void
 VirtualTube::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -204,7 +205,47 @@ VirtualTube::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
+void
+VirtualTube::createPorts(Simulation& System,
+			 MonteCarlo::Object* insertObj,
+			 const HeadRule& innerSurf,
+			 const HeadRule& outerSurf)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param insertObj :: Object to insert port cut into
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
+   */
+{
+  ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
+	
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      const attachSystem::ContainedComp& CC=getCC("Main");
+      for(const int CN : CC.getInsertCells())
+	{
+	  ELog::EM<<"C == "<<CN<<ELog::endDiag;
+	  Ports[i]->addInsertCell(CN);
+	}
+
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+
+      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
+      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      if (outerVoid && CellMap::hasCell("OuterVoid"))
+	Ports[i]->constructTrack(System,
+				 CellMap::getCellObject(System,"OuterVoid"),
+				 innerSurf,outerSurf);
+	
+      Ports[i]->insertObjects(System);
+    }
+
+  return;
+}
+
 void
 VirtualTube::createPorts(Simulation& System)
   /*!
@@ -213,7 +254,7 @@ VirtualTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts");
-  
+	
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -222,6 +263,7 @@ VirtualTube::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
+
 
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System);
@@ -242,13 +284,13 @@ VirtualTube::getPort(const size_t index) const
 
   if (index>=Ports.size())
     throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
-     
+
   return *(Ports[index]);
 }
 
 
 void
-VirtualTube::addInsertPortCells(const int CN) 
+VirtualTube::addInsertPortCells(const int CN)
   /*!
     Add a cell to the ports insert list
     \param CN :: Cell number
@@ -257,7 +299,7 @@ VirtualTube::addInsertPortCells(const int CN)
   portCells.insert(CN);
   return;
 }
-  
+
 
 void
 VirtualTube::intersectPorts(Simulation& System,
@@ -281,7 +323,7 @@ VirtualTube::intersectPorts(Simulation& System,
 				     "Port does not exist");
 
   Ports[aIndex]->intersectPair(System,*Ports[bIndex]);
-  
+
   return;
 }
 
@@ -307,41 +349,45 @@ VirtualTube::intersectVoidPorts(Simulation& System,
 				     "Port does not exist");
 
   Ports[aIndex]->intersectVoidPair(System,*Ports[bIndex]);
-  
+
   return;
 }
 
 
 void
 VirtualTube::setPortRotation(const size_t index,
-			  const Geometry::Vec3D& RAxis)
+			     const Geometry::Vec3D& RAxis,
+			     const double postAngle)
   /*!
-    Set Port rotation 
-    \param index 
+    Set Port rotation
+    \param index
         -0 : No rotation / no shift
-        - 1,2 : main ports 
+        - 1,2 : main ports
         - 3-N+2 : Extra Ports
     \param RAxis :: Rotation axis expresses in local X,Y,Z
   */
 {
   ELog::RegMethod RegA("VirtualTube","setPortRotation");
-  
+
   portConnectIndex=index;
   if (portConnectIndex>1)
     rotAxis=RAxis.unit();
-  
+
+  postYRotation=postAngle;
   return;
 }
 
 void
 VirtualTube::applyPortRotation()
   /*!
-    Apply a rotation to all the PCentre and the 
+    Apply a rotation to all the PCentre and the
     PAxis of the ports
   */
 {
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
+  if (keyName=="MaxPeemFrontBeamHeatBox")
+    ELog::EM<<"Keyname == "<<keyName<<" "<<portConnectIndex<<ELog::endDiag;
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
     throw ColErr::IndexError<size_t>
@@ -351,7 +397,7 @@ VirtualTube::applyPortRotation()
   nameSideIndex(7,"OrgOrigin");
   const Geometry::Vec3D YOriginal=Y;
 
-	
+
   Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {
@@ -367,6 +413,13 @@ VirtualTube::applyPortRotation()
     }
   else
     {
+      if (std::abs(postYRotation)>Geometry::zeroTol)
+	{
+	  const Geometry::Quaternion QVpost=
+	    Geometry::Quaternion::calcQRotDeg(postYRotation,Y);
+	  QVpost.rotate(X);
+	  QVpost.rotate(Z);
+	}
       const size_t pIndex=portConnectIndex-3;
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
@@ -376,7 +429,7 @@ VirtualTube::applyPortRotation()
       const Geometry::Vec3D QAxis=X*QVvec.X()+
 	Y*QVvec.Y()+Z*QVvec.Z();
 
-      const Geometry::Quaternion QVmain(QV[0],QAxis);  
+      const Geometry::Quaternion QVmain(QV[0],QAxis);
       QVmain.rotate(X);
       QVmain.rotate(Y);
       QVmain.rotate(Z);
@@ -385,6 +438,7 @@ VirtualTube::applyPortRotation()
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
       Origin+=offset;
       FixedComp::setConnect(7,Origin,YOriginal);
+
     }
 
   return;
@@ -400,7 +454,7 @@ VirtualTube::calcCylinderDistance(const size_t pIndex) const
    */
 {
   ELog::RegMethod RegA("VirtualTube","calcCylinderDistance");
-  
+
   if (pIndex>Ports.size())
     throw ColErr::IndexError<size_t>
       (pIndex,Ports.size(),"PI exceeds number of Ports");
@@ -418,11 +472,13 @@ VirtualTube::calcCylinderDistance(const size_t pIndex) const
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
 
-
-  const double R=radius+wallThick;
+  // Length R Now zero
+  const double R=0.0;
   const double ELen=Ports[pIndex]->getExternalLength();
+  //  const double CapLen=Ports[pIndex]->getCapLength();
+
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
-  
+
   const Geometry::Vec3D RPoint=
     SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
 
@@ -454,12 +510,12 @@ VirtualTube::splitVoidPorts(Simulation& System,
     {
       const size_t AIndex=portVec[i-1];
       const size_t BIndex=portVec[i];
-      
+
       if (AIndex==BIndex || AIndex>=PCentre.size() ||
 	  BIndex>=PCentre.size())
 	throw ColErr::IndexError<size_t>
 	  (AIndex,BIndex,"Port number too large for"+keyName);
-      
+
       const Geometry::Vec3D CPt=
 	(PCentre[AIndex]+PCentre[BIndex])/2.0;
       SplitOrg.push_back(CPt);
@@ -468,7 +524,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
 
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
-  
+
   if (!splitName.empty())
     for(const int CN : cells)
       CellMap::addCell(splitName,CN);
@@ -497,7 +553,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
   const Geometry::Vec3D Axis=(X*inobjAxis[0]+
 			      Y*inobjAxis[1]+
 			      Z*inobjAxis[2]).unit();
-  
+
   std::vector<Geometry::Vec3D> SplitOrg;
   std::vector<Geometry::Vec3D> SplitAxis;
 
@@ -514,7 +570,7 @@ VirtualTube::splitVoidPorts(Simulation& System,
 	      SplitOrg.push_back(CPt);
 	      SplitAxis.push_back(inobjAxis.unit());
 	    }
-		      
+
 	  preFlag=i+1;
 	}
     }
@@ -563,23 +619,23 @@ VirtualTube::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
-  
+
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
     for(const int CN : cells)
       CellMap::addCell(splitName,CN);
-  
+
   return (cells.empty()) ? CN : cells.back()+1;
 }
 
 void
 VirtualTube::insertAllInCell(Simulation& System,const int cellN)
   /*!
-    Overload of containdGroup so that the ports can also 
+    Overload of containdGroup so that the ports can also
     be inserted if needed
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellN :: Cell for insert
   */
 {
@@ -596,9 +652,9 @@ void
 VirtualTube::insertAllInCell(Simulation& System,
 			  const std::vector<int>& cellVec)
   /*!
-    Overload of containdGroup so that the ports can also 
+    Overload of containdGroup so that the ports can also
     be inserted if needed
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellVec :: Cells for insert
   */
 {
@@ -615,7 +671,7 @@ void
 VirtualTube::insertMainInCell(Simulation& System,const int cellN)
   /*!
     Fix of insertInAllCells to only do main body without ports
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellN :: Cell of insert
   */
 {
@@ -628,7 +684,7 @@ VirtualTube::insertMainInCell(Simulation& System,
 			   const std::vector<int>& cellVec)
   /*!
     Fix of insertInAllCells to only do main body without ports
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellVec :: Cells of insert
   */
 {
@@ -640,7 +696,7 @@ void
 VirtualTube::insertPortInCell(Simulation& System,const int cellN)
   /*!
     Allow ports to be intersected into arbitary cell list
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellN :: Cell for insert
   */
 {
@@ -648,7 +704,7 @@ VirtualTube::insertPortInCell(Simulation& System,const int cellN)
 
   for(const std::shared_ptr<portItem>& PC : Ports)
     PC->insertInCell(System,cellN);
-  
+
   return;
 }
 
@@ -657,13 +713,13 @@ VirtualTube::insertPortInCell(Simulation& System,
 			   const std::vector<std::set<int>>& cellVec)
   /*!
     Allow ports to be intersected into arbitary cell list
-    \param System :: Simulation to use    
+    \param System :: Simulation to use
     \param cellVec :: Sets of cellnumbers corresponding to each port (in order)
     for which the port will be inserted into.
   */
 {
   ELog::RegMethod RegA("VirtualTube","insertPortInCell");
-  
+
   for(size_t index=0;index<Ports.size() && index<cellVec.size();index++)
     {
       const std::set<int>& cellSet=cellVec[index];
@@ -673,7 +729,7 @@ VirtualTube::insertPortInCell(Simulation& System,
   return;
 }
 
-  
+
 void
 VirtualTube::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -689,15 +745,14 @@ VirtualTube::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
-  createObjects(System);  
+  createSurfaces();
+  createObjects(System);
   createLinks();
 
+  createPorts(System);
   insertObjects(System);
-  if (!delayPortBuild)
-    createPorts(System);
-
+    
   return;
 }
-  
+
 }  // NAMESPACE constructSystem

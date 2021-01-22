@@ -58,6 +58,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -301,8 +302,8 @@ TankMonoVessel::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+627,BFCentre,Y,flangeBRadius);
 
   // Flange cut
-  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+511,1,Y,flangeALength);
-  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+611,-1,Y,flangeBLength);
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+511,Y,flangeALength);
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+611,Y,-flangeBLength);
 
   return;
 }

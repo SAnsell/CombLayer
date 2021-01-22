@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTally.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,22 +51,10 @@
 namespace phitsSystem
 {
 
-std::ostream&
-operator<<(std::ostream& OX,const phitsTally& TX)
-  /*!
-    Generic writing function
-    \param OX :: Output stream
-    \param TX :: phitsTally
-    \return Output stream
-   */
-{
-  TX.write(OX);
-  return OX;
-}
-
 phitsTally::phitsTally(const int ID)  :
   keyName(std::to_string(ID)),
-  idNumber(ID),epsFlag(0),vtkFlag(0),vtkFormat(1)
+  idNumber(ID),particle("all"),
+  epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
     \param ID :: phitsTally ID number
@@ -75,7 +63,8 @@ phitsTally::phitsTally(const int ID)  :
 
 phitsTally::phitsTally(const std::string& KName,const int ID)  :
   keyName(KName+std::to_string(ID)),idNumber(ID),
-  epsFlag(0),vtkFlag(0),vtkFormat(1)
+  particle("all"),
+  epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
     Constructor 
     \param KName :: keyname
@@ -85,8 +74,10 @@ phitsTally::phitsTally(const std::string& KName,const int ID)  :
 
 phitsTally::phitsTally(const phitsTally& A) : 
   keyName(A.keyName),idNumber(A.idNumber),
-  comments(A.comments),epsFlag(A.epsFlag),
-  vtkFlag(A.vtkFlag),vtkFormat(A.vtkFormat),fileName(A.fileName)
+  comments(A.comments),particle(A.particle),
+  title(A.title),xTxt(A.xTxt),
+  yTxt(A.yTxt),epsFlag(A.epsFlag),
+  vtkout(A.vtkout),vtkBinary(A.vtkBinary)
   /*!
     Copy constructor
     \param A :: phitsTally to copy
@@ -104,10 +95,15 @@ phitsTally::operator=(const phitsTally& A)
   if (this!=&A)
     {
       comments=A.comments;
+      particle=A.particle;
+      
+      title=A.title;
+      xTxt=A.xTxt;
+      yTxt=A.yTxt;
+
       epsFlag=A.epsFlag;
-      vtkFlag=A.vtkFlag;
-      vtkFormat=A.vtkFormat;
-      fileName=A.fileName;
+      vtkout=A.vtkout;
+      vtkBinary=A.vtkBinary;
     }
   return *this;
 }
@@ -142,31 +138,51 @@ phitsTally::setComment(const std::string& C)
 
 
 void
-phitsTally::setParticle(const std::string&)
+phitsTally::setParticle(const std::string& P)
   /*!
-    Null op call for non-particle detectors
+     Call for particle detectors
+     \param P :: valid particles (outside of phits) ( all )
   */
-{}
+{
+  particle= (StrFunc::isEmpty(P)) ? "all" : P;
+  return;
+}
 
 void
-phitsTally::setEnergy(const bool,const double,
-		      const double,const size_t)
+phitsTally::setEnergy(const eType&)
   /*!
     Null op call for non-energy detectors
   */
 {}
 
 void
-phitsTally::setAngle(const bool,const double,
-		      const double,const size_t)
+phitsTally::setAngle(const aType&)
  /*!
    Null op call for non-angle detectors
  */
 {}
+
+void
+phitsTally::setVTKout()
+ /*!
+   Set the output for vtk format
+ */
+{
+  vtkout=1;
+}
+
+void
+phitsTally::setBinary()
+ /*!
+   Set the output for vtk into binary form
+ */
+{
+  vtkBinary=1;
+}
   
 
 void
-phitsTally::write(std::ostream&) const
+phitsTally::write(std::ostream&,const std::string&) const
   /*!
     Writes out the phitsTally depending on the 
     fields that have been set.

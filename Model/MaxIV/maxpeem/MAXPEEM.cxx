@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -68,6 +69,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
@@ -84,10 +86,9 @@
 #include "R1FrontEnd.h"
 #include "maxpeemFrontEnd.h"
 #include "maxpeemOpticsHut.h"
-#include "maxpeemOpticsBeamline.h"
+#include "maxpeemOpticsLine.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
-
 
 #include "R1Beamline.h"
 #include "MAXPEEM.h"
@@ -101,7 +102,7 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsBeam(new maxpeemOpticsBeamline(newName+"OpticsBeam"))
+  opticsBeam(new maxpeemOpticsLine(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -131,36 +132,46 @@ MAXPEEM::build(Simulation& System,
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
-   */
+  */
 {
-  // For output stream
   ELog::RegMethod RControl("MAXPEEM","build");
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 
-  frontBeam->addInsertCell(r1Ring->getCell("Void"));
+  frontBeam->setStopPoint(stopPoint);
+  frontBeam->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+
+  frontBeam->addInsertCell(r1Ring->getCell("Void",8));
+  frontBeam->addInsertCell(r1Ring->getCell("Void",9));
+  frontBeam->addInsertMagnetCell(r1Ring->getCell("Void",9));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
+  
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
+
+  if (!stopPoint.empty())
+    ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
+  if (stopPoint=="frontEnd" ||
+      stopPoint=="Dipole" ||
+      stopPoint=="Quadrupole") return;
 
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
 
-  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell(wallLead->getCell("Void"));
-  joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addAllInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
-
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
@@ -170,14 +181,14 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   std::vector<int> cells(opticsHut->getCells("Back"));
   cells.emplace_back(opticsHut->getCell("Extension"));
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
   				 opticsBeam->getCell("RightVoid"),
   				 cells);
-  
+
   return;
 }
 

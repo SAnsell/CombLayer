@@ -25,6 +25,11 @@
 class Simulation;
 class HeadRule;
 
+namespace ModelSupport
+{
+  class surfRegister;
+}
+
 namespace attachSystem
 {
   class FixedComp;
@@ -102,6 +107,13 @@ class SurfMap : public BaseMap
   std::string getSurfString(const std::string&) const;
   std::string getSurfComplement(const std::string&) const;
 
+
+  void makePlane(const std::string&,ModelSupport::surfRegister&,
+		 const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void makeCylinder(const std::string&,ModelSupport::surfRegister&,
+		    const int,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,const double);
+  
   void createLink(const std::string&,attachSystem::FixedComp&,
 		  const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&) const;

@@ -33,20 +33,11 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "InputControl.h"
 #include "inputParam.h"
-#include "support.h"
-#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsMaxIV.h"
 
@@ -167,13 +158,57 @@ setMaxIVLinac(defaultConfig& A,
     {
      { "LINAC", "World 0"},
      { "L2SPF", "World 0"},
-     { "L2SPFsegment1", "World 0"},
-     { "L2SPFsegment2", "World 0"},
-     { "L2SPFsegment3", "World 0"},
-     { "L2SPFsegment4", "World 0"},
-     { "TDCsegment14", "World 0"},
-     { "TDCsegment15", "World 0"},
-     { "TDCsegment16", "World 0"}
+     { "TDC", "World 0"},
+     { "All", "World 0"},
+     { "Segment1", "World 0"},
+     { "Segment2", "World 0"},
+     { "Segment3", "World 0"},
+     { "Segment4", "World 0"},
+     { "Segment5", "World 0"},
+     { "Segment6", "World 0"},
+     { "Segment7", "World 0"},
+     { "Segment8", "World 0"},
+     { "Segment9", "World 0"},
+     { "Segment10", "World 0"},
+     { "Segment11", "World 0"},
+     { "Segment12", "World 0"},
+     { "Segment13", "World 0"},
+     { "Segment14", "World 0"},
+     { "Segment15", "World 0"},
+     { "Segment16", "World 0"},
+     { "Segment17", "World 0"},
+     { "Segment18", "World 0"},
+     { "Segment19", "World 0"},
+     { "Segment20", "World 0"},
+     { "Segment21", "World 0"},
+     { "Segment22", "World 0"},
+     { "Segment23", "World 0"},
+     { "Segment24", "World 0"},
+     { "Segment25", "World 0"},
+     { "Segment26", "World 0"},
+     { "Segment27", "World 0"},
+     { "Segment28", "World 0"},
+     { "Segment29", "World 0"},
+     { "Segment30", "World 0"},
+     { "Segment31", "World 0"},
+     { "Segment32", "World 0"},
+     { "Segment33", "World 0"},
+     { "Segment34", "World 0"},
+     { "Segment35", "World 0"},
+     { "Segment36", "World 0"},
+     { "Segment37", "World 0"},
+     { "Segment38", "World 0"},
+     { "Segment39", "World 0"},
+     { "Segment40", "World 0"},
+     { "Segment41", "World 0"},
+     { "Segment42", "World 0"},
+     { "Segment43", "World 0"},
+     { "Segment44", "World 0"},
+     { "Segment45", "World 0"},
+     { "Segment46", "World 0"},
+     { "Segment47", "World 0"},
+     { "Segment48", "World 0"},
+     { "Segment49", "World 0"}
     };
 
   size_t unitIndex(0);

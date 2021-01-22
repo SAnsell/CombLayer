@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxivBuild/makeMaxIV.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -36,47 +36,27 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
 #include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "ExternalCut.h"
-#include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "PointMap.h"
 #include "InnerZone.h"
+#include "BlockZone.h"
 #include "World.h"
-#include "AttachSupport.h"
-#include "LinkSupport.h"
 
 
 #include "InjectionHall.h"
@@ -137,13 +117,14 @@ makeMaxIV::getActiveStop(const std::map<std::string,std::string>& beamStop,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","getActiveStop");
-  
+
   std::map<std::string,std::string>::const_iterator mc;
   mc=beamStop.find(BL);
+
   return (mc!=beamStop.end()) ? mc->second : "";
 }
 
-  
+
 void
 makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 			     const std::set<std::string>& beamNAMES,
@@ -156,10 +137,10 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","populateStopPoint");
-  
+
   typedef std::map<std::string,std::vector<std::string>> mTYPE;
   mTYPE stopUnits=IParam.getMapItems("stopPoint");
-  
+
   // create a map of beamname : stopPoint [or All : stoppoint]
   std::string stopPoint;
 
@@ -176,13 +157,13 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
     }
   return;
 }
-  
+
 bool
 makeMaxIV::buildInjection(Simulation& System,
 			  const mainSystem::inputParam& IParam)
   /*!
     Build the SPF/linac hall
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
   */
 {
@@ -192,19 +173,102 @@ makeMaxIV::buildInjection(Simulation& System,
   typedef const std::map<std::string,std::set<std::string> > ITYPE;
   static ITYPE injectNAMES
 
-    ({ {"L2SPF",{"L2SPFsegment1","L2SPFsegment2","L2SPFsegment3",
-	"L2SPFsegment4" } },      
-       {"TDC",{"TDCsegment14","TDCsegment15","TDCsegment16"} },      
-       {"L2SPFsegment1",{} },                              // first only
-       {"L2SPFsegment2",{} },                              // second only
-       {"L2SPFsegment3",{} },                              // third only
-       {"L2SPFsegment4",{} },                              // forth only
-       {"TDCsegment14",{} },                              // 14th only
-       {"TDCsegment15",{} },                              // 15th only
-       {"TDCsegment16",{} }                               // 16th only
+    ({ {"All",
+	{"Segment1","Segment2","Segment3",
+	 "Segment4", "Segment5", "Segment6",
+	 "Segment7", "Segment8", "Segment9",
+	 "Segment10", "Segment11", "Segment12",
+	 "Segment13", "Segment14", "Segment15",
+	 "Segment16", "Segment17", "Segment18",
+	 "Segment19", "Segment20", "Segment21",
+	 "Segment22", "Segment23", "Segment24",
+	 "Segment25", "Segment26", "Segment27",
+	 "Segment28", "Segment29", "Segment30",
+	 "Segment31", "Segment32", "Segment33",
+	 "Segment34", "Segment35", "Segment36",
+	 "Segment37", "Segment38", "Segment39",
+	 "Segment40", "Segment41", "Segment42",
+	 "Segment43", "Segment44", "Segment45",
+	 "Segment46", "Segment47", "Segment48",
+	 "Segment49"
+
+	} },
+       {"L2SPF",
+	{"Segment1","Segment2","Segment3",
+	 "Segment4", "Segment5", "Segment6",
+	 "Segment7", "Segment8", "Segment9",
+	 "Segment10", "Segment11", "Segment12",
+	 "Segment13"
+	} },
+       {"TDC",{"Segment14","Segment15","Segment16",
+	       "Segment17","Segment18","Segment19",
+	       "Segment20","Segment21","Segment22",
+
+	       "Segment23","Segment24","Segment25",
+	       "Segment27","Segment28","Segment29",
+	       "Segment30",
+	       "Segment31","Segment32","Segment33",
+	       "Segment34"}},
+       {"SPF",{"Segment30","Segment31","Segment32",
+	       "Segment33","Segment34","Segment35",
+	       "Segment36","Segment37","Segment38",
+	       "Segment39","Segment40","Segment41",
+	       "Segment42","Segment43","Segment44",
+	       "Segment45","Segment46","Segment47",
+	       "Segment48","Segment49"}},
+
+       {"Segment1",{} },                             // first only
+       {"Segment2",{} },                             // second only
+       {"Segment3",{} },                             // third only
+       {"Segment4",{} },                             // forth only
+       {"Segment5",{} },                             // fifth only
+       {"Segment6",{} },                             // 6th only
+       {"Segment7",{} },                             // 7h only
+       {"Segment8",{} },                             // 8th only
+       {"Segment9",{} },                             // 9th only
+       {"Segment10",{} },                            // wall unit
+       {"Segment11",{} },                            // TDC
+       {"Segment12",{} },                            // TDC
+       {"Segment13",{} },                            // TDC
+       {"Segment14",{} },                            // 14th only
+       {"Segment15",{} },                            // 15th only
+       {"Segment16",{} },                            // 16th only
+       {"Segment17",{} },                            // 17th only
+       {"Segment18",{} },                            // 18th only
+       {"Segment19",{} },                            // 19th only
+       {"Segment20",{} },                            // 20th only
+       {"Segment21",{} },                            // 21st only
+       {"Segment22",{} },                            // 22nd only
+       {"Segment23",{} },                            // 23rd only
+       {"Segment24",{} },                            // 24th only
+       {"Segment25",{} },                            // 25th only
+       {"Segment26",{} },                            // 26th only
+       {"Segment27",{} },                            // 27th only
+       {"Segment28",{} },                            // 28th only
+       {"Segment29",{} },                            // 29th only
+       {"Segment30",{} },                            // 30th only
+       {"Segment31",{} },                            // 31st only
+       {"Segment32",{} },                            // 32nd only
+       {"Segment33",{} },                            // 33rd only
+       {"Segment34",{} },                            // 34th only
+       {"Segment35",{} },                            // 35th only
+       {"Segment36",{} },                            // 36th only
+       {"Segment37",{} },                            // 37th only
+       {"Segment38",{} },                            // 38th only
+       {"Segment39",{} },                            // 39th only
+       {"Segment40",{} },                            // 40th only
+       {"Segment41",{} },                            // 41st only
+       {"Segment42",{} },                            // 42nd only
+       {"Segment43",{} },                            // 43st only
+       {"Segment44",{} },                            // 44th only
+       {"Segment45",{} },                            // 45th only
+       {"Segment46",{} },                            // 46th only
+       {"Segment47",{} },                            // 47th only
+       {"Segment48",{} },                            // 48th only
+       {"Segment49",{} }                             // 49th only
+
     });
 
-  const int voidCell(74123);
   bool activeLinac(0);
   const size_t NSet=IParam.setCnt("beamlines");  // converted from
                                                  //  defaultConfig linac
@@ -222,52 +286,55 @@ makeMaxIV::buildInjection(Simulation& System,
 	  else
 	    {
 	      ITYPE::const_iterator mc=injectNAMES.find(BL);
-	    if (mc != injectNAMES.end())
-	      {
-		if (mc->second.empty())
-		  {
-		    activeLinac=1;
-		    activeINJ.emplace(BL);
-		  }
-		else
-		  {
-		    for(const std::string& item : mc->second)
-		      activeINJ.emplace(item);
-		  }
-	      }
+	      if (mc != injectNAMES.end())
+		{
+		  if (mc->second.empty())
+		    {
+		      activeLinac=1;
+		      activeINJ.emplace(BL);
+		    }
+		  else
+		    {
+		      for(const std::string& item : mc->second)
+			activeINJ.emplace(item);
+		    }
+		}
 	    }
 	  index++;
 	}
     }
   if (!activeLinac) return 0;
 
-  // BUILD HALL:
+
+  if (IParam.flag("noLengthCheck"))
+    tdc->setNoLengthCheck();
+  if (IParam.flag("pointCheck"))
+    tdc->setPointCheck();
   tdc->setActive(activeINJ);
   tdc->createAll(System,World::masterOrigin(),0);
 
-  return 1;  
-}  
+  return 1;
+}
 
 bool
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
     Build the R1-ring based on segment needed
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
   */
 {
   ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
   static const std::map<std::string,std::string> beamNAMES
-    ({ {"FLEXPES","OpticCentre5"},
+    ({ {"FLEXPES","OpticCentre6"},
 	{"MAXPEEM","OpticCentre7"},
 	{"SPECIES","OpticCentre8"}
-	  
     });
 
 
-  // Determine if R1Ring/beamlines need to be built 
+  // Determine if R1Ring/beamlines need to be built
   std::set<std::string> activeBL;
   bool activeR1(0);
   const size_t NSet=IParam.setCnt("beamlines");
@@ -280,7 +347,7 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-	    
+
 	  if (BL=="R1RING" || BL=="RING1")
 	    activeR1=1;
 	  else if (beamNAMES.find(BL) != beamNAMES.end())
@@ -291,16 +358,16 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  index++;
 	}
     }
-  
+
   if (!activeR1) return 0;
-  
+
   const int voidCell(74123);
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
-  
+
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
-  
+
 
   for(const std::string& BL : activeBL)
     {
@@ -310,14 +377,13 @@ makeMaxIV::buildR1Ring(Simulation& System,
       std::unique_ptr<R1Beamline> BLPtr;
       if (BL=="FLEXPES")  // sector
 	BLPtr.reset(new FLEXPES("FlexPes"));
-      else if (BL=="MAXPEEM")	
+      else if (BL=="MAXPEEM")
 	BLPtr.reset(new MAXPEEM("MaxPeem"));
-      else if (BL=="SPECIES")	
+      else if (BL=="SPECIES")
 	BLPtr.reset(new SPECIES("Species"));
-        
+
       if (!activeStop.empty())
 	{
-	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
 	  BLPtr->setStopPoint(activeStop);
 	}
 
@@ -325,18 +391,18 @@ makeMaxIV::buildR1Ring(Simulation& System,
       BLPtr->build(System,*r1Ring,
 		   r1Ring->getSideIndex(beamNAMES.at(BL)));
     }
-      
+
   return 1;    // R1 Built
-}  
-  
+}
+
 bool
 makeMaxIV::buildR3Ring(Simulation& System,
 		      const mainSystem::inputParam& IParam)
 /*!
     Build a beamline based on LineType
-     -- to construct a beamline the name of the guide Item 
+     -- to construct a beamline the name of the guide Item
      and the beamline typename is required
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
     \retrun true if object(s) built
   */
@@ -348,11 +414,11 @@ makeMaxIV::buildR3Ring(Simulation& System,
        {"COSAXS","OpticCentre1"},
        {"SOFTIMAX","OpticCentre1"},
        {"DANMAX","OpticCentre1"},
-       {"FORMAX","OpticCentre8"},
+       {"FORMAX","OpticCentre1"},  // was 8
        {"MICROMAX","OpticCentre1"}
     });
 
-  // Determine if R1Ring/beamlines need to be built 
+  // Determine if R1Ring/beamlines need to be built
   std::set<std::string> activeBL;
   bool activeR3(0);
   const size_t NSet=IParam.setCnt("beamlines");
@@ -385,7 +451,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
-  
+
 
   for(const std::string& BL : activeBL)
     {
@@ -395,15 +461,15 @@ makeMaxIV::buildR3Ring(Simulation& System,
       std::unique_ptr<R3Beamline> BLPtr;
       if (BL=="BALDER")  // sector
 	BLPtr.reset(new BALDER("Balder"));
-      else if (BL=="COSAXS")	
+      else if (BL=="COSAXS")
 	BLPtr.reset(new COSAXS("Cosaxs"));
       else if (BL=="SOFTIMAX")
 	BLPtr.reset(new SOFTIMAX("SoftiMAX"));
-      else if (BL=="DANMAX")	
+      else if (BL=="DANMAX")
 	BLPtr.reset(new DANMAX("Danmax"));
-      else if (BL=="FORMAX")	
+      else if (BL=="FORMAX")
 	BLPtr.reset(new FORMAX("Formax"));
-      else if (BL=="MICROMAX")	
+      else if (BL=="MICROMAX")
 	BLPtr.reset(new MICROMAX("MicroMax"));
 
       if (!activeStop.empty())
@@ -416,9 +482,9 @@ makeMaxIV::buildR3Ring(Simulation& System,
 		   r3Ring->getSideIndex(beamNAMES.at(BL)));
     }
   return 1;    // R3 Built
-}  
+}
 
-void 
+void
 makeMaxIV::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -434,7 +500,7 @@ makeMaxIV::build(Simulation& System,
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
-  
+
   else if(buildR1Ring(System,IParam))
     ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
 
@@ -449,4 +515,3 @@ makeMaxIV::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

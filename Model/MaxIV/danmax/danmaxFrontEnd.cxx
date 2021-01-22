@@ -54,6 +54,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -72,7 +73,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "InnerZone.h"
+#include "BlockZone.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -129,14 +130,12 @@ danmaxFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 danmaxFrontEnd::buildUndulator(Simulation& System,
-			       MonteCarlo::Object* masterCell,
 			       const attachSystem::FixedComp& preFC,
 			       const long int preSideIndex)
 /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
     \return link object 
@@ -147,7 +146,7 @@ danmaxFrontEnd::buildUndulator(Simulation& System,
   int outerCell;
 
   undulatorTube->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorTube,2);
+  outerCell=buildZone.createUnit(System,*undulatorTube,2);
   
   undulator->addInsertCell(undulatorTube->getCell("Void"));
   undulator->createAll(System,*undulatorTube,0);
