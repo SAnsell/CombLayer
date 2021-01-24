@@ -347,8 +347,6 @@ portItem::createSurfaces()
   ELog::RegMethod RegA("portItem","createSurfaces");
   // divider surface if needeed :
 
-  if (buildIndex==7310000)
-    ELog::EM<<"Build["<<keyName<<"] == "<<buildIndex<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   if (flangeRadius-Geometry::zeroTol<=radius+wall)
     throw ColErr::SizeError<double>(flangeRadius,wall+radius,
@@ -571,7 +569,6 @@ portItem::constructFlange(Simulation& System,
       Out= (capFlag) ?
 	ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
 	ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
-
 
       addOuterSurf(Out+outerSurf.display());
     }

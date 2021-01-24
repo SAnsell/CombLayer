@@ -467,12 +467,14 @@ monoVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,monoKey+"OffPipeA",3.0);
   Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
   
-  // ystep/width/height/depth/length
-  // 
+
+  //
+  const double  outerRadius(54.91+1.2);
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(17.8,1.0);
   MBoxGen.setBFlange(17.8,1.0);
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  // ystep/width/height/depth/length
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,42.2,36.45,36.45);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
@@ -482,7 +484,7 @@ monoVariables(FuncDataBase& Control,
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF120>(5.0);
+  PItemGen.setCF<setVariable::CF120>(outerRadius+5.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,10.0),

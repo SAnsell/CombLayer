@@ -208,6 +208,8 @@ monoVariables(FuncDataBase& Control,
   // ystep/width/height/depth/length
   //
   constexpr double zstep(1.4);
+  const double  outerRadius(54.91+1.2);
+
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(10.2,1.0);
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
@@ -220,7 +222,7 @@ monoVariables(FuncDataBase& Control,
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1); // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF120>(5.0);
+  PItemGen.setCF<setVariable::CF120>(outerRadius+5.0);
   PItemGen.setPlate(setVariable::CF63::flangeLength,"SiO2");
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,0.0),
