@@ -148,11 +148,15 @@ class formaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
+			   const std::string&);
+  
+  void constructHDCM(Simulation&,const attachSystem::FixedComp&,
+		     const std::string&);
+
   int constructMonoShutter
     (Simulation&,const attachSystem::FixedComp&,const long int);
 
-  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
-			   const std::string&);
   
   int constructDiag
     (Simulation&,

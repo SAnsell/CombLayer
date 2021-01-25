@@ -775,7 +775,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
-  ELog::EM<<"ASDFASFSF"<<ELog::endErr;
+  ELog::EM<<"DEPRECIATED CODE : DO NOT USE"<<ELog::endCrit;
   AIndex=0;
   BIndex=0;
   // no point checking first value

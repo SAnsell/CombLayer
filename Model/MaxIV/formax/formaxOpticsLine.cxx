@@ -195,6 +195,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeC);
   OR.addObject(bellowE);
 
+  OR.addObject(monoVessel);
+  OR.addObject(mbXstals);
+
 }
   
 formaxOpticsLine::~formaxOpticsLine()
@@ -255,7 +258,7 @@ formaxOpticsLine::constructMirrorMono(Simulation& System,
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","buildMirrorMono");
+  ELog::RegMethod RegA("formaxOpticsLine","constructMirrorMono");
 
   int outerCell;
 
@@ -265,6 +268,28 @@ formaxOpticsLine::constructMirrorMono(Simulation& System,
   
   MLM->addInsertCell(MLMVessel->getCell("Void"));
   MLM->createAll(System,*MLMVessel,0);
+
+  return;
+}
+
+void
+formaxOpticsLine::constructHDCM(Simulation& System,
+				const attachSystem::FixedComp& initFC, 
+				const std::string& sideName)
+/*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("formaxOpticsLine","constructHDCM");
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*monoVessel);
+  
+  mbXstals->addInsertCell(monoVessel->getCell("Void"));
+  mbXstals->createAll(System,*monoVessel,0);
 
   return;
 }
@@ -458,7 +483,17 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
 
   constructMirrorMono(System,*bellowC,"back");
-  
+
+  constructSystem::constructUnit
+    (System,buildZone,*MLMVessel,"back",*bellowD);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*pipeC);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeC,"back",*gateTubeC);
+  constructSystem::constructUnit
+    (System,buildZone,*gateTubeC,"back",*bellowE);
+    
+  constructHDCM(System,*bellowE,"back");
   
   //  screenPipeB->insertAllInCell(System,outerCell);
   //  screenPipeB->intersectPorts(System,0,1);

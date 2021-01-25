@@ -253,7 +253,7 @@ hdcmPackage(FuncDataBase& Control,
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
-  // radius : Heigh / depth  [need heigh = 0]
+  // radius : Height / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
@@ -261,9 +261,10 @@ hdcmPackage(FuncDataBase& Control,
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
 
+  const double outerRadius(30.5);
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
   			Geometry::Vec3D(0,5.0,-10.0),

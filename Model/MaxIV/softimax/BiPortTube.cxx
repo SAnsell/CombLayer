@@ -3,7 +3,7 @@
 
  * File:   construct/BiPortTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,50 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <sstream>
-// #include <cmath>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <cmath>
 #include <complex>
-// #include <list>
 #include <vector>
 #include <set>
 #include <map>
-// #include <string>
-// #include <algorithm>
 #include <memory>
-// #include <array>
 
 #include "Exception.h"
-// #include "FileReport.h"
-// #include "GTKreport.h"
+#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-// #include "OutputLog.h"
+#include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-// #include "support.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Line.h"
-// #include "Plane.h"
 #include "Cylinder.h"
 #include "SurInter.h"
-// #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-// #include "Object.h"
+
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -72,8 +60,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
-// #include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -89,7 +77,7 @@ namespace constructSystem
 {
 
 BiPortTube::BiPortTube(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedRotate(Key,12),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -122,7 +110,7 @@ BiPortTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BiPortTube","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -418,7 +406,8 @@ BiPortTube::createPorts(Simulation& System)
 	Ports[i]->addOuterCell(CN);
 
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
+      ELog::EM<<"CAlL to PORTS construct :: OLD METHOD"<<ELog::endWarn;
+      //      Ports[i]->constructTrack(System);
     }
   return;
 }

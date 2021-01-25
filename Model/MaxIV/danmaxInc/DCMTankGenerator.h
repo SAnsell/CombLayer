@@ -35,7 +35,8 @@ namespace setVariable
   \brief DCMTankGenerator for variables
 */
 
-class DCMTankGenerator : public VacBoxGenerator
+class DCMTankGenerator :
+    public VacBoxGenerator
 {
  private:
   

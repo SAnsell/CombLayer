@@ -37,7 +37,7 @@ namespace constructSystem
 */
 
 class BiPortTube :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
