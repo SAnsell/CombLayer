@@ -110,6 +110,7 @@
 #include "TriggerGenerator.h"
 #include "LBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
+#include "HPJawsGenerator.h"
 
 namespace setVariable
 {
@@ -301,6 +302,9 @@ SingleItemVariables(FuncDataBase& Control)
   
   setVariable::BremTubeGenerator BTGen;
   BTGen.generateTube(Control,"BremTube");
+
+  setVariable::HPJawsGenerator HPGen;
+  HPGen.generateJaws(Control,"HPJaws");
 
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");

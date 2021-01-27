@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formax/BremTube.cxx
+ * File:   commonBeam/BremTube.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -208,8 +208,8 @@ BremTube::createSurfaces()
   makeCylinder("flangeRadius",SMap,buildIndex+327,Origin,Z,tubeFlangeRadius);
 
   // EXIT:    
-  ModelSupport::buildPlane
-    (SMap,buildIndex+412,Origin+Y*(backLength-backFlangeLength),Y); 
+  makePlane("flangeSurf",SMap,buildIndex+412,
+	    Origin+Y*(backLength-backFlangeLength),Y); 
 
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Y,backRadius);
    

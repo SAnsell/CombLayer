@@ -127,6 +127,7 @@
 #include "TriggerTube.h"
 #include "LBeamStop.h"
 #include "BremTube.h"
+#include "HPJaws.h"
 
 #include "makeSingleItem.h"
 
@@ -174,7 +175,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube",
+      "BremTube","HPJaws","HPCombine",
       "Help","help"
     });
 
@@ -997,6 +998,38 @@ makeSingleItem::build(Simulation& System,
 	
 	bremTube->addInsertCell(voidCell);
 	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPJaws" )
+      {
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(hp);
+	
+	hp->addInsertCell(voidCell);
+	hp->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPCombine" )
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(bremTube);
+	OR.addObject(hp);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	hp->addInsertCell(voidCell);
+	hp->setFront(*bremTube,2);
+	hp->setFlangeJoin();
+	hp->createAll(System,*bremTube,"back");
 	
 	return;
       }
