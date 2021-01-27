@@ -71,8 +71,6 @@ HPJawsGenerator::HPJawsGenerator() :
   jawThick(0.8),
   jawCornerEdge(2.5),
   jawCornerFar(1.0),
-  jawXGap(0.3),
-  jawZGap(0.3),
   voidMat("Void"),wallMat("Stainless304L"),
   jawMat("Tungsten")
   /*!
@@ -101,7 +99,9 @@ HPJawsGenerator::setPortCF()
 
 void
 HPJawsGenerator::generateJaws(FuncDataBase& Control,
-			     const std::string& keyName) const
+			      const std::string& keyName,
+			      const double xGap,
+			      const double zGap) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
@@ -126,8 +126,8 @@ HPJawsGenerator::generateJaws(FuncDataBase& Control,
   Control.addVariable(keyName+"JawThick",jawThick);
   Control.addVariable(keyName+"JawCornerEdge",jawCornerEdge);
   Control.addVariable(keyName+"JawCornerFar",jawCornerFar);
-  Control.addVariable(keyName+"JawXGap",jawXGap);
-  Control.addVariable(keyName+"JawZGap",jawZGap);
+  Control.addVariable(keyName+"JawXGap",xGap);
+  Control.addVariable(keyName+"JawZGap",zGap);
 
   
   Control.addVariable(keyName+"VoidMat",voidMat);

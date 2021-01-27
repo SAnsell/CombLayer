@@ -304,7 +304,7 @@ SingleItemVariables(FuncDataBase& Control)
   BTGen.generateTube(Control,"BremTube");
 
   setVariable::HPJawsGenerator HPGen;
-  HPGen.generateJaws(Control,"HPJaws");
+  HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
 
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");

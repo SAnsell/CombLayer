@@ -56,9 +56,6 @@ class HPJawsGenerator
   double jawThick;           ///< Thickness
   double jawCornerEdge;      ///< Corner cut size
   double jawCornerFar;       ///< Corner cut size
-
-  double jawXGap;            ///< Separation
-  double jawZGap;            ///< Separation 
   
   std::string voidMat;       ///< void material
   std::string wallMat;       ///< main material
@@ -73,8 +70,8 @@ class HPJawsGenerator
 
   template<typename T> void setPortCF();
   
-  void generateJaws(FuncDataBase&,
-		    const std::string&) const;
+  void generateJaws(FuncDataBase&,const std::string&,
+		    const double,const double) const;
 
 };
 
