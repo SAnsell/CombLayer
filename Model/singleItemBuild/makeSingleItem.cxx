@@ -126,6 +126,7 @@
 #include "IonGauge.h"
 #include "TriggerTube.h"
 #include "LBeamStop.h"
+#include "BremTube.h"
 
 #include "makeSingleItem.h"
 
@@ -173,6 +174,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
+      "BremTube",
       "Help","help"
     });
 
@@ -983,6 +985,18 @@ makeSingleItem::build(Simulation& System,
 	
 	buttonBPM->addInsertCell(voidCell);
 	buttonBPM->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "BremTube" )
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	
+	OR.addObject(bremTube);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
 	
 	return;
       }

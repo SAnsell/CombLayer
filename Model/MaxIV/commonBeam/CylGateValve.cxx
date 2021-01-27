@@ -347,7 +347,7 @@ CylGateValve::createAll(Simulation& System,
 
   populate(System.getDataBase());
   const double offset(radius+wallThick+portThick);
-  createCentredUnitVector(FC,FIndex,2.0*offset);
+  createCentredUnitVector(FC,FIndex,offset);
   createSurfaces();    
   createObjects(System);
   createLinks();

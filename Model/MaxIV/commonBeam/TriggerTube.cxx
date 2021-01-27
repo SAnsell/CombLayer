@@ -406,7 +406,7 @@ TriggerTube::createAll(Simulation& System,
   ELog::RegMethod RegA("TriggerTube","createAll");
   
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,2.0*frontLength);
+  createCentredUnitVector(FC,sideIndex,frontLength);
   createSurfaces();
   createObjects(System);
   createLinks();

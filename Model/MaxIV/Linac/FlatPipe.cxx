@@ -3,7 +3,7 @@
 
  * File:   Linac/FlatPipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -392,7 +392,7 @@ FlatPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("FlatPipe","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,FIndex,length);
+  createCentredUnitVector(FC,FIndex,length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -107,7 +107,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("maxiv", [@maxiv,
 				  qw(balder cosaxs danmax R3Common 
 				  flexpes formax maxpeem  micromax
-				  softimax
+				  softimax  
 				  commonGenerator commonBeam Linac
 				  R3Common R1Common species)]);
       }
@@ -187,7 +187,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
 			 qw( commonVar commonGenerator R1Common R3Common 
-			     commonBeam  Linac )]);
+			     commonBeam Linac )]);
       }
     
     

@@ -384,7 +384,7 @@ CrossWayBlank::createAll(Simulation& System,
   ELog::RegMethod RegA("CrossWayBlank","createAll");
   
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,2.0*frontLength);
+  createCentredUnitVector(FC,sideIndex,frontLength);
   createSurfaces();
   createObjects(System);
   createLinks();

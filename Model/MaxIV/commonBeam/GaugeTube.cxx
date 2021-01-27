@@ -313,7 +313,7 @@ GaugeTube::createAll(Simulation& System,
   ELog::RegMethod RegA("GaugeTube","createAll");
   
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();

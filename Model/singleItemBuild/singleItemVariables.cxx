@@ -109,6 +109,7 @@
 #include "IonGaugeGenerator.h"
 #include "TriggerGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "BremTubeGenerator.h"
 
 namespace setVariable
 {
@@ -298,6 +299,9 @@ SingleItemVariables(FuncDataBase& Control)
   IonPGen.generateTube(Control,"IonPTube");
 
   
+  setVariable::BremTubeGenerator BTGen;
+  BTGen.generateTube(Control,"BremTube");
+
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");
 
