@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_formaxOpticsLineX_h
-#define xraySystem_formaxOpticsLineX_h
+#ifndef xraySystem_formaxOpticsLine_h
+#define xraySystem_formaxOpticsLine_h
 
 namespace insertSystem
 {
@@ -161,8 +161,12 @@ class formaxOpticsLine :
   /// Mirror back
   std::shared_ptr<xraySystem::Mirror> mirrorBackA;
 
+  /// bellow from Mirror to Diag3
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateJ;
+
   
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

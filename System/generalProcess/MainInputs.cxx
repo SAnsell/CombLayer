@@ -269,7 +269,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
-  IParam.setDesc("PovRay","PovRay output");
+  IParam.setDesc("POVRAY","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");

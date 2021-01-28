@@ -170,8 +170,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
 
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA"))
+  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
 
+  bellowG(new constructSystem::Bellows(newName+"BellowG"))
+  
   //  bellowJ(new constructSyst\em::Bellows(newName+"BellowJ")),
   //  gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
