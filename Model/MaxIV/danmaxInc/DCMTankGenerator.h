@@ -3,7 +3,7 @@
  
  * File:   maxpeemInc/DCMTankGenerator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class DCMTankGenerator :
   virtual ~DCMTankGenerator();
 
   virtual void generateBox(FuncDataBase&,const std::string&,
-			   const double,const double,const double,
+			   const double,const double,
 			   const double) const;
 
 };

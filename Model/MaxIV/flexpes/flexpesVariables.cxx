@@ -3,7 +3,7 @@
  
  * File:   flexpes/flexpesVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,9 +323,9 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
 
-  // ystep/width/height/depth/length
+  // width/height/depth/length
   // 
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",41.2,12.8,12.8,117.1);
   Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
   
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)

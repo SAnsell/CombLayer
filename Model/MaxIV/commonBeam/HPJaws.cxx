@@ -127,6 +127,7 @@ HPJaws::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
   dividerThick=Control.EvalVar<double>(keyName+"DividerThick");
+  dividerGap=Control.EvalVar<double>(keyName+"DividerGap");
 
   jawFarLen=Control.EvalVar<double>(keyName+"JawFarLen");
   jawEdgeLen=Control.EvalVar<double>(keyName+"JawEdgeLen");
@@ -204,7 +205,7 @@ HPJaws::createSurfaces()
   // Jaw/MidWall 
   ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(dividerThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(dividerThick/2.0),Y);
-
+  
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*(dividerGap/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*(dividerGap/2.0),X);
 

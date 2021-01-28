@@ -66,6 +66,7 @@ HPJawsGenerator::HPJawsGenerator() :
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
   dividerThick(1.5),
+  dividerGap(0.7),
   jawFarLen(3.5),
   jawEdgeLen(4.5),
   jawThick(0.8),
@@ -120,6 +121,7 @@ HPJawsGenerator::generateJaws(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeLength",flangeLength);
 
   Control.addVariable(keyName+"DividerThick",dividerThick);
+  Control.addVariable(keyName+"DividerGap",dividerGap);
 
   Control.addVariable(keyName+"JawFarLen",jawFarLen);
   Control.addVariable(keyName+"JawEdgeLen",jawEdgeLen);

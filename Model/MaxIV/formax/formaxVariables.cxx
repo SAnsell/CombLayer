@@ -64,6 +64,8 @@
 #include "MonoBoxGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "BremMonoCollGenerator.h"
+#include "BremTubeGenerator.h"
+#include "HPJawsGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
@@ -100,6 +102,9 @@ void undulatorVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
+void diag2Package(FuncDataBase&,const std::string&);
+void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
+	       const double,const double);
 
 
 void
@@ -213,9 +218,9 @@ mirrorMonoPackage(FuncDataBase& Control,
   MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
-  // ystep/ width / heigh / depth / length
+  // width / heigh / depth / length
   MBoxGen.generateBox
-    (Control,monoKey+"MLMVessel",0.0,57.0,12.5,31.0,94.0);
+    (Control,monoKey+"MLMVessel",57.0,12.5,31.0,94.0);
 
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 
@@ -242,7 +247,7 @@ hdcmPackage(FuncDataBase& Control,
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","monoPackage");
+  ELog::RegMethod RegA("formaxVariables[F]","hdcmPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
@@ -254,7 +259,7 @@ hdcmPackage(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need heigh = 0]
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
@@ -274,6 +279,28 @@ hdcmPackage(FuncDataBase& Control,
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
   
 
+  return;
+}
+
+void
+diag2Package(FuncDataBase& Control,
+	     const std::string& diagKey)
+  /*!
+    Builds the variables for the second diagnostice/slit packge
+    \param Control :: Database
+    \param diagKey :: prename
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","diag2Package");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BremTubeGenerator BTGen;
+  setVariable::HPJawsGenerator HPGen;
+ 
+  BTGen.generateTube(Control,diagKey+"BremTubeA");
+  
+  HPGen.generateJaws(Control,diagKey+"HPJawsA",0.3,0.3);
+ 
   return;
 }
   
@@ -381,14 +408,16 @@ opticsHutVariables(FuncDataBase& Control,
 }
 
 void
-mirrorBox(FuncDataBase& Control,const std::string& Name,
-	  const std::string& Index,const std::string& vertFlag,
+mirrorBox(FuncDataBase& Control,
+	  const std::string& Name,
+	  const std::string& Index,
+	  const std::string& vertFlag,
 	  const double theta,const double phi)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
-    \param Index :: Index designator
+    \param Index :: Index designator for mirror box (A/B etc)
     \param theta :: theta angle [beam angle in deg]
     \param phi :: phi angle [rotation angle in deg]
   */
@@ -415,17 +444,16 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
-  // ystep/width/height/depth/length
+  // width/height/depth/length
   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-		      0.0,53.1,23.6,29.5,124.0);
-
+		      53.1,23.6,29.5,168.0);
 
   // length thick width
   MirrGen.setPlate(50.0,1.0,9.0);  //guess  
   MirrGen.setPrimaryAngle(0,vAngle,0);  
   // ystep : zstep : theta : phi : radius
   MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
-			 0.0,-centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
+			 0.0,-centreDist/2.0,0.0,theta,phi,0.0);   // hits beam center
   MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
   // x/y/z/theta/phi/
   MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
@@ -582,7 +610,7 @@ monoVariables(FuncDataBase& Control,
   VBoxGen.setBPortOffset(2.5,0.0);
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,preName+"MonoBox",77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
 
@@ -696,8 +724,16 @@ opticsVariables(FuncDataBase& Control,
 
   formaxVar::hdcmPackage(Control,preName);  
   
+  BellowGen.generateBellow(Control,preName+"BellowF",15.0);
+  PipeGen.generatePipe(Control,preName+"PipeD",12.5);  
+  GVGen.generateGate(Control,preName+"GateTubeD",0);  // open
+
+  formaxVar::diag2Package(Control,preName);
+
+  formaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
+
   formaxVar::monoShutterVariables(Control,preName);
-  
+
   return;
 }
 

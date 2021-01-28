@@ -3,7 +3,7 @@
  
  * File:   species/speciesVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -475,7 +475,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setBFlange(17.8,1.0);
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   // ystep/width/height/depth/length
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,42.2,36.45,36.45);
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",42.2,36.45,36.45);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //

@@ -348,9 +348,9 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
 
-  // ystep/width/height/depth/length
+  // width/height/depth/length
   // 
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",41.2,12.8,12.8,117.1);
   Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
   
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)

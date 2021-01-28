@@ -50,6 +50,7 @@ class HPJawsGenerator
   double flangeLength;       ///<  Attached back flange length 
 
   double dividerThick;       ///< Divider for jaws
+  double dividerGap;         ///< Mid point divider gap [static]
 
   double jawFarLen;          ///< Length extending away from beam
   double jawEdgeLen;         ///< Length on cutting surface

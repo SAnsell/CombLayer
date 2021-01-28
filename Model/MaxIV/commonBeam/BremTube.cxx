@@ -153,7 +153,7 @@ BremTube::createSurfaces()
 {
   ELog::RegMethod RegA("BremTube","createSurfaces");
 
-  const double frontDist(frontLength+midLength+tubeRadius);
+  const double frontDist(frontLength+midLength);
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*frontDist,Y);
