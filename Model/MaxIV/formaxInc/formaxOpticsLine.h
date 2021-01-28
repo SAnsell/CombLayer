@@ -162,7 +162,7 @@ class formaxOpticsLine :
   std::shared_ptr<xraySystem::Mirror> mirrorBackA;
 
   /// bellow from Mirror to Diag3
-  std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<constructSystem::Bellows> bellowG;
 
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateJ;
