@@ -55,9 +55,9 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -65,6 +65,7 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -427,6 +428,7 @@ makeT1Real::build(Simulation& System,
       
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);
+      
       voidCell=VoidObj->getVoidCell();
     }
   else

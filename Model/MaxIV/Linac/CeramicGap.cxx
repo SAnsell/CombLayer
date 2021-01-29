@@ -331,7 +331,7 @@ CeramicGap::createAll(Simulation& System,
   ELog::RegMethod RegA("CeramicGap","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
   const std::string frontStr=getRuleStr("front");
 
   createSurfaces();

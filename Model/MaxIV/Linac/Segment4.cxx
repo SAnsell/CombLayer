@@ -98,8 +98,8 @@ Segment4::Segment4(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   
   /*!
     Constructor

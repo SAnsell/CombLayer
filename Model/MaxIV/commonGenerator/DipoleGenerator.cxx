@@ -87,6 +87,7 @@ DipoleGenerator::generateDipole(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DipoleGenerator","generateColl");
 
+  ELog::EM<<"Y =-= "<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"YStep",yStep);
   
   Control.addVariable(keyName+"Length",length);

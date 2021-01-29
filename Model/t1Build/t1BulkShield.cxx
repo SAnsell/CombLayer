@@ -67,6 +67,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
@@ -75,7 +76,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -84,13 +84,13 @@
 #include "FixedUnit.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
+#include "collInsert.h"
 #include "GeneralShutter.h"
 #include "BlockShutter.h"
 #include "BulkInsert.h"
@@ -192,6 +192,7 @@ t1BulkShield::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("t1BulkShield","populate");
 
   vYoffset=Control.EvalVar<double>("voidYoffset");
+  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   
   shutterRadius=Control.EvalVar<double>(keyName+"ShutterRadius");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
@@ -226,7 +227,6 @@ t1BulkShield::createSurfaces()
 			      Origin,Z,innerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin,Z,outerRadius);
-
   // INNER LAYER:
   const int SN=ExternalCut::getRule("Inner").getPrimarySurface();
   SMap.addMatch(buildIndex+7,SN);
@@ -308,22 +308,17 @@ t1BulkShield::createShutters(Simulation& System)
       // Not registered under KeyName 
       OR.addObject(GData.back());
     }
+    
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      GData[i]->setExternal(SMap.realSurf(buildIndex+7),
-			    SMap.realSurf(buildIndex+17),
-			    SMap.realSurf(buildIndex+6),
-			    SMap.realSurf(buildIndex+5));
-
-      GData[i]->setGlobalVariables(voidRadius,shutterRadius,
-				   totalDepth,totalHeight);
-      GData[i]->setDivide(50000);     /// ARRRHHH....
+      GData[i]->setCutSurf("RInner",-SMap.realSurf(buildIndex+7));
+      GData[i]->setCutSurf("ROuter",-SMap.realSurf(buildIndex+17));
+      GData[i]->setCutSurf("TopPlane",-SMap.realSurf(buildIndex+6));
+      GData[i]->setCutSurf("BasePlane",SMap.realSurf(buildIndex+5));
       GData[i]->createAll(System,*this,0);    
-
       CellMap::insertComponent(System,"shutterCell",GData[i]->getExclude());
     }
-
   return;
 }
 
@@ -336,19 +331,27 @@ t1BulkShield::createBulkInserts(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","createBulkInserts");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   const int innerCell=CellMap::getCell("innerCell");
   const int outerCell=CellMap::getCell("outerCell");
   for(size_t i=0;i<numberBeamLines;i++)
     {
-      BData.push_back(std::shared_ptr<BulkInsert>
-		      (new BulkInsert(i,"bulkInsert")));
+      std::shared_ptr<BulkInsert> 
+	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
-      BData.back()->setLayers(innerCell,outerCell);
-      BData.back()->setExternal(SMap.realSurf(buildIndex+17),
-				SMap.realSurf(buildIndex+27),
-				SMap.realSurf(buildIndex+37) );
-      BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
-      BData.back()->createAll(System,*GData[i],0);    
+      BItem->setLayers(innerCell,outerCell);
+      BItem->setCutSurf("Divider",
+			GData[i]->getKey("Main").getLinkSurf("Divider"));
+      BItem->setCutSurf("RInner",-SMap.realSurf(buildIndex+17));
+      BItem->setCutSurf("RMid",-SMap.realSurf(buildIndex+27)); 
+      BItem->setCutSurf("ROuter",-SMap.realSurf(buildIndex+37));
+
+      OR.addObject(BItem->getKeyName(),BItem);
+      BItem->createAll(System,*GData[i],0);
+      
+      BData.push_back(BItem);
     }
   return;
 }
@@ -356,16 +359,16 @@ t1BulkShield::createBulkInserts(Simulation& System)
 void
 t1BulkShield::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the main bulk components
     \param System :: Simulation to create objects in
-    \param CC :: Excluded object to inner layers [Void vessel]
    */
 {
   ELog::RegMethod RegA("t1BulkShield","createObjects");
 
-  const std::string innerComp=ExternalCut::getRuleStr("FullInner");
+  const std::string innerComp=ExternalCut::getComplementStr("FullInner");
   std::string Out;
 
+  ELog::EM<<"Inner == "<<innerComp<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7 ");
   makeCell("shutterCell",System,cellIndex++,ironMat,0.0,Out+innerComp);
 
@@ -465,15 +468,17 @@ t1BulkShield::createAll(Simulation& System,
   // const t1CylVessel& CVoid)
 
   populate(System.getDataBase());
-  //  voidRadius=CVoid.getOuterRadius();
   createUnitVector(FC,sideIndex);
 
   createSurfaces();
   createObjects(System); 
   processVoid(System);
   createShutters(System);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createBulkInserts(System);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createLinks();
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
 
   return;
 }

@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment18.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,13 @@
 #ifndef tdcSystem_Segment18_h
 #define tdcSystem_Segment18_h
 
-namespace tdcSystem
+namespace xraySystem
 {
   class IonPumpTube;
+}
+
+namespace tdcSystem
+{
   /*!
     \class Segment18
     \version 1.0
@@ -39,14 +43,14 @@ class Segment18 :
  private:
 
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #1 Bellows 304L
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #2, 3
+  std::shared_ptr<xraySystem::IonPumpTube> ionPump;        ///< #2, 3
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #4 BPM
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;      ///< #5
   std::shared_ptr<tdcSystem::LQuadH> quad;                 ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #7
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;          ///< #8 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;          ///< #8 - vertical corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;          ///< #8 - horizontal corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;          ///< #8 - vertical corrector magnet
 
   void buildObjects(Simulation&);
   void createLinks();

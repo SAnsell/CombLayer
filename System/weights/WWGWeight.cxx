@@ -61,6 +61,7 @@
 #include "HeadRule.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "WForm.h"

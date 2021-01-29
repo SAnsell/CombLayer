@@ -3,7 +3,7 @@
 
  * File: Linac/Segment18.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,14 +83,14 @@ namespace tdcSystem
 Segment18::Segment18(const std::string& Key) :
   TDCsegment(Key,2),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
+  ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key

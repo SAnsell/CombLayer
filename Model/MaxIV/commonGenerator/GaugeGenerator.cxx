@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/SixPortGenerator.cxx
+ * File:   commonGenerator/GaugeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,6 +184,7 @@ template void GaugeGenerator::setCF<CF150>();
 template void GaugeGenerator::setFlangeCF<CF34_TDC>();
 template void GaugeGenerator::setFlangeCF<CF35_TDC>();
 template void GaugeGenerator::setFlangeCF<CF37_TDC>();
+template void GaugeGenerator::setFlangeCF<CF40>();
 template void GaugeGenerator::setFlangeCF<CF100>();
 template void GaugeGenerator::setFlangeCF<CF120>();
 template void GaugeGenerator::setFlangeCF<CF150>();
@@ -191,7 +192,7 @@ template void GaugeGenerator::setFlangeCF<CF150>();
 template void GaugeGenerator::setSidePortCF<CF34_TDC>(const double);
 template void GaugeGenerator::setSidePortCF<CF35_TDC>(const double);
 template void GaugeGenerator::setSidePortCF<CF37_TDC>(const double);
-
+template void GaugeGenerator::setSidePortCF<CF40>(const double);
 
 ///\endcond TEPLATE
 

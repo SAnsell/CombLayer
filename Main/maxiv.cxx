@@ -3,7 +3,7 @@
  
  * File:   Main/maxiv.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,13 +53,13 @@
 #include "Transform.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "Quadratic.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
@@ -73,10 +73,8 @@
 #include "FixedComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "maxivVariables.h"
 #include "ImportControl.h"
-#include "World.h"
 
 #include "DefUnitsMaxIV.h"
 #include "makeMaxIV.h"
@@ -133,7 +131,8 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
 
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->objectGroups::write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt",
+				  IParam.flag("fullOR"));
     }
   
   catch (ColErr::ExitAbort& EA)

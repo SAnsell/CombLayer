@@ -35,11 +35,12 @@ namespace ts1System
   \brief W/Ta plates 
 */
 
-class WaterDividers : public attachSystem::ContainedComp,
-    public attachSystem::FixedUnit
+class WaterDividers :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedComp,
+    public attachSystem::ExternalCut
 {
  private:
-  
   
   double conHeight;             ///< Height of the connect
 
@@ -97,10 +98,13 @@ class WaterDividers : public attachSystem::ContainedComp,
   WaterDividers(const WaterDividers&);
   WaterDividers& operator=(const WaterDividers&);
   ~WaterDividers();
-  
+
+
   void build(Simulation&,const PlateTarget&,
 		 const attachSystem::FixedComp&);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   source/SourceCreate.cxx
  *
- * Copyright (c) 2004-20198 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,8 +94,6 @@
 
 namespace SDef
 {
-
-
   
 std::shared_ptr<SDef::SourceBase>
 makeActivationSource(const std::string& ASName)
@@ -466,14 +464,12 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
   return GX.getKeyName();      
 }
 
-
-
 std::string
 createFlukaSource(const mainSystem::MITYPE& inputMap,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
-/*!
+  /*!
     Create the fluka source driven by the source.f routine
     Note this still can use both BEAM and BEAMAXIS
     \param inputMap :: Variables data base
@@ -481,7 +477,33 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
-   */
+  */
+{
+  ELog::RegMethod RegA("SourceCreate","createFlukaSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  FlukaSource GX(keyName);
+
+  GX.createAll(inputMap,FC,sideIndex);
+  SDB.registerSource(GX.getKeyName(),GX);
+
+  return GX.getKeyName();      
+}
+
+std::string
+createTDCSource(const mainSystem::MITYPE& inputMap,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
+  /*!
+    Create the fluka source driven by the source.f routine
+    Note this still can use both BEAM and BEAMAXIS
+    \param inputMap :: Variables data base
+    \param keyName :: keyname for FlukaSource
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \return keyName of source
+  */
 {
   ELog::RegMethod RegA("SourceCreate","createFlukaSource");
 

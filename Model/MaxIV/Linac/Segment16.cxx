@@ -3,7 +3,7 @@
 
  * File: Linac/Segment16.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -92,10 +93,10 @@ Segment16::Segment16(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   quad(new tdcSystem::LQuadH(keyName+"Quad")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
+  ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC"))
   /*!
     Constructor

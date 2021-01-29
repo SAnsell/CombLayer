@@ -50,6 +50,7 @@
 #include "neutron.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Zaid.h"
 #include "MXcards.h"

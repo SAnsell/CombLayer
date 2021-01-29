@@ -3,7 +3,7 @@
  
  * File:   delft/BeamTube.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,6 +60,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -211,7 +211,7 @@ BeamTube::populatePortals(const FuncDataBase& Control)
   int index(1);
   do
     {
-      const std::string PKey=keyName+"Portal"+StrFunc::makeString(index);
+      const std::string PKey=keyName+"Portal"+std::to_string(index);
       pM=ModelSupport::EvalDefMat<int>(Control,PKey+"Mat",-1);
       pD=Control.EvalDefVar<double>(PKey+"Dist",0.0);
       if (pM>=0)

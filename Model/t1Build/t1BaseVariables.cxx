@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BaseVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -895,9 +895,10 @@ TS1base(FuncDataBase& Control)
   // Control.addVariable("t1bulkInsertZOffset",0.00);
 
   // BULK VESSEL:
-  Control.addVariable("t1BulkShutterRadius",366.0);    // Shield level
-  Control.addVariable("t1BulkInnerRadius",481.0);      // Inner Steel
-  Control.addVariable("t1BulkOuterRadius",600.6);      // Outer Steel
+  Control.addVariable("t1BulkShutterRadius",366.0);   // Shield level
+  Control.addVariable("t1BulkVoidRadius",366.0);      // Shield level
+  Control.addVariable("t1BulkInnerRadius",481.0);     // Inner Steel
+  Control.addVariable("t1BulkOuterRadius",600.6);     // Outer Steel
   Control.addVariable("t1BulkFloor",270.5);           // Bulk shield floor  
   Control.addVariable("t1BulkRoof",509.5);            // Bulk shield top
   Control.addVariable("t1BulkIronMat","CastIron");             // bulk material
@@ -912,7 +913,14 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("t1BulkInWidth",36);        // Bulk Height [cm] (from centre line)
   Control.addVariable("t1BulkOutWidth",40);       // Bulk Width [cm] (from centre 
 
-  // SHUTTERS
+  // SHUTTERS [For TS1]
+  Control.addVariable("shutterInnerRadius",165.0);     // inner void radius
+  Control.addVariable("shutterOuterRadius",366.0);     // outer shutter rad
+  // outer shutter rad
+  Control.addParse<double>("shutterTotalHeight","t1BulkRoof");
+  Control.addParse<double>("shutterTotalDepth","t1BulkFloor");
+  Control.addVariable("shutterTotalDepth",270.5);     // outer shutter rad
+	  
   Control.addVariable("shutterUpperSteel",190.5);     // top thickness
   Control.addVariable("shutterLowerSteel",265.90);    // base thickness
   Control.addVariable("shutterHeight",131.4);         // Total shutter height
@@ -1002,6 +1010,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("bulkInsertZOffset",0.00);
 
   // Mono Plug
+  Control.addVariable("MonoTopXAngle",-90.0);  // rotate to + Z
   Control.addVariable("MonoTopNPlugs",3);
   Control.addVariable("MonoTopPlugClearance",3.0);
   Control.addVariable("MonoTopDivideLen",3.0);
@@ -1014,6 +1023,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("MonoTopPlugZLen2",264.0);  
   Control.addVariable("MonoTopPlugZLen3",381.0);  
 
+  Control.addVariable("MonoBaseXAngle",-90.0);  // rotate to y== -Z
   Control.addVariable("MonoBaseNPlugs",1);
   Control.addVariable("MonoBasePlugClearance",1.0);
   Control.addVariable("MonoBaseDivideLen",3.0);

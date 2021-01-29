@@ -3,7 +3,7 @@
  
  * File:   geomInc/SurInter.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,13 @@ Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
 	     const HeadRule&,const HeadRule&);
 	     
+double
+getLineDistance(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		const Geometry::Surface*,const Geometry::Vec3D&);
+  
+double
+getLineDistance(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		const Geometry::Plane*);
   
 Geometry::Vec3D
 nearPoint(const std::vector<Geometry::Vec3D>&,

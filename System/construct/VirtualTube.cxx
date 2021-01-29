@@ -3,7 +3,7 @@
 
  * File:   construct/VirtualTube.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -229,14 +230,16 @@ VirtualTube::createPorts(Simulation& System,
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
 
-      
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      if (outerVoid && CellMap::hasCell("OuterVoid"))
+       	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
       Ports[i]->insertObjects(System);
     }
 
   return;
 }
+
 
 void
 VirtualTube::createPorts(Simulation& System)

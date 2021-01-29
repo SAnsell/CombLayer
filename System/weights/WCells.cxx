@@ -3,7 +3,7 @@
  
  * File:   weights/WCells.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "cellValueSet.h"
 #include "WForm.h"
@@ -152,7 +153,7 @@ WCells::populateCells(const std::map<int,MonteCarlo::Object*>& ObjMap)
 	    (cellN,WItem(cellN,ORef.getDensity(),ORef.getTemp()));
 	}
       
-      if (!ORef.getImp())
+      if (ORef.isZeroImp())
 	maskCell(cellN);
     }
   return;

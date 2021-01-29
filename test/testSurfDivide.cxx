@@ -58,6 +58,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
@@ -66,7 +67,6 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "surfDBase.h"
-#include "mergeMulti.h"
 #include "mergeTemplate.h"
 #include "surfDivide.h"
 #include "surfCompare.h"
@@ -267,7 +267,8 @@ testSurfDivide::testMultiOuter()
   DA.init(); 
   DA.setCellN(4);   // Cube cell
   DA.setOutNum(11,8001);
-  DA.makeMulti<Geometry::Plane>(23,24,27);
+  //  DA.makeMulti<Geometry::Plane>(23,24,27);
+  DA.makeTemplate<Geometry::Plane>(23,24,27);
   DA.activeDivide(ASim);
 
   // Initial cell : 11 -12 13 -14 15 -16 -17
@@ -277,11 +278,6 @@ testSurfDivide::testMultiOuter()
 
   resTest+=checkSurfaceEqual(8001,"8001 py 0.6");
   
-  //  resTest+=checkSurface(17,"8002 py 0.6");
-  //  resTest+=checkSurface(8002,"8002 py 0.6");
-
-  // sqrt(2)*0.8 sqrt
-  //  resTest+=checkSurface(8004,"8004 p -0.56568 0.5 0 1"); 
 
   // surfaces : py -3 : py 3 
   // 17: p -3,2  -2 3  (xy)
@@ -294,7 +290,7 @@ testSurfDivide::testMultiOuter()
     (8002,"8104 p -0.4576523893115 0.889131199 0.0 0.92132034");  
 
   if (resTest) return -2;
-  
+
   return 0;
 }
 
@@ -306,7 +302,7 @@ testSurfDivide::testBasicPair()
   */
 {
   ELog::RegMethod RegA("testSurfDivide","testBasicPair");
-  
+
   ModelSupport::surfDivide DA;
   DA.addFrac(0.6);
   DA.addFrac(0.8);
@@ -314,13 +310,14 @@ testSurfDivide::testBasicPair()
   DA.addMaterial(5);
   DA.addMaterial(6);
 
-
+  int resTest;
+  /*
   // Test Cell 3:
   DA.init(); 
   DA.setCellN(3);   // Cube cell
   DA.setOutNum(11,8001);
-  DA.makePair<Geometry::Plane>(13,14);
-  DA.activeDivide(ASim);
+  DA.makeTemplate<Geometry::Plane>(13,-14);
+  DA.activeDivideTemplate(ASim);
   
   int resTest=checkResults(11,"11 -12 13 -8001 15 -16");
   resTest+=checkResults(12,"11 -12 8001 -8002 15 -16");
@@ -328,16 +325,13 @@ testSurfDivide::testBasicPair()
   resTest+=checkSurfaceEqual(8001,"8001 py 0.2");
   resTest+=checkSurfaceEqual(8002,"8002 py 0.6");
   if (resTest) return -1;
-
-  
-  // Test Cell 2 (in reverse):
-
+  */
   initSim();
   DA.init();
   DA.setCellN(3);   // Cube cell
   DA.setOutNum(11,8001);
-  DA.makePair<Geometry::Plane>(-14,13);
-  DA.activeDivide(ASim);
+  DA.makeTemplate<Geometry::Plane>(-14,13);
+  DA.activeDivideTemplate(ASim);
 
   resTest=checkResults(11,"11 -12 8001 -14 15 -16");
   resTest+=checkResults(12,"11 -12 8002 -8001 15 -16");
@@ -346,7 +340,7 @@ testSurfDivide::testBasicPair()
   resTest+=checkSurfaceEqual(8002,"8002 py -0.6");
 
   if (resTest) return -2;
-  
+
   return 0;
 }
 

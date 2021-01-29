@@ -61,6 +61,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"

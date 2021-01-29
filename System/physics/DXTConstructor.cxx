@@ -3,7 +3,7 @@
  
  * File:   physics/DXTConstructor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ DXTConstructor::DXTConstructor()
 {}
   
 void
-DXTConstructor::processDD(PhysicsCards& PC,
+DXTConstructor::processDD(SimMCNP& System,
 			  const mainSystem::inputParam& IParam,
 			  const size_t Index) 
   /*!
@@ -106,6 +106,8 @@ DXTConstructor::processDD(PhysicsCards& PC,
 {
   ELog::RegMethod RegA("DXTConstructor","processDD");
 
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  
   const size_t NParam=IParam.itemCnt("wDD",Index);
   if (NParam<2)
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wDXT");
@@ -114,7 +116,6 @@ DXTConstructor::processDD(PhysicsCards& PC,
   DXTControl& DXT=PC.getDXTCard();
   for(size_t j=1;j<NParam;j+=2)
     {
-      
       const double DDk=IParam.getValue<double>("wDD",Index,j-1);
       const double DDm=IParam.getValue<double>("wDD",Index,j);
       DXT.setDD(DDk,DDm);
@@ -123,8 +124,7 @@ DXTConstructor::processDD(PhysicsCards& PC,
 }
  
 void
-DXTConstructor::processUnit(const objectGroups& OGrp,
-			    PhysicsCards& PC,
+DXTConstructor::processUnit(SimMCNP& System, 
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
  /*!
@@ -152,6 +152,7 @@ DXTConstructor::processUnit(const objectGroups& OGrp,
       ELog::EM<<ELog::endBasic;
       return;
     }
+  
   // set particle 
   std::string particle("n");
   size_t offsetIndex(1);
@@ -163,7 +164,7 @@ DXTConstructor::processUnit(const objectGroups& OGrp,
       dxtName[0]=static_cast<char>(std::tolower(dxtName[0]));
     }
 
-  
+  physicsSystem::PhysicsCards& PC=System.getPC();  
   DXTControl& DXT=PC.getDXTCard();
   double RI,RO;
   if (dxtName=="object" || dxtName=="objOffset")
@@ -178,7 +179,7 @@ DXTConstructor::processUnit(const objectGroups& OGrp,
       
       Geometry::Vec3D PPoint,XAxis,YAxis,ZAxis;
       if (!attachSystem::getAttachPointWithXYZ
-	  (OGrp,place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
+	  (System,place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
 
@@ -229,7 +230,7 @@ DXTConstructor::writeHelp(std::ostream& OX) const
       " radius {radiusOuter} \n"
       "   free Vec3D radius \n";
     OX<<"-wDD [Kvalue Dvalue] \n";
-    OX<<"-wDXT  \n";
+    OX<<"-wDXT \n";
   return;
 }
 

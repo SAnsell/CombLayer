@@ -3,7 +3,7 @@
  
  * File: R3Common/R3FrontEnd.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -117,7 +118,7 @@ namespace xraySystem
 R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedRotate(newName,2),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -245,7 +246,7 @@ R3FrontEnd::populate(const FuncDataBase& Control)
     \param Control :: DataBase
    */
 {
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   frontOffset=Control.EvalDefVar<double>(keyName+"FrontOffset",0.0);
   return;
@@ -328,9 +329,7 @@ R3FrontEnd::buildHeatTable(Simulation& System,
     (System,PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertAllInCell(System,outerCell);
   
-
-  // cant use heatbox here because of port rotation
-  
+  // cant use heatbox here because of port rotation  
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
   heatDump->addInsertCell("Outer",outerCell);
   heatDump->createAll(System,PIA,0,*heatBox,2);
@@ -552,7 +551,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
-
   magBlockM1->createAll(System,*this,0);
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
@@ -657,8 +655,15 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*exitPipe,2);
   exitPipe->insertAllInCell(System,outerCell);
 
+  if (ExternalCut::isActive("REWall"))
+    {
+      buildZone.setMaxExtent(getRule("REWall"));
+      outerCell=buildZone.createUnit(System);
+    }
+
   setCell("MasterVoid",outerCell);  
   lastComp=exitPipe;
+  
   return;
 }
   

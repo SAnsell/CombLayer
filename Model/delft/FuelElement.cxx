@@ -3,7 +3,7 @@
  
  * File:   delft/FuelElement.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -556,9 +557,9 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
       DA.init();
       DA.setCellN(fuelCells[i]);
       DA.setOutNum(cellIndex,SI);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+15),
-				   SMap.realSurf(buildIndex+16));
-      DA.activeDivide(System);
+      DA.makeTemplate<Geometry::Plane>(SMap.realSurf(buildIndex+15),
+				       -SMap.realSurf(buildIndex+16));
+      DA.activeDivideTemplate(System);
       cellIndex=DA.getCellNum();
       SI+=100;
     }

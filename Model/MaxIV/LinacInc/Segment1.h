@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment1.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,17 @@ namespace constructSystem
   class Bellows;
 }
 
+namespace xraySystem
+{
+  class CorrectorMag;
+  class IonPumpTube;
+}
+
 namespace tdcSystem
 {
   class LQuadF;
-  class CorrectorMag;
   class StriplineBPM;
-  class IonPumpTube;
+
   /*!
     \class Segment1
     \version 1.0
@@ -51,24 +56,24 @@ class Segment1 :
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< first bellow
   ///< connect with two corrector magnets
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;   ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   ///< corrector mag
   /// exit pipe from corrector magnet
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   /// pipe from  corrector block+Quad
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHB;   ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVB;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHB;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVB;   ///< corrector mag
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// THIS is the double pipe
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;         ///< #7 BPM
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;   ///< corrector mag pipe
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHC;   ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVC;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHC;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVC;   ///< corrector mag
   /// ion pump [rotated]
-  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
+  std::shared_ptr<xraySystem::IonPumpTube> pumpA;
 
   void buildObjects(Simulation&);
   void createLinks();

@@ -3,7 +3,7 @@
 
  * File:   Linac/EBeamStop.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -500,7 +501,7 @@ EBeamStop::createAll(Simulation& System,
   ELog::RegMethod RegA("EBeamStop","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,2.0*portLength+length);
+  createCentredUnitVector(FC,sideIndex,portLength+length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();

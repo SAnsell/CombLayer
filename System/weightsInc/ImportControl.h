@@ -3,7 +3,7 @@
  
  * File:   weightsInc/ImportControl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 ///\file 
 
 class Simulation;
+class SimMCNP;
 namespace mainSystem
 {
   class inputParam;
@@ -39,23 +40,17 @@ namespace WeightSystem
 {
   void setWImp(physicsSystem::PhysicsCards&,const std::string&);
   void clearWImp(physicsSystem::PhysicsCards&,const std::string&);
-  void removePhysImp(physicsSystem::PhysicsCards&,const std::string&);
-  void zeroImp(physicsSystem::PhysicsCards&,Simulation&,const int,const int);
+  void zeroImp(Simulation&,const int,const int);
   void simulationImp(SimMCNP&,const mainSystem::inputParam&);
   void EnergyCellCut(SimMCNP&,const mainSystem::inputParam&);
-  void ExtField(const objectGroups&,physicsSystem::PhysicsCards&,
-		const mainSystem::inputParam&);
-  void FCL(const objectGroups&,physicsSystem::PhysicsCards&,
-	   const mainSystem::inputParam&);
+  void ExtField(SimMCNP&,const mainSystem::inputParam&);
+  void FCL(SimMCNP&,const mainSystem::inputParam&);
   
-  void IMP(SimMCNP&,const mainSystem::inputParam&);
-  void SBias(const objectGroups&,physicsSystem::PhysicsCards&,
-	     const mainSystem::inputParam&);
+  void IMP(Simulation&,const mainSystem::inputParam&);
+  void SBias(SimMCNP&,const mainSystem::inputParam&);
 
-  void DXT(const objectGroups&,physicsSystem::PhysicsCards&,
-	   const mainSystem::inputParam&);
-  void PWT(const objectGroups&,physicsSystem::PhysicsCards&,
-	   const mainSystem::inputParam&);
+  void DXT(SimMCNP&,const mainSystem::inputParam&);
+  void PWT(SimMCNP&,const mainSystem::inputParam&);
 
 }
 

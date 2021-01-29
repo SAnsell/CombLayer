@@ -3,7 +3,7 @@
  
  * File:   weights/TempWeights.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "WForm.h"
@@ -99,7 +100,7 @@ scaleTempWeights(Simulation& System,double factor)
     {
       // Keep currently masked cells:
       if (!WF->isMasked(cellNum) &&
-	  objPtr->getImp())
+	  !objPtr->isZeroImp())
         {
 	  const double T=objPtr->getTemp();
 	  if (T<275.0)

@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Line.h"
 #include "varList.h"
@@ -346,7 +347,6 @@ portItem::createSurfaces()
   ELog::RegMethod RegA("portItem","createSurfaces");
   // divider surface if needeed :
 
-
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   if (flangeRadius-Geometry::zeroTol<=radius+wall)
     throw ColErr::SizeError<double>(flangeRadius,wall+radius,
@@ -563,7 +563,7 @@ portItem::constructFlange(Simulation& System,
 
   if (outerFlag)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 17  -27 -102");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,
 	       Out+outerSurf.display());
       Out= (capFlag) ?
@@ -700,6 +700,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   if (outerFlag)
     {
+      ELog::EM<<"Outer["<<keyName<<"] == "<<ELog::endDiag;
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,Out+midSurf);
       Out= (capFlag) ?
@@ -774,6 +775,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
+  ELog::EM<<"DEPRECIATED CODE : DO NOT USE"<<ELog::endCrit;
   AIndex=0;
   BIndex=0;
   // no point checking first value
@@ -860,13 +862,14 @@ portItem::constructTrack(Simulation& System,
 {
   ELog::RegMethod RegA("portItem","constructTrack(HR,HR)");
 
+
   if (!statusFlag)
     {
       ELog::EM<<"Failed to set orientation in port:"<<keyName<<ELog::endCrit;
       return;
     }
   createSurfaces();
-  
+
   constructFlange(System,innerSurf,outerSurf);
   addPortCut(insertObj);
   
@@ -937,7 +940,7 @@ portItem::createAll(Simulation& System,
   ELog::RegMethod RegA("portItem","createAll");
 
   constructAxis(System,FC,sideIndex);
-  constructTrack(System);
+  constructTrack(System); 
   return;
 }
 

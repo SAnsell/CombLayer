@@ -3,7 +3,7 @@
  
  * File:   phitsProcess/phitsDefPhysics.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "FixedComp.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -168,6 +169,22 @@ setModelPhysics(SimPHITS& System,
   return; 
 }
 
+void 
+setDefaultPhysics(SimPHITS& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics for phits
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(phits)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
   
 void 
 setXrayPhysics(phitsPhysics& PC,

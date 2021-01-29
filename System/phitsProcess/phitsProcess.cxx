@@ -67,6 +67,7 @@
 #include "FixedComp.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

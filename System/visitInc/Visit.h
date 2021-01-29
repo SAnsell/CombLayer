@@ -46,7 +46,7 @@ class Visit
 
   /// Types of information to plot
   enum class VISITenum : int
-  { cellID=0,material=1,density=2,weight=3};
+    { cellID=0,material=1,density=2,weight=3,imp=4};
 
  private:
   

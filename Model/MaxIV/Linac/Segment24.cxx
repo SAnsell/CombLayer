@@ -3,7 +3,7 @@
 
  * File: Linac/Segment24.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,11 +83,11 @@ namespace tdcSystem
 Segment24::Segment24(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
+  ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   quad(new tdcSystem::LQuadH(keyName+"Quad"))

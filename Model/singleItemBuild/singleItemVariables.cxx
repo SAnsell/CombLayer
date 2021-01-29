@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
 #include "GaugeGenerator.h"
+#include "BremBlockGenerator.h"
 #include "PrismaChamberGenerator.h"
 #include "TriPipeGenerator.h"
 #include "TriGroupGenerator.h"
@@ -105,7 +106,11 @@
 #include "JawFlangeGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
+#include "IonGaugeGenerator.h"
+#include "TriggerGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "BremTubeGenerator.h"
+#include "HPJawsGenerator.h"
 
 namespace setVariable
 {
@@ -277,7 +282,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::GaugeGenerator GTGen;
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
-
+ 
+  setVariable::BremBlockGenerator BBGen;
+  BBGen.generateBlock(Control,"BremBlock",0,15.0);
+ 
+  
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
   CWBlankGen.setMainLength(2.4,13.6);
@@ -289,6 +298,19 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::IonPTubeGenerator IonPGen;
   IonPGen.generateTube(Control,"IonPTube");
+
+  
+  setVariable::BremTubeGenerator BTGen;
+  BTGen.generateTube(Control,"BremTube");
+
+  setVariable::HPJawsGenerator HPGen;
+  HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
+
+  setVariable::IonGaugeGenerator IonGGen;
+  IonGGen.generateTube(Control,"IonGauge");
+
+  setVariable::TriggerGenerator TrigGen;
+  TrigGen.generateTube(Control,"TriggerTube");
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
@@ -480,20 +502,22 @@ SingleItemVariables(FuncDataBase& Control)
 			Geometry::Vec3D(-1.0, 0.0, 0.0));
 
   // BlankTube
+  SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateBlank(Control,"BlankTube",0.0,20.0);
   // Control.addVariable("BlankTubeFlangeCapThick",setVariable::CF63::flangeLength);
   // Control.addVariable("BlankTubeFlangeCapMat","Lead");
   //  Control.addVariable("BlankTubeYAngle", 30.0);
-  Control.addVariable("BlankTubeNPorts",2);
-  PItemGen.setCF<setVariable::CF40>(6.0);
+  Control.addVariable("BlankTubeNPorts",1);
+  PItemGen.setCF<setVariable::CF40>(16.0);
   PItemGen.setPlate(setVariable::CF40_22::flangeLength, "Aluminium");
   PItemGen.generatePort(Control,"BlankTubePort0",
 			Geometry::Vec3D(0.0, 3.0, 0.0),
-			Geometry::Vec3D(0.5, -0.5, 0.866));
+			Geometry::Vec3D(1,0,0));
+  //			Geometry::Vec3D(0.5, -0.5, 0.866));
 
   PItemGen.setNoPlate();
   //  PItemGen.setCF<setVariable::CF40>(7.0);
-  PItemGen.setLength(7.0);
+  PItemGen.setLength(17.0);
   PItemGen.generatePort(Control,"BlankTubePort1",
 			Geometry::Vec3D(0.0, -3.0, 0.0),
 			Geometry::Vec3D(-1.0, 0.0, 0.0));

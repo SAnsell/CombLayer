@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment17.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,14 @@
 #ifndef tdcSystem_Segment17_h
 #define tdcSystem_Segment17_h
 
-namespace tdcSystem
+namespace xraySystem
 {
   class IonPumpTube;
+}
+
+namespace tdcSystem
+{
+
   /*!
     \class Segment17
     \version 1.0
@@ -40,7 +45,7 @@ class Segment17 :
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1
   std::shared_ptr<constructSystem::Bellows> bellowA;       ///< #2
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;       ///< #4 Ion pump 75l cf63
+  std::shared_ptr<xraySystem::IonPumpTube> ionPump;       ///< #4 Ion pump 75l cf63
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC
 
   void buildObjects(Simulation&);

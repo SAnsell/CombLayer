@@ -64,6 +64,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
+#include "Importance.h"
 #include "Object.h"
 
 #include "SplitFlangePipe.h"

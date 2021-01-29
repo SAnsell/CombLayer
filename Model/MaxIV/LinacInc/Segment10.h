@@ -27,10 +27,13 @@ namespace constructSystem
   class GateValveCube;
 }
 
+namespace xraySystem
+{
+  class IonPumpTube;
+}
 
 namespace tdcSystem
 {
-  class IonPumpTube;
   
   /*!
     \class Segment10
@@ -57,7 +60,7 @@ class Segment10 :
   std::shared_ptr<constructSystem::GateValveCube> gateValve;
 
   /// ion pump [rotated]
-  std::shared_ptr<tdcSystem::IonPumpTube> pumpA;
+  std::shared_ptr<xraySystem::IonPumpTube> pumpA;
 
   /// connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
@@ -71,7 +74,7 @@ class Segment10 :
   /// Quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   ///< corrector mag
 
 
   double wallRadius;       ///< Hole radius in wall

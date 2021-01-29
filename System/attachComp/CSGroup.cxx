@@ -54,6 +54,7 @@
 #include "SurInter.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"

@@ -53,6 +53,7 @@
 #include "Cylinder.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfIndex.h"
 #include "ObjSurfMap.h"

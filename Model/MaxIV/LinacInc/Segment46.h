@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment46.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@ namespace constructSystem
 namespace xraySystem
 {
   class CylGateValve;
+  class CrossWayTube;
 }
 
 namespace tdcSystem
 {
   class CleaningMagnet;
-  class CrossWayTube;
   class PrismaChamber;
 
   /*!
@@ -58,13 +58,13 @@ class Segment46 :
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2x50
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamber; ///< #4
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberA; ///< #6
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #6
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #7
   std::shared_ptr<tdcSystem::CleaningMagnet> cleaningMag; // #8
   std::shared_ptr<constructSystem::PortTube> slitTube; // #9
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #9
   std::shared_ptr<constructSystem::Bellows> bellowB; // #10
-  std::shared_ptr<tdcSystem::CrossWayTube> mirrorChamberB; ///< #6
+  std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberB; ///< #6
   std::shared_ptr<constructSystem::Bellows> bellowC; // #10
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
   std::shared_ptr<constructSystem::Bellows> bellowD; ///< Additional bellow

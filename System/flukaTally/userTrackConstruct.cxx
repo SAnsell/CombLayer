@@ -63,6 +63,7 @@
 #include "LinkSupport.h"
 #include "inputParam.h"
 
+#include "Importance.h"
 #include "Object.h"
 #include "SimFLUKA.h"
 #include "TallySelector.h"

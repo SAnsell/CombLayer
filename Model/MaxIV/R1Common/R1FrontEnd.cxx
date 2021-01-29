@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -253,7 +254,6 @@ R1FrontEnd::createSurfaces()
       buildZone.setSurround(HR);
     }
 
-  ELog::EM<<"Front == "<<ELog::endDiag;
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*150.0,Y);

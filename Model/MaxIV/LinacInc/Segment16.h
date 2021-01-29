@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment16.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,16 @@
 #ifndef tdcSystem_Segment16_h
 #define tdcSystem_Segment16_h
 
+namespace xraySystem
+{
+  class CorrectorMag;
+  class IonPumpTube;
+}
+
 namespace tdcSystem
 {
   class StriplineBPM;
   class LQuadH;
-  class CorrectorMag;
-  class IonPumpTube;
   /*!
     \class Segment16
     \version 1.0
@@ -48,12 +52,12 @@ class Segment16 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
 
   /// #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA; 
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA; 
   
   /// #6 - vertical corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;      
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;      
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< #1 Bellows 304L  
-  std::shared_ptr<tdcSystem::IonPumpTube> ionPump;     ///< #7
+  std::shared_ptr<xraySystem::IonPumpTube> ionPump;     ///< #7
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9
 
   void buildObjects(Simulation&);

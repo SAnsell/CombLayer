@@ -3,7 +3,7 @@
  
  * File:   maxpeemInc/MAXPEEM.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,9 @@ namespace xraySystem
   class R1Ring;
   class maxpeemFrontEnd;
   class maxpeemOpticsHut;
-  class maxpeemOpticsBeamline;
+  class maxpeemOpticsLine;
   class ExperimentalHutch;
   class ExptBeamline;
-  class OpticsBeamline;
   class ConnectZone;
   class PipeShield;
   class WallLead;
@@ -78,7 +77,7 @@ class MAXPEEM :
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
   /// Main optics hutch components
-  std::shared_ptr<maxpeemOpticsBeamline> opticsBeam;
+  std::shared_ptr<maxpeemOpticsLine> opticsBeam;
 
  public:
   

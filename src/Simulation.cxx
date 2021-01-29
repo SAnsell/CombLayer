@@ -81,6 +81,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "weightManager.h"
@@ -492,7 +493,6 @@ Simulation::removeCell(const int cellNumber)
   delete vc->second;
 
   OList.erase(vc);
-
   objectGroups::removeActiveCell(cellNumber);
 
   return;
@@ -595,27 +595,6 @@ Simulation::getOrderedMaterial() const
     }
 
   return orderedMat;
-}
-
-
-
-std::vector<std::pair<int,int>>
-Simulation::getCellImp() const
-  /*!
-    Now process Physics so importance/volume cards can be set.
-    \return pair of cellNumber : importance in cell 
-  */
-{
-  ELog::RegMethod RegA("Simulation","getCellImp");
-
-  std::vector<std::pair<int,int>> cellImp;
-
-  for(const auto& [cellNum,objPtr] : OList)
-    {
-      cellImp.push_back
-	(std::pair<int,int>(cellNum,(objPtr->getImp()>0 ? 1 : 0)));
-    }
-  return cellImp;
 }
 
 int
@@ -801,6 +780,45 @@ Simulation::applyTransforms()
     }
   return 0;
 }
+
+void
+Simulation::setImp(const int CellN,const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(V);
+  return;
+}
+
+void
+Simulation::setImp(const int CellN,const std::string& pName,
+		   const double V)
+  /*!
+    Helper function to set the importance of a cell 
+    \param CellN : Number of the Object to find
+    \param pName :: particleName
+    \param V :: value for importance
+  */
+{
+  ELog::RegMethod RegA("Simulation","setImp(particle)");
+  
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell number");
+
+  mp->second->setImp(pName,V);
+  return;
+}
+
 
 MonteCarlo::Object*
 Simulation::findObject(const int CellN)
@@ -1593,11 +1611,14 @@ Simulation::splitObject(const int CA,const int newCN,const int SN)
   if (AX.constructShannonDivision(-SN))
     {
       if (AX.isEmpty())
-	throw ColErr::EmptyContainer
-	  ("Cell Pair has empty cell:"+
-	   std::to_string(CA)+"/"+std::to_string(CB));
+	{
+	  throw ColErr::EmptyContainer
+	    ("Cell Pair has empty cell:"+
+	     std::to_string(CA)+"/"+std::to_string(CB));
+	}
       CPtr->procString(AX.writeMCNPX());
     }
+
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))

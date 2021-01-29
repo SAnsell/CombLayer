@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -100,11 +101,11 @@ Segment7::Segment7(const std::string& Key) :
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA"))
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
   /*!
     Constructor
     \param Key :: Name of construction key

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment1.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -91,18 +92,18 @@ Segment1::Segment1(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  cMagHB(new tdcSystem::CorrectorMag(keyName+"CMagHB")),
-  cMagVB(new tdcSystem::CorrectorMag(keyName+"CMagVB")),
+  cMagHB(new xraySystem::CorrectorMag(keyName+"CMagHB")),
+  cMagVB(new xraySystem::CorrectorMag(keyName+"CMagVB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  cMagHC(new tdcSystem::CorrectorMag(keyName+"CMagHC")),
-  cMagVC(new tdcSystem::CorrectorMag(keyName+"CMagVC")),
-  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA"))
+  cMagHC(new xraySystem::CorrectorMag(keyName+"CMagHC")),
+  cMagVC(new xraySystem::CorrectorMag(keyName+"CMagVC")),
+  pumpA(new xraySystem::IonPumpTube(keyName+"PumpA"))
   /*!
     Constructor
     \param Key :: Name of construction key

@@ -3,7 +3,7 @@
  
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -269,7 +269,6 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
 
-
   return;
 }
 
@@ -470,9 +469,8 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
   const std::string lensName=lensKey+"LensBox";
 
   MBoxGen.setCF<CF40>();
-  // ys/W/H/D/
-  
-  MBoxGen.generateBox(Control,lensName,0.0,20.0,12.5,8.0,48.0);
+  //W/H/D/L
+  MBoxGen.generateBox(Control,lensName,20.0,12.5,8.0,48.0);
   
 
   const size_t NPorts(6);
@@ -687,7 +685,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Heigh / depth  [need heigh = 0]
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
@@ -729,9 +727,9 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
-  // ystep/ width / heigh / depth / length
+  // width / heigh / depth / length
   MBoxGen.generateBox
-    (Control,monoKey+"MLMVessel",0.0,57.0,12.5,31.0,109.0);
+    (Control,monoKey+"MLMVessel",57.0,12.5,31.0,109.0);
 
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
 

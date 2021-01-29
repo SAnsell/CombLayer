@@ -3,7 +3,7 @@
 
  * File: Linac/Segment38.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ namespace tdcSystem
 Segment38::Segment38(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  ionPump(new tdcSystem::IonPumpTube(keyName+"IonPump")),
+  ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA"))
   /*!

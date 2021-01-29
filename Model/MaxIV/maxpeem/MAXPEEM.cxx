@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -85,7 +86,7 @@
 #include "R1FrontEnd.h"
 #include "maxpeemFrontEnd.h"
 #include "maxpeemOpticsHut.h"
-#include "maxpeemOpticsBeamline.h"
+#include "maxpeemOpticsLine.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 
@@ -101,7 +102,7 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsBeam(new maxpeemOpticsBeamline(newName+"OpticsBeam"))
+  opticsBeam(new maxpeemOpticsLine(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname

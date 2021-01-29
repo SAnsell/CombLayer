@@ -3,7 +3,7 @@
  
  * File:   tally/pointTally.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Plane.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
+#include "PDControl.h"
 #include "pointTally.h"
 
 namespace tallySystem
@@ -109,6 +110,10 @@ pointTally::operator=(const pointTally& A)
       secondDFlag=A.secondDFlag;
       secondDist=A.secondDist;
       mcnp6Out=A.mcnp6Out;
+      if (A.PDptr)
+	PDptr=std::make_unique<PDControl>(*A.PDptr);
+      else
+	PDptr.reset();
     }
   return *this;
 }
@@ -129,7 +134,20 @@ pointTally::~pointTally()
   */
 {}
 
+void
+pointTally::setPDControl(std::unique_ptr<PDControl> newPD)
+  /*!
+    Take ownership of the unique pointer
+    [required std::move() in the CALLING function
+    if not a tempory]
+    \param newPD :: New unique ptr
+   */
+{
+  PDptr=std::move(newPD);
+  return;
+}
 
+  
 void
 pointTally::setFUflag(const int flag)
   /*!
@@ -689,7 +707,11 @@ pointTally::write(std::ostream& OX) const
       cx<<Centre<<" "<<Radius;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
+  // write PD cards
+  if (PDptr)
+    PDptr->write(OX);
 
+  
   if (!fuCard.empty() || fuFlag)
     {
       cx.str("");

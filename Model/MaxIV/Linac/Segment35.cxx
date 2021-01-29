@@ -95,8 +95,8 @@ Segment35::Segment35(const std::string& Key) :
   bpm(new tdcSystem::ButtonBPM(keyName+"BPM")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   quadB(new tdcSystem::LQuadF(keyName+"QuadB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   mirrorChamber(new tdcSystem::CrossWayBlank(keyName+"MirrorChamber")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))

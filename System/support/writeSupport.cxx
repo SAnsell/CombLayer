@@ -205,7 +205,6 @@ writeFLUKAhead(const std::string& HeadUnit,
   return;
 }
 
-
 void
 writeMCNPX(const std::string& Line,std::ostream& OX)
 /*!

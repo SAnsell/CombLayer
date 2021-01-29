@@ -44,8 +44,8 @@ class Segment21 :
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #5 Yag screen unit
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< yag screen
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;          ///< #6 - horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;          ///< #6 - vertical corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;          ///< #6 - horizontal corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;          ///< #6 - vertical corrector magnet
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
 
   void buildObjects(Simulation&);

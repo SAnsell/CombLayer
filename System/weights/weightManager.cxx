@@ -51,6 +51,7 @@
 #include "Transform.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "WItem.h"

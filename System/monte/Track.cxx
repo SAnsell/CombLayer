@@ -50,6 +50,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Track.h"
 

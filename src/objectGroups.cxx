@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -891,11 +891,12 @@ objectGroups::writeRange(std::ostream& OX,
 }
   
 void
-objectGroups::write(const std::string& OFile) const
+objectGroups::write(const std::string& OFile,
+		    const bool fullFlag) const
   /*!
     Write out to a file 
     \param OFile :: output file
-  */
+    \param fullFlag :: write out all the info					  */
 {
   ELog::RegMethod RegA("objectGroups","write");
   if (!OFile.empty())
@@ -904,16 +905,28 @@ objectGroups::write(const std::string& OFile) const
       std::ofstream OX(OFile.c_str());
 
       boost::format FMT("%s%|40t|(%s)");
+      boost::format FMTVec("%|3t| %s %g %|40t|");
       MTYPE::const_iterator mc;
       for(mc=regionMap.begin();mc!=regionMap.end();mc++)
 	{
 	  const CTYPE::element_type* FPTR=
 	    getObject<CTYPE::element_type>(mc->first);
+
 	  const int flag=(FPTR) ? 1 : 0;
 	  OX<<(FMT % mc->first) % FStatus[flag];
+
 	  if (flag)
-	    OX<<" "<<FPTR->getCentre();
-	  OX<<" :: "<<mc->second<<std::endl;
+	    OX<<(FMTVec % "C: " % FPTR->getCentre());
+
+	  if (fullFlag && FPTR)
+	    OX<<(FMTVec % "X:" % FPTR->getX())
+	      <<(FMTVec % "Y:" % FPTR->getY())
+	      <<(FMTVec % "Z:" % FPTR->getZ());
+
+
+	  OX<<" :: "<<mc->second;
+	  
+	  OX<<std::endl;
 	}
     }
   return;

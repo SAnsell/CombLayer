@@ -101,8 +101,7 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   flangeBWidth(A.flangeBWidth),flangeBLength(A.flangeBLength),
   activeWindow(A.activeWindow),windowFront(A.windowFront),
   windowBack(A.windowBack),voidMat(A.voidMat),
-  feMat(A.feMat),claddingMat(A.claddingMat),flangeMat(A.flangeMat),
-  nDivision(A.nDivision)
+  feMat(A.feMat),claddingMat(A.claddingMat),flangeMat(A.flangeMat)
   /*!
     Copy constructor
     \param A :: VacuumPipe to copy
@@ -152,7 +151,6 @@ VacuumPipe::operator=(const VacuumPipe& A)
       feMat=A.feMat;
       claddingMat=A.claddingMat;
       flangeMat=A.flangeMat;
-      nDivision=A.nDivision;
     }
   return *this;
 }
@@ -246,7 +244,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
   if (activeWindow & 1)
     {
       if (windowFront.radius<Geometry::zeroTol &&
-	  (windowFront.width<Geometry::zeroTol || windowFront.height<Geometry::zeroTol))
+	  (windowFront.width<Geometry::zeroTol ||
+	   windowFront.height<Geometry::zeroTol))
 	throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
 				     "windowFront:Radius or Height/Width");
 
@@ -265,7 +264,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
       if (windowBack.radius>Geometry::zeroTol &&
 	  windowBack.radius+Geometry::zeroTol>flangeBRadius)
 	throw ColErr::SizeError<double>
-	  (windowBack.radius,flangeBRadius,"Pipe:["+keyName+"] windowBack.Radius/flangeBRadius");
+	  (windowBack.radius,flangeBRadius,
+	   "Pipe:["+keyName+"] windowBack.Radius/flangeBRadius");
     }
 
 
@@ -274,7 +274,6 @@ VacuumPipe::populate(const FuncDataBase& Control)
   claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
   flangeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeMat",feMat);
 
-  nDivision=Control.EvalDefVar<size_t>(keyName+"NDivision",0);
   return;
 }
 
@@ -580,34 +579,6 @@ VacuumPipe::createObjects(Simulation& System)
 
 
 void
-VacuumPipe::createDivision(Simulation& System)
-  /*!
-    Divide the vacuum pipe into sections if needed
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("VacuumPipe","createDivision");
-  if (nDivision>1)
-    {
-      ModelSupport::surfDivide DA;
-      DA.setBasicSplit(nDivision,feMat);
-
-      DA.init();
-      DA.setCellN(getCell("MainSteel"));
-      DA.setOutNum(cellIndex,buildIndex+1000);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+101),
-				   SMap.realSurf(buildIndex+102));
-
-      DA.activeDivide(System);
-      cellIndex=DA.getCellNum();
-      removeCell("MainSteel");
-      addCells("MainSteel",DA.getCells());
-    }
-
-  return;
-}
-
-void
 VacuumPipe::createLinks()
   /*!
     Determines the link point on the outgoing plane.
@@ -739,7 +710,6 @@ VacuumPipe::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
-  createDivision(System);
   insertObjects(System);
 
   return;

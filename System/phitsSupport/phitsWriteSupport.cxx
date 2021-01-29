@@ -29,6 +29,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <map>
 #include <algorithm>
 #include <functional>
 
@@ -139,7 +140,6 @@ writePHITS(std::ostream& OX,const size_t depth,
   \param value :: value
 */
 {
-  constexpr size_t equalPt(20);     // distance to name
   writePHITSOpen(OX,depth,unit);
   OX<<"Vec3D("<<value<<")";
   if (!comment.empty()) OX<<"# "<<comment;
@@ -147,6 +147,70 @@ writePHITS(std::ostream& OX,const size_t depth,
   return;
 }
 
+void
+writePHITSCellSet(std::ostream& OX,
+		    const size_t depth,
+		    const std::map<int,double>& cellValues)
+/*!
+  \param OX :: ostream to write to
+  \param depth :: step depth
+  \param unit :: unit name
+  \param cellValues :: 
+ */
+{
+  // ugly double loop
+
+  if (cellValues.empty()) return;
+  std::map<int,double>::const_iterator mc=
+    cellValues.begin();
+
+  int AI(mc->first);
+  int BI(mc->first);
+  double AVal(mc->second);
+
+
+  std::ostringstream cx;
+  for( ;mc!=cellValues.end();mc++)
+    {
+      const int& iVal=mc->first;
+      const double& cVal=mc->second;
+
+      // failed [need new point
+      if (std::abs(AVal-cVal)>1e-6)
+	{
+
+	  if (BI == AI )  // single point
+	      StrFunc::writePHITSItems(OX,depth,AI,AVal);
+	  else
+	    {
+	      cx.str("");
+	      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
+	      StrFunc::writePHITSOpen(OX,depth,cx.str());
+	    }
+	  AI=iVal;
+	  BI=iVal;
+	  AVal=cVal;
+	}
+      else
+	{
+	  BI=iVal;
+	}
+    }
+
+  // UGLY Tail part:
+  if (BI == AI)  // single point
+    StrFunc::writePHITSItems(OX,depth,AI,AVal);
+  else 
+    {
+      cx.str("");
+      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
+      StrFunc::writePHITSOpen(OX,depth,cx.str());
+    }
+  return;
+}
+
+
+  
 void
 writePHITSOpen(std::ostream& OX,
 	       const size_t depth,

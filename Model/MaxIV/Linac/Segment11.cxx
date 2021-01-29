@@ -94,7 +94,7 @@ Segment11::Segment11(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA"))
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA"))
   /*!
     Constructor
     \param Key :: Name of construction key

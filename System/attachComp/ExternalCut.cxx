@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExtractCut.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -365,7 +365,7 @@ ExternalCut::getRule(const std::string& extName) const
   /*!
     Accessor to main rule
     \param extName :: external-cut name
-    \return frontRule with divider
+    \return frontRule without divider
   */
 {
   ELog::RegMethod RegA("ExternalCut","getRule");
@@ -373,6 +373,18 @@ ExternalCut::getRule(const std::string& extName) const
   
   const cutUnit* CU=findUnit(extName);
   return (CU) ? CU->main :  nullOut;    
+}
+
+HeadRule
+ExternalCut::getComplementRule(const std::string& extName) const
+  /*!
+    Accessor to main rule
+    \param extName :: external-cut name
+    \return frontRule without divider (in complement form)
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","getComplementRule");
+  return getRule(extName).complement();
 }
 
 const HeadRule&
@@ -388,6 +400,23 @@ ExternalCut::getDivider(const std::string& extName) const
   
   const cutUnit* CU=findUnit(extName);
   return (CU) ? CU->divider :  nullOut;    
+}
+
+HeadRule
+ExternalCut::getValidRule(const std::string& extName,
+			  const Geometry::Vec3D& Pt) const
+  /*!
+    Accessor to main rule
+    \param extName :: external-cut name
+    \param Pt :: point to test
+    \return frontRule on a valid direction to pt
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","getValidRule");
+  static HeadRule nullOut;
+  
+  const cutUnit* CU=findUnit(extName);
+  return (CU) ? CU->main.makeValid(Pt) :  nullOut;    
 }
 
 void

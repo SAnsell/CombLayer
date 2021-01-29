@@ -39,23 +39,14 @@ namespace shutterSystem
 
 class BulkInsert :
   public attachSystem::FixedGroup,
-  public attachSystem::ContainedGroup
+  public attachSystem::ContainedGroup,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  protected:
 
   const std::string baseName;         ///< Base name
   const size_t shutterNumber;         ///< number of the shutter
-
-  int populated;                      ///< populated / not
-
-  int divideSurf;                     ///< Divider Number
-  Geometry::Plane* DPlane;            ///< Divided plane [if set]
-
-  double xyAngle;                     ///< Angle of beamline
-  double innerRadius;                 ///< Inner radius
-  double midRadius;                   ///< Mid radius
-  double outerRadius;                 ///< Outer radius
-
 
   double zOffset;                     ///< Vertical offset
   double innerHeight;                 ///< Total height 
@@ -71,9 +62,6 @@ class BulkInsert :
   // Cells:
   int innerCell;                ///< Inner Steel section [BulkShield]
   int outerCell;                ///< Outer Steel section [BulkShield]
-
-  int innerVoid;                ///< Inner void section [Created]
-  int outerVoid;                ///< Outer void section [Created]
   
   std::string innerInclude;     ///< Include for the inner layer
   std::string outerInclude;     ///< Include for the outer layer
@@ -84,7 +72,6 @@ class BulkInsert :
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
-  std::string divideStr() const;
 
   void createUnitVector(const FixedComp&,const long int);
   void createLinks();
@@ -103,12 +90,7 @@ class BulkInsert :
   void setLayers(const int A,const int B)
     { innerCell=A;outerCell=B; }
   void setExternal(const int,const int,const int);
-  void setGlobalVariables(const double,const double,const double);
 
-  /// Get innerVoid cell
-  int getInnerVoid() const { return innerVoid; }  
-  /// Get outerVoid cell
-  int getOuterVoid() const { return outerVoid; }  
   /// Accessor to include
   const std::string& getInnerInc() const { return innerInclude; }
   /// Accessor to include

@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -172,6 +173,12 @@ createVTK(const mainSystem::inputParam& IParam,
 	IParam.getDefValue<std::string>("","vtkType",0);
       if (vType=="cell" || vType=="Cell")
 	VTK.setType(Visit::VISITenum::cellID);
+      else if (vType=="imp" || vType=="IMP")
+	VTK.setType(Visit::VISITenum::imp);
+      else if (vType=="dens" || vType=="density")
+	VTK.setType(Visit::VISITenum::density);
+      else if (vType=="weight" || vType=="wwg")
+	VTK.setType(Visit::VISITenum::weight);
       else if (vType.empty())
 	VTK.setType(Visit::VISITenum::material);
       else 

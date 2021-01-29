@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
+#include "BremBlock.h"
 #include "Scrapper.h"
 #include "FlatPipe.h"
 #include "TriPipe.h"
@@ -122,7 +123,11 @@
 #include "portItem.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
+#include "IonGauge.h"
+#include "TriggerTube.h"
 #include "LBeamStop.h"
+#include "BremTube.h"
+#include "HPJaws.h"
 
 #include "makeSingleItem.h"
 
@@ -164,12 +169,13 @@ makeSingleItem::build(Simulation& System,
       "DipoleChamber","DipoleExtract","DipoleSndBend",
       "EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
-      "GaugeTube","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
+      "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
       "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-      "IonPTube","LBeamStop","MagTube",
+      "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
+      "BremTube","HPJaws","HPCombine",
       "Help","help"
     });
 
@@ -348,8 +354,8 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	VC(new constructSystem::VacuumPipe("CorrectorMagPipe"));
-      std::shared_ptr<tdcSystem::CorrectorMag>
-	CM(new tdcSystem::CorrectorMag("CM"));
+      std::shared_ptr<xraySystem::CorrectorMag>
+	CM(new xraySystem::CorrectorMag("CM"));
 
       OR.addObject(VC);
       OR.addObject(CM);
@@ -696,8 +702,8 @@ makeSingleItem::build(Simulation& System,
     }
   if (item=="CrossWay")
     {
-      std::shared_ptr<tdcSystem::CrossWayTube>
-	SP(new tdcSystem::CrossWayTube("CrossWay"));
+      std::shared_ptr<xraySystem::CrossWayTube>
+	SP(new xraySystem::CrossWayTube("CrossWay"));
 
       OR.addObject(SP);
 
@@ -720,8 +726,8 @@ makeSingleItem::build(Simulation& System,
     }
   if (item=="GaugeTube")
     {
-      std::shared_ptr<tdcSystem::GaugeTube>
-	SP(new tdcSystem::GaugeTube("GaugeTube"));
+      std::shared_ptr<xraySystem::GaugeTube>
+	SP(new xraySystem::GaugeTube("GaugeTube"));
 
       OR.addObject(SP);
 
@@ -730,10 +736,46 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item=="BremBlock")
+    {
+      std::shared_ptr<xraySystem::BremBlock>
+	BB(new xraySystem::BremBlock("BremBlock"));
+
+      OR.addObject(BB);
+
+      BB->addInsertCell(voidCell);
+      BB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
   if (item=="IonPTube")
     {
-      std::shared_ptr<tdcSystem::IonPumpTube>
-	SP(new tdcSystem::IonPumpTube("IonPTube"));
+      std::shared_ptr<xraySystem::IonPumpTube>
+	SP(new xraySystem::IonPumpTube("IonPTube"));
+
+      OR.addObject(SP);
+
+      SP->addInsertCell(voidCell);
+      SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="IonGauge")
+    {
+      std::shared_ptr<xraySystem::IonGauge>
+	IG(new xraySystem::IonGauge("IonGauge"));
+
+      OR.addObject(IG);
+
+      IG->addInsertCell(voidCell);
+      IG->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="TriggerTube")
+    {
+      std::shared_ptr<xraySystem::TriggerTube>
+	SP(new xraySystem::TriggerTube("TriggerTube"));
 
       OR.addObject(SP);
 
@@ -944,6 +986,50 @@ makeSingleItem::build(Simulation& System,
 	
 	buttonBPM->addInsertCell(voidCell);
 	buttonBPM->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "BremTube" )
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	
+	OR.addObject(bremTube);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPJaws" )
+      {
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(hp);
+	
+	hp->addInsertCell(voidCell);
+	hp->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPCombine" )
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(bremTube);
+	OR.addObject(hp);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	hp->addInsertCell(voidCell);
+	hp->setFront(*bremTube,2);
+	hp->setFlangeJoin();
+	hp->createAll(System,*bremTube,"back");
 	
 	return;
       }

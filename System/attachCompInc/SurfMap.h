@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
 
 class Simulation;
 class HeadRule;
+
+namespace ModelSupport
+{
+  class surfRegister;
+}
 
 namespace attachSystem
 {
@@ -102,6 +107,13 @@ class SurfMap : public BaseMap
   std::string getSurfString(const std::string&) const;
   std::string getSurfComplement(const std::string&) const;
 
+
+  void makePlane(const std::string&,ModelSupport::surfRegister&,
+		 const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void makeCylinder(const std::string&,ModelSupport::surfRegister&,
+		    const int,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,const double);
+  
   void createLink(const std::string&,attachSystem::FixedComp&,
 		  const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&) const;

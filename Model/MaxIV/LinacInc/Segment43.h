@@ -43,7 +43,7 @@ class Segment43 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;   // #3
   std::shared_ptr<xraySystem::CylGateValve> gate;    // #4
   std::shared_ptr<constructSystem::VacuumPipe> pipe; // #5
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;    // #6
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;    // #6
   std::shared_ptr<tdcSystem::ButtonBPM> bpmB;        // #7
   std::shared_ptr<constructSystem::Bellows> bellowB; // #1
 

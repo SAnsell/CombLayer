@@ -51,6 +51,7 @@
 #include "Rules.h"
 #include "RuleBinary.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "surfIndex.h"
 #include "mapIterator.h"

@@ -3,7 +3,7 @@
  
  * File:   include/SimMCNP.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ class SimMCNP : public Simulation
   void writeTally(std::ostream&) const;
   void writeSource(std::ostream&) const;
   void writePhysics(std::ostream&) const;
+  void writeImportance(std::ostream&) const;
 
 
   // The Cinder Write stuff

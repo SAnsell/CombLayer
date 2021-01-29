@@ -3,7 +3,7 @@
 
  * File:   Linac/YagUnitBig.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -366,7 +366,7 @@ YagUnitBig::createAll(Simulation& System,
   ELog::RegMethod RegA("YagUnitBig","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,2.0*frontLength);
+  createCentredUnitVector(FC,sideIndex,frontLength);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
 #include "Source.h"
@@ -551,6 +552,38 @@ SimFLUKA::writeWeights(std::ostream& OX) const
   return;
 }
 
+void
+SimFLUKA::prepareImportance()
+  /*!
+    This needs to set a BIAS card for the appropaiate particles
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","prepareImportance");
+
+  
+  const double minFlukaImportance(1e-5);
+  bool flag;
+  double Imp;
+  std::vector<std::pair<int,double>> ImpVec;
+  ImpVec.push_back(std::pair<int,double>(1,0.0));
+
+  for(const int CN : cellOutOrder)
+    {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpVec.push_back(std::pair<int,double>(CN,Imp));
+    }
+
+  for(const auto& [CN,V] : ImpVec)
+    {
+      if (std::abs(V-1.0)>Geometry::zeroTol &&
+	  std::abs(V) > minFlukaImportance)         // min for FLUKA
+	
+	PhysPtr->setTHR("bias",CN,"3.0",std::to_string(V),"3.0");
+    }	  
+  return;
+}
 
 void
 SimFLUKA::writePhysics(std::ostream& OX) const
@@ -713,6 +746,7 @@ SimFLUKA::prepareWrite()
   std::set<int> matActive=getActiveMaterial();
   matActive.erase(0);
   PhysPtr->setMatNumbers(matActive);
+  prepareImportance();
 
   return;
 }

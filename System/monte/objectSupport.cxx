@@ -60,6 +60,7 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "Importance.h"
 #include "Object.h"
 #include "inputParam.h"
 #include "objectSupport.h" 

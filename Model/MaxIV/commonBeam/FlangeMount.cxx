@@ -3,7 +3,7 @@
 
  * File:   commonBeam/FlangeMount.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -220,7 +221,6 @@ FlangeMount::calcThreadLength()
   return;
 }
 
-
 void
 FlangeMount::createSurfaces()
   /*!
@@ -281,54 +281,49 @@ FlangeMount::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FlangeMount","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string frontComp=frontComplement();
+  const HeadRule frontHR=getFrontRule();   // mount point on plate
+  const HeadRule frontCompHR=frontHR.complement();
   // Flange
   if (plateThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
-      makeCell("Plate",System,cellIndex++,plateMat,0.0,Out+frontStr);
-      addOuterSurf("Flange",Out+frontStr);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," -2 -7 ");
+      makeCell("Plate",System,cellIndex++,plateMat,0.0,HR*frontHR);
+      addOuterSurf("Flange",HR*frontHR);
     }
 
   // Thread
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");
+  HeadRule threadHR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -105 ");
 
   if (threadRadius*2>bladeThick)
-    Out += ModelSupport::getComposite(SMap,buildIndex," 101 -102 ");
-  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out+frontComp);
+    threadHR *= ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 ");
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,threadHR*frontCompHR);
 
   // blade
   if (bladeActive)
     {
-      // void around thread
-      Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 -105 17 ");
-      makeCell("VoidThread",System,cellIndex++,0,0.0,Out+frontComp);
-
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-
       if (holeActive)
 	{
-	  const std::string hole=ModelSupport::getComposite
+	  const HeadRule hole=ModelSupport::getHeadRule
 	    (SMap,buildIndex," 101 -102 203 -204 205 -206 ");
 	  makeCell("Hole",System,cellIndex++,0,0.0,hole);
 
-	  Out += ModelSupport::getComposite
+	  HR *= ModelSupport::getHeadRule
 	    (SMap,buildIndex," (-203:204:-205:206) ");
 	}
-      makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+      makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 101 -102 -17 -105 ");
-      addOuterSurf("Body",Out+frontComp);
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,"101 -102 103 -104 105 -106");
     }
-  else
-    {
-      addOuterSurf("Body",Out+frontComp);
-    }
+
+  HR+=threadHR;
+  HR*=frontCompHR;
+
+  addOuterSurf("Body",HR);
 
   return;
 }

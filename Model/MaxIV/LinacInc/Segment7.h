@@ -31,10 +31,14 @@ namespace constructSystem
   class PipeTube;
 }
 
+namespace xraySystem
+{
+  class CorrectorMag;
+}
+
 namespace tdcSystem
 {
   class LQuadF;
-  class CorrectorMag;
   class StriplineBPM;
 
   /*!
@@ -54,7 +58,7 @@ class Segment7 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
 
   /// horizontal corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;   
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;   
   /// first quad
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
   /// bpm
@@ -64,7 +68,7 @@ class Segment7 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
 
   /// vertical corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   
   
   void buildObjects(Simulation&);
   void createLinks();

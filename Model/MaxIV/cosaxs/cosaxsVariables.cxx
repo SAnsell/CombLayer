@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,7 +323,7 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setBPortOffset(2.5,0.0);
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,preName+"MonoBox",77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(preName+"MonoXtalYAngle",90.0);
@@ -386,7 +386,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
 
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-		      0.0,53.1,23.6,29.5,124.0);
+		      53.1,23.6,29.5,124.0);
 
 
   // length thick width
@@ -420,6 +420,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
+  const double outerRadius(8.0);
   PTubeGen.setPipe(7.5,0.5);
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
@@ -439,26 +440,26 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   const Geometry::Vec3D PPos(0.0,DLength/4.0,0);
 
   PItemGen.setOuterVoid(1);
-  PItemGen.setCF<setVariable::CF40>(2.0);
+  PItemGen.setCF<setVariable::CF40>(outerRadius+2.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-  PItemGen.setCF<setVariable::CF63>(4.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+4.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,ZVec);
   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
   // view port
-  PItemGen.setCF<setVariable::CF63>(8.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+8.0);
   PItemGen.generatePort(Control,portName+"3",
 			Geometry::Vec3D(0,DLength/4.5,0),
 			Geometry::Vec3D(-1,-1,0));
 
     //  flange for diamond filter view
-  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.setCF<setVariable::CF40>(outerRadius+4.0);
   PItemGen.generatePort(Control,portName+"4",
 			Geometry::Vec3D(0,0.3*DLength,0),XVec);
   PItemGen.generatePort(Control,portName+"5",
 			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
 
   // ion pump port
-  PItemGen.setCF<setVariable::CF100>(7.5);
+  PItemGen.setCF<setVariable::CF100>(outerRadius+7.5);
   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
 
   return;
@@ -483,6 +484,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
+  const double outerRadius(8.0);
   PTubeGen.setPipe(7.5,0.5);
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
@@ -497,26 +499,26 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   const Geometry::Vec3D PPos(0.0,DLength/6.0,0);
 
   PItemGen.setOuterVoid(1);  // create boundary round flange
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
   PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
   // view port
-  PItemGen.setCF<setVariable::CF63>(8.0);
+  PItemGen.setCF<setVariable::CF63>(outerRadius+8.0);
   PItemGen.generatePort(Control,portName+"3",
 			Geometry::Vec3D(0,DLength/5.0,0),
 			Geometry::Vec3D(-1,-1,0));
 
     //  flange for diamond filter view
-  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.setCF<setVariable::CF40>(outerRadius+4.0);
   PItemGen.generatePort(Control,portName+"4",
 			Geometry::Vec3D(0,0.3*DLength,0),XVec);
   PItemGen.generatePort(Control,portName+"5",
 			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
 
   // ion pump port
-  PItemGen.setCF<setVariable::CF100>(7.5);
+  PItemGen.setCF<setVariable::CF100>(outerRadius+7.5);
   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
 
   JawFlangeGenerator JFlanGen;
@@ -584,29 +586,30 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
   PTubeGen.setMat("Stainless304");
+  const double mainRadius(8.0);
   PTubeGen.setPipe(7.5,0.5);
   PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setPortLength(-6.0,-5.0);
   // ystep/radius length
-  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.0);
+  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.2);
   Control.addVariable(preName+"FilterBoxANPorts",4);
   
-  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.setCF<setVariable::CF40>(mainRadius+4.0);
   // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
-  Geometry::Vec3D PPos(0,3.5,0);
+  Geometry::Vec3D PPos(0,3.55,0);
   const Geometry::Vec3D XVec(-1,0,0);
   const std::string portName=preName+"FilterBoxAPort";
   PItemGen.generatePort(Control,portName+"0",PPos,XVec);
   PItemGen.generatePort(Control,portName+"1",-PPos,XVec);
 
   // ion pump port
-  PItemGen.setCF<setVariable::CF100>(7.5);
+  PItemGen.setCF<setVariable::CF100>(mainRadius+7.5);
   PItemGen.generatePort(Control,portName+"2",
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,-1));
   // Main flange for diamond filter
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(mainRadius+5.0);
   PItemGen.generatePort(Control,portName+"3",
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,1));
@@ -627,7 +630,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.setBFlangeCF<CF63>();
   SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
   Control.addVariable(preName+"ScreenPipeANPorts",1);
-  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+4.0);
   PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
 
@@ -635,7 +638,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
   Control.addVariable(preName+"ScreenPipeBNPorts",2);
-  PItemGen.setCF<setVariable::CF63>(4.0);
+  PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+4.0);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,preName+"ScreenPipeBPort0",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
@@ -658,7 +661,7 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,preName+"PrimeJawBox",
-		      0.0,30.0,15.0,15.0,53.15);
+		      30.0,15.0,15.0,53.15);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -785,7 +788,7 @@ exptVariables(FuncDataBase& Control,
 
   // arguments: ystep/width/height/depth/length
   VBoxGen.generateBox(Control,duName,
-		      0.0,22.0,8.5,8.5,43.0); // measured
+		      22.0,8.5,8.5,43.0); // measured
 
   Control.addVariable(duName+"FilterHolder1YStep",8.2);
   Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured
@@ -892,13 +895,14 @@ exptVariables(FuncDataBase& Control,
   const Geometry::Vec3D PZ(0,0,1);
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
+  const double outerRadius(50.2+0.6);
   SimpleTubeGen.setPipe(50.2,0.6,57.8,4.3);  // Rad,thick,Flange (Rad,len)
 
   std::string segName=tubeName+"Segment1";
   SimpleTubeGen.generateTube(Control,segName,0.0,167.2);  
   Control.addVariable(segName+"NPorts",1);
 
-  PItemGen.setCF<setVariable::CF350>(7.0);
+  PItemGen.setCF<setVariable::CF350>(outerRadius+7.0);
   PItemGen.setPlate(CF350::flangeLength,"Stainless304");
   PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,segName+"Port0",C1,PX);

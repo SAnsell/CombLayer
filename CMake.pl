@@ -21,11 +21,11 @@ my @masterProg=getAllMain();
 
 
 ## Model Directory
-##my @modelLibDir=qw( bibBuild bnctBuild build chip
+##my @modelLibDir=qw( bibBuild build 
 ##                    cuBlock d4cModel delft epbBuild essBuild
 ##                    gammaBuild lensModel moderator
 ##                    muon pipeBuild photon sinbadBuild snsBuild t1Build
-##                    zoom );
+##                     );
 
 ##my @modelNames= @modelLibDir;
 
@@ -35,16 +35,17 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
                scatMatInc specialInc transportInc testInclude );
 
 
-my @mainLib=qw( visit src simMC  construct physics input process
+my @mainLib=qw( visit src simMC  construct 
+    physics input generalProcess objectMod
     transport scatMat endf crystal source monte funcBase log monte
     flukaProcess flukaPhysics flukaTally
     phitsProcess phitsTally phitsSupport 
     tally geometry mersenne src world work
     xml poly support weights
-    insertUnit md5 construct
+    insertUnit md5 construct modelSupport
     global constructVar physics simMC
     transport attachComp visit poly 
-    magnetic phitsPhysics
+    magnetic phitsPhysics mcnpProcess
     scatMat endf crystal );
 
 my $gM=new CMakeList;
@@ -106,7 +107,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("maxiv", [@maxiv,
 				  qw(balder cosaxs danmax R3Common 
 				  flexpes formax maxpeem  micromax
-				  softimax
+				  softimax  
 				  commonGenerator commonBeam Linac
 				  R3Common R1Common species)]);
       }
@@ -127,7 +128,7 @@ foreach my $mainProg (@masterProg)
     
     elsif ($mainProg eq "fullBuild")
       {
-	my @fullBuild = qw( moderator build chip  build ralBuild zoom  );
+	my @fullBuild = qw( moderator t2Build ralBuild );
 	push(@fullBuild,@mainLib);
 	$gM->addDepUnit("fullBuild", [@fullBuild]),
       }
@@ -186,7 +187,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
 			 qw( commonVar commonGenerator R1Common R3Common 
-			     commonBeam  Linac )]);
+			     commonBeam Linac )]);
       }
     
     

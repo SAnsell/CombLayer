@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedRotate.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ FixedRotate::FixedRotate(const std::string& KN,const size_t NL) :
   FixedComp(KN,NL),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
-  xAngle(0.0),yAngle(0.0),zAngle(0.0)
+  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
  /*!
     Constructor 
     \param KN :: KeyName
@@ -79,7 +79,7 @@ FixedRotate::FixedRotate(const size_t NL,const std::string& KN) :
   FixedComp(NL,KN),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
-  xAngle(0.0),yAngle(0.0),zAngle(0.0)
+  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
  /*!
     Constructor 
     \param KN :: KeyName
@@ -102,7 +102,7 @@ FixedRotate::FixedRotate(const std::string& KN,const size_t NL,
   FixedComp(KN,NL,resSize),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
-  xAngle(0.0),yAngle(0.0),zAngle(0.0)
+  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
  /*!
     Constructor 
     \param KN :: KeyName
@@ -116,7 +116,8 @@ FixedRotate::FixedRotate(const FixedRotate& A) :
   preXAngle(A.preXAngle),preYAngle(A.preYAngle),
   preZAngle(A.preZAngle),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle)
+  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
+  flipX(A.flipX)
   /*!
     Copy constructor
     \param A :: FixedRotate to copy
@@ -143,6 +144,7 @@ FixedRotate::operator=(const FixedRotate& A)
       xAngle=A.xAngle;
       yAngle=A.yAngle;
       zAngle=A.zAngle;
+      flipX=A.flipX;
     }
   return *this;
 }
@@ -181,6 +183,8 @@ FixedRotate::populate(const FuncDataBase& Control)
   yAngle=Control.EvalDefVar<double>(keyName+"YAngle",yAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
 
+  flipX=Control.EvalDefVar<int>(keyName+"FlipX",flipX);
+
   return;
   
 }
@@ -206,6 +210,7 @@ FixedRotate::populate(const std::map<std::string,
   mainSystem::findInput(inputMap,"xStep",0,xStep);
   mainSystem::findInput(inputMap,"yStep",0,yStep);
   mainSystem::findInput(inputMap,"zStep",0,zStep);
+  mainSystem::findInput(inputMap,"flipX",0,flipX);
 
   return;
 }
@@ -240,6 +245,8 @@ FixedRotate::populate(const std::string& baseName,
   xAngle=Control.EvalDefTail<double>(keyName,baseName,"XAngle",xAngle);
   yAngle=Control.EvalDefTail<double>(keyName,baseName,"YAngle",yAngle);
   zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
+
+  flipX=Control.EvalDefTail<double>(keyName,baseName,"FlipX",flipX);
   return;
   
 }
@@ -362,7 +369,7 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
     
-  Origin+=Y*(length/2.0);
+  Origin+=Y*length;
   return;
 }
   
@@ -400,6 +407,7 @@ FixedRotate::applyOffset()
   FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);
   FixedComp::reOrientate();      // this might still be active
 
+  if (flipX) FixedComp::reverseX();
   return;
 }
 

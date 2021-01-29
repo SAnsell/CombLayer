@@ -48,6 +48,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -263,12 +264,7 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   BPoint.setRotation(beamX,beamY,beamZ);
   BPoint.createUnitVector(BeamOrg,BeamAxis,Z);
   FixedComp::setConnect(6,BPoint.getLinkPt(0),
-			    BPoint.getLinkAxis(0));
-
-  // ELog::EM<<"Link["<<keyName<<"] = "<<this->getLinkPt(1)
-  // 	  <<" Dir = "<<this->getLinkAxis(-1)<<ELog::endDiag;
-  // ELog::EM<<"Beam["<<keyName<<"] = "<<this->getLinkPt(7)
-  // 	  <<" Dir = "<<this->getLinkAxis(7)<<ELog::endDiag;
+			BPoint.getLinkAxis(0));
 
   return;
   

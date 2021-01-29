@@ -51,6 +51,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -177,6 +178,8 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
       return ObjPtr->getMatID();
     case VISITenum::density:
       return ObjPtr->getDensity();
+    case VISITenum::imp:
+      return ObjPtr->getImp("neutron");
     case VISITenum::weight:
       return 0.0;
     }
@@ -345,7 +348,7 @@ Visit::populatePoint(const Simulation& System,
 	      aVec[2]=stepXYZ[2]*(0.5+static_cast<double>(k));
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=System.findCell(Pt,ObjPtr);
-
+	      
 	      // Active Set Code:
 	      if (!aEmptyFlag)
 		{
@@ -407,7 +410,7 @@ Visit::writeVTK(const std::string& FName) const
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
   
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
-  OX<<"chipIR Data"<<std::endl;
+  OX<<"Geometry Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
@@ -459,7 +462,7 @@ Visit::writeIntegerVTK(const std::string& FName) const
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
   
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
-  OX<<"chipIR Data"<<std::endl;
+  OX<<"Geometry Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;

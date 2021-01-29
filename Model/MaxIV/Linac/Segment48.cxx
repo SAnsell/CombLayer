@@ -42,6 +42,7 @@
 #include "LinkUnit.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Importance.h"
 #include "Object.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -97,7 +98,7 @@ Segment48::Segment48(const std::string& Key) :
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit1")
     }),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
-  mirrorChamberA(new tdcSystem::CrossWayTube(keyName+"MirrorChamberA")),
+  mirrorChamberA(new xraySystem::CrossWayTube(keyName+"MirrorChamberA")),
   bellowC(new constructSystem::Bellows(keyName+"BellowC"))
   /*!
     Constructor

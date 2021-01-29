@@ -92,7 +92,7 @@ Segment43::Segment43(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   gate(new xraySystem::CylGateValve(keyName+"Gate")),
   pipe(new constructSystem::VacuumPipe(keyName+"Pipe")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   bpmB(new tdcSystem::ButtonBPM(keyName+"BPMB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
   /*!

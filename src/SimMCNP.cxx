@@ -3,7 +3,7 @@
  
  * File:   src/SimMCNP.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "particleConv.h"
 #include "version.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -63,6 +64,7 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "NGroup.h"
 #include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
@@ -88,6 +90,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "WForm.h"
 #include "weightManager.h"
@@ -638,6 +641,79 @@ SimMCNP::writePhysics(std::ostream& OX) const
 }
 
 
+void
+SimMCNP::writeImportance(std::ostream& OX) const
+  /*!
+    Write all the importances / voluems
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimMCNP","writeImportance");
+
+  const particleConv& pConv=particleConv::Instance();
+  
+  std::ostringstream cx;
+  cx<<"vol 1.0 "<<cellOutOrder.size()-1<<"r";
+  StrFunc::writeMCNPX(cx.str(),OX);  
+
+  // make set of particle:
+  std::set<int> pList;
+  const std::vector<std::string>& pVec=
+    PhysPtr->getMode().getParticles();
+  for(const std::string& P : pVec)
+    pList.emplace(pConv.mcplITYP(P));
+		  
+  
+  std::map<int,std::vector<int>> ImpMap;
+  ImpMap.emplace(0,std::vector<int>());
+    
+  RangeUnit::NGroup<int> IRange;
+  bool flag;
+  double Imp;
+  for(const int CN : cellOutOrder)
+    {
+      const MonteCarlo::Object* OPtr=findObject(CN);
+      // flag indicates particles :
+      std::tie(flag,Imp)=OPtr->getImpPair();  // returns 0 as well
+      ImpMap[0].push_back(Imp);
+      if (!flag)
+	{
+	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
+	  std::map<int,std::vector<int>>::iterator mc;
+	  for(const int P : PSet)
+	    {
+	      const double ImpVal=OPtr->getImp(P);
+	      mc=ImpMap.find(P);
+	      if (mc==ImpMap.end())
+		{
+		  pList.erase(P);
+		  ImpMap.emplace(P,ImpMap[0]);   // copy existing list in
+		}
+	      ImpMap[P].push_back(static_cast<int>(ImpVal));
+	    }
+	}
+
+    }
+  cx.str("");
+  cx<<"imp:"<<pConv.mcnpParticleList(pList);
+  IRange.condense(1e-6,ImpMap[0]);
+
+  cx<<IRange;
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  for(const auto& [ PN , IVec] : ImpMap)
+    if (PN)
+      {
+	cx.str("");
+	cx<<"imp:"<<pConv.mcplToMCNP(PN)<<" ";
+	IRange.condense(1e-6,ImpMap[0]);
+	cx<<IRange;
+	StrFunc::writeMCNPX(cx.str(),OX);    
+      }	  
+  return;
+}
+
+
 void 
 SimMCNP::writeCinder() const
   /*!
@@ -696,6 +772,7 @@ SimMCNP::write(const std::string& Fname) const
   writeWeights(OX);
   writeTally(OX);
   writeSource(OX);
+  writeImportance(OX);
   writePhysics(OX);
   OX.close();
   return;

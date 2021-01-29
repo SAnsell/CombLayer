@@ -51,6 +51,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "BnId.h"
 #include "AttachSupport.h"

@@ -37,7 +37,7 @@ class phitsPhysics
 {
  private:
 
-  /// CUT Energy for particles
+  /// fortran open files [to e done] 
   std::map<size_t,std::string> files;  
 
   /// CUT Energy for particles

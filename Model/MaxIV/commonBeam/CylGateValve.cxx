@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CylGateValve.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell 
+ * Copyright (c) 2004-2021 by Stuart Ansell 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -346,7 +347,7 @@ CylGateValve::createAll(Simulation& System,
 
   populate(System.getDataBase());
   const double offset(radius+wallThick+portThick);
-  createCentredUnitVector(FC,FIndex,2.0*offset);
+  createCentredUnitVector(FC,FIndex,offset);
   createSurfaces();    
   createObjects(System);
   createLinks();

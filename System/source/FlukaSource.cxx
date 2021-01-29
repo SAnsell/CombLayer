@@ -3,7 +3,7 @@
  
  * File:   source/FlukaSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,24 +152,34 @@ FlukaSource::populate(const ITYPE& inputMap)
   attachSystem::FixedOffset::populate(inputMap);
   SourceBase::populate(inputMap);
 
-  const size_t NPts=mainSystem::sizeInput(inputMap,"source");
+  std::string unitName("source");
+  size_t NPts=mainSystem::sizeInput(inputMap,unitName);
+  if (!NPts)
+    {
+      unitName="tdc";
+      NPts=mainSystem::sizeInput(inputMap,unitName);
+    }
   for(size_t index=0;index<NPts && index<12;index++)
     {
       double D;
       const std::string IStr=
-	mainSystem::getInput<std::string>(inputMap,"source",index);
+	mainSystem::getInput<std::string>(inputMap,unitName,index);
       if (StrFunc::convert(IStr,D))
 	sValues[index]=unitTYPE(1,IStr);
       else if (!IStr.empty() &&
 	       IStr!="-" &&
 	       StrFunc::toUpperString(IStr)!="DEF")
 	sValues[index]=unitTYPE(-1,IStr);
-    }      
+    }
+  if (unitName=="tdc")
+    sourceName="TDC";
   if (mainSystem::hasInput(inputMap,"logWeight"))
     sourceName="LOG";
 
   if (sourceName=="LOG")
     ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
+  else if  (sourceName=="TDC")
+    ELog::EM<<"Source type  == "<<sourceName<<ELog::endDiag;
   else
     ELog::EM<<"Source flat probability type "<<ELog::endDiag;
   
@@ -294,8 +304,5 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
   SourceBase::writeFLUKA(OX);
   return;
 }
-
-
-
 
 } // NAMESPACE SDef

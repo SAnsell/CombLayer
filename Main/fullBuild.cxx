@@ -62,8 +62,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
-#include "DefPhysics.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
@@ -75,7 +75,6 @@
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "makeTS2.h"
-#include "chipDataStore.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 
@@ -87,7 +86,6 @@ MTRand RNG(12345UL);
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;                      ///< Main Error log
-  ELog::OutputLog<FileReport> FM("ChipDatum.pts");  ///< C[x] datum points
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;              ///< Cell modifiers
 }
@@ -99,9 +97,6 @@ main(int argc,char* argv[])
   // For output stream
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
-  ELog::FM<<"Version == "<<version::Instance().getVersion()+1
-	  <<ELog::endDiag;
 
   std::vector<std::string> Names;  
   std::string Oname;
@@ -119,10 +114,7 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
       
       TS2InputModifications(SimPtr,IParam,Names);
-      
-      if (IParam.flag("units"))
-	chipIRDatum::chipDataStore::Instance().setUnits(chipIRDatum::cm);
-      
+            
       // MemStack
       if (IParam.flag("memStack"))
 	{
@@ -140,7 +132,6 @@ main(int argc,char* argv[])
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      chipIRDatum::chipDataStore::Instance().writeMasterTable("chipIR.table");
       SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)

@@ -3,7 +3,7 @@
  
  * File:   t1Build/MonoPlug.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -71,6 +72,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "ExternalCut.h"
 #include "MonoPlug.h"
 
@@ -78,7 +80,7 @@ namespace shutterSystem
 {
 
 MonoPlug::MonoPlug(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
@@ -88,7 +90,7 @@ MonoPlug::MonoPlug(const std::string& Key)  :
 {}
 
 MonoPlug::MonoPlug(const MonoPlug& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
   nPlugs(A.nPlugs),plugRadii(A.plugRadii),
   plugZLen(A.plugZLen),plugClearance(A.plugClearance),
@@ -110,7 +112,7 @@ MonoPlug::operator=(const MonoPlug& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       nPlugs=A.nPlugs;
@@ -139,6 +141,8 @@ MonoPlug::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MonoPlug","populate");
 
+  FixedRotate::populate(Control);
+  
   nPlugs=Control.EvalVar<size_t>(keyName+"NPlugs");   
   const std::string PRad=keyName+"PlugRadius";
   const std::string PLen=keyName+"PlugZLen";
@@ -220,7 +224,6 @@ MonoPlug::createObjects(Simulation& System)
   const std::string voidSurf=ExternalCut::getRuleStr("voidSurf");
   const std::string outSurf=ExternalCut::getRuleStr("outSurf");
   const std::string bulkSurf=ExternalCut::getRuleStr("bulkSurf");
-
   
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
@@ -304,11 +307,10 @@ MonoPlug::createAll(Simulation& System,
 		    const attachSystem::FixedComp& VoidFC,
 		    const long int sideIndex)
   
-		    //		    const attachSystem::FixedComp& BulkFC)
+		    //		    const attachSystem::FixedRotate& BulkFC)
   /*!
     Create the shutter
     \param System :: Simulation to process
-    \param vLCIndex :: void link point
     \param VoidFC :: Main outer void
     \param BulkFC :: Bulk steel object
   */
@@ -316,6 +318,11 @@ MonoPlug::createAll(Simulation& System,
   ELog::RegMethod RegA("MonoPlug","createAll");
   populate(System.getDataBase());
   createUnitVector(VoidFC,sideIndex);
+
+  ELog::EM<<"B["<<keyName<<"] X== "<<X<<ELog::endDiag;
+  ELog::EM<<"B["<<keyName<<"] Y== "<<Y<<ELog::endDiag;
+  ELog::EM<<"B["<<keyName<<"] Z== "<<Z<<ELog::endDiag;
+
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -44,8 +44,8 @@ class Segment23 :
   std::shared_ptr<tdcSystem::StriplineBPM> bpm;            ///< #4 BPM - 304L
   std::shared_ptr<constructSystem::Bellows> bellowB;       ///< #1 Bellows 304L
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;      ///< #5 VC- Flanges 304L- Tube-316L
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;          ///< #6 Horizontal corrector magnet
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;          ///< #6 Vertical corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;          ///< #6 Horizontal corrector magnet
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;          ///< #6 Vertical corrector magnet
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;         ///< #7 Yag screen - 304L
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;             ///< #8 Yag screen unit (ionPump)
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;      ///< #9 VC- Flanges 304L- Tube-316L

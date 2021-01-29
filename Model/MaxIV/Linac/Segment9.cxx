@@ -3,7 +3,7 @@
 
  * File: Linac/Segment9.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -91,10 +92,10 @@ Segment9::Segment9(const std::string& Key) :
   TDCsegment(Key,2),
 
   ceramicBellowA(new tdcSystem::CeramicGap(keyName+"CeramicBellowA")),
-  pumpA(new tdcSystem::IonPumpTube(keyName+"PumpA")),
+  pumpA(new xraySystem::IonPumpTube(keyName+"PumpA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
 
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),

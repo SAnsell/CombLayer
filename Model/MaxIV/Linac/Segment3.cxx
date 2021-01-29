@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -104,8 +105,8 @@ Segment3::Segment3(const std::string& Key) :
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   pipeA(new constructSystem::OffsetFlangePipe(keyName+"PipeA")),
-  cMagHA(new tdcSystem::CorrectorMag(keyName+"CMagHA")),
-  cMagVA(new tdcSystem::CorrectorMag(keyName+"CMagVA")),
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))

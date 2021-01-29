@@ -50,6 +50,7 @@
 #include "Rules.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"

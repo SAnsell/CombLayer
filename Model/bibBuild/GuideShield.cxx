@@ -59,6 +59,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

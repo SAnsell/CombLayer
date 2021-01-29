@@ -74,8 +74,8 @@ int
 correctorMagnetPair(Simulation&,
 		    attachSystem::InnerZone&,
 		    const std::shared_ptr<attachSystem::FixedComp>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>&);
+		    const std::shared_ptr<xraySystem::CorrectorMag>&,
+		    const std::shared_ptr<xraySystem::CorrectorMag>&);
 
 template<typename magTYPE>
 int

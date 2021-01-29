@@ -56,6 +56,7 @@
 #include "neutron.h"
 #include "photon.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "Zaid.h"
 #include "MXcards.h"

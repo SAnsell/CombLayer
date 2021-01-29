@@ -51,6 +51,7 @@
 #include "HeadRule.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -253,8 +254,7 @@ flukaImpConstructor::processGeneral(SimFLUKA& System,
     Handler for constructor of physics cards
     \param System :: Fluke Phays
     \param VVlist :: string array
-    \param keyName :: wTYPE card
-    \param cellSize :: number of extra cells 
+    \param cellSize :: number of extra values from VVList
     \param materialFlag :: material/region/particle [-1/0/1] (-100 for none)
     \param cardName :: card name for flukaPhysics to write
   */
@@ -308,7 +308,7 @@ flukaImpConstructor::processBIAS(SimFLUKA& System,
       { "electron", 2 }, { "photon", 2 }, { "positron", 2 },
       { "neutron", 3 }, { "low", 3 }
     });
-  // cell/mat : tag name 
+  // cell/mat : tag name  
   typedef std::tuple<size_t,int,std::string> biasTYPE;
   static const std::map<std::string,biasTYPE> IBias
     ({
@@ -465,41 +465,6 @@ flukaImpConstructor::processEXP(SimFLUKA& System,
   return;
 }
 
-void
-flukaImpConstructor::processIMP(SimFLUKA& System,
-				const mainSystem::inputParam& IParam,
-				const size_t setIndex)
-  /*!
-    Set individual IMP cards on Iparam
-    Implicit -wBIAS card with all / bias options set
-    \param System :: Fluka simulation
-    \param IParam :: input stream
-    \param setIndex :: index for the importance set
-  */
-{
-  ELog::RegMethod RegA("flukaImpConstructor","processIMP");
-
-  // cell/mat : tag name 
-  typedef std::tuple<size_t,int,std::string> impTYPE;
-
-  const std::string type=IParam.getValueError<std::string>
-    ("wIMP",setIndex,0,"No cell/object for wIMP ");
-
-  if (type=="help" || type=="Help")
-    return writeIMPHelp(ELog::EM.Estream(),&ELog::endBasic);
-
-  //cells:
-  std::vector<std::string> VVList(4);
-  VVList[0]=type;
-  VVList[1]="0";
-  VVList[2]=IParam.getValueError<std::string>
-    ("wIMP",setIndex,1," RR value for wIMP");
-  VVList[3]=IParam.getValueError<std::string>
-    ("wIMP",setIndex,2," IMP value for wIMP");
-    
-  processGeneral(System,VVList,impTYPE(3,0,"bias")); 
-  return;
-}
 
 
 void

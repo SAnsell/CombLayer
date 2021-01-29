@@ -56,6 +56,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -99,8 +100,8 @@ int
 correctorMagnetPair(Simulation& System,
 		    attachSystem::InnerZone& buildZone,
 		    const std::shared_ptr<attachSystem::FixedComp>& pipe,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMA,
-		    const std::shared_ptr<tdcSystem::CorrectorMag>& CMB)
+		    const std::shared_ptr<xraySystem::CorrectorMag>& CMA,
+		    const std::shared_ptr<xraySystem::CorrectorMag>& CMB)
   /*!
     Given a pipe build the two correct magnets round it and then
     correctly do the InnerZone splitting.
@@ -387,7 +388,7 @@ int pipeMagUnit(Simulation&,
 		const std::shared_ptr<attachSystem::FixedComp>&,
 		const std::string&,
 		const std::string&,
-		const std::shared_ptr<tdcSystem::CorrectorMag>&);
+		const std::shared_ptr<xraySystem::CorrectorMag>&);
 template
 int pipeMagUnit(Simulation&,
 		attachSystem::InnerZone&,

@@ -35,6 +35,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class CylGateValve;
+  class CorrectorMag;
 }
 
 
@@ -48,7 +49,6 @@ namespace xraySystem
 
 namespace tdcSystem
 {
-  class CorrectorMag;
   class DipoleDIBMag;
   class FlatPipe;
   
@@ -77,8 +77,8 @@ class Segment3 :
   /// first pipe in dipole
   std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
 
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagHA;    ///< corrector mag
-  std::shared_ptr<tdcSystem::CorrectorMag> cMagVA;   ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagHA;    ///< corrector mag
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   ///< corrector mag
 
   /// second pipe in dipole
   std::shared_ptr<tdcSystem::FlatPipe> flatB;   

@@ -118,9 +118,6 @@ class flukaImpConstructor
   void processEMF(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
-  void processIMP(SimFLUKA&,
-		  const mainSystem::inputParam&,
-		  const size_t);
   void processLAM(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);

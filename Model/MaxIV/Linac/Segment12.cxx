@@ -3,7 +3,7 @@
  
  * File: Linac/Segment12.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -94,7 +95,7 @@ Segment12::Segment12(const std::string& Key) :
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
-  ionPumpLA(new tdcSystem::IonPumpTube(keyName+"IonPumpLA")),
+  ionPumpLA(new xraySystem::IonPumpTube(keyName+"IonPumpLA")),
   pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
   bellowLB(new constructSystem::Bellows(keyName+"BellowLB")),
 

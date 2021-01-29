@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,7 +258,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
     Create the unit vectors
     \param FC :: Fixed unit for link points
     \param orgIndex :: SIGNED +1 side index for origin
-    \param basisIndex :: SIGNED +1 side index for directoin
+    \param basisIndex :: SIGNED +1 side index for direction
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
@@ -291,11 +291,12 @@ FixedComp::createUnitVector(const FixedComp& FC,
   else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     xTest=FC.getY();
 
-  computeZOffPlane(xTest,yTest,zTest);
+  Geometry::Vec3D YY=yTest;
 
+  computeZOffPlane(xTest,yTest,zTest);
   FixedComp::createUnitVector(FC.getLinkPt(orgIndex),
 		   yTest*zTest,yTest,zTest);
-  
+
   return;
 }
 
@@ -733,6 +734,17 @@ FixedComp::applyFullRotate(const double xyAngle,
   Qxy.rotate(Origin);
   Origin+=RotCent;
 
+  return;
+}
+
+void
+FixedComp::reverseX()
+  /*!
+    Flip the Z axis keeping Y Fixed
+    (could generalize but ...)
+  */
+{
+  X*= -1.0;
   return;
 }
 

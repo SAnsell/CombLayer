@@ -3,7 +3,7 @@
  
  * File:   support/mcnpStringSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ keyUnit(std::string& Ln,std::string& Key,std::string& value)
 bool
 startMaterial(const std::string& Line) 
   /*!
-    Static object to deterimine if the
+    Function to deterimine if the
     input string 'Line' starts an object 
     \param Line :: Object to test
     \retval 1 :: Start
