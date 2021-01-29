@@ -187,8 +187,11 @@ LINACmagnetVariables(FuncDataBase& Control,
 	  "Seg36QuadB SPF36PipeA:Void",
 
 	  "Seg43CMagHA SPF43Pipe:Void",
+	  // Artificial magnet to kick the beam towards the main beam
+	  // dump
+	  "Seg43BellowB SPF43BellowB:Void SPF44TriBend:Void",
 
-	  "Seg44CMag SPF44TriBend:Void SPF44TriBend:BendVoid"
+	  "Seg44CMag SPF44TriBend:BendVoid"
 	});
       for(const std::string& Item : SPFname)
 	Control.pushVariable<std::string>("MagUnitList",Item);
@@ -365,9 +368,21 @@ LINACmagnetVariables(FuncDataBase& Control,
 
       // SEGMENT 43
       MUdipole.generateCorMag(Control,43,"CMagHA",90.0);
+      // Artificial magnet to kick the beam towards the main beam dump
+      MUdipole.generateDipole(Control,43,"BellowB",0.0,8.5);
+      // We resize it in order to deflect the beam towards
+      // the entrance to the curved pipe of SPF44TriBend
+      Control.addVariable("MagUnitSeg43BellowBLength",10.0);
 
-      // SEGMENT 44 [THIS IS a curved dipole -- check sized]
-      MUdipole.generateDipole(Control,44,"CMag",0.0,-0.5);
+      // SEGMENT 44 (curved dipole magnet)
+      // We shift and rotate it so that the magnetic field
+      // is present in the curved pipe of SPF44TriBend only
+      MUdipole.setOffset(0.0,147.0,-41.0);
+      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.65);
+      Control.addVariable("MagUnitSeg44CMagLength",100.0);
+      Control.addVariable("MagUnitSeg44CMagHeight",25.0);
+      Control.addVariable("MagUnitSeg44CMagXAngle",-16.5);
+
 
       // SEGMENT 45
       // SEGMENT 46

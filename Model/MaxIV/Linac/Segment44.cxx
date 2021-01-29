@@ -152,6 +152,7 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertInCell("BendStr",System,outerCellD);
   triBend->insertInCell("BFlange",System,outerCellD);
 
+  //  triBend->insertInCell("Main",System,cMag->getCell("VoidFront"));
   triBend->insertInCell("Main",System,cMag->getCell("Void"));
   triBend->insertInCell("Mid",System,cMag->getCell("Void"));
   triBend->insertInCell("Bend",System,cMag->getCell("Void"));
