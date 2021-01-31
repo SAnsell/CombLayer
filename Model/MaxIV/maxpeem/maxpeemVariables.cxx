@@ -258,12 +258,10 @@ m3MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,viewName,0.0,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
-  const double wallThick=setVariable::CF63::innerRadius+
-    setVariable::CF63::wallThick;
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+5.95);
   PItemGen.setPlate(0.0,"Void");  
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
-  const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
+  const double DLen=14.0-CF63::outerRadius/sin(M_PI*37.0/180.0);
 
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);

@@ -89,6 +89,8 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
+#include "ViewScreenGenerator.h"
+#include "YagScreenGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
 
@@ -103,6 +105,8 @@ void wallVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void hdcmPackage(FuncDataBase&,const std::string&);
 void diag2Package(FuncDataBase&,const std::string&);
+void diag3Package(FuncDataBase&,const std::string&);
+void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
 
@@ -303,7 +307,100 @@ diag2Package(FuncDataBase& Control,
  
   return;
 }
+
+void
+diag3Package(FuncDataBase& Control,
+	     const std::string& diagKey)
+  /*!
+    Builds the variables for the second diagnostice/slit packge
+    \param Control :: Database
+    \param diagKey :: prename
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","diag2Package");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::ViewScreenGenerator VSGen;
+  setVariable::YagScreenGenerator YagGen;
+  setVariable::BremTubeGenerator BTGen;
+  setVariable::HPJawsGenerator HPGen;
+  setVariable::PipeGenerator PipeGen;
+
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowG",15.0);
+
+  GVGen.generateGate(Control,diagKey+"GateTubeE",0);  // open
+
+  VSGen.generateView(Control,diagKey+"ViewTube");
+  YagGen.generateScreen(Control,diagKey+"YagScreen",1);  // in beam
+  Control.addVariable(diagKey+"YagScreenYAngle",-45.0);
+
+   // will be rotated vertical
+  const std::string viewName=diagKey+"BremTubeB";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.setBFlangeCF<CF150>();
+  SimpleTubeGen.generateTube(Control,viewName,0.0,25.0);
+  Control.addVariable(viewName+"NPorts",2);   // beam ports
+
+  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,viewName+"Port0",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF150>(CF150::outerRadius+10.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,viewName+"Port1",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+
+  HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3); 
+
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowH",15.0);
+
+  PipeGen.generatePipe(Control,diagKey+"PipeE",185.0);
+
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowI",15.0);
+
+  return;
+}
+
+void
+diag4Package(FuncDataBase& Control,
+	     const std::string& diagKey)
+  /*!
+    Builds the variables for the second diagnostice/slit packge
+    \param Control :: Database
+    \param diagKey :: prename
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","diag2Package");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::ViewScreenGenerator VSGen;
+  setVariable::BellowGenerator BellowGen;
   
+  GVGen.generateGate(Control,diagKey+"GateTubeF",0);
+  VSGen.setPortBCF<CF40>();
+  VSGen.generateView(Control,diagKey+"ViewTubeB");
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowJ",10.0);    
+  
+  return;
+}
+
 void
 monoShutterVariables(FuncDataBase& Control,
 		     const std::string& preName)
@@ -318,18 +415,31 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
-  
-  // both shutters up
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::PipeGenerator PipeGen;
+
+    // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
-  
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF63>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",7.5);
+  PipeGen.setAFlangeCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",7.5);
+
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowJ",10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
     // joined and open
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateJ",0.0,0);
+  GVGen.generateGate(Control,preName+"GateTubeG",0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,preName+"PipeF",65.0);  
   return;
 }
   
@@ -365,7 +475,7 @@ opticsHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",894.6);
+  Control.addVariable(hutName+"Length",1256.0);
   Control.addVariable(hutName+"OutWidth",250.0);
   Control.addVariable(hutName+"RingExtra",40.0);
   Control.addVariable(hutName+"RingFlat",60.0);
@@ -732,6 +842,10 @@ opticsVariables(FuncDataBase& Control,
 
   formaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
 
+  formaxVar::diag3Package(Control,preName);
+
+  formaxVar::diag4Package(Control,preName);
+  
   formaxVar::monoShutterVariables(Control,preName);
 
   return;

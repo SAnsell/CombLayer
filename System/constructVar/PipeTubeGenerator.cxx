@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeTubeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,7 +158,9 @@ PipeTubeGenerator::setAFlangeCF()
 {
   flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
-  ACap=0.0;
+  if (ACap>Geometry::zeroTol)
+    ACap=flangeALen;
+
   return;
 }
 
@@ -171,7 +173,9 @@ PipeTubeGenerator::setBFlangeCF()
 {
   flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
-  BCap=0.0;
+  if (BCap>Geometry::zeroTol)
+    BCap=flangeBLen;
+
   return;
 }
 

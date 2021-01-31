@@ -75,12 +75,6 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
-
 #include "FilterHolder.h"
 
 namespace xraySystem

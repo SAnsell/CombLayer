@@ -128,6 +128,7 @@
 #include "LBeamStop.h"
 #include "BremTube.h"
 #include "HPJaws.h"
+#include "ViewScreenTube.h"
 
 #include "makeSingleItem.h"
 
@@ -175,7 +176,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","HPCombine",
+      "BremTube","HPJaws","HPCombine","ViewTube",
       "Help","help"
     });
 
@@ -1030,6 +1031,27 @@ makeSingleItem::build(Simulation& System,
 	hp->setFront(*bremTube,2);
 	hp->setFlangeJoin();
 	hp->createAll(System,*bremTube,"back");
+	
+	return;
+      }
+    if (item == "ViewTube" )
+      {
+	std::shared_ptr<xraySystem::ViewScreenTube>
+	  vt(new xraySystem::ViewScreenTube("ViewTube"));
+	std::shared_ptr<tdcSystem::YagScreen>
+	  yagScreen(new tdcSystem::YagScreen("YAG"));
+
+	OR.addObject(vt);
+	
+	vt->addInsertCell(voidCell);
+	vt->createAll(System,World::masterOrigin(),0);
+
+	yagScreen->setBeamAxis(*vt,1);
+	yagScreen->createAll(System,*vt,4);
+	yagScreen->insertInCell("Outer",System,voidCell);
+	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
+	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
+	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
 	
 	return;
       }

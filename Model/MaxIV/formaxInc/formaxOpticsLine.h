@@ -27,6 +27,11 @@ namespace insertSystem
   class insertPlate;
 }
 
+namespace tdcSystem
+{
+  class YagScreen;
+}
+
 namespace constructSystem
 {
   class SupplyPipe;
@@ -61,6 +66,8 @@ namespace xraySystem
   class TriggerTube;
   class HPJaws;
   class BremTube;
+  class ViewScreenTube;
+  class MonoShutter;
     
   /*!
     \class formaxOpticsLine
@@ -163,9 +170,41 @@ class formaxOpticsLine :
 
   /// bellow from Mirror to Diag3
   std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// gate valve infront of diag3
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
+  /// view screen
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
+  /// yag screen in view screen tube
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
+  /// Diag unit two contains Brem block
+  std::shared_ptr<constructSystem::PipeTube> bremTubeB;
+  /// Jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
+
+  /// bellow out of diag 3 [close]
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// pipe to exit bellow of diag 3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// bellow out of diag 3 [long/final]
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+
+  /// gate valve infront of diag3
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeF;
+  /// view screen
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
+  /// bellow out of diag 3 [long/final]
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
+  /// The main mono shutter
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
   /// Last gate valve:
-  std::shared_ptr<constructSystem::GateValveCube> gateJ;
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeG;
+  /// last pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
 
   
   double outerLeft;    ///< Left Width for cut rectangle
@@ -181,17 +220,15 @@ class formaxOpticsLine :
   void constructDiag2(Simulation&,const attachSystem::FixedComp&,
 		      const std::string&);
 
-  int constructMonoShutter
-    (Simulation&,const attachSystem::FixedComp&,const long int);
+  void constructDiag3(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
 
-  
-  int constructDiag
-    (Simulation&,
-     constructSystem::PortTube&,
-     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-     const attachSystem::FixedComp&,
-     const long int);
+  void constructDiag4(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
 
+  void constructMonoShutter
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
+ 
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
