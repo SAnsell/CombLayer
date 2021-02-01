@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef photonSystem_CryoMagnetBase_h
-#define photonSystem_CryoMagnetBase_h
+#ifndef cryoSystem_CryoMagnetBase_h
+#define cryoSystem_CryoMagnetBase_h
 
 class Simulation;
 
-namespace constructSystem
+namespace cryoSystem
 {
   
 /*!
@@ -42,12 +42,15 @@ class CryoMagnetBase :  public attachSystem::FixedOffset,
 {
  private:
 
+  //  const int layerIndex;         ///< Index of surface offset
+  //  int cellIndex;                ///< Cell index
 
   size_t nLayers;                    ///< Layer count
 
   std::vector<double> LRad;         ///< Layer Radius
   std::vector<double> LThick;       ///< Layer thickness
   std::vector<double> LTemp;        ///< Layer temperature
+  double innerRadius;
   double outerRadius;
 
   double topOffset;
@@ -62,7 +65,9 @@ class CryoMagnetBase :  public attachSystem::FixedOffset,
   double apertureWidth;
   double apertureHeight;
   
-  int mat;
+  int mat; // Material of the sample environment
+  int smat; // Material of a sample
+  int vmat;// Material in the voids
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

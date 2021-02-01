@@ -219,6 +219,52 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
   return;
 }
 
+
+void
+FocusGenerator::generateTaperGeneral(FuncDataBase& Control,
+			      const std::string& keyName,
+			      const double length,
+			      const double HSL,const double HEL,
+			      const double HSR,const double HER,
+			      const double VSB,const double VEB,
+			      const double VST,const double VET)  const
+/*!
+    Generate the focus-taper variables for general taper
+    \param Control :: Functional data base
+    \param keyName :: main name
+    \param length :: total length
+    \param HSL :: Distance LEFTWALL-CENTERLINE at start
+    \param HEL :: Distance LEFTWALL-CENTERLINE at end
+    \param HSR :: Distance RIGHTWALL-CENTERLINE at start
+    \param HER :: Distance RIGHTWALL-CENTERLINE at end
+    \param VSB :: Distance BOTTOMWALL-CENERLINE at start
+    \param VEB :: Distance BOTTOMWALL-CENERLINE at end
+    \param VST :: Distance TOPWALL-CENERLINE at start
+    \param VET :: Distance TOPWALL-CENERLINE at end
+   */
+{
+  ELog::RegMethod RegA("FocusGenerator","generateTaper");
+
+    
+  writeLayers(Control,keyName,length);
+  
+  Control.addVariable(keyName+"0TypeID","TaperGen");
+  Control.addVariable(keyName+"0HeightStartTop",VST);
+  Control.addVariable(keyName+"0HeightEndTop",VET);
+  Control.addVariable(keyName+"0HeightStartBottom",VSB);
+  Control.addVariable(keyName+"0HeightEndBottom",VEB);
+  Control.addVariable(keyName+"0WidthStartLeft",HSL);
+  Control.addVariable(keyName+"0WidthEndLeft",HEL);
+  Control.addVariable(keyName+"0WidthStartRight",HSR);
+  Control.addVariable(keyName+"0WidthEndRight",HER);
+  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  return;
+}
+
+
+
+  
 void
 FocusGenerator::generateRectangle(FuncDataBase& Control,
 				  const std::string& keyName,

@@ -92,7 +92,6 @@
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 
-#include "CryoMagnetBase.h"
 #include "Quadrupole.h"
 #include "EPSeparator.h"
 #include "PreDipole.h"

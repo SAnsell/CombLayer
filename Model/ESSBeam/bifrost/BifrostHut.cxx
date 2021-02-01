@@ -111,7 +111,7 @@ BifrostHut::populate(const FuncDataBase& Control)
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
   voidLength=Control.EvalVar<double>(keyName+"VoidLength");
-  
+    
   feFront=Control.EvalVar<double>(keyName+"FeFront");
   feLeftWall=Control.EvalVar<double>(keyName+"FeLeftWall");
   feRightWall=Control.EvalVar<double>(keyName+"FeRightWall");

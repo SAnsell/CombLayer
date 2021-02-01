@@ -100,6 +100,13 @@ class FocusGenerator
 		     const double,const double,
 		     const double,const double) const;
 
+  void generateTaperGeneral(FuncDataBase&,
+		     const std::string&,const double,
+		     const double,const double,
+		     const double,const double,
+		     const double,const double,
+		     const double,const double) const;
+
   void generateBender(FuncDataBase&,
 		      const std::string&,const double,
 		      const double,const double,

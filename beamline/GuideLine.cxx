@@ -426,6 +426,33 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
 	}
+        else if (typeID=="TaperGen")   
+	{
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
+	  const double HAT=Control.EvalVar<double>(keyName+NStr+"HeightStartTop");
+  	  const double HAB=Control.EvalVar<double>(keyName+NStr+"HeightStartBottom");
+	  const double WAL=Control.EvalVar<double>(keyName+NStr+"WidthStartLeft");
+	  const double WAR=Control.EvalVar<double>(keyName+NStr+"WidthStartRight");
+	  const double HBT=Control.EvalVar<double>(keyName+NStr+"HeightEndTop");
+	  const double HBB=Control.EvalVar<double>(keyName+NStr+"HeightEndBottom");	  
+	  const double WBL=Control.EvalVar<double>(keyName+NStr+"WidthEndLeft");
+	  const double WBR=Control.EvalVar<double>(keyName+NStr+"WidthEndRight");
+
+	  SU->addPairPoint(Geometry::Vec3D(-WAL,0.0,-HAB),
+			   Geometry::Vec3D(-WBL,0.0,-HBB));
+	  SU->addPairPoint(Geometry::Vec3D(WAR,0.0,-HAB),
+			   Geometry::Vec3D(WBR,0.0,-HBB));
+	  SU->addPairPoint(Geometry::Vec3D(WAR,0.0,HAT),
+			   Geometry::Vec3D(WBR,0.0,HBT));
+	  SU->addPairPoint(Geometry::Vec3D(-WAL,0.0,HAT),
+			   Geometry::Vec3D(-WBL,0.0,HBT));
+
+	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setXAxis(X,Z);      
+	  SU->constructConvex();
+	  shapeUnits.push_back(SU);
+	}
+
       else if (typeID=="Bend")
 	{
 	  BenderUnit* BU=new BenderUnit(GINumber,SULayer);
