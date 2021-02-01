@@ -123,6 +123,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  concreteMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   
   return;
@@ -169,7 +170,7 @@ OpticsHutch::createSurfaces()
 
   SurfMap::makePlane("outerWall",SMap,buildIndex+32,
 		     Origin+Y*(length+steelThick+pbBackThick),Y);
-    
+  
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
 
@@ -186,15 +187,6 @@ OpticsHutch::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
 
-  /*
-    if (outerOutVoid>Geometry::zeroTol)
-    ModelSupport::buildPlane
-      (SMap,buildIndex+1033,
-       Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
-
-
-
-  */
   return;
 }
 
@@ -215,16 +207,14 @@ OpticsHutch::createObjects(Simulation& System)
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
 
-
   HeadRule HR;
 
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"-2 3 (-4:-104) -6");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
-
   // walls:
-  int HI(buildIndex);
 
+  
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -3 13 -6");
   makeCell("InnerWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -13 23 -6");
@@ -232,6 +222,7 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 -23 33 -6");
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,HR*floor*frontWall);
 
+  
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"2 -12 33 -104 -6 107");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,HR*floor);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -22 33 -104 -6 107");
@@ -239,7 +230,7 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"22 -32 33 -104 -6 107");
   makeCell("BackOuterWall",System,cellIndex++,skinMat,0.0,HR*floor);
 
-  (SMap,buildIndex,HI,"-32 33 (-34:-134) 6M -16M ");
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 (-104:-4) 6 -16");
   makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall);
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 (-104:-4) 16 -26");
@@ -247,17 +238,21 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 (-104:-4) 26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall);
 
+  
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"4 104  -32 -36 ");
+  makeCell("ConcreteSide",System,cellIndex++,concreteMat,0.0,
+   	   HR*frontWall*sideWall*floor);
+  
   // Outer void for pipe
 
   if (holeRadius>Geometry::zeroTol)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,HI," 2 -2M -117 ");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 2 -32 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
     }
-
-  
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 (-4:-104) -36");
-  addOuterSurf(HR*frontWall);
+    
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -36");
+  addOuterSurf(HR*frontWall*sideWall);
 
   return;
 }
@@ -271,98 +266,34 @@ OpticsHutch::createLinks()
 {
   ELog::RegMethod RegA("OpticsHutch","createLinks");
 
+  const double wallThick(pbBackThick+innerThick+outerThick);
+  
   setConnect(0,Origin,Y);
   setLinkSurf(0,ExternalCut::getValidRule("RingWall",Origin+Y*length));
+
+  setConnect(1,Origin+Y*(length+wallThick),Y);
+  setLinkSurf(1,SMap.realSurf(buildIndex+32));
+
+
+  setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*(length+wallThick),Y);
+  setLinkSurf(7,SMap.realSurf(buildIndex+32));
+
+  setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+
+	     Y*(length+wallThick),Z);
+  setLinkSurf(8,SMap.realSurf(buildIndex+117));
+
 
   setConnect(11,Origin,Y);
   setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*length));
 
   setConnect(12,Origin+Y*length,-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-
-  nameSideIndex(11,"innerFront");
-  nameSideIndex(12,"innerBack");
-
-  /*
-  const double extraFront(innerThick+outerThick+pbFrontThick);
-  const double extraBack(innerThick+outerThick+pbBackThick);
-  const double extraWall(innerThick+outerThick+pbWallThick);
-
-  setConnect(0,Origin-Y*(extraFront),-Y);
-  setConnect(1,Origin+Y*(length+extraBack),Y);
-
-  setLinkSurf(0,-SMap.realSurf(buildIndex+31));
-  setLinkSurf(1,SMap.realSurf(buildIndex+132));
-
-  // inner surf
-  setConnect(2,Origin+Y*length,-Y);
-  setLinkSurf(2,-SMap.realSurf(buildIndex+2));
-
-  // outer surf
-  setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
-  setLinkSurf(3,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(3,"leftWall");
-  // outer surf
-  setConnect(4,Origin-X*(extraWall+ringWidth)+Y*(length/2.0),X);
-  setLinkSurf(4,SMap.realSurf(buildIndex+34));
-  nameSideIndex(4,"rightWall");
-
-  setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*length,-Y);
-  setLinkSurf(7,-SMap.realSurf(buildIndex+2));
+  
   nameSideIndex(7,"exitHole");
-
-  setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+Y*length,-Z);
-  setLinkSurf(8,SMap.realSurf(buildIndex+117));
   nameSideIndex(8,"exitHoleRadius");
-
-  setConnect(9,Origin+X*inletXStep+Z*inletZStep+Y*length,-Y);
-  setLinkSurf(9,SMap.realSurf(buildIndex+1));
-  nameSideIndex(9,"inlet");
-
-  setConnect(10,Origin+X*inletXStep+Z*(inletRadius+inletZStep),-Z);
-  setLinkSurf(10,SMap.realSurf(buildIndex+107));
-  nameSideIndex(10,"inletRadius");
-
-  setConnect(11,Origin,Y);
-  setConnect(12,Origin+Y*length,-Y);
-
-  setLinkSurf(11,SMap.realSurf(buildIndex+1));
-  setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-
   nameSideIndex(11,"innerFront");
   nameSideIndex(12,"innerBack");
 
-  // inner surf
-  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
-  setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
-
-  setConnect(14,Origin-X*ringWidth+Y*(length/2.0),-X);
-  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"innerRightWall");
-
-
-  const double steelThick(innerThick+outerThick);
-  HeadRule mainCut;
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," 4:104 15 ");
-  // setConnect(15,Origin-Z*(depth+floorThick),Z);
-  // setLinkSurf(15,SMap.realSurf(buildIndex+34));
-  // addLinkSurf(15,SMap.realSurf(buildIndex+134));
-  // addLinkComp(15,-SMap.realSurf(buildIndex+15));
-  // addLinkComp(15,SMap.realSurf(buildIndex+32));
-
-  setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);
-  setLinkSurf(16,SMap.realSurf(buildIndex+34));
-  addLinkSurf(16,SMap.realSurf(buildIndex+134));
-  addLinkComp(16,SMap.realSurf(buildIndex+36));
-  addLinkComp(16,SMap.realSurf(buildIndex+132));
-
-  setConnect(17,Origin,-Y);
-  setLinkSurf(17,SMap.realSurf(buildIndex+34));
-  addLinkSurf(17,SMap.realSurf(buildIndex+134));
-  addLinkComp(17,SMap.realSurf(buildIndex+36));
-  addLinkComp(17,SMap.realSurf(buildIndex+132));
-  */
   return;
 }
 

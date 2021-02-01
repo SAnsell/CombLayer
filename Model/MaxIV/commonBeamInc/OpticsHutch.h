@@ -71,6 +71,7 @@ class OpticsHutch :
 
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls
+  int concreteMat;            ///< side wall (concrete filler)
   int voidMat;                ///< Void material
 
   double beamTubeRadius;      ///< Void to construct components in

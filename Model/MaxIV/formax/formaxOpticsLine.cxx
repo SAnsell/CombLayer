@@ -194,8 +194,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  gateTubeG(new xraySystem::CylGateValve(newName+"GateTubeG")),
-  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))
+  pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -261,7 +260,6 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
   OR.addObject(monoAdaptorB);
-  OR.addObject(gateTubeG);
   OR.addObject(pipeF);
   
 }
@@ -312,6 +310,7 @@ formaxOpticsLine::createSurfaces()
 
      buildZone.setSurround(HR*getRule("floor"));
      buildZone.setFront(getRule("front"));
+     buildZone.setMaxExtent(getRule("back"));
     }
   return;
 }
@@ -479,17 +478,21 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*bellowJ,"back",*monoAdaptorA);
 
-  constructSystem::constructUnit
+  int outerCell=constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
 
+  monoShutter->splitObject(System,"-PortACut",outerCell);
+  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
+  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
+  monoShutter->splitObject(System,"PortBCut",outerCell);
+  cellIndex+=3;
+  
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*monoAdaptorB);
 
   constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorB,"back",*gateTubeG);
-
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeG,"back",*pipeF);
+    (System,buildZone,*monoAdaptorB,"back",*pipeF);
   
   return;
 }
@@ -622,8 +625,9 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,*viewTubeB,"back");
     
-  
-  //  setCell("LastVoid",masterCell->getName());
+
+  buildZone.createUnit(System);
+  setCell("LastVoid",buildZone.getCells("Unit").back());
   lastComp=pipeF;
 
   return;
@@ -638,7 +642,7 @@ formaxOpticsLine::createLinks()
   ELog::RegMethod RControl("formaxOpticsLine","createLinks");
   
   setLinkSignedCopy(0,*pipeInit,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
   

@@ -114,7 +114,9 @@ FORMAX::FORMAX(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new formaxOpticsLine(newName+"OpticsLine"))
+  opticsBeam(new formaxOpticsLine(newName+"OpticsLine")),
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -129,6 +131,8 @@ FORMAX::FORMAX(const std::string& KN) :
   
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(exptHut);
+  OR.addObject(joinPipeB);
 }
 
 FORMAX::~FORMAX()
@@ -196,6 +200,7 @@ FORMAX::build(Simulation& System,
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->createAll(System,*frontBeam,2);
   // new
+
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
@@ -204,10 +209,21 @@ FORMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
+  
+  
+  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->setCutSurf("frontWall",*opticsHut,"back");
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHut->createAll(System,*opticsHut,"exitHole");
 
-  return;  
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
+  ELog::EM<<"Last Cell = "<<opticsBeam->getCell("LastVoid")<<ELog::endDiag;
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
+  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
 
   return;
 }

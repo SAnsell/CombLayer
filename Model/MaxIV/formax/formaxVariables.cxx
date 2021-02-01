@@ -110,6 +110,9 @@ void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
 
+void opticsHutVariables(FuncDataBase&,const std::string&);
+void exptHutVariables(FuncDataBase&,const std::string&,const double);
+
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -435,11 +438,9 @@ monoShutterVariables(FuncDataBase& Control,
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowL",10.0);    
 
-    // joined and open
-  GVGen.generateGate(Control,preName+"GateTubeG",0);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeF",65.0);  
+  PipeGen.generatePipe(Control,preName+"PipeF",85.0);  
   return;
 }
   
@@ -495,13 +496,13 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"RingMat","Concrete");
+  Control.addVariable(hutName+"ConcreteMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
   Control.addVariable(hutName+"VoidMat","Void");
 
   Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
@@ -514,6 +515,75 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   
+  return;
+}
+
+void
+exptHutVariables(FuncDataBase& Control,
+		 const std::string& beamName,
+		 const double beamXStep)
+  /*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param beamName :: Beamline name
+    \param bremXStep :: Offset of beam from main centre line
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
+
+  const double beamOffset(-0.6);
+    
+  const std::string hutName(beamName+"ExptHut");
+  
+  Control.addVariable(hutName+"YStep",0.0);
+  Control.addVariable(hutName+"Depth",120.0);
+  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"OutWidth",198.50);
+  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"InnerThick",0.1);
+  Control.addVariable(hutName+"PbThick",0.4);
+  Control.addVariable(hutName+"OuterThick",0.1);
+  Control.addVariable(hutName+"FloorThick",50.0);
+  Control.addVariable(hutName+"CornerLength",720.0);
+  Control.addVariable(hutName+"CornerAngle",45.0);
+  
+  Control.addVariable(hutName+"Depth",120.0);
+  Control.addVariable(hutName+"InnerOutVoid",10.0);
+  Control.addVariable(hutName+"OuterOutVoid",10.0);
+
+  Control.addVariable(hutName+"VoidMat","Void");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"FloorMat","Concrete");
+
+  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleMat","Void");
+
+  // lead shield on pipe
+  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
+  Control.addVariable(beamName+"PShieldYStep",0.3);
+  Control.addVariable(beamName+"PShieldLength",1.0);
+  Control.addVariable(beamName+"PShieldWidth",10.0);
+  Control.addVariable(beamName+"PShieldHeight",10.0);
+  Control.addVariable(beamName+"PShieldWallThick",0.2);
+  Control.addVariable(beamName+"PShieldClearGap",0.3);
+  Control.addVariable(beamName+"PShieldWallMat","Stainless304");
+  Control.addVariable(beamName+"PShieldMat","Lead");
+
+  Control.addVariable(hutName+"NChicane",2);
+  PortChicaneGenerator PGen;
+  PGen.setSize(4.0,40.0,30.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  /*
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
+  */
+
   return;
 }
 
@@ -532,7 +602,7 @@ mirrorBox(FuncDataBase& Control,
     \param phi :: phi angle [rotation angle in deg]
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","mirrorBox");
+  ELog::RegMethod RegA("formaxVariables[F]","mirrorBox");
   
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::MirrorGenerator MirrGen;
@@ -961,6 +1031,10 @@ FORMAXvariables(FuncDataBase& Control)
   formaxVar::opticsHutVariables(Control,"FormaxOpticsHut");
   formaxVar::opticsVariables(Control,"Formax");
 
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,"FormaxJoinPipeB",20.0);
+  
+  formaxVar::exptHutVariables(Control,"Formax",0.0);
 
   return;
 }

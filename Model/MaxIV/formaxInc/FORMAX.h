@@ -82,7 +82,13 @@ class FORMAX : public R3Beamline
   
   /// Beamline
   std::shared_ptr<formaxOpticsLine> opticsBeam;
-  
+
+  /// Optics hutch
+  std::shared_ptr<ExperimentalHutch> exptHut;
+
+  /// Pipe joining frontend to Expt hutch
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+
  public:
   
   FORMAX(const std::string&);

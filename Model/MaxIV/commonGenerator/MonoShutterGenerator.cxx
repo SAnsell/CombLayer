@@ -126,6 +126,7 @@ MonoShutterGenerator::generateShutter(FuncDataBase& Control,
   Control.addVariable(keyName+"PipeNPorts",2);
   
   const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen->setLength(14.0);
   PItemGen->generatePort(Control,keyName+"PipePort0",
 			Geometry::Vec3D(0,-4,0),ZVec);
   PItemGen->generatePort(Control,keyName+"PipePort1",
