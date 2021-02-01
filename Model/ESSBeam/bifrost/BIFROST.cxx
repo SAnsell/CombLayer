@@ -36,24 +36,27 @@
 #include <memory>
 #include <array>
 
+
+
+
+#include "FileReport.h"
+#include "OutputLog.h"
+
+
+
+
+
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "debugMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -70,38 +73,26 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
-#include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "Bunker.h"
-#include "BunkerWall.h"
-#include "BunkerInsert.h"
 #include "CompBInsert.h"
 //#include "SecondTrack.h"
-#include "LayerComp.h"
 
-#include "SurInter.h"
-#include "surfDIter.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "surfDivide.h"
 //#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "surfDBase.h"
-#include "mergeTemplate.h"
 
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -112,7 +103,6 @@
 #include "caveDetector.h"
 #include "radialCollimator.h"
 #include "brickShape.h"
-#include "InnerShield.h"
 #include "Beamstop.h"
 #include "Corner.h"
 #include "VacuumPipe.h"
@@ -120,22 +110,15 @@
 
 #include "cryoSample.h"
 #include "simpleCave.h"
-#include "BoxShutter.h"
-#include "LineShieldPlus.h"
 #include "CaveMicoBlock.h"
 #include "CaveMicoRoof.h"
 
 #include "SimpleBoxChopper.h"
 #include "ChopperPit.h"
-#include "DetectorTank.h"
-#include "CylSample.h"
-#include "LineShield.h"
 #include "LineShieldPlus.h"
 #include "InnerShield.h"
 #include "HoleShape.h"
 #include "BifrostHut.h"
-#include "variableSetup.h"
-#include "shutterBlock.h"
 
 #include "BoxShutter.h"
 #include "D03SupportBlock.h"
@@ -2026,16 +2009,16 @@ std::shared_ptr<constructSystem::D03SteelInsert> D03SteelEnforcement    =
 D03SteelShutter[4]->createAll(System,*D03UpperShutter[0],8);
 
  std::vector<int> iCells=D03BaseShutter[2]->getCells("WallBackR");
- for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(141);
+ for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(145);
    System.setMaterialDensity(iCells[ii]);}
 
 
 iCells=D03BaseShutter[2]->getCells("WallBackL");
- for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(141);
+ for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(145);
    System.setMaterialDensity(iCells[ii]);}
 
  iCells=D03BaseShutter[2]->getCells("WallFrontR");
- for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(141);
+ for(size_t ii=0; ii<iCells.size();ii++){ System.findObject(iCells[ii])->setMaterial(145);
    System.setMaterialDensity(iCells[ii]);}
 
 
