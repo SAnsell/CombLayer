@@ -3149,6 +3149,70 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
+  /////////////////////////////////////////////// DUCTS ///////////////
+  const size_t nDucts = 19;
+  Control.addVariable(wallKey+"MidTNDucts",nDucts);
+  // Duct D1 is the TDC modulator klystron duct
+  // This is the leftmost duct in K_20-2_354 [email from AR 2021-01-15].
+  const double D1YStep = 7172.435; // calculated based on K_20-2_354 and K_20-1_08F6c1
+  const double D1ZStep =  158.0; // measured on K_20-2_354
+
+  // TDC modulator klystron duct
+  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruler
+  Control.addVariable(wallKey+"MidTDuct1YStep",D1YStep-210.0); // measured with ruler
+  Control.addVariable(wallKey+"MidTDuct1ZStep",D1ZStep);
+
+  // D1 - D4
+  // K_20-2_354, A-A view, leftmost ducts
+  for (size_t i=0; i<=4; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+2);
+      Control.addVariable(name+"Radius",5.0); // K_20-2_354
+      Control.addVariable(name+"YStep",D1YStep+30*i); // K_20-2_354
+      Control.addVariable(name+"ZStep",D1ZStep); // K_20-2_354
+    }
+
+  // Ducts near the floor
+  // They are not in the drawings, but should be approx. 2 meters to the right side after
+  // D4 (last duct in the previous serie)
+  // Water pipes go through them, but to be conservative we leave them empty
+  // [email from AR 2021-01-19]
+  const double floorDuctY = D1YStep+200.0; // approx
+  for (size_t i=0; i<=4; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
+      Control.addVariable(name+"Radius",5.0); // dummy
+      Control.addVariable(name+"YStep",floorDuctY+35*i); // dummy
+      Control.addVariable(name+"ZStep",-115); // dummy
+    }
+
+  // Ducts above the BTG blocks
+  // Photo of these ducts from the SPF hall:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view
+
+  // Lower tier - AR: 210119: I would
+  // assume there is also a concrete plug in each duct, but for now
+  // start with void.
+  const double BTGductY = 9839.035; // K_20-2_355
+  for (size_t i=0; i<=5; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
+      Control.addVariable(name+"Radius",7.5); // K_20-2_355
+      Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
+      Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
+    }
+  // Upper tier
+  // Electric cables, but now we put void to be conservative
+  const double BTGductYup = BTGductY + 105.0; // K_20-2_355: 105 = 241.6-136.6
+  for (size_t i=0; i<=4; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
+      Control.addVariable(name+"Radius",5.0); // K_20-2_355
+      Control.addVariable(name+"YStep",BTGductYup+30*i); // distance: K_20-2_355
+      Control.addVariable(name+"ZStep",158.0); // measured in K_20-2_355
+    }
+  ///////////////////////////////////////////////
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
@@ -3215,6 +3279,7 @@ wallVariables(FuncDataBase& Control,
       Control.addVariable(wallKey+"Pillar"+n+"Y",y[i]);
     }
 
+  // THz penetration
   Control.addVariable(wallKey+"THzHeight",5.0); // K_20-2_348
   Control.addVariable(wallKey+"THzWidth",30.0); // K_20-2_348
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
@@ -3224,16 +3289,24 @@ wallVariables(FuncDataBase& Control,
   // Update 210112: there is Lead (see photo)
   Control.addVariable(wallKey+"THzMat","Lead");
 
-  Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
-  Control.addVariable(wallKey+"BDRoomLength",570); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFrontWallThick",150.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
-  Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
+  // Main beam dump room
+  // Top view: K_15-6_010
+  const std::string bdRoom=wallKey+"BDRoom";
+  Control.addVariable(bdRoom+"XStep",-735); // SPF line center
+  Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"Length",540); // K_15-6_011
+  Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"RoofThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
+  Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
+  Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
+  Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"HatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
+  Control.addVariable(bdRoom+"InnerWallLength",365.0+2.0); // K_15-6_010, +2 just to avoid cutting SPF45PipeB
+  Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
+  Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
+  Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2

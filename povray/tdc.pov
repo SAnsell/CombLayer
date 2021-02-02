@@ -333,10 +333,10 @@ global_settings {
     #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment43")) // SPF segment 43
-    #declare cameraLocation = <-815, 9150, 40>;
-    #declare cameraLookAt   = <-860, 9110, 0>;
+    #declare cameraLocation = <-500, 9150, 50>;
+    #declare cameraLookAt   = <-733, 9163, 0>;
     #declare projection = 0;
-    #declare cameraAngle = 90;
+    #declare cameraAngle = 60;
   #break
   #case(strcmp(ITEM,"Segment44")) // SPF segment 44
     #declare cameraLocation = <-700, 9600, 100>;
@@ -407,6 +407,24 @@ global_settings {
     #declare cameraLocation = <-430, 6210, 100>;
     #declare cameraLookAt   = <-650, 6800, -250>;
     #declare cameraAngle = 50;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"D1Duct")) // D1-D4 ducts in FKG
+    #declare cameraLocation = <550, 6640, 100>;
+    #declare cameraLookAt   = <65, 7450, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"BTG")) // BTG wall
+    #declare cameraLocation = <430, 10429, 100>;
+    #declare cameraLookAt   = <240, 10100, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
+    #declare cameraLocation = <-80, 9500, 50>;
+    #declare cameraLookAt   = <-740, 9870, -300>;
+    #declare cameraAngle = 90;
     #declare projection = 0;
   #break
   #else // whole beamline view (like All)

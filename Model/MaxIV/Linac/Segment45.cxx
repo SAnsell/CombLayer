@@ -221,14 +221,18 @@ Segment45::constructHole(Simulation& System)
   if (IHall)
     {
       std::string Out;
-      const HeadRule fbHR=IHall->combine("#Floor SubFloor");
+      const HeadRule fbHR=IHall->combine("#Floor BDRoomRoof");
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
       pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
+      // tip of pipeB enters the main beam dump room
+      pipeB->insertInCell("Main",System,IHall->getCell("BDSPF"));
+      pipeB->insertInCell("FlangeB",System,IHall->getCell("BDSPF"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"Floor",Out);
+      IHall->insertComponent(System,"HatchSPF",Out); // concrete roof
+      IHall->insertComponent(System,"BDRoofSPF",Out); // steel roof
     }
   return;
 }
@@ -246,7 +250,7 @@ Segment45::createLinks()
   nameSideIndex(1,"buildZoneCut");
   joinItems.push_back(FixedComp::getFullRule("back"));
 
-    
+
   return;
 }
 
