@@ -111,6 +111,7 @@
 #include "LBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
+#include "LocalShieldingGenerator.h"
 
 namespace setVariable
 {
@@ -237,7 +238,7 @@ SingleItemVariables(FuncDataBase& Control)
   // FMaskGen.setMinSize(10.2,0.71,0.71);
   FMaskGen.generateColl(Control,"FMask",0.0,15.0);
 
-  
+
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");
 
@@ -282,11 +283,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::GaugeGenerator GTGen;
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
- 
+
   setVariable::BremBlockGenerator BBGen;
   BBGen.generateBlock(Control,"BremBlock",0,15.0);
- 
-  
+
+
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
   CWBlankGen.setMainLength(2.4,13.6);
@@ -299,7 +300,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::IonPTubeGenerator IonPGen;
   IonPGen.generateTube(Control,"IonPTube");
 
-  
+
   setVariable::BremTubeGenerator BTGen;
   BTGen.generateTube(Control,"BremTube");
 
@@ -356,7 +357,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   DEGen.setLength(82.0);
   DEGen.generatePipe(Control,"M1DipoleOut",0.0);
-  
+
   // Beam Stop
   setVariable::LBeamStopGenerator BS;
   BS.generateBStop(Control,"BeamStop");
@@ -411,7 +412,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("YAGYAngle",-90.0);
 
   setVariable::CurveMagGenerator CMagGen;
-  CMagGen.generateMag(Control,"CMag");  
+  CMagGen.generateMag(Control,"CMag");
 
   setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
@@ -431,7 +432,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EBeamStopGenerator EBGen;
   EBGen.generateEBeamStop(Control,"EBeam",0);
-  
+
   setVariable::ScrapperGenerator SCGen;
   SCGen.generateScrapper(Control,"Scrapper",1.0);   // z lift
 
@@ -581,6 +582,16 @@ SingleItemVariables(FuncDataBase& Control)
 
   Control.addVariable(Name+"JawUnit0JOpen",1.7);
   Control.addVariable(Name+"JawUnit1JOpen",1.7);
+
+  // Local shielding wall
+  setVariable::LocalShieldingGenerator LocalShieldGen;
+  LocalShieldGen.setSize(10,60,40);
+  LocalShieldGen.setMidHoleSize(4.0,5.0);
+  LocalShieldGen.setCornerSize(10.0,5.0);
+  LocalShieldGen.generate(Control,"Wall");
+  Control.addVariable("WallYStep",24.0);
+  Control.addVariable("WallZStep",-2.5);
+
 
   return;
 }

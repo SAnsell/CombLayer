@@ -128,6 +128,7 @@
 #include "LBeamStop.h"
 #include "BremTube.h"
 #include "HPJaws.h"
+#include "LocalShielding.h"
 
 #include "makeSingleItem.h"
 
@@ -175,9 +176,10 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","HPCombine",
+      "BremTube","HPJaws","HPCombine","LocalShielding",
       "Help","help"
     });
+
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -212,7 +214,7 @@ makeSingleItem::build(Simulation& System,
 
       OR.addObject(TubeA);
       OR.addObject(TubeB);
-      
+
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
 
@@ -392,7 +394,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  
+
   if (item == "Jaws")
     {
       // diagnostic box
@@ -943,9 +945,9 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::PipeTube>
 	  pipeTube(new constructSystem::PipeTube("PipeTube"));
-	
+
 	OR.addObject(pipeTube);
-	
+
 	pipeTube->addAllInsertCell(voidCell);
 	pipeTube->createAll(System,World::masterOrigin(),0);
 
@@ -955,12 +957,12 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::PortTube>
 	  pipeTube(new constructSystem::PortTube("PortTube"));
-	
+
 	OR.addObject(pipeTube);
-	
+
 	pipeTube->addAllInsertCell(voidCell);
 	pipeTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
 
@@ -968,49 +970,49 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::BlankTube>
 	  blankTube(new constructSystem::BlankTube("BlankTube"));
-	
+
 	OR.addObject(blankTube);
-	
+
 	blankTube->addAllInsertCell(voidCell);
 	blankTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
-    
+
     if (item == "ButtonBPM" )
       {
 	std::shared_ptr<tdcSystem::ButtonBPM>
 	  buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
-	
+
 	OR.addObject(buttonBPM);
-	
+
 	buttonBPM->addInsertCell(voidCell);
 	buttonBPM->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "BremTube" )
       {
 	std::shared_ptr<xraySystem::BremTube>
 	  bremTube(new xraySystem::BremTube("BremTube"));
-	
+
 	OR.addObject(bremTube);
-	
+
 	bremTube->addInsertCell(voidCell);
 	bremTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "HPJaws" )
       {
 	std::shared_ptr<xraySystem::HPJaws>
 	  hp(new xraySystem::HPJaws("HPJaws"));
-	
+
 	OR.addObject(hp);
-	
+
 	hp->addInsertCell(voidCell);
 	hp->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
     if (item == "HPCombine" )
@@ -1019,33 +1021,54 @@ makeSingleItem::build(Simulation& System,
 	  bremTube(new xraySystem::BremTube("BremTube"));
 	std::shared_ptr<xraySystem::HPJaws>
 	  hp(new xraySystem::HPJaws("HPJaws"));
-	
+
 	OR.addObject(bremTube);
 	OR.addObject(hp);
-	
+
 	bremTube->addInsertCell(voidCell);
 	bremTube->createAll(System,World::masterOrigin(),0);
-	
+
 	hp->addInsertCell(voidCell);
 	hp->setFront(*bremTube,2);
 	hp->setFlangeJoin();
 	hp->createAll(System,*bremTube,"back");
-	
+
 	return;
       }
-    
-    
+
+    if (item == "LocalShielding" )
+    {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VC"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	wall(new tdcSystem::LocalShielding("Wall"));
+
+      OR.addObject(VC);
+      OR.addObject(wall);
+
+      VC->addAllInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      wall->setCutSurf("Inner",*VC,"outerPipe");
+      wall->addInsertCell(voidCell);
+      wall->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+
+
     if (item=="Help" || item=="help")
       {
-	
+
 	ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
-	
+
 	for(const std::string& Name : validItems)
 	  ELog::EM<<"Item : "<<Name<<"\n";
-	
+
 	ELog::EM<<"-----------"<<ELog::endDiag;
       }
-    
+
   return;
 }
 
