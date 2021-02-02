@@ -689,12 +689,12 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // notch: big conical cell
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
   if (engActive)
     buildStiffeners(System,Out,buildIndex+3000,nSectors/2,steelMat);
   else
     System.addCell(MonteCarlo::Object(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
-
+  
 
   // shaft layers
   int SI(buildIndex);
@@ -729,12 +729,14 @@ BilbaoWheel::createShaftObjects(Simulation& System)
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
-				 " (-2007M -2006 2125) : " // connection
-				 " (2126 -2149) : " // upper stiffeners
-				 " (2126 -2186 -2157) : "  // above upper stiffeners
-				 " (-2118 2125 -2126) : " // 2nd step
-				 " ((-2239:-2247) 2205 -2125) "); // base
+  
+Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
+			        " (-2007M -2006 2125) : " // connection
+			       	 " (2126 -2149 -2146) : " // upper stiffeners
+			       " (2126 -2186 -2157)  : "  // above upper stiffeners
+			     " (-2118 2125 -2126) : " // 2nd step
+			     " ((-2239:-2247) 2205 -2125) "); // base
+  
   addOuterSurf("Shaft",Out);
 
   return;
