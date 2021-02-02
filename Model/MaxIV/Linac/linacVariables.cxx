@@ -86,6 +86,7 @@
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "LocalShieldingGenerator.h"
 
 namespace setVariable
 {
@@ -2856,6 +2857,13 @@ Segment46(FuncDataBase& Control,
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeA",96.8);
+
+  setVariable::LocalShieldingGenerator LSGen;
+  const double tmp = 4.0; // cut height to avoid overlap with SPF44
+  LSGen.setSize(10,60,40-tmp);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",89.0);
+  Control.addVariable(lKey+"ShieldAZStep",-7.5+tmp/2.0);
 
   const double pipeBLength(40.0);
   PGen.setCF<setVariable::CF16_TDC>();

@@ -82,6 +82,7 @@
 #include "CylGateValve.h"
 #include "CrossWayTube.h"
 #include "PrismaChamber.h"
+#include "LocalShielding.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -96,6 +97,7 @@ Segment46::Segment46(const std::string& Key) :
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   prismaChamber(new tdcSystem::PrismaChamber(keyName+"PrismaChamber")),
@@ -121,6 +123,7 @@ Segment46::Segment46(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(gateA);
   OR.addObject(bellowA);
   OR.addObject(prismaChamber);
@@ -229,8 +232,9 @@ Segment46::buildObjects(Simulation& System)
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  outerCell=IZThin->createUnit(System,*pipeA,2);
-  pipeA->insertAllInCell(System,outerCell);
+
+  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*gateA);
@@ -365,7 +369,7 @@ Segment46::postBuild(Simulation& System)
       if (segNames.find("SPF44")!=segNames.end() &&
 	  segNames.find("SPF45")!=segNames.end())
 	{
-	  
+
 	  mapTYPE::const_iterator mc=segNames.find("SPF45");
 	  const TDCsegment* sideSegment=mc->second;
 	  const HeadRule frontHR=IZThin->getBack();

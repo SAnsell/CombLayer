@@ -38,6 +38,7 @@ namespace tdcSystem
 {
   class CleaningMagnet;
   class PrismaChamber;
+  class LocalShielding;
 
   /*!
     \class Segment46
@@ -53,8 +54,9 @@ class Segment46 :
  private:
 
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
-  
+
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #2x50
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #3
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamber; ///< #4
@@ -68,13 +70,13 @@ class Segment46 :
   std::shared_ptr<constructSystem::Bellows> bellowC; // #10
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #11
   std::shared_ptr<constructSystem::Bellows> bellowD; ///< Additional bellow
-  
+
   void createSplitInnerZone(Simulation&);
   void buildObjects(Simulation&);
   void createLinks();
 
   void postBuild(Simulation&);
-  
+
  public:
 
   Segment46(const std::string&);
@@ -84,7 +86,7 @@ class Segment46 :
 
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const override;
 
-  void writePoints() const override; 
+  void writePoints() const override;
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
