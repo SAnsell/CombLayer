@@ -433,6 +433,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 65;
   #break
+  #case(strcmp(ITEM,"SPF48ShieldA")) // local shielding at SPF48 - img_5378.mp4
+    #declare cameraLocation = <-850, 9830, 20>;
+    #declare cameraLookAt   = <-730, 9900, -10>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
   #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
     #declare cameraLocation = <-900, 9850, 20>;
     #declare cameraLookAt   = <-730, 10025, 0>;

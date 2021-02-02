@@ -3023,10 +3023,25 @@ Segment48(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowB",10.0); // measured
   setBellow26(Control,lKey+"BellowC",10.0); // measured
 
-  // Pipe
-
   // Mirror Chamber
   setMirrorChamber(Control, lKey+"MirrorChamberA",90.0);
+
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
+  // time: 12:00
+  setVariable::LocalShieldingGenerator LSGen;
+  const double lsHeight = 35.0;
+  // Average length estimate (dimension along the beam line):
+  //   total height is made of:
+  //    3 bricks of 5 cm height (10 cm length): 5*3=15
+  //    2 bricks of 10 cm height (5 cm length): 10*2=20
+  const double lsLength = (15*10+20*5)/lsHeight;
+  LSGen.setSize(lsLength,40,lsHeight);
+  LSGen.setMidHoleSize(4.1,4.1);
+  LSGen.setCornerSize(10.0,5.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",6.0);
+  Control.addVariable(lKey+"ShieldAZStep",-2.5);
 
   return;
 }

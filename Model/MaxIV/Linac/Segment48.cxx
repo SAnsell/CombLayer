@@ -77,6 +77,8 @@
 #include "EBeamStop.h"
 #include "JawFlange.h"
 #include "CrossWayTube.h"
+#include "LocalShielding.h"
+#include "LObjectSupportB.h"
 
 #include "TDCsegment.h"
 #include "Segment48.h"
@@ -92,6 +94,7 @@ Segment48::Segment48(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   beamStopB(new tdcSystem::EBeamStop(keyName+"BeamStopB")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
   jaws({
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
@@ -112,6 +115,7 @@ Segment48::Segment48(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(beamStopB);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(slitTube);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberA);
@@ -137,11 +141,11 @@ Segment48::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment48","buildObjects");
 
   int outerCell;
-  
+
   if (isActive("front"))
     beamStopA->copyCutSurf("front",*this,"front");
   beamStopA->createAll(System,*this,0);
-  
+
   outerCell=buildZone->createUnit(System,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 
@@ -151,8 +155,10 @@ Segment48::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*beamStopB);
 
-  constructSystem::constructUnit
-    (System,*buildZone,*beamStopB,"back",*pipeA);
+  pipeA->createAll(System,*beamStopB,"back");
+
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*slitTube);
@@ -174,7 +180,7 @@ Segment48::buildObjects(Simulation& System)
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
   			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
-  
+
   constructSystem::constructUnit
     (System,*buildZone,*slitTube,"back",*bellowB);
 
