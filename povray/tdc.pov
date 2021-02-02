@@ -20,7 +20,7 @@
 #declare projection = 0;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -369,8 +369,8 @@ global_settings {
     #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment49")) // SPF segment 49
-    #declare cameraLocation = <-700, 10000, 30>;
-    #declare cameraLookAt   = <-860, 10070, 0>;
+    #declare cameraLocation = <-700, 9790, 30>;
+    #declare cameraLookAt   = <-730, 9930, 0>;
     #declare projection = 0;
     #declare cameraAngle = 90;
   #break
@@ -426,6 +426,18 @@ global_settings {
     #declare cameraLookAt   = <-740, 9870, -300>;
     #declare cameraAngle = 90;
     #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"SPF46ShieldA")) // local shielding at SPF46 - img_5375.jpg
+    #declare cameraLocation = <-850, 9450, 20>;
+    #declare cameraLookAt   = <-730, 9385, -20>;
+    #declare projection = 0;
+    #declare cameraAngle = 65;
+  #break
+  #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
+    #declare cameraLocation = <-900, 9850, 20>;
+    #declare cameraLookAt   = <-730, 10025, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

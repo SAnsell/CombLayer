@@ -24,6 +24,8 @@
 
 namespace tdcSystem
 {
+  class LocalShielding;
+
   /*!
     \class Segment49
     \version 1.0
@@ -41,6 +43,7 @@ class Segment49 :
 
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #1
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #3
   std::shared_ptr<xraySystem::CylGateValve> gateB;    // #4
 

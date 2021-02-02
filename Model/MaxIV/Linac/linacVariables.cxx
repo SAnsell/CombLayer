@@ -3063,6 +3063,17 @@ Segment49(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeA",51.29-15); // TODO -15 is artificial to avoid clipping with BackWall
   PGen.generatePipe(Control,lKey+"PipeB",230.0);
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(20,40,40);
+  LSGen.setMidHoleSize(4.0,5.0);
+  LSGen.setCornerSize(0.0,0.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",24.0);
+  Control.addVariable(lKey+"ShieldAZStep",-2.5);
+
+
   return;
 }
 

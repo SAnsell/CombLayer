@@ -69,8 +69,10 @@
 #include "CylGateValve.h"
 #include "VacuumPipe.h"
 #include "LObjectSupportB.h"
-#include "TDCsegment.h"
 #include "InjectionHall.h"
+#include "LocalShielding.h"
+
+#include "TDCsegment.h"
 #include "Segment49.h"
 
 
@@ -84,6 +86,7 @@ Segment49::Segment49(const std::string& Key) :
   IHall(nullptr),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   gateB(new xraySystem::CylGateValve(keyName+"GateB"))
   /*!
@@ -96,6 +99,7 @@ Segment49::Segment49(const std::string& Key) :
 
   OR.addObject(gateA);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(pipeB);
   OR.addObject(gateB);
 
@@ -199,8 +203,10 @@ Segment49::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,*gateA,"back",*pipeA);
+  pipeA->createAll(System,*gateA,2);
+
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*buildZone,pipeA);
 
   pipeB->createAll(System,*pipeA,"back");
   outerCell=buildZone->createUnit(System);

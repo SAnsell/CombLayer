@@ -206,7 +206,7 @@ LocalShielding::createObjects(Simulation& System)
   const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
   const std::string side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
-  if (cornerWidth*cornerHeight>0.0) // cut corners needed
+  if ((cornerWidth>Geometry::zeroTol) && (cornerHeight>Geometry::zeroTol))
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 -26 ");
       makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);

@@ -45,8 +45,8 @@ class LocalShieldingGenerator
   double zStep;                 ///< z offset
   double midHoleWidth;          ///< Width of the beam pipe penetration
   double midHoleHeight;         ///< Height of the beam pipe penetration
-  double cornerHeight;          ///< Corner cut height
   double cornerWidth;           ///< Corner cut width
+  double cornerHeight;          ///< Corner cut height
 
   std::string mainMat;          ///< Main material
 
@@ -58,6 +58,7 @@ class LocalShieldingGenerator
   virtual ~LocalShieldingGenerator();
 
   void setSize(const double, const double, const double);
+  void setMidHoleSize(const double, const double);
   void setCornerSize(const double, const double);
 
   virtual void generate(FuncDataBase&,const std::string&) const;

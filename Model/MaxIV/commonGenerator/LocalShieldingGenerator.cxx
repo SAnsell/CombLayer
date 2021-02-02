@@ -83,6 +83,20 @@ LocalShieldingGenerator::setSize(const double L, const double W, const double H)
 }
 
 void
+LocalShieldingGenerator::setMidHoleSize(const double W, const double H)
+{
+/*!
+  Mid hole size setter
+  \param W :: width
+  \param W :: height
+ */
+  midHoleWidth  = W;
+  midHoleHeight = H;
+
+  return;
+}
+
+void
 LocalShieldingGenerator::setCornerSize(const double W, const double H)
 {
 /*!

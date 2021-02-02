@@ -40,7 +40,7 @@ class Segment44 :
  private:
 
   std::shared_ptr<tdcSystem::TriGroup> triBend;  ///< vacuum part of bending mag
-  std::shared_ptr<tdcSystem::CurveMagnet> cMag;  ///< Magnet unit
+  std::shared_ptr<tdcSystem::CurveMagnet> cMag;  ///< Main beam dump magnet (DIP BD2)
 
   void buildObjects(Simulation&);
   void createLinks();
