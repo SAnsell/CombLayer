@@ -126,6 +126,7 @@
 #include "IonGauge.h"
 #include "TriggerTube.h"
 #include "LBeamStop.h"
+#include "PIKFuelElement.h"
 
 #include "makeSingleItem.h"
 
@@ -173,6 +174,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
+      "PIKFuelElement",
       "Help","help"
     });
 
@@ -209,7 +211,7 @@ makeSingleItem::build(Simulation& System,
 
       OR.addObject(TubeA);
       OR.addObject(TubeB);
-      
+
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
 
@@ -389,7 +391,7 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  
+
   if (item == "Jaws")
     {
       // diagnostic box
@@ -940,9 +942,9 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::PipeTube>
 	  pipeTube(new constructSystem::PipeTube("PipeTube"));
-	
+
 	OR.addObject(pipeTube);
-	
+
 	pipeTube->addAllInsertCell(voidCell);
 	pipeTube->createAll(System,World::masterOrigin(),0);
 
@@ -952,12 +954,12 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::PortTube>
 	  pipeTube(new constructSystem::PortTube("PortTube"));
-	
+
 	OR.addObject(pipeTube);
-	
+
 	pipeTube->addAllInsertCell(voidCell);
 	pipeTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
 
@@ -965,40 +967,53 @@ makeSingleItem::build(Simulation& System,
       {
 	std::shared_ptr<constructSystem::BlankTube>
 	  blankTube(new constructSystem::BlankTube("BlankTube"));
-	
+
 	OR.addObject(blankTube);
-	
+
 	blankTube->addAllInsertCell(voidCell);
 	blankTube->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
-    
+
     if (item == "ButtonBPM" )
       {
 	std::shared_ptr<tdcSystem::ButtonBPM>
 	  buttonBPM(new tdcSystem::ButtonBPM("ButtonBPM"));
-	
+
 	OR.addObject(buttonBPM);
-	
+
 	buttonBPM->addInsertCell(voidCell);
 	buttonBPM->createAll(System,World::masterOrigin(),0);
-	
+
 	return;
       }
-    
-    
+
+    if (item == "PIKFuelElement" )
+      {
+	std::shared_ptr<pikSystem::PIKFuelElement>
+	  pfe(new pikSystem::PIKFuelElement("PIKFuelElement"));
+
+	OR.addObject(pfe);
+
+	pfe->addInsertCell(voidCell);
+	pfe->createAll(System,World::masterOrigin(),0);
+
+	return;
+      }
+
+
     if (item=="Help" || item=="help")
       {
-	
+
 	ELog::EM<<"Valid items for single selection:\n"<<ELog::endDiag;
-	
+
 	for(const std::string& Name : validItems)
 	  ELog::EM<<"Item : "<<Name<<"\n";
-	
+
 	ELog::EM<<"-----------"<<ELog::endDiag;
       }
-    
+
   return;
 }
 
