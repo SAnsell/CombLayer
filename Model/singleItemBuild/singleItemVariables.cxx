@@ -111,6 +111,7 @@
 #include "LBeamStopGenerator.h"
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
+#include "BoxJawsGenerator.h"
 #include "ViewScreenGenerator.h"
 
 namespace setVariable
@@ -307,6 +308,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::HPJawsGenerator HPGen;
   HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
+
+  setVariable::BoxJawsGenerator BJGen;
+  BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

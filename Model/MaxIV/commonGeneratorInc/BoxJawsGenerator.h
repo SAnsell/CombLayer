@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonGeneratorInc/HPJawsGenerator.h
+ * File:   commonGeneratorInc/BoxJawsGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_HPJawsGenerator_h
-#define setVariable_HPJawsGenerator_h
+#ifndef setVariable_BoxJawsGenerator_h
+#define setVariable_BoxJawsGenerator_h
 
 class FuncDataBase;
 
@@ -32,25 +32,23 @@ namespace setVariable
   \version 1.0
   \author S. Ansell
   \date April 2020
-  \brief HPJawsGenerator for variables
+  \brief HRJawGenerator for variables
 */
 
-class HPJawsGenerator 
+class BoxJawsGenerator 
 {
  private:
   
 
-  double radius;           ///< main void radius
-  double length;           ///< Void length 
+  double width;            ///< main outer width
+  double height;           ///< main outer height
+  double length;           ///< outer length 
   double sideThick;        ///< Wall thickness
   double wallThick;        ///< Front/Back Wall thickness
 
   double flangeInnerRadius;  ///< Port radius
   double flangeRadius;       ///< Attached back flange radius
   double flangeLength;       ///<  Attached back flange length 
-
-  double dividerThick;       ///< Divider for jaws
-  double dividerGap;         ///< Mid point divider gap [static]
 
   double jawFarLen;          ///< Length extending away from beam
   double jawEdgeLen;         ///< Length on cutting surface
@@ -64,10 +62,10 @@ class HPJawsGenerator
  
  public:
 
-  HPJawsGenerator();
-  HPJawsGenerator(const HPJawsGenerator&);
-  HPJawsGenerator& operator=(const HPJawsGenerator&);
-  virtual ~HPJawsGenerator();
+  BoxJawsGenerator();
+  BoxJawsGenerator(const BoxJawsGenerator&);
+  BoxJawsGenerator& operator=(const BoxJawsGenerator&);
+  virtual ~BoxJawsGenerator();
 
   template<typename T> void setPortCF();
   

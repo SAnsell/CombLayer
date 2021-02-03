@@ -129,6 +129,7 @@
 #include "LBeamStop.h"
 #include "BremTube.h"
 #include "HPJaws.h"
+#include "BoxJaws.h"
 #include "ViewScreenTube.h"
 
 #include "makeSingleItem.h"
@@ -177,7 +178,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","HPCombine","ViewTube",
+      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "Help","help"
     });
 
@@ -1027,7 +1028,19 @@ makeSingleItem::build(Simulation& System,
 	
 	return;
       }
-    if (item == "HPCombine" )
+    if (item == "BoxJaws")
+      {
+	std::shared_ptr<xraySystem::BoxJaws>
+	  bj(new xraySystem::BoxJaws("BoxJaws"));
+	
+	OR.addObject(bj);
+	
+	bj->addInsertCell(voidCell);
+	bj->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPCombine")
       {
 	std::shared_ptr<xraySystem::BremTube>
 	  bremTube(new xraySystem::BremTube("BremTube"));
