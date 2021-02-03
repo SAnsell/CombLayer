@@ -277,6 +277,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
+  SPGen.generateSixPort(Control,"FourPort");
 
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
@@ -546,13 +547,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   const double Radius(7.5);
   const double WallThick(0.5);
-  const double PortRadius(Radius+WallThick+0.5);
+  const double portRadius(Radius+WallThick+0.5);
   PTubeGen.setPipe(Radius,WallThick);
   PTubeGen.setPortCF<setVariable::CF40>();
   const double sideWallThick(1.0);
   PTubeGen.setPortLength(-sideWallThick,sideWallThick);
-  PTubeGen.setAFlange(PortRadius,sideWallThick);
-  PTubeGen.setBFlange(PortRadius,sideWallThick);
+  PTubeGen.setAFlange(portRadius,sideWallThick);
+  PTubeGen.setBFlange(portRadius,sideWallThick);
   PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",4);
 
@@ -564,14 +565,14 @@ SingleItemVariables(FuncDataBase& Control)
 
   // first 2 ports are with jaws, others - without jaws
   PItemGen.setOuterVoid(1);  // create boundary round flange
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(portRadius+5.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setCF<setVariable::CF63>(portRadius+10.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
 
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setCF<setVariable::CF63>(portRadius+5.0);
   PItemGen.generatePort(Control,portName+"2",-PPos,-ZVec);
-  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setCF<setVariable::CF63>(portRadius+10.0);
   PItemGen.generatePort(Control,portName+"3",MidPt,-XVec);
 
   // PItemGen.setCF<setVariable::CF63>(10.0);

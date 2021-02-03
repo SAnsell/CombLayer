@@ -99,7 +99,7 @@
 #include "R3FrontEnd.h"
 #include "formaxFrontEnd.h"
 #include "formaxOpticsLine.h"
-#include "ConnectZone.h"
+#include "formaxExptLine.h"
 #include "PipeShield.h"
 
 #include "R3Beamline.h"
@@ -116,7 +116,8 @@ FORMAX::FORMAX(const std::string& KN) :
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new formaxOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
-  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  exptBeam(new formaxExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -133,6 +134,7 @@ FORMAX::FORMAX(const std::string& KN) :
   OR.addObject(opticsBeam);
   OR.addObject(exptHut);
   OR.addObject(joinPipeB);
+  OR.addObject(exptBeam);
 }
 
 FORMAX::~FORMAX()
@@ -209,20 +211,26 @@ FORMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
-  
-  
+    
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*opticsHut,"exitHole");
 
-
-  ELog::EM<<"Last Cell = "<<opticsBeam->getCell("LastVoid")<<ELog::endDiag;
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->setCutSurf("front",*exptHut,
+			 exptHut->getSideIndex("innerFront"));
+  exptBeam->setCutSurf("back",*exptHut,
+			 exptHut->getSideIndex("innerBack"));
+  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeam->setPreInsert(joinPipeB);
+  exptBeam->createAll(System,*joinPipeB,2);
 
 
   return;

@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/commonBeam/FilterHolder.cxx
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2019-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

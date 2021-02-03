@@ -92,6 +92,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
+#include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
@@ -168,7 +169,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield",
+      "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
@@ -698,6 +699,18 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="FourPort")
+    {
+      std::shared_ptr<xraySystem::FourPortTube>
+	FP(new xraySystem::FourPortTube("FourPort"));
+
+      OR.addObject(FP);
+
+      FP->addInsertCell(voidCell);
+      FP->createAll(System,World::masterOrigin(),0);
 
       return;
     }

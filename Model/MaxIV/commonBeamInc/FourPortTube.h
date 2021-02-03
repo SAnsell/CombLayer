@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/SixPortTube.h
+ * File:   commonBeamInc/FourPortTube.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_SixPortTube_h
-#define tdcSystem_SixPortTube_h
+#ifndef xraySystem_FourPortTube_h
+#define xraySystem_FourPortTube_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 
   /*!
-  \class SixPortTube
+  \class FourPortTube
   \version 1.0
   \author S. Ansell
   \date May 2020
 
-  \brief SixPortTube for Max-IV
+  \brief FourPortTube for Max-IV
 */
 
-class SixPortTube :
+class FourPortTube :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -50,9 +50,9 @@ class SixPortTube :
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
 
-  double frontLength;            ///< full to flange length
-  double backLength;             ///< full to flange length
-  double sideLength;              ///< full to flange length
+  double frontLength;           ///< full to flange length
+  double backLength;            ///< full to flange length
+  double sideLength;            ///< full to flange length
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius
@@ -76,11 +76,11 @@ class SixPortTube :
 
  public:
 
-  SixPortTube(const std::string&);
-  SixPortTube(const std::string&,const std::string&);
-  SixPortTube(const SixPortTube&);
-  SixPortTube& operator=(const SixPortTube&);
-  virtual ~SixPortTube();
+  FourPortTube(const std::string&);
+  FourPortTube(const std::string&,const std::string&);
+  FourPortTube(const FourPortTube&);
+  FourPortTube& operator=(const FourPortTube&);
+  virtual ~FourPortTube();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

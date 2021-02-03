@@ -91,6 +91,7 @@
 #include "MLMonoGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "YagScreenGenerator.h"
+#include "SixPortGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
 
@@ -112,7 +113,9 @@ void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 
 void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
-
+void opticsVariables(FuncDataBase&,const std::string&);
+void exptVariables(FuncDataBase&,const std::string&);
+  
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -836,7 +839,6 @@ opticsVariables(FuncDataBase& Control,
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::CrossGenerator CrossGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -921,79 +923,49 @@ opticsVariables(FuncDataBase& Control,
   return;
 }
 
-
 void
-connectingVariables(FuncDataBase& Control)
-  /*!
-    Variables for the connecting region
-    \param Control :: DataBase
+exptVariables(FuncDataBase& Control,
+	      const std::string& beamName)
+/*
+    Vacuum expt components in the optics hutch
+    \param Control :: Function data base
+    \param beamName :: Name of beamline
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","connectingVariables");
+  ELog::RegMethod RegA("formaxVariables[F]","exptVariables");
 
-  const std::string baseName="FormaxConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
-  Control.addVariable(baseName+"OuterRadius",60.0);
-  
   setVariable::BellowGenerator BellowGen;
-  setVariable::LeadPipeGenerator LeadPipeGen;
-  setVariable::PortTubeGenerator PTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::LeadBoxGenerator LBGen;
-  
-  PItemGen.setCF<setVariable::CF40>(3.0);
-  PItemGen.setPlate(0.0,"Void");  
-  
-  BellowGen.setCF<CF40>();  
-  BellowGen.generateBellow(Control,baseName+"BellowA",10.0);
-
-  LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
+  setVariable::SixPortGenerator CrossGen;
+  setVariable::MonoBoxGenerator VBoxGen;
     
-  LeadPipeGen.setCF<CF40>();
-  LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",152.0);
-  Control.addVariable(baseName+"PipeAYStep",10.0);
-  
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setPipeCF<CF40>();
-  PTubeGen.setPortCF<CF40>();
-  PTubeGen.setPortLength(3.0,3.0);
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,4.0);
-  Control.addVariable(baseName+"IonPumpANPorts",1);
-  PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
+  const std::string preName(beamName+"ExptLine");
 
+  Control.addVariable(preName+"OuterLeft",70.0);
+  Control.addVariable(preName+"OuterRight",50.0);
+  Control.addVariable(preName+"OuterTop",60.0);
 
-  // temp offset
-  LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
+  BellowGen.setCF<setVariable::CF40>();
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",188.0);
-  Control.addVariable(baseName+"PipeBYStep",PTubeGen.getTotalLength(4.0));
-  
-  BellowGen.generateBellow(Control,baseName+"BellowB",10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
-  
-  
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",188.0);
-  Control.addVariable(baseName+"PipeCYStep",10.0);
-  
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
-  
-  Control.addVariable(baseName+"IonPumpBNPorts",1);
-  PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
-  
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",172.0);
-  Control.addVariable(baseName+"PipeDYStep",PTubeGen.getTotalLength(4.0));
+  BellowGen.generateBellow(Control,preName+"BellowA",15.0);
 
-  BellowGen.generateBellow(Control,baseName+"BellowC",10.0);
-  LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
+  
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setCF<CF40>();
+  VBoxGen.setPortLength(3.5,3.5); // La/Lb
+  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
+  VBoxGen.generateBox(Control,preName+"FilterBoxA",5.8,4.5,4.5,20.0);
+
+  BellowGen.generateBellow(Control,preName+"BellowB",7.5);
+
+  CrossGen.setCF<setVariable::CF40>();
+  CrossGen.setLength(7.0,7.0,6.5);
+  CrossGen.generateSixPort(Control,preName+"CrossA");
+
+  BellowGen.generateBellow(Control,preName+"BellowC",7.5);
   
   return;
 }
+
 
 }  // NAMESPACE formaxVar
   
@@ -1035,7 +1007,7 @@ FORMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"FormaxJoinPipeB",20.0);
   
   formaxVar::exptHutVariables(Control,"Formax",0.0);
-
+  formaxVar::exptVariables(Control,"Formax");
   return;
 }
 
