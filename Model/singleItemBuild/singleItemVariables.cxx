@@ -112,6 +112,7 @@
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
+#include "DiffPumpGenerator.h"
 #include "ViewScreenGenerator.h"
 
 namespace setVariable
@@ -311,6 +312,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BoxJawsGenerator BJGen;
   BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
+
+  CF40 CFflange;
+  //  setVariable::DiffPumpGenerator DPGen(CFflange);
+  //  DPGen.generatePump(Control,"DiffPump",27.4);
+
+  setVariable::DiffPumpGenerator DPGen;
+  DPGen.generatePump(Control,"DiffPump",54.4);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

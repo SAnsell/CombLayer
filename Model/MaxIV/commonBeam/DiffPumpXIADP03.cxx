@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxs/DiffPumpXIADP03.cxx
+ * File:   commonBeam/DiffPumpXIADP03.cxx
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2019-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -81,12 +81,12 @@
 
 #include "DiffPumpXIADP03.h"
 
-namespace constructSystem
+namespace xraySystem
 {
 
 DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -111,7 +111,7 @@ DiffPumpXIADP03::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DiffPumpXIADP03","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -124,6 +124,7 @@ DiffPumpXIADP03::populate(const FuncDataBase& Control)
   flangeVoidWidth=Control.EvalVar<double>(keyName+"FlangeVoidWidth");
   flangeVoidHeight=Control.EvalVar<double>(keyName+"FlangeVoidHeight");
   flangeVoidThick=Control.EvalVar<double>(keyName+"FlangeVoidThick");
+
   magnetWidth=Control.EvalVar<double>(keyName+"MagnetWidth");
   magnetLength=Control.EvalVar<double>(keyName+"MagnetLength");
   magnetThick=Control.EvalVar<double>(keyName+"MagnetThick");
@@ -132,23 +133,6 @@ DiffPumpXIADP03::populate(const FuncDataBase& Control)
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   magnetMat=ModelSupport::EvalMat<int>(Control,keyName+"MagnetMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
-
-  return;
-}
-
-void
-DiffPumpXIADP03::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("DiffPumpXIADP03","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -367,7 +351,7 @@ DiffPumpXIADP03::createAll(Simulation& System,
 		       const long int sideIndex)
   /*!
     Generic function to create everything
-    \param System :: Simulation item
+    \param System :: Si\mulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
   */

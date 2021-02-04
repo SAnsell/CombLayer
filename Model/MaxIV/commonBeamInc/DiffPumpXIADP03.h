@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/DiffPumpXIADP03.h
+ * File:   commonBeamInc/DiffPumpXIADP03.h
  *
- * Copyright (c) 2019 by Konstantin Batkov
+ * Copyright (c) 2019-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 class Simulation;
 
-namespace constructSystem
+namespace xraySystem
 {
 
 /*!
@@ -38,7 +38,7 @@ namespace constructSystem
 
 class DiffPumpXIADP03 :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::ExternalCut
@@ -67,9 +67,6 @@ class DiffPumpXIADP03 :
   int flangeMat;             ///< Flange material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -81,6 +78,7 @@ class DiffPumpXIADP03 :
   DiffPumpXIADP03& operator=(const DiffPumpXIADP03&);
   virtual ~DiffPumpXIADP03();
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

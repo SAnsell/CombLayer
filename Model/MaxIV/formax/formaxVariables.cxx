@@ -92,6 +92,7 @@
 #include "ViewScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
+#include "PipeShieldGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
 
@@ -115,6 +116,7 @@ void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptVariables(FuncDataBase&,const std::string&);
+void shieldVariables(FuncDataBase&,const std::string&);
   
 
 void
@@ -398,6 +400,7 @@ diag4Package(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   
   GVGen.generateGate(Control,diagKey+"GateTubeF",0);
+
   VSGen.setPortBCF<CF40>();
   VSGen.generateView(Control,diagKey+"ViewTubeB");
 
@@ -566,15 +569,15 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(beamName+"PShieldYStep",0.3);
-  Control.addVariable(beamName+"PShieldLength",1.0);
-  Control.addVariable(beamName+"PShieldWidth",10.0);
-  Control.addVariable(beamName+"PShieldHeight",10.0);
-  Control.addVariable(beamName+"PShieldWallThick",0.2);
-  Control.addVariable(beamName+"PShieldClearGap",0.3);
-  Control.addVariable(beamName+"PShieldWallMat","Stainless304");
-  Control.addVariable(beamName+"PShieldMat","Lead");
+  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"PShieldYStep",0.3);
+  Control.addVariable(hutName+"PShieldLength",1.0);
+  Control.addVariable(hutName+"PShieldWidth",10.0);
+  Control.addVariable(hutName+"PShieldHeight",10.0);
+  Control.addVariable(hutName+"PShieldWallThick",0.2);
+  Control.addVariable(hutName+"PShieldClearGap",0.3);
+  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
+  Control.addVariable(hutName+"PShieldMat","Lead");
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
@@ -589,6 +592,28 @@ exptHutVariables(FuncDataBase& Control,
 
   return;
 }
+
+void
+shieldVariables(FuncDataBase& Control,
+		const std::string& preName)
+  /*!
+    Shield variables
+    \param Control :: DataBase to add
+  */
+{
+  ELog::RegMethod RegA("formaxVariables","shieldVariables");
+  
+  Control.addVariable(preName+"PShieldLength",5.0);
+  Control.addVariable(preName+"PShieldWidth",60.0);
+  Control.addVariable(preName+"PShieldHeight",60.0);
+  Control.addVariable(preName+"PShieldWallThick",0.5);
+  Control.addVariable(preName+"PShieldClearGap",0.3);
+  Control.addVariable(preName+"PShieldWallMat","Stainless304");
+  Control.addVariable(preName+"PShieldMat","Lead");
+
+  return;
+}
+  
 
 void
 mirrorBox(FuncDataBase& Control,
@@ -940,7 +965,7 @@ exptVariables(FuncDataBase& Control,
     
   const std::string preName(beamName+"ExptLine");
 
-  Control.addVariable(preName+"OuterLeft",70.0);
+  Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
 
@@ -1005,6 +1030,8 @@ FORMAXvariables(FuncDataBase& Control)
 
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,"FormaxJoinPipeB",20.0);
+
+  formaxVar::shieldVariables(Control,"Formax");
   
   formaxVar::exptHutVariables(Control,"Formax",0.0);
   formaxVar::exptVariables(Control,"Formax");

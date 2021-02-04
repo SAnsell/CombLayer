@@ -271,7 +271,6 @@ HeatDump::createSurfaces()
   // bellows flange
   const double BL((upFlag) ? bellowLength+lift : bellowLength);
 
-    
   ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin+Y*(topFlangeLength+BL),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,

@@ -117,6 +117,7 @@ FORMAX::FORMAX(const std::string& KN) :
   opticsBeam(new formaxOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  pShield(new xraySystem::PipeShield(newName+"PShield")),
   exptBeam(new formaxExptLine(newName+"ExptLine"))
   /*!
     Constructor
@@ -222,6 +223,12 @@ FORMAX::build(Simulation& System,
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
+
+  // pipe shield goes around joinPipeB:
+
+  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  pShield->createAll(System,*opticsHut,"innerBack");
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,

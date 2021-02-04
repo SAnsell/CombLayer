@@ -3,7 +3,7 @@
  
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,47 +254,53 @@ UTubePipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("UTubePipe","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
+  const HeadRule& frontHR=getFrontRule();
+  const HeadRule& backHR=getBackRule();
   
   // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex,"(3:-7) (-4:-8) 5 -6 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 6 -16");
-  makeCell("TopPipe",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-3 -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 -5 15");
-  makeCell("BasePipe",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -8 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -3 7 -17 ");
-  makeCell("LeftPipe",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 6 -16");
+  makeCell("TopPipe",System,cellIndex++,feMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 4 8 -18 ");
-  makeCell("RightPipe",System,cellIndex++,feMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 -5 15");
+  makeCell("BasePipe",System,cellIndex++,feMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -3 7 -17 ");
+  makeCell("LeftPipe",System,cellIndex++,feMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 4 8 -18 ");
+  makeCell("RightPipe",System,cellIndex++,feMat,0.0,HR);
 
   // FLANGE Front: 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 " -11 -107 ((7 -3) : (8 4) : -5 : 6) ");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
+  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  Out=ModelSupport::getComposite(SMap,buildIndex,
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 " 12 -207 ((7 -3) : (8 4) : -5 : 6) ");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,Out+backStr);
+  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
   // outer boundary [flange front/back]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-  addOuterSurf("FFlange",Out+frontStr);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
-  addOuterUnionSurf("BFlange",Out+backStr);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," -11 -107 ");
+  addOuterSurf("FFlange",HR*frontHR);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 12 -207 ");
+  addOuterUnionSurf("BFlange",HR*backHR);
   // outer boundary mid tube
   //  (3:-7) (-4:8) 5 -6 ");
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
 				    " 11 -12 15 -16 (3:-17) (-4:-18)");
-  addOuterUnionSurf("Pipe",Out);
+  addOuterUnionSurf("Pipe",HR);
   return;
 }
   

@@ -130,6 +130,7 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "BoxJaws.h"
+#include "DiffPumpXIADP03.h"
 #include "ViewScreenTube.h"
 
 #include "makeSingleItem.h"
@@ -179,6 +180,7 @@ makeSingleItem::build(Simulation& System,
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
+      "DiffPumpXIADP03","DiffPump",
       "Help","help"
     });
 
@@ -1037,6 +1039,18 @@ makeSingleItem::build(Simulation& System,
 	
 	bj->addInsertCell(voidCell);
 	bj->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "DiffPump" || item == "DiffPumpXIADP03")
+      {
+	std::shared_ptr<xraySystem::DiffPumpXIADP03>
+	  dp(new xraySystem::DiffPumpXIADP03("DiffPump"));
+	
+	OR.addObject(dp);
+	
+	dp->addInsertCell(voidCell);
+	dp->createAll(System,World::masterOrigin(),0);
 	
 	return;
       }

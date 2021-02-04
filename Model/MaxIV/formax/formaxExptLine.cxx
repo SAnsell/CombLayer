@@ -94,6 +94,7 @@
 
 
 #include "MonoBox.h"
+#include "BoxJaws.h"
 #include "FourPortTube.h"
 
 #include "formaxExptLine.h"
@@ -115,7 +116,8 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   filterBoxA(new xraySystem::MonoBox(newName+"FilterBoxA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  crossA(new xraySystem::FourPortTube(newName+"CrossA"))
+  crossA(new xraySystem::FourPortTube(newName+"CrossA")),
+  jawBox(new xraySystem::BoxJaws(newName+"JawBox"))
   /*!
     Constructor
     \param Key :: Name of construction key
