@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 segment_name(s) [ITEM]"
-    echo "       ITEM is value of ITEM in povray/tdc.pov"
+    echo "       ITEM is the value of ITEM in povray/tdc.pov"
     echo "            if not specified, last segment name is used as ITEM"
     echo "       Example: povray/tdc.sh  Segment47 Segment48 Segment49 SPF48ShieldA"
     exit 1

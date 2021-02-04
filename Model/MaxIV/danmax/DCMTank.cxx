@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/TankMonoVessel.cxx
+ * File:   danmax/DCMTank.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -438,7 +438,7 @@ DCMTank::createPorts(Simulation& System)
   
   const HeadRule innerWall=SurfMap::getSurfRule("innerCylinder");
   const HeadRule outerWall=SurfMap::getSurfRule("outerCylinder");
-  ELog::EM<<"Outer == "<<outerWall<<ELog::endDiag;
+
   for(size_t i=0;i<Ports.size();i++)
     {
       for(const int CN : portCells)

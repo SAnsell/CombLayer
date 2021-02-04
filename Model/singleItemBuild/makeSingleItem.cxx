@@ -92,6 +92,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
+#include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
@@ -128,6 +129,8 @@
 #include "LBeamStop.h"
 #include "BremTube.h"
 #include "HPJaws.h"
+#include "BoxJaws.h"
+#include "ViewScreenTube.h"
 #include "LocalShielding.h"
 
 #include "makeSingleItem.h"
@@ -168,7 +171,7 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield",
+      "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
@@ -176,7 +179,7 @@ makeSingleItem::build(Simulation& System,
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","HPCombine","LocalShielding",
+      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube","LocalShielding",
       "Help","help"
     });
 
@@ -702,6 +705,18 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item=="FourPort")
+    {
+      std::shared_ptr<xraySystem::FourPortTube>
+	FP(new xraySystem::FourPortTube("FourPort"));
+
+      OR.addObject(FP);
+
+      FP->addInsertCell(voidCell);
+      FP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
   if (item=="CrossWay")
     {
       std::shared_ptr<xraySystem::CrossWayTube>
@@ -1015,7 +1030,19 @@ makeSingleItem::build(Simulation& System,
 
 	return;
       }
-    if (item == "HPCombine" )
+    if (item == "BoxJaws")
+      {
+	std::shared_ptr<xraySystem::BoxJaws>
+	  bj(new xraySystem::BoxJaws("BoxJaws"));
+
+	OR.addObject(bj);
+
+	bj->addInsertCell(voidCell);
+	bj->createAll(System,World::masterOrigin(),0);
+
+	return;
+      }
+    if (item == "HPCombine")
       {
 	std::shared_ptr<xraySystem::BremTube>
 	  bremTube(new xraySystem::BremTube("BremTube"));
@@ -1032,6 +1059,28 @@ makeSingleItem::build(Simulation& System,
 	hp->setFront(*bremTube,2);
 	hp->setFlangeJoin();
 	hp->createAll(System,*bremTube,"back");
+
+	return;
+      }
+
+    if (item == "ViewTube" )
+      {
+	std::shared_ptr<xraySystem::ViewScreenTube>
+	  vt(new xraySystem::ViewScreenTube("ViewTube"));
+	std::shared_ptr<tdcSystem::YagScreen>
+	  yagScreen(new tdcSystem::YagScreen("YAG"));
+
+	OR.addObject(vt);
+
+	vt->addInsertCell(voidCell);
+	vt->createAll(System,World::masterOrigin(),0);
+
+	yagScreen->setBeamAxis(*vt,1);
+	yagScreen->createAll(System,*vt,4);
+	yagScreen->insertInCell("Outer",System,voidCell);
+	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
+	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
+	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
 
 	return;
       }
@@ -1055,9 +1104,6 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-
-
-
     if (item=="Help" || item=="help")
       {
 

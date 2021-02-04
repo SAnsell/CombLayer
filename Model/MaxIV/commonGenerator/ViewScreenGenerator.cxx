@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   commonGenerator/SixPortGenerator.cxx
+
+ * File:   commonGenerator/ViewScreenGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -52,33 +52,39 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "SixPortGenerator.h"
+#include "ViewScreenGenerator.h"
 
 namespace setVariable
 {
 
-SixPortGenerator::SixPortGenerator() :
-  radius(CF100::innerRadius),
-  linkRadius(CF100::innerRadius),
-  wallThick(CF100::wallThick),
-  frontLength(22.0),backLength(22.0),
-  sideLength(22.0),
-  flangeARadius(CF100::flangeRadius),
+ViewScreenGenerator::ViewScreenGenerator() :
+  radius(CF100::innerRadius),height(13.2),
+  depth(8.8),wallThick(CF63::wallThick),
+  plateThick(CF63::flangeLength),
+  flangeRadius(CF100::flangeRadius),
+  flangeLength(CF100::flangeLength),
+  portARadius(CF40::innerRadius),
+  portBRadius(CF100::innerRadius),
+  portALength(CF100::outerRadius+7.0),
+  portBLength(CF100::outerRadius+10.0),
+  flangeARadius(CF40::flangeRadius),
+  flangeALength(CF40::flangeLength),
   flangeBRadius(CF100::flangeRadius),
-  flangeSRadius(CF100::flangeRadius),
-  flangeALength(CF100::flangeLength),
   flangeBLength(CF100::flangeLength),
-  flangeSLength(CF100::flangeLength),
-  plateThick(CF100::flangeLength),
-  voidMat("Void"),mainMat("Stainless304L"),
-  flangeMat("Stainless304L"),plateMat("Stainless304L")
+
+  viewRadius(CF40::innerRadius),
+  viewLength(CF100::outerRadius+4.5),
+  viewFlangeRadius(CF40::flangeRadius),
+  viewFlangeLength(CF40::flangeLength),
+  viewPlateThick(CF40::flangeLength),
+
+  voidMat("Void"),wallMat("Stainless304L")
   /*!
     Constructor and defaults
   */
 {}
 
-
-SixPortGenerator::~SixPortGenerator() 
+ViewScreenGenerator::~ViewScreenGenerator()
  /*!
    Destructor
  */
@@ -86,67 +92,65 @@ SixPortGenerator::~SixPortGenerator()
 
 template<typename CF>
 void
-SixPortGenerator::setCF()
+ViewScreenGenerator::setCF()
   /*!
     Setter for flange A
    */
-{
-  radius=CF::innerRadius;
-  linkRadius=CF::innerRadius;
-  wallThick=CF::wallThick;
-  
-  setFlangeCF<CF>();
+{  
   return;
 }
 
 template<typename CF>
 void
-SixPortGenerator::setFlangeCF()
+ViewScreenGenerator::setPortBCF()
   /*!
-    Setter for flange A
+    Setter for port B
    */
 {
-  flangeARadius=CF::flangeRadius;
-  flangeALength=CF::flangeLength;
+  portBRadius=CF::innerRadius;
   flangeBRadius=CF::flangeRadius;
   flangeBLength=CF::flangeLength;
-  flangeSRadius=CF::flangeRadius;
-  flangeSLength=CF::flangeLength;
   return;
 }
 
 void
-SixPortGenerator::generateSixPort(FuncDataBase& Control,
+ViewScreenGenerator::generateView(FuncDataBase& Control,
 				  const std::string& keyName) const
 /*!
     Primary function for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param flip    :: flag to flip front/back
   */
 {
-  ELog::RegMethod RegA("SixPortGenerator","generateSixPort");
-  
+  ELog::RegMethod RegA("ViewScreenGenerator","generateView");
+
   Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"LinkRadius",linkRadius);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"FrontLength",frontLength);
-  Control.addVariable(keyName+"BackLength",backLength);
-  Control.addVariable(keyName+"SideLength",sideLength);
+  Control.addVariable(keyName+"PlateThick",plateThick);
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
+
+  Control.addVariable(keyName+"PortARadius",portARadius);
+  Control.addVariable(keyName+"PortBRadius",portBRadius);
+  Control.addVariable(keyName+"PortALength",portALength);
+  Control.addVariable(keyName+"PortBLength",portBLength);
 
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
-  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
-  Control.addVariable(keyName+"FlangeSRadius",flangeSRadius);
-  
   Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
-  Control.addVariable(keyName+"FlangeSLength",flangeSLength);
 
-  Control.addVariable(keyName+"PlateThick",plateThick);
+  Control.addVariable(keyName+"ViewRadius",viewRadius);
+  Control.addVariable(keyName+"ViewLength",viewLength);
+  Control.addVariable(keyName+"ViewFlangeRadius",viewFlangeRadius);
+  Control.addVariable(keyName+"ViewFlangeLength",viewFlangeLength);
+  Control.addVariable(keyName+"ViewPlateThick",viewPlateThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"FlangeMat",flangeMat);
-  Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
 
   return;
 
@@ -154,17 +158,8 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void SixPortGenerator::setCF<CF40>();
-template void SixPortGenerator::setCF<CF100>();
-template void SixPortGenerator::setCF<CF120>();
-template void SixPortGenerator::setCF<CF150>();
-
-template void SixPortGenerator::setFlangeCF<CF40>();
-template void SixPortGenerator::setFlangeCF<CF100>();
-template void SixPortGenerator::setFlangeCF<CF120>();
-template void SixPortGenerator::setFlangeCF<CF150>();
-
+template void ViewScreenGenerator::setPortBCF<CF40>();
 
 ///\endcond TEPLATE
-  
+
 }  // NAMESPACE setVariable

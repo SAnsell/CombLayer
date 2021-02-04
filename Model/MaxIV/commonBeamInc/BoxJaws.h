@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   LinacInc/SixPortTube.h
+ * File:   commonBeamInc/BoxJaws.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,25 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tdcSystem_SixPortTube_h
-#define tdcSystem_SixPortTube_h
+#ifndef tdcSystem_BoxJaws_h
+#define tdcSystem_BoxJaws_h
 
 class Simulation;
 
 
-namespace tdcSystem
+namespace xraySystem
 {
 
   /*!
-  \class SixPortTube
+  \class BoxJaws
   \version 1.0
   \author S. Ansell
-  \date May 2020
+  \date January 2021
 
-  \brief SixPortTube for Max-IV
+  \brief High Precision torsional haw system  for Max-IV
+  
+  This is a high precision jaw set for Max IV. Based on 
+  the Oxford design
 */
 
-class SixPortTube :
+class BoxJaws :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
@@ -46,29 +49,31 @@ class SixPortTube :
 {
  private:
 
-  double radius;               ///< void radius
-  double linkRadius;           ///< void radius on 4 cross way
-  double wallThick;            ///< pipe thickness
-
-  double frontLength;            ///< full to flange length
-  double backLength;             ///< full to flange length
-  double sideLength;              ///< full to flange length
-
-  double flangeARadius;         ///< Joining Flange radius
-  double flangeBRadius;         ///< Joining Flange radius
-  double flangeSRadius;         ///< Joining Flange radius
-
-  double flangeALength;         ///< Joining Flange radius
-  double flangeBLength;         ///< Joining Flange radius
-  double flangeSLength;         ///< Joining Flange radius
   
-  double plateThick;           ///< Joining Flange radius
+  double width;            ///< main void width
+  double height;           ///< main void height
+  double length;           ///< Void length 
+  double wallThick;        ///< Wall thickness
+  double sideThick;        ///< Wall thickness
 
-  int voidMat;                 ///< void material
-  int mainMat;                 ///< main material
-  int flangeMat;               ///< flange material
-  int plateMat;                ///< plate material
- 
+  double flangeInnerRadius;     ///< Port radius
+  double flangeRadius;          ///< Attached back flange radius
+  double flangeLength;          ///< Attached back flange length 
+  
+  double jawFarLen;          ///< Length extending away from beam
+  double jawEdgeLen;         ///< Length on cutting surface
+  double jawThick;           ///< Thickness
+  double jawCornerEdge;      ///< Corner cut size
+  double jawCornerFar;       ///< Corner cut size
+
+  double jawXGap;            ///< Separation
+  double jawZGap;            ///< Separation 
+  
+  int voidMat;               ///< void material
+  int wallMat;               ///< main material
+  int jawMat;                ///< jaw material
+
+
   void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,11 +81,11 @@ class SixPortTube :
 
  public:
 
-  SixPortTube(const std::string&);
-  SixPortTube(const std::string&,const std::string&);
-  SixPortTube(const SixPortTube&);
-  SixPortTube& operator=(const SixPortTube&);
-  virtual ~SixPortTube();
+  BoxJaws(const std::string&);
+  BoxJaws(const std::string&,const std::string&);
+  BoxJaws(const BoxJaws&);
+  BoxJaws& operator=(const BoxJaws&);
+  virtual ~BoxJaws();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

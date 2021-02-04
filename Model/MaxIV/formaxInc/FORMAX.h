@@ -50,6 +50,7 @@ namespace xraySystem
   class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
+  class formaxExptLine;
   class formaxOpticsLine;
   class R3FrontEndCave;
   class ConnectZone;
@@ -82,7 +83,16 @@ class FORMAX : public R3Beamline
   
   /// Beamline
   std::shared_ptr<formaxOpticsLine> opticsBeam;
-  
+
+  /// Optics hutch
+  std::shared_ptr<ExperimentalHutch> exptHut;
+
+  /// Pipe joining frontend to Expt hutch
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+
+  /// Beamline expt
+  std::shared_ptr<formaxExptLine> exptBeam;
+
  public:
   
   FORMAX(const std::string&);
