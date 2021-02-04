@@ -25,4 +25,4 @@
 
 #declare matCopper = texture { pigment{color rgb<0.969028364,0.0335801908,0.244655676>  } };
 
-#declare matLead = texture { pigment{color P_Chrome2} };
+#declare matLead = texture { pigment{color P_Chrome2 transmit 0.4 } };

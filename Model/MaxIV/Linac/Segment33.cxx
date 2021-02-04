@@ -74,6 +74,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 #include "Bellows.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -89,6 +90,7 @@ Segment33::Segment33(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -109,6 +111,7 @@ Segment33::Segment33(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(cMagHA);
   OR.addObject(bpm);
   OR.addObject(pipeB);
@@ -145,6 +148,7 @@ Segment33::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeA);
 

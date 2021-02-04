@@ -17,10 +17,10 @@
 // 1=panoramic - good to display whole beam line
 // 2=omnimax
 // 3=cylindrical
-#declare projection = 0;
+#declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -442,6 +442,12 @@ global_settings {
   #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
     #declare cameraLocation = <-900, 9850, 20>;
     #declare cameraLookAt   = <-730, 10025, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"SPF33ShieldA")) // local shielding at SPF33 - img_5389.mp4
+    #declare cameraLocation = <-750, 6200, 20>;
+    #declare cameraLookAt   = <-690, 6100, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break

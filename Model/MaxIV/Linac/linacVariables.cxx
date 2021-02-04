@@ -2273,6 +2273,15 @@ Segment33(FuncDataBase& Control,
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5388.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  ShieldGen.setSize(10,80,35);
+  ShieldGen.setMidHoleSize(3.0,5.0);
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",14.0);
+
   return;
 }
 
