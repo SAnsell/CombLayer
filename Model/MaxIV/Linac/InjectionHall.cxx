@@ -729,7 +729,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6212 6004 -6014 5 -6 ");
-  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080016MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6004 -6014 5 -6 ");
@@ -807,7 +807,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211 -6212 6113 -1003 5 -6 ");
-  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080017MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6113 -1003 5 -6 ");
@@ -977,7 +977,7 @@ InjectionHall::createObjects(Simulation& System)
   // middle wall (part with THz penetration)
   Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
 				 "1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT0",System,cellIndex++,wallMat,0.0,Out);
 
   HeadRule MidTDucts1; // TDC modulator klystron duct and D1-D4
   HeadRule MidTDucts2; // 4 ducts near floor level
@@ -1001,33 +1001,33 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
 				 "1M -2M 1003 -1004 5 -6 ");
   Out += MidTDucts1.display();
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT1",System,cellIndex++,wallMat,0.0,Out);
 
   // between ducts
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
 				 "2M -11M 1003 -1004 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT2",System,cellIndex++,wallMat,0.0,Out);
 
   // floor ducts
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
 				 "11M -12M 1003 -1004 5 -6 ");
   Out += MidTDucts2.display();
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT3",System,cellIndex++,wallMat,0.0,Out);
 
   // between ducts
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
 				 "12M -21M 1003 -1004 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT4",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
 				 "21M -22M 1003 -1004 5 -6 ");
   Out += MidTDucts3.display();
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT5",System,cellIndex++,wallMat,0.0,Out);
 
   // after ducts
   Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
   				 "22M -6112 1003 -1004 5 -6 ");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("MidT6",System,cellIndex++,wallMat,0.0,Out);
 
 
 
@@ -1189,10 +1189,13 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
   addOuterSurf(Out);
 
-  layerProcess(System,"MidT",
-	       SMap.realSurf(buildIndex+1003),
-	       -SMap.realSurf(buildIndex+1004),
-	       midTNLayers);
+  for (size_t i=0; i<6; ++i)
+    {
+      layerProcess(System,"MidT"+std::to_string(i),
+		   SMap.realSurf(buildIndex+1003),
+		   -SMap.realSurf(buildIndex+1004),
+		   midTNLayers);
+    }
 
   layerProcess(System,"BackWallConcrete",
 	       SMap.realSurf(buildIndex+21),
@@ -1274,6 +1277,14 @@ InjectionHall::createObjects(Simulation& System)
   layerProcess(System,"FKGMazeBackDoorWall",
   	       SMap.realSurf(buildIndex+2111),
   	       -SMap.realSurf(buildIndex+111),
+  	       btgNLayers);
+  layerProcess(System,"ParkingExitWall",
+  	       SMap.realSurf(buildIndex+7102),
+  	       -SMap.realSurf(buildIndex+7201),
+  	       btgNLayers);
+  layerProcess(System,"SPFEmergencyExitDoorWall",
+  	       -SMap.realSurf(buildIndex+223),
+  	       SMap.realSurf(buildIndex+233),
   	       btgNLayers);
 
   return;
