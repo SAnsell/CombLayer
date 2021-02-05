@@ -73,6 +73,7 @@
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -94,7 +95,8 @@ Segment11::Segment11(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA"))
+  cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -110,6 +112,7 @@ Segment11::Segment11(const std::string& Key) :
   OR.addObject(yagUnit);
   OR.addObject(pipeB);
   OR.addObject(cMagHA);
+  OR.addObject(shieldA);
 
   setFirstItems(bellowA);
 }
@@ -157,6 +160,7 @@ Segment11::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
+  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",shieldA);
   pipeTerminate(System,*buildZone,pipeB);
 
   return;

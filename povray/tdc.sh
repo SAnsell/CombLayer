@@ -33,5 +33,5 @@ if [ $segments == "All" -a $ITEM == "SPF32DipoleA" ]; then
 fi
 
 ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
-    && povray +A +W400 +H300 povray/tdc.pov <<< \"$ITEM\" && exit 0
+    && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0
 #    && povray +A +W1600 +H1200 povray/tdc.pov <<< \"$ITEM\" && exit 0

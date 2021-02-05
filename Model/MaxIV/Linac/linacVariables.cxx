@@ -1103,8 +1103,20 @@ Segment11(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",154.47);
+  Control.addVariable(lKey+"PipeBYAngle",-90.0);
 
-  CMGen.generateMag(Control,lKey+"CMagHA",10.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0);
+
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5404.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  ShieldGen.setSize(10,60,25);
+  ShieldGen.setMidHoleSize(2.5,5.0);
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",47.0);
+  Control.addVariable(lKey+"ShieldAZStep",5.0);
+
   return;
 }
 

@@ -427,6 +427,12 @@ global_settings {
     #declare cameraAngle = 90;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"L2SPF11ShieldA"))
+    #declare cameraLocation = <-190, 4030, 20>;
+    #declare cameraLookAt   = <-250, 4070, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
   #case(strcmp(ITEM,"SPF32DipoleA"))
     #declare cameraLocation = <-690, 5920, 20>;
     #declare cameraLookAt   = <-655, 5883, 0>;
