@@ -1161,6 +1161,17 @@ Segment12(FuncDataBase& Control,
 
   Segment12Magnet(Control,lKey);
 
+  // Placeholder for the local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5409.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHoleSize(10.0,4.0);
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",25.0);
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+
   return;
 }
 

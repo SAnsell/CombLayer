@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment12.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -34,6 +34,7 @@
 #include <iterator>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -75,7 +76,7 @@
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "IonPumpTube.h"
-
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -86,7 +87,7 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment12::Segment12(const std::string& Key) :
   TDCsegment(Key,6),
 
@@ -94,6 +95,7 @@ Segment12::Segment12(const std::string& Key) :
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
   ionPumpLA(new xraySystem::IonPumpTube(keyName+"IonPumpLA")),
   pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
@@ -114,6 +116,7 @@ Segment12::Segment12(const std::string& Key) :
   OR.addObject(flatA);
   OR.addObject(dipoleA);
   OR.addObject(beamA);
+  OR.addObject(shieldA);
   OR.addObject(bellowLA);
   OR.addObject(ionPumpLA);
   OR.addObject(pipeLA);
@@ -124,7 +127,7 @@ Segment12::Segment12(const std::string& Key) :
 
   setFirstItems(bellowA);
 }
-  
+
 Segment12::~Segment12()
   /*!
     Destructor
@@ -149,7 +152,7 @@ Segment12::buildObjects(Simulation& System)
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
-  
+
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
@@ -160,11 +163,22 @@ Segment12::buildObjects(Simulation& System)
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
 
-  pipeTerminateGroup(System,*buildZone,beamA,"exit",
-		     {"Exit","Box","FlangeE","FlangeA","Main"});
+  /////////// Local shielding
+  shieldA->setCutSurf("Inner",*beamA,"outerBox");
+  shieldA->createAll(System,*beamA,"front");
+  outerCell=buildZone->createUnit(System,*shieldA,-1);
+
+  attachSystem::ContainedGroup* CGPtr=
+    dynamic_cast<attachSystem::ContainedGroup*>(beamA.get());
+  CGPtr->insertInCell("Box",System,outerCell);
+  CGPtr->insertInCell("FlangeA",System,outerCell);
+
+  outerCell=buildZone->createUnit(System,*shieldA,2);
+  shieldA->insertInCell(System,outerCell);
 
   pipeTerminateGroup(System,*buildZone,beamA,"exit",
-		     {"Exit","Box","FlangeE","FlangeA","Main"});
+   		     {"Box","Main","Exit","FlangeE"});
+  /////////////
 
   bellowLA->setCutSurf("front",*beamA,"exit");
   bellowLA->createAll(System,*beamA,"exit");
@@ -174,9 +188,9 @@ Segment12::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*bellowLA,"back",*ionPumpLA);
   ionPumpLA->insertInCell(System,outerCell);
-  // note this is a double insert 
+  // note this is a double insert
   beamA->insertInCell("Main",System,outerCell);
-  
+
 
   int cellA,cellB,cellC;
   cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
@@ -198,7 +212,7 @@ Segment12::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ionPumpLA,"back",*pipeLA);
   bellowRB->addInsertCell(outerCell);
-  
+
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeLA,"back",*bellowLB);
 
@@ -206,7 +220,7 @@ Segment12::buildObjects(Simulation& System)
   bellowRB->setFront(*flatB,"back");
   bellowRB->createAll(System,*flatB,"back");
   bellowRB->insertInCell(System,outerCell);
-  
+
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
 
@@ -226,13 +240,13 @@ Segment12::createLinks()
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"magnetExit");
-  
+
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   return;
 }
 
-void 
+void
 Segment12::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -250,10 +264,9 @@ Segment12::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

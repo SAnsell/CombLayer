@@ -32,12 +32,13 @@ namespace xraySystem
 
 namespace tdcSystem
 {
+  class LocalShielding;
 
   /*!
     \class Segment12
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date May 2020
+    \date Feb 2021
     \brief 12th segment
   */
 
@@ -57,6 +58,7 @@ class Segment12 :
 
   /// first pipe
   std::shared_ptr<tdcSystem::BeamDivider> beamA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
 
   // LEFT DIVIDER:
 
