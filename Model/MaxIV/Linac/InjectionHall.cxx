@@ -1053,18 +1053,23 @@ InjectionHall::createObjects(Simulation& System)
     (SMap,buildIndex," 5 -6 -2007 ");
   makeCell("MidTAuxCyl",System,cellIndex++,wallMat,0.0,Out);
 
-
-  // GATE:
+  // Maze between the Linac and SPF halls
   Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1512 3 -1503 5 -6  ");
   makeCell("GateA",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1521 -1522 3 -1503 5 -6  ");
   makeCell("GateB",System,cellIndex++,wallMat,0.0,Out);
-  // void in middle
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1512 -1521 3 -1503 5 -6 "
-          "(-1201 : 1202 : 1153 : -1103)  "
-          "( -1153 : -1111 : 1112)");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1512 -1201 3 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1111 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 3 -1103 5 -6 ");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1202 -1521 3 -1503 1112 5 -6 ");
   makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
 
   // KLYSTRONG WALLS
