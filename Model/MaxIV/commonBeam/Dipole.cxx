@@ -248,7 +248,7 @@ Dipole::createObjects(Simulation& System)
       const HeadRule& CDivide=getRule("CentreDivide");
       const HeadRule& AFlat=getRule("InnerFlat");
       const HeadRule& ARound=getRule("InnerRound");
-      const HeadRule& BCell=getRule("InnerB");
+      const HeadRule& BFlat=getRule("InnerBFlat");
       const HeadRule& MSplit=getRule("MidSplit");
 	    
       HR=ModelSupport::getHeadRule
@@ -262,7 +262,10 @@ Dipole::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 15 -16 103 -104 -202");
       makeCell("MidVoidB",System,cellIndex++,0,0.0,
-	       HR*BCell*MSplit);
+	       HR*ARound*MSplit*CDivide.complement());
+      makeCell("MidVoidB",System,cellIndex++,0,0.0,
+	       HR*BFlat*MSplit*CDivide);
+
     }
   else
     {

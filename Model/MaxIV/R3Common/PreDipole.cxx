@@ -404,6 +404,10 @@ PreDipole::createLinks()
   setConnect(8,Origin+Y*straightLength,Z);
   setLinkSurf(8,HR.complement());
 
+  // Mid Half straight (half) [ divider is +10]
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"115 -116 (-217:-210)");
+  setConnect(9,cylEnd,elecAxis);
+  setLinkSurf(9,HR.complement());
 
   return;
 }

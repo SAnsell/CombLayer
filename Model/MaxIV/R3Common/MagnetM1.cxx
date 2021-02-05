@@ -355,7 +355,8 @@ MagnetM1::createAll(Simulation& System,
 
   DIPm->setCutSurf("InnerRound",preDipole->getFullRule(8));
   DIPm->setCutSurf("InnerFlat",preDipole->getFullRule(9));
-  DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
+  DIPm->setCutSurf("InnerBFlat",preDipole->getFullRule(10));
+  
   DIPm->createAll(System,*this,0);
   outerCell=
     BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),
