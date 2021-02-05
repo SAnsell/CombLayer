@@ -38,19 +38,13 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
 
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "MainProcess.h"
 #include "inputParam.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -59,7 +53,6 @@
 #include "particleConv.h"
 
 #include "phitsTallyModification.h"
-#include "phitsTallySelector.h"
 
 std::string
 convertTallyParticle(const std::string& TParticle)

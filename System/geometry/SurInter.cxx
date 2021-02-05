@@ -38,25 +38,17 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "mathSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "solveValues.h"
-#include "vecOrder.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Cylinder.h"
-#include "Cone.h"
-#include "General.h"
 #include "Line.h"
 #include "Intersect.h"
 #include "Pnt.h"
@@ -68,7 +60,6 @@
 #include "LineIntersectVisit.h"
 #include "SurInter.h"
 
-#include "Debug.h"
 
 namespace SurInter
 {

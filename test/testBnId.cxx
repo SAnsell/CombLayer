@@ -31,12 +31,8 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include "Debug.h"
-#include "BnId.h"
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"

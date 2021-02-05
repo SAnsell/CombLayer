@@ -35,19 +35,13 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -58,12 +52,9 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "SimProcess.h"
-#include "SurInter.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "TempWeights.h"
 
 namespace WeightSystem
 {

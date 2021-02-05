@@ -37,7 +37,6 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -52,7 +51,6 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Line.h"
 #include "ArbPoly.h"
 
 namespace Geometry

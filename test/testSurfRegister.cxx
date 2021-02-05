@@ -35,22 +35,16 @@
 #include <memory>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 

@@ -31,9 +31,6 @@
 #include <iterator>
 
 #include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "support.h" 
 #include "XMLload.h"
 #include "XMLnamespace.h"
 #include "XMLattribute.h"

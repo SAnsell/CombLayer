@@ -32,20 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -53,9 +47,7 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "LeadPipeGenerator.h"
-#include "CrossGenerator.h"
 #include "GateValveGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
@@ -67,21 +59,14 @@
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "FlangeMountGenerator.h"
-#include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
-#include "MazeGenerator.h"
-#include "RingDoorGenerator.h"
-#include "LeadBoxGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
-#include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
 #include "DiffPumpGenerator.h"
-#include "PreDipoleGenerator.h"
-#include "DipoleChamberGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamPairGenerator.h"
@@ -93,7 +78,6 @@
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
 
-#include "R3ChokeChamberGenerator.h"
 
 namespace setVariable
 {

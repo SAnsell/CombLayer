@@ -33,9 +33,7 @@
 #include <algorithm>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -43,11 +41,8 @@
 #include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Line.h"
 #include "Surface.h"
 #include "masterWrite.h"
 #include "Quadratic.h"

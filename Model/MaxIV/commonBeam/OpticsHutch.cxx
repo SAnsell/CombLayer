@@ -41,7 +41,6 @@
 #include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -56,12 +55,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "PortChicane.h"
 
 #include "OpticsHutch.h"
 

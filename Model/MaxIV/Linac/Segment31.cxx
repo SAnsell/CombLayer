@@ -64,7 +64,6 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "VirtualTube.h"
 #include "VacuumPipe.h"
 #include "CorrectorMag.h"
 #include "LObjectSupportB.h"

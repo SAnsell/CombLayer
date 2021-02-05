@@ -33,17 +33,11 @@
 #include <iterator>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "funcList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"

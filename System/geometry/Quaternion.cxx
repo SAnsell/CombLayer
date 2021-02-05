@@ -30,7 +30,6 @@
 #include <map>
 
 #include "Exception.h"
-#include "mathSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

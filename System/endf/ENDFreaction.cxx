@@ -32,19 +32,13 @@
 #include <algorithm>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
-#include "RefCon.h"
-#include "Simpson.h"
 #include "ENDF.h"
-#include "SEtable.h"
 #include "doubleErr.h"
 #include "ENDFreaction.h"
 

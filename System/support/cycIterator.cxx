@@ -4,7 +4,6 @@
 #include <vector>
 #include <iterator>
 
-#include "Exception.h"
 #include "cycIterator.h"
 
 namespace RMCbox

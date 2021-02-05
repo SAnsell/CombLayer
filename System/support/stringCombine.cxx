@@ -33,12 +33,7 @@
 #include <iterator>
 
 
-#include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
-#include "stringCombine.h"
 /*! 
   \file stringCombine.cxx 
 */

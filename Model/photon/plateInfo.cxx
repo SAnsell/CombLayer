@@ -33,11 +33,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "plateInfo.h"
 

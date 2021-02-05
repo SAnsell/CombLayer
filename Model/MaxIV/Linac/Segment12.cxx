@@ -34,13 +34,10 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -48,8 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -68,9 +63,6 @@
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "BeamDivider.h"

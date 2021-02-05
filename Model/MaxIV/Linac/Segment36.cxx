@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -63,8 +61,6 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
-#include "Importance.h"
-#include "Object.h"
 
 #include "VacuumPipe.h"
 #include "LQuadF.h"

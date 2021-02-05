@@ -31,7 +31,6 @@
 #include <algorithm>
 #include <functional>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "NameStack.h"

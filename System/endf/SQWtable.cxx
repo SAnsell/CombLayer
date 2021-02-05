@@ -34,17 +34,12 @@
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Triple.h"
-#include "support.h"
 #include "mathSupport.h"
-#include "RefCon.h"
 #include "ENDF.h"
 #include "SQWtable.h"
 

@@ -33,26 +33,18 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -66,7 +58,6 @@
 #include "FixedComp.h"
 #include "FixedUnit.h"
 #include "objectRegister.h"
-#include "World.h"
 
 namespace World
 {

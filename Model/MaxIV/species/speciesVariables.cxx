@@ -32,20 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -53,12 +47,9 @@
 #include "BeamMountGenerator.h"
 #include "CollGenerator.h"
 #include "CrossGenerator.h"
-#include "FlangeMountGenerator.h"
 #include "GateValveGenerator.h"
 #include "GratingMonoGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
-#include "LeadBoxGenerator.h"
 
 #include "MirrorGenerator.h"
 #include "PipeGenerator.h"
@@ -70,15 +61,12 @@
 #include "SimpleChicaneGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
-#include "LeadPipeGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "TankMonoVesselGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "WallLeadGenerator.h"
-#include "QuadUnitGenerator.h"
-#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {

@@ -31,25 +31,17 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Cylinder.h"
-#include "Cone.h"
 #include "Plane.h"
-#include "Sphere.h"
 #include "surfImplicates.h" 
 
 

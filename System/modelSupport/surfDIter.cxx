@@ -31,25 +31,17 @@
 #include <map>
 #include <string>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
 #include "splineSupport.h"
 #include "stringCombine.h"
-#include "Element.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
-#include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "MaterialSupport.h"
-#include "surfDIter.h"
 
 
 namespace ModelSupport

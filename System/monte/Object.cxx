@@ -40,17 +40,13 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"
 #include "mcnpStringSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Track.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Surface.h"
@@ -60,9 +56,7 @@
 #include "HeadRule.h"
 #include "Token.h"
 #include "particle.h"
-#include "objectRegister.h"
 #include "masterWrite.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -70,7 +64,6 @@
 #include "Importance.h"
 #include "Object.h"
 
-#include "Debug.h"
 
 namespace MonteCarlo
 {

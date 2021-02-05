@@ -37,12 +37,10 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -51,7 +49,6 @@
 #include "inputParam.h"
 #include "support.h"
 #include "masterWrite.h"
-#include "objectRegister.h"
 #include "surfIndex.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -62,8 +59,6 @@
 #include "SimMCNP.h"
 #include "DetGroup.h"
 #include "SimMonte.h"
-#include "variableSetup.h"
-#include "defaultConfig.h"
 #include "DBModify.h"
 #include "SimProcess.h"
 #include "Process.h"
@@ -77,23 +72,14 @@
 #include "SimInput.h"
 #include "SimImportance.h"
 #include "inputSupport.h"
-#include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "mcnpDefPhysics.h"
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "phitsDefPhysics.h"
 #include "ObjectAddition.h"
-#include "MaterialUpdate.h"
-#include "World.h"
 
-#include "MainProcess.h"
 
-#include "surfRegister.h"
-#include "HeadRule.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "FixedUnit.h"
 
 namespace mainSystem
 {

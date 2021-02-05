@@ -27,7 +27,6 @@
 #include <iterator>
 #include <functional>
 
-#include "Exception.h"
 #include "support.h"
 #include "PolyFunction.h"
 

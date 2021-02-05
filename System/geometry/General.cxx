@@ -31,14 +31,11 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"

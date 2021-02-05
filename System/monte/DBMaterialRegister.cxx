@@ -35,17 +35,10 @@
 #include <numeric>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"

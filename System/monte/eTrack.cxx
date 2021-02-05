@@ -30,15 +30,8 @@
 #include <map>
 #include <string>
 
-#include "Exception.h"
-#include "RefCon.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "particle.h"
 #include "eTrack.h"

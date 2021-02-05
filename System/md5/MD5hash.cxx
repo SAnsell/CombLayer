@@ -31,13 +31,10 @@
 #include <algorithm>
 #include <functional>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Binary.h"
 #include "MD5hash.h"
 
 

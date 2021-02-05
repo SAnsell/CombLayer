@@ -43,8 +43,6 @@
 #include "support.h"
 #include "mathSupport.h"
 #include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
 #include "masterWrite.h"
 #include "polySupport.h"
 #include "PolyFunction.h"

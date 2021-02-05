@@ -33,11 +33,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "varNameOrder.h"

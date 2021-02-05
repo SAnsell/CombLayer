@@ -28,7 +28,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

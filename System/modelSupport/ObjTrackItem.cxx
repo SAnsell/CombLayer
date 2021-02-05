@@ -31,21 +31,11 @@
 #include <algorithm>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Zaid.h"
-#include "MXcards.h"
-#include "Material.h"
-#include "DBMaterial.h"
 #include "ObjTrackItem.h"
 
 

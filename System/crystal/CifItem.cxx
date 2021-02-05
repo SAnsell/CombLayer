@@ -24,7 +24,6 @@
 #include <map>
 #include <vector>
 
-#include "Exception.h"
 #include "support.h"
 #include "CifItem.h"
 

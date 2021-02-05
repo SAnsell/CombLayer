@@ -32,7 +32,6 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "Code.h"
@@ -53,19 +52,14 @@
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "FlangeMountGenerator.h"
-#include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "MonoShutterGenerator.h"
-#include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
-#include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
-#include "QuadUnitGenerator.h"
-#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {

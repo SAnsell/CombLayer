@@ -32,9 +32,7 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -45,13 +43,11 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Line.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Ellipsoid.h"
 
-#include "Debug.h"
 
 namespace Geometry
 {

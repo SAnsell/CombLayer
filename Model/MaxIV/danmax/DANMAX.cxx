@@ -34,26 +34,19 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -64,7 +57,6 @@
 #include "CopiedComp.h"
 #include "InnerZone.h"
 #include "BlockZone.h"
-#include "AttachSupport.h"
 
 #include "VacuumPipe.h"
 
@@ -76,7 +68,6 @@
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
-#include "SqrShield.h"
 #include "balderExptBeamline.h"
 
 #include "R3Ring.h"

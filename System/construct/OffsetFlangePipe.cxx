@@ -58,7 +58,6 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"

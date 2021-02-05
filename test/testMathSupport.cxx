@@ -33,16 +33,13 @@
 #include <tuple>
 
 #include "MersenneTwister.h"
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "mathSupport.h"
 #include "polySupport.h"
 #include "ClebschGordan.h"
-#include "MapRange.h"
 #include "permSort.h"
 
 #include "testFunc.h"

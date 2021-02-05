@@ -26,8 +26,6 @@
 #include <vector>
 
 #include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
 

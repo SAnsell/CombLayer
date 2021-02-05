@@ -42,7 +42,6 @@
 #include "FuncDataBase.h"
 #include "MagnetGenerator.h"
 
-#include "maxivVariables.h"
 
 namespace setVariable
 {

@@ -61,7 +61,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "BlockZone.h"
-#include "InnerZone.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 

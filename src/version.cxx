@@ -27,7 +27,6 @@
 #include <array>
 #include <string>
 
-#include "Exception.h"
 #include "support.h"
 #include "version.h"
 

@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <functional>
 
-#include "vectorSupport.h"
 
 /*! 
   \file vectorSupport.cxx 

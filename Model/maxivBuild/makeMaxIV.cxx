@@ -54,7 +54,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "PointMap.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "World.h"
 

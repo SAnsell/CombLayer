@@ -31,7 +31,6 @@
 
 #include "Exception.h"
 #include "doubleErr.h"
-#include "MapRange.h"
 #include "mathSupport.h"
 
 /*! 

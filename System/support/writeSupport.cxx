@@ -34,13 +34,9 @@
 #include <boost/format.hpp>
 
 #include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 
 #include "support.h"
-#include "writeSupport.h"
 
 /*! 
   \file writeSupport.cxx 

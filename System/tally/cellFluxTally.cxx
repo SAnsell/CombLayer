@@ -32,17 +32,12 @@
 #include <iterator>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"

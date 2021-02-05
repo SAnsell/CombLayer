@@ -30,7 +30,6 @@
 #include <boost/multi_array.hpp> 
 
 #include "Exception.h"
-#include "mathSupport.h"
 #include "MatrixBase.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"

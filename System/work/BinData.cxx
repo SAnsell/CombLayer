@@ -33,14 +33,12 @@
 #include <iterator>
 
 #include "Exception.h"
-#include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "doubleErr.h"
-#include "mathSupport.h"
 #include "BUnit.h"
 #include "Boundary.h"
 #include "BinData.h"

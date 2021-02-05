@@ -31,11 +31,9 @@
 #include <algorithm>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"

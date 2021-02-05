@@ -24,8 +24,6 @@
 #include <vector>
 
 #include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
 #include "Intersect.h"
 
 namespace Geometry

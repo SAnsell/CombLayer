@@ -34,27 +34,16 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "mathSupport.h"
-#include "support.h"
-#include "MapSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
@@ -62,7 +51,6 @@
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
-#include "DBMaterial.h"
 #include "particle.h"
 #include "eTrack.h"
 #include "groupRange.h"
@@ -70,7 +58,6 @@
 #include "Simulation.h"
 #include "LineTrack.h"
 
-#include "debugMethod.h"
 
 namespace ModelSupport
 {

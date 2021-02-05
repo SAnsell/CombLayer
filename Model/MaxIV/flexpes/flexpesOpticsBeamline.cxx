@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -75,14 +67,11 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 
 
-#include "insertObject.h"
-#include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"

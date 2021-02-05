@@ -37,7 +37,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "particleConv.h"
-#include "flukaGenParticle.h"
 #include "Importance.h"
 
 namespace MonteCarlo

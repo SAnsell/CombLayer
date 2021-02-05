@@ -39,7 +39,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
-#include "Exception.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"

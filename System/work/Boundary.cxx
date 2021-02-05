@@ -33,7 +33,6 @@
 #include <algorithm>
 
 #include "Exception.h"
-#include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"

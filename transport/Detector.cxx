@@ -33,20 +33,8 @@
 #include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
-#include "RefCon.h"
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "mathSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Surface.h"
 #include "Detector.h"
 
 extern MTRand RNG;

@@ -30,16 +30,8 @@
 #include <iterator>
 #include <boost/multi_array.hpp>
 
-#include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "support.h"
-#include "XMLload.h"
-#include "XMLnamespace.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
-#include "XMLgroup.h"
 #include "XMLdatablock.h"
 
 #include "doubleErr.h"

@@ -29,15 +29,11 @@
 #include <iterator>
 #include <functional>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
 #include "mathSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "vecOrder.h"
 #include "PolyFunction.h"

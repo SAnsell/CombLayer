@@ -34,9 +34,7 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "mathSupport.h"
 #include "support.h"
 #include "fortranWrite.h"
 

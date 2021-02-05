@@ -32,8 +32,6 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
-#include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -42,11 +40,8 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Line.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Cone.h"

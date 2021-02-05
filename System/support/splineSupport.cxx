@@ -31,9 +31,7 @@
 #include <functional>
 
 #include "Exception.h"
-#include "doubleErr.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"

@@ -32,16 +32,13 @@
 #include <numeric>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "MersenneTwister.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "mathSupport.h"
 #include "SVD.h"
 
 #include "testFunc.h"

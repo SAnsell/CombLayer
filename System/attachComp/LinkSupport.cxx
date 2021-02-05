@@ -34,32 +34,18 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedGroup.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "LinkSupport.h"
 
 namespace attachSystem
 {

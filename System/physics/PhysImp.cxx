@@ -37,7 +37,6 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"
@@ -45,7 +44,6 @@
 
 #include "Triple.h"
 #include "NRange.h"
-#include "MapSupport.h"
 #include "MapRange.h"
 #include "ZoneUnit.h"
 #include "PhysicsCardFunctions.h"

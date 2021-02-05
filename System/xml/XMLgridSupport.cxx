@@ -32,13 +32,11 @@
 #include <functional>
 #include <boost/multi_array.hpp>
 
-#include "Exception.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
 #include "XMLgroup.h"
 #include "XMLgrid.h"
 #include "XMLload.h"
-#include "XMLread.h"
 #include "XMLcollect.h"
 #include "XMLnamespace.h"
 

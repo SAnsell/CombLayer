@@ -32,18 +32,11 @@
 #include <algorithm>
 
 #include "MersenneTwister.h"
-#include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
 #include "RefCon.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "particle.h"
 #include "neutron.h"
