@@ -126,9 +126,9 @@ setMagneticExternal(SimTYPE& System,
 	  size_t index(0);
 	  ModelSupport::getObjectAxis
 	    (System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
+	  ELog::EM<<"AOrg == "<<AOrg<<ELog::endDiag;
 	  const Geometry::Vec3D Extent=
 	    IParam.getCntVec3D("MagUnit",setIndex,index,"Extent");
-
 	  // Additional angle flag:
 	  double magYAngle(0.0); 
 	  std::string angleFlag= IParam.getValueError<std::string>
@@ -139,7 +139,6 @@ setMagneticExternal(SimTYPE& System,
 	      magYAngle=IParam.getValueError<double>
 		("MagUnit",setIndex,index++,"Angle rotation");
 	    }
-
 	  std::vector<double> KV(4);
 	  KV[0]=IParam.getValueError<double>
 	    ("MagUnit",setIndex,index++,"K Value");

@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetM1.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -351,7 +351,10 @@ MagnetM1::createAll(Simulation& System,
   preDipole->insertInCell("Tube",System,outerCell);
   // move to next bend object
   DIPm->setCutSurf("MidSplit",preDipole->getSurf("electronCut"));
-  DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
+  DIPm->setCutSurf("CentreDivide",preDipole->getSurf("midDivider"));
+
+  DIPm->setCutSurf("InnerRound",preDipole->getFullRule(8));
+  DIPm->setCutSurf("InnerFlat",preDipole->getFullRule(9));
   DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
   DIPm->createAll(System,*this,0);
   outerCell=
