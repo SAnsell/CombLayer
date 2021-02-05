@@ -20,7 +20,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -427,6 +427,18 @@ global_settings {
     #declare cameraAngle = 90;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"SPF32DipoleA"))
+    #declare cameraLocation = <-690, 5920, 20>;
+    #declare cameraLookAt   = <-655, 5883, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 65;
+  #break
+  #case(strcmp(ITEM,"SPF33ShieldA")) // local shielding at SPF33 - img_5389.mp4
+    #declare cameraLocation = <-750, 6200, 20>;
+    #declare cameraLookAt   = <-690, 6100, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
   #case(strcmp(ITEM,"SPF46ShieldA")) // local shielding at SPF46 - img_5375.jpg
     #declare cameraLocation = <-850, 9450, 20>;
     #declare cameraLookAt   = <-730, 9385, -20>;
@@ -442,12 +454,6 @@ global_settings {
   #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
     #declare cameraLocation = <-900, 9850, 20>;
     #declare cameraLookAt   = <-730, 10025, 0>;
-    #declare projection = 0;
-    #declare cameraAngle = 50;
-  #break
-  #case(strcmp(ITEM,"SPF33ShieldA")) // local shielding at SPF33 - img_5389.mp4
-    #declare cameraLocation = <-750, 6200, 20>;
-    #declare cameraLookAt   = <-690, 6100, 0>;
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break

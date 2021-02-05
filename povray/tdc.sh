@@ -28,6 +28,10 @@ if [ $1 != " " ]; then # we build the beam line, therefore remove the InjectionH
     void+=" -v InjectionHallTHzMat Void "
 fi
 
+if [ $segments == "All" -a $ITEM == "SPF32DipoleA" ]; then
+    void=""
+fi
+
 ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
-    && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0
+    && povray +A +W400 +H300 povray/tdc.pov <<< \"$ITEM\" && exit 0
 #    && povray +A +W1600 +H1200 povray/tdc.pov <<< \"$ITEM\" && exit 0
