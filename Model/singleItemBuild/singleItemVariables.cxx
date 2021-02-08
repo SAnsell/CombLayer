@@ -66,6 +66,7 @@
 #include "DipoleSndBendGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
+#include "MagnetN1Generator.h"
 #include "MagnetBlockGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "QuadUnitGenerator.h"
@@ -258,6 +259,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
+
+  setVariable::MagnetN1Generator N1Gen;
+  N1Gen.generateBlock(Control,"N1Block");
 
   setVariable::PreDipoleGenerator PBGen;
   PBGen.generatePipe(Control,"PreDipole");

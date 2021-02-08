@@ -3,7 +3,7 @@
  
  * File:   R3Common/EPCombine.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h" 
@@ -85,7 +84,7 @@ namespace xraySystem
 {
 
 EPCombine::EPCombine(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -116,7 +115,7 @@ EPCombine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("EPCombine","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
 
@@ -411,8 +410,8 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
 
 void
 EPCombine::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

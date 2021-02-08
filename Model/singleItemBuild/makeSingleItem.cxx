@@ -81,7 +81,9 @@
 #include "DipoleSndBend.h"
 #include "R3ChokeChamber.h"
 #include "PreDipole.h"
+#include "HalfElectronPipe.h"
 #include "MagnetM1.h"
+#include "MagnetN1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "GateValveCube.h"
@@ -168,14 +170,15 @@ makeSingleItem::build(Simulation& System,
       "default",
       "CylGateValve","GateValveCube","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-      "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
+      "MagnetBlock","Sexupole","MagnetN1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
       "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
-      "Scrapper","TWCavity","Bellow", "VacuumPipe",
+      "Scrapper","TWCavity","Bellow", "VacuumPipe","PreDipole",
+      "HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
@@ -535,10 +538,10 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item=="MagnetM1")
+  if (item=="MagnetN1")
     {
-      std::shared_ptr<xraySystem::MagnetM1>
-	MagBlock(new xraySystem::MagnetM1("M1Block"));
+      std::shared_ptr<xraySystem::MagnetN1>
+	MagBlock(new xraySystem::MagnetN1("N1Block"));
 
       OR.addObject(MagBlock);
 
@@ -610,6 +613,26 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(DB);
       DB->addAllInsertCell(voidCell);
       DB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="PreDipole")
+    {
+      std::shared_ptr<xraySystem::PreDipole>
+	PD(new xraySystem::PreDipole("PreDipole"));
+      OR.addObject(PD);
+      PD->addAllInsertCell(voidCell);
+      PD->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="HalfElectronPipe")
+    {
+      std::shared_ptr<xraySystem::HalfElectronPipe>
+	HE(new xraySystem::HalfElectronPipe("N1BlockHalfElectron"));
+      OR.addObject(HE);
+      HE->addAllInsertCell(voidCell);
+      HE->createAll(System,World::masterOrigin(),0);
 
       return;
     }
