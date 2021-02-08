@@ -48,7 +48,6 @@
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -243,29 +242,20 @@ Dipole::createObjects(Simulation& System)
   
   HeadRule HR;
   
-  if (isActive("MidSplit") && isActive("CentreDivide"))
+  if (isActive("MidSplit"))
     {
-      const HeadRule& CDivide=getRule("CentreDivide");
-      const HeadRule& AFlat=getRule("InnerFlat");
-      const HeadRule& ARound=getRule("InnerRound");
-      const HeadRule& BFlat=getRule("InnerBFlat");
       const HeadRule& MSplit=getRule("MidSplit");
-	    
+      const HeadRule ACell=getComplementRule("InnerA");
+      const HeadRule BCell=getComplementRule("InnerB");
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 15 -16 103 -104 201 ");
       makeCell("MidVoidA",System,cellIndex++,
-	       0,0.0,HR*ARound*MSplit.complement()*CDivide.complement());
-
-      makeCell("MidVoidA",System,cellIndex++,
-	       0,0.0,HR*AFlat*MSplit.complement()*CDivide);
+	       0,0.0,HR*MSplit.complement()*ACell);
 
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex," 15 -16 103 -104 -202");
-      makeCell("MidVoidB",System,cellIndex++,0,0.0,
-	       HR*ARound*MSplit*CDivide.complement());
-      makeCell("MidVoidB",System,cellIndex++,0,0.0,
-	       HR*BFlat*MSplit*CDivide);
-
+      makeCell("MidVoidB",System,cellIndex++,0,0.0,HR*BCell*MSplit);
     }
   else
     {

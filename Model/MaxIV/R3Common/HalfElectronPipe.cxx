@@ -79,7 +79,11 @@ HalfElectronPipe::HalfElectronPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(1,"Flange");
+  FixedComp::nameSideIndex(2,"Photon");
+  FixedComp::nameSideIndex(3,"Electron");
+}
 
 
 HalfElectronPipe::~HalfElectronPipe()
@@ -129,7 +133,6 @@ HalfElectronPipe::createSurfaces()
     }
   if (!isActive("back"))
     {
-      ELog::EM<<"fullLength == "<<fullLength<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*fullLength,Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
@@ -219,11 +222,11 @@ HalfElectronPipe::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"(-17 -10) : (10 115 -116 117 -110)");
-
+  ExternalCut::setCutSurf("HalfElectron",HR);
   addOuterSurf("Half",HR*frontHR*midHR);
 
   const HeadRule midComp=midHR.complement();
-
+  ELog::EM<<"Mid Comp == "<<midComp<<ELog::endDiag;
   // Full pipe
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*midComp*backHR);
@@ -242,15 +245,10 @@ HalfElectronPipe::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"210 -217 207");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*midComp*backHR);
-
-
-
   
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"(-10 -17) : (210 -217) : (10 -210 115 -116)");
-
-
-  
+  ExternalCut::setCutSurf("FullElectron",HR);
   addOuterSurf("Full",HR*midComp*backHR);
   return;
 }
@@ -267,7 +265,18 @@ HalfElectronPipe::createLinks()
 
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  setConnect(1,endPoint,elecAxis);
+
+  // Photon centre line [exit]
+  setConnect(2,Origin+Y*fullLength,Y);
+  setLinkSurf(2,SMap.realSurf(buildIndex+2));
+
+  setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  setLineConnect(3,endPoint,elecAxis);
+
+  FixedComp::nameSideIndex(4,"midPlane");
+  setConnect(4,endPoint,elecAxis);
+  setLinkSurf(4,SMap.realSurf(buildIndex+102));
+
 
   return;
 }

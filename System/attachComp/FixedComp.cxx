@@ -1117,7 +1117,8 @@ FixedComp::setConnect(const size_t Index,
 }
 
 void
-FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
+FixedComp::setLineConnect(const size_t Index,
+			  const Geometry::Vec3D& C,
 			  const Geometry::Vec3D& A)
  /*!
    Set the axis of the linked component by intersecting

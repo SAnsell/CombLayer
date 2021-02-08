@@ -188,7 +188,7 @@ MagnetN1Generator::generateBlock(FuncDataBase& Control,
   // extra +5 cm
   QGen.generateQuad(Control,keyName+"QDend",90.30,23.0);
   // +5 cm
-  DGen.generateDipole(Control,keyName+"DIPm",115.50,60.0);
+  DGen.generateDipole(Control,keyName+"DIPm",118.50,60.0);
 
   OGen.setPoleAngle(0.0);
   OGen.setRadius(2.8,3.4);

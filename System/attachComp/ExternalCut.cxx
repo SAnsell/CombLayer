@@ -153,7 +153,8 @@ ExternalCut::getUnit(const std::string& extName)
   
   return mx.first->second;
 }
-  
+
+
 void
 ExternalCut::copyCutSurf(const std::string& extName,
 			const ExternalCut& ESurf,
@@ -165,7 +166,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
     \param outerName :: external-cut name
   */
 {
-  ELog::RegMethod RegA("ExternalCut","copyCutSurf(ExternalCut)");
+  ELog::RegMethod RegA("ExternalCut","setCutSurf(ExternalCut)");
 
   cutUnit& A=getUnit(extName);
   const cutUnit* BPtr=ESurf.findUnit(otherName);
@@ -179,7 +180,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
 	
   return;
 }
-
+  
 void
 ExternalCut::setCutSurf(const std::string& extName,
 			const int ESurf)
