@@ -27,11 +27,13 @@ namespace tdcSystem
   class CrossWayTube;
   class CrossWayBlank;
   class YagScreen;
+  class LocalShielding;
+
   /*!
     \class Segment15
-    \version 1.0
+    \version 1.1
     \author K. Batkov
-    \date May 2020
+    \date Feb 2021
     \brief TDC segment 15
   */
 
@@ -41,7 +43,8 @@ class Segment15 :
  private:
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;       ///< #1 - VC
-  std::shared_ptr<tdcSystem::CrossWayBlank> mirrorChamber;       ///< #2 
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
+  std::shared_ptr<tdcSystem::CrossWayBlank> mirrorChamber;       ///< #2
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;          ///<  Yag unit
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;          ///< #3 Yag screen
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;       ///< #5 - VC

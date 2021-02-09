@@ -1165,6 +1165,7 @@ Segment12(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5409.mp4/view
   setVariable::LocalShieldingGenerator ShieldGen;
   // max length is 22 cm [img_5422]
+  // max width is 86 cm [img_5428]
   ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
   ShieldGen.setMidHoleSize(10.0,4.0);
   ShieldGen.setCornerSize(0.0,0.0);
@@ -1230,6 +1231,7 @@ Segment13(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/tdc/img_5421.jpg/view
   setVariable::LocalShieldingGenerator ShieldGen;
   // max length is 14 cm [img_5420]
+  // max width is 105 cm [img_5429]
   ShieldGen.setSize(10,40,25); // length is 10, height/width arbitrary since it's a placeholder
   ShieldGen.setMidHoleSize(4.0,4.0); // dummy
   ShieldGen.setCornerSize(0.0,0.0); // dummy
@@ -1335,6 +1337,20 @@ Segment15(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",167.0);
+
+  // Placeholder for the local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_????.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // max length is 14 cm [img_5426.jpg]
+  // max width is 91 cm [img_5430.jpg]
+  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHoleSize(10.0,4.0); // dummy
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",11.0); // img_5427.jpg
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+
 
   return;
 }

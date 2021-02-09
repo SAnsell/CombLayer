@@ -68,7 +68,9 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 #include "CrossWayBlank.h"
+#include "LocalShielding.h"
 
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment15.h"
 
@@ -80,6 +82,7 @@ namespace tdcSystem
 Segment15::Segment15(const std::string& Key) :
   TDCsegment(Key,2),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   mirrorChamber(new tdcSystem::CrossWayBlank(keyName+"MirrorChamber")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
@@ -93,6 +96,7 @@ Segment15::Segment15(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(mirrorChamber);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
@@ -117,17 +121,17 @@ Segment15::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment15","buildObjects");
 
-  int outerCell;
+  if (isActive("front"))
+    pipeA->copyCutSurf("front",*this,"front");
+
   pipeA->createAll(System,*this,0);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*buildZone,pipeA);
 
-  outerCell=buildZone->createUnit(System,*pipeA,2);
-  pipeA->insertAllInCell(System,outerCell);
-
-
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*mirrorChamber);
 
-  outerCell=constructSystem::constructUnit
+  const int outerCell=constructSystem::constructUnit
     (System,*buildZone,*mirrorChamber,"back",*yagUnit);
 
   yagScreen->setBeamAxis(*yagUnit,1);
