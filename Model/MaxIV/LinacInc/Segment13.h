@@ -46,7 +46,7 @@ namespace tdcSystem
     \class Segment13
     \version 1.0
     \author S. Ansell
-    \date June 2020
+    \date Feb 2021
     \brief Last L2SPF segment
   */
 

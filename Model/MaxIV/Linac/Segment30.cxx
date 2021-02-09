@@ -72,8 +72,9 @@
 #include "CorrectorMag.h"
 #include "GaugeTube.h"
 #include "IonPumpTube.h"
-#include "LObjectSupportB.h"
+#include "LocalShielding.h"
 
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment30.h"
 
@@ -87,6 +88,7 @@ Segment30::Segment30(const std::string& Key) :
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
   gauge(new xraySystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -101,6 +103,7 @@ Segment30::Segment30(const std::string& Key) :
 
   OR.addObject(gauge);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(bellow);
   OR.addObject(ionPump);
   OR.addObject(pipeB);
@@ -178,15 +181,16 @@ Segment30::buildObjects(Simulation& System)
 
   int outerCell;
 
-  
+
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*gauge,2);
   gauge->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*IZThin,*gauge,"back",*pipeA);
+  pipeA->createAll(System,*gauge,"back");
+  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*bellow);
@@ -211,7 +215,7 @@ Segment30::postBuild(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment46","postBuild");
-  
+
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
   if (!sideVec.empty())
     {
@@ -225,7 +229,7 @@ Segment30::postBuild(Simulation& System)
       HeadRule surHR=buildZone->getSurround();
       surHR.removeOuterPlane(Origin+Y*10.0,-X,0.9);
       surHR.addIntersection(SMap.realSurf(buildIndex+5005));
-      
+
       if (segNames.find("L2SPF13")!=segNames.end() &&
 	  segNames.find("TDC14")==segNames.end())
 	{
@@ -253,10 +257,10 @@ Segment30::postBuild(Simulation& System)
 	  surHR.addIntersection(-SMap.realSurf(SN));
 	}
 
-      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());      
+      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
     }
   return;
- 
+
 }
 
 void

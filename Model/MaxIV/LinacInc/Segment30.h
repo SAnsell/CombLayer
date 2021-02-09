@@ -31,11 +31,13 @@ namespace xraySystem
 
 namespace tdcSystem
 {
+  class LocalShielding;
+
   /*!
     \class Segment30
-    \version 1.0
+    \version 1.1
     \author K. Batkov
-    \date June 2020
+    \date Feb 2021
     \brief TDC segment 30
   */
 
@@ -50,6 +52,7 @@ class Segment30 :
   std::shared_ptr<xraySystem::GaugeTube> gauge;
   /// #3 VC- Flanges 304L- Tube-316L
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
 
   /// #5 Bellows – 304L
   std::shared_ptr<constructSystem::Bellows> bellow;
@@ -61,7 +64,7 @@ class Segment30 :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
   /// #8 Corrector magnet type D - vertical
-  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;       
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;
 
   void buildObjects(Simulation&);
   void createLinks();
@@ -69,7 +72,7 @@ class Segment30 :
   void createSplitInnerZone(Simulation&);
 
   void postBuild(Simulation&);
-  
+
  public:
 
   Segment30(const std::string&);
@@ -78,7 +81,7 @@ class Segment30 :
   ~Segment30();
 
   virtual void registerPrevSeg(const TDCsegment*,const size_t);
-  
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
