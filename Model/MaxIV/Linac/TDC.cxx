@@ -631,7 +631,6 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
-
   reconstructInjectionHall(System);
 
 

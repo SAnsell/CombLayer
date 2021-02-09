@@ -666,6 +666,7 @@ R3FrontEnd::buildObjects(Simulation& System)
       outerCell=buildZone.createUnit(System);
     }
 
+  buildZone.rebuildInsertCells(System);
   setCell("MasterVoid",outerCell);  
   lastComp=exitPipe;
   
@@ -692,7 +693,7 @@ R3FrontEnd::createAll(Simulation& System,
   createSurfaces();
   buildObjects(System);
   createLinks();
-
+  
   return;
 }
 
