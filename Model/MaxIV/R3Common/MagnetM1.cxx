@@ -204,7 +204,8 @@ MagnetM1::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
-  
+
+
   frontHR=entryPipe->getFullRule(-1);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 13 -14 15 -16");
   makeCell("FrontVoid",System,cellIndex++,0,0.0,HR*frontHR);
@@ -296,6 +297,7 @@ MagnetM1::createObjects(Simulation& System)
   //
   // MAIN OUTER VOID:
   //
+
   frontHR=entryPipe->getFullRule(-1);
   backHR=epCombine->getFullRule(-2);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
@@ -389,7 +391,6 @@ MagnetM1::createAll(Simulation& System,
   halfPipe->setCutSurf("front",*entryPipe,"back");
   halfPipe->createAll(System,*entryPipe,"back");
 
-
   epCombine->setEPOriginPair(*halfPipe,"Photon","Electron");
   epCombine->setCutSurf("front",*halfPipe,"back");
   epCombine->createAll(System,*halfPipe,"back");
@@ -411,6 +412,7 @@ MagnetM1::createAll(Simulation& System,
   DIPm->copyCutSurf("InnerA",*halfPipe,"HalfElectron");
   DIPm->copyCutSurf("InnerB",*halfPipe,"FullElectron");
   DIPm->createAll(System,*this,0);
+
   ELog::EM<<"DIP == "<<DIPm->getKeyName()<<ELog::endDiag;
   createObjects(System);
   insertObjects(System);

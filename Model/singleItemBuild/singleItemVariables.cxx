@@ -269,7 +269,7 @@ SingleItemVariables(FuncDataBase& Control)
   OGen.generateOcto(Control,"OXX",20.0,25.0);
 
   setVariable::DipoleGenerator DGen;
-  DGen.generateDipole(Control,"M1BlockDIM",0.0,60.0);
+  DGen.generateDipole(Control,"DIM",0.0,60.0);
 
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
