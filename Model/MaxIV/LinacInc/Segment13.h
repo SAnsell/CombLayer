@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment13.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment13_h
@@ -40,6 +40,7 @@ namespace tdcSystem
   class CorrectorMag;
   class YagUnit;
   class YagScreen;
+  class LocalShielding;
 
   /*!
     \class Segment13
@@ -54,27 +55,28 @@ class Segment13 :
 {
  private:
 
-  // first pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  // first pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
 
   /// corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;
 
   /// BPM
-  std::shared_ptr<tdcSystem::StriplineBPM> bpm;    
+  std::shared_ptr<tdcSystem::StriplineBPM> bpm;
 
   // main magnetic pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
-  
-  /// Quad begining QSQ 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// Quad begining QSQ
   std::shared_ptr<tdcSystem::LQuadF> QuadA;
 
   /// sexupole
-  std::shared_ptr<tdcSystem::LSexupole> SexuA; 
+  std::shared_ptr<tdcSystem::LSexupole> SexuA;
 
-  /// Quad endng QSQ 
+  /// Quad endng QSQ
   std::shared_ptr<tdcSystem::LQuadF> QuadB;
-  
+
   /// yag station [verical]
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
 
@@ -82,17 +84,17 @@ class Segment13 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
   /// exit pipe + corrector mag
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
   /// corrector mag
-  std::shared_ptr<xraySystem::CorrectorMag> cMagVA; 
+  std::shared_ptr<xraySystem::CorrectorMag> cMagVA;
 
   void buildObjects(Simulation&);
   void createLinks();
 
-  
+
  public:
-  
+
   Segment13(const std::string&);
   Segment13(const Segment13&);
   Segment13& operator=(const Segment13&);

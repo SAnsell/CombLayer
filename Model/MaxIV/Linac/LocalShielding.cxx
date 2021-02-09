@@ -179,8 +179,8 @@ LocalShielding::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   // penetration for the beam pipe
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(midHoleWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(midHoleWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(midHoleWidth/2.0+xStep),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(midHoleWidth/2.0-xStep),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(midHoleHeight/2.0+zStep),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(midHoleHeight/2.0-zStep),Z);
