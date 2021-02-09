@@ -513,7 +513,7 @@ makeSingleItem::build(Simulation& System,
     {
 
       std::shared_ptr<xraySystem::MagnetBlock>
-	MB(new xraySystem::MagnetBlock("M1"));
+	MB(new xraySystem::MagnetBlock("MB1"));
 
       OR.addObject(MB);
       MB->addAllInsertCell(voidCell);

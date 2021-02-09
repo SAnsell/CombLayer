@@ -173,7 +173,6 @@ EPCombine::createUnitVector(const attachSystem::FixedComp& FC,
     }
   else
     {
-      elecYAxis=Y;
       elecXAxis=elecYAxis*Z;
       elecOrg+=X*electronXStep;    // Note both P/E the same xstep
       photOrg+=X*photonXStep;    //
@@ -359,7 +358,6 @@ EPCombine::createLinks()
 
   setConnect(2,photOrg-X*photonXStep+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
-
   
   // electron surface is intersect from 102 normal into surface 2
   ELog::EM<<"EO == "<<elecOrg<<":"<<elecYAxis<<ELog::endDiag;
@@ -403,9 +401,9 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
 
   photOrg=FC.getLinkPt(photonIndex);
   elecOrg=FC.getLinkPt(electronIndex);
-  
-  elecYAxis=FC.getLinkAxis(electronIndex);
 
+
+  elecYAxis=FC.getLinkAxis(electronIndex);
   epPairSet=1;
   
   return;

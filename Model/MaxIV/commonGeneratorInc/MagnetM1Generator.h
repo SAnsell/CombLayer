@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/MagnetN1Generator.h
+ * File:   commonBeamInc/MagnetM1Generator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *

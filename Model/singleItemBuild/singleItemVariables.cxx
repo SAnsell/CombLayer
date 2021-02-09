@@ -356,7 +356,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
-  MBGen.generateBlock(Control,"M1",0.0);
+  MBGen.generateBlock(Control,"MB1",0.0);
 
   setVariable::QuadUnitGenerator M1QGen;
   M1QGen.generatePipe(Control,"M1QuadUnit",0.0);

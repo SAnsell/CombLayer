@@ -152,7 +152,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
-  Control.addVariable(keyName+"YStep",yOffset-blockYStep);
+  Control.addVariable(keyName+"YStep",yOffset-blockYStep);    
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
 

@@ -552,7 +552,10 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
+  
   magBlockM1->createAll(System,*this,0);
+
+  
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
   transPipe->createAll(System,undulatorFC,2);
@@ -563,8 +566,11 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
   
+
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
+  ELog::EM<<"PAxis = "<<magBlockM1->getLinkAxis("Photon")<<ELog::endDiag;
+  ELog::EM<<"PAxis = "<<magBlockM1->getLinkAxis("Electron")<<ELog::endDiag;
   epSeparator->createAll(System,*magBlockM1,2);
   outerCell=buildZone.createUnit(System,*epSeparator,2);
   epSeparator->insertInCell(System,outerCell);
@@ -572,6 +578,8 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   chokeChamber->setCutSurf("front",*epSeparator,2);
   chokeChamber->setEPOriginPair(*epSeparator,"Photon","Electron");
+  ELog::EM<<"Axis = "<<epSeparator->getLinkAxis("Photon")<<ELog::endDiag;
+  ELog::EM<<"Axis = "<<epSeparator->getLinkAxis("Electron")<<ELog::endDiag;
   chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createUnit(System,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
