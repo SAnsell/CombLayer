@@ -120,7 +120,10 @@ MagnetM1::MagnetM1(const std::string& Key) :
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
+  OR.addObject(entryPipe);
+  OR.addObject(halfPipe);
+  OR.addObject(epCombine);
   OR.addObject(Oxx);
   OR.addObject(QFend);
   OR.addObject(Oxy);
@@ -328,9 +331,6 @@ MagnetM1::createLinks()
   setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
   setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
-  ELog::EM<<"EAxis = "<<epCombine->getLinkAxis("Photon")<<ELog::endDiag;
-  ELog::EM<<"EAxis = "<<epCombine->getLinkAxis("Electron")<<ELog::endDiag;
-
   setConnect(4,Origin+Y*blockYStep,-Y);
   setLinkSurf(4,-SMap.realSurf(buildIndex+1));
 
@@ -396,9 +396,6 @@ MagnetM1::createAll(Simulation& System,
   halfPipe->createAll(System,*entryPipe,"back");
 
   epCombine->setEPOriginPair(*halfPipe,"Photon","Electron"); 
-  ELog::EM<<"HAxis = "<<halfPipe->getLinkAxis("Photon")<<ELog::endDiag;
-  ELog::EM<<"HAxis = "<<halfPipe->getLinkAxis("Electron")<<ELog::endDiag;
-
   epCombine->setCutSurf("front",*halfPipe,"back");
   epCombine->createAll(System,*halfPipe,"back");
 
@@ -420,7 +417,6 @@ MagnetM1::createAll(Simulation& System,
   DIPm->copyCutSurf("InnerB",*halfPipe,"FullElectron");
   DIPm->createAll(System,*this,0);
 
-  ELog::EM<<"DIP == "<<DIPm->getKeyName()<<ELog::endDiag;
   createObjects(System);
   insertObjects(System);
   createLinks();

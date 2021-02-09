@@ -226,7 +226,6 @@ HalfElectronPipe::createObjects(Simulation& System)
   addOuterSurf("Half",HR*frontHR*midHR);
 
   const HeadRule midComp=midHR.complement();
-  ELog::EM<<"Mid Comp == "<<midComp<<ELog::endDiag;
   // Full pipe
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*midComp*backHR);

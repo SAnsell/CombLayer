@@ -783,6 +783,7 @@ objectGroups::getObjectRange(const std::string& objName) const
     {
       const std::string& itemName=Units[0];
       const std::string& cellName=Units[1];
+
       
       const attachSystem::CellMap* CPtr=
 	getObject<attachSystem::CellMap>(itemName);
@@ -797,6 +798,7 @@ objectGroups::getObjectRange(const std::string& objName) const
 		  (objName,"CellMap:cellName:Index");
 	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
 	    }
+
 	  // case 2: CellMap : Name
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())

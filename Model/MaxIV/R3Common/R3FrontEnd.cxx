@@ -569,8 +569,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
-  ELog::EM<<"PAxis = "<<magBlockM1->getLinkAxis("Photon")<<ELog::endDiag;
-  ELog::EM<<"PAxis = "<<magBlockM1->getLinkAxis("Electron")<<ELog::endDiag;
   epSeparator->createAll(System,*magBlockM1,2);
   outerCell=buildZone.createUnit(System,*epSeparator,2);
   epSeparator->insertInCell(System,outerCell);
@@ -578,8 +576,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   chokeChamber->setCutSurf("front",*epSeparator,2);
   chokeChamber->setEPOriginPair(*epSeparator,"Photon","Electron");
-  ELog::EM<<"Axis = "<<epSeparator->getLinkAxis("Photon")<<ELog::endDiag;
-  ELog::EM<<"Axis = "<<epSeparator->getLinkAxis("Electron")<<ELog::endDiag;
   chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createUnit(System,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
