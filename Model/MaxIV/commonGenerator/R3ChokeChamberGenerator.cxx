@@ -84,8 +84,8 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   flangeSideLength(CF63::flangeLength),
   sideCapThick(CF63::flangeLength),
 
-  plateThick(6.0),plateGap(0.2),
-  plateDepth(3.0),plateLength(15.0),
+  plateThick(4.0),plateGap(0.2),
+  plateDepth(2.0),plateLength(15.0),
 
   voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304"),
   capMat("Stainless304"),plateMat("Copper")
