@@ -704,7 +704,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   const Geometry::Vec3D MidPt(0,0,0);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
-  const Geometry::Vec3D PPosA(0.0,-DLength/3.0,0);
+  const Geometry::Vec3D PPosA(0.0,-DLength/3.2,0);
   const Geometry::Vec3D PPosB(0.0,-DLength/4.0,0);
   const Geometry::Vec3D PPosC(0.0,DLength/8.0,0);
   const Geometry::Vec3D PPosD(0.0,DLength/3.0,0);

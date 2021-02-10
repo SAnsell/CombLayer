@@ -547,6 +547,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowB,"back",*diagBoxA);
   diagBoxA->intersectPorts(System,0,1);
+  diagBoxA->intersectPorts(System,4,3);
 
 
   for(size_t i=0;i<jaws.size();i++)
