@@ -101,6 +101,7 @@ Segment33::Segment33(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
@@ -122,6 +123,7 @@ Segment33::Segment33(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(pipeC);
   OR.addObject(cMagVA);
+  OR.addObject(shieldB);
   OR.addObject(bellow);
 
   setFirstItems(pipeA);
@@ -174,6 +176,7 @@ Segment33::buildObjects(Simulation& System)
 
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
+  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",shieldB);
   pipeTerminate(System,*buildZone,pipeC);
 
   outerCell=constructSystem::constructUnit

@@ -74,6 +74,9 @@ class Segment33 :
   /// corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagVA;
 
+  // local shielding
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB;
+
   /// bellow
   std::shared_ptr<constructSystem::Bellows> bellow;
 

@@ -20,7 +20,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -474,6 +474,12 @@ global_settings {
     #declare cameraLookAt   = <-363, 5287, 7>;
     #declare projection = 0;
     #declare cameraAngle = 70;
+  #break
+    #case(strcmp(ITEM,"SPF33ShieldB"))
+    #declare cameraLocation = <-633, 6235, 20>;
+    #declare cameraLookAt   = <-705, 6320, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

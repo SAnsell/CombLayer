@@ -2339,18 +2339,28 @@ Segment33(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
-  CMGen.generateMag(Control,lKey+"CMagVA",11.0,0);
+  Control.addVariable(lKey+"PipeCYAngle",90.0);
+  CMGen.generateMag(Control,lKey+"CMagVA",11.0,1);
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
-  // Local shielding wall
-  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5388.mp4/view
+  // Local shielding walls
   setVariable::LocalShieldingGenerator ShieldGen;
+  // SPF33ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5388.mp4/view
   ShieldGen.setSize(10,80,35);
   ShieldGen.setMidHoleSize(3.0,5.0);
   ShieldGen.setCornerSize(0.0,0.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",14.0);
+
+  // SPF33ShieldB
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5433.jpg/view
+  ShieldGen.setSize(10,60,20);
+  ShieldGen.setMidHoleSize(3.0,5.0);
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",40.0);
 
   return;
 }
