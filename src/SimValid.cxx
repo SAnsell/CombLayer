@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ SimValid::runPoint(const Simulation& System,
     \return true if valid
   */
 {
-  ELog::RegMethod RegA("SimValid","run");
+  ELog::RegMethod RegA("SimValid","runPoint");
   ELog::debugMethod DebA;
   
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
@@ -200,9 +200,21 @@ SimValid::runPoint(const Simulation& System,
 
   // Find Initial cell [Store for next time]
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
-  InitObj=System.findCell(CP,InitObj);  
-  const int initSurfNum=InitObj->isOnSide(CP);
-
+  int initSurfNum(0);
+  Geometry::Vec3D Pt(CP);
+  do
+    {
+      if (initSurfNum)
+	{
+	  ELog::EM<<"Adjusting the initial point as on surface"<<ELog::endDiag;
+	  Pt+=Geometry::Vec3D(RNG.rand()*0.01,RNG.rand()*0.01,RNG.rand()*0.01);
+	}
+      InitObj=System.findCell(Pt,InitObj);
+      initSurfNum=InitObj->isOnSurface(Pt);
+      ELog::EM<<"Is on side == "<<initSurfNum<<ELog::endDiag;
+    }
+  while(initSurfNum);
+      
   // check surfaces
   ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
   for(size_t i=0;i<nAngle;i++)
@@ -216,7 +228,7 @@ SimValid::runPoint(const Simulation& System,
       Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
-      MonteCarlo::eTrack TNeut(CP,uVec);
+      MonteCarlo::eTrack TNeut(Pt,uVec);
 
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
@@ -229,7 +241,7 @@ SimValid::runPoint(const Simulation& System,
 	  if (aDist>1e30 && Pts.size()<=1)
 	    {
 	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
-	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDiag;
+	      ELog::EM<<"Index == "<<Pts.size()<<ELog::endDiag;
 	      ELog::EM<<"Pts[0] == "<<Pts[0].Pt<<ELog::endDiag;
 	      ELog::EM<<"Pts[0] == "<<Pts[0].Dir<<ELog::endDiag;
 	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
@@ -244,9 +256,11 @@ SimValid::runPoint(const Simulation& System,
 
       if (!OPtr)
 	{
-	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
+	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
 	  if (!InitObj)
 	    ELog::EM<<"Failed to calculate INITIAL cell correctly: "<<ELog::endCrit;
+	  else
+	    ELog::EM<<"Initial Cell ="<<*InitObj<<ELog::endDiag;
 	  diagnostics(System,Pts);
 	  return 0;
 	}

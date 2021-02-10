@@ -360,7 +360,6 @@ EPCombine::createLinks()
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
   
   // electron surface is intersect from 102 normal into surface 2
-  ELog::EM<<"EO == "<<elecOrg<<":"<<elecYAxis<<ELog::endDiag;
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,elecOrg,elecYAxis);
 

@@ -578,6 +578,28 @@ Object::addSurfString(const std::string& XE)
 }
 
 int
+Object::isOnSurface(const Geometry::Vec3D& Pt) const
+  /*!
+    Determine if the point is on a surface in the object
+    THIS SHOULD NOT be used if you want if the point is 
+    at an exiting boundary (use Object::isOnSide). But 
+    it is for determining if a boundary check is needed.
+    \param Pt :: Point to check
+    \returns SurfNumber if the point is on the surface [signed]
+  */
+{
+  ELog::RegMethod RegA("Object","isOnSurface");
+
+  std::map<int,int> surMap=mapValid(Pt);
+  for(const auto& [sn , sideFlag] : surMap)
+    {
+      if (!sideFlag)
+	return sn;
+    }
+  return 0;
+}
+
+int
 Object::isOnSide(const Geometry::Vec3D& Pt) const
   /*!
     Determine if the point is in/out on the object
@@ -591,10 +613,10 @@ Object::isOnSide(const Geometry::Vec3D& Pt) const
   std::map<int,int>::iterator mc;
 
   std::set<int> onSurf;
-  for(mc=surMap.begin();mc!=surMap.end();mc++)
+  for(const auto& [sn , sideFlag] : surMap)
     {
-      if (!mc->second)
-	onSurf.insert(mc->first);
+      if (!sideFlag)
+	onSurf.insert(sn);
     }
   // Definately not on the surface
   if (onSurf.empty()) return 0;
@@ -680,7 +702,7 @@ Object::trackDirection(const Geometry::Vec3D& C,
 
 int
 Object::isValid(const Geometry::Vec3D& Pt) const
-/*! 
+/*!
   Determines is Pt is within the object 
   or on the surface
   \param Pt :: Point to be tested
@@ -836,12 +858,12 @@ Object::isValid(const std::map<int,int>& SMap) const
 
 std::map<int,int>
 Object::mapValid(const Geometry::Vec3D& Pt) const
-/*! 
-  Populates the validity map
-  the surface 
-  \param Pt :: Point to testsd
-  \returns Map [ surfNumber: -1/1 ]
-*/
+  /*! 
+    Populates the validity map
+    the surface 
+    \param Pt :: Point to testsd
+    \returns Map [ surfNumber: -1/1 ]
+  */
 {
   ELog::RegMethod RegA("Object","mapValid");
 
