@@ -71,6 +71,7 @@
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LocalShielding.h"
 
 #include "TDCsegment.h"
 #include "Segment26.h"
@@ -90,6 +91,8 @@ Segment26::Segment26(const std::string& Key) :
   pipeAA(new constructSystem::VacuumPipe(keyName+"PipeAA")),
   pipeBA(new constructSystem::VacuumPipe(keyName+"PipeBA")),
   pipeCA(new constructSystem::VacuumPipe(keyName+"PipeCA")),
+
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
 
   bellowAA(new constructSystem::Bellows(keyName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(keyName+"BellowBA")),
@@ -115,6 +118,8 @@ Segment26::Segment26(const std::string& Key) :
   OR.addObject(pipeAA);
   OR.addObject(pipeBA);
   OR.addObject(pipeCA);
+
+  OR.addObject(shieldA);
 
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
@@ -170,7 +175,7 @@ Segment26::createSplitInnerZone()
    */
 {
   ELog::RegMethod RegA("Segment26","createSplitInnerZone");
-  
+
   *IZTop=*buildZone;
   *IZMid=*buildZone;
   *IZLower=*buildZone;
@@ -241,6 +246,39 @@ Segment26::buildObjects(Simulation& System)
 
   createSplitInnerZone();
 
+  // Local shielding wall
+  shieldA->setCutSurf("InnerTop", *pipeAA, "outerPipe");
+  shieldA->setCutSurf("Inner", *pipeBA, "outerPipe");
+  shieldA->setCutSurf("InnerLow", *pipeCA, "outerPipe");
+  shieldA->createAll(System, *pipeBA, "#front");
+
+  // IZTop
+  outerCellA = IZTop->createUnit(System, *shieldA, -1);
+
+  attachSystem::ContainedGroup *CGPtr = dynamic_cast<attachSystem::ContainedGroup*>(pipeAA.get());
+  CGPtr->insertAllInCell(System,outerCellA);
+
+  outerCellA=IZTop->createUnit(System,*shieldA,2);
+  shieldA->insertInCell(System,outerCellA);
+
+  // IZMid
+  outerCellB = IZMid->createUnit(System, *shieldA, -1);
+  CGPtr = dynamic_cast<attachSystem::ContainedGroup*>(pipeBA.get());
+  CGPtr->insertAllInCell(System,outerCellB);
+
+  outerCellB=IZMid->createUnit(System,*shieldA,2);
+  shieldA->insertInCell(System,outerCellB);
+
+  // IZLower
+  outerCellC = IZLower->createUnit(System, *shieldA, -1);
+  CGPtr = dynamic_cast<attachSystem::ContainedGroup*>(pipeCA.get());
+  CGPtr->insertAllInCell(System,outerCellC);
+
+  outerCellC=IZLower->createUnit(System,*shieldA,2);
+  shieldA->insertInCell(System,outerCellC);
+
+  ////////////
+
   outerCellA=IZTop->createUnit(System,*pipeAA,2);
   outerCellB=IZMid->createUnit(System,*pipeBA,2);
   outerCellC=IZLower->createUnit(System,*pipeCA,2);
@@ -290,7 +328,7 @@ Segment26::buildObjects(Simulation& System)
 
   outerCellC=IZLower->createUnit(System,*pipeBB,"back");
   CellMap::addCell("SpaceFiller",outerCellC);
-  
+
   return;
 }
 
@@ -335,7 +373,7 @@ Segment26::buildFrontSpacer(Simulation& System)
    */
 {
   ELog::RegMethod RegA("Segment27","buildFrontSpacer");
-  
+
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
       HeadRule volume=buildZone->getFront();

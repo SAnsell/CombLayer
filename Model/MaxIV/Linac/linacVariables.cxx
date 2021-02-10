@@ -1932,8 +1932,8 @@ Segment26(FuncDataBase& Control,
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
-  Control.addVariable(lKey+"PipeBAXAngle",
-		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
+  const double pipeBAXAngle = std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI;
+  Control.addVariable(lKey+"PipeBAXAngle", pipeBAXAngle);
   Control.addVariable(lKey+"PipeCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
@@ -1957,6 +1957,21 @@ Segment26(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeAB",217.2);
   PGen.generatePipe(Control,lKey+"PipeBB",210.473);
   PGen.generatePipe(Control,lKey+"PipeCB",222.207);
+
+  // Local shielding walls
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // SPF26ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/tdc/img_5443.jpg/view
+  // max length is 14 cm [img_5444.jpg]
+  // max width is 99 cm [img_5445.jpg]
+  // max height is 58 cm [img_5448.jpg]
+  ShieldGen.setSize(14,99.0-10.0,58); // max dimensions
+  ShieldGen.setMidHoleSize(5.0,29.0); // approx
+  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",20.0); // approx
+  Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
+  Control.addVariable(lKey+"ShieldAXAngle",-pipeBAXAngle);
 
   return;
 }

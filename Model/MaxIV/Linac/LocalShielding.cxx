@@ -203,7 +203,13 @@ LocalShielding::createObjects(Simulation& System)
   ELog::RegMethod RegA("LocalShielding","createObjects");
 
   std::string Out;
-  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+  std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
+
+  const std::string ICellTop=isActive("InnerTop") ? getRuleStr("InnerTop") : "";
+  const std::string ICellLow=isActive("InnerLow") ? getRuleStr("InnerLow") : "";
+
+  ICell += ICellTop + ICellLow;
+
   const std::string side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
   if ((cornerWidth>Geometry::zeroTol) && (cornerHeight>Geometry::zeroTol))

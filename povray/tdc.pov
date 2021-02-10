@@ -20,7 +20,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -480,6 +480,12 @@ global_settings {
     #declare cameraLookAt   = <-705, 6320, 0>;
     #declare projection = 0;
     #declare cameraAngle = 60;
+  #break
+    #case(strcmp(ITEM,"TDC26ShieldA"))
+    #declare cameraLocation = <-243, 7850, 20>;
+    #declare cameraLookAt   = <-352, 8115, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
