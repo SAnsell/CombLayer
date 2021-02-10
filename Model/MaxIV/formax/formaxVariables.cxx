@@ -196,7 +196,6 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );   
   FMaskGen.generateColl(Control,preName+"CollB",FM2dist,40.0);
 
-
   // NOT PRESENT ::: 
   // FMaskGen.setFrontGap(0.84,0.582);
   // FMaskGen.setBackGap(0.750,0.357);

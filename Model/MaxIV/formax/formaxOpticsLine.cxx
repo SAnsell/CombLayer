@@ -628,6 +628,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
     
 
   buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
   lastComp=pipeF;
 
