@@ -89,7 +89,7 @@ class Segment46 :
   void writePoints() const override;
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

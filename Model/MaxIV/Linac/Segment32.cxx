@@ -120,7 +120,6 @@ Segment32::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment32","buildObjects");
 
-  int outerCell;
   if (isActive("front"))
     flatA->copyCutSurf("front",*this,"front");
 

@@ -32,7 +32,7 @@ namespace tdcSystem
 {
   class CeramicGap;
   class InjectionHall;
-  
+
   /*!
     \class Segment45
     \version 1.0
@@ -49,7 +49,7 @@ class Segment45 :
   const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
   double cutRadius;        ///< Cut radius
-  
+
   std::shared_ptr<tdcSystem::CeramicGap> ceramic;     // #1 ceramic gap
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #2
   std::shared_ptr<tdcSystem::YagUnitBig> yagUnit;     // #3
@@ -57,15 +57,15 @@ class Segment45 :
   std::shared_ptr<constructSystem::FlangePlate> adaptor; // adaptor plate
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
 
-  virtual void setFrontSurfs(const std::vector<HeadRule>&);
+  virtual void setFrontSurfs(const std::vector<HeadRule>&) override;
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
 
   void constructHole(Simulation&);
-  
+
  public:
 
   Segment45(const std::string&);
@@ -76,7 +76,7 @@ class Segment45 :
   void writePoints() const override;
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

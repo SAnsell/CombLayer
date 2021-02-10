@@ -226,7 +226,6 @@ Segment46::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","buildObjects");
 
-  int outerCell;
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
