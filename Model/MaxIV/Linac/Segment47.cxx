@@ -91,8 +91,7 @@ Segment47::Segment47(const std::string& Key) :
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
-  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB"))
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -113,7 +112,6 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeE);
   OR.addObject(shieldA);
-  OR.addObject(shieldB);
 
   setFirstItems(pipeA);
 }
@@ -204,10 +202,6 @@ Segment47::buildObjects(Simulation& System)
   for (int i=0; i<2; ++i)
     shieldA->insertInCell(System,outerCell+i);
 
-  shieldB->createAll(System,*shieldA, "left");
-  for (int i=0; i<4; ++i)
-    shieldB->insertInCell(System,outerCell+i);
-
   return;
 }
 
@@ -248,6 +242,8 @@ Segment47::createAll(Simulation& System,
   createSplitInnerZone();
   buildObjects(System);
   createLinks();
+  CellMap::setCells("BlockVoid",IZThin->getCells("Unit"));
+
   return;
 }
 

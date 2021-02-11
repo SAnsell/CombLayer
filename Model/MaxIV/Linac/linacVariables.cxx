@@ -3095,13 +3095,6 @@ Segment47(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAXStep",47.5);
   Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
-  const double shieldBLength = 5.0;
-  const double shieldBWidth = 28.07;
-  LSGen.setSize(shieldBLength,shieldBWidth,shieldAHeight);
-  LSGen.generate(Control,lKey+"ShieldB");
-  Control.addVariable(lKey+"ShieldBXStep",(shieldBWidth-shieldALength)/2.0);
-  Control.addVariable(lKey+"ShieldBYStep",shieldBLength/2.0);
-
   return;
 }
 
@@ -3167,7 +3160,7 @@ Segment48(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",6.0);
   Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
-  const double shieldBLength = 105.9; // beam stop length x 2 + bellow length
+  const double shieldBLength = 134;
   LSGen.setSize(5,shieldBLength,15);
   LSGen.setMidHoleSize(0.0,0.0);
   LSGen.setCornerSize(0.0,0.0);

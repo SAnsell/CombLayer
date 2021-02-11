@@ -570,6 +570,9 @@ TDC::createAll(Simulation& System,
 	  if (BL=="Segment47")
 	    sideSegNames={"Segment45","Segment46"};
 
+	  if (BL=="Segment48")
+	    sideSegNames={"Segment47"};
+
 	  if (BL=="Segment49") // same treatment as Segment10
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=

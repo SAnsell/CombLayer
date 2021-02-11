@@ -58,7 +58,6 @@ class Segment47 :
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
   std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
-  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding parallel to beam line
 
   void createSplitInnerZone();
 
