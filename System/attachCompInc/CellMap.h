@@ -76,12 +76,15 @@ class CellMap  : public BaseMap
   void setCells(const std::string& K,const int CNA,const int CNB)
    { BaseMap::setItems(K,CNA,CNB); }
 
+  void setCells(const std::string& K,const std::vector<int>& CVec)
+    { BaseMap::setItems(K,CVec); }
+
   /// Rename function
   void addCell(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
   /// Rename function
-  void addCells(const std::string& K,const std::vector<int>& CN)
-    { BaseMap::addItems(K,CN); }
+  void addCells(const std::string& K,const std::vector<int>& CVec)
+    { BaseMap::addItems(K,CVec); }
 
   /// Rename function
   int getCell(const std::string& K) const
