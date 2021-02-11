@@ -49,7 +49,8 @@ class Segment48 :
   std::shared_ptr<tdcSystem::EBeamStop> beamStopB;    // #1
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
-  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding parallel to beam line
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding in the corner of shieldA
+  std::shared_ptr<tdcSystem::LocalShielding> shieldC; // local shielding parallel to beam line
   std::shared_ptr<constructSystem::PortTube> slitTube; // #4
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jaws; // jaws in #4
   std::shared_ptr<constructSystem::Bellows> bellowB;  // #5

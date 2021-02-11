@@ -463,7 +463,7 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
-  #case(strcmp(ITEM,"SPF48ShieldB")) // img_5457.jpg
+  #case(strcmp(ITEM,"SPF48ShieldC")) // img_5457.jpg
     #declare cameraLocation = <-600, 9900, 70>;
     #declare cameraLookAt   = <-735, 9830, 0>;
     #declare projection = 0;

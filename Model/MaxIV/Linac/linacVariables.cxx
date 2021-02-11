@@ -3083,17 +3083,13 @@ Segment47(FuncDataBase& Control,
   // Local shielding wall
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
   setVariable::LocalShieldingGenerator LSGen;
-  const double shieldALength = 10.0;
-  const double shieldAHeight = 30.0;
-  const double shieldAZStep = -7.5;
   // Average length estimate (dimension along the beam line):
-  LSGen.setSize(shieldALength,60,shieldAHeight);
+  LSGen.setSize(10.0,60,30.0);
   LSGen.setMidHoleSize(0.0,0.0);
   LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldA");
-  // Control.addVariable(lKey+"ShieldAYStep",6.0);
-  Control.addVariable(lKey+"ShieldAXStep",47.5);
-  Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
+  Control.addVariable(lKey+"ShieldAXStep",62.5);
+  Control.addVariable(lKey+"ShieldAZStep",-10.0);
 
   return;
 }
@@ -3160,14 +3156,21 @@ Segment48(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",6.0);
   Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
-  const double shieldBLength = 134;
-  LSGen.setSize(5,shieldBLength,15);
-  LSGen.setMidHoleSize(0.0,0.0);
+  LSGen.setSize(20.0,10.0,15.0);
+  LSGen.setMidHoleSize(0,0);
   LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldB");
-  Control.addVariable(lKey+"ShieldBZStep",-shieldAZStep); // to center at the beam line
-  Control.addVariable(lKey+"ShieldBXStep",shieldBLength/2.0+shieldALength/2.0);
-  Control.addVariable(lKey+"ShieldBYStep",-5.0); // approx
+  Control.addVariable(lKey+"ShieldBXStep",1.5);
+  Control.addVariable(lKey+"ShieldBYStep",10.0);
+
+  const double shieldCWidth = 131;
+  LSGen.setSize(shieldCWidth,5,20);
+  LSGen.setMidHoleSize(0.0,0.0);
+  LSGen.setCornerSize(0.0,0.0);
+  LSGen.generate(Control,lKey+"ShieldC");
+  Control.addVariable(lKey+"ShieldCYStep",shieldCWidth/2.0);
+  Control.addVariable(lKey+"ShieldCZStep",-2.5);
+
   return;
 }
 
@@ -3572,7 +3575,7 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfFarXStep",-995.514+linacVar::zeroX);
   Control.addVariable("spfFarYStep",7900.0+linacVar::zeroY);
   Control.addVariable("spfFarOuterLeft",50.0);
-  Control.addVariable("spfFarOuterRight",65.0);
+  Control.addVariable("spfFarOuterRight",80.0);
   Control.addVariable("spfFarOuterTop",100.0);
 
   // segment 49

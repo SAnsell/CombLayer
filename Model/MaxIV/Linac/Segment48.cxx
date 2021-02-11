@@ -92,6 +92,7 @@ Segment48::Segment48(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
+  shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
   jaws({
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
@@ -114,6 +115,7 @@ Segment48::Segment48(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(shieldA);
   OR.addObject(shieldB);
+  OR.addObject(shieldC);
   OR.addObject(slitTube);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberA);
@@ -159,14 +161,18 @@ Segment48::buildObjects(Simulation& System)
   pipeTerminate(System,*buildZone,pipeA);
 
   shieldB->createAll(System,*shieldA,"right");
-  for (int i=0; i<=3; ++i)
+  for (int i=2; i<=4; ++i)
     shieldB->insertInCell(System,outerCell+i);
+
+  shieldC->createAll(System,*shieldB,"right");
+  for (int i=0; i<=3; ++i)
+    shieldC->insertInCell(System,outerCell+i);
 
   for (const TDCsegment* sideSegment : sideVec)
     {
       const std::vector<int> cellVec= sideSegment->getCells("BlockVoid");
       for (int i=0; i<4; ++i)
-	shieldB->insertInCell(System,cellVec.rbegin()[i]);
+	shieldC->insertInCell(System,cellVec.rbegin()[i]);
       // for(const int cn : cellVec)
       // 	ELog::EM<<"BPtr= "<<cn<<ELog::endDiag;
     }
