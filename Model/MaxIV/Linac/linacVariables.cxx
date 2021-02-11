@@ -1965,7 +1965,7 @@ Segment26(FuncDataBase& Control,
   // max length is 14 cm [img_5444.jpg]
   // max width is 99 cm [img_5445.jpg]
   // max height is 58 cm [img_5448.jpg]
-  ShieldGen.setSize(14,99.0-10.0,58); // max dimensions
+  ShieldGen.setSize(14,99.0,58); // max dimensions
   ShieldGen.setMidHoleSize(5.0,29.0); // approx
   ShieldGen.setCornerSize(0.0,0.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
@@ -3570,7 +3570,7 @@ LINACvariables(FuncDataBase& Control)
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",60.0);
+  Control.addVariable("spfLongOuterLeft",65.0);
   Control.addVariable("spfLongOuterRight",50.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
@@ -3579,7 +3579,7 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfFarXStep",-995.514+linacVar::zeroX);
   Control.addVariable("spfFarYStep",7900.0+linacVar::zeroY);
   Control.addVariable("spfFarOuterLeft",50.0);
-  Control.addVariable("spfFarOuterRight",50.0);
+  Control.addVariable("spfFarOuterRight",65.0);
   Control.addVariable("spfFarOuterTop",100.0);
 
   // segment 49
