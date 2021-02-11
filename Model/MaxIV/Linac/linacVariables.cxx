@@ -3083,13 +3083,13 @@ Segment47(FuncDataBase& Control,
   // Local shielding wall
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
   setVariable::LocalShieldingGenerator LSGen;
-  // Average length estimate (dimension along the beam line):
   LSGen.setSize(10.0,60,30.0);
   LSGen.setMidHoleSize(0.0,0.0);
   LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAXStep",62.5);
   Control.addVariable(lKey+"ShieldAZStep",-10.0);
+  Control.addVariable(lKey+"ShieldAYStep",1.1);
 
   return;
 }
@@ -3163,7 +3163,7 @@ Segment48(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldBXStep",1.5);
   Control.addVariable(lKey+"ShieldBYStep",10.0);
 
-  const double shieldCWidth = 131;
+  const double shieldCWidth = 130;
   LSGen.setSize(shieldCWidth,5,20);
   LSGen.setMidHoleSize(0.0,0.0);
   LSGen.setCornerSize(0.0,0.0);
@@ -3213,9 +3213,11 @@ Segment49(FuncDataBase& Control,
   LSGen.setMidHoleSize(4.0,5.0);
   LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldA");
-  Control.addVariable(lKey+"ShieldAYStep",24.0);
+  // YStep is wrong: distance to the back wall is 20 cm, but
+  // can't do it since gateA is too close to the wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5462.jpg/view
+  Control.addVariable(lKey+"ShieldAYStep",20.0); // wrong, but reasonable
   Control.addVariable(lKey+"ShieldAZStep",-2.5);
-
 
   return;
 }
