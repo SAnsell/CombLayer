@@ -247,10 +247,13 @@ Segment26::buildObjects(Simulation& System)
   createSplitInnerZone();
 
   // Local shielding wall
-  shieldA->setCutSurf("InnerTop", *pipeAA, "outerPipe");
-  shieldA->setCutSurf("Inner", *pipeBA, "outerPipe");
-  shieldA->setCutSurf("InnerLow", *pipeCA, "outerPipe");
+
+  shieldA->setCutSurf("Inner",
+		      pipeAA->getFullRule("outerPipe") *
+		      pipeBA->getFullRule("outerPipe") *
+		      pipeCA->getFullRule("outerPipe"));
   shieldA->createAll(System, *pipeBA, "#front");
+
 
   // IZTop
   outerCellA = IZTop->createUnit(System, *shieldA, -1);
