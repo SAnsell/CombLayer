@@ -235,6 +235,11 @@ LocalShielding::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 ") + top;
       makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
     }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 ") + top;
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+    }
 
   if (isCorners)
     {
@@ -247,11 +252,6 @@ LocalShielding::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
       makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
 
-      if (!isMidHole)
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 ") + top;
-	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
-	}
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");

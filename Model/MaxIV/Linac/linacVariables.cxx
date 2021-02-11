@@ -3070,16 +3070,37 @@ Segment47(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeD",8.4); // measured
+  Control.addVariable(lKey+"PipeDYAngle",90);
 
     // Gate valves
-  setCylGateValve(Control,lKey+"GateA",-90.0,false);
+  setCylGateValve(Control,lKey+"GateA",180.0,false);
 
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
+  setVariable::LocalShieldingGenerator LSGen;
+  const double shieldALength = 10.0;
+  const double shieldAHeight = 30.0;
+  const double shieldAZStep = -7.5;
+  // Average length estimate (dimension along the beam line):
+  LSGen.setSize(shieldALength,60,shieldAHeight);
+  LSGen.setMidHoleSize(0.0,0.0);
+  LSGen.setCornerSize(0.0,0.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  // Control.addVariable(lKey+"ShieldAYStep",6.0);
+  Control.addVariable(lKey+"ShieldAXStep",47.5);
+  Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
+  const double shieldBLength = 5.0;
+  const double shieldBWidth = 28.07;
+  LSGen.setSize(shieldBLength,shieldBWidth,shieldAHeight);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBXStep",(shieldBWidth-shieldALength)/2.0);
+  Control.addVariable(lKey+"ShieldBYStep",shieldBLength/2.0);
 
   return;
 }

@@ -30,11 +30,12 @@ namespace xraySystem
 
 namespace tdcSystem
 {
+  class LocalShielding;
   /*!
     \class Segment47
-    \version 1.0
+    \version 1.1
     \author K. Batkov
-    \date July 2020
+    \date Feb 2020
     \brief SPF segment 47
   */
 
@@ -44,7 +45,7 @@ class Segment47 :
  private:
 
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
-  
+
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #4
@@ -56,9 +57,11 @@ class Segment47 :
   std::shared_ptr<xraySystem::CylGateValve> gateA;    // #7
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding parallel to beam line
 
   void createSplitInnerZone();
-  
+
   void buildObjects(Simulation&);
   void createLinks();
 

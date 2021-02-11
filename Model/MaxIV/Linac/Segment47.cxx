@@ -66,6 +66,7 @@
 #include "VacuumPipe.h"
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"
+#include "LocalShielding.h"
 
 #include "TDCsegment.h"
 #include "Segment47.h"
@@ -78,7 +79,7 @@ namespace tdcSystem
 Segment47::Segment47(const std::string& Key) :
   TDCsegment(Key,2),
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
-  
+
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   prismaChamberA(new tdcSystem::PrismaChamber(keyName+"PrismaChamberA")),
   mirrorChamberA(new xraySystem::CrossWayTube(keyName+"MirrorChamberA")),
@@ -89,7 +90,9 @@ Segment47::Segment47(const std::string& Key) :
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE"))
+  pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -109,6 +112,8 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(gateA);
   OR.addObject(bellowA);
   OR.addObject(pipeE);
+  OR.addObject(shieldA);
+  OR.addObject(shieldB);
 
   setFirstItems(pipeA);
 }
@@ -136,7 +141,7 @@ Segment47::createSplitInnerZone()
 	{
 	  if (sideSegment->hasSideIndex("buildZoneCut"))
 	    HRcut.addUnion(sideSegment->getLinkSurf("buildZoneCut"));
-	}				  
+	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.addIntersection(HRcut);
 
@@ -144,8 +149,8 @@ Segment47::createSplitInnerZone()
     }
   return;
 }
-  
-  
+
+
 void
 Segment47::buildObjects(Simulation& System)
   /*!
@@ -164,7 +169,7 @@ Segment47::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
-  
+
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*prismaChamberA);
 
@@ -183,9 +188,9 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
 
-  constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
-    
+
   constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
 
@@ -195,6 +200,13 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*bellowA,"back",*pipeE);
 
+  shieldA->createAll(System,*pipeD, 2);
+  for (int i=0; i<2; ++i)
+    shieldA->insertInCell(System,outerCell+i);
+
+  shieldB->createAll(System,*shieldA, "left");
+  for (int i=0; i<4; ++i)
+    shieldB->insertInCell(System,outerCell+i);
 
   return;
 }
