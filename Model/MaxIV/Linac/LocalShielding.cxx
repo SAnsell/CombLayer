@@ -207,11 +207,37 @@ LocalShielding::createObjects(Simulation& System)
 
   const std::string side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
-  if ((cornerWidth>Geometry::zeroTol) && (cornerHeight>Geometry::zeroTol))
+  const bool isMidHole = (midHoleWidth>Geometry::zeroTol) && (midHoleHeight>Geometry::zeroTol);
+  const bool isCorners = (cornerWidth>Geometry::zeroTol) && (cornerHeight>Geometry::zeroTol);
+
+  const std::string top=ModelSupport::getComposite(SMap,buildIndex,
+						   isCorners ? " -26 " : " -6 ");
+
+  if ((!isMidHole) && (!isCorners))
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 -26 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+    }
+  else if (isMidHole)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -15 ");
       makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
 
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 15 -16 ");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
+      makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 15 -16 ");
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 ") + top;
+      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+    }
+
+  if (isCorners)
+    {
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
       makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
 
@@ -220,24 +246,13 @@ LocalShielding::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
       makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+
+      if (!isMidHole)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 ") + top;
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	}
     }
-  else
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 -6 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
-    }
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 15 -16 ");
-  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 15 -16 ");
-  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -15 ");
-  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-  makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
@@ -254,11 +269,29 @@ LocalShielding::createLinks()
 {
   ELog::RegMethod RegA("LocalShielding","createLinks");
 
+  // ExternalCut::createLink("front",*this,0,Origin,Y);
+  // ExternalCut::createLink("back",*this,1,Origin,Y);
+
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
 
   return;
 }
