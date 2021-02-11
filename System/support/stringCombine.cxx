@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   support/stringCombine.cxx
+
+ * File:   System/support/stringCombine.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -34,8 +34,10 @@
 
 
 #include "Vec3D.h"
-/*! 
-  \file stringCombine.cxx 
+#include "stringCombine.h"
+
+/*!
+  \file stringCombine.cxx
 */
 
 namespace StrFunc
@@ -44,7 +46,7 @@ namespace StrFunc
 char
 indexToAlpha(const size_t index)
   /*!
-    Convert an index to A-Z / a-z 
+    Convert an index to A-Z / a-z
     \param index :: index value
     \return [A-z] based on index '?' on error
   */
@@ -60,7 +62,7 @@ indexToRevAlpha(const size_t index)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[] =
@@ -75,7 +77,7 @@ alphaToIndex(const char C)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[]=
@@ -90,7 +92,7 @@ revAlphaToIndex(const char C)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[]=
@@ -99,8 +101,8 @@ revAlphaToIndex(const char C)
   size_t pos=(strchr(cmap,C)-cmap);
   return pos;
 }
-    
-  
+
+
 template<typename T>
 std::string
 makeString(const T& V)
@@ -127,7 +129,7 @@ makeString(const std::string& V)
   return V;
 }
 
-template<template<typename T,typename A> class V,typename T,typename A> 
+template<template<typename T,typename A> class V,typename T,typename A>
 std::string
 makeString(const V<T,A>& Vec)
   /*!
@@ -202,7 +204,7 @@ template std::string makeString(const std::string&,const long int&);
 
 template std::string makeString(const std::vector<int>&);
 
-  
+
 template std::string makeString(const char*,const int&);
 template std::string makeString(const char*,const size_t&);
 

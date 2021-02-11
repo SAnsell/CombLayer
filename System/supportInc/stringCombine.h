@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   supportInc/stringCombine.h
+
+ * File:   System/supportInc/stringCombine.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef StrFunc_stringCombine_h
@@ -25,16 +25,16 @@
 namespace StrFunc
 {
 
-  template<template<typename T,typename A> class V,typename T,typename A> 
+  template<template<typename T,typename A> class V,typename T,typename A>
     std::string makeString(const V<T,A>&);
 
-  template<typename T> 
+  template<typename T>
     std::string makeString(const T&);
 
-  template<typename T,typename U> 
+  template<typename T,typename U>
     std::string makeString(const T&,const U&);
 
-  template<typename U> 
+  template<typename U>
     std::string makeString(const char*,const U&);
 
   char indexToAlpha(const size_t);
@@ -42,10 +42,9 @@ namespace StrFunc
 
   size_t alphaToIndex(const char);
   size_t revAlphaToIndex(const char);
-  
+
   size_t checkKey(const std::string&,const std::string&,
 		  const std::string&,const std::string&);
 }  // NAMESPACE StrFunc
 
 #endif
-
