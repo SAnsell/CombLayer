@@ -91,6 +91,7 @@ Segment48::Segment48(const std::string& Key) :
   beamStopB(new tdcSystem::EBeamStop(keyName+"BeamStopB")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
   jaws({
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
@@ -112,6 +113,7 @@ Segment48::Segment48(const std::string& Key) :
   OR.addObject(beamStopB);
   OR.addObject(pipeA);
   OR.addObject(shieldA);
+  OR.addObject(shieldB);
   OR.addObject(slitTube);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberA);
@@ -155,6 +157,10 @@ Segment48::buildObjects(Simulation& System)
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeTerminate(System,*buildZone,pipeA);
+
+  shieldB->createAll(System,*shieldA,"right");
+  for (int i=0; i<=3; ++i)
+    shieldB->insertInCell(System,outerCell+i);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*slitTube);

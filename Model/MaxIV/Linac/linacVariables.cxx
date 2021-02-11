@@ -3112,9 +3112,7 @@ Segment48(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-
   EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
-
   setBellow26(Control,lKey+"BellowA",7.5);
 
   EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
@@ -3134,19 +3132,28 @@ Segment48(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
   // time: 12:00
   setVariable::LocalShieldingGenerator LSGen;
-  const double lsHeight = 35.0;
+  const double shieldAHeight = 35.0;
   // Average length estimate (dimension along the beam line):
   //   total height is made of:
   //    3 bricks of 5 cm height (10 cm length): 5*3=15
   //    2 bricks of 10 cm height (5 cm length): 10*2=20
-  const double lsLength = (15*10+20*5)/lsHeight;
-  LSGen.setSize(lsLength,40,lsHeight);
+  const double shieldALength = (15*10+20*5)/shieldAHeight;
+  const double shieldAZStep = -2.5;
+  LSGen.setSize(shieldALength,40,shieldAHeight);
   LSGen.setMidHoleSize(4.1,4.1);
   LSGen.setCornerSize(10.0,5.0);
   LSGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",6.0);
-  Control.addVariable(lKey+"ShieldAZStep",-2.5);
+  Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
+  const double shieldBLength = 105.9; // beam stop length x 2 + bellow length
+  LSGen.setSize(5,shieldBLength,15);
+  LSGen.setMidHoleSize(0.0,0.0);
+  LSGen.setCornerSize(0.0,0.0);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBZStep",-shieldAZStep); // to center at the beam line
+  Control.addVariable(lKey+"ShieldBXStep",shieldBLength/2.0+shieldALength/2.0);
+  Control.addVariable(lKey+"ShieldBYStep",-5.0); // approx
   return;
 }
 

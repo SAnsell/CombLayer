@@ -20,7 +20,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -462,6 +462,12 @@ global_settings {
     #declare cameraLookAt   = <-730, 9900, -10>;
     #declare projection = 0;
     #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"SPF48ShieldB")) // img_5457.jpg
+    #declare cameraLocation = <-600, 9900, 70>;
+    #declare cameraLookAt   = <-735, 9850, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
   #break
   #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
     #declare cameraLocation = <-900, 9850, 20>;
