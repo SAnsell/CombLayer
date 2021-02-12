@@ -427,6 +427,12 @@ global_settings {
     #declare cameraAngle = 90;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"MidTFrontLShield")) //
+    #declare cameraLocation = <450, 2800, 30>;
+    #declare cameraLookAt   = <230, 3200, 0>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"L2SPF11ShieldA"))
     #declare cameraLocation = <-190, 4030, 20>;
     #declare cameraLookAt   = <-250, 4070, 0>;

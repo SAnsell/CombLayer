@@ -115,6 +115,11 @@ class InjectionHall :
   double midTBackAngleStep;     ///< angle at back extent from mid line
   size_t midTNLayers;           ///< Number of layers in the MidT wall [for cell-based biasing]
 
+  double midTFrontLShieldThick; ///< Local shielding thickness of MidTFrontWall
+  double midTFrontLShieldHeight; ///< MidTFrontWall local shielding height
+  double midTFrontLShieldWidth; ///< MidTFrontWall local shielding width
+  int midTFrontLShieldMat;      ///< MidTFrontWall local shielding material
+
   size_t midTNDucts;            ///< Number of ducts in the MidT wall
   std::vector<double> midTDuctRadius;  ///< MidT duct radii
   std::vector<double> midTDuctYStep;   ///< MidT duct y steps

@@ -31,7 +31,9 @@ fi
 if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
     void=""
 elif [ "$segments" == "Segment16 Segment30 Segment31" -a $ITEM == "TDC16CMagH" ]; then
-     void=""
+    void=""
+elif [ $ITEM == "MidTFrontLShield" ]; then
+    void=""
 fi
 
 ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \

@@ -164,6 +164,11 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
   midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1);
 
+  midTFrontLShieldThick=Control.EvalVar<double>(keyName+"MidTFrontLShieldThick");
+  midTFrontLShieldHeight=Control.EvalVar<double>(keyName+"MidTFrontLShieldHeight");
+  midTFrontLShieldWidth=Control.EvalVar<double>(keyName+"MidTFrontLShieldWidth");
+  midTFrontLShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"MidTFrontLShieldMat");
+
   midTNDucts=Control.EvalVar<size_t>(keyName+"MidTNDucts");
 
   for (size_t i=1; i<=midTNDucts; ++i)
@@ -575,6 +580,13 @@ InjectionHall::createSurfaces()
       SJ += 10;
     }
 
+  // MidT front wall local shielding
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7803,buildIndex+1104,X,-midTFrontLShieldWidth);
+  ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
+
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
@@ -625,8 +637,28 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1511 -1001 -1111 1503 -4 5 -6 2007 ");
+    (SMap,buildIndex," 1511 -1001 -1111 1503 -7803 5 -6 2007 ");
   makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  ///////////////////////         MidTFront local shielding wall
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1511 -7801 7803 -1104 5 -6 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 5 -7805 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 7806 -6 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 7805 -7806 ");
+  makeCell("MidTFrontLShield",System,cellIndex++,midTFrontLShieldMat,0.0,Out);
+
+  ///////////////////////
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1112 -1003 5 -6 -1522  1503 ");
@@ -1039,7 +1071,7 @@ InjectionHall::createObjects(Simulation& System)
 				 "1001 -1011 1004 -1104 5 -6 ");
   makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1011 1104 -4 5 -6 ");
   makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007 ");

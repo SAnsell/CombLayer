@@ -3509,6 +3509,15 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WasteRoomWallThick",40.0); // K_20-1_08G6b1
   Control.addVariable(wallKey+"WasteRoomYStep",7534.0); // derived from K_20-1_08G6b1
 
+  // Local shielding at the MidT wall
+  // Email from AR 2021-01-19 and 2021-01-20
+  // K_20-1_08F6c1.pdf
+  // K_20-2_348 - this wall marked as "STRÅLSKYDD ENL. SENARE BESKED"
+  Control.addVariable(wallKey+"MidTFrontLShieldThick",10.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldHeight",100.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldWidth",100.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldMat","Lead"); // AR 2021-01-20
+
   return;
 }
 
