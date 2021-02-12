@@ -219,12 +219,8 @@ class Object
 		     const Geometry::Vec3D&) const;
 
   int trackCell(const MonteCarlo::particle&,double&,
-		const int,const Geometry::Surface*&,
+		const Geometry::Surface*&,
 		const int) const;
-  int trackIntoCell(const MonteCarlo::particle&,double&,
-		    const Geometry::Surface*&,const int =0) const;
-  int trackOutCell(const MonteCarlo::particle&,double&,
-		   const Geometry::Surface*&,const int =0) const;
 
 
   /// acessor to forward 

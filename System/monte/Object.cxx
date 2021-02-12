@@ -1149,38 +1149,6 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
 }
 
 
-int
-Object::trackOutCell(const MonteCarlo::particle& N,double& D,
-		     const Geometry::Surface*& SPtr,
-		     const int startSurf) const
-  /*!
-    Track the distance to exit the cell 
-    - if already out of the cell, distance is to the cell+to the exit
-    \param N :: particle
-    \param D :: Distance to exit
-    \param SPtr :: Surface at exit
-    \param startSurf :: Start surface (not to be used) [0 to ignore]
-    \return surface number on exit
-  */
-{
-  return trackCell(N,D,-1,SPtr,startSurf);
-}
-
-int
-Object::trackIntoCell(const MonteCarlo::particle& N,double& D,
-		      const Geometry::Surface*& SPtr,
-		      const int startSurf) const
-  /*!
-    Track the distance to a cell
-    \param N :: Particle
-    \param D :: Distance to entrance
-    \param SPtr :: Surface at exit
-    \param startSurf :: Start surface 
-    \return surface number on exit
-  */
-{
-  return trackCell(N,D,1,SPtr,startSurf);
-}
 
 int
 Object::calcInOut(const int pAB,const int N) const
@@ -1205,13 +1173,12 @@ Object::calcInOut(const int pAB,const int N) const
 
 int
 Object::trackCell(const MonteCarlo::particle& N,double& D,
-		  const int direction,const Geometry::Surface*& surfPtr,
+		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param direction :: direction to track [+1/-1 : into cell /out of cell ] 
     \param surfPtr :: Surface at exit
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept
@@ -1227,28 +1194,31 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
+  const int absSN(std::abs(startSurf));
+  const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
   D=1e38;
   surfPtr=0;
   int touchUnit(0);
   // NOTE: we only check for and exiting surface by going
   // along the line.
   int bestPairValid(0);
+  size_t bestIndex(-1);
   for(size_t i=0;i<dPts.size();i++)
     {
+
       // Is point possible closer
-      if ( ( surfIndex[i]->getName()!=startSurf || 
-	     dPts[i]>10.0*Geometry::zeroTol) &&
-	   (dPts[i]>0.0 && dPts[i]<D) )
+      if ( dPts[i]>10.0*Geometry::zeroTol &&
+	   dPts[i]>0.0 && dPts[i]<D )
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 	  const int pAB=isDirectionValid(IPts[i],NS);
 	  const int mAB=isDirectionValid(IPts[i],-NS);
-	  const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
-          
-	  if (direction<0)
+	  if (pAB!=mAB)           // out going positive surface
 	    {
-	      if (pAB!=mAB)  // out going positive surface
+	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
+	      if (NS!=absSN || (normD!=signSN))  // discard current surface
 		{
+		  bestIndex=i;
 		  bestPairValid=normD;
 		  if (dPts[i]>Geometry::zeroTol)
 		    D=dPts[i];
@@ -1262,15 +1232,21 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   if (touchUnit && D>1e37)
     D=Geometry::zeroTol;
 
-  if (!surfPtr) return 0;
   const int NSsurf=surfPtr->getName();
   const bool pSurfFound(SurSet.find(NSsurf)!=SurSet.end());
   const bool mSurfFound(SurSet.find(-NSsurf)!=SurSet.end());
   
-  if (pSurfFound && mSurfFound)
-    return bestPairValid*NSsurf;
+  const int pAB=isDirectionValid(IPts[bestIndex],NSsurf);
+  const int mAB=isDirectionValid(IPts[bestIndex],-NSsurf);
 
-  return (pSurfFound) ? -NSsurf : NSsurf;
+  int retNum;
+  if (pSurfFound && mSurfFound)
+    retNum=bestPairValid*NSsurf;
+  else
+    retNum=(pSurfFound) ? -NSsurf : NSsurf;
+  // Exit surface is OUTGOING sense
+  const int normD=surfIndex[bestIndex]->sideDirection(IPts[bestIndex],N.uVec);
+  return retNum;
 }
 
 		  

@@ -1198,9 +1198,6 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   ELog::RegMethod RegA("Simulation","findCell");
 
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-
-  // First test users guess:
-  ELog::EM<<"Point "<<Pt<<ELog::endDiag;
       
   if (testCell && testCell->isValid(Pt))
     {

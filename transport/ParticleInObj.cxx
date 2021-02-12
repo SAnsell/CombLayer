@@ -233,7 +233,7 @@ ParticleInObj<PTYPE>::trackOutCell
     \return true/false if neutron intersects object    
   */
 {
-  return ObjPtr->trackOutCell(N,aDist,surfPtr);
+  return ObjPtr->trackCell(N,aDist,surfPtr,0);
 }
 
 template<typename PTYPE>
@@ -250,7 +250,7 @@ ParticleInObj<PTYPE>::trackIntoCell
     \return true/false if particle intersects/misses the object    
   */
 {
-  return ObjPtr->trackIntoCell(N,aDist,surfPtr);
+  return ObjPtr->trackCell(N,aDist,surfPtr,0);
 }
 
 template<>
@@ -271,7 +271,7 @@ ParticleInObj<MonteCarlo::neutron>::trackWeight
 
   double aDist(0.0);
       
-  const int SN=ObjPtr->trackOutCell(N,aDist,surfPtr);
+  const int SN=ObjPtr->trackCell(N,aDist,surfPtr,0);
   //  ELog::EM<<"Neutron Track"<<N.weight<<ELog::endDiag;
   const scatterSystem::neutMaterial* matPtr=
     dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
@@ -317,7 +317,7 @@ ParticleInObj<MonteCarlo::neutron>::trackAttn(MonteCarlo::neutron& N,
   double aDist(0);
       
   // Signed number
-  const int SN=ObjPtr->trackOutCell(N,aDist,SPtr);
+  const int SN=ObjPtr->trackCell(N,aDist,SPtr,0);
   const scatterSystem::neutMaterial* matPtr=
     dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
   
