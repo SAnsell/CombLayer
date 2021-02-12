@@ -58,8 +58,8 @@ class LocalShieldingGenerator
   virtual ~LocalShieldingGenerator();
 
   void setSize(const double, const double, const double);
-  void setMidHoleSize(const double, const double);
-  void setCornerSize(const double, const double);
+  void setMidHole(const double, const double);
+  void setCorner(const double, const double);
 
   virtual void generate(FuncDataBase&,const std::string&) const;
 

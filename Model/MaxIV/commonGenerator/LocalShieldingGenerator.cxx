@@ -51,10 +51,9 @@ namespace setVariable
 
 LocalShieldingGenerator::LocalShieldingGenerator() :
   length(10.0),width(60.0),height(40.0),
-  midHoleWidth(10.0),midHoleHeight(5.0),
-  cornerWidth(10.0),cornerHeight(5.0),
-  zStep(0.0),
-  mainMat("Lead")
+  midHoleWidth(0.0),midHoleHeight(0.0),
+  cornerWidth(0.0),cornerHeight(0.0),
+  zStep(0.0),mainMat("Lead")
   /*!
     Constructor and defaults
   */
@@ -83,13 +82,13 @@ LocalShieldingGenerator::setSize(const double L, const double W, const double H)
 }
 
 void
-LocalShieldingGenerator::setMidHoleSize(const double W, const double H)
-{
+LocalShieldingGenerator::setMidHole(const double W, const double H)
 /*!
   Mid hole size setter
   \param W :: width
   \param W :: height
  */
+{
   midHoleWidth  = W;
   midHoleHeight = H;
 
@@ -97,13 +96,13 @@ LocalShieldingGenerator::setMidHoleSize(const double W, const double H)
 }
 
 void
-LocalShieldingGenerator::setCornerSize(const double W, const double H)
-{
+LocalShieldingGenerator::setCorner(const double W, const double H)
 /*!
   Corner size setter. The corners are not built if at least one of the dimensions is zero
   \param W :: width
   \param W :: height
  */
+{
   cornerWidth  = W;
   cornerHeight = H;
 

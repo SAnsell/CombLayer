@@ -1111,8 +1111,7 @@ Segment11(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5404.mp4/view
   setVariable::LocalShieldingGenerator ShieldGen;
   ShieldGen.setSize(10,60,25);
-  ShieldGen.setMidHoleSize(2.5,5.0);
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(2.5,5.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",47.0);
   Control.addVariable(lKey+"ShieldAZStep",5.0);
@@ -1167,8 +1166,7 @@ Segment12(FuncDataBase& Control,
   // max length is 22 cm [img_5422]
   // max width is 86 cm [img_5428]
   ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
-  ShieldGen.setMidHoleSize(10.0,4.0);
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(10.0,4.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",17.0); // IMG_5423.JPG
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
@@ -1233,8 +1231,7 @@ Segment13(FuncDataBase& Control,
   // max length is 14 cm [img_5420]
   // max width is 105 cm [img_5429]
   ShieldGen.setSize(10,40,25); // length is 10, height/width arbitrary since it's a placeholder
-  ShieldGen.setMidHoleSize(4.0,4.0); // dummy
-  ShieldGen.setCornerSize(0.0,0.0); // dummy
+  ShieldGen.setMidHole(4.0,4.0); // dummy
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",25.0); // IMG_5421.JPG
   Control.addVariable(lKey+"ShieldAXStep",7.5); // to avoid cutting SPF30
@@ -1344,8 +1341,7 @@ Segment15(FuncDataBase& Control,
   // max length is 14 cm [img_5426.jpg]
   // max width is 91 cm [img_5430.jpg]
   ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
-  ShieldGen.setMidHoleSize(10.0,4.0); // dummy
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(10.0,4.0); // dummy
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",11.0); // img_5427.jpg
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
@@ -1966,8 +1962,7 @@ Segment26(FuncDataBase& Control,
   // max width is 99 cm [img_5445.jpg]
   // max height is 58 cm [img_5448.jpg]
   ShieldGen.setSize(14,99.0,58); // max dimensions
-  ShieldGen.setMidHoleSize(5.0,29.0); // approx
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(5.0,29.0); // approx
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",20.0); // approx
   Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
@@ -2198,8 +2193,7 @@ Segment30(FuncDataBase& Control,
   setVariable::LocalShieldingGenerator ShieldGen;
   // max length is 14 cm [img_5420]
   ShieldGen.setSize(10,30,25); // length is 10, height/width arbitrary since it's a placeholder
-  ShieldGen.setMidHoleSize(4.0,4.0); // dummy
-  ShieldGen.setCornerSize(0.0,0.0); // dummy
+  ShieldGen.setMidHole(4.0,4.0); // dummy
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",9.2); // IMG_5421.JPG
   Control.addVariable(lKey+"ShieldAXStep",-10.0); // to avoid cutting SPF30
@@ -2364,16 +2358,14 @@ Segment33(FuncDataBase& Control,
   // SPF33ShieldA
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5388.mp4/view
   ShieldGen.setSize(10,80,35);
-  ShieldGen.setMidHoleSize(3.0,5.0);
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(3.0,5.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",14.0);
 
   // SPF33ShieldB
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5433.jpg/view
   ShieldGen.setSize(10,60,20);
-  ShieldGen.setMidHoleSize(3.0,5.0);
-  ShieldGen.setCornerSize(0.0,0.0);
+  ShieldGen.setMidHole(3.0,5.0);
   ShieldGen.generate(Control,lKey+"ShieldB");
   Control.addVariable(lKey+"ShieldBYStep",40.0);
 
@@ -2965,6 +2957,8 @@ Segment46(FuncDataBase& Control,
   setVariable::LocalShieldingGenerator LSGen;
   const double tmp = 4.0; // cut height to avoid overlap with SPF44
   LSGen.setSize(10,60,40-tmp);
+  LSGen.setMidHole(10, 5);
+  LSGen.setCorner(10, 5);
   LSGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",89.0);
   Control.addVariable(lKey+"ShieldAZStep",-7.5+tmp/2.0);
@@ -3084,12 +3078,14 @@ Segment47(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
   setVariable::LocalShieldingGenerator LSGen;
   LSGen.setSize(10.0,60,30.0);
-  LSGen.setMidHoleSize(0.0,0.0);
-  LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAXStep",62.5);
   Control.addVariable(lKey+"ShieldAZStep",-10.0);
   Control.addVariable(lKey+"ShieldAYStep",1.1);
+
+  // Walls near pipeC
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5384.jpg/view
 
   return;
 }
@@ -3150,23 +3146,21 @@ Segment48(FuncDataBase& Control,
   const double shieldALength = (15*10+20*5)/shieldAHeight;
   const double shieldAZStep = -2.5;
   LSGen.setSize(shieldALength,40,shieldAHeight);
-  LSGen.setMidHoleSize(4.1,4.1);
-  LSGen.setCornerSize(10.0,5.0);
+  LSGen.setMidHole(4.1,4.1);
+  LSGen.setCorner(10.0,5.0);
   LSGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",6.0);
   Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
 
   LSGen.setSize(20.0,10.0,15.0);
-  LSGen.setMidHoleSize(0,0);
-  LSGen.setCornerSize(0.0,0.0);
+  LSGen.setMidHole(0.0,0.0);
+  LSGen.setCorner(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldB");
   Control.addVariable(lKey+"ShieldBXStep",1.5);
   Control.addVariable(lKey+"ShieldBYStep",10.0);
 
   const double shieldCWidth = 130;
   LSGen.setSize(shieldCWidth,5,20);
-  LSGen.setMidHoleSize(0.0,0.0);
-  LSGen.setCornerSize(0.0,0.0);
   LSGen.generate(Control,lKey+"ShieldC");
   Control.addVariable(lKey+"ShieldCYStep",shieldCWidth/2.0);
   Control.addVariable(lKey+"ShieldCZStep",-2.5);
@@ -3210,8 +3204,7 @@ Segment49(FuncDataBase& Control,
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
   setVariable::LocalShieldingGenerator LSGen;
   LSGen.setSize(20,40,40);
-  LSGen.setMidHoleSize(4.0,5.0);
-  LSGen.setCornerSize(0.0,0.0);
+  LSGen.setMidHole(4.0,5.0);
   LSGen.generate(Control,lKey+"ShieldA");
   // YStep is wrong: distance to the back wall is 20 cm, but
   // can't do it since gateA is too close to the wall
