@@ -58,6 +58,14 @@ class Segment47 :
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
   std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding near pipeC
+  std::shared_ptr<tdcSystem::LocalShielding> shieldC; // local shielding below shieldB
+  std::shared_ptr<tdcSystem::LocalShielding> shieldD; // vertical wall along shieldB
+  std::shared_ptr<tdcSystem::LocalShielding> shieldE; // roof
+  std::shared_ptr<tdcSystem::LocalShielding> shieldF1; // leg
+  std::shared_ptr<tdcSystem::LocalShielding> shieldF2; // leg
+  std::shared_ptr<tdcSystem::LocalShielding> shieldF3; // leg
+  std::shared_ptr<tdcSystem::LocalShielding> shieldF4; // leg
 
   void createSplitInnerZone();
 

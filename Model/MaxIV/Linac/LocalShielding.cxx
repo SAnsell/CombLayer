@@ -293,6 +293,9 @@ LocalShielding::createLinks()
   FixedComp::nameSideIndex(2,"left");
   FixedComp::nameSideIndex(3,"right");
 
+  FixedComp::nameSideIndex(4,"bottom");
+  FixedComp::nameSideIndex(5,"top");
+
   return;
 }
 
