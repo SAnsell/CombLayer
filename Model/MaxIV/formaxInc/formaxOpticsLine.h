@@ -52,6 +52,7 @@ namespace xraySystem
 {
   class CylGateValve;
   class BremColl;
+  class BremBlock;
   class BeamPair;
   class BremMonoColl;
   class DCMTank;
@@ -68,6 +69,7 @@ namespace xraySystem
   class BremTube;
   class ViewScreenTube;
   class MonoShutter;
+  
     
   /*!
     \class formaxOpticsLine
@@ -106,7 +108,7 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Vacuum pipe for collimator
+  /// Brem for collimator
   std::shared_ptr<xraySystem::SquareFMask> bremCollA;
   /// Ion Gauge
   std::shared_ptr<xraySystem::IonGauge> ionGaugeA;
@@ -157,7 +159,9 @@ class formaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> gateTubeD;
 
   /// Diag unit two contains Brem block
-  std::shared_ptr<xraySystem::BremTube> bremTubeA; 
+  std::shared_ptr<xraySystem::BremTube> bremTubeA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollB;
   /// Jaws
   std::shared_ptr<xraySystem::HPJaws> hpJawsA;
 
@@ -178,8 +182,10 @@ class formaxOpticsLine :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
 
   /// Diag unit two contains Brem block
-  std::shared_ptr<constructSystem::PipeTube> bremTubeB;
-  /// Jaws
+  std::shared_ptr<constructSystem::PipeTube> bremTubeB; 
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollC;
+ /// Jaws
   std::shared_ptr<xraySystem::HPJaws> hpJawsB;
 
   /// bellow out of diag 3 [close]

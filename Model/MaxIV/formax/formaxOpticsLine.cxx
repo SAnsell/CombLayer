@@ -98,6 +98,7 @@
 #include "CrossPipe.h"
 #include "BremColl.h"
 #include "BremMonoColl.h"
+#include "BremBlock.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -169,6 +170,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   gateTubeD(new xraySystem::CylGateValve(newName+"GateTubeD")),
 
   bremTubeA(new xraySystem::BremTube(newName+"BremTubeA")),
+  bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
 
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
@@ -181,8 +183,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
 
   bremTubeB(new constructSystem::PipeTube(newName+"BremTubeB")),
-
+  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),  
   hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
+  
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
@@ -236,6 +239,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeD);
 
   OR.addObject(bremTubeA);
+  OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
 
   OR.addObject(mirrorBoxA);
@@ -247,6 +251,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTube);
   OR.addObject(yagScreen);
   OR.addObject(bremTubeB);
+  OR.addObject(bremCollC);
   OR.addObject(hpJawsB);
   
   OR.addObject(bellowH);
@@ -379,6 +384,9 @@ formaxOpticsLine::constructDiag2(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*bremTubeA);
 
+  bremCollB->addInsertCell(bremTubeA->getCell("Void"));
+  bremCollB->createAll(System,*bremTubeA,0);
+
   hpJawsA->setFlangeJoin();
   constructSystem::constructUnit
     (System,buildZone,*bremTubeA,"back",*hpJawsA);
@@ -417,6 +425,9 @@ formaxOpticsLine::constructDiag3(Simulation& System,
   int outerCell=buildZone.createUnit
     (System,VPB,VPB.getSideIndex("OuterPlate"));
   bremTubeB->insertAllInCell(System,outerCell);
+
+  bremCollC->addInsertCell(bremTubeB->getCell("Void"));
+  bremCollC->createAll(System,*bremTubeB,0);
 
   hpJawsB->setFlangeJoin();
   constructSystem::constructUnit

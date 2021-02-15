@@ -289,7 +289,8 @@ SingleItemVariables(FuncDataBase& Control)
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
  
   setVariable::BremBlockGenerator BBGen;
-  BBGen.generateBlock(Control,"BremBlock",0,15.0);
+  BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  BBGen.generateBlock(Control,"BremBlock",0,8.0);
  
   
   setVariable::CrossWayGenerator CWBlankGen;
@@ -637,13 +638,17 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"CornerLength",720.0);
   Control.addVariable(hutName+"CornerAngle",45.0);
   
-  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
+
+  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",3.0);
+  Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
   Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);

@@ -132,7 +132,7 @@
 #include "BoxJaws.h"
 #include "DiffPumpXIADP03.h"
 #include "ViewScreenTube.h"
-#include "ExptHutch.h"
+#include "ExperimentalHutch.h"
 
 #include "makeSingleItem.h"
 
@@ -181,7 +181,7 @@ makeSingleItem::build(Simulation& System,
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
-      "DiffPumpXIADP03","DiffPump","ExptHutch",
+      "DiffPumpXIADP03","DiffPump","ExperimentalHutch",
       "Help","help"
     });
 
@@ -1105,10 +1105,10 @@ makeSingleItem::build(Simulation& System,
 	return;
       }
     
-    if (item == "ExptHutch")
+    if (item == "ExperimentalHutch")
       {
-	std::shared_ptr<xraySystem::ExptHutch>
-	  eh(new xraySystem::ExptHutch("ExptHutch"));
+	std::shared_ptr<xraySystem::ExperimentalHutch>
+	  eh(new xraySystem::ExperimentalHutch("ExptHutch"));
 	
 	OR.addObject(eh);
 	
