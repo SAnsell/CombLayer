@@ -34,6 +34,8 @@ elif [ "$segments" == "Segment16 Segment30 Segment31" -a $ITEM == "TDC16CMagH" ]
     void=""
 elif [ $ITEM == "MidTFrontLShield" ]; then
     void=""
+# elif [ $ITEM == "L2SPF3ShieldA" ]; then
+#     void=""
 fi
 
 ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \

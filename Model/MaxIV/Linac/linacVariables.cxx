@@ -743,6 +743,29 @@ Segment3(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowB",7.5);
   Control.addVariable(lKey+"BellowBXYAngle",1.6);
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/bc2/pictures-from-josefine/63.jpg/view
+  // There are 7x4-8=28-8=20 bricks of 10 cm length
+  // and 8 bricks of 15 cm length
+  // in total there are 20+8 = 28 bricks
+  // averge length is 10.0*20.0/28.0+15.0*8.0/28.0 = 11.428571 cm
+  const double shieldALength(11.428571);
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(shieldALength,80,35.0);
+  LSGen.setMidHole(3.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAZStep",10.0); // center of the 2nd tier bricks
+  Control.addVariable(lKey+"ShieldAYStep",80.0); // approx
+
+  const double shieldBLength(10.0);
+  const double shieldBWidth(140.0);
+  LSGen.setSize(shieldBLength,shieldBWidth,30.0); // email from JR 210120
+  LSGen.setMidHole(0.0, 0.0);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",shieldBLength/2.0);
+  Control.addVariable(lKey+"ShieldBXStep",(shieldALength-shieldBWidth)/2.0);
+  Control.addVariable(lKey+"ShieldBZStep",-2.5); // bottoms of shieldA and shieldB are on the same plane
+
   return;
 }
 

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment3.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -68,6 +68,7 @@
 #include "FlatPipe.h"
 #include "DipoleDIBMag.h"
 #include "CorrectorMag.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -77,7 +78,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 Segment3::Segment3(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -87,6 +88,8 @@ Segment3::Segment3(const std::string& Key) :
   pipeA(new constructSystem::OffsetFlangePipe(keyName+"PipeA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   flatB(new tdcSystem::FlatPipe(keyName+"FlatB")),
   dipoleB(new tdcSystem::DipoleDIBMag(keyName+"DipoleB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB"))
@@ -97,20 +100,22 @@ Segment3::Segment3(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(bellowA);
   OR.addObject(flatA);
   OR.addObject(dipoleA);
   OR.addObject(pipeA);
   OR.addObject(cMagHA);
-  OR.addObject(cMagVA);  
+  OR.addObject(cMagVA);
+  OR.addObject(shieldA);
+  OR.addObject(shieldB);
   OR.addObject(flatB);
   OR.addObject(dipoleB);
   OR.addObject(bellowB);
 
   setFirstItems(bellowA);
 }
-  
+
 Segment3::~Segment3()
   /*!
     Destructor
@@ -130,7 +135,7 @@ Segment3::buildObjects(Simulation& System)
 
   if (isActive("front"))
     bellowA->copyCutSurf("front",*this,"front");
-  
+
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
@@ -142,9 +147,15 @@ Segment3::buildObjects(Simulation& System)
   pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   pipeA->setFront(*flatA,"back");
-  pipeA->createAll(System,*flatA,"back");  
+  pipeA->createAll(System,*flatA,"back");
   correctorMagnetPair(System,*buildZone,pipeA,cMagHA,cMagVA);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeTerminate(System,*buildZone,pipeA);
+
+  shieldB->createAll(System,*shieldA, "left");
+  for (int i=2; i<=9; ++i)
+    shieldB->insertInCell(System,outerCell+i);
+
 
   flatB->setFront(*pipeA,"back");
   flatB->createAll(System,*pipeA,"back");
@@ -154,7 +165,7 @@ Segment3::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*bellowB);
-  
+
   return;
 }
 
@@ -171,7 +182,7 @@ Segment3::createLinks()
   return;
 }
 
-void 
+void
 Segment3::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -195,4 +206,3 @@ Segment3::createAll(Simulation& System,
 
 
 }   // NAMESPACE tdcSystem
-
