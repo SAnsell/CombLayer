@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment6.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment6_h
@@ -32,7 +32,8 @@ namespace tdcSystem
   class Scrapper;
   class EBeamStop;
   class CeramicGap;
-  
+  class LocalShielding;
+
   /*!
     \class Segment6
     \version 1.0
@@ -47,32 +48,34 @@ class Segment6 :
  private:
 
   /// first pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// seonc pipe
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   /// third pipe (falange change)
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
   /// beam scrapper
-  std::shared_ptr<tdcSystem::Scrapper> scrapper;   
+  std::shared_ptr<tdcSystem::Scrapper> scrapper;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA;
 
   /// fourth pipe (flange change)
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD;   
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB;
 
   /// long bellow
-  std::shared_ptr<tdcSystem::CeramicGap> ceramicA;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicA;
 
   /// Electron beam stop
-  std::shared_ptr<tdcSystem::EBeamStop> beamStop;   
-  
+  std::shared_ptr<tdcSystem::EBeamStop> beamStop;
+
   /// ceramicBellow [reversed]
-  std::shared_ptr<tdcSystem::CeramicGap> ceramicB;   
+  std::shared_ptr<tdcSystem::CeramicGap> ceramicB;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment6(const std::string&);
   Segment6(const Segment6&);
   Segment6& operator=(const Segment6&);

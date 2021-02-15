@@ -893,6 +893,17 @@ Segment6(FuncDataBase& Control,
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(20.0,25,20.0);
+  LSGen.setMidHole(15.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAOption","SideOnly");
+
+  LSGen.setSize(5.0,25,20.0);
+  LSGen.setMidHole(5.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",5.0); // approx
+  Control.addVariable(lKey+"ShieldBOption","SideOnly");
 
   return;
 }
