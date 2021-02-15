@@ -88,7 +88,8 @@ LocalShielding::LocalShielding(const LocalShielding& A) :
   cornerWidth(A.cornerWidth),
   cornerHeight(A.cornerHeight),
   mainMat(A.mainMat),
-  cType(A.cType)
+  cType(A.cType),
+  opt(A.opt)
   /*!
     Copy constructor
     \param A :: LocalShielding to copy
@@ -119,6 +120,7 @@ LocalShielding::operator=(const LocalShielding& A)
       cornerHeight=A.cornerHeight;
       mainMat=A.mainMat;
       cType=A.cType;
+      opt=A.opt;
     }
   return *this;
 }
@@ -160,6 +162,7 @@ LocalShielding::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   cType=Control.EvalVar<std::string>(keyName+"CornerType");
+  opt=Control.EvalVar<std::string>(keyName+"Option");
 
   return;
 }
@@ -223,20 +226,34 @@ LocalShielding::createObjects(Simulation& System)
     }
   else if (isMidHole)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -15 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+      if (opt == "SideOnly") // build only side walls, hole height does not make sence
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 5 ") + top;
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 15 -16 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 5 ") + top;
+	  makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
-      makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 5 ") + top;
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -15 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 15 -16 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 15 -16 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 ") + top;
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
+	  makeCell("Hole",System,cellIndex++,0,0.0,Out+side+ICell);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 15 -16 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 16 ") + top;
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	}
     }
   else
     {

@@ -54,7 +54,8 @@ LocalShieldingGenerator::LocalShieldingGenerator() :
   midHoleWidth(0.0),midHoleHeight(0.0),
   cornerWidth(0.0),cornerHeight(0.0),
   zStep(0.0),mainMat("Lead"),
-  cType("both")
+  cType("both"),
+  opt("")
   /*!
     Constructor and defaults
   */
@@ -132,6 +133,7 @@ LocalShieldingGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ZStep",zStep);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"CornerType",cType);
+  Control.addVariable(keyName+"Option",opt);
 
   return;
 }

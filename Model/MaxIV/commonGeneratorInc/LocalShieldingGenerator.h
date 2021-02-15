@@ -50,6 +50,7 @@ class LocalShieldingGenerator
 
   std::string mainMat;          ///< Main material
   std::string cType;            ///< Corner type
+  std::string opt;              ///< Option
 
  public:
 
