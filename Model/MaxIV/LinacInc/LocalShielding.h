@@ -52,6 +52,7 @@ class LocalShielding :
   double cornerWidth;           ///< Corner cut width
   double cornerHeight;          ///< Corner cut height
   int mainMat;                  ///< Main material
+  std::string cType;            ///< Corner type
 
   void populate(const FuncDataBase&);
 

@@ -87,7 +87,8 @@ LocalShielding::LocalShielding(const LocalShielding& A) :
   midHoleHeight(A.midHoleHeight),
   cornerWidth(A.cornerWidth),
   cornerHeight(A.cornerHeight),
-  mainMat(A.mainMat)
+  mainMat(A.mainMat),
+  cType(A.cType)
   /*!
     Copy constructor
     \param A :: LocalShielding to copy
@@ -117,6 +118,7 @@ LocalShielding::operator=(const LocalShielding& A)
       cornerWidth=A.cornerWidth;
       cornerHeight=A.cornerHeight;
       mainMat=A.mainMat;
+      cType=A.cType;
     }
   return *this;
 }
@@ -157,6 +159,7 @@ LocalShielding::populate(const FuncDataBase& Control)
   cornerHeight=Control.EvalVar<double>(keyName+"CornerHeight");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  cType=Control.EvalVar<std::string>(keyName+"CornerType");
 
   return;
 }
@@ -243,14 +246,33 @@ LocalShielding::createObjects(Simulation& System)
 
   if (isCorners)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
-      makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+      if (cType == "right") // left corner is not built
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
+	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 26 -6 ");
-      makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -4 26 -6 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+	}
+      else if (cType == "left") // right corner is not built
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -24 26 -6 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
-      makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
+	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	}
+      else // both corners are built
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -23 26 -6 ");
+	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 26 -6 ");
+	  makeCell("Wall",System,cellIndex++,mainMat,0.0,Out+side);
+
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 24 -4 26 -6 ");
+	  makeCell("Corner",System,cellIndex++,0,0.0,Out+side);
+	}
 
     }
 

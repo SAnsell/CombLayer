@@ -759,12 +759,12 @@ Segment3(FuncDataBase& Control,
 
   const double shieldBLength(10.0);
   const double shieldBWidth(140.0);
-  LSGen.setSize(shieldBLength,shieldBWidth,30.0); // email from JR 210120
+  LSGen.setSize(shieldBLength,shieldBWidth,35.0); // email from JR 210120
   LSGen.setMidHole(0.0, 0.0);
+  LSGen.setCorner(120, 5.0, "right");
   LSGen.generate(Control,lKey+"ShieldB");
   Control.addVariable(lKey+"ShieldBYStep",shieldBLength/2.0);
   Control.addVariable(lKey+"ShieldBXStep",(shieldALength-shieldBWidth)/2.0);
-  Control.addVariable(lKey+"ShieldBZStep",-2.5); // bottoms of shieldA and shieldB are on the same plane
 
   return;
 }

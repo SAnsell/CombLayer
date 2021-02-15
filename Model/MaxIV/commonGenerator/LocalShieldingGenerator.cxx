@@ -53,7 +53,8 @@ LocalShieldingGenerator::LocalShieldingGenerator() :
   length(10.0),width(60.0),height(40.0),
   midHoleWidth(0.0),midHoleHeight(0.0),
   cornerWidth(0.0),cornerHeight(0.0),
-  zStep(0.0),mainMat("Lead")
+  zStep(0.0),mainMat("Lead"),
+  cType("both")
   /*!
     Constructor and defaults
   */
@@ -96,7 +97,7 @@ LocalShieldingGenerator::setMidHole(const double W, const double H)
 }
 
 void
-LocalShieldingGenerator::setCorner(const double W, const double H)
+LocalShieldingGenerator::setCorner(const double W, const double H, const std::string type)
 /*!
   Corner size setter. The corners are not built if at least one of the dimensions is zero
   \param W :: width
@@ -105,6 +106,7 @@ LocalShieldingGenerator::setCorner(const double W, const double H)
 {
   cornerWidth  = W;
   cornerHeight = H;
+  cType = type;
 
   return;
 }
@@ -129,6 +131,7 @@ LocalShieldingGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CornerWidth",cornerWidth);
   Control.addVariable(keyName+"ZStep",zStep);
   Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"CornerType",cType);
 
   return;
 }

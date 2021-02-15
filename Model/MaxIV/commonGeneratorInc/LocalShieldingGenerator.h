@@ -49,6 +49,7 @@ class LocalShieldingGenerator
   double cornerHeight;          ///< Corner cut height
 
   std::string mainMat;          ///< Main material
+  std::string cType;            ///< Corner type
 
  public:
 
@@ -59,7 +60,7 @@ class LocalShieldingGenerator
 
   void setSize(const double, const double, const double);
   void setMidHole(const double, const double);
-  void setCorner(const double, const double);
+  void setCorner(const double, const double, const std::string type="both");
 
   virtual void generate(FuncDataBase&,const std::string&) const;
 
