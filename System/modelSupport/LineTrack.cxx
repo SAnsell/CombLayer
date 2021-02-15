@@ -181,13 +181,6 @@ LineTrack::calculate(const Simulation& ASim)
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
-      ELog::EM<<"INIT  CALC=-------------------:"<<ELog::endDiag;
-      ELog::EM<<"START  CALC:"<<SN<<ELog::endDiag;
-      ELog::EM<<"START  OBJ:"<<*OPtr;
- 
-      ELog::EM<<"START  CALC=-------------------:"<<ELog::endDiag;
-      ELog::EM<<"New Object["<<nOut.Pos<<"]["<<nOut.uVec
-	      <<"]["<<SN<<"] = "<<*OPtr;
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))

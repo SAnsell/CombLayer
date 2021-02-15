@@ -115,6 +115,10 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
+  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
+  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
+  extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
+
   holeXStep=Control.EvalVar<double>(keyName+"HoleXStep");
   holeZStep=Control.EvalVar<double>(keyName+"HoleZStep");
   holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");
@@ -145,6 +149,10 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringFlat,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
+  if (innerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);
+
   // Steel inner layer
 
   ModelSupport::buildPlane(SMap,buildIndex+12,
@@ -155,8 +163,6 @@ OpticsHutch::createSurfaces()
 			       Origin+Z*(height+innerThick),Z);
   
   // Lead
-  ModelSupport::buildPlane(SMap,buildIndex+21,
-			   Origin+Y*(innerThick+pbFrontThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(length+innerThick+pbBackThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+23,
@@ -187,6 +193,12 @@ OpticsHutch::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
 
+  // extra for chicanes
+  if (outerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+1033,
+       Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);
+  
   return;
 }
 
@@ -250,8 +262,18 @@ OpticsHutch::createObjects(Simulation& System)
       HR=ModelSupport::getSetHeadRule(SMap,buildIndex," 2 -32 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
     }
-    
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -36");
+
+  // EXCLUDE:
+  if (outerOutVoid>Geometry::zeroTol)
+    {
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 1033 -33 -36");
+      makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 1033 -36");
+    }
+  else
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
+
+
   addOuterSurf(HR*frontWall*sideWall);
 
   return;
@@ -305,7 +327,7 @@ OpticsHutch::createChicane(Simulation& System)
   */
 {
   ELog::RegMethod Rega("OpticsHutch","createChicane");
-  /*
+  return;
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -337,7 +359,7 @@ OpticsHutch::createChicane(Simulation& System)
       //      PItem->splitObject(System,23,getCell("WallVoid"));
       //      PItem->splitObject(System,24,getCell("SplitVoid"));
     }
-  */
+
   return;
 }
 

@@ -114,9 +114,13 @@
 #include "BoxJawsGenerator.h"
 #include "DiffPumpGenerator.h"
 #include "ViewScreenGenerator.h"
+#include "PortChicaneGenerator.h"
 
 namespace setVariable
 {
+
+void
+exptHutVariables(FuncDataBase&,const std::string&,const double);
 
 
 void
@@ -596,7 +600,75 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(Name+"JawUnit0JOpen",1.7);
   Control.addVariable(Name+"JawUnit1JOpen",1.7);
 
+
+  // expt hutch
+  exptHutVariables(Control,"",0.0);
   return;
 }
 
+
+void
+exptHutVariables(FuncDataBase& Control,
+		 const std::string& beamName,
+		 const double beamXStep)
+  /*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param beamName :: Beamline name
+    \param bremXStep :: Offset of beam from main centre line
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
+
+  const double beamOffset(-0.6);
+    
+  const std::string hutName(beamName+"ExptHutch");
+
+  
+  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"OutWidth",198.50);
+  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"InnerThick",1.1);
+  Control.addVariable(hutName+"PbBackThick",1.0);
+  Control.addVariable(hutName+"PbRoofThick",0.6);
+  Control.addVariable(hutName+"PbWallThick",0.4);
+  Control.addVariable(hutName+"OuterThick",1.1);
+  Control.addVariable(hutName+"CornerLength",720.0);
+  Control.addVariable(hutName+"CornerAngle",45.0);
+  
+  Control.addVariable(hutName+"Depth",120.0);
+  Control.addVariable(hutName+"InnerOutVoid",10.0);
+  Control.addVariable(hutName+"OuterOutVoid",10.0);
+
+  Control.addVariable(hutName+"VoidMat","Void");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+
+  // lead shield on pipe
+  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"PShieldYStep",0.3);
+  Control.addVariable(hutName+"PShieldLength",1.0);
+  Control.addVariable(hutName+"PShieldWidth",10.0);
+  Control.addVariable(hutName+"PShieldHeight",10.0);
+  Control.addVariable(hutName+"PShieldWallThick",0.2);
+  Control.addVariable(hutName+"PShieldClearGap",0.3);
+  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
+  Control.addVariable(hutName+"PShieldMat","Lead");
+
+  Control.addVariable(hutName+"NChicane",2);
+  PortChicaneGenerator PGen;
+  PGen.setSize(4.0,40.0,30.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  /*
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
+  */
+
+  return;
+}
+
+  
 }  // NAMESPACE setVariable

@@ -1,7 +1,7 @@
-/*********************************************************************
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
-
- * File:   commonBeamInc/bladerOpticsHutch.h
+ 
+ * File:   R3CommonInc/ExptHutch.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -16,29 +16,29 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsHutch_h
-#define xraySystem_OpticsHutch_h
+#ifndef xraySystem_ExptHutch_h
+#define xraySystem_ExptHutch_h
 
 class Simulation;
 
 namespace xraySystem
 {
   class PortChicane;
+  
 /*!
-  \class OpticsHutch
+  \class ExptHutch
   \version 1.0
   \author S. Ansell
-  \date January 2021
-  \brief OpticsHutch unit 
+  \date January 2018
+  \brief ExptHutch unit  
 
-  Built around the central beam axis with out 
-  side wall on the ring side.
+  Built around the central beam axis
 */
 
-class OpticsHutch :
+class ExptHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -46,14 +46,15 @@ class OpticsHutch :
   public attachSystem::SurfMap
 {
  private:
-
-  double height;                ///< void height
+  
+  double height;                ///< void height to roof (from origin)
   double length;                ///< void out side width
-
-  double ringExtra;             ///< Extra thickness of ring wall
-  double ringFlat;              ///< Distance to ring flat
+  double ringWidth;             ///< void flat part to ring
   double outWidth;              ///< out side width
-  // walls
+
+  double cornerAngle;           ///< angle at corner
+  double cornerLength;          ///< length to corner
+
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
   double pbFrontThick;          ///< Thickness of lead in front plate
@@ -61,48 +62,39 @@ class OpticsHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
-  double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space
-  double extension;             ///< Extension for void behind back wall
-
+  double innerOutVoid;          ///< Extension for inner void space
+  double outerOutVoid;          ///< Extension for outer void space 
+  double extension;
   
-  double inletXStep;            ///< Inlet XStep
-  double inletZStep;            ///< Inlet ZStep
-  double inletRadius;           ///< Inlet radius
-
-  double holeXStep;            ///< Hole XStep
-  double holeZStep;            ///< Hole ZStep
-  double holeRadius;           ///< Hole radius
-
+  int voidMat;                ///< Void material [air]
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls
-  int concreteMat;            ///< side wall (concrete filler)
-  int voidMat;                ///< Void material
 
-  double beamTubeRadius;      ///< Void to construct components in
-
-  /// Chicanes
-  std::vector<std::shared_ptr<PortChicane>> PChicane;
-
+  /// Chicanes 
+  std::vector<std::shared_ptr<PortChicane>> PChicane;  
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
   void createChicane(Simulation&);
 
  public:
 
-  OpticsHutch(const std::string&);
-  OpticsHutch(const OpticsHutch&);
-  OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  ExptHutch(const std::string&);
+  ExptHutch(const ExptHutch&);
+  ExptHutch& operator=(const ExptHutch&);
+  virtual ~ExptHutch();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 
 }
 
 #endif
+ 

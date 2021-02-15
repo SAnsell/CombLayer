@@ -209,7 +209,6 @@ SimValid::runPoint(const Simulation& System,
 	}
       InitObj=System.findCell(Pt,InitObj);
       initSurfNum=InitObj->isOnSurface(Pt);
-      ELog::EM<<"Is on side == "<<initSurfNum<<ELog::endDiag;
     }
   while(initSurfNum);
       

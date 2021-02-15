@@ -514,7 +514,6 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
 
-
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
   PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
@@ -541,7 +540,6 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
   
   Control.addVariable(hutName+"YStep",0.0);
-  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"OutWidth",198.50);
@@ -549,11 +547,9 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InnerThick",0.1);
   Control.addVariable(hutName+"PbThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
-  Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"CornerLength",720.0);
   Control.addVariable(hutName+"CornerAngle",45.0);
   
-  Control.addVariable(hutName+"Depth",120.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
