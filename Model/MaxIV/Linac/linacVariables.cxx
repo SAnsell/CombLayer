@@ -1090,6 +1090,18 @@ Segment10(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadA",33.8);
   CMGen.generateMag(Control,lKey+"CMagVA",115.23,1);
 
+  // Local shielding
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(10.0,40.0,30.0);
+  LSGen.setMidHole(5.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",7.0);
+
+  LSGen.setSize(5.0,20.0,10.0);
+  LSGen.setMidHole(0.0, 0.0);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",2.5);
+
   return;
 }
 

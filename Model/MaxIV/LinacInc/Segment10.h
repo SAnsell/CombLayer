@@ -34,12 +34,13 @@ namespace xraySystem
 
 namespace tdcSystem
 {
-  
+  class LocalShielding;
+
   /*!
     \class Segment10
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date May 2020
+    \date Feb 2021
     \brief 10th segment
   */
 
@@ -52,6 +53,8 @@ class Segment10 :
 
   /// connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB;
 
   /// first bellow [actually ceramic gap]
   std::shared_ptr<constructSystem::Bellows> bellowA;

@@ -32,11 +32,13 @@ if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
     void=""
 elif [ "$segments" == "Segment16 Segment30 Segment31" -a $ITEM == "TDC16CMagH" ]; then
     void=""
-elif [ $ITEM == "MidTFrontLShield" ]; then
-    void=""
-elif [ $ITEM == "L2SPF3ShieldA" ]; then
+elif [ $ITEM == "MidTFrontLShield" -o $ITEM == "L2SPF3ShieldA" -o $ITEM == "L2SPF10ShieldA" ]; then
     void=""
 fi
+
+# echo $ITEM
+# echo ${segments}
+# echo $void
 
 ./maxiv   -defaultConfig LINAC ${segments} -povray $void a \
     && povray +A +W800 +H600 povray/tdc.pov <<< \"$ITEM\" && exit 0

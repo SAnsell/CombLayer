@@ -72,6 +72,7 @@
 #include "CorrectorMag.h"
 #include "GateValveCube.h"
 #include "IonPumpTube.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -88,6 +89,8 @@ Segment10::Segment10(const std::string& Key) :
   TDCsegment(Key,2),
   IHall(nullptr),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   gateValve(new constructSystem::GateValveCube(keyName+"Gate")),
   pumpA(new xraySystem::IonPumpTube(keyName+"PumpA")),
@@ -106,8 +109,10 @@ Segment10::Segment10(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(bellowA);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
+  OR.addObject(shieldB);
+  OR.addObject(bellowA);
   OR.addObject(gateValve);
   OR.addObject(pipeB);
   OR.addObject(bellowB);
@@ -201,17 +206,31 @@ Segment10::buildObjects(Simulation& System)
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
+  shieldA->setCutSurf("Inner",*pipeA,"outerPipe");
+  shieldA->createAll(System,*pipeA, "#front");
+
+  outerCell=buildZone->createUnit(System, *shieldA, "#front");
+  pipeA->insertInCell("FlangeA",System,outerCell);
+  pipeA->insertInCell("Main",System,outerCell);
+
+  outerCell=buildZone->createUnit(System, *shieldA, "back");
+  shieldA->insertInCell(System,outerCell);
+
+  shieldB->createAll(System, *shieldA, "top");
+  shieldB->insertInCell(System,outerCell);
+
   outerCell=buildZone->createUnit(System);
-  pipeA->insertAllInCell(System,outerCell);
+  pipeA->insertInCell("Main",System,outerCell);
 
   if (!nextZone)
     ELog::EM<<"Failed to get nextZone"<<ELog::endDiag;
 
-  //  masterCell=nextZone->constructMasterCell(System,*pipeA,2);
+  // masterCell=nextZone->constructMasterCell(System,*pipeA,2);
   // allows the first surface of pipe to be the start of the masterCell
   outerCell=nextZone->createUnit(System,*pipeA,2);
 
-  pipeA->insertAllInCell(System,outerCell);
+  pipeA->insertInCell("Main",System,outerCell);
+  pipeA->insertInCell("FlangeB",System,outerCell);
   pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit

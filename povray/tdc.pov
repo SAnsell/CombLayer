@@ -517,6 +517,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
+    #case(strcmp(ITEM,"L2SPF10ShieldA"))
+    #declare cameraLocation = <120, 3170, 30>;
+    #declare cameraLookAt   = <-55, 3185, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 20;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
