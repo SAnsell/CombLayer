@@ -104,6 +104,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
+
   ringExtra=Control.EvalVar<double>(keyName+"RingExtra");
   ringFlat=Control.EvalVar<double>(keyName+"RingFlat");
   

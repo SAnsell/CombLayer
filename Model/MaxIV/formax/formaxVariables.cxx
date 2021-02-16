@@ -494,9 +494,9 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",250.0);
-  Control.addVariable(hutName+"RingExtra",40.0);
-  Control.addVariable(hutName+"RingFlat",60.0);
+  Control.addVariable(hutName+"OutWidth",204.0);
+  Control.addVariable(hutName+"RingExtra",20.0);
+  Control.addVariable(hutName+"RingFlat",70.0);
 
   
   Control.addVariable(hutName+"InnerThick",0.3);
