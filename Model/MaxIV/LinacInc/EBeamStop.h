@@ -3,7 +3,7 @@
 
  * File:   LinacInc/EBeamStop.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ namespace tdcSystem
 {
 /*!
   \class EBeamStop
-  \version 1.0
-  \author S. Ansell
-  \date January 2019
+  \version 1.1
+  \author S. Ansell / K. Batkov
+  \date February 2021
 
-  \brief EBeamStop for Max-IV
+  \brief Electron beam stop for MAX-IV
 */
 
 class EBeamStop :
@@ -56,12 +56,12 @@ class EBeamStop :
   double baseFlangeExtra;       ///< base outstep
   double baseFlangeThick;       ///< base vertical rise
 
-  double portLength;            ///< Port length 
+  double portLength;            ///< Port length
   double portRadius;            ///< Port radius
   double portWallThick;         ///< Port wall thickness
   double portFlangeRadius;      ///< Port flange radius
   double portFlangeLength;      ///< Port flange length
-  
+
   double stopRadius;            ///< Main stop radius
   double stopLength;            ///< Main stop length
   double stopZLift;             ///< Lift of support if open
@@ -71,7 +71,7 @@ class EBeamStop :
   double supportConeLen;        ///< Support close cone
   double supportConeRadius;     ///< Support radius at base
   double supportHoleRadius;     ///< Hole in support radius
-  double supportRadius;         ///< Radius of 
+  double supportRadius;         ///< Radius of
 
   double stopPortYStep;          ///< Stop port centre YStep
   double stopPortRadius;         ///< stop port radius
@@ -89,10 +89,10 @@ class EBeamStop :
   double ionPortFlangeRadius;   /// flange radius
   double ionPortFlangeLength;   /// flange length
   double ionPortPlateThick;     /// coverplate thick
-  
+
   bool closedFlag;              ///< is beamstop closed (in beam)
 
-  std::vector<int> stopMat;     ///< Stop materials 
+  std::vector<int> stopMat;     ///< Stop materials
 
   int voidMat;                  ///< void material
   int wallMat;                ///< flange material
@@ -100,6 +100,24 @@ class EBeamStop :
   int supportMat;                ///< support material
   int plateMat;                 ///< end plate material
   int outerMat;                 ///< pipe material
+
+  bool shieldActive;            ///< Activates outer shielding
+  int shieldInnerMat;           ///< Inner layer material
+  int shieldOuterMat;           ///< Outer layer material
+  int shieldRoofPlateMat;       ///< Material of the plate above the beam stop
+  double shieldLength;          ///< Total length
+  double shieldWidth;           ///< Total width
+  double shieldHeight;          ///< Total height (above beam line)
+  double shieldDepth;           ///< Total depth (below beam line)
+  double shieldInnerFloorThick; ///< Inner layer floor thickness
+  double shieldInnerRoofThick;  ///< Inner layer roof thickness
+  double shieldInnerSideThick;  ///< Inner layer side thickness
+  double shieldSideHoleWidth;   ///< Side penetration width for the beam pipes
+  double shieldSideHoleHeight;  ///< Side penetration height for the beam pipes
+  double shieldOuterFloorThick; ///< Outer layer floor thickness
+  double shieldOuterSideThick;  ///< Outer layer side thickness
+  double shieldOuterRoofThick;  ///< Outer layer roof thickness
+  double shieldRoofPlateThick;  ///< Thickness of the plate above the beam stop
 
   void populate(const FuncDataBase&);
   void createSurfaces();

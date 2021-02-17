@@ -82,6 +82,11 @@
     #declare cameraLookAt   = <0.0, 40.0, -5.0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"EBeamStop"))
+    #declare cameraLocation = <-150, 120.0, 30.0>;
+    #declare cameraLookAt   = <0.0, 30.0, -10.0>;
+    #declare cameraAngle = 40;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;

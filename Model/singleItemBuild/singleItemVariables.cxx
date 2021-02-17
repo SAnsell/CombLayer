@@ -595,8 +595,8 @@ SingleItemVariables(FuncDataBase& Control)
   // Local shielding wall
   setVariable::LocalShieldingGenerator LocalShieldGen;
   LocalShieldGen.setSize(10,60,40);
-  LocalShieldGen.setMidHoleSize(4.0,5.0);
-  LocalShieldGen.setCornerSize(10.0,5.0);
+  LocalShieldGen.setMidHole(4.0,5.0);
+  LocalShieldGen.setCorner(10.0,5.0);
   LocalShieldGen.generate(Control,"Wall");
   Control.addVariable("WallYStep",24.0);
   Control.addVariable("WallZStep",-2.5);

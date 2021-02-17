@@ -3,7 +3,7 @@
 
  * File:   Linac/EBeamStop.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -96,7 +97,7 @@ EBeamStop::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   closedFlag=static_cast<bool>(Control.EvalVar<size_t>(keyName+"Closed"));
-  
+
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -133,7 +134,7 @@ EBeamStop::populate(const FuncDataBase& Control)
   supportConeRadius=Control.EvalVar<double>(keyName+"SupportConeRadius");
   supportHoleRadius=Control.EvalVar<double>(keyName+"SupportHoleRadius");
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
-  
+
   stopPortYStep=Control.EvalVar<double>(keyName+"StopPortYStep");
   stopPortRadius=Control.EvalVar<double>(keyName+"StopPortRadius");
   stopPortLength=Control.EvalVar<double>(keyName+"StopPortLength");
@@ -148,13 +149,39 @@ EBeamStop::populate(const FuncDataBase& Control)
   ionPortWallThick=Control.EvalVar<double>(keyName+"IonPortWallThick");
   ionPortFlangeRadius=Control.EvalVar<double>(keyName+"IonPortFlangeRadius");
   ionPortFlangeLength=Control.EvalVar<double>(keyName+"IonPortFlangeLength");
-  
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+
+  // Outer shielding
+  shieldActive=Control.EvalVar<int>(keyName+"ShieldActive");
+  if (shieldActive)
+    {
+      shieldInnerMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldInnerMat");
+      shieldOuterMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldOuterMat");
+      shieldRoofPlateMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldRoofPlateMat");
+
+      shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
+      shieldWidth=Control.EvalVar<double>(keyName+"ShieldWidth");
+      shieldHeight=Control.EvalVar<double>(keyName+"ShieldHeight");
+      shieldDepth=Control.EvalVar<double>(keyName+"ShieldDepth");
+      shieldInnerFloorThick=Control.EvalVar<double>(keyName+"ShieldInnerFloorThick");
+      shieldInnerRoofThick=Control.EvalVar<double>(keyName+"ShieldInnerRoofThick");
+      shieldInnerSideThick=Control.EvalVar<double>(keyName+"ShieldInnerSideThick");
+      shieldSideHoleWidth=Control.EvalVar<double>(keyName+"ShieldSideHoleWidth");
+      shieldSideHoleHeight=Control.EvalVar<double>(keyName+"ShieldSideHoleHeight");
+      shieldOuterFloorThick=Control.EvalVar<double>(keyName+"ShieldOuterFloorThick");
+      shieldOuterSideThick=Control.EvalVar<double>(keyName+"ShieldOuterSideThick");
+      shieldOuterRoofThick=Control.EvalVar<double>(keyName+"ShieldOuterRoofThick");
+      shieldRoofPlateThick=Control.EvalVar<double>(keyName+"ShieldRoofPlateThick");
+
+      if (std::abs(shieldHeight+shieldDepth-57.5)>Geometry::zeroTol)
+	throw ColErr::NumericalAbort("Wrong outer shielding height+depth in " + keyName);
+    }
 
   return;
 }
@@ -226,7 +253,7 @@ EBeamStop::createSurfaces()
     (SMap,buildIndex+201,Origin-Y*(portLength+length/2.0-portFlangeLength),Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+202,Origin+Y*(portLength+length/2.0-portFlangeLength),Y);
-  
+
 
   // Ion Pump port:
   const Geometry::Vec3D ionOrg(Origin+Y*ionPortYStep-Z*depth);
@@ -251,7 +278,7 @@ EBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+405,stopOrg-Z*stopPortLength,Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+415,stopOrg-Z*(stopPortLength-stopPortFlangeLength),Z);
-  
+
   // Main stop cylinder
   const Geometry::Vec3D tOrg=(closedFlag) ?
     Origin-Y*(stopLength/2.0) : Origin-Y*(stopLength/2.0)+Z*stopZLift;
@@ -284,7 +311,7 @@ EBeamStop::createSurfaces()
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+600,
-			   midCentre-Z*(stopRadius/10.0),Z);  
+			   midCentre-Z*(stopRadius/10.0),Z);
   ModelSupport::buildCone(SMap,buildIndex+607,coneCentre,Z,coneAngle);
   ModelSupport::buildCylinder(SMap,buildIndex+617,coneCentre,Z,supportRadius);
   // hole [not down shift by exactly stopZLift to align hole if open position]
@@ -292,9 +319,48 @@ EBeamStop::createSurfaces()
     (SMap,buildIndex+657,midCentre-Z*stopZLift,Y,supportHoleRadius);
   ModelSupport::buildPlane
     (SMap,buildIndex+605,midCentre-Z*(stopRadius+supportConeLen),Z);
-  
+
   // const Geometry::Vec3D tOrg=(closedFlag) ?
   //   Origin-Y*(stopLength/2.0) : Origin-Y*(stopLength/2.0)+Z*stopZLift;
+
+  if (shieldActive)
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*(shieldLength/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*(shieldLength/2.0),Y);
+
+      ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(shieldWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(shieldWidth/2.0),X);
+
+      ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(shieldDepth),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(shieldHeight),Z);
+
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1011,buildIndex+1001,Y,shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1012,buildIndex+1002,Y,-shieldOuterSideThick);
+
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1013,buildIndex+1003,X,shieldOuterSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1014,buildIndex+1004,X,-shieldOuterSideThick);
+
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1015,buildIndex+1005,Z,shieldOuterFloorThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1016,buildIndex+1006,Z,-shieldOuterRoofThick);
+
+      // pipe penetrations
+      ModelSupport::buildPlane(SMap,buildIndex+1103,Origin-X*(shieldSideHoleWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+1104,Origin+X*(shieldSideHoleWidth/2.0),X);
+
+      ModelSupport::buildPlane(SMap,buildIndex+1105,Origin-Z*(shieldSideHoleHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1106,Origin+Z*(shieldSideHoleHeight/2.0),Z);
+
+      // inner layer
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1021,buildIndex+1011,X,shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1022,buildIndex+1012,X,-shieldInnerSideThick);
+
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1023,buildIndex+1013,X,shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1024,buildIndex+1014,X,-shieldInnerSideThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1025,buildIndex+1015,Z,shieldInnerFloorThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1026,buildIndex+1016,Z,-shieldInnerRoofThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+1036,buildIndex+1026,Z,-shieldRoofPlateThick);
+
+    }
 
 
   return;
@@ -320,7 +386,7 @@ EBeamStop::createObjects(Simulation& System)
      "(600: -605: 607 ) (-501 : 502 : 507) ");
   if (!closedFlag)
     Out+=ModelSupport::getComposite(SMap,buildIndex," (617:605) ");
-				    
+
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -382,7 +448,7 @@ EBeamStop::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 415 -115 417 -427  ");
   makeCell("StopOuter",System,cellIndex++,outerMat,0.0,Out);
 
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 111 -112 123 -124 125 -116 (-111:112:-113:114)");
   makeCell("SideOuter",System,cellIndex++,0,0.0,Out);
@@ -415,7 +481,7 @@ EBeamStop::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -605 405 -407 -617 ");
   makeCell("SupportDrive",System,cellIndex++,supportMat,0.0,Out);
 
-  
+
   if (stopPortLength>=ionPortLength)
     {
       Out=ModelSupport::getComposite
@@ -432,14 +498,113 @@ EBeamStop::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
     }
-  addOuterSurf("Main",Out);
+  if (shieldActive)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -1024 116 -1036 ");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -121 -227 ");
-  addOuterSurf("FlangeA",Out+frontStr);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -1024 1106 -116 (-121:122:-123:124) ");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 122 -227 ");
-  addOuterSurf("FlangeB",Out+backStr);
-  
+      // long sides
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 124 -1024 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -123 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+
+      // short sides
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -121 123 -1103 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -1022 123 -1103 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -121 1104 -124 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -1022 1104 -124 1105 -1106");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1021 -1022 1023 -1024 1025 -1105 (-121:122:-123:124) ");
+      makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1001 -1002 1003 -1004 405 -1005 (-121:122:-123:124) ");
+      makeCell("BottomVoid",System,cellIndex++,0,0.0,Out);
+
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1001 -1002 1003 -1004 1005 -1015 (-121:122:-123:124) ");
+      makeCell("ShieldOuterFloor",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1016 -1006 ");
+      makeCell("ShieldOuterRoof",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      // long sides
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 1003 -1013 1015 -1006 ");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 1014 -1004 1015 -1006 ");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      // short sides
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106) ");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1012 -1002 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
+      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1001 -121 1103 -1104 1105 -1106 (227:-1) ");
+      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 122 -1002 1103 -1104 1105 -1106 (227:2)");
+      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,Out);
+
+      // inner layer
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1011 -1012 1013 -1014 1015 -1025 (-121:122:-123:124) ");
+      makeCell("ShieldInnerFloor",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      // long sides
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1012 1013 -1023 1025 -1036 ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1012 1024 -1014 1025 -1036 ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      // short sides
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1011 -1021 1013 -1014 1025 -1036 (-1103:1104:-1105:1106) ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex,
+				     " 1022 -1012 1023 -1024 1025 -1036 (-1103:1104:-1105:1106) ");
+      makeCell("ShieldInnerSide",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1026 -1016 ");
+      makeCell("ShieldInnerRoof",System,cellIndex++,shieldInnerMat,0.0,Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -1012 1013 -1014 1036 -1026 ");
+      makeCell("ShieldRoofPlate",System,cellIndex++,shieldRoofPlateMat,0.0,Out);
+
+      // main outer rule
+      Out=ModelSupport::getComposite(SMap,buildIndex, " 1001 -1002 1003 -1004 405 -1006 ");
+      addOuterSurf("Main",Out);
+    }
+  else
+    {
+      addOuterSurf("Main",Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," -121 -227 ");
+      addOuterSurf("FlangeA",Out+frontStr);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 122 -227 ");
+      addOuterSurf("FlangeB",Out+backStr);
+    }
+
   return;
 }
 
@@ -462,7 +627,7 @@ EBeamStop::createLinks()
 
   nameSideIndex(2,"BoxFront");
   nameSideIndex(3,"BoxBack");
-  
+
   return;
 }
 

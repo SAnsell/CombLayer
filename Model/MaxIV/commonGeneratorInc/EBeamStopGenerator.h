@@ -50,12 +50,12 @@ class EBeamStopGenerator
   double baseFlangeExtra;       ///< base outstep
   double baseFlangeThick;       ///< base vertical rise
 
-  double portLength;            ///< Port length 
+  double portLength;            ///< Port length
   double portRadius;            ///< Port radius
   double portWallThick;         ///< Port wall thickness
   double portFlangeRadius;      ///< Port flange radius
   double portFlangeLength;      ///< Port flange length
-  
+
   double stopRadius;            ///< Main stop radius
   double stopLength;            ///< Main stop length
   double stopZLift;             ///< Lift of support if open
@@ -65,9 +65,9 @@ class EBeamStopGenerator
   double supportConeLen;        ///< Support close cone
   double supportConeRadius;     ///< Support radius at base
   double supportHoleRadius;     ///< Hole in support radius
-  double supportRadius;         ///< Radius of support tube 
+  double supportRadius;         ///< Radius of support tube
 
-  double stopPortYStep;          ///< Support centre YStep  
+  double stopPortYStep;          ///< Support centre YStep
   double stopPortRadius;         ///< stop port radius
   double stopPortLength;         ///< stop port total length
   double stopPortWallThick;      ///< stop port wall radius
@@ -83,8 +83,8 @@ class EBeamStopGenerator
   double ionPortFlangeRadius;   /// flange radius
   double ionPortFlangeLength;   /// flange length
   double ionPortPlateThick;     /// coverplate thick
-  
-  std::vector<std::string> stopMat;     ///< Stop materials 
+
+  std::vector<std::string> stopMat;     ///< Stop materials
 
   std::string voidMat;                  ///< void material
   std::string wallMat;                  ///< wallmaterial
@@ -93,6 +93,23 @@ class EBeamStopGenerator
   std::string plateMat;                 ///< end plate material
   std::string outerMat;                 ///< pipe material
 
+  bool shieldActive;            ///< Activates outer shielding
+  std::string shieldInnerMat;   ///< Inner layer material
+  std::string shieldOuterMat;   ///< Outer layer material
+  std::string shieldRoofPlateMat; ///< Material of the plate above the beam stop
+  double shieldLength;          ///< Total length
+  double shieldWidth;           ///< Total width
+  double shieldHeight;          ///< Total height (above beam line)
+  double shieldDepth;           ///< Total depth (below beam line)
+  double shieldInnerFloorThick; ///< Inner layer floor thickness
+  double shieldInnerRoofThick;  ///< Inner layer roof thickness
+  double shieldInnerSideThick;  ///< Inner layer side thickness
+  double shieldSideHoleWidth;   ///< Side penetration width for the beam pipes
+  double shieldSideHoleHeight;  ///< Side penetration height for the beam pipes
+  double shieldOuterFloorThick; ///< Outer layer floor thickness
+  double shieldOuterSideThick;  ///< Outer layer side thickness
+  double shieldOuterRoofThick;  ///< Outer layer roof thickness
+  double shieldRoofPlateThick;  ///< Thickness of the plate above the beam stop
 
  public:
 
