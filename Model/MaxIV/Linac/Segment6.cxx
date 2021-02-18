@@ -62,11 +62,15 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
+
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
 #include "LocalShielding.h"
+
+#include "AttachSupport.h"
+
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -154,12 +158,29 @@ Segment6::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",shieldB);
   pipeTerminate(System,*buildZone,pipeD);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*ceramicA);
+
+  beamStop->setCutSurf("Front", ceramicA->getExclude() +
+		       pipeD->getExclude("FlangeB") +
+		       pipeD->getExclude("Main"));
+
   constructSystem::constructUnit
     (System,*buildZone,*ceramicA,"back",*beamStop);
+
   constructSystem::constructUnit
     (System,*buildZone,*beamStop,"back",*ceramicB);
+
+  if (beamStop->isShieldActive()) // optimise \todo
+    {
+      beamStop->insertAllInCell(System,outerCell);
+      beamStop->insertAllInCell(System,outerCell-1);
+
+      beamStop->insertAllInCell(System,outerCell+2);
+
+      attachSystem::addToInsertControl(System,*beamStop,*ceramicB);
+    }
+
 
   return;
 }
@@ -195,6 +216,9 @@ Segment6::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
+
+  if (beamStop->isShieldActive())
+      CellMap::setCells("ShieldSideBackHole",beamStop->getCells("ShieldSideBackHole"));
 
   return;
 }

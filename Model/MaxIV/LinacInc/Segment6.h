@@ -81,6 +81,7 @@ class Segment6 :
   Segment6& operator=(const Segment6&);
   ~Segment6();
 
+  std::shared_ptr<EBeamStop> getBeamStop() const { return beamStop; }
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

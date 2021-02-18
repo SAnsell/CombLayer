@@ -67,7 +67,7 @@ namespace tdcSystem
 {
 
 EBeamStop::EBeamStop(const std::string& Key) :
-  attachSystem::FixedOffset(Key,4),
+  attachSystem::FixedOffset(Key,7),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -498,8 +498,13 @@ EBeamStop::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 121 -122 123 -124 305 -116 ");
     }
+
   if (shieldActive)
     {
+      // exclude rules of other components located inside shielding
+      const std::string front=isActive("Front") ? getRuleStr("Front") : "";
+      const std::string back=isActive("Back") ? getRuleStr("Back") : "";
+
       Out=ModelSupport::getComposite(SMap,buildIndex," 1021 -1022 1023 -1024 116 -1036 ");
       makeCell("ShieldInnerVoid",System,cellIndex++,0,0.0,Out);
 
@@ -549,19 +554,26 @@ EBeamStop::createObjects(Simulation& System)
       // short sides
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 1001 -1011 1013 -1014 1015 -1006 (-1103:1104:-1105:1106) ");
-      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+      makeCell("ShieldOuterSideFront",System,cellIndex++,shieldOuterMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 1012 -1002 1013 -1014 1015 -1006 (-1103:1104:-1105:1106)");
-      makeCell("ShieldOuterSide",System,cellIndex++,shieldOuterMat,0.0,Out);
+      makeCell("ShieldOuterSideBack",System,cellIndex++,shieldOuterMat,0.0,Out);
+
+      HeadRule HR;
+      HR.procString(ModelSupport::getComposite(SMap,buildIndex, " -227 ") + frontStr);
+      HR.makeComplement();
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 1001 -121 1103 -1104 1105 -1106 (227:-1) ");
-      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,Out);
+				     " 1001 -121 1103 -1104 1105 -1106 ");
+      makeCell("ShieldSideFrontHole",System,cellIndex++,0,0.0,Out + HR.display() + front);
+
+      HR.procString(ModelSupport::getComposite(SMap,buildIndex, " -227 ") + backStr);
+      HR.makeComplement();
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
-				     " 122 -1002 1103 -1104 1105 -1106 (227:2)");
-      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,Out);
+				     " 122 -1002 1103 -1104 1105 -1106 ");
+      makeCell("ShieldSideBackHole",System,cellIndex++,0,0.0,Out + HR.display() + back);
 
       // inner layer
       Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -627,6 +639,25 @@ EBeamStop::createLinks()
 
   nameSideIndex(2,"BoxFront");
   nameSideIndex(3,"BoxBack");
+
+  //  if (shieldActive)
+  //    {
+  // FixedComp::setConnect(4,Origin-Y*(shieldLength/2.0),-Y);
+  // FixedComp::setConnect(5,Origin+Y*(shieldLength/2.0),Y);
+  // FixedComp::setConnect(6,Origin+Z*(shieldHeight),Z);
+
+  // FixedComp::setLinkSurf(4,ModelSupport::getComposite(SMap,buildIndex,
+  // 			  " 1001 1003 -1004 405 -1006 (-1103:1104:-1105:1106) "));
+  // FixedComp::setLinkSurf(5,ModelSupport::getComposite(SMap,buildIndex,
+  // 							  " 1003 -1004 405 -1006 "));
+  // FixedComp::setLinkSurf(6,ModelSupport::getComposite(SMap,buildIndex,
+  // 			 " -1002 1003 -1004 405 -1006 (-1103:1104:-1105:1106) "));
+
+  // nameSideIndex(4,"ShieldFront");
+  // nameSideIndex(5,"ShieldMid");
+  // nameSideIndex(6,"ShieldBack");
+  //    }
+
 
   return;
 }

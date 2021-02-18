@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment7.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,9 +66,11 @@
 #include "StriplineBPM.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
+#include "EBeamStop.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
+#include "Segment6.h"
 #include "Segment7.h"
 
 namespace tdcSystem
@@ -76,12 +78,12 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment7::Segment7(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  
+
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPM")),
@@ -102,9 +104,9 @@ Segment7::Segment7(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(cMagVA);
 
-  setFirstItems(pipeA);  
+  setFirstItems(pipeA);
 }
-  
+
 Segment7::~Segment7()
   /*!
     Destructor
@@ -121,6 +123,8 @@ Segment7::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment7","buildObjects");
 
+
+
   int outerCell;
 
   if (isActive("front"))
@@ -129,9 +133,32 @@ Segment7::buildObjects(Simulation& System)
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  outerCell = pipeTerminate(System,*buildZone,pipeA);
 
-  
+  for (const TDCsegment* sideSegment : sideVec)
+    {
+      // Insert shielding of L2SPF6BeamStop into the first zone cell
+      const Segment6 *seg6 = dynamic_cast<const Segment6*>(sideSegment);
+      if (seg6)
+	{
+	  const std::shared_ptr<EBeamStop> beamStop = seg6->getBeamStop();
+	  if (beamStop->isShieldActive())
+	    {
+	      beamStop->insertAllInCell(System,outerCell-4);
+
+	      // Insert L2SPF7PipeA into L2SPF6BeamStop
+	      const std::vector<int>  cells= sideSegment->getCells("ShieldSideBackHole");
+	      for (const int cn : cells)
+		{
+		  pipeA->insertInCell("FlangeA",System,cn);
+		  pipeA->insertInCell("Main",System,cn);
+		}
+	    }
+	}
+    }
+
+
+
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
 
@@ -157,7 +184,7 @@ Segment7::createLinks()
   return;
 }
 
-void 
+void
 Segment7::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -175,10 +202,9 @@ Segment7::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-
