@@ -3,7 +3,7 @@
  
  * File:   commonBeam/PipeShield.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
+#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -67,7 +68,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedRotate.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -82,7 +83,7 @@ namespace xraySystem
 
 PipeShield::PipeShield(const std::string& Key) :
   attachSystem::ContainedGroup("Main","Wings"),
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -93,7 +94,7 @@ PipeShield::PipeShield(const std::string& Key) :
 
 PipeShield::PipeShield(const PipeShield& A) : 
   attachSystem::ContainedGroup(A),
-  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
   clearGap(A.clearGap),wallThick(A.wallThick),mat(A.mat),
@@ -115,7 +116,7 @@ PipeShield::operator=(const PipeShield& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -139,7 +140,7 @@ PipeShield::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PipeShield","populate");
 
-  FixedRotate::populate(Control);
+  FixedOffset::populate(Control);
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");

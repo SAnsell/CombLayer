@@ -3,7 +3,7 @@
  
  * File:   construct/JawSet.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -69,7 +70,6 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedRotate.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -83,7 +83,7 @@ namespace constructSystem
 
 JawSet::JawSet(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),
   JawX(new constructSystem::Jaws(Key+"Vert")),
   JawXZ(new constructSystem::Jaws(Key+"Diag"))
@@ -101,7 +101,7 @@ JawSet::JawSet(const std::string& Key) :
 
 JawSet::JawSet(const JawSet& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedRotate(A),
+  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
   length(A.length)
@@ -122,7 +122,7 @@ JawSet::operator=(const JawSet& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       JawX=A.JawX;
       JawXZ=A.JawXZ;
@@ -147,11 +147,27 @@ JawSet::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("JawSet","populate");
   
-  FixedRotate::populate(Control);
+  FixedOffset::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
+
+  return;
+}
+
+void
+JawSet::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed component to link to
+    \param sideIndex :: Link point and direction [0 for origin]
+  */
+{
+  ELog::RegMethod RegA("JawSet","createUnitVector");
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -184,8 +200,9 @@ JawSet::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
   addOuterSurf(Out);
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  setCell("Void",cellIndex-1);
 
   return;
 }

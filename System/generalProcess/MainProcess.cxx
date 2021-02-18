@@ -411,7 +411,7 @@ createSimulation(inputParam& IParam,
       masterWrite::Instance().setZero(1e-14);
       SimPtr=new SimFLUKA;
     }
-  else if (IParam.flag("POVRAY"))
+  else if (IParam.flag("PovRay"))
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 

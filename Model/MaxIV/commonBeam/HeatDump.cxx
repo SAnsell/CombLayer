@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HeatDump.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -271,6 +271,7 @@ HeatDump::createSurfaces()
   // bellows flange
   const double BL((upFlag) ? bellowLength+lift : bellowLength);
 
+    
   ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin+Y*(topFlangeLength+BL),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,

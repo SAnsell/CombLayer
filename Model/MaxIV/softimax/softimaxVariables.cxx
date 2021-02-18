@@ -214,8 +214,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setAFlange(10.2,1.0);
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
   MBoxGen.setPortLength(2.3,5.0);
-  // R,height,depth
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",54.91,36.45,36.45); 
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
   Control.addVariable(monoKey+"MonoVesselOuterSize",63);
   Control.addVariable(monoKey+"MonoVesselPortBZStep",zstep);      // from primary: 131.4-130.0
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");

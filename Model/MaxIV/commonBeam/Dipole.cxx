@@ -3,7 +3,7 @@
  
  * File:   commonBeam/Dipole.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
+#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -152,6 +153,23 @@ Dipole::populate(const FuncDataBase& Control)
 }
 
 void
+Dipole::createUnitVector(const attachSystem::FixedComp& FC,
+    	                     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: FixedComp to attach to
+    \param sideIndex :: Link point
+  */
+{
+  ELog::RegMethod RegA("Dipole","createUnitVector");
+
+  // origin from start point
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  return;
+}
+
+void
 Dipole::createSurfaces()
   /*!
     Create All the surfaces
@@ -239,71 +257,73 @@ Dipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Dipole","createObjects");
 
-  
-  HeadRule HR;
-  
+
+  std::string Out;
+
   if (isActive("MidSplit"))
     {
+      const std::string ACell=getRuleStr("InnerA");
+      const std::string BCell=getRuleStr("InnerB");
       const HeadRule& MSplit=getRule("MidSplit");
-      const HeadRule ACell=getComplementRule("InnerA");
-      const HeadRule BCell=getComplementRule("InnerB");
-
-      HR=ModelSupport::getHeadRule
+	    
+      Out=ModelSupport::getComposite
 	(SMap,buildIndex," 15 -16 103 -104 201 ");
-      makeCell("MidVoidA",System,cellIndex++,
-	       0,0.0,HR*MSplit.complement()*ACell);
+      makeCell("MidVoidA",System,cellIndex++,0,0.0,
+	       Out+ACell+MSplit.complement().display());
 
-      HR=ModelSupport::getHeadRule
+      Out=ModelSupport::getComposite
 	(SMap,buildIndex," 15 -16 103 -104 -202");
-      makeCell("MidVoidB",System,cellIndex++,0,0.0,HR*BCell*MSplit);
+      makeCell("MidVoidB",System,cellIndex++,0,0.0,
+	       Out+BCell+MSplit.display());
     }
   else
     {
-      HR=ModelSupport::getHeadRule
+      const std::string ACell=
+	(isActive("Inner")) ? getRuleStr("Inner") : "";
+      Out=ModelSupport::getComposite
 	(SMap,buildIndex," 15 -16 103 -104 201 -202");
-      if (isActive("Inner")) HR*=getRule("Inner");
-      makeCell("MidVoid",System,cellIndex++,0,0.0,HR);
+      makeCell("MidVoid",System,cellIndex++,0,0.0,Out+ACell);
     }
 
   // side voids
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," (-1:2:17:-27) -15 105 103 -104 (-107:101) (-108:-102)");
-  makeCell("BaseVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("BaseVoid",System,cellIndex++,0,0.0,Out);
 
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," (-1:2:17:-27) 16 -106 103 -104 (-107:101) (-108:-102)");
-  makeCell("TopVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
 
   // Pole pieces
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -15 5 -17 27 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -15 5 -17 27 ");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 16 -6 -17 27 ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,HR);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 16 -6 -17 27 ");
+  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," (-107:101) (-108:-102) -105 5 103 -104 "
     " (-1:2:17:-27) ");
-  makeCell("CoilA",System,cellIndex++,coilMat,0.0,HR);
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,Out);
 
   
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," (-107:101) (-108:-102) 106 -6 103 -104 "
     " (-1:2:17:-27) ");
-  makeCell("CoilB",System,cellIndex++,coilMat,0.0,HR);
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,Out);
 
   // Void ends
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," 201 107 -101 5 -6 103 -104 (-15 : 16)");
-  makeCell("FrontVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
 
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," -202 108 102 5 -6 103 -104 (-15 : 16)");
-  makeCell("BackVoid",System,cellIndex++,0,0.0,HR);
+  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
   
-  HR=ModelSupport::getHeadRule
+  Out=ModelSupport::getComposite
     (SMap,buildIndex," 5 -6 103 -104 201 -202 ");
-  addOuterSurf(HR);
+  addOuterSurf(Out);
   
   return;
 }

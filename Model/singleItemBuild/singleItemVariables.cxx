@@ -109,18 +109,9 @@
 #include "IonGaugeGenerator.h"
 #include "TriggerGenerator.h"
 #include "LBeamStopGenerator.h"
-#include "BremTubeGenerator.h"
-#include "HPJawsGenerator.h"
-#include "BoxJawsGenerator.h"
-#include "DiffPumpGenerator.h"
-#include "ViewScreenGenerator.h"
-#include "PortChicaneGenerator.h"
 
 namespace setVariable
 {
-
-void
-exptHutVariables(FuncDataBase&,const std::string&,const double);
 
 
 void
@@ -263,6 +254,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
+  setVariable::PreDipoleGenerator PBGen;
+  PBGen.generatePipe(Control,"PreDipole");
+
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
 
@@ -273,14 +267,13 @@ SingleItemVariables(FuncDataBase& Control)
   OGen.generateOcto(Control,"OXX",20.0,25.0);
 
   setVariable::DipoleGenerator DGen;
-  DGen.generateDipole(Control,"DIM",0.0,60.0);
+  DGen.generateDipole(Control,"M1BlockDIM",0.0,60.0);
 
   setVariable::SexupoleGenerator SGen;
   SGen.generateHex(Control,"SXX",20.0,25.0);
 
   setVariable::SixPortGenerator SPGen;
   SPGen.generateSixPort(Control,"SixPort");
-  SPGen.generateSixPort(Control,"FourPort");
 
   setVariable::CrossWayGenerator MSPGen;
   MSPGen.generateCrossWay(Control,"CrossWay");
@@ -289,8 +282,7 @@ SingleItemVariables(FuncDataBase& Control)
   GTGen.generateGauge(Control,"GaugeTube",0.0,0.0);
  
   setVariable::BremBlockGenerator BBGen;
-  BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
-  BBGen.generateBlock(Control,"BremBlock",0,8.0);
+  BBGen.generateBlock(Control,"BremBlock",0,15.0);
  
   
   setVariable::CrossWayGenerator CWBlankGen;
@@ -306,25 +298,6 @@ SingleItemVariables(FuncDataBase& Control)
   IonPGen.generateTube(Control,"IonPTube");
 
   
-  setVariable::BremTubeGenerator BTGen;
-  BTGen.generateTube(Control,"BremTube");
-
-  setVariable::HPJawsGenerator HPGen;
-  HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
-
-  setVariable::BoxJawsGenerator BJGen;
-  BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
-
-  CF40 CFflange;
-  //  setVariable::DiffPumpGenerator DPGen(CFflange);
-  //  DPGen.generatePump(Control,"DiffPump",27.4);
-
-  setVariable::DiffPumpGenerator DPGen;
-  DPGen.generatePump(Control,"DiffPump",54.4);
-
-  setVariable::ViewScreenGenerator VTGen;
-  VTGen.generateView(Control,"ViewTube");
-
   setVariable::IonGaugeGenerator IonGGen;
   IonGGen.generateTube(Control,"IonGauge");
 
@@ -361,7 +334,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
-  MBGen.generateBlock(Control,"MB1",0.0);
+  MBGen.generateBlock(Control,"M1",0.0);
 
   setVariable::QuadUnitGenerator M1QGen;
   M1QGen.generatePipe(Control,"M1QuadUnit",0.0);
@@ -561,13 +534,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   const double Radius(7.5);
   const double WallThick(0.5);
-  const double portRadius(Radius+WallThick+0.5);
+  const double PortRadius(Radius+WallThick+0.5);
   PTubeGen.setPipe(Radius,WallThick);
   PTubeGen.setPortCF<setVariable::CF40>();
   const double sideWallThick(1.0);
   PTubeGen.setPortLength(-sideWallThick,sideWallThick);
-  PTubeGen.setAFlange(portRadius,sideWallThick);
-  PTubeGen.setBFlange(portRadius,sideWallThick);
+  PTubeGen.setAFlange(PortRadius,sideWallThick);
+  PTubeGen.setBFlange(PortRadius,sideWallThick);
   PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",4);
 
@@ -579,14 +552,14 @@ SingleItemVariables(FuncDataBase& Control)
 
   // first 2 ports are with jaws, others - without jaws
   PItemGen.setOuterVoid(1);  // create boundary round flange
-  PItemGen.setCF<setVariable::CF63>(portRadius+5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
-  PItemGen.setCF<setVariable::CF63>(portRadius+10.0);
+  PItemGen.setCF<setVariable::CF63>(10.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
 
-  PItemGen.setCF<setVariable::CF63>(portRadius+5.0);
+  PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.generatePort(Control,portName+"2",-PPos,-ZVec);
-  PItemGen.setCF<setVariable::CF63>(portRadius+10.0);
+  PItemGen.setCF<setVariable::CF63>(10.0);
   PItemGen.generatePort(Control,portName+"3",MidPt,-XVec);
 
   // PItemGen.setCF<setVariable::CF63>(10.0);
@@ -601,79 +574,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(Name+"JawUnit0JOpen",1.7);
   Control.addVariable(Name+"JawUnit1JOpen",1.7);
 
-
-  // expt hutch
-  exptHutVariables(Control,"",0.0);
   return;
 }
 
-
-void
-exptHutVariables(FuncDataBase& Control,
-		 const std::string& beamName,
-		 const double beamXStep)
-  /*!
-    Optics hut variables
-    \param Control :: DataBase to add
-    \param beamName :: Beamline name
-    \param bremXStep :: Offset of beam from main centre line
-  */
-{
-  ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
-
-  const double beamOffset(-0.6);
-    
-  const std::string hutName(beamName+"ExptHutch");
-
-  
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",1.1);
-  Control.addVariable(hutName+"PbBackThick",1.0);
-  Control.addVariable(hutName+"PbRoofThick",0.6);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"OuterThick",1.1);
-  Control.addVariable(hutName+"CornerLength",720.0);
-  Control.addVariable(hutName+"CornerAngle",45.0);
-  
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
-
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
-
-  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.0);
-  Control.addVariable(hutName+"HoleMat","Void");
-
-  // lead shield on pipe
-  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"PShieldYStep",0.3);
-  Control.addVariable(hutName+"PShieldLength",1.0);
-  Control.addVariable(hutName+"PShieldWidth",10.0);
-  Control.addVariable(hutName+"PShieldHeight",10.0);
-  Control.addVariable(hutName+"PShieldWallThick",0.2);
-  Control.addVariable(hutName+"PShieldClearGap",0.3);
-  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
-  Control.addVariable(hutName+"PShieldMat","Lead");
-
-  Control.addVariable(hutName+"NChicane",2);
-  PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
-  /*
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
-  */
-
-  return;
-}
-
-  
 }  // NAMESPACE setVariable

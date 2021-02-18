@@ -3,7 +3,7 @@
  
  * File:   species/TankMonoVesselGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ TankMonoVesselGenerator::~TankMonoVesselGenerator()
 void
 TankMonoVesselGenerator::generateBox(FuncDataBase& Control,
 				     const std::string& keyName,
-				     const double radius,
+				     const double yStep,const double radius,
 				     const double height,const double depth)
   const
   /*!
@@ -96,7 +96,7 @@ TankMonoVesselGenerator::generateBox(FuncDataBase& Control,
   ELog::RegMethod RegA("TankMonoVesselGenerator","generateBox");
   
 
-  VacBoxGenerator::generateBox(Control,keyName,radius*2.0,
+  VacBoxGenerator::generateBox(Control,keyName,yStep,radius*2.0,
 			       height,depth,radius*2.0);
   const double LR= (radius>lidRadius) ? radius+lidRadius : lidRadius;
 

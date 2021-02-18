@@ -80,7 +80,7 @@
 #include "DipoleExtract.h"
 #include "DipoleSndBend.h"
 #include "R3ChokeChamber.h"
-#include "HalfElectronPipe.h"
+#include "PreDipole.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
@@ -92,7 +92,6 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
-#include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
@@ -127,12 +126,6 @@
 #include "IonGauge.h"
 #include "TriggerTube.h"
 #include "LBeamStop.h"
-#include "BremTube.h"
-#include "HPJaws.h"
-#include "BoxJaws.h"
-#include "DiffPumpXIADP03.h"
-#include "ViewScreenTube.h"
-#include "ExperimentalHutch.h"
 
 #include "makeSingleItem.h"
 
@@ -172,16 +165,14 @@ makeSingleItem::build(Simulation& System,
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield","FourPort",
+      "EPSeparator","Quadrupole","TargetShield",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
-      "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
+      "Scrapper","TWCavity","Bellow", "VacuumPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
-      "DiffPumpXIADP03","DiffPump","ExperimentalHutch",
       "Help","help"
     });
 
@@ -514,7 +505,7 @@ makeSingleItem::build(Simulation& System,
     {
 
       std::shared_ptr<xraySystem::MagnetBlock>
-	MB(new xraySystem::MagnetBlock("MB1"));
+	MB(new xraySystem::MagnetBlock("M1"));
 
       OR.addObject(MB);
       MB->addAllInsertCell(voidCell);
@@ -551,6 +542,7 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="Octupole")
     {
+
       std::shared_ptr<xraySystem::Octupole>
 	OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
       OR.addObject(OXX);
@@ -613,16 +605,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item=="HalfElectronPipe")
-    {
-      std::shared_ptr<xraySystem::HalfElectronPipe>
-	HE(new xraySystem::HalfElectronPipe("N1BlockHalfElectron"));
-      OR.addObject(HE);
-      HE->addAllInsertCell(voidCell);
-      HE->createAll(System,World::masterOrigin(),0);
 
-      return;
-    }
   if (item=="QuadUnit" || item=="DipoleChamber" || item=="EPSeparator")
     {
       std::shared_ptr<xraySystem::QuadUnit>
@@ -711,18 +694,6 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
-
-      return;
-    }
-  if (item=="FourPort")
-    {
-      std::shared_ptr<xraySystem::FourPortTube>
-	FP(new xraySystem::FourPortTube("FourPort"));
-
-      OR.addObject(FP);
-
-      FP->addInsertCell(voidCell);
-      FP->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -1015,108 +986,7 @@ makeSingleItem::build(Simulation& System,
 	
 	return;
       }
-    if (item == "BremTube" )
-      {
-	std::shared_ptr<xraySystem::BremTube>
-	  bremTube(new xraySystem::BremTube("BremTube"));
-	
-	OR.addObject(bremTube);
-	
-	bremTube->addInsertCell(voidCell);
-	bremTube->createAll(System,World::masterOrigin(),0);
-	
-	return;
-      }
-    if (item == "HPJaws" )
-      {
-	std::shared_ptr<xraySystem::HPJaws>
-	  hp(new xraySystem::HPJaws("HPJaws"));
-	
-	OR.addObject(hp);
-	
-	hp->addInsertCell(voidCell);
-	hp->createAll(System,World::masterOrigin(),0);
-	
-	return;
-      }
-    if (item == "BoxJaws")
-      {
-	std::shared_ptr<xraySystem::BoxJaws>
-	  bj(new xraySystem::BoxJaws("BoxJaws"));
-	
-	OR.addObject(bj);
-	
-	bj->addInsertCell(voidCell);
-	bj->createAll(System,World::masterOrigin(),0);
-	
-	return;
-      }
-    if (item == "DiffPump" || item == "DiffPumpXIADP03")
-      {
-	std::shared_ptr<xraySystem::DiffPumpXIADP03>
-	  dp(new xraySystem::DiffPumpXIADP03("DiffPump"));
-	
-	OR.addObject(dp);
-	
-	dp->addInsertCell(voidCell);
-	dp->createAll(System,World::masterOrigin(),0);
-	
-	return;
-      }
-    if (item == "HPCombine")
-      {
-	std::shared_ptr<xraySystem::BremTube>
-	  bremTube(new xraySystem::BremTube("BremTube"));
-	std::shared_ptr<xraySystem::HPJaws>
-	  hp(new xraySystem::HPJaws("HPJaws"));
-	
-	OR.addObject(bremTube);
-	OR.addObject(hp);
-	
-	bremTube->addInsertCell(voidCell);
-	bremTube->createAll(System,World::masterOrigin(),0);
-	
-	hp->addInsertCell(voidCell);
-	hp->setFront(*bremTube,2);
-	hp->setFlangeJoin();
-	hp->createAll(System,*bremTube,"back");
-	
-	return;
-      }
-    if (item == "ViewTube" )
-      {
-	std::shared_ptr<xraySystem::ViewScreenTube>
-	  vt(new xraySystem::ViewScreenTube("ViewTube"));
-	std::shared_ptr<tdcSystem::YagScreen>
-	  yagScreen(new tdcSystem::YagScreen("YAG"));
-
-	OR.addObject(vt);
-	
-	vt->addInsertCell(voidCell);
-	vt->createAll(System,World::masterOrigin(),0);
-
-	yagScreen->setBeamAxis(*vt,1);
-	yagScreen->createAll(System,*vt,4);
-	yagScreen->insertInCell("Outer",System,voidCell);
-	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
-	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
-	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
-	
-	return;
-      }
     
-    if (item == "ExperimentalHutch")
-      {
-	std::shared_ptr<xraySystem::ExperimentalHutch>
-	  eh(new xraySystem::ExperimentalHutch("ExptHutch"));
-	
-	OR.addObject(eh);
-	
-	eh->addInsertCell(voidCell);
-	eh->createAll(System,World::masterOrigin(),0);
-	
-	return;
-      }
     
     if (item=="Help" || item=="help")
       {

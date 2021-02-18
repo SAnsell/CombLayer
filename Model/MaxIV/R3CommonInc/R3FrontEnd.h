@@ -178,7 +178,7 @@ class R3FrontEnd :
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
@@ -196,8 +196,7 @@ class R3FrontEnd :
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&,
-		     const size_t);
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,

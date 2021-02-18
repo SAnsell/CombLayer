@@ -429,8 +429,7 @@ Quadrupole::createObjects(Simulation& System)
   makeCell("REdge",System,cellIndex++,0,0.0,Out);
 
   // Pole Pieces
-  const std::string ICell=      
-    (isActive("Inner")) ? getRuleStr("Inner") : "";
+  const std::string ICell=innerTube.display();
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 203 -204 (206:-207) ");

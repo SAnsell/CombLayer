@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/FaradayCup.h
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +36,12 @@ namespace essSystem
 */
 
 class FaradayCup : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
+  const std::string baseName; ///< base name (e.g. Linac)
 
   int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag
@@ -53,31 +55,38 @@ class FaradayCup : public attachSystem::ContainedComp,
 
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
+  int absTemp; ///< Entrance foil temperature
   double baseLength; ///< Base length (e1)
 
-  double colLength;             ///< Collector length
-  int colMat;                   ///< collector material
+  double colLength; ///< Collector length
 
+  size_t nShieldLayers; ///< Number of shield layers. No shielding if zero.
+  std::vector<double> shieldWidthLeft; ///< shield width towards x+
+  std::vector<double> shieldWidthRight; ///< Shield width towards x-
+  std::vector<double> shieldHeight; ///< Shield height
+  std::vector<double> shieldDepth; ///< Shield depth
+  std::vector<double> shieldForwardLength; ///< shield length
+  double shieldBackLength;         ///< shield length towards the proton beam origin
+  std::vector<int> shieldMat;      ///< shielding material
+
+  int colMat;                   ///< collector material
   int wallMat;                   ///< wall material
   int airMat;                    ///< air material
+  int baseMat;                   ///< base material
 
-  double shieldRadius;          ///< shield radius
-  double shieldInnerRadius;     ///< shielding inner radius
-  double shieldLength;          ///< shield length
-  double shieldInnerLength;     ///< shielding inner length
-  int shieldMat;                ///< shielding material
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS,
+		    const long int& lsS,
+		    const size_t&, const int&);
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  FaradayCup(const std::string&);
+  FaradayCup(const std::string&,const std::string&);
   FaradayCup(const FaradayCup&);
   FaradayCup& operator=(const FaradayCup&);
   virtual FaradayCup* clone() const;

@@ -163,13 +163,13 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  gateTubeB(new constructSystem::PipeTube(newName+"GateTubeB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
       std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
-    }),
+	std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+	}),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
 
@@ -281,8 +281,7 @@ R3FrontEnd::createSurfaces()
 
 void
 R3FrontEnd::insertFlanges(Simulation& System,
-			  const constructSystem::PipeTube& PT,
-			  const size_t offset)
+			  const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
     that extend past the linkzone in to ther neighbouring regions.
@@ -292,19 +291,15 @@ R3FrontEnd::insertFlanges(Simulation& System,
 {
   ELog::RegMethod RegA("R3FrontEnd","insertFlanges");
   
-  size_t voidN=buildZone.getNItems("Unit");
-  if (voidN<offset)
-    throw ColErr::InContainerError<size_t>
-      (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
-  voidN-=offset;
+  const size_t voidN=CellMap::getNItems("OuterVoid")-3;
 
-  buildZone.insertComponent(System,"Unit",voidN,
+  this->insertComponent(System,"OuterVoid",voidN,
 			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN,
+  this->insertComponent(System,"OuterVoid",voidN,
 			PT.getFullRule("FlangeB"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
+  this->insertComponent(System,"OuterVoid",voidN+2,
 			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
+  this->insertComponent(System,"OuterVoid",voidN+2,
 			PT.getFullRule("FlangeB"));
   return;
 }
@@ -340,6 +335,7 @@ R3FrontEnd::buildHeatTable(Simulation& System,
   heatDump->createAll(System,PIA,0,*heatBox,2);
 
 
+  //  const constructSystem::portItem& PI=heatBox->getPort(1);  
   bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
@@ -471,7 +467,6 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
   outerCell=buildZone.createUnit(System,
 				 FPI,FPI.getSideIndex("OuterPlate"));
-
   florTubeA->insertAllInCell(System,outerCell);
 
   // bellows 
@@ -479,13 +474,18 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowJ,2);
   bellowJ->insertInCell(System,outerCell);
 
-  insertFlanges(System,*florTubeA,3);
+  //  insertFlanges(System,*florTubeA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowJ,"back",*gateTubeB);
+  // FAKE insertcell:
+  gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeB->createAll(System,*bellowJ,2);  
+  const constructSystem::portItem& GPI=gateTubeB->getPort(1);
+  outerCell=buildZone.createUnit(System,
+				 GPI,GPI.getSideIndex("OuterPlate"));
+  gateTubeB->insertAllInCell(System,outerCell);
+
   
-  
-  offPipeA->createAll(System,*gateTubeB,"back");
+  offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
@@ -520,11 +520,10 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
     
-  // bellows
-
-  constructSystem::constructUnit
-    (System,buildZone,*offPipeB,"back",*bellowK);
-
+  // bellows 
+  bellowK->createAll(System,*offPipeB,2);
+  outerCell=buildZone.createUnit(System,*bellowK,2);
+  bellowK->insertInCell(System,outerCell);
   
   return;
 }
@@ -552,10 +551,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
-  
   magBlockM1->createAll(System,*this,0);
-
-  
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
   transPipe->createAll(System,undulatorFC,2);
@@ -566,7 +562,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
   
-
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
   epSeparator->createAll(System,*magBlockM1,2);
@@ -666,7 +661,6 @@ R3FrontEnd::buildObjects(Simulation& System)
       outerCell=buildZone.createUnit(System);
     }
 
-  buildZone.rebuildInsertCells(System);
   setCell("MasterVoid",outerCell);  
   lastComp=exitPipe;
   
@@ -693,7 +687,7 @@ R3FrontEnd::createAll(Simulation& System,
   createSurfaces();
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 

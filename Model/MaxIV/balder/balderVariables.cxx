@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ wigglerVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length  (yste =498)
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      30.0,15.0,15.0,210.0);
+		      0.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
   Control.addVariable(frontKey+"WigglerYStep",0.0);
@@ -532,9 +532,9 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
-  // width/height/depth/length
+  // ystep/width/height/depth/length
   // [length is 177.4cm total]
-  VBoxGen.generateBox(Control,opticsName+"MirrorBox",54.0,15.3,31.3,167.4);
+  VBoxGen.generateBox(Control,opticsName+"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
   // x/y/z/theta/phi/radius
   MirrGen.generateMirror(Control,opticsName+"Mirror",0.0,0.0, 0.0, -0.5, 0.0,0.0);
@@ -616,7 +616,7 @@ opticsVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"B-ellowD",10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowD",10.0);    
 
   // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -625,7 +625,7 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(4.5,4.5); // La/Lb
   // [length is 177.4cm total]
-  VBoxGen.generateBox(Control,opticsName+"MirrorBoxB",54.0,15.3,31.3,178.0);
+  VBoxGen.generateBox(Control,opticsName+"MirrorBoxB",0.0,54.0,15.3,31.3,178.0);
 
   // small flange bellows
   BellowGen.setCF<setVariable::CF40>(); 

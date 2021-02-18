@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   modelSupport/LineTrack.cxx
+ * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,15 +181,16 @@ LineTrack::calculate(const Simulation& ASim)
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
-      SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
+      SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);
+	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  if (!OPtr)
 	    {
-	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endErr;
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endDiag;
 	      calculateError(ASim);
 	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
@@ -237,7 +238,7 @@ LineTrack::calculateError(const Simulation& ASim)
       ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
 
       // Note: Need OPPOSITE Sign on exiting surface
-      SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
+      SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
       ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance
@@ -252,6 +253,7 @@ LineTrack::calculateError(const Simulation& ASim)
 
 	  ELog::EM<<"Track == "<<nOut<<" "<<ELog::endDiag;
 	  ELog::EM<<" ============== "<<ELog::endDiag;
+
 
 	  if (OPtr==0)
 	    {
@@ -338,7 +340,7 @@ LineTrack::getSurfPtr(const size_t Index) const
     \return surface index number
   */
 {
-  ELog::RegMethod RegA("LineTrack","getSurfPtr");
+  ELog::RegMethod RegA("LineTrack","getPoint");
 
   if (Index>=SurfVec.size())
     throw ColErr::IndexError<size_t>(Index,SurfVec.size(),
@@ -354,7 +356,7 @@ LineTrack::getSurfIndex(const size_t Index) const
     \return surface index number
   */
 {
-  ELog::RegMethod RegA("LineTrack","getSurfIndex");
+  ELog::RegMethod RegA("LineTrack","getPoint");
 
   if (Index>=SurfIndex.size())
     throw ColErr::IndexError<size_t>(Index,SurfIndex.size(),
@@ -455,8 +457,7 @@ LineTrack::write(std::ostream& OX) const
   */
 {
 
-  OX<<"Start/End Pts == "<<InitPt<<"::"<<EndPt<<"\n";
-  OX<<"------------------------------------- "<<"\n";
+  OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
 
   double sumSigma(0.0);
   for(size_t i=0;i<Cells.size();i++)
@@ -466,13 +467,11 @@ LineTrack::write(std::ostream& OX) const
       const double density=MPtr->getAtomDensity();
       const double A=MPtr->getMeanA();
       const double sigma=segmentLen[i]*density*std::pow(A,0.66);
-      OX<<"  "<<Cells[i]<<" == "<<getPoint(i)
-	<<" : "<<segmentLen[i]<<"\n";
-      //	MPtr->getID()<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
+      OX<<"  "<<Cells[i]<<" : "<<segmentLen[i]<<" "<<
+	MPtr->getID()<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
     }
-  OX<<"------------------------------------- "<<"\n";
-  OX<<"Total Len/sigma == "<<TDist<<" "<<sumSigma<<std::endl;
+  OX<<"Len == "<<TDist<<" "<<sumSigma<<std::endl;
   return;
 }
 

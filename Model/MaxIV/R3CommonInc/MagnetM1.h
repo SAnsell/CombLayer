@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/MagnetM1.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@ namespace xraySystem
   class Quadrupole;
   class Dipole;
   class EPCombine;
-  class EntryPipe;
-  class HalfElectronPipe;
   
 /*!
   \class MagnetM1
@@ -68,14 +66,13 @@ class MagnetM1 :
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
 
-
-  std::shared_ptr<xraySystem::EntryPipe> entryPipe;
-  
-  std::shared_ptr<xraySystem::HalfElectronPipe> halfPipe;
-  
+  attachSystem::InnerZone buildZone;   ///<Main outerVoid
+  /// dipole connection pipe
+  std::shared_ptr<xraySystem::PreDipole> preDipole;
+  /// Electron/photon combined track
   std::shared_ptr<xraySystem::EPCombine> epCombine;
-  
-/// Octupole [first]
+
+  /// Octupole [first]
   std::shared_ptr<xraySystem::Octupole> Oxx;
   /// Quad [first]
   std::shared_ptr<xraySystem::Quadrupole> QFend;
@@ -92,7 +89,7 @@ class MagnetM1 :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createEndPieces(Simulation&);
+  void createEndPieces();
 
  public:
 

@@ -149,7 +149,7 @@ createOuterObjects(Simulation& System,
   SurI.reset();
 
   // Create object 1
-  SurI.createSurface(1,"so "+std::to_string(worldRadius));
+  SurI.createSurface(1,"so "+std::to_string(60000)); //modified for now
   MonteCarlo::Object tmpCell(1,0,0.0," 1 ");
   tmpCell.setImp(0);
   System.addCell(tmpCell);

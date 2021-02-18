@@ -476,7 +476,7 @@ TankMonoVessel::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,
-			  portATubeLength+wallThick+voidRadius);
+			  2.0*(portATubeLength+wallThick+voidRadius));
   createSurfaces();
   createObjects(System);
 

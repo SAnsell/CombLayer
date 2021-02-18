@@ -3,7 +3,7 @@
 
  * File:   cosaxsInc/cosaxsExptLine.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@ namespace xraySystem
   class FilterHolder;
   class cosaxsSampleArea;
   class cosaxsTube;
-  class DiffPumpXIADP03;
 
 class cosaxsExptLine :
   public attachSystem::CopiedComp,
@@ -81,7 +80,7 @@ class cosaxsExptLine :
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   /// Differential pumping
-  std::shared_ptr<xraySystem::DiffPumpXIADP03> diffPump;
+  std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPump;
   /// Telescopic system - just a pipe with variable length
   /// (so the next component is not attached to this pipe)
   std::shared_ptr<constructSystem::VacuumPipe> telescopicSystem;

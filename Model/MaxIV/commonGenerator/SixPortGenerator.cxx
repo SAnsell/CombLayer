@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/SixPortGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,12 +154,10 @@ SixPortGenerator::generateSixPort(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void SixPortGenerator::setCF<CF40>();
 template void SixPortGenerator::setCF<CF100>();
 template void SixPortGenerator::setCF<CF120>();
 template void SixPortGenerator::setCF<CF150>();
 
-template void SixPortGenerator::setFlangeCF<CF40>();
 template void SixPortGenerator::setFlangeCF<CF100>();
 template void SixPortGenerator::setFlangeCF<CF120>();
 template void SixPortGenerator::setFlangeCF<CF150>();

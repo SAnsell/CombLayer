@@ -66,7 +66,6 @@ class BlockZone  :
   int fakeCell;
 
   std::vector<int> insertCells;    ///< Cell to insert into
-  std::map<int,const HeadRule> insertHR;  ///< Headrules of original cells
   
   void removeFakeCell(Simulation&);
   void insertCell(Simulation&,const HeadRule&);
@@ -79,8 +78,6 @@ class BlockZone  :
   BlockZone& operator=(const BlockZone&);
   ~BlockZone() {}         ///< Destructor
 
-  void rebuildInsertCells(Simulation&);
-  
   int merge(const BlockZone&);
   
   void setMaxExtent(const HeadRule&);
@@ -107,7 +104,7 @@ class BlockZone  :
 
   /// Accessor to insert cellls
   const std::vector<int>& getInsertCells() const
-    { return insertCells; }
+  { return insertCells; }
   void write(std::ostream&) const;
 
   int createFakeCell(Simulation&);
@@ -122,7 +119,8 @@ class BlockZone  :
 		 const attachSystem::FixedComp&,
 		 const std::string&);
 
-  using FixedComp::createAll;  
+  using FixedComp::createAll;
+  
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

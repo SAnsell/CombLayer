@@ -3,7 +3,7 @@
 
  * File:   essBuild/FaradayCup.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2017-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -75,7 +74,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
-#include "FixedOffset.h"
+#include "CellMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
@@ -87,9 +86,11 @@
 namespace essSystem
 {
 
-FaradayCup::FaradayCup(const std::string& Key)  :
+FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedOffset(Base+Key,7),
+  attachSystem::CellMap(),
+  baseName(Base)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,6 +100,8 @@ FaradayCup::FaradayCup(const std::string& Key)  :
 FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::CellMap(),
+  baseName(A.baseName),
   active(A.active),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
@@ -106,14 +109,19 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   faceRadius(A.faceRadius),
   absLength(A.absLength),
   absMat(A.absMat),
+  absTemp(A.absTemp),
   baseLength(A.baseLength),
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
   airMat(A.airMat),
-  shieldRadius(A.shieldRadius),
-  shieldInnerRadius(A.shieldInnerRadius),
-  shieldLength(A.shieldLength),
-  shieldInnerLength(A.shieldInnerLength),
+  baseMat(A.baseMat),
+  nShieldLayers(A.nShieldLayers),
+  shieldWidthLeft(A.shieldWidthLeft),
+  shieldWidthRight(A.shieldWidthRight),
+  shieldHeight(A.shieldHeight),
+  shieldDepth(A.shieldDepth),
+  shieldForwardLength(A.shieldForwardLength),
+  shieldBackLength(A.shieldBackLength),
   shieldMat(A.shieldMat)
   /*!
     Copy constructor
@@ -133,6 +141,7 @@ FaradayCup::operator=(const FaradayCup& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       active=A.active;
       engActive=A.engActive;
       length=A.length;
@@ -142,15 +151,20 @@ FaradayCup::operator=(const FaradayCup& A)
       faceRadius=A.faceRadius;
       absLength=A.absLength;
       absMat=A.absMat;
+      absTemp=A.absTemp;
       baseLength=A.baseLength;
       colLength=A.colLength;
       colMat=A.colMat;
       wallMat=A.wallMat;
       airMat=A.airMat;
-      shieldRadius=A.shieldRadius;
-      shieldInnerRadius=A.shieldInnerRadius;
-      shieldLength=A.shieldLength;
-      shieldInnerLength=A.shieldInnerLength;
+      baseMat=A.baseMat;
+      nShieldLayers=A.nShieldLayers;
+      shieldWidthLeft=A.shieldWidthLeft;
+      shieldWidthRight=A.shieldWidthRight;
+      shieldHeight=A.shieldHeight;
+      shieldDepth=A.shieldDepth;
+      shieldForwardLength=A.shieldForwardLength;
+      shieldBackLength=A.shieldBackLength;
       shieldMat=A.shieldMat;
     }
   return *this;
@@ -158,12 +172,12 @@ FaradayCup::operator=(const FaradayCup& A)
 
 FaradayCup*
 FaradayCup::clone() const
-  /*!
-    Clone self
-    \return new (this)
-  */
+/*!
+  Clone self
+  \return new (this)
+ */
 {
-  return new FaradayCup(*this);
+    return new FaradayCup(*this);
 }
 
 FaradayCup::~FaradayCup()
@@ -171,6 +185,76 @@ FaradayCup::~FaradayCup()
     Destructor
   */
 {}
+
+void
+FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS, const long int& lsS,
+		    const size_t& N, const int& mat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: TSW wall cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param N :: number of layers to divide to
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("FaradayCup","layerProcess");
+
+    if (N<=1)
+      return;
+
+    const long int pS(getLinkSurf(lpS));
+    const long int sS(getLinkSurf(lsS));
+
+    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findObject(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = 1.0/N;
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<N;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/static_cast<double>(N);
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, buildIndex+10000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
+			     SMap.realSurf(static_cast<int>(sS)));
+
+    std::string OutA = getLinkString(lpS);
+    std::string OutB = getLinkString(-lsS);
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System);
+
+    cellIndex=DA.getCellNum();
+
+    return;
+}
+
 
 void
 FaradayCup::populate(const FuncDataBase& Control)
@@ -183,7 +267,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   active=Control.EvalDefVar<int>(keyName+"Active", 1);
-  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -192,38 +276,44 @@ FaradayCup::populate(const FuncDataBase& Control)
   faceRadius=Control.EvalVar<double>(keyName+"FaceRadius");
   absLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsorberMat");
+  absTemp=Control.EvalVar<int>(keyName+"AbsorberTemp");
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
   colLength=Control.EvalVar<double>(keyName+"CollectorLength");
   colMat=ModelSupport::EvalMat<int>(Control,keyName+"CollectorMat");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
+  baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
-  shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
-  shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
-  shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
-  shieldInnerLength=Control.EvalVar<double>(keyName+"ShieldInnerLength");
-  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
+  nShieldLayers=Control.EvalVar<size_t>(keyName+"NShieldLayers");
+  shieldBackLength = Control.EvalVar<double>(keyName+"ShieldBackLength");
+
+  for (size_t i=0; i<nShieldLayers; i++)
+    {
+      double WL,WR,H,D,FL;
+      int mat;
+      const std::string Num=std::to_string(i+1);
+      WL = Control.EvalVar<double>(keyName+"ShieldWidthLeft"+Num);
+      WR = Control.EvalVar<double>(keyName+"ShieldWidthRight"+Num);
+      H = Control.EvalVar<double>(keyName+"ShieldHeight"+Num);
+      D = Control.EvalVar<double>(keyName+"ShieldDepth"+Num);
+      FL = Control.EvalVar<double>(keyName+"ShieldForwardLength"+Num);
+      mat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat"+Num);
+
+      shieldWidthLeft.push_back(WL);
+      shieldWidthRight.push_back(WR);
+      shieldHeight.push_back(H);
+      shieldDepth.push_back(D);
+      shieldForwardLength.push_back(FL);
+      shieldMat.push_back(mat);
+    }
+
+  // check if the variables are sorted
+  //std::is_sorted(shieldWidthLeft.begin(),shieldWidthLeft.end());
 
   return;
 }
 
-void
-FaradayCup::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("FaradayCup","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 FaradayCup::createSurfaces()
@@ -232,6 +322,10 @@ FaradayCup::createSurfaces()
   */
 {
   ELog::RegMethod RegA("FaradayCup","createSurfaces");
+
+  // dividers
+  ModelSupport::buildPlane(SMap,buildIndex+300,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+500,Origin,Z);
 
   double dy(0.0);
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*dy,Y);
@@ -250,10 +344,20 @@ FaradayCup::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,faceRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(shieldInnerLength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+112,Origin+Y*(shieldLength),Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,shieldInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,shieldRadius);
+  int SI(buildIndex+100);
+  for (size_t i=0; i<nShieldLayers; i++)
+    {
+      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength),Y);
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(shieldForwardLength[i]),Y);
+
+      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidthLeft[i]),X);
+      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidthRight[i]),X);
+
+      ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(shieldDepth[i]),Z);
+      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(shieldHeight[i]),Z);
+
+      SI += 10;
+    }
 
   return;
 }
@@ -266,47 +370,80 @@ FaradayCup::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("FaradayCup","createObjects");
+  if (!active) return;
 
-  if (active)
+  std::string Out;
+  // collimator
+  if (faceLength>Geometry::zeroTol)
     {
-
-      std::string Out;
-      // collimator
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+      makeCell("CollimatorVoid",System,cellIndex++,airMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      
-      // absorber
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
-      
-      // base
-      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
-      
-      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      
-      // collector
-      Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
-      
-      // back plane
-      Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      
-      // shielding
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -102 -107 (-1:2:17) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-      
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 (-1:102:107) ");
-      System.addCell(MonteCarlo::Object(cellIndex++,shieldMat,0.0,Out));
-      
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 ");
-      addOuterSurf(Out);
+      makeCell("Collimator",System,cellIndex++,wallMat,0.0,Out);
     }
+  // absorber
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
+  makeCell("Absorber",System,cellIndex++,absMat,absTemp,Out);
+  
+ // base
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
+  makeCell("Base",System,cellIndex++,baseMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
+
+  // collector
+  if (colLength>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
+      makeCell("Collector",System,cellIndex++,colMat,0.0,Out);
+    }
+  
+  // back plane
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
+  makeCell("BackPlane",System,cellIndex++,wallMat,0.0,Out);
+
+  
+  int SI(buildIndex+100);
+  for (size_t i=0; i<nShieldLayers; i++)
+    {
+      const std::string sNum(std::to_string(i));
+      if (i==0)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
+					 " 1M -2 17M 3 -4 5 -6 ");
+	  makeCell("LateralShield"+sNum,System,cellIndex++,
+		   shieldMat[i],0.0,Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 2 -2M -17 ");
+	  makeCell("ForwardShield"+sNum,System,cellIndex++,
+		   shieldMat[i],0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
+					 " 1 -1M 3 -4 5 -6 ");
+	  makeCell("ForwardShield"+sNum,System,cellIndex++,
+		   shieldMat[i],0.0,Out);
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10,
+					 " 1 -2M 3 -4 5 -6 (-3M:4M:-5M:6M)");
+	  makeCell("LateralShield"+sNum,System,cellIndex++,
+		   shieldMat[i],0.0,Out);
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10," 2M -2 3 -4 5 -6 ");
+	  makeCell("ForwardShield"+sNum,System,cellIndex++,
+		   shieldMat[i],0.0,Out);
+	}
+      SI += 10;
+    }
+
+  if (nShieldLayers>0)
+    Out=ModelSupport::getComposite(SMap,SI-10," 1 -2 3 -4 5 -6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
+
+  addOuterSurf(Out);
+
   return;
 }
 
@@ -319,8 +456,61 @@ FaradayCup::createLinks()
 {
   ELog::RegMethod RegA("FaradayCup","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  if (nShieldLayers>0)
+    {
+      const size_t n = nShieldLayers-1;
+      const int SI(buildIndex+100+static_cast<int>(n)*10);
+
+      FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
+
+      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[n]),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
+
+      FixedComp::setConnect(2,Origin-X*(shieldWidthLeft[n]),-X);
+      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
+
+      FixedComp::setConnect(3,Origin+X*(shieldWidthRight[n]),X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
+
+      FixedComp::setConnect(4,Origin-Z*(shieldDepth[n]),-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+
+      FixedComp::setConnect(5,Origin+Z*(shieldHeight[n]),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+
+      // for layerProccess
+      FixedComp::setConnect(6,Origin+Y*(shieldForwardLength[n-1]),Y);
+      FixedComp::setLinkSurf(6,SMap.realSurf(SI-10+2));
+    } else
+    {
+      FixedComp::setConnect(0,Origin,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+
+      FixedComp::setConnect(1,Origin+Y*(length),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+      FixedComp::setConnect(2,Origin-X*(outerRadius)+Y*(length/2.0),-X);
+      FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+300));
+
+      FixedComp::setConnect(3,Origin+X*(outerRadius)+Y*(length/2.0),X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+300));
+
+      FixedComp::setConnect(4,Origin-Z*(outerRadius)+Y*(length/2.0),-Z);
+      FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(4,-SMap.realSurf(buildIndex+500));
+
+      FixedComp::setConnect(5,Origin+Z*(outerRadius)+Y*(length/2.0),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+500));
+
+      // 6 is a dummy LP (same as 5) to have the same number of LPs as with nShieldLayers>0 added ddju, copied from FC2-FC4
+      FixedComp::setConnect(6,Origin+Z*(outerRadius)+Y*(length/2.0),Z);
+      FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(6,SMap.realSurf(buildIndex+500));
+    }
 
   return;
 }
@@ -330,8 +520,8 @@ FaradayCup::createLinks()
 
 void
 FaradayCup::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -342,12 +532,13 @@ FaradayCup::createAll(Simulation& System,
   ELog::RegMethod RegA("FaradayCup","createAll");
 
   populate(System.getDataBase());
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);
-
+  
   return;
 }
 

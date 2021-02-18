@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/DiffPumpGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ class DiffPumpGenerator
  public:
 
   DiffPumpGenerator();
-  DiffPumpGenerator(const CF40&);
   DiffPumpGenerator(const DiffPumpGenerator&);
   DiffPumpGenerator& operator=(const DiffPumpGenerator&);
   ~DiffPumpGenerator();

@@ -258,10 +258,12 @@ m3MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,viewName,0.0,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
+  const double wallThick=setVariable::CF63::innerRadius+
+    setVariable::CF63::wallThick;
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+5.95);
   PItemGen.setPlate(0.0,"Void");  
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
-  const double DLen=14.0-CF63::outerRadius/sin(M_PI*37.0/180.0);
+  const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
 
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
@@ -346,9 +348,9 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
 
-  // width/height/depth/length
+  // ystep/width/height/depth/length
   // 
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",41.2,12.8,12.8,117.1);
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
   Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
   
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)

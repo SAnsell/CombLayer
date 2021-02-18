@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Dipole.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,16 @@ namespace xraySystem
   \brief Dipole for Max-IV
 */
 
-class Dipole :
-    public attachSystem::FixedRotate,
-    public attachSystem::ContainedComp,
-    public attachSystem::ExternalCut,
-    public attachSystem::CellMap,
-    public attachSystem::SurfMap
+class Dipole : public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
   const std::string baseName;   ///< Base key
+
 
   double length;                 ///< frame length
   double height;                 ///< height of frame
@@ -63,6 +63,8 @@ class Dipole :
   int coilMat;                     ///< coil material
   
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,8 +77,7 @@ class Dipole :
   Dipole& operator=(const Dipole&);
   virtual ~Dipole();
 
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

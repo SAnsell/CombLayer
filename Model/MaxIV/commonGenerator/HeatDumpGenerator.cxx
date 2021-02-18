@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HeatDumpGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 HeatDumpGenerator::HeatDumpGenerator() :
-  radius(4.0),height(25.0),width(4.1),
+  radius(4.0),height(20.0),width(4.1),
   thick(8.0),lift(6.0),cutHeight(2.0),
   cutAngle(25.0),cutDepth(1.0),
   topInnerRadius(CF100::innerRadius),

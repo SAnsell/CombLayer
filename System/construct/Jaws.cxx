@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -68,7 +69,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedRotate.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -83,8 +84,7 @@ namespace constructSystem
 {
 
 Jaws::Jaws(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -93,7 +93,7 @@ Jaws::Jaws(const std::string& Key) :
 {}
 
 Jaws::Jaws(const Jaws& A) : 
-  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   zOpen(A.zOpen),
   zThick(A.zThick),zCross(A.zCross),zLen(A.zLen),
@@ -117,7 +117,7 @@ Jaws::operator=(const Jaws& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedRotate::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       zOpen=A.zOpen;
@@ -159,7 +159,7 @@ Jaws::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Jaws","populate");
 
-  FixedRotate::populate(Control);
+  FixedOffset::populate(Control);
   
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
@@ -198,6 +198,23 @@ Jaws::populate(const FuncDataBase& Control)
 				      zLen,jawZFrac);
     }
   
+  return;
+}
+
+void
+Jaws::createUnitVector(const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed component to link to
+    \param sideIndex :: Link point and direction [0 for origin]
+  */
+{
+  ELog::RegMethod RegA("Jaws","createUnitVector");
+  
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+
   return;
 }
 

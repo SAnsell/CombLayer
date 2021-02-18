@@ -76,6 +76,7 @@
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
+#include "SqrShield.h"
 #include "balderExptBeamline.h"
 
 #include "R3Ring.h"
@@ -221,7 +222,7 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
   
-  // pipe shield goes around joinPipeC:
+  // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(exptHut->getCell("Void"));
   pShield->setCutSurf("inner",*joinPipeC,"outerPipe");
   //  pShield->setCutSurf("front",*opticsHut,"innerBack");

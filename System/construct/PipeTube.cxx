@@ -149,18 +149,16 @@ PipeTube::createSurfaces()
   ELog::RegMethod RegA("PipeTube","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
-  const double frontLength(length/2.0+flangeACapThick);
-  const double backLength(length/2.0+flangeACapThick);
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
-			       Origin-Y*frontLength,Y);
+			       Origin-Y*(length/2.0),Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,
-			       Origin+Y*backLength,Y);
+			       Origin+Y*(length/2.0),Y);
       setBack(-SMap.realSurf(buildIndex+2));
     }
   
@@ -171,22 +169,19 @@ PipeTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   SurfMap::addSurf("OuterCyl",SMap.realSurf(buildIndex+17));
 
-  ModelSupport::buildPlane
-    (SMap,buildIndex+101,
-     Origin-Y*(frontLength-(flangeALength+flangeACapThick)),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+102,
-     Origin+Y*(backLength-(flangeBLength+flangeBCapThick)),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,
+			   Origin-Y*(length/2.0-(flangeALength+flangeACapThick)),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   Origin+Y*(length/2.0-(flangeBLength+flangeBCapThick)),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin-Y*(frontLength-flangeACapThick),Y);
+			   Origin-Y*(length/2.0-flangeACapThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(backLength-flangeBCapThick),Y);
+			   Origin+Y*(length/2.0-flangeBCapThick),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   SurfMap::addSurf("FlangeACyl",SMap.realSurf(buildIndex+107));
-
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
   SurfMap::addSurf("FlangeBCyl",SMap.realSurf(buildIndex+207));
   
@@ -228,7 +223,7 @@ PipeTube::makeOuterVoid(Simulation& System)
 void
 PipeTube::createObjects(Simulation& System)
   /*!
-    Builds the pipe
+    Adds the vacuum box
     \param System :: Simulation to create objects in
    */
 {

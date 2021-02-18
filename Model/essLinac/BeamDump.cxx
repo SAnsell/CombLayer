@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   essBuild/BeamDump.cxx
+ * File:   essLinac/BeamDump.cxx
  *
- * Copyright (c) 2004-2019 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +74,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "BaseMap.h"
 #include "FixedOffset.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "BeamDump.h"
 
@@ -90,27 +87,32 @@ BeamDump::BeamDump(const std::string& Base,
 		   const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key,6),
+  attachSystem::CellMap(),
   baseName(Base),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Base :: Base name 
     \param Key :: Name for item in search
   */
-{}
+{
+}
 
-BeamDump::BeamDump(const BeamDump& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  baseName(A.baseName),active(A.active),
-  engActive(A.engActive),steelMat(A.steelMat),
-  concMat(A.concMat),alMat(A.alMat),waterMat(A.waterMat),
-  airMat(A.airMat),cuMat(A.cuMat),graphiteMat(A.graphiteMat),
+BeamDump::BeamDump(const BeamDump& A) :
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  baseName(A.baseName),
+  active(A.active),
+  engActive(A.engActive),
+
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
   frontWallHoleRad(A.frontWallHoleRad),
+
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
+
   frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
@@ -118,14 +120,23 @@ BeamDump::BeamDump(const BeamDump& A) :
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
   sideInnerWallThick(A.sideInnerWallThick),
-  sideWallThick(A.sideWallThick),floorLength(A.floorLength),
-  floorDepth(A.floorDepth),plate25Length(A.plate25Length),
-  plate25Depth(A.plate25Depth),plate38Depth(A.plate38Depth),
+  sideWallThick(A.sideWallThick),
+
+  floorLength(A.floorLength),
+  floorDepth(A.floorDepth),
+
+  plate25Length(A.plate25Length),
+  plate25Depth(A.plate25Depth),
+
+  plate38Depth(A.plate38Depth),
+
   roofThick(A.roofThick),
   roofOverhangLength(A.roofOverhangLength),
   innerRoofThick(A.innerRoofThick),
+
   vacPipeFrontInnerWallDist(A.vacPipeFrontInnerWallDist),
-  vacPipeLength(A.vacPipeLength),vacPipeRad(A.vacPipeRad),
+  vacPipeLength(A.vacPipeLength),
+  vacPipeRad(A.vacPipeRad),
   vacPipeSideWallThick(A.vacPipeSideWallThick),
   vacPipeLidRmax(A.vacPipeLidRmax),
   vacPipeLid1Length(A.vacPipeLid1Length),
@@ -133,11 +144,21 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeBaseLength(A.vacPipeBaseLength),
   vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
   vacPipeInnerConeTop(A.vacPipeInnerConeTop),
-  wallThick(A.wallThick),waterPipeRad(A.waterPipeRad),
+  wallThick(A.wallThick),
+  waterPipeRad(A.waterPipeRad),
   waterPipeLength(A.waterPipeLength),
   waterPipeOffsetX(A.waterPipeOffsetX),
   waterPipeOffsetZ(A.waterPipeOffsetZ),
-  waterPipeDist(A.waterPipeDist)
+  waterPipeDist(A.waterPipeDist),
+  
+  steelMat(A.steelMat),
+  concMat(A.concMat),
+  alMat(A.alMat),
+  waterMat(A.waterMat),
+  airMat(A.airMat),
+  cuMat(A.cuMat),
+  graphiteMat(A.graphiteMat)
+
   /*!
     Copy constructor
     \param A :: BeamDump to copy
@@ -156,9 +177,11 @@ BeamDump::operator=(const BeamDump& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       baseName=A.baseName;
       active=A.active;
       engActive=A.engActive;
+
       steelMat=A.steelMat;
       concMat=A.concMat;
       alMat=A.alMat;
@@ -166,13 +189,16 @@ BeamDump::operator=(const BeamDump& A)
       airMat=A.airMat;
       cuMat=A.cuMat;
       graphiteMat=A.graphiteMat;
+
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallHoleRad=A.frontWallHoleRad;
+
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
+
       frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
@@ -181,14 +207,19 @@ BeamDump::operator=(const BeamDump& A)
       backInnerWallGapLength=A.backInnerWallGapLength;
       sideInnerWallThick=A.sideInnerWallThick;
       sideWallThick=A.sideWallThick;
+
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
+
       plate25Length=A.plate25Length;
       plate25Depth=A.plate25Depth;
+
       plate38Depth=A.plate38Depth;
+
       roofThick=A.roofThick;
       roofOverhangLength=A.roofOverhangLength;
       innerRoofThick=A.innerRoofThick;
+
       vacPipeFrontInnerWallDist=A.vacPipeFrontInnerWallDist;
       vacPipeLength=A.vacPipeLength;
       vacPipeRad=A.vacPipeRad;
@@ -205,8 +236,19 @@ BeamDump::operator=(const BeamDump& A)
       waterPipeOffsetX=A.waterPipeOffsetX;
       waterPipeOffsetZ=A.waterPipeOffsetZ;
       waterPipeDist=A.waterPipeDist;
+
     }
   return *this;
+}
+
+BeamDump*
+BeamDump::clone() const
+/*!
+  Clone self
+  \return new (this)
+ */
+{
+    return new BeamDump(*this);
 }
 
 BeamDump::~BeamDump()
@@ -229,13 +271,6 @@ BeamDump::populate(const FuncDataBase& Control)
   active=Control.EvalTail<int>(keyName,baseName,"Active");
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
-  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
-  alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
-  waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
-  airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
-  cuMat=ModelSupport::EvalMat<int>(Control,baseName+"CopperMat");
-  graphiteMat=ModelSupport::EvalMat<int>(Control,baseName+"GraphiteMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
@@ -285,25 +320,17 @@ BeamDump::populate(const FuncDataBase& Control)
   waterPipeOffsetZ=Control.EvalVar<double>(keyName+"WaterPipeOffsetZ");
   waterPipeDist=Control.EvalVar<double>(keyName+"WaterPipeDist");
 
-  return;
-}
-
-void
-BeamDump::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("BeamDump","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
+  steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
+  alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
+  airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
+  cuMat=ModelSupport::EvalMat<int>(Control,baseName+"CopperMat");
+  graphiteMat=ModelSupport::EvalMat<int>(Control,baseName+"GraphiteMat");
 
   return;
 }
+
 
 void
 BeamDump::createSurfaces()
@@ -466,125 +493,127 @@ BeamDump::createObjects(Simulation& System)
   std::string Out;
   // front wall
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 7");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("FrontWall",System,cellIndex++,steelMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("FrontHol",System,cellIndex++,airMat,0.0,Out);
 
   // floor
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("Floor",System,cellIndex++,steelMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -21 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("Floor",System,cellIndex++,steelMat,0.0,Out);
 
   // Floor - small steel plates
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("FloorPlate",System,cellIndex++,airMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -12 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("FloorPlate",System,cellIndex++,steelMat,0.0,Out);
 
   //  Floor - Al plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -42 3 -4 35 -25 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
+  makeCell("FloorPlate",System,cellIndex++,alMat,0.0,Out);
 
   // Floor - void cell below Al plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -42 3 -4 5 -35 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("FloorVoid",System,cellIndex++,airMat,0.0,Out);
 
   // back wall
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -42 3 -4 25 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  makeCell("BackWall",System,cellIndex++,concMat,0.0,Out);
 
   // Roof
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -42 3 -4 6 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  makeCell("Roof",System,cellIndex++,concMat,0.0,Out);
 
   // Inner roof
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 76 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("InnerRoof",System,cellIndex++,steelMat,0.0,Out);
 
   // void cell under overhead
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -1 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("OverheadVoid",System,cellIndex++,airMat,0.0,Out);
 
   // side walls
   //            inner
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -12 3 -63 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("InnerSide",System,cellIndex++,steelMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -12 64 -4 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("InnerSide",System,cellIndex++,steelMat,0.0,Out);
 
   //            outer
   Out=ModelSupport::getComposite(SMap,buildIndex, " 51 -42 73 -3 5 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  makeCell("OuterSide",System,cellIndex++,concMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 51 -42 4 -74 5 -56 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  makeCell("OuterSide",System,cellIndex++,concMat,0.0,Out);
 
   // front inner wall
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -82 63 -64 16 -76 87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("FrontInner",System,cellIndex++,steelMat,0.0,Out);
 
   // proton hole in plates 22,28,29
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2 -82 -87 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("ProtonHole",System,cellIndex++,airMat,0.0,Out);
 
   // back inner wall and gap
   Out=ModelSupport::getComposite(SMap,buildIndex, " 91 -92 63 -64 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("BackWall",System,cellIndex++,steelMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 92 -12 63 -64 16 -76 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("BackWallHole",System,cellIndex++,airMat,0.0,Out);
 
   // vac pipe
   Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -131 -107 -137 -138 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("VacPipe",System,cellIndex++,0,0.0,Out);
   // cone top
   Out=ModelSupport::getComposite(SMap,buildIndex, " -131 -137 138 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
+  makeCell("ConeTop",System,cellIndex++,graphiteMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex, " 131 -112 -137 ");// : -131 -137 138");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
+  makeCell("ConeTop",System,cellIndex++,graphiteMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -112 -107 -127 137 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,graphiteMat,0.0,Out));
+  makeCell("ConeTop",System,cellIndex++,graphiteMat,0.0,Out);
   // steel inside vac pipe cone and lid 2
-  Out=ModelSupport::getComposite(SMap,buildIndex," 112 -102 -107 -127 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 -107 127  122 (147:-141) (148:-141)");
-  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"112 -102 -107 -127");
+  makeCell("ConeTop",System,cellIndex++,cuMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"101 -102 -107 127  122 (147:-141) (148:-141)");
+  makeCell("VacPipe",System,cellIndex++,cuMat,0.0,Out);
 
   //water pipes
   Out=ModelSupport::getComposite(SMap,buildIndex," 141 -102 -147");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  makeCell("WapterPipe",System,cellIndex++,waterMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 141 -102 -148");
-  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  makeCell("WaterPipe",System,cellIndex++,waterMat,0.0,Out);
 
   // tiny cell
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 101 -102 -107 127 -122 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("Tiny",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -102 107 -108 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("Tiny",System,cellIndex++,steelMat,0.0,Out);
 
   // vac pipe lids
   Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -111 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("VacPipe",System,cellIndex++,steelMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 111 -112 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("VacPipeVoid",System,cellIndex++,airMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 112 -102 108 -117 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
+  makeCell("VacPipe",System,cellIndex++,steelMat,0.0,Out);
 
   //  void cell inside shielding (vac pipe goes there)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  makeCell("ShieldVoid",System,cellIndex++,airMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -42 73 -74 5 -56 ");
   addOuterSurf(Out);

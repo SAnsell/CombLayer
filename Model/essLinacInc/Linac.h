@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/Linac.h
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2016-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,22 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+  class VacuumPipe;
+}
+
 namespace essSystem
 {
 
   class BeamDump;
   class FaradayCup;
+  class DTLArray;
+  class TSW;
+  class Spoke;
+  class MBeta;
+  //class SpokeCavity;
+
 
   /*!
     \class Linac
@@ -38,53 +49,64 @@ namespace essSystem
     \brief Linac building and container for the linac-related components
   */
 
-class Linac : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+class Linac :
+    public attachSystem::ContainedComp,
+    public attachSystem::FixedOffset,
+    public attachSystem::CellMap
 {
  private:
 
+  int engActive;               ///< Engineering active flag
 
-  int engActive;                ///< Engineering active flag
+  double lengthBack;           ///< length backward the proton beam direction
+  double lengthFront;          ///< length towards the proton beam direction
+  double widthLeft;            ///< Inner width towards x+
+  double widthRight;           ///< inner width towards x-
+  double height;               ///< Inner height
+  double depth;                ///< Inner depth
 
-  double length;                ///< Total length including void
-  double widthLeft;             ///< Inner width towards x+
-  double widthRight;            ///< inner width towards x-
-  double height;                ///< Inner height
-  double depth;                 ///< Inner depth
+  double wallThick;            ///< Thickness of side walls
+  double roofThick;            ///< Roof thickness
+  double floorThick;           ///< Thickness of floor
+  double floorWidthLeft;       ///< floor width towards x+
+  double floorWidthRight;      ///< floor width towards x-
 
-  double wallThick;             ///< Thickness of side walls
-  double roofThick;             ///< Roof thickness
-  double floorThick;            ///< Thickness of floor
-  double floorWidthLeft;        ///< floor width towards x+
-  double floorWidthRight;       ///< floor width towards x-
   /// number of layers in the air of the tunnel (along the proton beam)
-  size_t  nAirLayers;   
+  size_t nAirLayers;           
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
 
-  double tswLength;              ///< Temporary shielding wall length
-  double tswWidth;               ///< Temporary shielding wall width
-  double tswGap;                 ///< Distance between Temporary shielding walls
-  double tswOffsetY;             ///< TSW location on the Y-axis
-  size_t tswNLayers;             ///< number of layers in a TSW wall
+  size_t nTSW;                   ///< Number of TSWs
 
-  std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
+  /// Max number of stubs (individual stubs can be switched on/of
+  /// with their Active flags)
+  size_t nStubs; 
+  size_t nDTL; ///< number of DTL tanks
+
+  std::shared_ptr<BeamDump> beamDump;     ///< linac 4 commissionning dump
+  std::shared_ptr<FaradayCup> fc2;        ///< Faraday Cup 2
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
+  std::shared_ptr<DTLArray> dtl;          /// array of DTL tanks
 
-  void layerProcess(Simulation&,const std::string&,
-		    const long int, const long int,
-		    const size_t, const int);
+  
+  std::shared_ptr<Spoke> spoke;
+  std::shared_ptr<MBeta> mbeta;
+
+  std::shared_ptr<constructSystem::VacuumPipe> beamPipe;
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS, const long int& lsS, const size_t&, const int&);
+
+  void buildTSW(Simulation& system) const;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
   void createSurfaces();
   void createObjects(Simulation&);
 
   void createLinks();
+
+  //std::shared_ptr<SpokeCavity> spkcvt;
 
  public:
 
@@ -95,6 +117,9 @@ class Linac : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+
+  /// access to number of stubs
+  size_t getNStubs() const { return nStubs; }
 
 };
 

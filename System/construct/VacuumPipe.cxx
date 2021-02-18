@@ -610,6 +610,8 @@ VacuumPipe::createLinks()
       FixedComp::nameSideIndex(7,"outerPipe");
       FixedComp::nameSideIndex(7,"pipeOuterBase");
       FixedComp::nameSideIndex(8,"pipeOuterTop");
+      FixedComp::nameSideIndex(8,"pipeRadius");
+	
     }
   else // rectangular pipe
     {

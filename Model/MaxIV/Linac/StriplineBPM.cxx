@@ -3,7 +3,7 @@
 
  * File:   Linac/StriplineBPM.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -350,7 +350,7 @@ StriplineBPM::createAll(Simulation& System,
   ELog::RegMethod RegA("StriplineBPM","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length/2.0);
+  createCentredUnitVector(FC,sideIndex,length);
   createSurfaces();
   createObjects(System);
   createLinks();

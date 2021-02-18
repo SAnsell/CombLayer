@@ -432,7 +432,7 @@ IonGauge::createAll(Simulation& System,
   ELog::RegMethod RegA("IonGauge","createAll");
   
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,frontLength);
+  createCentredUnitVector(FC,sideIndex,2.0*frontLength);
   createSurfaces();
   createObjects(System);
   createLinks();

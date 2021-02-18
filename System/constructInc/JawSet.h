@@ -3,7 +3,7 @@
  
  * File:   constructInc/JawSet.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,10 +37,9 @@ namespace constructSystem
   \brief Container class for multi-Jaw system
 */
 
-class JawSet :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate,
-    public attachSystem::CellMap
+class JawSet : public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -55,6 +54,8 @@ class JawSet :
   double length;           ///< Enclosing length
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -66,8 +67,7 @@ class JawSet :
   JawSet& operator=(const JawSet&);
   virtual ~JawSet();
 
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 

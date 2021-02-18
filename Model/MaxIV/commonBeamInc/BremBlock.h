@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class BremBlock :
-  public attachSystem::FixedRotate,
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
@@ -64,6 +64,7 @@ class BremBlock :
   int mainMat;                ///< main material
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

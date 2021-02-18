@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/DCMTank.cxx
+ * File:   danmax/TankMonoVessel.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "portItem.h"
 
@@ -83,9 +82,7 @@ namespace xraySystem
 
 DCMTank::DCMTank(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   centreOrigin(0),delayPortBuild(0)
   /*!
@@ -263,9 +260,9 @@ DCMTank::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
-  makeCylinder("innerCylinder",SMap,buildIndex+7,Origin,Z,voidRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
-  makeCylinder("outerCylinder",SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
     
   // Top plate
   const Geometry::Vec3D topCent=Origin-Z*(topRadius-(voidHeight+topLift));
@@ -431,22 +428,16 @@ DCMTank::createPorts(Simulation& System)
     \param System :: Simulation to use
    */
 {
-  ELog::RegMethod RegA("DCMTank","createPorts");
-
-  MonteCarlo::Object* wallObject=
-    CellMap::getCellObject(System,"Wall");
+   ELog::RegMethod RegA("DCMTank","createPorts");
   
-  const HeadRule innerWall=SurfMap::getSurfRule("innerCylinder");
-  const HeadRule outerWall=SurfMap::getSurfRule("outerCylinder");
-
   for(size_t i=0;i<Ports.size();i++)
     {
+
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
-      Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
+
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i].constructTrack(System,wallObject,innerWall,outerWall);
-      Ports[i].insertObjects(System);
+      Ports[i].constructTrack(System);
     }
   return;
 }

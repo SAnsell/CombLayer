@@ -3,7 +3,7 @@
  
  * File:   R3Common/EPCombine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h" 
@@ -84,7 +85,7 @@ namespace xraySystem
 {
 
 EPCombine::EPCombine(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -115,7 +116,7 @@ EPCombine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("EPCombine","populate");
 
-  FixedRotate::populate(Control);
+  FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
 
@@ -195,7 +196,6 @@ EPCombine::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-	
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
 
 
@@ -349,7 +349,7 @@ EPCombine::createLinks()
   */
 {
   ELog::RegMethod RegA("EPCombine","createLinks");
-
+  
   ExternalCut::createLink("front",*this,0,Origin,Y);
 
   // photon/electron
@@ -358,6 +358,7 @@ EPCombine::createLinks()
 
   setConnect(2,photOrg-X*photonXStep+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
+
   
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
@@ -400,9 +401,9 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
 
   photOrg=FC.getLinkPt(photonIndex);
   elecOrg=FC.getLinkPt(electronIndex);
-
-
+  
   elecYAxis=FC.getLinkAxis(electronIndex);
+
   epPairSet=1;
   
   return;
@@ -410,8 +411,8 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
 
 void
 EPCombine::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

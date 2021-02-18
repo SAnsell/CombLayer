@@ -125,9 +125,9 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
-  IParam.regFlag("phits","PHITS");
+  IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regItem("povray","POVRAY");
+  IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regFlag("noThermal","noThermal");
@@ -269,7 +269,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
-  IParam.setDesc("POVRAY","PovRay output");
+  IParam.setDesc("PovRay","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");

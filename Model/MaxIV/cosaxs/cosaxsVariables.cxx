@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,7 +323,7 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setBPortOffset(2.5,0.0);
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,preName+"MonoBox",77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(preName+"MonoXtalYAngle",90.0);
@@ -386,7 +386,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
 
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-		      53.1,23.6,29.5,124.0);
+		      0.0,53.1,23.6,29.5,124.0);
 
 
   // length thick width
@@ -661,7 +661,7 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,preName+"PrimeJawBox",
-		      30.0,15.0,15.0,53.15);
+		      0.0,30.0,15.0,15.0,53.15);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -788,7 +788,7 @@ exptVariables(FuncDataBase& Control,
 
   // arguments: ystep/width/height/depth/length
   VBoxGen.generateBox(Control,duName,
-		      22.0,8.5,8.5,43.0); // measured
+		      0.0,22.0,8.5,8.5,43.0); // measured
 
   Control.addVariable(duName+"FilterHolder1YStep",8.2);
   Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured

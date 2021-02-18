@@ -39,7 +39,6 @@ class DCMTank :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap,
   public attachSystem::ExternalCut
 {
  private:

@@ -369,7 +369,7 @@ FixedRotate::createCentredUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
     
-  Origin+=Y*length;
+  Origin+=Y*(length/2.0);
   return;
 }
   

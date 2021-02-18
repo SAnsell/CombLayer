@@ -664,9 +664,10 @@ SimMCNP::writeImportance(std::ostream& OX) const
     pList.emplace(pConv.mcplITYP(P));
 		  
   
-  std::map<int,std::vector<double>> ImpMap;
-  ImpMap.emplace(0,std::vector<double>());
+  std::map<int,std::vector<int>> ImpMap;
+  ImpMap.emplace(0,std::vector<int>());
     
+  RangeUnit::NGroup<int> IRange;
   bool flag;
   double Imp;
   for(const int CN : cellOutOrder)
@@ -678,7 +679,7 @@ SimMCNP::writeImportance(std::ostream& OX) const
       if (!flag)
 	{
 	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
-	  std::map<int,std::vector<double>>::iterator mc;
+	  std::map<int,std::vector<int>>::iterator mc;
 	  for(const int P : PSet)
 	    {
 	      const double ImpVal=OPtr->getImp(P);
@@ -688,14 +689,13 @@ SimMCNP::writeImportance(std::ostream& OX) const
 		  pList.erase(P);
 		  ImpMap.emplace(P,ImpMap[0]);   // copy existing list in
 		}
-	      ImpMap[P].push_back(ImpVal);
+	      ImpMap[P].push_back(static_cast<int>(ImpVal));
 	    }
 	}
+
     }
   cx.str("");
   cx<<"imp:"<<pConv.mcnpParticleList(pList);
-
-  RangeUnit::NGroup<double> IRange;    
   IRange.condense(1e-6,ImpMap[0]);
 
   cx<<IRange;

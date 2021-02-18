@@ -3,7 +3,7 @@
  
  * File:   constructInc/PinHole.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,10 +37,9 @@ namespace constructSystem
   \brief Container class for multi-collimator system
 */
 
-class PinHole :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedRotate,
-    public attachSystem::CellMap
+class PinHole : public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -59,6 +58,8 @@ class PinHole :
   double length;           ///< Enclosing length
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,8 +71,7 @@ class PinHole :
   PinHole& operator=(const PinHole&);
   virtual ~PinHole();
 
-  using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 

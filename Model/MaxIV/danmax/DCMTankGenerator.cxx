@@ -3,7 +3,7 @@
  
  * File:   danmax/DCMTankGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,13 +79,14 @@ DCMTankGenerator::~DCMTankGenerator()
 void
 DCMTankGenerator::generateBox(FuncDataBase& Control,
 				     const std::string& keyName,
-				     const double radius,
+				     const double yStep,const double radius,
 				     const double height,const double depth)
   const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param yStep :: y-offset 
     \param radius :: radius of main cylinder
     \param depth :: depth of main cylinder
     \param height :: height of main cylinder
@@ -94,7 +95,7 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
   ELog::RegMethod RegA("DCMTankGenerator","generateBox");
   
 
-  VacBoxGenerator::generateBox(Control,keyName,radius*2.0,
+  VacBoxGenerator::generateBox(Control,keyName,yStep,radius*2.0,
 			       height,depth,radius*2.0);
 
   Control.addVariable(keyName+"VoidRadius",radius);

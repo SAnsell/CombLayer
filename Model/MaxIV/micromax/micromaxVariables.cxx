@@ -3,7 +3,7 @@
  
  * File:   micromax/micromaxVariables.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -674,7 +674,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setBPortOffset(2.5,0); // X/Z
 
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,Name,53.1,23.6,29.5,124.0);
+  VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
 
 
   return;
@@ -830,7 +830,7 @@ monoVariables(FuncDataBase& Control,
 
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,Name+"MonoBox",77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,Name+"MonoBox",0.0,77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(Name+"MonoXtalYAngle",90.0);
@@ -971,8 +971,9 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
-  // width/height/depth/length
-  VBoxGen.generateBox(Control,preName+"PrimeJawBox",30.0,15.0,15.0,53.15);
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,preName+"PrimeJawBox",
+		      0.0,30.0,15.0,15.0,53.15);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();

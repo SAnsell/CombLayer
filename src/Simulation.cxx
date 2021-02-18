@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1196,9 +1196,10 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   */
 {
   ELog::RegMethod RegA("Simulation","findCell");
-
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-      
+
+
+  // First test users guess:
   if (testCell && testCell->isValid(Pt))
     {
       ST.setCell(this,testCell);

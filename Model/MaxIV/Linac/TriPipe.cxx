@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TriPipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2020 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -333,7 +333,7 @@ TriPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("TriPipe","createAll");
 
   populate(System.getDataBase());
-  FixedRotate::createCentredUnitVector(FC,FIndex,length/2.0);
+  FixedRotate::createCentredUnitVector(FC,FIndex,length);
   
   createSurfaces();    
   createObjects(System);

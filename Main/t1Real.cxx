@@ -102,7 +102,6 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
 
   Simulation* SimPtr(0);
   try
