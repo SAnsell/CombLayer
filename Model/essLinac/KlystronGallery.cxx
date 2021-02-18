@@ -1,0 +1,319 @@
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder
+
+ * File:   essBuild/KlystronGallery.cxx
+ *
+ * Copyright (c) 2018-2021 by Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <memory>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Quaternion.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Rules.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedOffset.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+
+#include "KlystronGallery.h"
+
+namespace essSystem
+{
+
+KlystronGallery::KlystronGallery(const std::string& Key)  :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,9),
+  attachSystem::CellMap()
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: Name for item in search
+  */
+{}
+
+KlystronGallery::KlystronGallery(const KlystronGallery& A) :
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  lengthBack(A.lengthBack),
+  lengthFront(A.lengthFront),
+  widthLeft(A.widthLeft),
+  widthRight(A.widthRight),
+  height(A.height),
+  depth(A.depth),
+  wallThick(A.wallThick),
+  roofThick(A.roofThick),
+  floorThick(A.floorThick),
+  roofAngle(A.roofAngle),
+  airMat(A.airMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: KlystronGallery to copy
+  */
+{}
+
+KlystronGallery&
+KlystronGallery::operator=(const KlystronGallery& A)
+  /*!
+    Assignment operator
+    \param A :: KlystronGallery to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      lengthBack=A.lengthBack;
+      lengthFront=A.lengthFront;
+      widthLeft=A.widthLeft;
+      widthRight=A.widthRight;
+      height=A.height;
+      depth=A.depth;
+      wallThick=A.wallThick;
+      roofThick=A.roofThick;
+      floorThick=A.floorThick;
+      roofAngle=A.roofAngle;
+      airMat=A.airMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+
+KlystronGallery*
+KlystronGallery::clone() const
+/*!
+  Clone self
+  \return new (this)
+ */
+{
+    return new KlystronGallery(*this);
+}
+
+KlystronGallery::~KlystronGallery()
+  /*!
+    Destructor
+  */
+{}
+
+void
+KlystronGallery::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    \param Control :: Variable data base
+  */
+{
+  ELog::RegMethod RegA("KlystronGallery","populate");
+
+  FixedOffset::populate(Control);
+
+  lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
+  lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
+  widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
+  widthRight=Control.EvalVar<double>(keyName+"WidthRight");
+  height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+  roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
+
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
+  return;
+}
+
+
+void
+KlystronGallery::createSurfaces()
+  /*!
+    Create All the surfaces
+  */
+{
+  ELog::RegMethod RegA("KlystronGallery","createSurfaces");
+
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(lengthFront),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(widthRight),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
+
+  Geometry::Vec3D topNorm(Z);
+  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
+
+  ModelSupport::buildPlane(SMap,buildIndex+6,
+			   Origin-X*(widthLeft)+Z*(height),topNorm);
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(lengthBack+wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(lengthFront+wallThick),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(widthRight+wallThick),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+6),
+				  roofThick);
+
+  return;
+}
+
+void
+KlystronGallery::createObjects(Simulation& System)
+  /*!
+    Adds the all the components
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("KlystronGallery","createObjects");
+
+  std::string Out;
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  makeCell("Void",System,cellIndex++,airMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  addOuterSurf(Out);
+
+  return;
+}
+
+
+void
+KlystronGallery::createLinks()
+  /*!
+    Create all the linkes
+  */
+{
+  ELog::RegMethod RegA("KlystronGallery","createLinks");
+
+  const Geometry::Vec3D midY(Y*((lengthFront-lengthBack)/2.0));
+
+  FixedComp::setConnect(0,Origin-Y*(lengthBack+wallThick),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+
+  FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+
+  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick)+midY,-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+
+  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+midY,X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+
+  FixedComp::setConnect(4,Origin-Z*(depth+floorThick)+midY,-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+
+  // highest roof x+ corner
+  FixedComp::setConnect(5,Origin-X*(widthLeft)+
+			Z*(height+roofThick/cos(roofAngle*M_PI/180))+midY,Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+
+  FixedComp::setConnect(6,Origin-X*(widthLeft)+midY,-X);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
+
+  FixedComp::setConnect(7,Origin-Z*(depth)+midY,Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect(8,Origin-X*(widthLeft)+Z*(height)+midY,-Z);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
+
+   // for (int i=0; i<9; i++)
+   //    ELog::EM << "KG lp " << i << ":\t" << getLinkSurf(i+1) << " " << getLinkPt(i+1) << ELog::endDiag;
+
+
+  return;
+}
+
+
+
+
+void
+KlystronGallery::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: Central origin
+    \param sideIndex :: link point for origin
+  */
+{
+  ELog::RegMethod RegA("KlystronGallery","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+
+  return;
+}
+
+}  // essSystem
