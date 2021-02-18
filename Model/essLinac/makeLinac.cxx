@@ -137,14 +137,12 @@ makeLinac::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  //  LinacTunnel->addInsertCell(voidCell);
+  LinacTunnel->addInsertCell(voidCell);
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
-  ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
-  return;
   
   feb->addInsertCell(voidCell);
-  
+
   feb->setCutSurf("floorLow",LinacTunnel->getFullRule(5));
   feb->setCutSurf("floorTop",LinacTunnel->getFullRule(15));
   feb->setCutSurf("roofLow",LinacTunnel->getFullRule(16));
@@ -154,8 +152,20 @@ makeLinac::build(Simulation& System,
   feb->setPoint("floorTop",LinacTunnel->getLinkPt(15));
   feb->setPoint("roofLow",LinacTunnel->getLinkPt(16));
   feb->setPoint("roofTop",LinacTunnel->getLinkPt(6));
+
   feb->createAll(System,*LinacTunnel,1);
-  
+
+  ELog::EM<<"WARNING UNNECESSARLY COMPLEX INSERT ==> Use ExternalCut instead"
+	  <<ELog::endWarn;
+
+  attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
+  attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
+  attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
+
+  ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
+  return;
+
+
   KG->addInsertCell(voidCell);
   KG->createAll(System,*LinacTunnel,0);
 
@@ -167,11 +177,7 @@ makeLinac::build(Simulation& System,
   // Add RFQ
   //rfq->createAll(System,World::masterOrigin(),0);
 
-  ELog::EM<<"WARNING UNNECESSARLY COMPLEX INSERT ==> Use ExternalCut instead"
-	  <<ELog::endWarn;
-  attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
-  attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
-  attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
+  
   //attachSystem::addToInsertSurfCtrl(System,*feb,*rfq); //To add the RFQ
 
   //mebt->createAll(System,*rfq,1);
@@ -215,6 +221,7 @@ makeLinac::build(Simulation& System,
   cryoTransferLine->setFront(*KG,7);
   cryoTransferLine->setBack(*LinacTunnel,-14);
   cryoTransferLine->createAll(System,*LinacTunnel,0);
+  
   attachSystem::addToInsertSurfCtrl(System,*berm,cryoTransferLine->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,
   				    cryoTransferLine->getCC("Leg1"));

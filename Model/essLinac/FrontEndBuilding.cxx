@@ -291,6 +291,7 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  
   shieldWall1Offset=Control.EvalVar<double>(keyName+"ShieldWall1Offset");
   shieldWall1Thick=Control.EvalVar<double>(keyName+"ShieldWall1Thick");
   shieldWall1Length=Control.EvalVar<double>(keyName+"ShieldWall1Length");
@@ -308,6 +309,7 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
   fillingMat=ModelSupport::EvalMat<int>(Control,keyName+"FillingMat");
+  
   gapALength=Control.EvalVar<double>(keyName+"GapALength");
   gapAHeightLow=Control.EvalVar<double>(keyName+"GapAHeightLow");
   gapAHeightTop=Control.EvalVar<double>(keyName+"GapAHeightTop");
@@ -351,12 +353,17 @@ FrontEndBuilding::createSurfaces()
   // shield wall 2
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(shieldWall2Offset),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(shieldWall2Offset+shieldWall2Thick),Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+204,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+104),
-				  -shieldWall2Length);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+213,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+204),
-				  shieldWall2Thick);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+204,
+     Origin-X*(shieldWall1Offset+shieldWall1Thick+shieldWall2Length),X);
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+213,
+     Origin-X*(shieldWall1Offset+shieldWall1Thick+
+	       shieldWall2Length-shieldWall2Thick),X);
+
+
 
   // Drop Hatch
   ModelSupport::buildPlane(SMap,buildIndex+301,
@@ -380,7 +387,7 @@ FrontEndBuilding::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(buildIndex+303),
 				  dropHatchWallThick);
 
-  // shield wall 3
+    // shield wall 3
   ModelSupport::buildShiftedPlane(SMap,buildIndex+402,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+2),
 				  -shieldWall3Length);
@@ -396,17 +403,26 @@ FrontEndBuilding::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+900,Origin+Z*(280.0),Z);
 
-  Geometry::Plane* pRoof = ModelSupport::buildPlane(SMap,buildIndex+901,Origin+Z*(830.0),Z);
-  ModelSupport::buildRotatedPlane(SMap,buildIndex+902,pRoof,4.76,Y,Geometry::Vec3D(0,0,0));
-
-  Geometry::Plane* pRoof2 = ModelSupport::buildPlane(SMap,buildIndex+903,Origin+Z*(855.0),Z);
-  ModelSupport::buildRotatedPlane(SMap,buildIndex+904,pRoof2,4.76,Y,Geometry::Vec3D(0,0,0));
-
-  ModelSupport::buildPlane(SMap,buildIndex+911,Origin+X*(widthLeft+wallThick-20.0-50.0),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+912,Origin+X*(widthLeft+wallThick-20.0+70-50.0),X);
+  Geometry::Plane* pRoof =
+    ModelSupport::buildPlane(SMap,buildIndex+901,Origin+Z*(830.0),Z);
   
+  ModelSupport::buildRotatedPlane
+    (SMap,buildIndex+902,pRoof,4.76,Y,Geometry::Vec3D(0,0,0));
+
+  Geometry::Plane* pRoof2 =
+    ModelSupport::buildPlane(SMap,buildIndex+903,Origin+Z*855.0,Z);
   
+  ModelSupport::buildRotatedPlane
+    (SMap,buildIndex+904,pRoof2,4.76,Y,Geometry::Vec3D(0,0,0));
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+911,Origin+X*(widthLeft+wallThick-20.0-50.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+912,
+			   Origin+X*(widthLeft+wallThick-20.0+70-50.0),X);
+  
+
+
   return;
 }
 
@@ -429,8 +445,9 @@ FrontEndBuilding::createObjects(Simulation& System)
   const HeadRule floorTopHR(getRule("floorTop"));
   const HeadRule floorLowHR(getRule("floorLow"));
 
-  const HeadRule airTB(floorTopHR*roofLowHR);
 
+  const HeadRule airTB(floorTopHR*roofLowHR);
+  
   HeadRule HR;
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -3 103 ");
@@ -473,11 +490,11 @@ FrontEndBuilding::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 402 -2 -403 404 405");
   makeCell("ShieldingWall",System,cellIndex++,fillingMat,0.0,HR*roofLowHR);
 
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 402 -2 403 -104 ");
   makeCell("ShieldingWall",System,cellIndex++,mainMat,0.0,HR*airTB);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -3 4 ")*airTB;
-
   const HeadRule zoneHR(HR.complement());
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 -13 14 ")*
@@ -488,20 +505,21 @@ FrontEndBuilding::createObjects(Simulation& System)
   HeadRule dropHatch=
     ModelSupport::getHeadRule(SMap,buildIndex," 301 -302 3 ")*airTB;
   dropHatch.makeComplement();
-  makeCell("ShieldingWall",System,cellIndex++,wallMat,0.0,dropHatch*zoneHR);
+  dropHatch*=HR;
 
+
+  makeCell("ShieldingWall",System,cellIndex++,wallMat,0.0,dropHatch*zoneHR);
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 301 -302 -303 3 ")*airTB;
   makeCell("ShieldingWall",System,cellIndex++,mainMat,0.0,HR);
 
   dropHatch=HR.complement();
-
   // Space above drophatch
   
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"311 -312 -313 13 (303:-912:-899:-301:302)")*
     floorLowHR.complement()*roofTopHR.complement();
   makeCell("ShieldingWall",System,cellIndex++,wallMat,0.0,HR*dropHatch);
-  
   addOuterUnionSurf(HR);
 
   HR=ModelSupport::getHeadRule
@@ -517,7 +535,6 @@ FrontEndBuilding::createObjects(Simulation& System)
   makeCell("ShieldingWall",System,cellIndex++,wallMat,0.0,HR*dropHatch); 
   addOuterUnionSurf(HR);
 
-  
   // Penetrations A and B in ShieldingWall1
   std::vector<int> fracMat;
   for (int i=0; i<4; i++)
@@ -537,7 +554,6 @@ FrontEndBuilding::createObjects(Simulation& System)
     fracMat.push_back(i%2 ? wallMat : gapMat);
 
   const double totalHeight(getLinkDistance(11,12));
-
   frac.clear();
   frac.push_back(gapBHeightLow/totalHeight);
   frac.push_back(gapBDist/totalHeight);
@@ -607,6 +623,7 @@ FrontEndBuilding::createLinks()
 			Y*((length+wallThick)/2.0),-Z);
   FixedComp::setLinkSurf(10,getRule("floorTop"));
 
+
   FixedComp::setConnect(11,Origin+Z*getPoint("roofLow").Z()+
 			Y*((length+wallThick)/2.0),Z);
   FixedComp::setLinkSurf(11,getRule("roofLow"));
@@ -637,7 +654,7 @@ FrontEndBuilding::createAll(Simulation& System,
   ELog::RegMethod RegA("FrontEndBuilding","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createUnitVector(FC,sideIndex);    
   createSurfaces();
   createLinks();
   createObjects(System);

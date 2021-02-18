@@ -402,12 +402,12 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 23 -24 15 -5 ");
   makeCell("WallSlab",System,cellIndex++,wallMat,0.0,Out);
 
-  layerProcess(System,"Air",11,12,nAirLayers,airMat);
+  //  layerProcess(System,"Air",11,12,nAirLayers,airMat);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," (1 -12 13 -14 15 -16) : (1 -12 23 -24 15 -5) ");
   addOuterSurf(Out);
-
+  
   return;
 }
 
@@ -481,13 +481,15 @@ Linac::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
-
+  ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
+  return;
   if (nDTL>0)
     {
       // -------------------------
       // This should not be world::
       // -------------------------
       dtl->createAll(System,World::masterOrigin(),0);
+      
       attachSystem::addToInsertControl(System,*this,*dtl);
       // Beam dump and Faraday Cup are built with respect to the end of last DTL
       const long int backLP(static_cast<long int>(dtl->NConnect()-4));
