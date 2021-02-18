@@ -132,6 +132,8 @@ class EBeamStop :
   EBeamStop& operator=(const EBeamStop&);
   virtual ~EBeamStop();
 
+  bool isShieldActive() const { return shieldActive; }
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
