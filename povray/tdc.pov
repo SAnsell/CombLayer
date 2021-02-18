@@ -517,6 +517,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 50;
   #break
+    #case(strcmp(ITEM,"L2SPF6EBeam"))
+    #declare cameraLocation = <260, 2310, 40>;
+    #declare cameraLookAt   = <132, 2385, -5>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
     #case(strcmp(ITEM,"L2SPF10ShieldA"))
     #declare cameraLocation = <120, 3170, 30>;
     #declare cameraLookAt   = <-55, 3185, 0>;

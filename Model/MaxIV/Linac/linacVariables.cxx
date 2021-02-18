@@ -890,6 +890,7 @@ Segment6(FuncDataBase& Control,
   CSGen.generateCeramicGap(Control,lKey+"CeramicA");
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
