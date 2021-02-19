@@ -814,7 +814,7 @@ Segment4(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadB",61.7); // No_4_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitYAngle",-90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
@@ -825,6 +825,11 @@ Segment4(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHA",14,1);
   CMGen.generateMag(Control,lKey+"CMagVA",34,0);
+
+  setVariable::LocalShieldingGenerator LocalShieldingGen;
+  LocalShieldingGen.setSize(40.0,10.0,15.0); // 64.jpg
+  LocalShieldingGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",-50.0); // approx
 
   return;
 }
@@ -3593,7 +3598,7 @@ LINACvariables(FuncDataBase& Control)
   // Segment 1-14
   Control.addVariable("l2spfXStep",linacVar::zeroX);
   Control.addVariable("l2spfYStep",linacVar::zeroY);
-  Control.addVariable("l2spfOuterLeft",80.0);
+  Control.addVariable("l2spfOuterLeft",100.0);
   Control.addVariable("l2spfOuterRight",140.0);
   Control.addVariable("l2spfOuterTop",100.0);
 

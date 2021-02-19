@@ -49,7 +49,7 @@ namespace tdcSystem
     \version 1.1
     \author S. Ansell
     \date Feb 2021
-    \brief 3rd segment in the TDC from the linac
+    \brief 3rd L2SPF segment
   */
 
 class Segment3 :

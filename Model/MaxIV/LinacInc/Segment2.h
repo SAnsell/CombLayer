@@ -91,7 +91,8 @@ class Segment2 :
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
   /// yag screen
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
-  std::shared_ptr<tdcSystem::LocalShielding> shieldA; //shielding of the camera (the camera is not built)
+  /// shielding of the YAG screen camera (the camera is not built)
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA;
 
   void buildObjects(Simulation&);
   void createLinks();
