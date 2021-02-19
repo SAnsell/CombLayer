@@ -62,7 +62,6 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
-
 #include "VacuumPipe.h"
 #include "CeramicGap.h"
 #include "Scrapper.h"
@@ -70,8 +69,6 @@
 #include "LocalShielding.h"
 
 #include "AttachSupport.h"
-
-
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment6.h"

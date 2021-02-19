@@ -202,6 +202,7 @@ Segment7::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
+  CellMap::setCells("BlockVoid",buildZone->getCells("Unit"));
 
   return;
 }

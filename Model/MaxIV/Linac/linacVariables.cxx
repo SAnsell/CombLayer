@@ -975,6 +975,7 @@ Segment8(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowA",7.5);
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
