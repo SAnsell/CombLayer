@@ -74,6 +74,7 @@
 #include "EArrivalMon.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -104,7 +105,8 @@ Segment2::Segment2(const std::string& Key) :
   QuadD(new tdcSystem::LQuadF(keyName+"QuadD")),
   QuadE(new tdcSystem::LQuadF(keyName+"QuadE")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
-  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen"))
+  yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -131,6 +133,7 @@ Segment2::Segment2(const std::string& Key) :
   OR.addObject(QuadE);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
+  OR.addObject(shieldA);
 
   setFirstItems(pipeA);
 }
@@ -200,6 +203,9 @@ Segment2::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
+
+  shieldA->createAll(System, *yagScreen, 0);
+  shieldA->insertInCell(System,outerCell);
 
   return;
 }

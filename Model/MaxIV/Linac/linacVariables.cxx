@@ -687,6 +687,11 @@ Segment2(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(40.0,10.0,15.0); // 62.jpg
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",-50.0); // approx
+
   return;
 }
 
