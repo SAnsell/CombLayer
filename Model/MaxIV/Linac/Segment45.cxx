@@ -72,7 +72,9 @@
 #include "YagScreen.h"
 #include "CeramicGap.h"
 #include "FlangePlate.h"
+#include "EBeamStop.h"
 
+#include "AttachSupport.h"
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
@@ -91,7 +93,9 @@ Segment45::Segment45(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   adaptor(new constructSystem::FlangePlate(keyName+"Adaptor")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  beamStop(new tdcSystem::EBeamStop(keyName+"EBeam"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,6 +110,8 @@ Segment45::Segment45(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(adaptor);
   OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(beamStop);
 
   setFirstItems(ceramic);
 }
@@ -205,6 +211,18 @@ Segment45::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*adaptor,"back",*pipeB);
 
+  pipeC->setCutSurf("front",*pipeB,"back");
+  pipeC->createAll(System,*pipeB, "back");
+
+  beamStop->setCutSurf("front",*pipeC,"back");
+  beamStop->createAll(System,*pipeC, "back");
+
+  if (beamStop->isShieldActive())
+    {
+      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
+      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
+    }
+
   CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
@@ -229,6 +247,9 @@ Segment45::constructHole(Simulation& System)
       // tip of pipeB enters the main beam dump room
       pipeB->insertInCell("Main",System,IHall->getCell("BDSPF"));
       pipeB->insertInCell("FlangeB",System,IHall->getCell("BDSPF"));
+
+      pipeC->insertAllInCell(System,IHall->getCell("BDSPF"));
+      beamStop->insertAllInCell(System,IHall->getCell("BDSPF"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
       IHall->insertComponent(System,"HatchSPF",Out); // concrete roof

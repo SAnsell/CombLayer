@@ -32,13 +32,14 @@ namespace tdcSystem
 {
   class CeramicGap;
   class InjectionHall;
+  class EBeamStop;
 
   /*!
     \class Segment45
-    \version 1.0
+    \version 1.1
     \author K. Batkov
-    \date July 2020
-    \brief SPF segment 45
+    \date Feb 2021
+    \brief SPF segment 45 + Main beam dump
   */
 
 class Segment45 :
@@ -56,6 +57,10 @@ class Segment45 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;    // #3
   std::shared_ptr<constructSystem::FlangePlate> adaptor; // adaptor plate
   std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
+
+  /// Main beam dump
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  std::shared_ptr<tdcSystem::EBeamStop> beamStop;
 
   virtual void setFrontSurfs(const std::vector<HeadRule>&) override;
 

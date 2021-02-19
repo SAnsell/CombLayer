@@ -2969,11 +2969,21 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeB",145.0); // orig: 160.0 but goes out from InjectionHall
+  PGen.generatePipe(Control,lKey+"PipeB",160.0);
 
   FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
   FPGen.generateFlangePlate(Control,lKey+"Adaptor");
+
+  // additional stuff for beam dump - not present in the original
+  // drawings
+  PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+  Control.addVariable(lKey+"PipeCYAngle",-90);
+  Control.addVariable(lKey+"PipeCFlangeBackRadius",4.5); // to avoid cutting EBeam
+  setVariable::EBeamStopGenerator EBGen;
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
+  Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
 
   return;
 }
