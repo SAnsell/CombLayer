@@ -69,7 +69,7 @@ namespace constructSystem
 
 SplitFlangePipe::SplitFlangePipe(const std::string& Key,
 				 const bool IF) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key,10),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   innerLayer(IF),frontJoin(0),backJoin(0)
@@ -81,8 +81,8 @@ SplitFlangePipe::SplitFlangePipe(const std::string& Key,
   FixedComp::nameSideIndex(0,"front");
   FixedComp::nameSideIndex(1,"back");
   FixedComp::nameSideIndex(2,"innerPipe");
-  FixedComp::nameSideIndex(7,"outerPipe");
-  FixedComp::nameSideIndex(9,"pipeWall");
+  FixedComp::nameSideIndex(6,"outerPipe");
+  FixedComp::nameSideIndex(8,"pipeWall");
 }
 
 SplitFlangePipe::SplitFlangePipe(const SplitFlangePipe& A) :
@@ -397,16 +397,16 @@ SplitFlangePipe::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(7,Origin-Z*(radius+bellowThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+bellowThick),Z);
+  FixedComp::setConnect(6,Origin-Z*(radius+bellowThick),-Z);
+  FixedComp::setConnect(7,Origin+Z*(radius+bellowThick),Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+27));
 
   // pipe wall
-  FixedComp::setConnect(9,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(10,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(8,Origin-Z*(radius+feThick),-Z);
+  FixedComp::setConnect(9,Origin+Z*(radius+feThick),Z);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+17));
 
 
   return;
