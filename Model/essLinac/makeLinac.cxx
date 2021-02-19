@@ -147,6 +147,9 @@ makeLinac::build(Simulation& System,
   feb->setCutSurf("floorTop",LinacTunnel->getFullRule(15));
   feb->setCutSurf("roofLow",LinacTunnel->getFullRule(16));
   feb->setCutSurf("roofTop",LinacTunnel->getFullRule(6));
+  feb->setCutSurf("leftSide",LinacTunnel->getFullRule(3));
+  feb->setCutSurf("rightSide",LinacTunnel->getFullRule(4));
+  feb->setCutSurf("FullUnit",LinacTunnel->getOuterSurf());
 
   feb->setPoint("floorLow",LinacTunnel->getLinkPt(5));
   feb->setPoint("floorTop",LinacTunnel->getLinkPt(15));
@@ -158,9 +161,8 @@ makeLinac::build(Simulation& System,
   ELog::EM<<"WARNING UNNECESSARLY COMPLEX INSERT ==> Use ExternalCut instead"
 	  <<ELog::endWarn;
 
-  attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
-  attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
-  attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
+  //  attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
+  //  attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
 
   ELog::EM<<"EARLY RETURN"<<ELog::endCrit;
   return;

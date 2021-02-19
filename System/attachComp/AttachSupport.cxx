@@ -483,7 +483,7 @@ addToInsertSurfCtrl(Simulation& System,
    Adds this object to the containedComp to be inserted.
    FC is the fixed object that is to be inserted -- linkpoints
    must be set. It is tested against all the ojbect with
-   this object .
+   this object.
    \param System :: Simulation to use
    \param cellA :: cell number [to test]
    \param CC :: ContainedComp object to add to this
@@ -535,9 +535,10 @@ addToInsertSurfCtrl(Simulation& System,
 	  CRPtr->createSurfaceList();
 	  const std::vector<const Geometry::Surface*>&
 	    CellSVec=CRPtr->getSurList();
-	  
 	  if (checkIntersect(CC,*CRPtr,CellSVec))
-	    CC.addInsertCell(CN);
+	    {
+	      CC.addInsertCell(CN);
+	    }
 	}
     }
   CC.insertObjects(System);

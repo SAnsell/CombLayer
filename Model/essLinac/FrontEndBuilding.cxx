@@ -444,8 +444,11 @@ FrontEndBuilding::createObjects(Simulation& System)
   const HeadRule roofTopHR(getRule("roofTop"));
   const HeadRule floorTopHR(getRule("floorTop"));
   const HeadRule floorLowHR(getRule("floorLow"));
-
-
+  const HeadRule leftSide(getRule("leftSide"));
+  const HeadRule rightSide(getRule("rightSide"));
+  
+  const HeadRule linacUnit=getComplementRule("FullUnit");
+      
   const HeadRule airTB(floorTopHR*roofLowHR);
   
   HeadRule HR;
@@ -507,15 +510,16 @@ FrontEndBuilding::createObjects(Simulation& System)
   dropHatch.makeComplement();
   dropHatch*=HR;
 
+  makeCell("ShieldingWall",System,cellIndex++,
+	   wallMat,0.0,dropHatch*zoneHR*linacUnit);
 
-  makeCell("ShieldingWall",System,cellIndex++,wallMat,0.0,dropHatch*zoneHR);
-  
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 301 -302 -303 3 ")*airTB;
   makeCell("ShieldingWall",System,cellIndex++,mainMat,0.0,HR);
 
   dropHatch=HR.complement();
   // Space above drophatch
-  
+
+
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"311 -312 -313 13 (303:-912:-899:-301:302)")*
     floorLowHR.complement()*roofTopHR.complement();

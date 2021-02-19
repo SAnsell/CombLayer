@@ -107,7 +107,7 @@ namespace essSystem
 
 Linac::Linac(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,17),
+  attachSystem::FixedOffset(Key,20),
   attachSystem::CellMap(),
   nTSW(0),nStubs(0),nDTL(0),
   beamDump(new BeamDump(Key,"BeamDump")),
@@ -433,6 +433,7 @@ Linac::createLinks()
   FixedComp::setConnect(3,Origin+X*(widthLeft+wallThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
 
+  
   FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
 
@@ -457,6 +458,12 @@ Linac::createLinks()
 
   FixedComp::setConnect(15,Origin+Z*(height),-Z);
   FixedComp::setLinkSurf(15,-SMap.realSurf(buildIndex+6));
+
+  FixedComp::setConnect(16,Origin-X*(widthRight+wallThick),-X);
+  FixedComp::setLinkSurf(16,-SMap.realSurf(buildIndex+23));
+
+  FixedComp::setConnect(17,Origin+X*(widthLeft+wallThick),X);
+  FixedComp::setLinkSurf(17,SMap.realSurf(buildIndex+24));
 
   return;
 }
