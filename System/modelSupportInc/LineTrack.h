@@ -22,6 +22,8 @@
 #ifndef ModelSupport_LineTrack_h
 #define ModelSupport_LineTrack_h
 
+class Simulation;
+
 namespace Geometry
 {
   class Surface;

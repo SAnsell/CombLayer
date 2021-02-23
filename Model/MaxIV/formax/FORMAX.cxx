@@ -57,9 +57,8 @@
 #include "BlockZone.h"
 
 #include "VacuumPipe.h"
-
+#include "PipeShield.h"
 #include "OpticsHutch.h"
-
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3Ring.h"
