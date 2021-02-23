@@ -80,7 +80,7 @@ LocalShieldingCell::LocalShieldingCell(const std::string& Key,
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldB"),
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldC"),
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldD"),
-	 std::make_shared<tdcSystem::LocalShielding>(bas\eKey+"ShieldE"),
+	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldE"),
     }),
   connections({
 	       {baseKey+"ShieldB",{"THIS",""}},
