@@ -66,6 +66,10 @@ class LocalShieldingCell :
   LocalShieldingCell& operator=(const LocalShieldingCell&);
   virtual ~LocalShieldingCell();
 
+  void addUnit(const std::string&);
+  void addConnection(const std::string&,const std::string&,const std::string&);
+
+  
   using FixedComp::createAll;
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,const long int);
