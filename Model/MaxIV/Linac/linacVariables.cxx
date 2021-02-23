@@ -3109,6 +3109,7 @@ Segment47(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
+  PGen.setOuterVoid(1);
 
 
   PGen.setCF<setVariable::CF35_TDC>();
@@ -3663,14 +3664,14 @@ LINACvariables(FuncDataBase& Control)
   // start/endPt of Segment34
   Control.addVariable("spfXStep",-995.514+linacVar::zeroX);
   Control.addVariable("spfYStep",5872.556+linacVar::zeroY);
-  Control.addVariable("spfOuterLeft",50.0);
-  Control.addVariable("spfOuterRight",50.0);
+  Control.addVariable("spfOuterLeft",60.0);
+  Control.addVariable("spfOuterRight",80.0);
   Control.addVariable("spfOuterTop",100.0);
 
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",65.0);
+  Control.addVariable("spfLongOuterLeft",70.0);
   Control.addVariable("spfLongOuterRight",50.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
