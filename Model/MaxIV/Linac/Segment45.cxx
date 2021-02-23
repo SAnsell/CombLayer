@@ -74,6 +74,11 @@
 #include "FlangePlate.h"
 #include "EBeamStop.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
+
 #include "AttachSupport.h"
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -247,6 +252,11 @@ Segment45::constructHole(Simulation& System)
       // tip of pipeB enters the main beam dump room
       pipeB->insertInCell("Main",System,IHall->getCell("BDSPF"));
       pipeB->insertInCell("FlangeB",System,IHall->getCell("BDSPF"));
+
+      MonteCarlo::Object *obj = System.findObject(IHall->getCell("BD"));
+      obj->addIntersection(HeadRule(pipeB->getLinkString(10)));
+      // same but less efficient (side surfaces also added into BD):
+      //  pipeB->insertInCell("Main",System,IHall->getCell("BD"));
 
       pipeC->insertAllInCell(System,IHall->getCell("BDSPF"));
       beamStop->insertAllInCell(System,IHall->getCell("BDSPF"));
