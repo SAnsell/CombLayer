@@ -134,6 +134,8 @@
 #include "ViewScreenTube.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
+#include "LocalShielding.h"
+#include "LocalShieldingCell.h"
 
 #include "makeSingleItem.h"
 
@@ -183,7 +185,7 @@ makeSingleItem::build(Simulation& System,
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","DiffPump","ExperimentalHutch",
-      "ConnectorTube","Help","help"
+      "ConnectorTube","LocalShield","Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -446,6 +448,18 @@ makeSingleItem::build(Simulation& System,
 
       EA->addInsertCell(voidCell);
       EA->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "LocalShield" )
+    {
+      std::shared_ptr<tdcSystem::LocalShieldingCell>
+	ls(new tdcSystem::LocalShieldingCell("Cell",""));
+
+      OR.addObject(ls);
+
+      ls->addInsertCell(voidCell);
+      ls->createAll(System,World::masterOrigin(),0);
 
       return;
     }

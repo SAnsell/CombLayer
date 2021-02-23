@@ -116,12 +116,15 @@
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
+#include "LocalShieldingGenerator.h"
 
 namespace setVariable
 {
 
 void
 exptHutVariables(FuncDataBase&,const std::string&,const double);
+void
+localShieldVariables(FuncDataBase&);
 
 
 void
@@ -360,8 +363,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::LinacQuadGenerator LQGen;
   LQGen.generateQuad(Control,"LQ",20.0);
 
-  setVariable::LinacSexuGenerator LSGen;
-  LSGen.generateSexu(Control,"LS",20.0);
+  setVariable::LinacSexuGenerator LSxGen;
+  LSxGen.generateSexu(Control,"LS",20.0);
 
   // Block for new R1-M1
   setVariable::MagnetBlockGenerator MBGen;
@@ -608,10 +611,62 @@ SingleItemVariables(FuncDataBase& Control)
 
   // expt hutch
   exptHutVariables(Control,"",0.0);
+  localShieldVariables(Control);
   return;
 }
 
 
+void
+localShieldVariables(FuncDataBase& Control)
+  /*!
+    Createa groupd of local shielding variables
+  */
+{
+  ELog::RegMethod RegA("singleItemVariables[F]","localShieldVariables");
+  
+  setVariable::LocalShieldingGenerator LSGen;
+
+  LSGen.setSize(10.0,60,30.0);
+  LSGen.generate(Control,"ShieldA");
+  Control.addVariable("ShieldAXStep",62.5);
+  Control.addVariable("ShieldAZStep",-10.0);
+  Control.addVariable("ShieldAYStep",1.1);
+
+  // Walls near pipeC
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5384.jpg/view
+  LSGen.setSize(45.0,5,20.0);
+  LSGen.generate(Control,"ShieldB");
+  Control.addVariable("ShieldBXStep",-25.0);
+  Control.addVariable("ShieldBYStep",-27.0);
+  Control.addVariable("ShieldBZStep",5.0);
+  // floor
+  LSGen.setSize(5.0,20,40.0);
+  LSGen.generate(Control,"ShieldC");
+  Control.addVariable("ShieldCZStep",-2.5);
+  Control.addVariable("ShieldCXStep",-7.5);
+  Control.addVariable("ShieldCYStep",2.5);
+  // vertical wall
+  LSGen.setSize(5.0,15,20.0);
+  LSGen.generate(Control,"ShieldD");
+  Control.addVariable("ShieldDXStep",10.0);
+  Control.addVariable("ShieldDYStep",-2.5);
+  // roof
+  LSGen.setSize(5.0,10,20);
+  LSGen.generate(Control,"ShieldE");
+  Control.addVariable("ShieldEYStep",2.5); // Z
+  Control.addVariable("ShieldEXStep",4); // X
+  Control.addVariable("ShieldEZStep",-11); // Y
+  Control.addVariable("ShieldEYAngle",-10);
+
+  
+  Control.addVariable("CellLength",500.0);
+  Control.addVariable("CellWidth",500.0);
+  Control.addVariable("CellHeight",500.0);
+
+  return;
+}
+  
 void
 exptHutVariables(FuncDataBase& Control,
 		 const std::string& beamName,
@@ -623,13 +678,12 @@ exptHutVariables(FuncDataBase& Control,
     \param bremXStep :: Offset of beam from main centre line
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","exptHutVariables");
+  ELog::RegMethod RegA("singleItemVariables[F]","exptHutVariables");
 
   const double beamOffset(-0.6);
     
   const std::string hutName(beamName+"ExptHutch");
 
-  
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"OutWidth",198.50);

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment47.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,12 @@
 
 #include "TDCsegment.h"
 #include "Segment47.h"
+
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
 
 namespace tdcSystem
 {
@@ -214,14 +220,22 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*bellowA,"back",*pipeE);
 
-  shieldA->createAll(System,*pipeD, 2);
-  for (int i=0; i<2; ++i)
-    shieldA->insertInCell(System,outerCell+i);
+  
+  const MonteCarlo::Object* OCell=System.findObject(5750004);
+  ELog::EM<<"Outer Cell ="<<*OCell<<ELog::endDiag; 
 
+  // GIVE UNITS better names:
+  shieldA->createAll(System,*pipeD, 2);
+  shieldA->insertInCell(System,IZThin->getCell("Unit",8));
+  shieldA->insertInCell(System,IZThin->getCell("Unit",9));
   // vertical side wall along the beam line behind pipeC
   shieldB->createAll(System,*pipeD, 2);
   for (int i=-4; i<=0; ++i)
     shieldB->insertInCell(System,outerCell+i);
+
+  ELog::EM<<"Shield == "<<shieldB->getCentre()<<ELog::endDiag;
+  ELog::EM<<"Cell == "<<IZThin->getCell("Unit",8)<<ELog::endDiag;
+  ELog::EM<<"Outer Cell == "<<outerCell<<ELog::endDiag;
 
   // floor
   shieldC->createAll(System,*shieldB, "bottom");
@@ -249,6 +263,9 @@ Segment47::buildObjects(Simulation& System)
 
   shieldF4->createAll(System,*shieldF3, "back");
   shieldF4->insertInCell(System,outerCell-1);
+
+  
+  ELog::EM<<"Outer Cell ="<<*OCell<<ELog::endDiag; 
 
   return;
 }
