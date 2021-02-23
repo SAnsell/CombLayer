@@ -213,7 +213,7 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
   
-  // pipe shield goes around joinPipeB:
+  // pipe shield goes around joinPipeC:
   pShield->addAllInsertCell(exptHut->getCell("Void"));
   pShield->setCutSurf("inner",*joinPipeC,"outerPipe");
   //  pShield->setCutSurf("front",*opticsHut,"innerBack");

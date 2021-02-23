@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/R3ChokeInsert.h
+ * File:   R3ComonInc/HalfElectronPipe.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_R3ChokeInsert_h
-#define xraySystem_R3ChokeInsert_h
+#ifndef xraySystem_HalfElectronPipe_h
+#define xraySystem_HalfElectronPipe_h
 
 class Simulation;
 
@@ -28,43 +28,47 @@ namespace xraySystem
 {
 
 /*!
-  \class R3ChokeInsert
+  \class HalfElectronPipe
   \version 1.0
   \author S. Ansell
-  \date January 2018
-  \brief R3ChokeInsert unit
+  \date July 2015
+  \brief HalfElectronPipe unit
 */
 
-class R3ChokeInsert :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+class HalfElectronPipe :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
-  public attachSystem::ExternalCut
+  public attachSystem::FrontBackCut
 {
  private:
 
-  double plateThick;            ///< Depth
-  double plateGap;              ///< gap between plates
-  double plateDepth;            ///< gap between plates
-  double plateLength;           ///< gap between plates
 
-  int plateMat;                 ///< material for plates
+  double photonRadius;            ///< round on phont side
+  double electronRadius;          ///< large curve for electron 
+  double wallThick;               ///< pipe thickness
+
+  double electronAngle;           ///< Electron bend angle
+  double fullLength;              ///< Full length
+  
+  int voidMat;                  ///< Void material
+  int wallMat;                  ///< Pipe material
+
+  Geometry::Vec3D endPoint;     ///< end point 
+  Geometry::Vec3D elecAxis;     ///< axis at end point
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
- public:
-
-  R3ChokeInsert(const std::string&);
-  R3ChokeInsert(const R3ChokeInsert&);
-  R3ChokeInsert& operator=(const R3ChokeInsert&);
-  virtual ~R3ChokeInsert();
-
-  void setBladeCentre(const attachSystem::FixedComp&,const long int);
-  void setBladeCentre(const Geometry::Vec3D&);
+public:
+  
+  HalfElectronPipe(const std::string&);
+  HalfElectronPipe(const HalfElectronPipe&);
+  HalfElectronPipe& operator=(const HalfElectronPipe&);
+  virtual ~HalfElectronPipe();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

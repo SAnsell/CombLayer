@@ -71,6 +71,7 @@
 
 
 #include "MonoBox.h"
+#include "BoxJaws.h"
 #include "FourPortTube.h"
 
 #include "formaxExptLine.h"
@@ -92,7 +93,9 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   filterBoxA(new xraySystem::MonoBox(newName+"FilterBoxA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  crossA(new xraySystem::FourPortTube(newName+"CrossA"))
+  crossA(new xraySystem::FourPortTube(newName+"CrossA")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  jawBox(new xraySystem::BoxJaws(newName+"JawBox"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -105,6 +108,8 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(filterBoxA);
   OR.addObject(bellowB);
   OR.addObject(crossA);
+  OR.addObject(bellowC);
+  OR.addObject(jawBox);
 }
   
 formaxExptLine::~formaxExptLine()
@@ -190,9 +195,16 @@ formaxExptLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowB,"back",*crossA);
 
+  constructSystem::constructUnit
+    (System,buildZone,*crossA,"back",*bellowC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowC,"back",*jawBox);
+
   buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=bellowB;
+  lastComp=jawBox;
 
   return;
 }

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/R3ChokeInsert.h
+ * File:   R3CommonInc/EntryPipe.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -9,7 +9,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *v
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_R3ChokeInsert_h
-#define xraySystem_R3ChokeInsert_h
+#ifndef constructSystem_EntryPipe_h
+#define constructSystem_EntryPipe_h
 
 class Simulation;
 
@@ -28,43 +28,45 @@ namespace xraySystem
 {
 
 /*!
-  \class R3ChokeInsert
+  \class EntryPipe
   \version 1.0
   \author S. Ansell
-  \date January 2018
-  \brief R3ChokeInsert unit
+  \date July 2015
+  \brief EntryPipe unit
 */
 
-class R3ChokeInsert :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+class EntryPipe :
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
-  public attachSystem::ExternalCut
+  public attachSystem::FrontBackCut
 {
  private:
 
-  double plateThick;            ///< Depth
-  double plateGap;              ///< gap between plates
-  double plateDepth;            ///< gap between plates
-  double plateLength;           ///< gap between plates
 
-  int plateMat;                 ///< material for plates
-  
+  double radius;                ///< void radius [inner]
+  double length;                ///< void length [total]
+  double wallThick;               ///< pipe thickness
+
+  double flangeRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeLength;          ///< Joining Flange length
+
+  int voidMat;                  ///< Void material
+  int wallMat;                  ///< Pipe material
+  int flangeMat;                ///< Flange material
+
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
-
-  R3ChokeInsert(const std::string&);
-  R3ChokeInsert(const R3ChokeInsert&);
-  R3ChokeInsert& operator=(const R3ChokeInsert&);
-  virtual ~R3ChokeInsert();
-
-  void setBladeCentre(const attachSystem::FixedComp&,const long int);
-  void setBladeCentre(const Geometry::Vec3D&);
+  
+  EntryPipe(const std::string&);
+  EntryPipe(const EntryPipe&);
+  EntryPipe& operator=(const EntryPipe&);
+  virtual ~EntryPipe();
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

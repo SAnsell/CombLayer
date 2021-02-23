@@ -3,7 +3,7 @@
  
  * File:   constructVar/DiffPumpGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 namespace setVariable
 {
 
+
 DiffPumpGenerator::DiffPumpGenerator() :
   width(15.28),height(6.52),
   apertureWidth(0.7),apertureHeight(0.7),
@@ -65,6 +66,25 @@ DiffPumpGenerator::DiffPumpGenerator() :
     Constructor and defaults
   */
 {}
+
+
+DiffPumpGenerator::DiffPumpGenerator(const CF40&) :
+  width(6.4),height(6.4),
+  apertureWidth(0.7),apertureHeight(0.7),
+  flangeRadius(CF40::flangeRadius),
+  flangeThick(CF40::flangeLength),
+  flangeVoidWidth(5.0),flangeVoidHeight(5.0),
+  flangeVoidThick(CF40::flangeLength+1.2),magnetWidth(4.7),
+  magnetLength(10.0),magnetThick(1.54),
+  magnetGap(0.17),
+  mat("Stainless304"),magnetMat("Fe2O3"),
+  flangeMat("Stainless304")
+  /*!
+    Constructor and defaults
+  */
+{
+
+}
 
 DiffPumpGenerator::DiffPumpGenerator(const DiffPumpGenerator& A) : 
   width(A.width),height(A.height),apertureWidth(A.apertureWidth),
@@ -172,7 +192,8 @@ DiffPumpGenerator::generatePump(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void DiffPumpGenerator::setCF<CF100>();
+template void DiffPumpGenerator::setCF<CF40>();
+  template void DiffPumpGenerator::setCF<CF100>();
 template void DiffPumpGenerator::setCF<CF150>();
 
 ///\endcond TEMPLATE

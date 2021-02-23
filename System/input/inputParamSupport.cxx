@@ -74,7 +74,7 @@ getNamedCells(const Simulation& System,
   const std::string objName=
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name]");
-  
+
   const std::vector<int> Cells=System.getObjectRange(objName);
   if (Cells.empty())
     throw ColErr::InContainerError<std::string>

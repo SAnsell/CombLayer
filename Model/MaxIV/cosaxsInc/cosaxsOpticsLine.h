@@ -3,7 +3,7 @@
 
  * File:   cosaxsInc/cosaxsOpticsLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,6 @@
 #ifndef xraySystem_cosaxsOpticsLine_h
 #define xraySystem_cosaxsOpticsLine_h
 
-namespace constructSystem
-{
-  class DiffPumpXIADP03;
-}
-
 /*!
   \namespace xraySystem
   \brief General xray optics system
@@ -44,7 +39,7 @@ namespace xraySystem
   class MonoBox;
   class MonoCrystals;
   class MonoShutter;
-
+  class DiffPumpXIADP03;
   /*!
     \class cosaxsOpticsLine
     \version 1.0
@@ -96,7 +91,7 @@ class cosaxsOpticsLine :
   /// Addaptor to connect from pumpint point to diffuser
   std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
   /// Diffusion pump
-  std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
+  std::shared_ptr<xraySystem::DiffPumpXIADP03> diffPumpA;
 
   /// Primary jaw (Box)
   std::shared_ptr<constructSystem::VacuumBox> primeJawBox;

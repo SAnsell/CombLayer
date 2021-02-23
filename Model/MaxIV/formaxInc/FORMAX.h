@@ -55,6 +55,7 @@ namespace xraySystem
   class R3FrontEndCave;
   class ConnectZone;
   class formaxFrontEnd;
+  class PipeShield;
   class WallLead;
   
   /*!
@@ -89,6 +90,9 @@ class FORMAX : public R3Beamline
 
   /// Pipe joining frontend to Expt hutch
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+
+  /// Shield at exit of optics hutch
+  std::shared_ptr<xraySystem::PipeShield> pShield;
 
   /// Beamline expt
   std::shared_ptr<formaxExptLine> exptBeam;

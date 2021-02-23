@@ -45,7 +45,6 @@ namespace constructSystem
   class GateValveCube;
   class JawValveCube;
   class JawFlange;
-  class DiffPumpXIADP03;
 }
 
 namespace xraySystem
@@ -66,11 +65,14 @@ namespace xraySystem
   class IonGauge;
   class TriggerTube;
   class HPJaws;
+  class BoxJaws;
   class BremTube;
   class ViewScreenTube;
   class MonoShutter;
   class MonoBox;
   class FourPortTube;
+  class DiffPumpXIADP03;
+  
     
   /*!
     \class formaxExptLine
@@ -106,7 +108,14 @@ class formaxExptLine :
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// cross way
   std::shared_ptr<xraySystem::FourPortTube> crossA;
-
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+  /// jaws
+  std::shared_ptr<xraySystem::BoxJaws> jawBox;
+  /// Pipe from jaws
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  // diff pump
+  std::shared_ptr<xraySystem::DiffPumpXIADP03> diffPump;
   
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

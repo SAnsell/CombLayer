@@ -344,8 +344,6 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreenB");
   int outerCell;
   
-  // FAKE INSERT REQUIRED
-  viewTubeB->addAllInsertCell(masterCell->getName());
   viewTubeB->createAll(System,initFC,sideName);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewTubeB,2);
   viewTubeB->insertAllInCell(System,outerCell);

@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/MagnetM1Generator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 
-#include "PreDipoleGenerator.h"
 #include "EPCombineGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
@@ -59,6 +59,21 @@ MagnetM1Generator::MagnetM1Generator() :
   yOffset(234.6),blockYStep(10.5),length(220.0),
   outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
   baseVoid(12.0),baseThick(8.0),wallThick(6.0),
+  
+  // entry pipe
+  entryLength(109.5),
+  entryFlangeRadius(CF50::flangeRadius),
+  entryFlangeLength(CF50::flangeLength),
+  
+  // half pipe
+  photonRadius(1.10),
+  pipeWallThick(0.1),electronRadius(1910.0),
+  electronAngle(1.5),
+
+  // full pipe
+  fullLength(205.0),
+
+  // halfpipe
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -72,6 +87,54 @@ MagnetM1Generator::~MagnetM1Generator()
 {}
 
 void
+MagnetM1Generator::generateEntryPipe(FuncDataBase& Control,
+				     const std::string& pipeName) const
+  /*!
+    Entry Pipe
+    \param Control :: dataBase
+    \param pipeName :: Prename of entry pipe
+   */
+{
+  ELog::RegMethod RegA("MagnetM1Generator","generateEntryPipe");
+
+  Control.addVariable(pipeName+"YStep",yOffset-blockYStep);
+  Control.addVariable(pipeName+"Radius",photonRadius);
+  Control.addVariable(pipeName+"Length",entryLength);
+  Control.addVariable(pipeName+"WallThick",pipeWallThick);
+  Control.addVariable(pipeName+"FlangeRadius",entryFlangeRadius);
+  Control.addVariable(pipeName+"FlangeLength",entryFlangeLength);
+  
+  Control.addVariable(pipeName+"VoidMat",voidMat);
+  Control.addVariable(pipeName+"WallMat",wallMat);
+  return;
+}
+
+void
+MagnetM1Generator::generateHalfPipe(FuncDataBase& Control,
+				    const std::string& pipeName) const
+  /*!
+    Half Pipe
+    \param Control :: dataBase
+    \param pipeName :: Prename of half pipe
+   */
+{
+  ELog::RegMethod RegA("MagnetM1Generator","generateHalfPipe");
+
+  Control.addVariable(pipeName+"PhotonRadius",photonRadius);
+  Control.addVariable(pipeName+"WallThick",pipeWallThick);
+  Control.addVariable(pipeName+"ElectronRadius",electronRadius);
+  Control.addVariable(pipeName+"ElectronAngle",electronAngle);
+  Control.addVariable(pipeName+"FullLength",fullLength-entryLength);
+  
+  Control.addVariable(pipeName+"VoidMat",voidMat);
+  Control.addVariable(pipeName+"WallMat",wallMat);
+  return;
+}
+
+
+  
+  
+void
 MagnetM1Generator::generateBlock(FuncDataBase& Control,
 				 const std::string& keyName) const
   /*!
@@ -82,7 +145,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
-  Control.addVariable(keyName+"YStep",yOffset-blockYStep);
+  Control.addVariable(keyName+"YStep",yOffset-blockYStep);    
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
 
@@ -97,8 +160,10 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
-  setVariable::PreDipoleGenerator PBGen;
-  PBGen.generatePipe(Control,keyName+"PreDipole");
+  generateEntryPipe(Control,keyName+"EntryPipe");
+  generateHalfPipe(Control,keyName+"HalfElectron");
+  // setVariable::PreDipoleGenerator PBGen;
+  // PBGen.generatePipe(Control,keyName+"PreDipole");
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,keyName+"EPCombine");
@@ -116,7 +181,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   // extra +5 cm
   QGen.generateQuad(Control,keyName+"QDend",90.30,23.0);
   // +5 cm
-  DGen.generateDipole(Control,keyName+"DIPm",115.50,60.0);
+  DGen.generateDipole(Control,keyName+"DIPm",118.50,60.0);
 
   OGen.setPoleAngle(0.0);
   OGen.setRadius(2.8,3.4);
