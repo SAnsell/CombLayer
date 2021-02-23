@@ -189,8 +189,8 @@ Segment47::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment47","buildObjects");
 
   HeadRule HR;
-  int outerCell,cellB,cellD;
-  MonteCarlo::Object *obj(nullptr), *objB(nullptr);
+  int outerCell;
+  MonteCarlo::Object *obj(nullptr), *objB(nullptr), *objB1(nullptr);
   const int IHFloor(IHall->getSurf("Floor"));
 
   if (isActive("front"))
@@ -218,16 +218,13 @@ Segment47::buildObjects(Simulation& System)
   obj->removeSurface(IHFloor);
   obj->removeSurface(back45);
 
-  cellB = constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberA,"back",*pipeB);
+  objB = System.findObject(outerCell);
 
-  objB = System.findObject(cellB);
-  ELog::EM << objB->getHeadRule() << ELog::endDiag;
-  // obj->removeSurface(IHFloor);
-  // obj->removeSurface(back45);
-
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*pipeB,"back",*mirrorChamberB);
+  objB1 = System.findObject(outerCell);
 
   constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberB,"back",*pipeC);
@@ -235,9 +232,8 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
 
-  cellD = constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
-  outerCell = cellD;
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
@@ -264,7 +260,16 @@ Segment47::buildObjects(Simulation& System)
   HR.populateSurf();
   objB->addIntersection(HR);
 
-  for (int i=-3; i<=0; ++i)
+  HR.reset();
+  HR.addIntersection(shieldB->getLinkSurf("#left")); // 3
+  HR.addIntersection(shieldB->getLinkSurf("#right")); // -4
+  HR.addIntersection(shieldB->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldB->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB1->addIntersection(HR);
+
+  for (int i=-2; i<=0; ++i)
     shieldB->insertInCell(System,outerCell+i);
 
   // floor
@@ -273,13 +278,22 @@ Segment47::buildObjects(Simulation& System)
   HR.addIntersection(shieldC->getLinkSurf("#left")); // 5890003
   HR.addIntersection(shieldC->getLinkSurf("#right")); // -4
   HR.addIntersection(shieldC->getLinkSurf("#front")); // -5650005
-  HR.addIntersection(shieldC->getLinkSurf("#bottom")); // 5880001
   HR.addIntersection(shieldC->getLinkSurf("#back"));
+  HR.addIntersection(shieldC->getLinkSurf("#bottom")); // 5880001
   HR.makeComplement();
   HR.populateSurf();
   objB->addIntersection(HR);
 
-  for (int i=-3; i<=-1; ++i)
+  HR.reset();
+  HR.addIntersection(shieldC->getLinkSurf("#left")); // 5890003
+  HR.addIntersection(shieldC->getLinkSurf("#right")); // -4
+  HR.addIntersection(shieldC->getLinkSurf("#front")); // -5650005
+  HR.addIntersection(shieldC->getLinkSurf("#back"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB1->addIntersection(HR);
+
+  for (int i=-2; i<=-1; ++i)
     shieldC->insertInCell(System,outerCell+i);
 
   // vertical wall
@@ -294,7 +308,17 @@ Segment47::buildObjects(Simulation& System)
   HR.populateSurf();
   objB->addIntersection(HR);
 
-  for (int i=-3; i<=-3; ++i)
+  HR.reset();
+  HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
+  HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
+  HR.addIntersection(shieldD->getLinkSurf("#front"));
+  HR.addIntersection(shieldD->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldD->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB1->addIntersection(HR);
+
+  for (int i=-2; i<=-3; ++i)
     shieldD->insertInCell(System,outerCell+i);
 
   // roof
@@ -309,7 +333,16 @@ Segment47::buildObjects(Simulation& System)
   HR.populateSurf();
   objB->addIntersection(HR);
 
-  for (int i=-3; i<=-2; ++i)
+  HR.reset();
+  HR.addIntersection(shieldE->getLinkSurf("#left")); // -3
+  HR.addIntersection(shieldE->getLinkSurf("#right")); // 4
+  HR.addIntersection(shieldE->getLinkSurf("#back")); // 2
+  HR.addIntersection(shieldE->getLinkSurf("#front")); // 6
+  HR.makeComplement();
+  HR.populateSurf();
+  objB1->addIntersection(HR);
+
+  for (int i=-2; i<=-2; ++i)
     shieldE->insertInCell(System,outerCell+i);
   // legs
   shieldF1->createAll(System,*shieldC, "back");
