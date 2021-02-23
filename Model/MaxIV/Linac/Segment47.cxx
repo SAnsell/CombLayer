@@ -67,6 +67,13 @@
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
+#include "FixedOffset.h"
+#include "InjectionHall.h"
+
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "TDCsegment.h"
 #include "Segment47.h"
@@ -79,6 +86,7 @@ namespace tdcSystem
 Segment47::Segment47(const std::string& Key) :
   TDCsegment(Key,2),
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
+  IHall(nullptr),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   prismaChamberA(new tdcSystem::PrismaChamber(keyName+"PrismaChamberA")),
@@ -155,6 +163,11 @@ Segment47::createSplitInnerZone()
 	{
 	  if (sideSegment->hasSideIndex("buildZoneCut"))
 	    HRcut.addUnion(sideSegment->getLinkSurf("buildZoneCut"));
+
+	  if (sideSegment->getKeyName() == "SPF45")
+	    back45 = sideSegment->getLinkSurf("buildZoneCut");
+	  else if (sideSegment->getKeyName() == "SPF46")
+	    roof46 = sideSegment->getLinkSurf("buildZoneCut");
 	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.addIntersection(HRcut);
@@ -175,7 +188,10 @@ Segment47::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment47","buildObjects");
 
-  int outerCell;
+  HeadRule HR;
+  int outerCell,cellB,cellD;
+  MonteCarlo::Object *obj(nullptr), *objB(nullptr);
+  const int IHFloor(IHall->getSurf("Floor"));
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
@@ -184,14 +200,31 @@ Segment47::buildObjects(Simulation& System)
   outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*prismaChamberA);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*prismaChamberA,"back",*mirrorChamberA);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  cellB = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberA,"back",*pipeB);
+
+  objB = System.findObject(cellB);
+  ELog::EM << objB->getHeadRule() << ELog::endDiag;
+  // obj->removeSurface(IHFloor);
+  // obj->removeSurface(back45);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeB,"back",*mirrorChamberB);
@@ -202,8 +235,9 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
 
-  outerCell = constructSystem::constructUnit
+  cellD = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
+  outerCell = cellD;
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
@@ -220,17 +254,47 @@ Segment47::buildObjects(Simulation& System)
 
   // vertical side wall along the beam line behind pipeC
   shieldB->createAll(System,*pipeD, 2);
-  for (int i=-4; i<=0; ++i)
+  HR.reset();
+  HR.addIntersection(shieldB->getLinkSurf("#left")); // 3
+  HR.addIntersection(shieldB->getLinkSurf("#front")); // 1
+  HR.addIntersection(shieldB->getLinkSurf("#right")); // -4
+  HR.addIntersection(shieldB->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldB->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB->addIntersection(HR);
+
+  for (int i=-3; i<=0; ++i)
     shieldB->insertInCell(System,outerCell+i);
 
   // floor
   shieldC->createAll(System,*shieldB, "bottom");
-  for (int i=-4; i<=-1; ++i)
+  HR.reset();
+  HR.addIntersection(shieldC->getLinkSurf("#left")); // 5890003
+  HR.addIntersection(shieldC->getLinkSurf("#right")); // -4
+  HR.addIntersection(shieldC->getLinkSurf("#front")); // -5650005
+  HR.addIntersection(shieldC->getLinkSurf("#bottom")); // 5880001
+  HR.addIntersection(shieldC->getLinkSurf("#back"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB->addIntersection(HR);
+
+  for (int i=-3; i<=-1; ++i)
     shieldC->insertInCell(System,outerCell+i);
 
   // vertical wall
   shieldD->createAll(System,*shieldB, "front");
-  for (int i=-4; i<=-3; ++i)
+  HR.reset();
+  HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
+  HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
+  HR.addIntersection(shieldD->getLinkSurf("#back")); // 1
+  HR.addIntersection(shieldD->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldD->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB->addIntersection(HR);
+
+  for (int i=-3; i<=-3; ++i)
     shieldD->insertInCell(System,outerCell+i);
 
   // roof
@@ -283,6 +347,8 @@ Segment47::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment47","build");
+
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -45,6 +45,7 @@ class Segment47 :
  private:
 
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
+  const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
   std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
@@ -66,6 +67,9 @@ class Segment47 :
   std::shared_ptr<tdcSystem::LocalShielding> shieldF2; // leg
   std::shared_ptr<tdcSystem::LocalShielding> shieldF3; // leg
   std::shared_ptr<tdcSystem::LocalShielding> shieldF4; // leg
+
+  int back45; ///< back surface of segment 45
+  int roof46; ///< roof surface of segment 46
 
   void createSplitInnerZone();
 
