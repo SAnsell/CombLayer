@@ -660,9 +660,9 @@ localShieldVariables(FuncDataBase& Control)
   Control.addVariable("ShieldEYAngle",-10);
 
   
-  Control.addVariable("CellLength",500.0);
-  Control.addVariable("CellWidth",500.0);
-  Control.addVariable("CellHeight",500.0);
+  Control.addVariable("CellLength",100.0);
+  Control.addVariable("CellWidth",100.0);
+  Control.addVariable("CellHeight",190.0);
 
   return;
 }

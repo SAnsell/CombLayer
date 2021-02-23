@@ -50,7 +50,7 @@ class BaseMap
   std::string getFCKeyName() const;
   
  public:
-
+  
   BaseMap();         
   BaseMap(const BaseMap&);
   BaseMap& operator=(const BaseMap&);

@@ -175,15 +175,14 @@ LocalShielding::createSurfaces()
 {
   ELog::RegMethod RegA("LocalShielding","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  makePlane("front",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  makePlane("back",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
+  makePlane("base",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ELog::EM<<"Top["<<keyName<<"] == "<<getSurfRule("top")<<ELog::endDiag;
   // penetration for the beam pipe
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(midHoleWidth/2.0+xStep),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(midHoleWidth/2.0-xStep),X);
