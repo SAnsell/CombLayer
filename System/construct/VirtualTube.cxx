@@ -521,8 +521,10 @@ VirtualTube::splitVoidPorts(Simulation& System,
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
-    for(const int CN : cells)
-      CellMap::addCell(splitName,CN);
+    {
+      for(const int CN : cells)
+	CellMap::addCell(splitName,CN);
+    }
 
   return (cells.empty()) ? CN : cells.back()+1;
 }

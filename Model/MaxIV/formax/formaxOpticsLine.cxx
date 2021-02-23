@@ -555,7 +555,8 @@ formaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*ionGaugeA,"back",*bellowB);
 
-  constructSystem::constructUnit
+  // split later:
+  outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowB,"back",*diagBoxA);
   diagBoxA->intersectPorts(System,0,1);
   diagBoxA->intersectPorts(System,4,3);
@@ -567,7 +568,8 @@ formaxOpticsLine::buildObjects(Simulation& System)
       jaws[i]->createAll(System,*diagBoxA,0,
 			 PI,PI.getSideIndex("InnerPlate"));
 
-      diagBoxA->splitObjectAbsolute(System,1501+i*10,
+      const int surfNum(1501+10*static_cast<int>(i));
+      diagBoxA->splitObjectAbsolute(System,surfNum,
 				    diagBoxA->getCell("Void",i),
 				    jaws[i]->getCentre(),
 				    diagBoxA->getY());
@@ -586,6 +588,13 @@ formaxOpticsLine::buildObjects(Simulation& System)
   jaws[1]->insertInCell("BlockA",System,diagBoxA->getCell("Void",2));
   jaws[1]->insertInCell("BlockB",System,diagBoxA->getCell("Void",1));
 
+  // split on port:
+
+  diagBoxA->splitVoidPorts(System,"OuterSplit",2501,outerCell,
+			  {1,2});
+  outerCell=diagBoxA->getCell("OuterSplit",1);
+  diagBoxA->splitVoidPorts(System,"OuterSplit",2601,outerCell,
+			  {2,3});
 
   // exit:
 
@@ -596,8 +605,8 @@ formaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*gateTubeB,"back",*bellowC);
 
-
   constructMirrorMono(System,*bellowC,"back");
+
 
   constructSystem::constructUnit
     (System,buildZone,*MLMVessel,"back",*bellowD);
@@ -607,7 +616,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeC,"back",*gateTubeC);
   constructSystem::constructUnit
     (System,buildZone,*gateTubeC,"back",*bellowE);
-    
+
   constructHDCM(System,*bellowE,"back");
 
   constructSystem::constructUnit
@@ -616,12 +625,15 @@ formaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowF,"back",*pipeD);
   constructSystem::constructUnit
     (System,buildZone,*pipeD,"back",*gateTubeD);
+  
 
   constructDiag2(System,*gateTubeD,"back");
 
+
   constructSystem::constructUnit
     (System,buildZone,*hpJawsA,"back",*mirrorBoxA);
-  
+
+
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   
@@ -635,8 +647,9 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructDiag4(System,*bellowI,"back");
 
+
   constructMonoShutter(System,*viewTubeB,"back");
-    
+
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

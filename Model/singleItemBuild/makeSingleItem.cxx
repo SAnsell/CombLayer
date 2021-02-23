@@ -133,6 +133,7 @@
 #include "DiffPumpXIADP03.h"
 #include "ViewScreenTube.h"
 #include "ExperimentalHutch.h"
+#include "ConnectorTube.h"
 
 #include "makeSingleItem.h"
 
@@ -182,7 +183,7 @@ makeSingleItem::build(Simulation& System,
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","DiffPump","ExperimentalHutch",
-      "Help","help"
+      "ConnectorTube","Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -821,6 +822,18 @@ makeSingleItem::build(Simulation& System,
       BS->addInsertCell(voidCell);
       BS->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+
+  if (item == "ConnectorTube")
+    {
+      std::shared_ptr<xraySystem::ConnectorTube>
+	cp(new xraySystem::ConnectorTube("ConnectorTube"));
+      OR.addObject(cp);
+
+      cp->addInsertCell(voidCell);
+      cp->createAll(System,World::masterOrigin(),0);
+      
       return;
     }
 

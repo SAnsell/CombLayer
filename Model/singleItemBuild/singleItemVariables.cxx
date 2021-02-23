@@ -115,6 +115,7 @@
 #include "DiffPumpGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
+#include "ConnectorGenerator.h"
 
 namespace setVariable
 {
@@ -312,10 +313,13 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::HPJawsGenerator HPGen;
   HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
 
+  setVariable::ConnectorGenerator CPGen;
+  CPGen.generatePipe(Control,"ConnectorTube",20.0);
+  
   setVariable::BoxJawsGenerator BJGen;
   BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
 
-  CF40 CFflange;
+  //    CF40 CFflange;
   //  setVariable::DiffPumpGenerator DPGen(CFflange);
   //  DPGen.generatePump(Control,"DiffPump",27.4);
 

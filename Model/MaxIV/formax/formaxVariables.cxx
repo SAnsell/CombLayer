@@ -93,6 +93,7 @@
 #include "ViewScreenGenerator.h"
 #include "YagScreenGenerator.h"
 #include "SixPortGenerator.h"
+#include "BoxJawsGenerator.h"
 #include "PipeShieldGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
@@ -914,7 +915,8 @@ exptVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::SixPortGenerator CrossGen;
   setVariable::MonoBoxGenerator VBoxGen;
-    
+  setVariable::BoxJawsGenerator BJGen;
+  
   const std::string preName(beamName+"ExptLine");
 
   Control.addVariable(preName+"OuterLeft",50.0);
@@ -939,7 +941,9 @@ exptVariables(FuncDataBase& Control,
   CrossGen.generateSixPort(Control,preName+"CrossA");
 
   BellowGen.generateBellow(Control,preName+"BellowC",7.5);
-  
+
+  BJGen.generateJaws(Control,"JawBox",0.8,0.8);
+
   return;
 }
 

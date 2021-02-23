@@ -212,7 +212,8 @@ FORMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
-    
+
+  
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -230,6 +231,7 @@ FORMAX::build(Simulation& System,
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   pShield->createAll(System,*opticsHut,"innerBack");
 
+  if (stopPoint=="exptHut") return;
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
 			 exptHut->getSideIndex("innerFront"));
