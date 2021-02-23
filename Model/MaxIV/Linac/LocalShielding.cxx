@@ -329,6 +329,9 @@ LocalShielding::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+
   FixedComp::nameSideIndex(2,"left");
   FixedComp::nameSideIndex(3,"right");
 
