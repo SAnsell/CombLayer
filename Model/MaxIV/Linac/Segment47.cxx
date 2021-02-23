@@ -67,6 +67,7 @@
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
+#include "LocalShieldingCell.h"
 
 #include "TDCsegment.h"
 #include "Segment47.h"
@@ -98,10 +99,8 @@ Segment47::Segment47(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
-  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
-  shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
-  shieldD(new tdcSystem::LocalShielding(keyName+"ShieldD")),
-  shieldE(new tdcSystem::LocalShielding(keyName+"ShieldE")),
+  shieldCell(new tdcSystem::LocalShieldingCell(keyName+"ShieldCell",
+					       keyName)),
   shieldF1(new tdcSystem::LocalShielding(keyName+"ShieldF1")),
   shieldF2(new tdcSystem::LocalShielding(keyName+"ShieldF2")),
   shieldF3(new tdcSystem::LocalShielding(keyName+"ShieldF3")),
@@ -126,10 +125,7 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeE);
   OR.addObject(shieldA);
-  OR.addObject(shieldB);
-  OR.addObject(shieldC);
-  OR.addObject(shieldD);
-  OR.addObject(shieldE);
+  OR.addObject(shieldCell);
   OR.addObject(shieldF1);
   OR.addObject(shieldF2);
   OR.addObject(shieldF3);
@@ -228,30 +224,16 @@ Segment47::buildObjects(Simulation& System)
   shieldA->createAll(System,*pipeD, 2);
   shieldA->insertInCell(System,IZThin->getCell("Unit",8));
   shieldA->insertInCell(System,IZThin->getCell("Unit",9));
-  // vertical side wall along the beam line behind pipeC
-  shieldB->createAll(System,*pipeD, 2);
-  for (int i=-4; i<=0; ++i)
-    shieldB->insertInCell(System,outerCell+i);
 
-  ELog::EM<<"Shield == "<<shieldB->getCentre()<<ELog::endDiag;
-  ELog::EM<<"Cell == "<<IZThin->getCell("Unit",8)<<ELog::endDiag;
-  ELog::EM<<"Outer Cell == "<<outerCell<<ELog::endDiag;
+  shieldCell->createAll(System,*pipeD,2);
+  for(size_t i=3;i<9;i++)
+    {
+      ELog::EM<<"Cell == "<<IZThin->getCell("Unit",i)<<ELog::endDiag;
+      shieldCell->insertInCell(System,IZThin->getCell("Unit",i));
+    }
 
-  // floor
-  shieldC->createAll(System,*shieldB, "bottom");
-  for (int i=-4; i<=-1; ++i)
-    shieldC->insertInCell(System,outerCell+i);
-
-  // vertical wall
-  shieldD->createAll(System,*shieldB, "front");
-  for (int i=-4; i<=-3; ++i)
-    shieldD->insertInCell(System,outerCell+i);
-
-  // roof
-  shieldE->createAll(System,*shieldB, "top");
-  for (int i=-4; i<=-2; ++i)
-    shieldE->insertInCell(System,outerCell+i);
-  // legs
+  // legs [DO LATER]
+  /*
   shieldF1->createAll(System,*shieldC, "back");
   shieldF1->insertInCell(System,outerCell-4);
 
@@ -263,7 +245,7 @@ Segment47::buildObjects(Simulation& System)
 
   shieldF4->createAll(System,*shieldF3, "back");
   shieldF4->insertInCell(System,outerCell-1);
-
+  */
   
   ELog::EM<<"Outer Cell ="<<*OCell<<ELog::endDiag; 
 

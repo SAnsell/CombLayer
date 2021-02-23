@@ -38,6 +38,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -58,6 +59,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Surface.h"
 #include "ExternalCut.h"
 
 #include "LocalShielding.h"
@@ -73,6 +75,7 @@ LocalShieldingCell::LocalShieldingCell(const std::string& Key,
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
+  baseName(baseKey),
   Units({
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldB"),
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldC"),
@@ -130,7 +133,7 @@ LocalShieldingCell::createObjects(Simulation& System)
   for(std::shared_ptr<LocalShielding>& uPtr : Units)
     {      
       const std::string unitName=uPtr->getKeyName();
-      mc=connections.find(unitName);
+      mc=connections.find(baseName+unitName);
 
       if (mc!=connections.end())
 	{
@@ -153,21 +156,22 @@ LocalShieldingCell::createObjects(Simulation& System)
       const std::string& linkSide=sUnit.second;
       const attachSystem::SurfMap* SMptr=
 	    System.getObjectThrow<attachSystem::SurfMap>
-	    (linkUnit,"SurfMap");
+	    (baseName+linkUnit,"SurfMap");
 
       const HeadRule SurfHR = SMptr->getSurfRule(linkSide);
       HR *= SurfHR;
-      //      ELog::EM<<name<<":"<<linkUnit<<"::"<<linkSide<<" == "<<SurfHR<<ELog::endDiag;
-
+      ELog::EM<<"SURF["
+	      <<baseName+linkUnit<<"] == "
+	      <<*SMptr->getSurfPtr(linkSide);
     }
+  ELog::EM<<ELog::endDiag;
+  ELog::EM<<"HR == "<<HR<<ELog::endDiag;
   makeCell("Main",System,cellIndex++,0,0.0,HR);
   addOuterSurf(HR);
 
   const int mainCell=getCell("Main");
   for(std::shared_ptr<LocalShielding>& uPtr : Units)
     uPtr->insertInCell(System,mainCell);
-      
-
   
   return;
 }

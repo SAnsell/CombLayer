@@ -45,6 +45,8 @@ class LocalShieldingCell :
 {
  private:
 
+  const std::string baseName;
+  
   typedef std::map<std::string,std::pair<std::string,std::string>> mapTYPE;
   
   /// Unit for the shielding
