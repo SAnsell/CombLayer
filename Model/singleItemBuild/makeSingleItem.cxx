@@ -457,7 +457,24 @@ makeSingleItem::build(Simulation& System,
 	ls(new tdcSystem::LocalShieldingCell("Cell",""));
 
       OR.addObject(ls);
+      
+      ls->setSurfaces({
+    	    {"front",{"ShieldE","#back"}},      // -1050002
+	    {"back",{"ShieldB","#back"}},       // -1020002
+	    {"left",{"ShieldC","left"}},        // 1030003
+	    {"right",{"ShieldB","#right"}},     // -102004
+	    {"base",{"ShieldE","base"}},        // 1050005 
+	    {"top",{"ShieldB","#top"}}          // -1020006 
+	});
 
+      ls->setConnections
+	({
+	  {"ShieldB",{"THIS",""}},
+	  {"ShieldC",{"ShieldB","bottom"}},
+	  {"ShieldD",{"ShieldB","front"}},
+	  {"ShieldE",{"ShieldB","front"}}
+	});
+      
       ls->addInsertCell(voidCell);
       ls->createAll(System,World::masterOrigin(),0);
 

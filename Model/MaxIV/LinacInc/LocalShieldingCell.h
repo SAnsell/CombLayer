@@ -43,14 +43,18 @@ class LocalShieldingCell :
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
 {
- private:
-
-  const std::string baseName;
+ public:
   
   typedef std::map<std::string,std::pair<std::string,std::string>> mapTYPE;
+
+ private:
+  
+  const std::string baseName;
+
   
   /// Unit for the shielding
-  std::vector<std::shared_ptr<tdcSystem::LocalShielding>> Units;
+  std::vector<std::shared_ptr<attachSystem::FixedComp>> Units;
+  /// Connections
   std::map<std::string,std::pair<std::string,std::string>>
     connections;
   std::map<std::string,std::pair<std::string,std::string>>
@@ -66,8 +70,13 @@ class LocalShieldingCell :
   LocalShieldingCell& operator=(const LocalShieldingCell&);
   virtual ~LocalShieldingCell();
 
-  void addUnit(const std::string&);
+  void addUnit(std::shared_ptr<attachSystem::FixedComp>);
+  
   void addConnection(const std::string&,const std::string&,const std::string&);
+  void addSurface(const std::string&,const std::string&,const std::string&);
+ 
+  void setConnections(mapTYPE&&);
+  void setSurfaces(mapTYPE&&);
 
   
   using FixedComp::createAll;

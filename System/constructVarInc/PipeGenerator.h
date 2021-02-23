@@ -59,6 +59,8 @@ class PipeGenerator
   std::string claddingMat;      ///< Primary default mat
   std::string flangeMat;        ///< Flange material
 
+  int outerVoid;                ///< Flag to build the outer void cell between flanges
+
  public:
 
   PipeGenerator();
@@ -85,6 +87,8 @@ class PipeGenerator
   void setWindowMat(const std::string&);
   void setWindowMat(const std::string&,const std::string&);
   void setCladding(const double,const std::string&);
+
+  inline void setOuterVoid(int val=1) { outerVoid = val; }
 
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double) const;

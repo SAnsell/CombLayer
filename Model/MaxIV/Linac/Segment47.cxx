@@ -68,15 +68,22 @@
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
 #include "LocalShieldingCell.h"
+#include "FixedOffset.h"
+#include "InjectionHall.h"
 
-#include "TDCsegment.h"
-#include "Segment47.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
+
+#include "TDCsegment.h"
+#include "Segment47.h"
 
 namespace tdcSystem
 {
@@ -86,6 +93,7 @@ namespace tdcSystem
 Segment47::Segment47(const std::string& Key) :
   TDCsegment(Key,2),
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
+  IHall(nullptr),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   prismaChamberA(new tdcSystem::PrismaChamber(keyName+"PrismaChamberA")),
@@ -99,8 +107,11 @@ Segment47::Segment47(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
-  shieldCell(new tdcSystem::LocalShieldingCell(keyName+"ShieldCell",
-					       keyName)),
+  shieldCell(new tdcSystem::LocalShieldingCell(keyName,"ShieldCell")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
+  shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
+  shieldD(new tdcSystem::LocalShielding(keyName+"ShieldD")),
+  shieldE(new tdcSystem::LocalShielding(keyName+"ShieldE")),
   shieldF1(new tdcSystem::LocalShielding(keyName+"ShieldF1")),
   shieldF2(new tdcSystem::LocalShielding(keyName+"ShieldF2")),
   shieldF3(new tdcSystem::LocalShielding(keyName+"ShieldF3")),
@@ -125,12 +136,25 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeE);
   OR.addObject(shieldA);
+
   OR.addObject(shieldCell);
+  OR.addObject(shieldB);
+  OR.addObject(shieldC);
+  OR.addObject(shieldD);
+  OR.addObject(shieldE);
+  
   OR.addObject(shieldF1);
   OR.addObject(shieldF2);
   OR.addObject(shieldF3);
   OR.addObject(shieldF4);
 
+
+  // Create Shield
+  shieldCell->addUnit(shieldB);
+  shieldCell->addUnit(shieldC);
+  shieldCell->addUnit(shieldD);
+  shieldCell->addUnit(shieldE);
+	
   setFirstItems(pipeA);
 }
 
@@ -157,6 +181,11 @@ Segment47::createSplitInnerZone()
 	{
 	  if (sideSegment->hasSideIndex("buildZoneCut"))
 	    HRcut.addUnion(sideSegment->getLinkSurf("buildZoneCut"));
+
+	  if (sideSegment->getKeyName() == "SPF45")
+	    back45 = sideSegment->getLinkSurf("buildZoneCut");
+	  else if (sideSegment->getKeyName() == "SPF46")
+	    roof46 = sideSegment->getLinkSurf("buildZoneCut");
 	}
       HeadRule HSurroundB=buildZone->getSurround();
       HSurroundB.addIntersection(HRcut);
@@ -177,7 +206,10 @@ Segment47::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment47","buildObjects");
 
-  int outerCell;
+  HeadRule HR;
+  int outerCell,cellB,cellD;
+  MonteCarlo::Object *obj(nullptr), *objB(nullptr);
+  const int IHFloor(IHall->getSurf("Floor"));
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
@@ -186,14 +218,31 @@ Segment47::buildObjects(Simulation& System)
   outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*prismaChamberA);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*prismaChamberA,"back",*mirrorChamberA);
 
-  constructSystem::constructUnit
+  obj = System.findObject(outerCell);
+  obj->removeSurface(IHFloor);
+  obj->removeSurface(back45);
+
+  cellB = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberA,"back",*pipeB);
+
+  objB = System.findObject(cellB);
+  ELog::EM << objB->getHeadRule() << ELog::endDiag;
+  // obj->removeSurface(IHFloor);
+  // obj->removeSurface(back45);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeB,"back",*mirrorChamberB);
@@ -204,8 +253,9 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
 
-  outerCell = constructSystem::constructUnit
+  cellD = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
+  outerCell = cellD;
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
@@ -216,23 +266,37 @@ Segment47::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*IZThin,*bellowA,"back",*pipeE);
 
-  
-  const MonteCarlo::Object* OCell=System.findObject(5750004);
-  ELog::EM<<"Outer Cell ="<<*OCell<<ELog::endDiag; 
-
+ 
   // GIVE UNITS better names:
   shieldA->createAll(System,*pipeD, 2);
+
   shieldA->insertInCell(System,IZThin->getCell("Unit",8));
   shieldA->insertInCell(System,IZThin->getCell("Unit",9));
 
+
+  shieldCell->setSurfaces({
+    	    {"front",{"ShieldE","#back"}},      // -1050002
+	    {"back",{"ShieldB","#back"}},       // -1020002
+	    {"left",{"ShieldC","left"}},        // 1030003
+	    {"right",{"ShieldB","#right"}},     // -102004
+	    {"base",{"ShieldE","base"}},        // 1050005 
+	    {"top",{"ShieldB","#top"}}          // -1020006 
+    });
+
+  shieldCell->setConnections
+    ({
+      {keyName+"ShieldB",{"THIS",""}},
+      {keyName+"ShieldC",{keyName+"ShieldB","bottom"}},
+      {keyName+"ShieldD",{keyName+"ShieldB","front"}},
+      {keyName+"ShieldE",{keyName+"ShieldB","front"}}
+    });
+
+
   shieldCell->createAll(System,*pipeD,2);
   for(size_t i=3;i<9;i++)
-    {
-      ELog::EM<<"Cell == "<<IZThin->getCell("Unit",i)<<ELog::endDiag;
-      shieldCell->insertInCell(System,IZThin->getCell("Unit",i));
-    }
+    shieldCell->insertInCell(System,IZThin->getCell("Unit",i));
 
-  // legs [DO LATER]
+
   /*
   shieldF1->createAll(System,*shieldC, "back");
   shieldF1->insertInCell(System,outerCell-4);
@@ -245,10 +309,7 @@ Segment47::buildObjects(Simulation& System)
 
   shieldF4->createAll(System,*shieldF3, "back");
   shieldF4->insertInCell(System,outerCell-1);
-  */
-  
-  ELog::EM<<"Outer Cell ="<<*OCell<<ELog::endDiag; 
-
+  */  
   return;
 }
 
@@ -282,6 +343,8 @@ Segment47::createAll(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("Segment47","build");
+
+  IHall=dynamic_cast<const InjectionHall*>(&FC);
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

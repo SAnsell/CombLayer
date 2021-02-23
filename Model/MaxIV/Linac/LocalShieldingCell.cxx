@@ -56,6 +56,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -68,49 +69,19 @@
 namespace tdcSystem
 {
 
-LocalShieldingCell::LocalShieldingCell(const std::string& Key,
-				       const std::string& baseKey)  :
+LocalShieldingCell::LocalShieldingCell(const std::string& baseKey,
+					 const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
-  baseName(baseKey),
-  Units({
-	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldB"),
-	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldC"),
-	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldD"),
-	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldE"),
-    }),
-  connections({
-	       {baseKey+"ShieldB",{"THIS",""}},
-	       {baseKey+"ShieldC",{baseKey+"ShieldB","bottom"}},
-	       {baseKey+"ShieldD",{baseKey+"ShieldB","front"}},
-	       {baseKey+"ShieldE",{baseKey+"ShieldB","front"}}
-    }),
-  surfaces({
-	    {"front",{"ShieldE","#back"}},     // -1050002
-	    {"back",{"ShieldB","#back"}},     // -1020002
-	    {"left",{"ShieldC","left"}},        // 1030003
-	    {"right",{"ShieldB","#right"}},         // -102004
-	    {"base",{"ShieldE","base"}},         // 1050005 
-	    {"top",{"ShieldB","#top"}}       // -1020006 
-    })
-    
-    
-	       
+  baseName(baseKey)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  for(const std::shared_ptr<LocalShielding>& uPtr : Units)
-    OR.addObject(uPtr);
-
-}
+{}
 
 LocalShieldingCell::~LocalShieldingCell()
   /*!
@@ -118,6 +89,49 @@ LocalShieldingCell::~LocalShieldingCell()
   */
 {}
 
+void
+LocalShieldingCell::addUnit
+(std::shared_ptr<attachSystem::FixedComp> UnitFC)
+  /*!
+    Adds a unit
+    \param UnitFC :: Contained FixedComp unit
+  */
+
+{
+  ELog::RegMethod RegA("LocalShieldingCell","addUnit");
+
+  Units.push_back(UnitFC);
+  return;
+}
+
+void
+LocalShieldingCell::setSurfaces(mapTYPE&& surfMap)
+  /*!
+    Adds a unit
+    \param surfMap :: Surfaces
+  */
+
+{
+  ELog::RegMethod RegA("LocalShieldingCell","setSurfaces");
+
+  surfaces=surfMap;  
+  return;
+}
+
+void
+LocalShieldingCell::setConnections(mapTYPE&& conMap)
+  /*!
+    Adds the connections map
+    \param conMap :: connections
+  */
+
+{
+  ELog::RegMethod RegA("LocalShieldingCell","setConnections");
+
+  connections=conMap;  
+  return;
+}
+  
 void
 LocalShieldingCell::createObjects(Simulation& System)
   /*!
@@ -131,7 +145,7 @@ LocalShieldingCell::createObjects(Simulation& System)
   
   mapTYPE::const_iterator mc;
 
-  for(std::shared_ptr<LocalShielding>& uPtr : Units)
+  for(std::shared_ptr<attachSystem::FixedComp>& uPtr : Units)
     {      
       const std::string unitName=uPtr->getKeyName();
       mc=connections.find(unitName);
@@ -173,8 +187,22 @@ LocalShieldingCell::createObjects(Simulation& System)
   addOuterSurf(HR);
 
   const int mainCell=getCell("Main");
-  for(std::shared_ptr<LocalShielding>& uPtr : Units)
-    uPtr->insertInCell(System,mainCell);
+  for(std::shared_ptr<attachSystem::FixedComp>& uPtr : Units)
+    {
+      attachSystem::ContainedGroup* CGPtr=
+	dynamic_cast<attachSystem::ContainedGroup*>(uPtr.get());
+      if (CGPtr)
+	CGPtr->insertAllInCell(System,mainCell);
+      else
+	{
+	  attachSystem::ContainedComp* CPtr=
+	    dynamic_cast<attachSystem::ContainedComp*>(uPtr.get());
+	  if (CPtr)
+	    CPtr->insertInCell(System,mainCell);
+
+	}
+    }
+  
   
   return;
 }

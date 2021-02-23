@@ -160,16 +160,15 @@ Segment12::buildObjects(Simulation& System)
   shieldA->createAll(System,*beamA,"front");
   outerCell=buildZone->createUnit(System,*shieldA,-1);
 
-  attachSystem::ContainedGroup* CGPtr=
-    dynamic_cast<attachSystem::ContainedGroup*>(beamA.get());
-  CGPtr->insertInCell("Box",System,outerCell);
-  CGPtr->insertInCell("FlangeA",System,outerCell);
+  beamA->insertInCell("Box",System,outerCell);
+  beamA->insertInCell("FlangeA",System,outerCell);
 
   outerCell=buildZone->createUnit(System,*shieldA,2);
   shieldA->insertInCell(System,outerCell);
 
   pipeTerminateGroup(System,*buildZone,beamA,"exit",
    		     {"Box","Main","Exit","FlangeE"});
+  outerCell = buildZone->createUnit(System,*beamA,"exit");
   /////////////
 
   bellowLA->setCutSurf("front",*beamA,"exit");
@@ -179,35 +178,46 @@ Segment12::buildObjects(Simulation& System)
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*bellowLA,"back",*ionPumpLA);
+
+
+
   ionPumpLA->insertInCell(System,outerCell);
   // note this is a double insert
   beamA->insertInCell("Main",System,outerCell);
 
-
-  int cellA,cellB,cellC;
-  cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
-					{"Main","FlangeB"});
+  int cellB,cellC;
 
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
 
-  // this creates two buildZone cells:
-  cellB=pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  dipoleB->setCutSurf("Inner",*flatB,"outerPipe");
+  dipoleB->createAll(System,*flatB,"Origin");
+
+  cellB=buildZone->createUnit(System,*dipoleB,2); // cellB = cellA+1
+  dipoleB->insertInCell(System,cellB);
+
+  beamA->insertInCell("Main",System,cellB);
+  beamA->insertInCell("FlangeB",System,cellB);
+
+
   cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
+  flatB->insertInCell("FlangeA",System,cellB);
+  flatB->insertInCell("Pipe",System,cellB);
 
-  pipeLA->addAllInsertCell(cellA);
-  pipeLA->addAllInsertCell(cellB-1);
+  pipeLA->addInsertCell("Main",cellB);
+  pipeLA->addInsertCell("FlangeA",cellB);
   pipeLA->addAllInsertCell(cellC);
   pipeLA->addAllInsertCell(dipoleB->getCell("VoidMiddle"));
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,*ionPumpLA,"back",*pipeLA);
-  bellowRB->addInsertCell(outerCell);
+
+  pipeLA->setCutSurf("font",*ionPumpLA,"back");
+  pipeLA->createAll(System,*ionPumpLA,"back");
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeLA,"back",*bellowLB);
 
+  pipeLA->insertInCell("Main",System,outerCell);
+  pipeLA->insertInCell("FlangeB",System,outerCell);
 
   bellowRB->setFront(*flatB,"back");
   bellowRB->createAll(System,*flatB,"back");

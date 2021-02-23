@@ -96,22 +96,26 @@ Segment1Magnet(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
   //  corrector mag and pie
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
   CMGen.generateMag(Control,lKey+"CMagHA",31.85,0); // No_1_00.pdf
   CMGen.generateMag(Control,lKey+"CMagVA",46.85,1); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid(1);
   PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
   CMGen.generateMag(Control,lKey+"CMagHB",51.86,0);
@@ -310,6 +314,7 @@ Segment29Magnet(FuncDataBase& Control,
   PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
@@ -372,6 +377,7 @@ Segment32Magnet(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.setCF<CF18_TDC>();
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeA",94.401); // No_32_34_00
   Control.addVariable(lKey+"PipeAXYAngle",-1.6); // No_32_34_00

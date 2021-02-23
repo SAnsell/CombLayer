@@ -96,6 +96,8 @@ class VacuumPipe :
   int claddingMat;              ///< Pipe cladding material
   int flangeMat;                ///< Flange material
 
+  int outerVoid;                ///< Flag to build the outer void cell between flanges
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

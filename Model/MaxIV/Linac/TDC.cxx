@@ -318,12 +318,12 @@ TDC::buildInnerZone(Simulation& System,
       {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronCorner","MidAngleWall","LWideVoid","LTVoid"}},
-      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
-      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
+      //      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
+      //      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"tdcShort", {"TDCAngleMid","#TDCMid","SPFVoid","LongVoid"}},
       {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spfAngle"  ,{"DoorEndWall","#TDCMid","TVoidB","SPFVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#BackWallFront","LongVoid",""}}, // last cell with columns
       {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXBack","C080016",""}} // cell behind back wall
@@ -479,9 +479,9 @@ TDC::createAll(Simulation& System,
       {"Segment8",{"l2spfAngle","Segment7",1}},
       {"Segment9",{"l2spfAngle","Segment8",1}},
       {"Segment10",{"l2spfAngle","Segment9",1}},
-      {"Segment11",{"tdcFront","Segment10",1}},
-      {"Segment12",{"tdcFront","Segment11",1}},
-      {"Segment13",{"tdcMain","Segment12",1}},
+      {"Segment11",{"spfAngle","Segment10",1}},
+      {"Segment12",{"spfAngle","Segment11",1}},
+      {"Segment13",{"spfAngle","Segment12",1}},
       {"Segment14",{"tdc","Segment13",1}},
       {"Segment15",{"tdc","Segment14",1}},
       {"Segment16",{"tdc","Segment15",1}},
@@ -498,7 +498,7 @@ TDC::createAll(Simulation& System,
       {"Segment27",{"spfLong","Segment26",2}},
       {"Segment28",{"spfLong","Segment27",2}},
       {"Segment29",{"spfLong","Segment28",2}},
-      {"Segment30",{"tdcMain","Segment12",1}},
+      {"Segment30",{"spfAngle","Segment12",1}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -565,7 +565,7 @@ TDC::createAll(Simulation& System,
 	  if (BL=="Segment10")
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=
-		buildInnerZone(System,"Segment10B","tdcFront");
+		buildInnerZone(System,"Segment10B","spfAngle");
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")

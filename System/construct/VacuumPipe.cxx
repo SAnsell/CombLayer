@@ -100,7 +100,8 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   flangeBWidth(A.flangeBWidth),flangeBLength(A.flangeBLength),
   activeWindow(A.activeWindow),windowFront(A.windowFront),
   windowBack(A.windowBack),voidMat(A.voidMat),
-  feMat(A.feMat),claddingMat(A.claddingMat),flangeMat(A.flangeMat)
+  feMat(A.feMat),claddingMat(A.claddingMat),flangeMat(A.flangeMat),
+  outerVoid(0)
   /*!
     Copy constructor
     \param A :: VacuumPipe to copy
@@ -272,6 +273,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
   flangeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeMat",feMat);
+
+  outerVoid = Control.EvalDefVar<int>(keyName+"OuterVoid",0);
 
   return;
 }
@@ -557,21 +560,53 @@ VacuumPipe::createObjects(Simulation& System)
   Out+=InnerVoid.display()+backStr+windowBackExclude;
   makeCell("Steel",System,cellIndex++,flangeMat,0.0,Out);
 
-  // outer boundary [flange front]
-  Out=ModelSupport::getSetComposite
-		    (SMap,buildIndex," -101 -107 103 -104 105 -106 ");
-  addOuterSurf("FlangeA",Out+frontStr);
+  if (outerVoid && (radius>Geometry::zeroTol))
+    {
+      if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -107 ");
+	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -107 ")+frontStr+backStr;
+	  addOuterSurf("Main",Out);
+	}
+      else if (flangeARadius>flangeBRadius)
+	{
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -107 ");
+	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 102 207 -107 ")+backStr;
+	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 
-  // outer boundary [flange back]
-  Out=ModelSupport::getSetComposite
-		    (SMap,buildIndex," 102 -207 203 -204 205 -206 ");
-  addOuterSurf("FlangeB",Out+backStr);
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -107 ")+frontStr+backStr;
+	  addOuterSurf("Main",Out);
+	}
+      else if (flangeBRadius>flangeARadius)
+	{
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -207 ");
+	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 107 -207 ")+frontStr;
+	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 
-  // outer boundary mid tube
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
-  Out+=CladdingLayer.display();
-  addOuterSurf("Main",Out);
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -207 ")+frontStr+backStr;
+	  addOuterSurf("Main",Out);
+	}
+    }
+  else
+    {
+      // outer boundary [flange front]
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
+      addOuterSurf("FlangeA",Out+frontStr);
 
+      // outer boundary [flange back]
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex," 102 -207 203 -204 205 -206 ");
+      addOuterSurf("FlangeB",Out+backStr);
+
+      // outer boundary mid tube
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
+      Out+=CladdingLayer.display();
+      addOuterSurf("Main",Out);
+    }
 
   return;
 }
