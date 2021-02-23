@@ -136,20 +136,19 @@ LocalShieldingCell::createObjects(Simulation& System)
       const std::string unitName=uPtr->getKeyName();
       mc=connections.find(unitName);
 
-      if (unitName=="THIS")
-	{
-	  ELog::EM<<"CREATE ING "<<ELog::endDiag;
-	  uPtr->createAll(System,*this,0);
-	}
-      else if (mc!=connections.end())
+      if (mc!=connections.end())
 	{
 	  const std::string& linkUnit=mc->second.first;
 	  const std::string& linkSide=mc->second.second;
-	  const attachSystem::FixedComp* FCptr=
-	    System.getObjectThrow<attachSystem::FixedComp>
-	    (linkUnit,"FixedObject");
-
-	  uPtr->createAll(System,*FCptr,linkSide);
+	  if (linkUnit!="THIS")
+	    {
+	      const attachSystem::FixedComp* FCptr=
+		System.getObjectThrow<attachSystem::FixedComp>
+		(linkUnit,"FixedObject");
+	      uPtr->createAll(System,*FCptr,linkSide);
+	    }
+	  else
+	    uPtr->createAll(System,*this,0);
 	}
       else
 	ELog::EM<<"HERE "<<unitName<<ELog::endDiag;
