@@ -83,9 +83,10 @@ LocalShieldingCell::LocalShieldingCell(const std::string& Key,
 	 std::make_shared<tdcSystem::LocalShielding>(baseKey+"ShieldE"),
     }),
   connections({
-	       {"ShieldC",{"ShieldB","bottom"}},
-	       {"ShieldD",{"ShieldB","front"}},
-	       {"ShieldE",{"ShieldB","front"}}
+	       {baseKey+"ShieldB",{"THIS",""}},
+	       {baseKey+"ShieldC",{baseKey+"ShieldB","bottom"}},
+	       {baseKey+"ShieldD",{baseKey+"ShieldB","front"}},
+	       {baseKey+"ShieldE",{baseKey+"ShieldB","front"}}
     }),
   surfaces({
 	    {"front",{"ShieldE","#back"}},     // -1050002
@@ -133,9 +134,14 @@ LocalShieldingCell::createObjects(Simulation& System)
   for(std::shared_ptr<LocalShielding>& uPtr : Units)
     {      
       const std::string unitName=uPtr->getKeyName();
-      mc=connections.find(baseName+unitName);
+      mc=connections.find(unitName);
 
-      if (mc!=connections.end())
+      if (unitName=="THIS")
+	{
+	  ELog::EM<<"CREATE ING "<<ELog::endDiag;
+	  uPtr->createAll(System,*this,0);
+	}
+      else if (mc!=connections.end())
 	{
 	  const std::string& linkUnit=mc->second.first;
 	  const std::string& linkSide=mc->second.second;
@@ -145,8 +151,9 @@ LocalShieldingCell::createObjects(Simulation& System)
 
 	  uPtr->createAll(System,*FCptr,linkSide);
 	}
-     else
-       uPtr->createAll(System,*this,0);
+      else
+	ELog::EM<<"HERE "<<unitName<<ELog::endDiag;
+      
     }
 
   HeadRule HR;
@@ -160,12 +167,9 @@ LocalShieldingCell::createObjects(Simulation& System)
 
       const HeadRule SurfHR = SMptr->getSurfRule(linkSide);
       HR *= SurfHR;
-      ELog::EM<<"SURF["
-	      <<baseName+linkUnit<<"] == "
-	      <<*SMptr->getSurfPtr(linkSide);
     }
   ELog::EM<<ELog::endDiag;
-  ELog::EM<<"HR == "<<HR<<ELog::endDiag;
+
   makeCell("Main",System,cellIndex++,0,0.0,HR);
   addOuterSurf(HR);
 

@@ -155,6 +155,7 @@ LocalShielding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  
   midHoleWidth=Control.EvalVar<double>(keyName+"MidHoleWidth");
   midHoleHeight=Control.EvalVar<double>(keyName+"MidHoleHeight");
   cornerWidth=Control.EvalVar<double>(keyName+"CornerWidth");
@@ -357,6 +358,8 @@ LocalShielding::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
+  ELog::EM<<"["<<keyName<<"] == Centre = "<<Origin<<"::"<<Y<<ELog::endDiag;
+  
   return;
 }
 
