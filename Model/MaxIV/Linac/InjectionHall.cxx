@@ -665,7 +665,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("TVoidA",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -201  3 -1003 5 -6 1522 ");
+    (SMap,buildIndex," 1522  -201  3 -1003 5 -6 ");
   makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -1127,13 +1127,13 @@ InjectionHall::createObjects(Simulation& System)
 
   // Under-the-floor beam dump and its room
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7501 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 7514 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 53 -7513 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -7511 7513 -7514 7505 -15 ");
   makeCell("BDFrontWall",System,cellIndex++,wallMat,0.0,Out);
