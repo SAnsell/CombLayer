@@ -68,7 +68,6 @@
 #include "EBeamStop.h"
 #include "LocalShielding.h"
 
-#include "AttachSupport.h"
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment6.h"
@@ -175,7 +174,8 @@ Segment6::buildObjects(Simulation& System)
 
       beamStop->insertAllInCell(System,outerCell+2);
 
-      attachSystem::addToInsertControl(System,*beamStop,*ceramicB);
+      //      attachSystem::addToInsertControl(System,*beamStop,*ceramicB);
+      beamStop->insertComponent(System,"ShieldSideBackHole",*ceramicB);
     }
 
 
