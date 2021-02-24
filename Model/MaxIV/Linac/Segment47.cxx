@@ -197,7 +197,6 @@ Segment47::buildObjects(Simulation& System)
 
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*prismaChamberA,"back",*mirrorChamberA);
-
   obj = System.findObject(outerCell);
   obj->removeSurface(IHFloor);
   obj->removeSurface(back45);
@@ -213,30 +212,61 @@ Segment47::buildObjects(Simulation& System)
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberB,"back",*pipeC);
   MonteCarlo::Object *objC = System.findObject(outerCell);
+  objC->removeSurface(roof46);
+  objC->removeSurface(back45);
 
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
   MonteCarlo::Object *objC1 = System.findObject(outerCell);
+  objC1->removeSurface(roof46);
+  objC1->removeSurface(back45);
 
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
+  MonteCarlo::Object *objD = System.findObject(outerCell);
+  objD->removeSurface(roof46);
+  objD->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
+  MonteCarlo::Object *objD1 = System.findObject(outerCell);
+  objD1->removeSurface(roof46);
+  objD1->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*gateA,"back",*bellowA);
+  obj = System.findObject(outerCell);
+  obj->removeSurface(roof46);
+  obj->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*bellowA,"back",*pipeE);
+  obj = System.findObject(outerCell);
+  obj->removeSurface(roof46);
+  obj->removeSurface(back45);
 
   shieldA->createAll(System,*pipeD, 2);
-  for (int i=0; i<2; ++i)
-    shieldA->insertInCell(System,outerCell+i);
+  HR.reset();
+  HR.addIntersection(shieldA->getLinkSurf("#front"));
+  HR.addIntersection(shieldA->getLinkSurf("#left"));
+  HR.addIntersection(shieldA->getLinkSurf("#right"));
+  HR.addIntersection(shieldA->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldA->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objD->addIntersection(HR);
+
+  HR.reset();
+  HR.addIntersection(shieldA->getLinkSurf("#back"));
+  HR.addIntersection(shieldA->getLinkSurf("#left"));
+  HR.addIntersection(shieldA->getLinkSurf("#right"));
+  HR.addIntersection(shieldA->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldA->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objD1->addIntersection(HR);
 
   shieldB->createAll(System,*pipeC, 0);
-  // for (int i=-2; i<=2; ++i)
-  //   shieldB->insertInCell(System,cellB+i);
 
   HR.reset();
   HR.addIntersection(shieldB->getLinkSurf("#left"));
