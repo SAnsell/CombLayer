@@ -183,6 +183,7 @@ SPFCameraShield::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(height),Z);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+36,buildIndex+26,Z,wallThick);
 
+  // roof
   const Geometry::Quaternion qRoof=
     Geometry::Quaternion::calcQRotDeg(roofAngle,Z);
 
@@ -193,6 +194,22 @@ SPFCameraShield::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(roofLength/2.0-roofYShift),roofY);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(width/2.0+roofXShift),roofX);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0-roofXShift),roofX);
+
+  // legs
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+201,buildIndex+1,Y,-wallThick/2.0);
+
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(roofLength/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(roofLength/2.0),X);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+205,buildIndex+5,Z,-width);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+211,buildIndex+201,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+221,buildIndex+211,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+231,buildIndex+221,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+241,buildIndex+231,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+251,buildIndex+241,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+261,buildIndex+251,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+271,buildIndex+261,Y,wallThick*2.0);
 
   return;
 }
@@ -243,6 +260,36 @@ SPFCameraShield::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 (-101:102:-103:104) 26 -36 ");
   makeCell("RoofVoid",System,cellIndex++,0,0.0,Out);
 
+  // legs
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -4 201 -1 5 -36 ");
+  makeCell("OuterVoidShort",System,cellIndex++,0,0.0,Out); // above the first leg
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -203 201 -12 205 -5 ");
+  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 204 -4 201 -12 205 -5 ");
+  makeCell("OuterVoidLegsSide",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 203 -14 205 -5 ");
+  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -221 203 -14 205 -5 ");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 221 -231 203 -14 205 -5 ");
+  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 231 -241 203 -14 205 -5 ");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 241 -251 203 -14 205 -5 ");
+  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 251 -261 203 -14 205 -5 ");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 261 -271 203 -14 205 -5 ");
+  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 271 -12 203 -14 205 -5 ");
+  makeCell("LegVoid",System,cellIndex++,0,0.0,Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 5 -36 ");
   addOuterSurf(Out);
 
@@ -258,8 +305,8 @@ SPFCameraShield::createLinks()
 {
   ELog::RegMethod RegA("SPFCameraShield","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect(0,Origin-Y*((length+wallThick)/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
@@ -270,8 +317,8 @@ SPFCameraShield::createLinks()
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect(4,Origin-Z*(width),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+205));
 
   FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+36));
