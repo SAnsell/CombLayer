@@ -22,6 +22,10 @@
 #ifndef tdcSystem_Segment47_h
 #define tdcSystem_Segment47_h
 
+namespace attachSystem
+{
+  class WrapperCell;
+}
 namespace xraySystem
 {
   class CylGateValve;
@@ -60,7 +64,7 @@ class Segment47 :
   std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
   std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
   std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
-  std::shared_ptr<tdcSystem::LocalShieldingCell> shieldCell;
+  std::shared_ptr<attachSystem::WrapperCell> shieldCell;
   std::shared_ptr<tdcSystem::LocalShielding> shieldB; // leg
   std::shared_ptr<tdcSystem::LocalShielding> shieldC; // leg
   std::shared_ptr<tdcSystem::LocalShielding> shieldD; // leg

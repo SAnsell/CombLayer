@@ -135,7 +135,7 @@
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
 #include "LocalShielding.h"
-#include "LocalShieldingCell.h"
+#include "WrapperCell.h"
 
 #include "makeSingleItem.h"
 
@@ -451,12 +451,29 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item == "LocalShield" )
+  if (item == "LocalShield")
     {
-      std::shared_ptr<tdcSystem::LocalShieldingCell>
-	ls(new tdcSystem::LocalShieldingCell("Cell",""));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sb(new tdcSystem::LocalShielding("ShieldB"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sc(new tdcSystem::LocalShielding("ShieldC"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sd(new tdcSystem::LocalShielding("ShieldD"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	se(new tdcSystem::LocalShielding("ShieldE"));
+      std::shared_ptr<attachSystem::WrapperCell>
+	ls(new attachSystem::WrapperCell("","Cell"));
 
+      OR.addObject(sb);
+      OR.addObject(sc);
+      OR.addObject(sd);
+      OR.addObject(se);
       OR.addObject(ls);
+
+      ls->addUnit(sb);
+      ls->addUnit(sc);
+      ls->addUnit(sd);
+      ls->addUnit(se);
       
       ls->setSurfaces({
     	    {"front",{"ShieldE","#back"}},      // -1050002

@@ -2290,8 +2290,8 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \return exit surface [signed??]
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf")
-;
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+  
   Geometry::Vec3D Pt(Org);
   D=0.0;
   double DD;

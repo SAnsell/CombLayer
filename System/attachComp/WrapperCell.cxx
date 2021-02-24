@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/Linac/LocalShieldingCell.cxx
+ * File:   attachComp/WrapperCell.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -40,18 +41,14 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+#include "surfRegister.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
-#include "objectRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -60,16 +57,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "Surface.h"
 #include "ExternalCut.h"
 
-#include "LocalShielding.h"
-#include "LocalShieldingCell.h"
+#include "WrapperCell.h"
 
-namespace tdcSystem
+namespace attachSystem
 {
 
-LocalShieldingCell::LocalShieldingCell(const std::string& baseKey,
+WrapperCell::WrapperCell(const std::string& baseKey,
 					 const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
@@ -83,14 +78,14 @@ LocalShieldingCell::LocalShieldingCell(const std::string& baseKey,
   */
 {}
 
-LocalShieldingCell::~LocalShieldingCell()
+WrapperCell::~WrapperCell()
   /*!
     Destructor
   */
 {}
 
 void
-LocalShieldingCell::addUnit
+WrapperCell::addUnit
 (std::shared_ptr<attachSystem::FixedComp> UnitFC)
   /*!
     Adds a unit
@@ -98,48 +93,48 @@ LocalShieldingCell::addUnit
   */
 
 {
-  ELog::RegMethod RegA("LocalShieldingCell","addUnit");
+  ELog::RegMethod RegA("WrapperCell","addUnit");
 
   Units.push_back(UnitFC);
   return;
 }
 
 void
-LocalShieldingCell::setSurfaces(mapTYPE&& surfMap)
+WrapperCell::setSurfaces(mapTYPE&& surfMap)
   /*!
     Adds a unit
     \param surfMap :: Surfaces
   */
 
 {
-  ELog::RegMethod RegA("LocalShieldingCell","setSurfaces");
+  ELog::RegMethod RegA("WrapperCell","setSurfaces");
 
   surfaces=surfMap;  
   return;
 }
 
 void
-LocalShieldingCell::setConnections(mapTYPE&& conMap)
+WrapperCell::setConnections(mapTYPE&& conMap)
   /*!
     Adds the connections map
     \param conMap :: connections
   */
 
 {
-  ELog::RegMethod RegA("LocalShieldingCell","setConnections");
+  ELog::RegMethod RegA("WrapperCell","setConnections");
 
   connections=conMap;  
   return;
 }
   
 void
-LocalShieldingCell::createObjects(Simulation& System)
+WrapperCell::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("LocalShieldingCell","createObjects");
+  ELog::RegMethod RegA("WrapperCell","createObjects");
 
   // BUILD inner object first:
   
@@ -154,7 +149,7 @@ LocalShieldingCell::createObjects(Simulation& System)
 	{
 	  const std::string& linkUnit=mc->second.first;
 	  const std::string& linkSide=mc->second.second;
-	  if (linkUnit!="THIS")
+	  if (linkUnit!="THIS" && linkUnit!="this")
 	    {
 	      const attachSystem::FixedComp* FCptr=
 		System.getObjectThrow<attachSystem::FixedComp>
@@ -165,8 +160,8 @@ LocalShieldingCell::createObjects(Simulation& System)
 	    uPtr->createAll(System,*this,0);
 	}
       else
-	ELog::EM<<"HERE "<<unitName<<ELog::endDiag;
-      
+	throw ColErr::InContainerError<std::string>
+	  (unitName,"Object for connection");
     }
 
   HeadRule HR;
@@ -176,12 +171,11 @@ LocalShieldingCell::createObjects(Simulation& System)
       const std::string& linkSide=sUnit.second;
       const attachSystem::SurfMap* SMptr=
 	    System.getObjectThrow<attachSystem::SurfMap>
-	    (baseName+linkUnit,"SurfMap");
+	    (baseName+linkUnit,"SurfMap item:");
 
       const HeadRule SurfHR = SMptr->getSurfRule(linkSide);
       HR *= SurfHR;
     }
-  ELog::EM<<ELog::endDiag;
 
   makeCell("Main",System,cellIndex++,0,0.0,HR);
   addOuterSurf(HR);
@@ -209,21 +203,37 @@ LocalShieldingCell::createObjects(Simulation& System)
 
 
 void
-LocalShieldingCell::createLinks()
+WrapperCell::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("LocalShieldingCell","createLinks");
+  ELog::RegMethod RegA("WrapperCell","createLinks");
 
-  // ExternalCut::createLink("front",*this,0,Origin,Y);
-  // ExternalCut::createLink("back",*this,1,Origin,Y);
+  // Use the Main cell:
+  
+  const HeadRule& HR=ContainedComp::outerSurf;
 
+  double DA,DB;
+
+  
+  const int SA=HR.trackSurf(Origin,-Y,DA);
+  const int SB=HR.trackSurf(Origin,Y,DB);
+  if (SA)
+    {
+      FixedComp::setConnect(0,Origin-Y*DA,-Y);
+      FixedComp::setLinkSurf(0,SA);
+    }
+  if (SB)
+    {
+      FixedComp::setConnect(0,Origin-Y*DA,-Y);
+      FixedComp::setLinkSurf(0,SA);
+    }
   return;
 }
 
 void
-LocalShieldingCell::createAll(Simulation& System,
+WrapperCell::createAll(Simulation& System,
 			      const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
@@ -233,7 +243,7 @@ LocalShieldingCell::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("LocalShieldingCell","createAll");
+  ELog::RegMethod RegA("WrapperCell","createAll");
 
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

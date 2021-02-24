@@ -62,12 +62,12 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "BlockZone.h"
+#include "WrapperCell.h"
 #include "generalConstruct.h"
 #include "VacuumPipe.h"
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
-#include "LocalShieldingCell.h"
 #include "FixedOffset.h"
 #include "InjectionHall.h"
 
@@ -107,7 +107,7 @@ Segment47::Segment47(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
-  shieldCell(new tdcSystem::LocalShieldingCell(keyName,"ShieldCell")),
+  shieldCell(new attachSystem::WrapperCell(keyName,"ShieldCell")),
   shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
   shieldD(new tdcSystem::LocalShielding(keyName+"ShieldD")),
