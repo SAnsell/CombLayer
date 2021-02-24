@@ -564,14 +564,14 @@ VacuumPipe::createObjects(Simulation& System)
     {
       if (std::abs(flangeARadius-flangeBRadius)<Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -107 ");
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 27 -107 ");
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -107 ")+frontStr+backStr;
 	  addOuterSurf("Main",Out);
 	}
       else if (flangeARadius>flangeBRadius)
 	{
-	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -107 ");
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 27 -107 ");
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 102 207 -107 ")+backStr;
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
@@ -581,7 +581,7 @@ VacuumPipe::createObjects(Simulation& System)
 	}
       else if (flangeBRadius>flangeARadius)
 	{
-	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 17 -207 ");
+	  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 27 -207 ");
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 	  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 107 -207 ")+frontStr;
 	  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
