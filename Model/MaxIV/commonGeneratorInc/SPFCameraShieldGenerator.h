@@ -43,6 +43,10 @@ class SPFCameraShieldGenerator
   double width;                 ///< Width
   double height;                ///< Height
   double wallThick;             ///< Wall [brick] thickness
+  double roofLength;            ///< Roof [brick] length
+  double roofAngle;             ///< Roof angle around z axis
+  double roofXShift;            ///< Roof x-offset
+  double roofYShift;            ///< Roof y-offset
 
   std::string mat;              ///< Shield material
 

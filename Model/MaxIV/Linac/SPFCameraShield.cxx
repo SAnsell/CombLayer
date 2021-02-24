@@ -57,6 +57,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "Quaternion.h"
 
 #include "SPFCameraShield.h"
 
@@ -79,6 +80,10 @@ SPFCameraShield::SPFCameraShield(const SPFCameraShield& A) :
   attachSystem::CellMap(A),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
+  roofLength(A.roofLength),
+  roofAngle(A.roofAngle),
+  roofXShift(A.roofXShift),
+  roofYShift(A.roofYShift),
   mat(A.mat)
   /*!
     Copy constructor
@@ -103,6 +108,10 @@ SPFCameraShield::operator=(const SPFCameraShield& A)
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
+      roofLength=A.roofLength;
+      roofAngle=A.roofAngle;
+      roofXShift=A.roofXShift;
+      roofYShift=A.roofYShift;
       mat=A.mat;
     }
   return *this;
@@ -139,6 +148,10 @@ SPFCameraShield::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofLength=Control.EvalVar<double>(keyName+"RoofLength");
+  roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
+  roofXShift=Control.EvalVar<double>(keyName+"RoofXShift");
+  roofYShift=Control.EvalVar<double>(keyName+"RoofYShift");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -161,13 +174,25 @@ SPFCameraShield::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallThick+10.0),Z); // TODO
-  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(height),Z);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+12,buildIndex+2,Y,wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+3,Y,-wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,Y,-wallThick);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallThick+roofLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(height),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+36,buildIndex+26,Z,wallThick);
+
+  const Geometry::Quaternion qRoof=
+    Geometry::Quaternion::calcQRotDeg(roofAngle,Z);
+
+  const Geometry::Vec3D roofY=qRoof.makeRotate(Y);
+  const Geometry::Vec3D roofX=qRoof.makeRotate(X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(roofLength/2.0+roofYShift),roofY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(roofLength/2.0-roofYShift),roofY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(width/2.0+roofXShift),roofX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0-roofXShift),roofX);
 
   return;
 }
@@ -212,7 +237,13 @@ SPFCameraShield::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 5 -6 ");
   makeCell("OuterVoidFloor",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 26 -36 ");
+  makeCell("Roof",System,cellIndex++,mat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 (-101:102:-103:104) 26 -36 ");
+  makeCell("RoofVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 5 -36 ");
   addOuterSurf(Out);
 
   return;
@@ -242,8 +273,8 @@ SPFCameraShield::createLinks()
   FixedComp::setConnect(4,Origin-Z*(0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+36));
 
   FixedComp::nameSideIndex(0,"front");
   FixedComp::nameSideIndex(1,"back");

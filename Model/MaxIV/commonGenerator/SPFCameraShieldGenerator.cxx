@@ -52,6 +52,10 @@ namespace setVariable
 SPFCameraShieldGenerator::SPFCameraShieldGenerator() :
   length(40.0),width(20.0),height(25.0),
   wallThick(5.0),
+  roofLength(10.0),
+  roofAngle(30.0),
+  roofXShift(7.0),
+  roofYShift(10.0),
   mat("Lead")
   /*!
     Constructor and defaults
@@ -79,6 +83,10 @@ SPFCameraShieldGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"RoofLength",roofLength);
+  Control.addVariable(keyName+"RoofAngle",roofAngle);
+  Control.addVariable(keyName+"RoofXShift",roofXShift);
+  Control.addVariable(keyName+"RoofYShift",roofYShift);
   Control.addVariable(keyName+"Mat",mat);
 
   return;
