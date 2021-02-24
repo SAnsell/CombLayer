@@ -296,54 +296,54 @@ Segment47::buildObjects(Simulation& System)
   for (int i=-2; i<=-1; ++i)
     shieldC->insertInCell(System,outerCell+i);
 
-  // vertical wall
-  shieldD->createAll(System,*shieldB, "front");
-  HR.reset();
-  HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
-  HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
-  HR.addIntersection(shieldD->getLinkSurf("#back")); // 1
-  HR.addIntersection(shieldD->getLinkSurf("#bottom"));
-  HR.addIntersection(shieldD->getLinkSurf("#top"));
-  HR.makeComplement();
-  HR.populateSurf();
-  objB->addIntersection(HR);
+  // // vertical wall
+  // shieldD->createAll(System,*shieldB, "front");
+  // HR.reset();
+  // HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
+  // HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
+  // HR.addIntersection(shieldD->getLinkSurf("#back")); // 1
+  // HR.addIntersection(shieldD->getLinkSurf("#bottom"));
+  // HR.addIntersection(shieldD->getLinkSurf("#top"));
+  // HR.makeComplement();
+  // HR.populateSurf();
+  // objB->addIntersection(HR);
 
-  HR.reset();
-  HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
-  HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
-  HR.addIntersection(shieldD->getLinkSurf("#front"));
-  HR.addIntersection(shieldD->getLinkSurf("#bottom"));
-  HR.addIntersection(shieldD->getLinkSurf("#top"));
-  HR.makeComplement();
-  HR.populateSurf();
-  objB1->addIntersection(HR);
+  // HR.reset();
+  // HR.addIntersection(shieldD->getLinkSurf("#left")); // -4 -5880003
+  // HR.addIntersection(shieldD->getLinkSurf("#right")); // 3
+  // HR.addIntersection(shieldD->getLinkSurf("#front"));
+  // HR.addIntersection(shieldD->getLinkSurf("#bottom"));
+  // HR.addIntersection(shieldD->getLinkSurf("#top"));
+  // HR.makeComplement();
+  // HR.populateSurf();
+  // objB1->addIntersection(HR);
 
-  for (int i=-2; i<=-3; ++i)
-    shieldD->insertInCell(System,outerCell+i);
+  // for (int i=-2; i<=-3; ++i)
+  //   shieldD->insertInCell(System,outerCell+i);
 
   // roof
-  shieldE->createAll(System,*shieldB, "top");
-  HR.reset();
-  HR.addIntersection(shieldE->getLinkSurf("#left")); // -3
-  HR.addIntersection(shieldE->getLinkSurf("#right")); // 4
-  HR.addIntersection(shieldE->getLinkSurf("#back")); // 2
-  HR.addIntersection(shieldE->getLinkSurf("#front")); // 6
-  HR.addIntersection(shieldE->getLinkSurf("#bottom")); //
-  HR.makeComplement();
-  HR.populateSurf();
-  objB->addIntersection(HR);
+  // shieldE->createAll(System,*shieldB, "top");
+  // HR.reset();
+  // HR.addIntersection(shieldE->getLinkSurf("#left")); // -3
+  // HR.addIntersection(shieldE->getLinkSurf("#right")); // 4
+  // HR.addIntersection(shieldE->getLinkSurf("#back")); // 2
+  // HR.addIntersection(shieldE->getLinkSurf("#front")); // 6
+  // HR.addIntersection(shieldE->getLinkSurf("#bottom")); //
+  // HR.makeComplement();
+  // HR.populateSurf();
+  // objB->addIntersection(HR);
 
-  HR.reset();
-  HR.addIntersection(shieldE->getLinkSurf("#left")); // -3
-  HR.addIntersection(shieldE->getLinkSurf("#right")); // 4
-  HR.addIntersection(shieldE->getLinkSurf("#back")); // 2
-  HR.addIntersection(shieldE->getLinkSurf("#front")); // 6
-  HR.makeComplement();
-  HR.populateSurf();
-  objB1->addIntersection(HR);
+  // HR.reset();
+  // HR.addIntersection(shieldE->getLinkSurf("#left")); // -3
+  // HR.addIntersection(shieldE->getLinkSurf("#right")); // 4
+  // HR.addIntersection(shieldE->getLinkSurf("#back")); // 2
+  // HR.addIntersection(shieldE->getLinkSurf("#front")); // 6
+  // HR.makeComplement();
+  // HR.populateSurf();
+  // objB1->addIntersection(HR);
 
-  for (int i=-2; i<=-2; ++i)
-    shieldE->insertInCell(System,outerCell+i);
+  // for (int i=-2; i<=-2; ++i)
+  //   shieldE->insertInCell(System,outerCell+i);
   // legs
   shieldF1->createAll(System,*shieldC, "back");
   shieldF1->insertInCell(System,outerCell-4);
