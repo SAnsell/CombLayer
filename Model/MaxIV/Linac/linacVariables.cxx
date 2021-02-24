@@ -87,6 +87,7 @@
 #include "GaugeGenerator.h"
 #include "LBeamStopGenerator.h"
 #include "LocalShieldingGenerator.h"
+#include "SPFCameraShieldGenerator.h"
 
 namespace setVariable
 {
@@ -3180,49 +3181,16 @@ Segment47(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAZStep",-10.0);
   Control.addVariable(lKey+"ShieldAYStep",1.1);
 
-  // Walls near pipeC
+  // Mirror camera shield
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5384.jpg/view
-  LSGen.setSize(45.0,5,20.0);
-  LSGen.generate(Control,lKey+"ShieldB");
-  Control.addVariable(lKey+"ShieldBXStep",-25.0);
-  Control.addVariable(lKey+"ShieldBYStep",-27.0);
-  Control.addVariable(lKey+"ShieldBZStep",5.0);
-  // floor
-  LSGen.setSize(5.0,20,40.0);
-  LSGen.generate(Control,lKey+"ShieldC");
-  Control.addVariable(lKey+"ShieldCZStep",-2.5);
-  Control.addVariable(lKey+"ShieldCXStep",-7.5);
-  Control.addVariable(lKey+"ShieldCYStep",2.5);
-  // vertical wall
-  LSGen.setSize(5.0,15,20.0);
-  LSGen.generate(Control,lKey+"ShieldD");
-  Control.addVariable(lKey+"ShieldDXStep",10.0);
-  Control.addVariable(lKey+"ShieldDYStep",-2.5);
-  // roof
-  LSGen.setSize(5.0,10,20);
-  LSGen.generate(Control,lKey+"ShieldE");
-  Control.addVariable(lKey+"ShieldEYStep",2.5); // Z
-  Control.addVariable(lKey+"ShieldEXStep",4); // X
-  Control.addVariable(lKey+"ShieldEZStep",-11); // Y
-  Control.addVariable(lKey+"ShieldEYAngle",-10);
-
-  // legs
-  LSGen.setSize(20.0,10,5);
-  LSGen.generate(Control,lKey+"ShieldF1");
-  Control.addVariable(lKey+"ShieldF1YStep",10);
-  Control.addVariable(lKey+"ShieldF1ZStep",-20);
-
-  LSGen.setSize(5,10,20);
-  LSGen.generate(Control,lKey+"ShieldF2");
-  Control.addVariable(lKey+"ShieldF2YStep",7.5);
-
-  LSGen.generate(Control,lKey+"ShieldF3");
-  Control.addVariable(lKey+"ShieldF3YStep",7.5);
-
-  LSGen.setSize(10,10,20);
-  LSGen.generate(Control,lKey+"ShieldF4");
-  Control.addVariable(lKey+"ShieldF4YStep",11.5);
+  setVariable::SPFCameraShieldGenerator CSGen;
+    //  CSGen.setSize(45.0,5,20.0);
+  CSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBZStep",30.0);
+  Control.addVariable(lKey+"ShieldBYAngle",90.0);
+  Control.addVariable(lKey+"ShieldBYStep",-7.0);
+  Control.addVariable(lKey+"ShieldBXStep",-7.5);
   return;
 }
 
