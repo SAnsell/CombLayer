@@ -112,6 +112,7 @@
 #include "BremTubeGenerator.h"
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
+#include "DiffXIADP03Generator.h"
 #include "DiffPumpGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -322,12 +323,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BoxJawsGenerator BJGen;
   BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
 
-  //    CF40 CFflange;
-  //  setVariable::DiffPumpGenerator DPGen(CFflange);
-  //  DPGen.generatePump(Control,"DiffPump",27.4);
-
-  setVariable::DiffPumpGenerator DPGen;
-  DPGen.generatePump(Control,"DiffPump",54.4);
+  setVariable::DiffXIADP03Generator DPXGen;
+  DPXGen.generatePump(Control,"DiffPump",54.4);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

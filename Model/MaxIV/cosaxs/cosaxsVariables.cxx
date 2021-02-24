@@ -68,7 +68,7 @@
 #include "MonoShutterGenerator.h"
 
 
-#include "DiffPumpGenerator.h"
+#include "DiffXIADP03Generator.h"
 
 namespace setVariable
 {
@@ -558,7 +558,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
-  setVariable::DiffPumpGenerator DiffGen;
+  setVariable::DiffXIADP03Generator DiffGen;
 
   PipeGen.setNoWindow();   // no window
 
@@ -751,7 +751,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::MonoBoxGenerator VBoxGen;
-  setVariable::DiffPumpGenerator DiffGen;
+  setVariable::DiffXIADP03Generator DiffGen;
   setVariable::PortItemGenerator PItemGen;
   
   BellowGen.setCF<setVariable::CF40>();

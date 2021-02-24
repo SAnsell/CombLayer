@@ -85,10 +85,11 @@ void
 ConnectorGenerator::setCF(const double L)
   /*!
     Setter for flange beam direction flanges
+    \param L :: fractional length of total length
   */
 {
   innerRadius=CF::innerRadius;
-  innerLength=CF::innerLength;
+  innerLength=L;
 
   return;
 }
