@@ -386,9 +386,9 @@ LINACmagnetVariables(FuncDataBase& Control,
       // We shift and rotate it so that the magnetic field
       // is present in the curved pipe of SPF44TriBend only
       MUdipole.setOffset(0.0,147.0,-41.0);
-      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.65);
+      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.635);
       Control.addVariable("MagUnitSeg44CMagLength",100.0);
-      Control.addVariable("MagUnitSeg44CMagHeight",25.0);
+      Control.addVariable("MagUnitSeg44CMagHeight",24.9);
       Control.addVariable("MagUnitSeg44CMagXAngle",-16.5);
 
 
