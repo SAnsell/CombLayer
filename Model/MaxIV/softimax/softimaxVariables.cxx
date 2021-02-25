@@ -69,7 +69,7 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
-#include "DiffPumpGenerator.h"
+#include "DiffXIADP03Generator.h"
 
 namespace setVariable
 {
@@ -691,7 +691,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
-  setVariable::DiffPumpGenerator DiffGen;
+  setVariable::DiffXIADP03Generator DiffGen;
   setVariable::JawValveGenerator JawGen;
 
   PipeGen.setNoWindow();   // no window

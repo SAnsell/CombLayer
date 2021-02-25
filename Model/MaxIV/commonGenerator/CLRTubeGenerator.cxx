@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/DiffPumpGenerator.cxx
+ * File:   commonGenerator/CLRTubeGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -52,17 +52,18 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "DiffPumpGenerator.h"
+#include "CLRTubeGenerator.h"
 
 namespace setVariable
 {
 
 
-DiffPumpGenerator::DiffPumpGenerator() :
-  length(20.0),width(10.0),height(10.0),
-  innerLength(16.0),
-  captureWidth(2.0),captureHeight(2.0),
-  magWidth(5.0),magHeight(5.0),
+CLRTubeGenerator::CLRTubeGenerator() :
+  zLift(-1.0),length(20.0),width(10.0),height(10.0),
+  innerLength(19.0),
+  captureWidth(2.0),captureHeight(2.0),captureDepth(1.0),
+  supportWidth(5.5),supportHeight(3.0),supportDepth(3.0),
+  magWidth(5.0),magHeight(2.5),magDepth(1.5),
   innerRadius(CF16::innerRadius),
   innerThick(CF16::wallThick),
   portLength(3.0),portRadius(CF40::innerRadius),
@@ -79,7 +80,7 @@ DiffPumpGenerator::DiffPumpGenerator() :
   */
 {} 
 
-DiffPumpGenerator::~DiffPumpGenerator()
+CLRTubeGenerator::~CLRTubeGenerator()
  /*!
    Destructor
  */
@@ -87,7 +88,7 @@ DiffPumpGenerator::~DiffPumpGenerator()
 
 template<typename CF>
 void
-DiffPumpGenerator::setCF()
+CLRTubeGenerator::setCF()
   /*!
     Setter for flange beam direction flanges
   */
@@ -100,7 +101,7 @@ DiffPumpGenerator::setCF()
 
 template<typename CF>
 void
-DiffPumpGenerator::setPortCF(const double L)
+CLRTubeGenerator::setPortCF(const double L)
   /*!
     Setter for flange/port beam direction flanges
     \param L :: length
@@ -115,26 +116,43 @@ DiffPumpGenerator::setPortCF(const double L)
 }
 
 void
-DiffPumpGenerator::generatePump(FuncDataBase& Control,
-				const std::string& keyName) const
+CLRTubeGenerator::generatePump(FuncDataBase& Control,
+				const std::string& keyName,
+				const bool inBeam) const
   /*!
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param inBeam :: in beam
   */
 {
-  ELog::RegMethod RegA("DiffPumpGenerator","generatePump");
+  ELog::RegMethod RegA("CLRTubeGenerator","generatePump");
 
+  Control.addVariable(keyName+"InBeam",static_cast<int>(inBeam));
+  Control.addVariable(keyName+"ZLift",zLift);
+  
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"InnerLength",innerLength);
+
+
   Control.addVariable(keyName+"CaptureWidth",captureWidth);
   Control.addVariable(keyName+"CaptureHeight",captureHeight);
+  Control.addVariable(keyName+"CaptureDepth",captureDepth);
+
+  Control.addVariable(keyName+"SupportWidth",supportWidth);
+  Control.addVariable(keyName+"SupportHeight",supportHeight);
+  Control.addVariable(keyName+"SupportDepth",supportDepth);
+
   Control.addVariable(keyName+"MagWidth",magWidth);
   Control.addVariable(keyName+"MagHeight",magHeight);
+  Control.addVariable(keyName+"MagDepth",magDepth);
+
+
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"InnerThick",innerThick);
+
   Control.addVariable(keyName+"PortLength",portLength);
   Control.addVariable(keyName+"PortRadius",portRadius);
   Control.addVariable(keyName+"PortThick",portThick);
@@ -153,7 +171,7 @@ DiffPumpGenerator::generatePump(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template void DiffPumpGenerator::setPortCF<CF40>(const double);
+template void CLRTubeGenerator::setPortCF<CF40>(const double);
 
 
 

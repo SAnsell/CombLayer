@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/DiffPump.h
+ * File:   commonBeamInc/CLRTube.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_DiffPump_h
-#define xraySystem_DiffPump_h
+#ifndef xraySystem_CLRTube_h
+#define xraySystem_CLRTube_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class DiffPump
+  \class CLRTube
   \version 1.0
   \author Stuart Ansell
   \date February 2021
   \brief DP-differential pump by XIA
 */
 
-class DiffPump :
+class CLRTube :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
@@ -44,18 +44,27 @@ class DiffPump :
 {
  private:
 
+  bool inBeam;                   ///< Object in beam
+  double zLift;                  ///< zLift distance
+
   double length;                 ///< Main box length
   double width;                  ///< Main box width
   double height;                 ///< Main box height
 
   double innerLength;            ///< Main box width
   
-  double captureWidth;           ///< Main box width
-  double captureHeight;         ///< Main box height
+  double captureWidth;           ///< Void around main tube
+  double captureHeight;          ///< Void around main tube
+  double captureDepth;           ///< void in capture space
+  
+  double supportWidth;           ///< support Width
+  double supportHeight;          ///< support Height
+  double supportDepth;          ///< support Height
 
   double magWidth;               ///< Magnet Width
   double magHeight;              ///< Magnet Height
-
+  double magDepth;               ///< Magnet Depth
+  
   double innerRadius;            ///< inner pipe radius
   double innerThick;             ///< inner pipe thickness
 
@@ -80,10 +89,10 @@ class DiffPump :
 
  public:
 
-  DiffPump(const std::string&);
-  DiffPump(const DiffPump&);
-  DiffPump& operator=(const DiffPump&);
-  virtual ~DiffPump();
+  CLRTube(const std::string&);
+  CLRTube(const CLRTube&);
+  CLRTube& operator=(const CLRTube&);
+  virtual ~CLRTube();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

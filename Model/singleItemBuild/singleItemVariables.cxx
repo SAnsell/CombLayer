@@ -113,7 +113,7 @@
 #include "HPJawsGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "DiffXIADP03Generator.h"
-#include "DiffPumpGenerator.h"
+#include "CLRTubeGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
@@ -326,8 +326,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::DiffXIADP03Generator DPXGen;
   DPXGen.generatePump(Control,"DiffXIA",54.4);
 
-  setVariable::DiffPumpGenerator DPGen;
-  DPGen.generatePump(Control,"DiffPump");
+  setVariable::CLRTubeGenerator DPGen;
+  DPGen.generatePump(Control,"CLRTube");
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

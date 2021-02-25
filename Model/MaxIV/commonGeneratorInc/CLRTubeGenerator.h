@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonGeneratorInc/DiffPumpGenerator.h
+ * File:   commonGeneratorInc/CLRTubeGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_DiffPumpGenerator_h
-#define setVariable_DiffPumpGenerator_h
+#ifndef setVariable_CLRTubeGenerator_h
+#define setVariable_CLRTubeGenerator_h
 
 class FuncDataBase;
 
@@ -32,24 +32,32 @@ namespace setVariable
   \version 1.0
   \author S. Ansell
   \date April 2020
-  \brief DiffPumpGenerator for variables
+  \brief CLRTubeGenerator for variables
 */
 
-class DiffPumpGenerator 
+class CLRTubeGenerator 
 {
  private:
 
+  double zLift;                  ///< Movement distance
+  
   double length;                 ///< Main box length
   double width;                  ///< Main box width
   double height;                 ///< Main box height
-
+  
   double innerLength;            ///< inner Length
   
   double captureWidth;           ///< void in capture space
-  double captureHeight;          ///< void in capture space 
+  double captureHeight;          ///< void in capture space
+  double captureDepth;           ///< void in capture space 
+
+  double supportWidth;           ///< support Width
+  double supportHeight;          ///< support Height
+  double supportDepth;           ///< support Height
 
   double magWidth;               ///< Magnet Width
   double magHeight;              ///< Magnet Height
+  double magDepth;              ///< Magnet Depth
 
   double innerRadius;            ///< inner pipe radius
   double innerThick;             ///< inner pipe thickness
@@ -70,15 +78,16 @@ class DiffPumpGenerator
 
  public:
 
-  DiffPumpGenerator();
-  DiffPumpGenerator(const DiffPumpGenerator&);
-  DiffPumpGenerator& operator=(const DiffPumpGenerator&);
-  virtual ~DiffPumpGenerator();
+  CLRTubeGenerator();
+  CLRTubeGenerator(const CLRTubeGenerator&);
+  CLRTubeGenerator& operator=(const CLRTubeGenerator&);
+  virtual ~CLRTubeGenerator();
 
   template<typename T> void setCF();
   template<typename T> void setPortCF(const double);
   
-  void generatePump(FuncDataBase&,const std::string&) const;
+  void generatePump(FuncDataBase&,const std::string&,
+		    const bool =1) const;
 
 
 };

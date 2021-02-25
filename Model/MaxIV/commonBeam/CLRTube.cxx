@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/DiffPump.cxx
+ * File:   commonBeam/CLRTube.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -79,12 +79,12 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 
-#include "DiffPump.h"
+#include "CLRTube.h"
 
 namespace xraySystem
 {
 
-DiffPump::DiffPump(const std::string& Key) :
+CLRTube::CLRTube(const std::string& Key) :
   attachSystem::ContainedGroup("Main","PortA","PortB"),
   attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
@@ -96,20 +96,20 @@ DiffPump::DiffPump(const std::string& Key) :
   */
 {}
 
-DiffPump::~DiffPump()
+CLRTube::~CLRTube()
   /*!
     Destructor
   */
 {}
 
 void
-DiffPump::populate(const FuncDataBase& Control)
+CLRTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("DiffPump","populate");
+  ELog::RegMethod RegA("CLRTube","populate");
 
   FixedRotate::populate(Control);
 
@@ -119,11 +119,19 @@ DiffPump::populate(const FuncDataBase& Control)
 
   innerLength=Control.EvalVar<double>(keyName+"InnerLength");
 
+  zLift=Control.EvalDefVar<double>(keyName+"ZLift",0.0);
+  inBeam=Control.EvalDefVar<int>(keyName+"InBeam",1);
   captureWidth=Control.EvalVar<double>(keyName+"CaptureWidth");
   captureHeight=Control.EvalVar<double>(keyName+"CaptureHeight");
+  captureDepth=Control.EvalVar<double>(keyName+"CaptureDepth");
+
+  supportWidth=Control.EvalVar<double>(keyName+"SupportWidth");
+  supportHeight=Control.EvalVar<double>(keyName+"SupportHeight");
+  supportDepth=Control.EvalVar<double>(keyName+"SupportDepth");
 
   magWidth=Control.EvalVar<double>(keyName+"MagWidth");
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
+  magDepth=Control.EvalVar<double>(keyName+"MagDepth");
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
@@ -145,12 +153,12 @@ DiffPump::populate(const FuncDataBase& Control)
 }
 
 void
-DiffPump::createSurfaces()
+CLRTube::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("DiffPump","createSurfaces");
+  ELog::RegMethod RegA("CLRTube","createSurfaces");
 
   if (!isActive("front"))
     {
@@ -165,10 +173,12 @@ DiffPump::createSurfaces()
 	(SMap,buildIndex+2,Origin+Y*(portLength+length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+  const Geometry::Vec3D beamOrg((!inBeam) ? Origin : Origin+Z*zLift);
+
   ModelSupport::buildCylinder
-    (SMap,buildIndex+7,Origin,Y,innerRadius);
+    (SMap,buildIndex+7,beamOrg,Y,innerRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,Origin,Y,innerRadius+innerThick);
+    (SMap,buildIndex+17,beamOrg,Y,innerRadius+innerThick);
 
   // main 
   ModelSupport::buildPlane
@@ -183,48 +193,65 @@ DiffPump::createSurfaces()
     (SMap,buildIndex+105,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane
     (SMap,buildIndex+106,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,Origin,Y,innerRadius);
 
-  // magnet (outer surf)
+
+  // Support space (outer)
   ModelSupport::buildPlane
-    (SMap,buildIndex+203,Origin-X*(magWidth/2.0),X);
+    (SMap,buildIndex+203,Origin-X*(supportWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+204,Origin+X*(magWidth/2.0),X);
+    (SMap,buildIndex+204,Origin+X*(supportWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+205,Origin-Z*(magHeight/2.0),Z);
+    (SMap,buildIndex+205,Origin-Z*supportDepth,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+206,Origin+Z*(magHeight/2.0),Z);
+    (SMap,buildIndex+206,Origin+Z*supportHeight,Z);
+
+  // moving support (outer surf)
+  ModelSupport::buildPlane
+    (SMap,buildIndex+301,beamOrg-Y*(innerLength/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+302,beamOrg+Y*(innerLength/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+303,beamOrg-X*(magWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+304,beamOrg+X*(magWidth/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+305,beamOrg-Z*magDepth,Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+306,beamOrg+Z*magHeight,Z);
 
   // capture
   ModelSupport::buildPlane
-    (SMap,buildIndex+303,Origin-X*(captureWidth/2.0),X);
+    (SMap,buildIndex+403,beamOrg-X*(captureWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+304,Origin+X*(captureWidth/2.0),X);
+    (SMap,buildIndex+404,beamOrg+X*(captureWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+305,Origin-Z*(captureHeight/2.0),Z);
+    (SMap,buildIndex+405,beamOrg-Z*captureDepth,Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+306,Origin+Z*(captureHeight/2.0),Z);
+    (SMap,buildIndex+406,beamOrg+Z*captureHeight,Z);
 
 
   // Inner tube
   ModelSupport::buildCylinder
-    (SMap,buildIndex+427,Origin,Y,flangeRadius);
+    (SMap,buildIndex+527,Origin,Y,flangeRadius);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+401,Origin-Y*(length/2.0+portThick),Y);
+    (SMap,buildIndex+501,Origin-Y*(length/2.0+portThick),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+402,Origin+Y*(length/2.0+portThick),Y);  
+    (SMap,buildIndex+502,Origin+Y*(length/2.0+portThick),Y);  
 
   
   // Port Radius
   ModelSupport::buildCylinder
-    (SMap,buildIndex+507,Origin,Y,portRadius);
+    (SMap,buildIndex+607,Origin,Y,portRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+517,Origin,Y,portRadius+portThick);
+    (SMap,buildIndex+617,Origin,Y,portRadius+portThick);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+511,Origin-Y*(length/2.0+portLength-flangeLength),Y);
+    (SMap,buildIndex+611,Origin-Y*(length/2.0+portLength-flangeLength),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+512,Origin+Y*(length/2.0+portLength-flangeLength),Y);  
+    (SMap,buildIndex+612,Origin+Y*(length/2.0+portLength-flangeLength),Y);  
     
 
   
@@ -232,13 +259,13 @@ DiffPump::createSurfaces()
 }
 
 void
-DiffPump::createObjects(Simulation& System)
+CLRTube::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("DiffPump","createObjects");
+  ELog::RegMethod RegA("CLRTube","createObjects");
 
   HeadRule HR;
   const HeadRule frontHR(getRule("front"));
@@ -246,72 +273,87 @@ DiffPump::createObjects(Simulation& System)
 
   // Main pipe
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -402 -7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -402 7 -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 7 -17");
   makeCell("Pipe",System,cellIndex++,pipeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 17 303 -304 305 -306");
+    (SMap,buildIndex,"301 -302 17 403 -404 405 -406");
   makeCell("captureVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 203 -204 205 -206 (-303:304:-305:306)");
-  makeCell("Magnet",System,cellIndex++,magnetMat,0.0,HR);
+    (SMap,buildIndex,"301 -302 303 -304 305 -306 (-403:404:-405:406)");
+  makeCell("MoveOuter",System,cellIndex++,magnetMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"301 -302 203 -204 205 -206 (-303:304:-305:306)");
+  makeCell("Support",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"101 -102 103 -104 105 -106 (-203:204:-205:206)");
   makeCell("Outer",System,cellIndex++,mainMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -507 -401 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"203 -204 205 -206 101 -301");
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"203 -204 205 -206 -102 302");
+  makeCell("EndVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -607 -501 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -507 402 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -607 502 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*backHR);
+  
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"17 -517 401 -101");
+    (SMap,buildIndex,"17 103 -104 105 -106  501 -101");
   makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"17 -517 -402 102");
-  makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 501 -101");
+  makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-517 507 -401 ");
+    (SMap,buildIndex,"17 103 -104 105 -106  -502 102");
+  makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -502 102");
+  makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-617 607 -501 ");
   makeCell("PortTube",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-517 507 402 ");
+    (SMap,buildIndex,"-617 607 502 ");
   makeCell("PortTube",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 517 -511");
+    (SMap,buildIndex,"-527 617 -611");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 517 512");
+    (SMap,buildIndex,"-527 617 612");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 517 -101 511");
+    (SMap,buildIndex,"-527 617 -501 611");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 517 102 -512");
+    (SMap,buildIndex,"-527 617 502 -612");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 103 -104 105 -106");
+    (SMap,buildIndex,"501 -502 103 -104 105 -106");
   addOuterSurf("Main",HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -427");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-501 -527");
   addOuterSurf("PortA",HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -427");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -527");
   addOuterSurf("PortB",HR*backHR);
   
   return;
@@ -319,12 +361,12 @@ DiffPump::createObjects(Simulation& System)
 
 
 void
-DiffPump::createLinks()
+CLRTube::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("DiffPump","createLinks");
+  ELog::RegMethod RegA("CLRTube","createLinks");
 
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
@@ -333,7 +375,7 @@ DiffPump::createLinks()
 }
 
 void
-DiffPump::createAll(Simulation& System,
+CLRTube::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -343,7 +385,7 @@ DiffPump::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("DiffPump","createAll");
+  ELog::RegMethod RegA("CLRTube","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length/2.0+portLength);

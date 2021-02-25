@@ -74,7 +74,7 @@
 #include "MonoBox.h"
 #include "BoxJaws.h"
 #include "ConnectorTube.h"
-#include "DiffPump.h"
+#include "CLRTube.h"
 #include "FourPortTube.h"
 #include "SixPortTube.h"
 
@@ -101,7 +101,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   jawBox(new xraySystem::BoxJaws(newName+"JawBox")),
   connectA(new xraySystem::ConnectorTube(newName+"ConnectA")),
-  diffPump(new xraySystem::DiffPump(newName+"DiffPump")),
+  clrTubeA(new xraySystem::CLRTube(newName+"CLRTubeA")),
   connectB(new xraySystem::ConnectorTube(newName+"ConnectB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   sixPortA(new tdcSystem::SixPortTube(newName+"SixPortA")),
@@ -125,7 +125,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(jawBox);
   OR.addObject(connectA);
-  OR.addObject(diffPump);
+  OR.addObject(clrTubeA);
   OR.addObject(connectB);
   OR.addObject(pipeA);
   OR.addObject(sixPortA);
@@ -229,10 +229,10 @@ formaxExptLine::buildObjects(Simulation& System)
     (System,buildZone,*jawBox,"back",*connectA);
 
   constructSystem::constructUnit
-    (System,buildZone,*connectA,"back",*diffPump);
+    (System,buildZone,*connectA,"back",*clrTubeA);
 
   constructSystem::constructUnit
-    (System,buildZone,*diffPump,"back",*connectB);
+    (System,buildZone,*clrTubeA,"back",*connectB);
   
   constructSystem::constructUnit
     (System,buildZone,*connectB,"back",*pipeA);
