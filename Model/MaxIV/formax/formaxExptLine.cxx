@@ -68,11 +68,15 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GateValveCylinder.h"
 
-
+#include "VacuumPipe.h"
 #include "MonoBox.h"
 #include "BoxJaws.h"
+#include "ConnectorTube.h"
+#include "DiffPump.h"
 #include "FourPortTube.h"
+#include "SixPortTube.h"
 
 #include "formaxExptLine.h"
 
@@ -95,7 +99,17 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   crossA(new xraySystem::FourPortTube(newName+"CrossA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  jawBox(new xraySystem::BoxJaws(newName+"JawBox"))
+  jawBox(new xraySystem::BoxJaws(newName+"JawBox")),
+  connectA(new xraySystem::ConnectorTube(newName+"ConnectA")),
+  diffPump(new xraySystem::DiffPump(newName+"DiffPump")),
+  connectB(new xraySystem::ConnectorTube(newName+"ConnectB")),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  sixPortA(new tdcSystem::SixPortTube(newName+"SixPortA")),
+  cylGateA(new constructSystem::GateValveCylinder(newName+"CylGateA")),
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  sixPortB(new tdcSystem::SixPortTube(newName+"SixPortB")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -110,6 +124,16 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(crossA);
   OR.addObject(bellowC);
   OR.addObject(jawBox);
+  OR.addObject(connectA);
+  OR.addObject(diffPump);
+  OR.addObject(connectB);
+  OR.addObject(pipeA);
+  OR.addObject(sixPortA);
+  OR.addObject(cylGateA);
+  OR.addObject(pipeB);
+  OR.addObject(bellowD);
+  OR.addObject(sixPortB);
+  OR.addObject(pipeC);
 }
   
 formaxExptLine::~formaxExptLine()
@@ -201,10 +225,40 @@ formaxExptLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowC,"back",*jawBox);
 
+  constructSystem::constructUnit
+    (System,buildZone,*jawBox,"back",*connectA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*connectA,"back",*diffPump);
+
+  constructSystem::constructUnit
+    (System,buildZone,*diffPump,"back",*connectB);
+  
+  constructSystem::constructUnit
+    (System,buildZone,*connectB,"back",*pipeA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeA,"back",*sixPortA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortA,"back",*cylGateA);
+
+  constructSystem::constructUnit
+    (System,buildZone,*cylGateA,"back",*pipeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeB,"back",*bellowD);
+  
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*sixPortB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortB,"back",*pipeC);
+    
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=jawBox;
+  lastComp=pipeC;
 
   return;
 }

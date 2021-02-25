@@ -85,6 +85,7 @@
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "GateValveCube.h"
+#include "GateValveCylinder.h"
 #include "StriplineBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
@@ -131,6 +132,7 @@
 #include "HPJaws.h"
 #include "BoxJaws.h"
 #include "DiffPumpXIADP03.h"
+#include "DiffPump.h"
 #include "ViewScreenTube.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
@@ -170,7 +172,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","GateValveCube","CleaningMagnet",
+      "CylGateValve","GateValveCube","GateValveCylinder","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
@@ -233,6 +235,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::GateValveCube>
 	GV(new constructSystem::GateValveCube("GVCube"));
+
+      OR.addObject(GV);
+
+      GV->addInsertCell(voidCell);
+      GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "GateValveCylinder" )
+    {
+      std::shared_ptr<constructSystem::GateValveCylinder>
+	GV(new constructSystem::GateValveCylinder("GVCylinder"));
 
       OR.addObject(GV);
 
@@ -1112,14 +1126,27 @@ makeSingleItem::build(Simulation& System,
 	
 	return;
       }
-    if (item == "DiffPump" || item == "DiffPumpXIADP03")
+    if (item == "DiffPumpXIADP03")
       {
 	std::shared_ptr<xraySystem::DiffPumpXIADP03>
-	  dp(new xraySystem::DiffPumpXIADP03("DiffPump"));
+	  dp(new xraySystem::DiffPumpXIADP03("DiffXIA"));
 	
 	OR.addObject(dp);
 	
 	dp->addInsertCell(voidCell);
+	dp->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+
+    if (item == "DiffPump")
+      {
+	std::shared_ptr<xraySystem::DiffPump>
+	  dp(new xraySystem::DiffPump("DiffPump"));
+	
+	OR.addObject(dp);
+	
+	dp->addAllInsertCell(voidCell);
 	dp->createAll(System,World::masterOrigin(),0);
 	
 	return;

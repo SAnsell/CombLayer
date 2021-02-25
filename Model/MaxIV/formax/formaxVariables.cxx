@@ -80,6 +80,7 @@
 #include "SixPortGenerator.h"
 #include "BoxJawsGenerator.h"
 #include "PipeShieldGenerator.h"
+#include "ConnectorGenerator.h"
 
 
 namespace setVariable
@@ -681,13 +682,11 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   setVariable::PortItemGenerator PItemGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
-
     
   PTubeGen.setMat("Stainless304");
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  const double outerRadius(9.5);
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(-3.0,-3.0);
@@ -900,6 +899,14 @@ exptVariables(FuncDataBase& Control,
   setVariable::SixPortGenerator CrossGen;
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::BoxJawsGenerator BJGen;
+  setVariable::ConnectorGenerator CTGen;
+  setVariable::DiffPumpGenerator DPGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::SixPortGenerator SixGen;
+
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
   
   const std::string preName(beamName+"ExptLine");
 
@@ -911,7 +918,6 @@ exptVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,preName+"BellowA",15.0);
 
-  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(3.5,3.5); // La/Lb
@@ -926,8 +932,35 @@ exptVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,preName+"BellowC",7.5);
 
-  BJGen.generateJaws(Control,"JawBox",0.8,0.8);
+  BJGen.generateJaws(Control,preName+"JawBox",0.8,0.8);
 
+  CTGen.generatePipe(Control,preName+"ConnectA",20.0);
+
+  DPGen.generatePump(Control,preName+"DiffPump");
+
+  CTGen.generatePipe(Control,preName+"ConnectB",20.0);
+
+  PipeGen.generatePipe(Control,preName+"PipeA",12.5);
+
+  SixGen.setCF<CF40>();
+  SixGen.setLength(6.0,6.0,5.0);
+  SixGen.generateSixPort(Control,preName+"SixPortA");
+
+  
+  setVariable::GateValveGenerator CGateGen;
+  CGateGen.setBladeMat("Aluminium");
+  CGateGen.setBladeThick(0.8);
+  CGateGen.setLength(1.2);
+  CGateGen.setCylCF<CF40>();
+  CGateGen.generateValve(Control,preName+"CylGateA",0.0,0);
+
+  PipeGen.generatePipe(Control,preName+"PipeB",118.0);
+
+  BellowGen.generateBellow(Control,preName+"BellowD",15.0);
+  
+  SixGen.generateSixPort(Control,preName+"SixPortB");
+
+  PipeGen.generatePipe(Control,preName+"PipeC",118.0);
   return;
 }
 

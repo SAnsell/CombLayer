@@ -29,49 +29,30 @@ namespace insertSystem
 
 namespace tdcSystem
 {
+  class SixPortTube;
   class YagScreen;
 }
 
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
   class VacuumPipe;
   class Bellows;
-  class VacuumBox;
   class portItem;
   class PortTube;
   class PipeTube;
-  class GateValveCube;
-  class JawValveCube;
-  class JawFlange;
+  class GateValveCylinder;
 }
 
 namespace xraySystem
 {
   class CylGateValve;
-  class BremColl;
-  class BeamPair;
-  class BremMonoColl;
-  class DCMTank;
-  class FlangeMount;
-  class FourBeam;
-  class GaugeTube;
-  class Mirror;
-  class MLMono;
-  class MonoBlockXstals;
-  class ShutterUnit;
-  class SquareFMask;
-  class IonGauge;
-  class TriggerTube;
-  class HPJaws;
-  class BoxJaws;
-  class BremTube;
-  class ViewScreenTube;
-  class MonoShutter;
   class MonoBox;
   class FourPortTube;
-  class DiffPumpXIADP03;
+  class BoxJaws;
+  class ViewScreenTube;
+  class DiffPump;
+  class ConnectorTube;
+
   
     
   /*!
@@ -113,10 +94,27 @@ class formaxExptLine :
   /// jaws
   std::shared_ptr<xraySystem::BoxJaws> jawBox;
   /// Pipe from jaws
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<xraySystem::ConnectorTube> connectA;
   // diff pump
-  std::shared_ptr<xraySystem::DiffPumpXIADP03> diffPump;
-  
+  std::shared_ptr<xraySystem::DiffPump> diffPump;
+  /// Pipe from diff
+  std::shared_ptr<xraySystem::ConnectorTube> connectB;
+  /// Pipe to gauge system [segment 12]
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortA;
+  /// Cylinder gate valve [with square top]
+  std::shared_ptr<constructSystem::GateValveCylinder> cylGateA;
+  /// Pipe from gauge system 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowD;  
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortB;
+  /// Pipe from gauge system 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
+
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle

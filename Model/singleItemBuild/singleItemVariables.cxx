@@ -324,7 +324,10 @@ SingleItemVariables(FuncDataBase& Control)
   BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
 
   setVariable::DiffXIADP03Generator DPXGen;
-  DPXGen.generatePump(Control,"DiffPump",54.4);
+  DPXGen.generatePump(Control,"DiffXIA",54.4);
+
+  setVariable::DiffPumpGenerator DPGen;
+  DPGen.generatePump(Control,"DiffPump");
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");
@@ -420,6 +423,9 @@ SingleItemVariables(FuncDataBase& Control)
   CGateGen.setBladeThick(0.8);
   CGateGen.setPortPairCF<CF40,CF63>();
   CGateGen.generateValve(Control,"GVCube",0.0,1);
+
+  CGateGen.setCylCF<CF40>();
+  CGateGen.generateValve(Control,"GVCylinder",0.0,1);
 
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;

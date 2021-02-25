@@ -161,9 +161,14 @@ DiffPump::createSurfaces()
 
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+2,Origin+Y*(portLength+length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+7,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+17,Origin,Y,innerRadius+innerThick);
 
   // main 
   ModelSupport::buildPlane
@@ -202,16 +207,26 @@ DiffPump::createSurfaces()
 
   // Inner tube
   ModelSupport::buildCylinder
-    (SMap,buildIndex+407,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+417,Origin,Y,innerRadius+innerThick);
-  ModelSupport::buildCylinder
     (SMap,buildIndex+427,Origin,Y,flangeRadius);
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+411,Origin-Y*(length/2.0+portLength-flangeLength),Y);
+    (SMap,buildIndex+401,Origin-Y*(length/2.0+portThick),Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+412,Origin+Y*(length/2.0+portLength-flangeLength),Y);  
+    (SMap,buildIndex+402,Origin+Y*(length/2.0+portThick),Y);  
+
+  
+  // Port Radius
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+507,Origin,Y,portRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+517,Origin,Y,portRadius+portThick);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+511,Origin-Y*(length/2.0+portLength-flangeLength),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+512,Origin+Y*(length/2.0+portLength-flangeLength),Y);  
+    
+
   
   return;
 }
@@ -231,14 +246,14 @@ DiffPump::createObjects(Simulation& System)
 
   // Main pipe
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -407");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -402 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 407 -417");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -402 7 -17");
   makeCell("Pipe",System,cellIndex++,pipeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"101 -102 417 303 -304 305 -306");
+    (SMap,buildIndex,"101 -102 17 303 -304 305 -306");
   makeCell("captureVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
@@ -250,35 +265,43 @@ DiffPump::createObjects(Simulation& System)
   makeCell("Outer",System,cellIndex++,mainMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -407 -101 ");
+    (SMap,buildIndex," -507 -401 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex," -407 102 ");
+    (SMap,buildIndex," -507 402 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-417 407 -101 ");
+    (SMap,buildIndex,"17 -517 401 -101");
+  makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"17 -517 -402 102");
+  makeCell("PortPlate",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-517 507 -401 ");
+  makeCell("PortTube",System,cellIndex++,pipeMat,0.0,HR*frontHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-517 507 402 ");
   makeCell("PortTube",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-417 407 102 ");
-  makeCell("PortTube",System,cellIndex++,pipeMat,0.0,HR*backHR);
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 417 -411");
+    (SMap,buildIndex,"-427 517 -511");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 417 412");
+    (SMap,buildIndex,"-427 517 512");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 417 -101 411");
+    (SMap,buildIndex,"-427 517 -101 511");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-427 417 -102 412");
+    (SMap,buildIndex,"-427 517 102 -512");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule
@@ -323,7 +346,7 @@ DiffPump::createAll(Simulation& System,
   ELog::RegMethod RegA("DiffPump","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,length/2.0+portLength);
   createSurfaces();
   createObjects(System);
   createLinks();
