@@ -570,7 +570,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildPlane(SMap,SJ+11,Origin+Y*(midTDuctYStep[5]-midTDuctRadius[5]*2),Y);
   ModelSupport::buildPlane(SMap,SJ+12,Origin+Y*(midTDuctYStep[8]+midTDuctRadius[8]*2),Y);
   ModelSupport::buildPlane(SMap,SJ+21,Origin+Y*(midTDuctYStep[9]-midTDuctRadius[9]*2),Y);
-  ModelSupport::buildPlane(SMap,SJ+22,Origin+Y*(midTDuctYStep[18]+midTDuctRadius[18]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+22,Origin+Y*(midTDuctYStep[14]+midTDuctRadius[14]*2),Y);
 
   for (size_t i=0; i<midTNDucts; ++i)
     {

@@ -3412,7 +3412,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
   /////////////////////////////////////////////// DUCTS ///////////////
-  const size_t nDucts = 19;
+  const size_t nDucts = 20;
   Control.addVariable(wallKey+"MidTNDucts",nDucts);
   // Duct D1 is the TDC modulator klystron duct
   // This is the leftmost duct in K_20-2_354 [email from AR 2021-01-15].
@@ -3451,11 +3451,14 @@ wallVariables(FuncDataBase& Control,
   // Ducts above the BTG blocks
   // Photo of these ducts from the SPF hall:
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view
+  // Video from the FKG:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/fkg/img_5353.mov/view
 
   // Lower tier - AR: 210119: I would
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
-  const double BTGductY = 9839.035; // K_20-2_355
+  const double dx = 60; // artificial offset based on img_5374
+  const double BTGductY = 9839.035 - dx; // K_20-2_355
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
@@ -3463,10 +3466,10 @@ wallVariables(FuncDataBase& Control,
       Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
       Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
     }
-  // Upper tier
+  // Upper tier: G1-G5
   // Electric cables, but now we put void to be conservative
-  const double BTGductYup = BTGductY + 105.0; // K_20-2_355: 105 = 241.6-136.6
-  for (size_t i=0; i<=4; ++i)
+  const double BTGductYup = BTGductY + 105.0 - dx; // K_20-2_355: 105 = 241.6-136.6
+  for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
       Control.addVariable(name+"Radius",5.0); // K_20-2_355

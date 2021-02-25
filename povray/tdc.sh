@@ -32,7 +32,7 @@ if [ "$segments" == "All" -a $ITEM == "SPF32DipoleA" ]; then
     void=""
 elif [ "$segments" == "Segment16 Segment30 Segment31" -a $ITEM == "TDC16CMagH" ]; then
     void=""
-elif [ $ITEM == "MidTFrontLShield" -o $ITEM == "L2SPF3ShieldA" -o $ITEM == "L2SPF10ShieldA" ]; then
+elif [ $ITEM == "MidTFrontLShield" -o $ITEM == "L2SPF3ShieldA" -o $ITEM == "L2SPF10ShieldA" -o $ITEM == "BTG" ]; then
     void=""
 fi
 
