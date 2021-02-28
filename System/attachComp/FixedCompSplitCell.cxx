@@ -101,6 +101,36 @@ FixedComp::splitObject(Simulation& System,
 std::vector<int>
 FixedComp::splitObjectAbsolute(Simulation& System,
 			       const int SNoffset,
+			       const std::string& cellName,
+			       const Geometry::Vec3D& Org,
+			       const Geometry::Vec3D& XYZ)
+  /*!
+    Carries out a splitObject function -- not 100% sure
+    is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
+    \param System :: Simuation for the model
+    \param SNoffset :: Number for new surface [relative to build index]
+    \param cellN :: Cell number to split
+    \param Org :: Origin 
+    \param XYZ :: XYZ plane 
+    \return cellList 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","splitObjectAbsolute(cellName,org,axis,)");
+
+  const CellMap* CMapPtr=
+    dynamic_cast<const attachSystem::CellMap*>(this);
+  const int cellN=(CMapPtr) ? CMapPtr->getLastCell(cellName) : 0;
+  if (!cellN)
+    throw ColErr::InContainerError<std::string>
+      (cellName,"FC:"+keyName+" cell: "+cellName+" has no cell");
+
+  return splitObjectAbsolute(System,SNoffset,cellN,Org,XYZ);
+}
+
+std::vector<int>
+FixedComp::splitObjectAbsolute(Simulation& System,
+			       const int SNoffset,
 			       const int cellN,
 			       const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& XYZ)

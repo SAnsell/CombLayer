@@ -3,7 +3,7 @@
  
  * File:   construct/portSet.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "portItem.h"
 #include "doublePortItem.h"
@@ -71,7 +73,9 @@ namespace constructSystem
 {
 
 portSet::portSet(attachSystem::FixedComp& FC)  :
-  FUnit(FC)
+  FUnit(FC),
+  cellPtr(dynamic_cast<attachSystem::CellMap*>(&FC)),
+  outerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -243,49 +247,6 @@ portSet::intersectVoidPorts(Simulation& System,
 
 
 
-Geometry::Vec3D
-portSet::calcCylinderDistance(const size_t pIndex,const double R) const
-  /*!
-    Calculate the shift vector
-    \param pIndex :: Port index [0-NPorts]
-    \param pIndex :: Port index [0-NPorts]
-    \return the directional vector from the port origin
-    to the pipetube surface
-
-   */
-{
-  ELog::RegMethod RegA("portSet","calcCylinderDistance");
-  
-  if (pIndex>Ports.size())
-    throw ColErr::IndexError<size_t>
-      (pIndex,Ports.size(),"PI exceeds number of Ports");
-
-  const Geometry::Vec3D& X=FUnit.getX();
-  const Geometry::Vec3D& Y=FUnit.getY();
-  const Geometry::Vec3D& Z=FUnit.getZ();
-  
-  // No Y point so no displacement
-  const Geometry::Vec3D PC=
-    X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
-  const Geometry::Vec3D PA=
-    X*PAxis[pIndex].X()+Y*PAxis[pIndex].Y()+Z*PAxis[pIndex].Z();
-
-  const Geometry::Line CylLine(Geometry::Vec3D(0,0,0),Y);
-  const Geometry::Line PortLine(PC,PA);
-
-  Geometry::Vec3D CPoint;
-  std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
-  // calc external impact point:
-  
-  //  const double R=radius+wallThick;
-  const double ELen=Ports[pIndex]->getExternalLength();
-  const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
-  
-  const Geometry::Vec3D RPoint=
-    SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
-
-  return RPoint-PA*ELen - PC*2.0;
-}
 
 template<typename T>
 int
@@ -506,11 +467,16 @@ portSet::insertPortInCell(Simulation& System,
 
 void
 portSet::createPorts(Simulation& System,
-		     const std::vector<int>& CCVec)
+		     MonteCarlo::Object* insertObj,
+		     const std::vector<int>& CCVec,
+		     const HeadRule& innerSurf,
+		     const HeadRule& outerSurf)
   /*!
     Simple function to create ports
     \param System :: Simulation to use
     \param CC :: Insert cells [from CC.getInsertCell()]			
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
    */
 {
   ELog::RegMethod RegA("portSet","createPorts");
@@ -525,7 +491,50 @@ portSet::createPorts(Simulation& System,
 	Ports[i]->addOuterCell(CN);
 
       Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
+      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      // if (outerVoid && FUnit.hasCell(outerVoidName))
+      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,OuterVoidName));
+      Ports[i]->insertObjects(System);
+    }
+  return;
+}
+
+void
+portSet::createPorts(Simulation& System,
+		     const std::string& cellName,
+		     const std::vector<int>& CCVec)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param cellName :: Main cell nabe
+
+    \param CCVec :: Insert cells [from CC.getInsertCell()]			
+  */
+{
+  ELog::RegMethod RegA("portSet","createPorts");
+
+  populate(System.getDataBase());
+  ELog::EM<<"Insert Cell ="<<cellName<<ELog::endDiag;
+  MonteCarlo::Object* insertObj=
+    cellPtr->getCellObject(System,cellName);
+  ELog::EM<<"Insert Cell ="<<*insertObj<<ELog::endDiag;
+  return;
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      for(const int CN : CCVec)
+	  Ports[i]->addOuterCell(CN);
+
+      for(const int CN : portCells)
+	Ports[i]->addOuterCell(CN);
+
+      Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
+      int SN=insertObj->trackSurf(PCentre[i],PAxis[i]);
+      ELog::EM<<"Surf == "<<SN<<ELog::endDiag;
+      
+      //      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      // if (outerVoid && FUnit.hasCell(outerVoidName))
+      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,OuterVoidName));
+      Ports[i]->insertObjects(System);
     }
   return;
 }

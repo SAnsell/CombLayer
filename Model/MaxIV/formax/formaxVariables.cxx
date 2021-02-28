@@ -961,6 +961,19 @@ exptVariables(FuncDataBase& Control,
   SixGen.generateSixPort(Control,preName+"SixPortB");
 
   PipeGen.generatePipe(Control,preName+"PipeC",118.0);
+
+  CGateGen.generateValve(Control,preName+"CylGateB",0.0,0);
+
+  SixGen.generateSixPort(Control,preName+"SixPortC");
+  
+  PipeGen.generatePipe(Control,preName+"PipeD",12.5);
+
+  CTGen.generatePipe(Control,preName+"ConnectC",20.0);
+
+  DPGen.generatePump(Control,preName+"CLRTubeB");
+
+  CTGen.generatePipe(Control,preName+"ConnectD",20.0);
+
   return;
 }
 

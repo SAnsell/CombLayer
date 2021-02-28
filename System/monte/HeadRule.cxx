@@ -2307,53 +2307,19 @@ HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
   return Pts[index];
 }
 
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit,
-		    double& D,const std::set<int>& activeNull) const
-  /*!
-    Calculate the track of a line to the boundary surface of the
-    HeadRule. activeNull designates the current surface(s) (with sign)
-    which is to be ignored.
 
-    \param Org :: Origin of line
-    \param Unit :: Direction of line
-    \param D :: Distance travelled to surface
-    \param activeNull :: signed avoid surfaces
-    \return exit surface [signed - ingoing sense: Origin is true to surface]
-  */
-{
-  ELog::RegMethod RegA("HeadRule","trackSurf");
-  
-  Geometry::Vec3D Pt(Org);
-  D=0.0;
-  double DD;
-  int SN=trackSurf(Pt,Unit,DD);
-  while (SN && activeNull.find(SN)!=activeNull.end())
-    {
-      Pt+=Unit*DD;
-      SN=trackSurf(Pt,Unit,DD);
-      D+=DD;
-    }
-  D+=DD;
-  return SN;
-}
-
-
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit,
-		    double& D) const
+std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
+			     const Geometry::Vec3D& Unit) const
   /*!
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \param D :: Distance travelled to surface
-    \return exit surface [signed]
+    \return Signed Surf : SurfacePtr : Point : Distance
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf");
-
+  ELog::RegMethod RegA("HeadRule","trackSurfIntersect");
+    
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
 
   const std::vector<const Geometry::Surface*> SurfList=
@@ -2366,7 +2332,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
 
-  D= std::numeric_limits<double>::max();
+  double D= std::numeric_limits<double>::max();
   const Geometry::Surface* surfPtr=0;
   // NOTE: we only check for and exiting surface by going
   // along the line in the positive direction.
@@ -2390,9 +2356,108 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 	    }
 	}
     }
-      
-  return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result(0,0,Org,0.0);
+
+  if (surfPtr)
+    {
+      std::get<0>(result)=bestPairValid*surfPtr->getName();
+      std::get<1>(result)=surfPtr;
+      std::get<2>(result)=Org+Unit*D;
+      std::get<3>(result)=D;
+    }
+  return result;
+  
 }
+
+std::pair<int,double>
+HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
+			    const Geometry::Vec3D& Unit) const
+
+  /*!
+    Calculate a track of a line to a change in state surface
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \return exit surface [signed??]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurfDistance");
+  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=trackSurfIntersect(Org,Unit);
+
+  return std::pair<int,double>(std::get<0>(result),std::get<3>(result));
+}
+
+std::pair<int,double>
+HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
+			    const Geometry::Vec3D& Unit,
+			    const std::set<int>& ) const
+
+  /*!
+    Calculate a track of a line to a change in state surface
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \return exit surface [signed??]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=trackSurfIntersect(Org,Unit);
+
+  return std::pair<int,double>(std::get<0>(result),std::get<3>(result));
+}
+
+int
+HeadRule::trackSurf(const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& Unit) const
+  /*!
+    Calculate the track of a line to the boundary surface of the
+    HeadRule. activeNull designates the current surface(s) (with sign)
+    which is to be ignored.
+
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param activeSurf :: signed avoid surfaces
+    \return exit surface [signed - ingoing sense: Origin is true to surface]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+
+  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=trackSurfIntersect(Org,Unit);
+
+  return std::get<0>(result);
+}
+
+int
+HeadRule::trackSurf(const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& Unit,
+		    const std::set<int>& activeSurf) const
+  /*!
+    Calculate the track of a line to the boundary surface of the
+    HeadRule. activeNull designates the current surface(s) (with sign)
+    which is to be ignored.
+
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param activeSurf :: signed avoid surfaces
+    \return exit surface [signed - ingoing sense: Origin is true to surface]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+  
+  Geometry::Vec3D Pt(Org);
+  double D(0.0);
+  auto [SN,DD]=trackSurfDistance(Pt,Unit);
+  while (SN && activeSurf.find(SN)!=activeSurf.end())
+    {
+      Pt+=Unit*DD;
+      std::tie(SN,DD)=trackSurfDistance(Pt,Unit);
+      D+=DD;
+    }
+  return SN;
+}
+
 
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const

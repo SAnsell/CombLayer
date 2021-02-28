@@ -1097,50 +1097,32 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
   return 0;
 }
 
-std::pair<const Geometry::Surface*,double>
-Object::forwardIntercept(const Geometry::Vec3D& IP,
-			 const Geometry::Vec3D& UV) const
-  /*!
-    Given a line IP + lambda(UV) does it intercept
-    this object: (used for virtual objects).
-    This does descriminate between ingoing and outgoing
-    tracks.
 
-    \param IP :: Initial point
-    \param UV :: Forward going vector
-    \return surface + distance forward : -ve on failure
+std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+Object::trackSurfIntersect(const Geometry::Vec3D& Org,
+			   const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into headrule
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Tuple of SurfNumber[signed]/surfacePointer/ImpactPoint/distance
   */
 {
-  ELog::RegMethod RegA("Object","forwardIntercept");
-  
-  MonteCarlo::LineIntersectVisit LI(IP,UV);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  double minDist(1e38);
-  const Geometry::Surface* surfPtr(0);
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>Geometry::shiftTol && dPts[i]<minDist)
-	{
-	  const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	  if (pAB==1 || pAB==2)            // Going either way
-	    {
-	      minDist=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  // surface + distance
-  return std::pair<const Geometry::Surface*,double>(surfPtr,minDist);
+  return HRule.trackSurfIntersect(Org,unitAxis);
 }
 
+int
+Object::trackSurf(const Geometry::Vec3D& Org,
+		  const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into headrule
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
+  */
+{
+  return HRule.trackSurf(Org,unitAxis);
+}
 
 
 int
@@ -1243,66 +1225,6 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 }
 
 		  
-std::pair<const Geometry::Surface*,double>
-Object::forwardInterceptInit(const Geometry::Vec3D& IP,
-			     const Geometry::Vec3D& UV) const
-  /*!
-    Given a line IP + lambda(UV) does it intercept
-    this object: (used for virtual objects).
-    Has special test for the case that the particle 
-    starts on a surface and we need to effectively move it inside.
-
-    \param IP :: Initial point
-    \param UV :: Forward going vector
-    \return distance forward : -ve on failure
-  */
-{
-  ELog::RegMethod RegA("Object","forwardInterceptInit");
-  
-  MonteCarlo::LineIntersectVisit LI(IP,UV);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  double minDist(1e38);
-  const Geometry::Surface* surfPtr(0);
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>Geometry::shiftTol && dPts[i]<minDist)
-	{
-	  const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	  if (pAB==1 || pAB==2)            // Going either way
-	    {
-	      minDist=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  
-  if (!surfPtr)
-    {
-      for(size_t i=0;i<dPts.size();i++)
-	{
-	  if (dPts[i]>-Geometry::shiftTol && dPts[i]<Geometry::shiftTol && 
-	      dPts[i]<minDist)
-	    {
-	      const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	      if (pAB==1 || pAB==2)            // Going either way
-		{
-		  minDist=dPts[i];
-		  surfPtr=surfIndex[i];
-		}
-	    }
-	}
-    }
-  
-  return std::pair<const Geometry::Surface*,double>(surfPtr,minDist);
-}
 
 void
 Object::makeComplement()

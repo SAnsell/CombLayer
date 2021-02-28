@@ -214,11 +214,8 @@ WrapperCell::createLinks()
   
   const HeadRule& HR=ContainedComp::outerSurf;
 
-  double DA,DB;
-
-  
-  const int SA=HR.trackSurf(Origin,-Y,DA);
-  const int SB=HR.trackSurf(Origin,Y,DB);
+  const auto [SA,DA]=HR.trackSurfDistance(Origin,-Y);
+  const auto [SB,DB]=HR.trackSurfDistance(Origin,Y);
   if (SA)
     {
       FixedComp::setConnect(0,Origin-Y*DA,-Y);

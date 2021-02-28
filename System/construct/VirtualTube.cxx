@@ -237,7 +237,9 @@ VirtualTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("VirtualTube","createPorts");
-	
+
+  ELog::EM<<"THIS SHOULD NOT BE CALLED [OBSOLTE ==> "
+    "use createPorts(Obj,HR,HR)"<<ELog::endCrit;
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");

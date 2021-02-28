@@ -113,7 +113,19 @@ class formaxExptLine :
   std::shared_ptr<tdcSystem::SixPortTube> sixPortB;
   /// Pipe from gauge system 
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-
+  /// Cylinder gate valve [with square top]
+  std::shared_ptr<constructSystem::GateValveCylinder> cylGateB;
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortC;
+  /// Short Pipe from gauge system 
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  // Segment 13 :
+  /// Pipe from gate value 
+  std::shared_ptr<xraySystem::ConnectorTube> connectC;
+  // second CLR tube
+  std::shared_ptr<xraySystem::CLRTube> clrTubeB;
+  /// Pipe from diff
+  std::shared_ptr<xraySystem::ConnectorTube> connectD;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

@@ -259,6 +259,10 @@ class FixedComp
 			       const std::vector<Geometry::Vec3D>&);
 
   std::vector<int> splitObjectAbsolute
+  (Simulation&,const int,const std::string&,
+     const Geometry::Vec3D&,const Geometry::Vec3D&);
+
+  std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int,
      const Geometry::Vec3D&,const Geometry::Vec3D&);
   

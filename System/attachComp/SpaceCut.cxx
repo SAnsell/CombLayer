@@ -3,7 +3,7 @@
  
  * File:   attachComp/SpaceCut.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -457,8 +457,7 @@ SpaceCut::calcBoundary(const HeadRule& objHR,
       for(size_t i=0;i<NDivide;i++)
 	{
 	  const Geometry::Vec3D Axis=XX*cos(angle)+ZZ*sin(angle);
-	  double D;
-	  const int SN=objHR.trackSurf(Org,Axis,D,linkSN);
+	  const auto [SN,D] =objHR.trackSurfDistance(Org,Axis,linkSN);
 	  if (SN && surfN.find(-SN)==surfN.end())
 	    {
 	      surfN.insert(-SN);
@@ -474,8 +473,7 @@ SpaceCut::calcBoundary(const HeadRule& objHR,
   // forward going trajectory
   if (!ALink.isComplete() || !BLink.isComplete())
     {
-      double D;
-      const int SN=objHR.trackSurf(CPoint,-YA,D);
+      const int SN=objHR.trackSurf(CPoint,-YA);
       if (SN)
 	surfN.insert(-SN);
     } 	

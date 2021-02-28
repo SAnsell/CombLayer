@@ -211,13 +211,12 @@ class Object
   // INTERSECTION
   int hasIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  std::pair<const Geometry::Surface*,double> 
-    forwardInterceptInit(const Geometry::Vec3D&,
-		     const Geometry::Vec3D&) const;
-  std::pair<const Geometry::Surface*,double> 
-    forwardIntercept(const Geometry::Vec3D&,
-		     const Geometry::Vec3D&) const;
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+
+  
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,
 		const int) const;

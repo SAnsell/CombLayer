@@ -169,6 +169,7 @@ FORMAX::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
   // new
 
+  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));

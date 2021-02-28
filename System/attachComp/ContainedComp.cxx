@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -506,21 +506,13 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
   */
 {
   ELog::RegMethod RegA("ContainedComp","surfOuterIntersect");
-  // Create object:
+
   if (outerSurf.hasRule())
     {
-      MonteCarlo::Object TObj(1,0,0.0,outerSurf.display());
-      TObj.createSurfaceList();
-      std::pair<const Geometry::Surface*,double> Res=
-	TObj.forwardIntercept(LA.getOrigin(),LA.getDirect());
-      
-      if (Res.first && Res.second>0.0)
-	{
-	  // Get point :
-	  Geometry::Vec3D Pt=LA.getPoint(Res.second);
-	  return Res.first->sideDirection(Pt,LA.getDirect())*
-	    Res.first->getName();
-	}
+      const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+	result=outerSurf.trackSurfIntersect(LA.getOrigin(),LA.getDirect());
+
+      return std::get<0>(result);
     }
   return 0;
 }

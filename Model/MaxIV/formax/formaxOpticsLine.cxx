@@ -474,7 +474,6 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
   /*!
     Construct a monoshutter system
     \param System :: Simulation for building
-    \param masterCellPtr Pointer to mast cell
     \param FC :: FixedComp for start point
     \param linkName :: side index
     \return outerCell

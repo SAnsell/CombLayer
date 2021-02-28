@@ -109,7 +109,13 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   sixPortB(new tdcSystem::SixPortTube(newName+"SixPortB")),
-  pipeC(new constructSystem::VacuumPipe(newName+"PipeC"))
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  cylGateB(new constructSystem::GateValveCylinder(newName+"CylGateB")),
+  sixPortC(new tdcSystem::SixPortTube(newName+"SixPortC")),
+  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  connectC(new xraySystem::ConnectorTube(newName+"ConnectC")),
+  clrTubeB(new xraySystem::CLRTube(newName+"CLRTubeB")),
+  connectD(new xraySystem::ConnectorTube(newName+"ConnectD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -134,6 +140,12 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(bellowD);
   OR.addObject(sixPortB);
   OR.addObject(pipeC);
+  OR.addObject(cylGateB);
+  OR.addObject(sixPortC);
+  OR.addObject(pipeD);
+  OR.addObject(connectC);
+  OR.addObject(clrTubeB);
+  OR.addObject(connectD);
 }
   
 formaxExptLine::~formaxExptLine()
@@ -254,11 +266,29 @@ formaxExptLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*sixPortB,"back",*pipeC);
-    
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeC,"back",*cylGateB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*cylGateB,"back",*sixPortC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortC,"back",*pipeD);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortC,"back",*connectC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*connectC,"back",*clrTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*clrTubeB,"back",*connectD);
+
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeC;
+  lastComp=connectD;
 
   return;
 }
