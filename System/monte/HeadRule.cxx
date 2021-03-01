@@ -693,7 +693,7 @@ HeadRule::isEmpty() const
     \return true/false on surfaces present
   */
 {
-   return (HeadNode) ? HeadNode->isEmpty() : 0;
+   return (HeadNode) ? HeadNode->isEmpty() : 1;
 }
 
 bool

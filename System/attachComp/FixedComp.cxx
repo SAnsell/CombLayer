@@ -1400,6 +1400,7 @@ FixedComp::getSideName(const long int sideIndex) const
 
   if (sideIndex<0)
     return std::string("#")+mc->first;
+
   return mc->first;
 }
 

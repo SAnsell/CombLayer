@@ -205,6 +205,7 @@ DANMAX::build(Simulation& System,
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectUnit->setFront(*opticsHut,2);
+  ELog::EM<<"Back[Expt] == "<<exptHut->getLinkSurf(1)<<ELog::endDiag;
   connectUnit->setBack(*exptHut,1);
   connectUnit->createAll(System,*joinPipeB,"back");
 

@@ -425,11 +425,16 @@ ExternalCut::createLink(const std::string& extName,
     \param YAxis :: YAxis
    */
 {
-  ELog::RegMethod RegA("ExternalCut","createLinks");
+  ELog::RegMethod RegA("ExternalCut","createLink");
 
   const cutUnit* CU=findUnit(extName);
   if (CU)  
     {
+      if (CU->main.isEmpty())
+	throw ColErr::InContainerError<std::string>
+	  (extName,"FC:"+FC.getKeyName()+" has no surface rule");
+
+      const std::string keyN=FC.getKeyName();
       FC.setLinkSurf(linkIndex,CU->main.complement());
       FC.setBridgeSurf(linkIndex,CU->divider);
       FC.setConnect(linkIndex,
@@ -517,7 +522,6 @@ ExternalCut::interPoint(const std::string& extName,
 
   if (!CU) 
     throw ColErr::InContainerError<std::string>(extName,"Unit not found");
-  
   
   return SurInter::getLinePoint(Centre,CAxis,CU->main,CU->divider);
 }

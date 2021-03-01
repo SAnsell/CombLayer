@@ -140,8 +140,11 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->setInsertCell(getInsertCells());
   connectShield->setFront(FrontBackCut::getFrontRule());
   connectShield->setBack(FrontBackCut::getBackRule());
+  ELog::EM<<"Back == "<<FrontBackCut::getBackRule()<<ELog::endDiag;
   connectShield->createAll(System,beamFC,sideIndex);
 
+  return;
+  
   buildZone.setFront(FrontBackCut::getFrontRule());
   buildZone.setMaxExtent(FrontBackCut::getBackRule());
 
