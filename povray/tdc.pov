@@ -445,6 +445,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
+  #case(strcmp(ITEM,"SPF31Quad"))
+    #declare cameraLocation = <-600, 5514, 12>;
+    #declare cameraLookAt   = <-570, 5495, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
   #case(strcmp(ITEM,"SPF32DipoleA"))
     #declare cameraLocation = <-690, 5920, 20>;
     #declare cameraLookAt   = <-655, 5883, 0>;
