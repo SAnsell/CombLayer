@@ -599,7 +599,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 
-  
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 

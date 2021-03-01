@@ -1374,6 +1374,35 @@ FixedComp::nameSideIndex(const size_t lP,
   return;
 }
   
+std::string
+FixedComp::getSideName(const long int sideIndex) const
+  /*!
+    Find the name based on the index.
+    \param sideName :: Name with +/- at front if require to change 
+    \return name 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSideIndex");
+
+  if (!sideIndex) return "Origin";
+
+  const size_t index=std::abs(sideIndex)-1;
+  std::map<std::string,size_t>::const_iterator mc=
+    std::find_if(keyMap.begin(),keyMap.end(),
+		[&index](const std::pair<std::string,size_t>& item)
+		{
+		  return item.second==index;
+		});
+  if (mc==keyMap.end())
+  throw ColErr::InContainerError<size_t>
+    (sideIndex,"Side index not named");
+
+
+  if (sideIndex<0)
+    return std::string("#")+mc->first;
+  return mc->first;
+}
+
 long int
 FixedComp::getSideIndex(const std::string& sideName) const
   /*!

@@ -284,6 +284,10 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
+  Control.addVariable(beamName+"OuterLeft",70.0);
+  Control.addVariable(beamName+"OuterRight",60.0);
+  Control.addVariable(beamName+"OuterTop",70.0);
+
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
   
@@ -298,7 +302,6 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setNoWindow();
-
     
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",50.0);

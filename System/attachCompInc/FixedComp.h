@@ -194,6 +194,7 @@ class FixedComp
   LinkUnit getSignedLU(const long int) const;
   bool hasSideIndex(const std::string&) const;
   long int getSideIndex(const std::string&) const;
+  std::string getSideName(const long int) const;
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 

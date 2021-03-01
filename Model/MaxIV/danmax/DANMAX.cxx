@@ -206,7 +206,7 @@ DANMAX::build(Simulation& System,
   connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectUnit->setFront(*opticsHut,2);
   connectUnit->setBack(*exptHut,1);
-  connectUnit->construct(System,*opticsHut,"back",*joinPipeB,"back");
+  connectUnit->createAll(System,*joinPipeB,"back");
 
   joinPipeB->insertAllInCell(System,connectUnit->getCell("OuterVoid",0));
   
