@@ -218,7 +218,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string viewName=mirrorKey+"ViewTube";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setBFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,viewName,0.0,15.0);
+  SimpleTubeGen.generateTube(Control,viewName,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
   const double wallThick=setVariable::CF63::innerRadius+
@@ -243,7 +243,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,pumpName,40.0);
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
@@ -270,7 +270,7 @@ m3MirrorVariables(FuncDataBase& Control,
 
   const std::string mName=mirrorKey+"M3Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,32.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,mName,32.0);  // centre 13.5cm
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   // mirror in M3Tube 
@@ -374,7 +374,7 @@ slitPackageVariables(FuncDataBase& Control,
   const std::string sName=slitKey+"SlitTube";
   const double tLen(50.2);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
+  SimpleTubeGen.generateTube(Control,sName,tLen);  
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.1);
@@ -451,7 +451,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,mName,36.0);  // centre 13.5cm
   Control.addVariable(mName+"XStep",centreOffset);   
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -529,7 +529,7 @@ opticsBeamVariables(FuncDataBase& Control,
   const std::string gateName=opticKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateName,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(4.45);  // to origin line
@@ -546,7 +546,7 @@ opticsBeamVariables(FuncDataBase& Control,
   const std::string florName=opticKey+"FlorTubeA";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,florName,27.0);  // centre 13.5cm
 
   Control.addVariable(florName+"NPorts",2);   // beam ports
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.25);
@@ -568,7 +568,7 @@ opticsBeamVariables(FuncDataBase& Control,
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,collName,40.0);
   Control.addVariable(collName+"NPorts",3);   // beam ports
   
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.95);

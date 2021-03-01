@@ -628,7 +628,7 @@ opticsVariables(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",12.5);
   Control.addVariable(preName+"ScreenPipeANPorts",1);
   PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+4.0);
   PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
@@ -636,7 +636,7 @@ opticsVariables(FuncDataBase& Control,
 
   
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",14.0);
   Control.addVariable(preName+"ScreenPipeBNPorts",2);
   PItemGen.setCF<setVariable::CF63>(CF63::outerRadius+4.0);
   PItemGen.setOuterVoid(0);
@@ -899,7 +899,7 @@ exptVariables(FuncDataBase& Control,
   SimpleTubeGen.setPipe(50.2,0.6,57.8,4.3);  // Rad,thick,Flange (Rad,len)
 
   std::string segName=tubeName+"Segment1";
-  SimpleTubeGen.generateTube(Control,segName,0.0,167.2);  
+  SimpleTubeGen.generateTube(Control,segName,167.2);  
   Control.addVariable(segName+"NPorts",1);
 
   PItemGen.setCF<setVariable::CF350>(outerRadius+7.0);
@@ -909,7 +909,7 @@ exptVariables(FuncDataBase& Control,
 
   // segment 2:
   segName=tubeName+"Segment2";
-  SimpleTubeGen.generateTube(Control,segName,0.0,176);
+  SimpleTubeGen.generateTube(Control,segName,176);
   Control.addVariable(segName+"NPorts",1);
   PItemGen.generatePort(Control,segName+"Port0",C,-PX);  
 
@@ -919,14 +919,14 @@ exptVariables(FuncDataBase& Control,
   WallTubeGen.setAFlange(57.8,3.7);
   WallTubeGen.setBFlange(70.0,1.0);
   // [2] 1 added to have distance 378.7 as in [1]
-  WallTubeGen.generateTube(Control,segName,0.0,32.8+1.0);
+  WallTubeGen.generateTube(Control,segName,32.8+1.0);
   Control.addVariable(segName+"NPorts",0);
 
 
   // segment 4: longer with 2 ports right after the wall
   segName=tubeName+"Segment4";
   SimpleTubeGen.setAFlange(70.0,1.0);
-  SimpleTubeGen.generateTube(Control,segName,0.0,238.2);
+  SimpleTubeGen.generateTube(Control,segName,238.2);
   
   Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,38.2,0),PX);
@@ -940,7 +940,7 @@ exptVariables(FuncDataBase& Control,
   // Segment 5
   segName=tubeName+"Segment5";
   SimpleTubeGen.setAFlange(57.8,4.3);   // set back to default
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
+  SimpleTubeGen.generateTube(Control,segName,264.0);
   Control.addVariable(segName+"NPorts",5);
 
   const double alpha(30*M_PI/180);
@@ -960,14 +960,14 @@ exptVariables(FuncDataBase& Control,
 
   // segments 6
   segName=tubeName+"Segment6";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
+  SimpleTubeGen.generateTube(Control,segName,264.0);
   Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
   // segments 7
   segName=tubeName+"Segment7";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
+  SimpleTubeGen.generateTube(Control,segName,264.0);
   Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);
   PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
@@ -978,7 +978,7 @@ exptVariables(FuncDataBase& Control,
   SimpleTubeGen.setBFlange(57.8,4.0);
   SimpleTubeGen.setFlangeCap(0.0,2.7);
     
-  SimpleTubeGen.generateTube(Control,segName,0.0,264);
+  SimpleTubeGen.generateTube(Control,segName,264);
   //  SimpleTubeGen.setFlange(4.)
   Control.addVariable(segName+"NPorts",4);
   PItemGen.generatePort(Control,segName+"Port0",C2,PX);

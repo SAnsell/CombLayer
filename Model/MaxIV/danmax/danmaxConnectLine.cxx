@@ -140,10 +140,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
   connectShield->setInsertCell(getInsertCells());
   connectShield->setFront(FrontBackCut::getFrontRule());
   connectShield->setBack(FrontBackCut::getBackRule());
-  ELog::EM<<"Back == "<<FrontBackCut::getBackRule()<<ELog::endDiag;
   connectShield->createAll(System,beamFC,sideIndex);
-
-  return;
   
   buildZone.setFront(FrontBackCut::getFrontRule());
   buildZone.setMaxExtent(FrontBackCut::getBackRule());
@@ -174,13 +171,13 @@ danmaxConnectLine::buildObjects(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*bellowB,"back",*pipeB);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowB,"back",*pipeB);
 
   outerCell=buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+
+  setCell("FirstVoid",buildZone.getCells("Unit").front());
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  
+
   JPipe->addAllInsertCell(outerCell);
   JPipe->setFront(*pipeB,2);
   JPipe->createAll(System,*pipeB,2);

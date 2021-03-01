@@ -228,7 +228,6 @@ PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
 void
 PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,
 				const double length) const
  /*!
     Primary funciton for setting the variables
@@ -239,9 +238,6 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("PipeTubeGenerator","generatorTube");
-
-
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
@@ -267,7 +263,6 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
 void
 PipeTubeGenerator::generateBlank(FuncDataBase& Control,
 				 const std::string& keyName,
-				 const double yStep,
 				 const double length) const
  /*!
     Primary funciton for setting the variables
@@ -278,8 +273,6 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("PipeTubeGenerator","generatorBlank");
-
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);

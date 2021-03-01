@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/VacBoxGenerator.h
+ * File:   constructVarInc/PipeTubeGenerator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,9 +86,9 @@ class PipeTubeGenerator
 
   
   void generateTube(FuncDataBase&,const std::string&,
-		    const double,const double) const;
+		    const double) const;
   void generateBlank(FuncDataBase&,const std::string&,
-		    const double,const double) const;
+		    const double) const;
 
 };
 

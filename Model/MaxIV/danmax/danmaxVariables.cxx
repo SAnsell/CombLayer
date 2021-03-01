@@ -325,7 +325,7 @@ connectVariables(FuncDataBase& Control,
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
   // ystep/length
-  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",0.0,8.0);
+  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",8.0);
   Control.addVariable(beamName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
 
@@ -354,16 +354,19 @@ exptHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
 
-  const double beamOffset(-0.6);
     
   const std::string hutName(beamName+"ExptHut");
 
-  Control.addVariable(hutName+"YStep",1850.0);
+  Control.addVariable(hutName+"YStep",1845.0);
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
   Control.addVariable(hutName+"InnerThick",0.1);
+  Control.addVariable(hutName+"PbFrontThick",0.5);
+  Control.addVariable(hutName+"HoleRadius",4.0);
+  Control.addVariable(hutName+"HoleXStep",beamXStep);
+
   Control.addVariable(hutName+"PbBackThick",0.5);
   Control.addVariable(hutName+"PbRoofThick",0.6);
   Control.addVariable(hutName+"PbWallThick",0.4);
@@ -381,14 +384,14 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"HoleXStep",beamXStep);
   Control.addVariable(hutName+"HoleZStep",0.0);
   Control.addVariable(hutName+"HoleRadius",3.0);
   Control.addVariable(hutName+"HoleMat","Void");
 
   // lead shield on pipe
-  Control.addVariable(beamName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(beamName+"PShieldYStep",0.3);
+  Control.addVariable(beamName+"PShieldXStep",beamXStep);
+  Control.addVariable(beamName+"PShieldYStep",1.0);
   Control.addVariable(beamName+"PShieldLength",1.0);
   Control.addVariable(beamName+"PShieldWidth",10.0);
   Control.addVariable(beamName+"PShieldHeight",10.0);
@@ -427,7 +430,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
   // up 15cm / 32.5cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
+  SimpleTubeGen.generateTube(Control,pipeName,47.5);
 
 
   Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
@@ -559,7 +562,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   // up 16cm / 37.5cm down : Measured +1cm up for clearance
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
+  SimpleTubeGen.generateTube(Control,pipeName,53.5);
 
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 
@@ -624,7 +627,7 @@ revBeamStopPackage(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   // up 15cm / 38.5cm down : Measured +1up clearance
-  SimpleTubeGen.generateTube(Control,pipeName,0.0,53.5);
+  SimpleTubeGen.generateTube(Control,pipeName,53.5);
   Control.addVariable(pipeName+"YAngle",180.0);  // rotate
   Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
 

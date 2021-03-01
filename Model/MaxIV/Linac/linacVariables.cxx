@@ -3,7 +3,7 @@
 
  * File:   linac/linacVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,7 +235,7 @@ setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 
   SimpleTubeGen.setCapMat("Stainless304L");
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,name,0.0,fullLen);
+  SimpleTubeGen.generateTube(Control,name,fullLen);
 
   Control.addVariable(name+"NPorts",3);
   Control.addVariable(name+"YAngle",180.0);
@@ -286,7 +286,7 @@ setPrismaChamber(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateBlank(Control,name,0.0,33.2); // measured
+  SimpleTubeGen.generateBlank(Control,name,33.2); // measured
   Control.addVariable(name+"Radius",15.0); // measured
   Control.addVariable(name+"WallThick",0.2); // measured
   Control.addVariable(name+"BlankThick",0.8);  // measured

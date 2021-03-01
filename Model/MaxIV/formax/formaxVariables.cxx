@@ -98,6 +98,7 @@ void diag3Package(FuncDataBase&,const std::string&);
 void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
+void viewPackage(FuncDataBase&,const std::string&);
 
 void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
@@ -348,7 +349,7 @@ diag3Package(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.setBFlangeCF<CF150>();
-  SimpleTubeGen.generateTube(Control,viewName,0.0,25.0);
+  SimpleTubeGen.generateTube(Control,viewName,25.0);
   Control.addVariable(viewName+"NPorts",2);   // beam ports
 
   PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
@@ -884,6 +885,59 @@ opticsVariables(FuncDataBase& Control,
   return;
 }
 
+
+void
+viewPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 
+    \param Control :: Database
+    \param viewKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","viewPackage");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;  
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  
+  // will be rotated vertical
+  const std::string pipeName=viewKey+"ViewTube";
+  SimpleTubeGen.setCF<CF40>();
+  // up 15cm / 32.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,21.0);
+
+
+  Control.addVariable(pipeName+"NPorts",4);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,-1));
+  PItemGen.setPlate(0.0,"Stainless304");
+  
+  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF40::outerRadius+12.0);
+  PItemGen.generatePort(Control,pipeName+"Port2",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(-1,-1,0));
+
+  PItemGen.generatePort(Control,pipeName+"Port3",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(1,0,0));
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+
+  return;
+}
+
+
 void
 exptVariables(FuncDataBase& Control,
 	      const std::string& beamName)
@@ -973,6 +1027,12 @@ exptVariables(FuncDataBase& Control,
   DPGen.generatePump(Control,preName+"CLRTubeB");
 
   CTGen.generatePipe(Control,preName+"ConnectD",20.0);
+
+  viewPackage(Control,preName);
+
+  BellowGen.generateBellow(Control,preName+"BellowE",15.0);
+
+  CrossGen.generateSixPort(Control,preName+"CrossB");
 
   return;
 }

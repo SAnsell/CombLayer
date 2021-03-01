@@ -57,11 +57,16 @@ class ExperimentalHutch :
 
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
-  double pbFrontThick;          ///< Thickness of lead in front plate
+  double pbFrontThick;          ///< Thickness of lead in front plate(if used)
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
+  double holeRadius;            ///< Radius of front hole (if used)
+  double holeXStep;             ///< X step offset
+  double holeZStep;             ///< Z step offset
+  
+  
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 
   double extension;

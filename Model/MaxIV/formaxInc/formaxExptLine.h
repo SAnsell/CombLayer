@@ -126,12 +126,24 @@ class formaxExptLine :
   std::shared_ptr<xraySystem::CLRTube> clrTubeB;
   /// Pipe from diff
   std::shared_ptr<xraySystem::ConnectorTube> connectD;
+  /// view screen
+  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// cross way
+  std::shared_ptr<xraySystem::FourPortTube> crossB;
+  /// Adjustable pipe
+  std::shared_ptr<constructSystem::VacuumPipe> adjustPipe;
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
- 
+  void constructViewScreen(Simulation&,
+			   const attachSystem::FixedComp&,
+			   const std::string&); 
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

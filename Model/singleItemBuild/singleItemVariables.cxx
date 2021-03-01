@@ -499,7 +499,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,"PipeTube",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,"PipeTube",20.0);
 
   Control.addVariable("PipeTubeNPorts",2);
   PItemGen.setCF<setVariable::CF40>(12.0);
@@ -532,7 +532,7 @@ SingleItemVariables(FuncDataBase& Control)
 
   // BlankTube
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateBlank(Control,"BlankTube",0.0,20.0);
+  SimpleTubeGen.generateBlank(Control,"BlankTube",20.0);
   // Control.addVariable("BlankTubeFlangeCapThick",setVariable::CF63::flangeLength);
   // Control.addVariable("BlankTubeFlangeCapMat","Lead");
   //  Control.addVariable("BlankTubeYAngle", 30.0);

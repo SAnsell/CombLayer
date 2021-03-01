@@ -186,7 +186,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -218,7 +218,7 @@ shutterTable(FuncDataBase& Control,
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(0,0);
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube
@@ -319,7 +319,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
-  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports

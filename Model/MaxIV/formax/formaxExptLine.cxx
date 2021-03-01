@@ -69,6 +69,9 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValveCylinder.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
+#include "portItem.h"
 
 #include "VacuumPipe.h"
 #include "MonoBox.h"
@@ -115,7 +118,11 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   connectC(new xraySystem::ConnectorTube(newName+"ConnectC")),
   clrTubeB(new xraySystem::CLRTube(newName+"CLRTubeB")),
-  connectD(new xraySystem::ConnectorTube(newName+"ConnectD"))
+  connectD(new xraySystem::ConnectorTube(newName+"ConnectD")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  crossB(new xraySystem::FourPortTube(newName+"CrossB")), 
+  adjustPipe(new constructSystem::VacuumPipe(newName+"AdjustPipe"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -146,6 +153,10 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(connectC);
   OR.addObject(clrTubeB);
   OR.addObject(connectD);
+  OR.addObject(viewTube);
+  OR.addObject(bellowE);
+  OR.addObject(crossB);
+  OR.addObject(adjustPipe);
 }
   
 formaxExptLine::~formaxExptLine()
@@ -196,6 +207,75 @@ formaxExptLine::createSurfaces()
      buildZone.setMaxExtent(getRule("back"));
     }
   return;
+}
+
+void
+formaxExptLine::constructViewScreen(Simulation& System,
+				    const attachSystem::FixedComp& initFC, 
+				    const std::string& sideName)
+  /*!
+    Sub build of the first viewing package unit
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("formaxOpticsLine","constructViewScreen");
+
+  // FAKE insertcell: required
+
+  int prevCell(buildZone.getLastCell("Unit"));
+    
+  viewTube->setOuterVoid();
+  
+
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*viewTube);
+  viewTube->intersectPorts(System,0,2);
+  viewTube->intersectPorts(System,1,2);
+  viewTube->intersectPorts(System,0,3);
+  viewTube->intersectPorts(System,1,3);
+
+  const constructSystem::portItem& VPA=viewTube->getPort(2);
+  VPA.insertInCell(System,prevCell);
+  /*
+
+
+
+  const constructSystem::portItem& VPB=viewTube->getPort(1);
+  const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
+
+  int outerCell=buildZone.createUnit
+    (System,VPB,VPB.getSideIndex("OuterPlate"));
+  //  viewTube->insertAllInCell(System,outerCell);
+  const Geometry::Vec3D Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
+  buildZone.splitObjectAbsolute(System,1501,"Unit",
+			      viewTube->getCentre(),VPB.getY());
+  buildZone.splitObjectAbsolute(System,1502,"Unit",
+			      viewTube->getCentre(),Axis);
+
+  ELog::EM<<"CAUTION THIS IS INSANE INSERT"<<ELog::endCrit;
+  const std::vector<int> cellUnit=buildZone.getCells("Unit");
+  viewTube->insertMainInCell(System,cellUnit);
+
+
+  VPA.insertInCell(System,buildZone.getLastCell("Unit"));
+  
+  viewTube->insertPortInCell
+    (System,{{outerCell},{outerCell+1},{outerCell+2}});
+  cellIndex+=2;
+
+  viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
+  viewTubeScreen->setBladeCentre(*viewTube,0);
+  viewTubeScreen->createAll(System,VPC,"-InnerPlate");
+
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,VPB,"OuterPlate",*gateD);
+  VPC.insertInCell(System,outerCell);
+  */
+  return;
+
 }
 
 void
@@ -285,10 +365,12 @@ formaxExptLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*clrTubeB,"back",*connectD);
 
+  constructViewScreen(System,*connectD,"back");
+  
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=connectD;
+  lastComp=viewTube;;
 
   return;
 }

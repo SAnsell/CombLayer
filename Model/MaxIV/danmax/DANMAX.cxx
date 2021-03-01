@@ -205,11 +205,10 @@ DANMAX::build(Simulation& System,
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectUnit->setFront(*opticsHut,2);
-  ELog::EM<<"Back[Expt] == "<<exptHut->getLinkSurf(1)<<ELog::endDiag;
   connectUnit->setBack(*exptHut,1);
   connectUnit->createAll(System,*joinPipeB,"back");
 
-  joinPipeB->insertAllInCell(System,connectUnit->getCell("OuterVoid",0));
+  joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
   
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
