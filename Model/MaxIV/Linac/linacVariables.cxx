@@ -2044,7 +2044,6 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",20.0); // approx
   Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
   Control.addVariable(lKey+"ShieldAXAngle",-pipeBAXAngle);
-  Control.addVariable(lKey+"ShieldAMainMat","Void");
 
   return;
 }
