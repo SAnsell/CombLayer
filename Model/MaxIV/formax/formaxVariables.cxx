@@ -99,6 +99,7 @@ void diag4Package(FuncDataBase&,const std::string&);
 void mirrorBox(FuncDataBase&,const std::string&,const std::string&,
 	       const double,const double);
 void viewPackage(FuncDataBase&,const std::string&);
+void detectorTubePackage(FuncDataBase&,const std::string&);
 
 void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
@@ -465,7 +466,6 @@ wallVariables(FuncDataBase& Control,
 
   return;
 }
-
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -860,7 +860,6 @@ opticsVariables(FuncDataBase& Control,
 
   formaxVar::mirrorMonoPackage(Control,preName);
   
-  
   BellowGen.generateBellow(Control,preName+"BellowD",15.0);
   PipeGen.generatePipe(Control,preName+"PipeC",50.0);  
   GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
@@ -937,6 +936,27 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   return;
 }
 
+void
+detectorTubePackage(FuncDataBase& Control,
+		    const std::string& beamName)
+  /*!
+    Builds the variables for the main detector tube.
+    \param Control :: Database
+    \param viewKey :: prename including view
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","detectorTubePackage");  
+
+  const std::string tubeName(beamName+"DetectorTube");
+  Control.addVariable(tubeName+"YStep", 454.748); // dummy
+  
+  Control.addVariable(tubeName+"OuterRadius",60.0);
+
+
+
+  return;
+}
+  
 
 void
 exptVariables(FuncDataBase& Control,
@@ -1034,6 +1054,23 @@ exptVariables(FuncDataBase& Control,
 
   CrossGen.generateSixPort(Control,preName+"CrossB");
 
+  PipeGen.generatePipe(Control,preName+"AdjustPipe",73.0);
+
+  PipeGen.generatePipe(Control,preName+"PipeE",7.5);
+
+  BJGen.generateJaws(Control,preName+"JawBoxB",0.8,0.8);
+
+  CTGen.setOuter(2.5,0.5);
+  CTGen.setPort(CF40::flangeRadius,0.5*CF40::flangeLength);
+  CTGen.generatePipe(Control,preName+"ConnectE",5.0);
+
+  PipeGen.setCF<CF16>();
+  PipeGen.setAFlangeCF<CF40>();
+  PipeGen.setBFlange(1.1,0.1);
+  PipeGen.generatePipe(Control,preName+"EndPipe",61.0);
+
+
+  
   return;
 }
 
@@ -1081,6 +1118,7 @@ FORMAXvariables(FuncDataBase& Control)
   
   formaxVar::exptHutVariables(Control,"Formax",0.0);
   formaxVar::exptVariables(Control,"Formax");
+  formaxVar::detectorTubePackage(Control,"Formax");  
   return;
 }
 

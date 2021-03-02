@@ -66,6 +66,7 @@
 #include "formaxFrontEnd.h"
 #include "formaxOpticsLine.h"
 #include "formaxExptLine.h"
+#include "formaxDetectorTube.h"
 
 #include "R3Beamline.h"
 #include "FORMAX.h"
@@ -83,7 +84,9 @@ FORMAX::FORMAX(const std::string& KN) :
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
-  exptBeam(new formaxExptLine(newName+"ExptLine"))
+  exptBeam(new formaxExptLine(newName+"ExptLine")),
+  detectorTube(new xraySystem::formaxDetectorTube(newName+"DetectorTube"))
+  
   /*!
     Constructor
     \param KN :: Keyname
@@ -206,6 +209,13 @@ FORMAX::build(Simulation& System,
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setPreInsert(joinPipeB);
   exptBeam->createAll(System,*joinPipeB,2);
+
+
+  detectorTube->addInsertCell(exptHut->getCell("Void"));
+  detectorTube->setCutSurf("front",*exptBeam,"back");
+  detectorTube->setCutSurf("back",*exptHut,
+			   exptHut->getSideIndex("innerBack"));
+  detectorTube->createAll(System,*joinPipeB,2);
 
 
   return;

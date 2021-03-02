@@ -64,6 +64,9 @@ class ConnectorGenerator
 
   template<typename T> void setCF(const double);
   template<typename T> void setPortCF();
+
+  void setOuter(const double,const double);
+  void setPort(const double,const double);
   
   void generatePipe(FuncDataBase&,const std::string&,const double) const;
 

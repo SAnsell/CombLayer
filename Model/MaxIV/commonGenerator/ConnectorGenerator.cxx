@@ -90,7 +90,19 @@ ConnectorGenerator::setCF(const double L)
 {
   innerRadius=CF::innerRadius;
   innerLength=L;
+  return;
+}
 
+
+void
+ConnectorGenerator::setOuter(const double R,const double L)
+  /*!
+    Setter for flange beam direction flanges
+    \param L :: fractional length of total length
+  */
+{
+  outerRadius=R;
+  outerLength=L;
   return;
 }
 
@@ -103,6 +115,20 @@ ConnectorGenerator::setPortCF()
 {
   flangeRadius=CF::flangeRadius;
   flangeLength=CF::flangeLength;
+  return;
+}
+
+
+void
+ConnectorGenerator::setPort(const double R,const double L)
+  /*!
+    Setter for flange beam direction flanges
+    \param R :: Radius
+    \param l :: length
+  */
+{
+  flangeRadius=R;
+  flangeLength=L;
   return;
 }
 

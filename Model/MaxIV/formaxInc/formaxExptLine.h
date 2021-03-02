@@ -52,6 +52,7 @@ namespace xraySystem
   class ViewScreenTube;
   class CLRTube;
   class ConnectorTube;
+  class formaxDetectorTube;
 
   
     
@@ -134,7 +135,14 @@ class formaxExptLine :
   std::shared_ptr<xraySystem::FourPortTube> crossB;
   /// Adjustable pipe
   std::shared_ptr<constructSystem::VacuumPipe> adjustPipe;
-
+  /// End pipe on adjustable
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// sample jaws
+  std::shared_ptr<xraySystem::BoxJaws> jawBoxB;
+  /// Pipe to short nose
+  std::shared_ptr<xraySystem::ConnectorTube> connectE;
+  /// Narrow end pipe
+  std::shared_ptr<constructSystem::VacuumPipe> endPipe;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

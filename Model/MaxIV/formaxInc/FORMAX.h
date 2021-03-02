@@ -50,6 +50,7 @@ namespace xraySystem
   class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
+  class formaxDetectorTube;
   class formaxExptLine;
   class formaxOpticsLine;
   class R3FrontEndCave;
@@ -96,6 +97,9 @@ class FORMAX : public R3Beamline
 
   /// Beamline expt
   std::shared_ptr<formaxExptLine> exptBeam;
+
+  /// Detector
+  std::shared_ptr<formaxDetectorTube> detectorTube;
 
  public:
   
