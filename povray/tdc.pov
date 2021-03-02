@@ -548,6 +548,29 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 20;
   #break
+    #case(strcmp(ITEM,"TDC1")) // TDC beamline view backwards from the BSP01 storage area
+    #declare cameraLocation = <200, 25000, 300>;
+    #declare cameraLookAt   = <-170, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"TDC2")) // TDC beamline view forward from the klystron gallery in BC2
+    #declare cameraLocation = <0, -12000, 500>;
+    #declare cameraLookAt   = <10, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"SpectrometerDipole"))
+    #declare cameraLocation = <200, 7100, 100>;
+    #declare cameraLookAt   = <-300, 8150, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"L2SPF"))
+    #declare cameraLocation = <500, 1700, 100>;
+    #declare cameraLookAt   = <300, 1700, 0>;
+    #declare projection = 1;
+  #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;
     #declare cameraLookAt   = <-600, 5100, 0>;
