@@ -137,8 +137,17 @@ formaxDetectorTube::createSurfaces()
 {
   ELog::RegMethod RegA("formaxDetectorTube","createSurfaces");
 
-  if (!isActive("front") || !isActive("back"))
-    throw ColErr::InContainerError<std::string>("front/back","ExternalCut");
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*outerLength,Y);
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
@@ -178,8 +187,7 @@ formaxDetectorTube::createObjects(Simulation& System)
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getLastCell("Unit"));
-  lastComp=mainTube[8];
-
+  lastComp=mainTube[7];
   return;
 }
 

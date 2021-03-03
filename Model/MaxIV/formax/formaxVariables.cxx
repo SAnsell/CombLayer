@@ -540,7 +540,7 @@ exptHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"YStep",0.0);
   Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"Length",1719.4);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
   Control.addVariable(hutName+"InnerThick",0.1);
@@ -551,7 +551,7 @@ exptHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"PbThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
-  Control.addVariable(hutName+"CornerLength",720.0);
+  Control.addVariable(hutName+"CornerLength",1719.4-120.0);  //
   Control.addVariable(hutName+"CornerAngle",45.0);
   
   Control.addVariable(hutName+"InnerOutVoid",10.0);
@@ -947,13 +947,25 @@ detectorTubePackage(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("formaxVariables[F]","detectorTubePackage");  
 
-  const std::string tubeName(beamName+"DetectorTube");
-  Control.addVariable(tubeName+"YStep", 454.748); // dummy
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+
+  SimpleTubeGen.setCF<CF350>();
   
+  const std::string tubeName(beamName+"DetectorTube");
+  Control.addVariable(tubeName+"YStep", 800.748); // dummy
   Control.addVariable(tubeName+"OuterRadius",60.0);
 
+  // MAIN PIPE:
 
-
+  for(size_t i=0;i<8;i++)
+    {
+      const std::string segName=tubeName+"Segment"+std::to_string(i);
+      SimpleTubeGen.generateTube(Control,segName,111.0);
+      Control.addVariable(segName+"NPorts",0);   // beam ports
+    }
+  
+  
   return;
 }
   
