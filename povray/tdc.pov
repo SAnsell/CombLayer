@@ -511,6 +511,24 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 40;
   #break
+    #case(strcmp(ITEM,"L2SPF2YagScreenInBeam"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagScreen"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagUnit"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
     #case(strcmp(ITEM,"L2SPF2ShieldA"))
     #declare cameraLocation = <140, 1270, 20>;
     #declare cameraLookAt   = <240, 1350, 0>;
