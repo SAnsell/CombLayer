@@ -70,7 +70,7 @@ LBeamStop::LBeamStop(const std::string& Key)  :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
-  
+
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -131,7 +131,7 @@ LBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*length,Y);
 
-  
+
   // mid
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*midVoidLen,Y);
   ModelSupport::buildPlane
@@ -141,7 +141,7 @@ LBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*innerVoidLen,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+2,Origin+Y*(innerVoidLen+innerLength),Y);
-  
+
   return;
 }
 
@@ -166,10 +166,16 @@ LBeamStop::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -11 -17 7");
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 (7:2)");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 7 -17 ");
   makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 (17:12)");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 ");
+  makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -12 17 -27 ");
+  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -27 ");
   makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 ");
