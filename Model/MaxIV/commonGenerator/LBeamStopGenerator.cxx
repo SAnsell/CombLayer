@@ -54,6 +54,7 @@ LBeamStopGenerator::LBeamStopGenerator() :
   innerLength(5.0),innerRadius(4.0),
   midVoidLen(7.5),midLength(22.5),
   midRadius(7.0),outerRadius(20.0),
+  outerNLayers(1),
   voidMat("Void"),innerMat("Graphite"),
   midMat("Poly"),outerMat("Stainless304L")
   /*!
@@ -87,6 +88,7 @@ LBeamStopGenerator::generateBStop(FuncDataBase& Control,
   Control.addVariable(keyName+"MidLength",midLength);
   Control.addVariable(keyName+"MidRadius",midRadius);
   Control.addVariable(keyName+"OuterRadius",outerRadius);
+  Control.addVariable(keyName+"OuterNLayers",outerNLayers);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"InnerMat",innerMat);

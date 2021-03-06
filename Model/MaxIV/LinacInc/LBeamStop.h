@@ -46,21 +46,24 @@ class LBeamStop :
 
   double length;                ///< Total length including void
 
-  double innerVoidLen;         ///< inner void lenth	   
-  double innerLength;	       ///< inner length of material 
-  double innerRadius;	       ///< inner radius             
+  double innerVoidLen;         ///< inner void lenth
+  double innerLength;	       ///< inner length of material
+  double innerRadius;	       ///< inner radius
 
-  double midVoidLen;          ///< mid void lenth	  
-  double midLength;           ///< mid length of material 
-  double midRadius;            ///< mid radius             
+  double midVoidLen;          ///< mid void lenth
+  double midLength;           ///< mid length of material
+  double midRadius;            ///< mid radius
 
-  double outerRadius;            ///< outer radius             
-
+  double outerRadius;           ///< Outer radius
+  size_t outerNLayers;             ///< Number of layers in the outer region
 
   int voidMat;                  ///< Void material
   int innerMat;                 ///< Inner material
   int midMat;                   ///< Mid material
   int outerMat;                 ///< Outer material
+
+  void layerProcess(Simulation&,const std::string&,
+                    const int,const int,const size_t);
 
   void populate(const FuncDataBase&);
   void createSurfaces();

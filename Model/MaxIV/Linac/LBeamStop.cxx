@@ -57,7 +57,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "surfDBase.h"
+#include "surfDivide.h"
+#include "mergeTemplate.h"
 #include "ExternalCut.h"
+#include "Exception.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "LBeamStop.h"
 
@@ -105,6 +112,7 @@ LBeamStop::populate(const FuncDataBase& Control)
   midRadius=Control.EvalVar<double>(keyName+"MidRadius");
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  outerNLayers=Control.EvalVar<size_t>(keyName+"OuterNLayers");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
@@ -173,17 +181,21 @@ LBeamStop::createObjects(Simulation& System)
   makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -12 17 -27 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -27 ");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("OuterBack",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 ");
   addOuterSurf(Out);
 
+  layerProcess(System,"OuterBack",
+	       SMap.realSurf(buildIndex+12),
+	       -SMap.realSurf(buildIndex+22),
+	       outerNLayers);
+
   return;
 }
-
 
 void
 LBeamStop::createLinks()
@@ -198,6 +210,64 @@ LBeamStop::createLinks()
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+
+  return;
+}
+
+void
+LBeamStop::layerProcess(Simulation& System,
+			const std::string& cellName,
+			const int primSurf,
+			const int sndSurf,
+			const size_t NLayers)
+/*!
+  Processes the splitting of the surfaces into a multilayer system
+  \param System :: Simulation to work on
+  \param cellName :: cell name
+  \param primSurf :: primary surface
+  \param sndSurf  :: secondary surface
+  \param NLayers :: number of layers to divide to
+*/
+{
+  ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+  if (NLayers<=1) return;
+
+  // cellmap -> material
+  const int wallCell=this->getCell(cellName);
+  const MonteCarlo::Object* wallObj=System.findObject(wallCell);
+  if (!wallObj)
+    throw ColErr::InContainerError<int>
+      (wallCell,"Cell '" + cellName + "' not found");
+
+  const int mat=wallObj->getMatID();
+  double baseFrac = 1.0/static_cast<double>(NLayers);
+  ModelSupport::surfDivide DA;
+  for(size_t i=1;i<NLayers;i++)
+    {
+      DA.addFrac(baseFrac);
+      DA.addMaterial(mat);
+      baseFrac += 1.0/static_cast<double>(NLayers);
+    }
+  DA.addMaterial(mat);
+
+  DA.setCellN(wallCell);
+  // CARE here :: buildIndex + X should be so that X+NLayer does not
+  // interfer.
+  DA.setOutNum(cellIndex, buildIndex+8000);
+
+  ModelSupport::mergeTemplate<Geometry::Plane,
+			      Geometry::Plane> surroundRule;
+
+  surroundRule.setSurfPair(primSurf,sndSurf);
+
+  surroundRule.setInnerRule(primSurf);
+  surroundRule.setOuterRule(sndSurf);
+
+  DA.addRule(&surroundRule);
+  DA.activeDivideTemplate(System,this);
+
+  cellIndex=DA.getCellNum();
 
   return;
 }

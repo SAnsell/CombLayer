@@ -1358,6 +1358,7 @@ InjectionHall::createAll(Simulation& System,
 
   return;
 }
+
 void
 InjectionHall::layerProcess(Simulation& System,
 			    const std::string& cellName,

@@ -41,15 +41,16 @@ class LBeamStopGenerator
 
   double length;                ///< Total length including void
 
-  double innerVoidLen;          ///< inner void lenth	   
-  double innerLength;	        ///< inner length of material 
-  double innerRadius;	        ///< inner radius             
- 
-  double midVoidLen;            ///< mid void lenth	  
-  double midLength;             ///< mid length of material 
-  double midRadius;             ///< mid radius             
+  double innerVoidLen;          ///< inner void lenth
+  double innerLength;	        ///< inner length of material
+  double innerRadius;	        ///< inner radius
 
-  double outerRadius;           ///< outer radius             
+  double midVoidLen;            ///< mid void lenth
+  double midLength;             ///< mid length of material
+  double midRadius;             ///< mid radius
+
+  double outerRadius;           ///< outer radius
+  int outerNLayers;             ///< Number of layers in the outer region
 
   std::string voidMat;                  ///< Void material
   std::string innerMat;                 ///< Inner material
