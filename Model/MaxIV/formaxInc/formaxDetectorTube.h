@@ -27,10 +27,13 @@ class Simulation;
 namespace constructSystem
 {
   class PipeTube;
+  class portItem;
+  class FlangeDome;
 }
 
 namespace xraySystem
 {
+
 
 /*!
   \class formaxDetectorTube
@@ -61,6 +64,8 @@ class formaxDetectorTube :
 
   /// main tube vacuum segments 
   std::array<std::shared_ptr<constructSystem::PipeTube>,8> mainTube;
+  std::shared_ptr<constructSystem::FlangeDome> frontDome;
+  std::shared_ptr<constructSystem::FlangeDome> backDome;
   
   void populate(const FuncDataBase&);
   void createSurfaces();

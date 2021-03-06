@@ -66,7 +66,8 @@
 #include "generalConstruct.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-
+#include "portItem.h"
+#include "FlangeDome.h"
 #include "GateValveCylinder.h"
 
 #include "formaxDetectorTube.h"
@@ -85,7 +86,6 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
   
   mainTube
   ({
-    
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment0"),
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment1"),
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment2"),
@@ -94,7 +94,9 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment5"),
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment6"),
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment7")
-  })
+  }),
+  frontDome(new constructSystem::FlangeDome(keyName+"FrontDome")),
+  backDome(new constructSystem::FlangeDome(keyName+"RearDome"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -105,6 +107,8 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
 
   for(size_t i=0;i<8;i++)
     OR.addObject(mainTube[i]);
+  OR.addObject(frontDome);
+  OR.addObject(backDome);
 }
 
 formaxDetectorTube::~formaxDetectorTube()
@@ -175,6 +179,12 @@ formaxDetectorTube::createObjects(Simulation& System)
   buildZone.addInsertCells(this->getInsertCells());
 
   mainTube[0]->createAll(System,*this,0);
+  outerCell=buildZone.createUnit(System,*mainTube[0],1);
+  
+  frontDome->addInsertCell(outerCell);
+  frontDome->setCutSurf("plate",*mainTube[0],"front");
+  frontDome->createAll(System,*mainTube[0],1);
+
   outerCell=buildZone.createUnit(System,*mainTube[0],2);
   mainTube[0]->insertAllInCell(System,outerCell);
 
@@ -182,8 +192,10 @@ formaxDetectorTube::createObjects(Simulation& System)
     {
       constructSystem::constructUnit
 	(System,buildZone,*mainTube[i-1],"back",*mainTube[i]);
-    }
+    }  
 
+
+  
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getLastCell("Unit"));

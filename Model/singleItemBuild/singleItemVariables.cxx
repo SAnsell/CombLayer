@@ -118,6 +118,7 @@
 #include "PortChicaneGenerator.h"
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
+#include "FlangeDomeGenerator.h"
 
 namespace setVariable
 {
@@ -310,7 +311,6 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::IonPTubeGenerator IonPGen;
   IonPGen.generateTube(Control,"IonPTube");
 
-  
   setVariable::BremTubeGenerator BTGen;
   BTGen.generateTube(Control,"BremTube");
 
@@ -611,6 +611,18 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(Name+"JawUnit0JOpen",1.7);
   Control.addVariable(Name+"JawUnit1JOpen",1.7);
 
+  // Flange Dome components:
+  FlangeDomeGenerator FDGen;
+  PItemGen.setCF<setVariable::CF40>(10.0);
+  PItemGen.setNoPlate();
+  SimpleTubeGen.setCF<CF350>();    
+  SimpleTubeGen.generateTube(Control,"FlangeTube",20.0);
+  Control.addVariable("FlangeTubeNPorts",0);
+  FDGen.generateDome(Control,"FlangeDome");
+  Control.addVariable("FlangeDomeNPorts",1);
+  PItemGen.generatePort(Control,"FlangeDomePort0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
 
   // expt hutch
   exptHutVariables(Control,"",0.0);

@@ -2326,7 +2326,7 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
     this->getSurfaces();
   for(const Geometry::Surface* SPtr : SurfList)
     SPtr->acceptVisitor(LI);
-  
+
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
@@ -2339,6 +2339,11 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
   int bestPairValid(0);
   for(size_t i=0;i<dPts.size();i++)
     {
+      const int NS=surfIndex[i]->getName();	    // NOT SIGNED
+
+      ELog::EM<<"HERE "<<NS<<" "<<dPts[i]<<ELog::endDiag;
+      ELog::EM<<"SU "<<*surfIndex[i]<<ELog::endDiag;  
+
       // Is point possible closer
       if ( dPts[i]>10.0*Geometry::zeroTol &&
 	   dPts[i]<D )
@@ -2400,7 +2405,8 @@ HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
     \return exit surface [signed??]
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf");
+  ELog::RegMethod RegA("HeadRule","trackSurfDistance");
+  
   const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
     result=trackSurfIntersect(Org,Unit);
 
@@ -2421,7 +2427,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \return exit surface [signed - ingoing sense: Origin is true to surface]
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf");
+  ELog::RegMethod RegA("HeadRule","trackSurf(O,U)");
 
   const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
     result=trackSurfIntersect(Org,Unit);
@@ -2444,7 +2450,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \return exit surface [signed - ingoing sense: Origin is true to surface]
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf");
+  ELog::RegMethod RegA("HeadRule","trackSurf(O,u,{set}");
   
   Geometry::Vec3D Pt(Org);
   double D(0.0);

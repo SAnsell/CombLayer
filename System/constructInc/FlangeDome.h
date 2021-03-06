@@ -51,19 +51,22 @@ class FlangeDome :
 
   int voidMat;                 ///< inner (Void) material
   int mat;                     ///< Main material  
+
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
+  
  public:
 
   FlangeDome(const std::string&);
   FlangeDome(const FlangeDome&);
   FlangeDome& operator=(const FlangeDome&);
   virtual ~FlangeDome();
-  
+
+  void createPorts(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

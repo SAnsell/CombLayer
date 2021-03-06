@@ -60,7 +60,10 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ContainedComp.h"
-
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "ContainedGroup.h"
 
 namespace attachSystem
 {
@@ -735,7 +738,7 @@ ContainedComp::insertObjects(Simulation& System)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
-	  outerObj->addSurfString(getExclude());
+	outerObj->addSurfString(getExclude());
       else
 	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }

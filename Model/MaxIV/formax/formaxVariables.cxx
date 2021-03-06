@@ -81,6 +81,7 @@
 #include "BoxJawsGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "ConnectorGenerator.h"
+#include "FlangeDomeGenerator.h"
 
 
 namespace setVariable
@@ -949,6 +950,8 @@ detectorTubePackage(FuncDataBase& Control,
 
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeDomeGenerator FDGen;
 
   SimpleTubeGen.setCF<CF350>();
   
@@ -964,6 +967,27 @@ detectorTubePackage(FuncDataBase& Control,
       SimpleTubeGen.generateTube(Control,segName,111.0);
       Control.addVariable(segName+"NPorts",0);   // beam ports
     }
+
+
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setNoPlate();
+  FDGen.generateDome(Control,"FrontDome");
+  Control.addVariable("FrontDomeNPorts",1);
+  PItemGen.generatePort(Control,"FrontDomePort0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setNoPlate();
+  FDGen.generateDome(Control,"BackDome");
+  Control.addVariable("BackDomeNPorts",2);
+  PItemGen.generatePort(Control,"BackDomePort0",
+			Geometry::Vec3D(-4.0, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+  PItemGen.generatePort(Control,"BackDomePort1",
+			Geometry::Vec3D(4.0, 0.0, 0.0),
+			Geometry::Vec3D(0,1,0));
+
   
   
   return;

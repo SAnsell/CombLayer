@@ -138,6 +138,7 @@
 #include "ConnectorTube.h"
 #include "LocalShielding.h"
 #include "WrapperCell.h"
+#include "FlangeDome.h"
 
 #include "makeSingleItem.h"
 
@@ -187,7 +188,7 @@ makeSingleItem::build(Simulation& System,
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
       "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
       "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
-      "ConnectorTube","LocalShield","Help","help"
+      "ConnectorTube","LocalShield","FlangeDome","Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -314,6 +315,25 @@ makeSingleItem::build(Simulation& System,
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
       yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
+
+      return;
+    }
+  if (item == "FlangeDome")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	ft(new constructSystem::PipeTube("FlangeTube"));
+      std::shared_ptr<constructSystem::FlangeDome>
+	fd(new constructSystem::FlangeDome("FlangeDome"));
+      OR.addObject(ft);
+      OR.addObject(fd);
+
+      ft->addAllInsertCell(voidCell);
+      ft->setOuterVoid();
+      ft->createAll(System,World::masterOrigin(),0);
+
+      fd->addInsertCell(voidCell);
+      fd->setCutSurf("plate",*ft,"front");
+      fd->createAll(System,*ft,1);
 
       return;
     }

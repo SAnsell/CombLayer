@@ -99,7 +99,6 @@
 #include "SquareFMask.h"
 #include "danmaxOpticsLine.h"
 
-#include "portSet.h"
 
 
 namespace xraySystem
@@ -669,11 +668,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   // adds a portset to an object:
   const int CN = buildZone.getLastCell("Unit");
-
+  /*
   constructSystem::portSet lensBoxPort(*lensBox);
   lensBoxPort.createPorts(System,"MainWall",lensBox->getInsertCells());
   lensBoxPort.splitVoidPorts(System,"OuterVoid",1501,CN);
-
+  */
   constructSystem::constructUnit
     (System,buildZone,*lensBox,"back",*gateF);
   constructSystem::constructUnit

@@ -90,10 +90,8 @@ class portSet
   void setOuterVoid(const std::string& ON)
     { outerVoid=1; outerVoidName=ON;}
   void createPorts(Simulation&,MonteCarlo::Object*,
-		   const std::vector<int>&,
 		   const HeadRule&,const HeadRule&);
-  void createPorts(Simulation&,const std::string&,
-		   const std::vector<int>&);
+  void createPorts(Simulation&,const std::string&);
 };
 
 }

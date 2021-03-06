@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructVarInc/FlangePlateGenerator.h
+ * File:   constructVarInc/FlangeDomeGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_FlangePlateGenerator_h
-#define setVariable_FlangePlateGenerator_h
+#ifndef setVariable_FlangeDomeGenerator_h
+#define setVariable_FlangeDomeGenerator_h
 
 class FuncDataBase;
 
@@ -28,42 +28,43 @@ namespace setVariable
 {
 
 /*!
-  \class FlangePlateGenerator
+  \class FlangeDomeGenerator
   \version 1.0
   \author S. Ansell
   \date August 2020
-  \brief FlangePlateGenerator for variables
+  \brief FlangeDomeGenerator for variables
 */
 
-class FlangePlateGenerator
+class FlangeDomeGenerator
 {
  private:
 
-  double innerRadius;           ///< Inner window (void) if present
-  double flangeRadius;          ///< void radius [inner]
-  double flangeLength;          ///< Flange thickness
+  double curveRadius;           ///< inner Radius of dome (extent)
+  double curveStep;             ///< Step from flat start plane
+  double plateThick;            ///< Thickness of plate
+  double flangeRadius;          ///< Flange radius 
 
-  std::string innerMat;         ///< inner (Void) material
-  std::string flangeMat;        ///< Main material
+  std::string voidMat;         ///< inner (Void) material
+  std::string mainMat;        ///< Main material
 
  public:
 
-  FlangePlateGenerator();
-  FlangePlateGenerator(const FlangePlateGenerator&);
-  FlangePlateGenerator& operator=(const FlangePlateGenerator&);
-  ~FlangePlateGenerator();
+  FlangeDomeGenerator();
+  FlangeDomeGenerator(const FlangeDomeGenerator&);
+  FlangeDomeGenerator& operator=(const FlangeDomeGenerator&);
+  ~FlangeDomeGenerator();
 
-  void setFlange(const double,const double);
-  void setFlangeLen(const double);
-
-  template<typename CF> void setCF(const double);
+  /// set main dome sphere:
+  void setSphere(const double R,const double S)
+  { curveRadius=R; curveStep=S; }
+  
   template<typename CF> void setFlangeCF();
 
   /// setter for material name
   void setMat(const std::string& M, const std::string& IM="Void")
-  { flangeMat = M; innerMat = IM;  }
+  { mainMat = M; voidMat = IM;  }
 
-  void generateFlangePlate(FuncDataBase&,const std::string&) const;
+  void generateDome(FuncDataBase&,const std::string&) const;
 
 };
 

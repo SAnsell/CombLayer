@@ -59,6 +59,8 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "portItem.h"
+#include "portSet.h"
 
 #include "FlangeDome.h"
 
@@ -98,7 +100,7 @@ FlangeDome::populate(const FuncDataBase& Control)
   // Void + Fe special:
   curveRadius=Control.EvalVar<double>(keyName+"CurveRadius");
   curveStep=Control.EvalVar<double>(keyName+"CurveStep");
-  plateThick=Control.EvalVar<double>(keyName+"WallThick");
+  plateThick=Control.EvalVar<double>(keyName+"PlateThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
@@ -116,10 +118,10 @@ FlangeDome::createSurfaces()
 {
   ELog::RegMethod RegA("FlangeDome","createSurfaces");
 
-  if (!isActive("front"))
+  if (!isActive("flat"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+      ExternalCut::setCutSurf("plate",SMap.realSurf(buildIndex+1));
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
@@ -131,7 +133,6 @@ FlangeDome::createSurfaces()
   
   ModelSupport::buildSphere(SMap,buildIndex+8,rCentre,Radius);
   ModelSupport::buildSphere(SMap,buildIndex+18,rCentre+Y*plateThick,Radius);
-
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,curveRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeRadius);
   
@@ -149,18 +150,16 @@ FlangeDome::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  const HeadRule frontHR=getRule("front");
+  const HeadRule frontHR=getRule("plate");
+  ELog::EM<<"Front = "<<frontHR<<ELog::endDiag;
   
-  
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex," -8 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -8 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"(-18:-2) 8 -207 ");
-  makeCell("Dome",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-18:-2) 8 -207 ");
+  makeCell("Dome",System,cellIndex++,mat,0.0,HR*frontHR);
 
-  
-
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"(-18:-2) -207");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-18:-2) -207");
   addOuterSurf(HR*frontHR);
 
   return;
@@ -180,6 +179,32 @@ FlangeDome::createLinks()
   return;
 }
 
+void
+FlangeDome::createPorts(Simulation& System)
+  /*!
+    Construct port
+   */
+{
+  ELog::RegMethod RegA("FlangeDome","createPorts");
+
+  const HeadRule frontHR=getRule("plate");
+  
+  constructSystem::portSet PSet(*this);
+
+  MonteCarlo::Object* insertObj= 
+    this->getCellObject(System,"Dome");
+  const HeadRule innerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"8")*frontHR;
+  const HeadRule outerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"18")*frontHR;
+
+  for(const auto CN : insertCells)
+    PSet.addInsertPortCells(CN);
+
+  PSet.createPorts(System,insertObj,innerHR,outerHR);
+
+  return;
+}
 
 void
 FlangeDome::createAll(Simulation& System,
@@ -199,8 +224,10 @@ FlangeDome::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);
+  createPorts(System);
+  insertObjects(System);  
 
+  
   return;
 }
 

@@ -229,33 +229,6 @@ VirtualTube::createPorts(Simulation& System,
 }
 
 
-void
-VirtualTube::createPorts(Simulation& System)
-  /*!
-    Simple function to create ports
-    \param System :: Simulation to use
-   */
-{
-  ELog::RegMethod RegA("VirtualTube","createPorts");
-
-  ELog::EM<<"THIS SHOULD NOT BE CALLED [OBSOLTE ==> "
-    "use createPorts(Obj,HR,HR)"<<ELog::endCrit;
-  for(size_t i=0;i<Ports.size();i++)
-    {
-      const attachSystem::ContainedComp& CC=getCC("Main");
-      for(const int CN : CC.getInsertCells())
-	  Ports[i]->addOuterCell(CN);
-
-      for(const int CN : portCells)
-	Ports[i]->addOuterCell(CN);
-
-
-      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
-    }
-
-  return;
-}
 
 const portItem&
 VirtualTube::getPort(const size_t index) const
@@ -736,7 +709,6 @@ VirtualTube::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
-  createPorts(System);
   insertObjects(System);
     
   return;

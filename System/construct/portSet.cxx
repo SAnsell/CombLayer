@@ -468,7 +468,6 @@ portSet::insertPortInCell(Simulation& System,
 void
 portSet::createPorts(Simulation& System,
 		     MonteCarlo::Object* insertObj,
-		     const std::vector<int>& CCVec,
 		     const HeadRule& innerSurf,
 		     const HeadRule& outerSurf)
   /*!
@@ -484,16 +483,15 @@ portSet::createPorts(Simulation& System,
   populate(System.getDataBase());
   for(size_t i=0;i<Ports.size();i++)
     {
-      for(const int CN : CCVec)
-	  Ports[i]->addOuterCell(CN);
 
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
 
       Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
-      // if (outerVoid && FUnit.hasCell(outerVoidName))
-      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,OuterVoidName));
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+
       Ports[i]->insertObjects(System);
     }
   return;
@@ -501,39 +499,38 @@ portSet::createPorts(Simulation& System,
 
 void
 portSet::createPorts(Simulation& System,
-		     const std::string& cellName,
-		     const std::vector<int>& CCVec)
+		     const std::string& cellName)
+
   /*!
     Simple function to create ports
     \param System :: Simulation to use
     \param cellName :: Main cell nabe
-
-    \param CCVec :: Insert cells [from CC.getInsertCell()]			
   */
 {
   ELog::RegMethod RegA("portSet","createPorts");
 
+  ELog::EM<<"CAlling very inefficient code"<<ELog::endDiag;
+  ELog::EM<<"Fix objectHR.complement() nb"<<ELog::endCrit;
   populate(System.getDataBase());
-  ELog::EM<<"Insert Cell ="<<cellName<<ELog::endDiag;
-  MonteCarlo::Object* insertObj=
-    cellPtr->getCellObject(System,cellName);
-  ELog::EM<<"Insert Cell ="<<*insertObj<<ELog::endDiag;
-  return;
+  MonteCarlo::Object* insertObj= (cellPtr) ? 
+    cellPtr->getCellObject(System,cellName) : nullptr;
+
+  if (!insertObj)
+    throw ColErr::InContainerError<std::string>
+      (cellName,"Cell not present in "+FUnit.getKeyName());
+  
+  const HeadRule& objectHR= insertObj->getHeadRule();
+
   for(size_t i=0;i<Ports.size();i++)
     {
-      for(const int CN : CCVec)
-	  Ports[i]->addOuterCell(CN);
-
-      for(const int CN : portCells)
-	Ports[i]->addOuterCell(CN);
-
+      Ports[i]->setWrapVolume();
       Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
-      int SN=insertObj->trackSurf(PCentre[i],PAxis[i]);
-      ELog::EM<<"Surf == "<<SN<<ELog::endDiag;
+      Ports[i]->constructTrack(System,insertObj,objectHR,objectHR.complement());
       
-      //      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
-      // if (outerVoid && FUnit.hasCell(outerVoidName))
-      //  	Ports[i]->addPortCut(CellMap::getCellObject(System,OuterVoidName));
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+      //      Ports[i]->addInsertCell(insertObj->getName());
+      
       Ports[i]->insertObjects(System);
     }
   return;
