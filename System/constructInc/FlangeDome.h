@@ -52,12 +52,14 @@ class FlangeDome :
   int voidMat;                 ///< inner (Void) material
   int mat;                     ///< Main material  
 
+  constructSystem::portSet PSet;        ///< Port set
   
   void populate(const FuncDataBase&);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
+  void createPorts(Simulation&);
   
  public:
 
@@ -66,7 +68,10 @@ class FlangeDome :
   FlangeDome& operator=(const FlangeDome&);
   virtual ~FlangeDome();
 
-  void createPorts(Simulation&);
+  const portItem& getPort(const size_t) const;
+
+  virtual void insertInCell(MonteCarlo::Object&) const;
+  virtual void insertInCell(Simulation&,const int) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

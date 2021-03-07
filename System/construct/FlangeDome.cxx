@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -55,6 +56,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "Importance.h"
+#include "Object.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -72,7 +75,8 @@ FlangeDome::FlangeDome(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ExternalCut(),
+  PSet(*this)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -189,8 +193,6 @@ FlangeDome::createPorts(Simulation& System)
 
   const HeadRule frontHR=getRule("plate");
   
-  constructSystem::portSet PSet(*this);
-
   MonteCarlo::Object* insertObj= 
     this->getCellObject(System,"Dome");
   const HeadRule innerHR=
@@ -204,6 +206,55 @@ FlangeDome::createPorts(Simulation& System)
   PSet.createPorts(System,insertObj,innerHR,outerHR);
 
   return;
+}
+
+void
+FlangeDome::insertInCell(MonteCarlo::Object& outerObj) const
+  /*!
+    Insert both the flange adn the ports in a cell 
+    \param outerObj :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("FlangeDome","insertInCell");
+
+  ContainedComp::insertInCell(outerObj);
+  PSet.insertAllInCell(outerObj);
+  
+  return;
+}
+
+void
+FlangeDome::insertInCell(Simulation& System,
+			 const int CN) const
+  /*!
+    Insert both the flange adn the ports in a cell 
+    \param System :: Simulation
+    \param CN :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("FlangeDome","insertInCell");
+  
+  
+  MonteCarlo::Object* outerObj=System.findObjectThrow(CN);
+  outerObj->addSurfString(getExclude());
+
+  ContainedComp::insertInCell(*outerObj);
+  PSet.insertAllInCell(System,CN);
+  
+  return;
+}
+
+const portItem&
+FlangeDome::getPort(const size_t index) const
+  /*!
+    Accessor to the portItem
+    \param index :: Index of port
+    \return portItem
+  */
+{
+  ELog::RegMethod RegA("FlangeDome","getPort");
+
+  return PSet.getPort(index);
 }
 
 void

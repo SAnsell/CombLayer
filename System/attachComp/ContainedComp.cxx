@@ -719,7 +719,7 @@ ContainedComp::insertExternalObject(Simulation& System,
       if (outerObj)
 	outerObj->addSurfString(excludeStr);
       else
-	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(CN,"OuterObject");
     }
   return;
 }
@@ -740,7 +740,7 @@ ContainedComp::insertObjects(Simulation& System)
       if (outerObj)
 	outerObj->addSurfString(getExclude());
       else
-	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(CN,"Cell in Simulation");
     }
   insertCells.clear();
   return;
@@ -806,11 +806,8 @@ ContainedComp::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertInCell");
   
-  MonteCarlo::Object* outerObj=System.findObject(cellN);
-  if (outerObj)
-    ContainedComp::insertInCell(*outerObj);
-  else
-    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  this->insertInCell(*outerObj);
   return;
 }
 
@@ -828,11 +825,8 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
   for(const int cellN : cellVec)
     {
-      MonteCarlo::Object* outerObj=System.findObject(cellN);
-      if (outerObj)
-	outerObj->addSurfString(getExclude());
-      else
-	throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+      outerObj->addSurfString(getExclude());
     }
   return;
 }

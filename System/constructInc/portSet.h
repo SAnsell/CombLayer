@@ -81,10 +81,11 @@ class portSet
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
-  void insertAllInCell(Simulation&,const int);
-  void insertAllInCell(Simulation&,const std::vector<int>&);
+  void insertAllInCell(MonteCarlo::Object&) const;
+  void insertAllInCell(Simulation&,const int) const;
+  void insertAllInCell(Simulation&,const std::vector<int>&) const; 
   void insertPortInCell(Simulation&,
-			const std::vector<std::set<int>>&);
+			const std::vector<std::set<int>>&) const;
 
   /// set outer void [expect "outerVoid"  as name]
   void setOuterVoid(const std::string& ON)

@@ -412,8 +412,22 @@ portSet::splitVoidPorts(Simulation& System,
 }
 
 void
+portSet::insertAllInCell(MonteCarlo::Object& outerObj) const
+  /*!
+    Overload of containdGroup so that the ports can also 
+    be inserted if needed
+    \param outerObj :: Cell for insertion
+  */
+{
+  //  ContainedGroup::insertAllInCell(System,cellN);
+  for(const std::shared_ptr<portItem>& PC : Ports)
+    PC->insertInCell(outerObj);
+  return;
+}
+
+void
 portSet::insertAllInCell(Simulation& System,
-			 const int cellN)
+			 const int cellN) const
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -429,7 +443,7 @@ portSet::insertAllInCell(Simulation& System,
 
 void
 portSet::insertAllInCell(Simulation& System,
-			 const std::vector<int>& cellVec)
+			 const std::vector<int>& cellVec) const
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -446,7 +460,7 @@ portSet::insertAllInCell(Simulation& System,
 
 void
 portSet::insertPortInCell(Simulation& System,
-			  const std::vector<std::set<int>>& cellVec)
+			  const std::vector<std::set<int>>& cellVec) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use    

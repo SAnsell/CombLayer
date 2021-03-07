@@ -814,6 +814,22 @@ Simulation::findObject(const int CellN)
   return (mp==OList.end()) ? nullptr : mp->second;
 }
 
+MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN)
+  /*!
+    Helper function to determine the hull object 
+    given a particular cell number
+    \param CellN : Number of the Object to find
+    \returns Object pointer to the object
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject");
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
+}
+
 const MonteCarlo::Object*
 Simulation::findObject(const int CellN) const
   /*! 
@@ -826,7 +842,24 @@ Simulation::findObject(const int CellN) const
   ELog::RegMethod RegA("Simulation","findObject const");
 
   OTYPE::const_iterator mp=OList.find(CellN);
-  return (mp==OList.end()) ? 0 : mp->second;
+  return (mp==OList.end()) ? nullptr : mp->second;
+}
+
+const MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN) const
+  /*! 
+    Helper function to determine the hull object 
+    given a particulat cell number (const varient)
+    \param CellN :: Cell number 
+    \return Object pointer 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject const");
+
+  OTYPE::const_iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
 }
 
 

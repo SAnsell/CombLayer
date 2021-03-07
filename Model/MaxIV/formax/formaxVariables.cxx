@@ -971,20 +971,20 @@ detectorTubePackage(FuncDataBase& Control,
 
   PItemGen.setCF<setVariable::CF63>(10.0);
   PItemGen.setNoPlate();
-  FDGen.generateDome(Control,"FrontDome");
-  Control.addVariable("FrontDomeNPorts",1);
-  PItemGen.generatePort(Control,"FrontDomePort0",
+  FDGen.generateDome(Control,tubeName+"FrontDome");
+  Control.addVariable(tubeName+"FrontDomeNPorts",1);
+  PItemGen.generatePort(Control,tubeName+"FrontDomePort0",
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
   PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.setNoPlate();
-  FDGen.generateDome(Control,"BackDome");
-  Control.addVariable("BackDomeNPorts",2);
-  PItemGen.generatePort(Control,"BackDomePort0",
+  FDGen.generateDome(Control,tubeName+"BackDome");
+  Control.addVariable(tubeName+"BackDomeNPorts",2);
+  PItemGen.generatePort(Control,tubeName+"BackDomePort0",
 			Geometry::Vec3D(-4.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
-  PItemGen.generatePort(Control,"BackDomePort1",
+  PItemGen.generatePort(Control,tubeName+"BackDomePort1",
 			Geometry::Vec3D(4.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 

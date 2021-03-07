@@ -244,9 +244,7 @@ SpaceCut::setOuterSurf(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setOuterSurf(cell)");
 
-  const MonteCarlo::Object* outerObj=System.findObject(cellN);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
 
   outerSurfBox=outerObj->getHeadRule();
   return;
@@ -277,9 +275,7 @@ SpaceCut::setPrimaryCell(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setPrimaryCell(cell)");
 
-  const MonteCarlo::Object* outerObj=System.findObject(cellN);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
 
   primaryBBox=outerObj->getHeadRule();
   primaryCell=cellN;
@@ -305,10 +301,7 @@ SpaceCut::calcBoundary(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","calcBoundary(System)");
 
-  const MonteCarlo::Object* outerObj=System.findObject(cellN);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellN,"cellN on found");
-
+  const MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
   const HeadRule objHR=outerObj->getHeadRule();
 
   return calcBoundary(objHR,NDivide,ALink,BLink);
@@ -560,10 +553,7 @@ SpaceCut::buildWrapCell(Simulation& System,
   double matTemp=0.0;
   if (pCell)
     {
-      const MonteCarlo::Object* outerObj=System.findObject(pCell);
-      if (!outerObj)
-	throw ColErr::InContainerError<int>
-	  (pCell,"Primary cell does not exist");
+      const MonteCarlo::Object* outerObj=System.findObjectThrow(pCell);
       matN=outerObj->getMatID();
       matTemp=outerObj->getTemp();
     }
@@ -693,10 +683,7 @@ SpaceCut::insertPair(Simulation& System,
 
   for(const int pCell : insertCells)
      {
-      MonteCarlo::Object* outerObj=System.findObject(pCell);
-      if (!outerObj)
-	throw ColErr::InContainerError<int>
-	  (pCell,"Primary cell does not exist");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(pCell);
       outerObj->addSurfString(BBox.display());
     }      
   return;
@@ -725,12 +712,8 @@ SpaceCut::insertObjects(Simulation& System)
   
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
-      if (outerObj)
-	outerObj->addSurfString(outerCut.complement().display());
-      else
-	throw ColErr::InContainerError<int>(primaryCell,
-					    "Cell not in Simulation");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(primaryCell);
+      outerObj->addSurfString(outerCut.complement().display());
     }  
   return;
 }
@@ -763,12 +746,8 @@ SpaceCut::insertObjects(Simulation& System,
 
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
-      if (outerObj)
-	outerObj->addSurfString(outerCut.complement().display());
-      else
-	throw ColErr::InContainerError<int>(primaryCell,
-					    "Cell not in Simulation");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(primaryCell);
+      outerObj->addSurfString(outerCut.complement().display());
     }  
   return;
 }

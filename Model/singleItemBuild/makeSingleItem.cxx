@@ -123,6 +123,7 @@
 #include "FixedOffsetGroup.h"
 #include "JawFlange.h"
 #include "portItem.h"
+#include "portSet.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
 #include "IonGauge.h"

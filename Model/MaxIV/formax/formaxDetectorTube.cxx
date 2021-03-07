@@ -67,6 +67,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "portItem.h"
+#include "portSet.h"
 #include "FlangeDome.h"
 #include "GateValveCylinder.h"
 
@@ -96,7 +97,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment7")
   }),
   frontDome(new constructSystem::FlangeDome(keyName+"FrontDome")),
-  backDome(new constructSystem::FlangeDome(keyName+"RearDome"))
+  backDome(new constructSystem::FlangeDome(keyName+"BackDome"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -178,13 +179,14 @@ formaxDetectorTube::createObjects(Simulation& System)
   
   buildZone.addInsertCells(this->getInsertCells());
 
+
   mainTube[0]->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*mainTube[0],1);
+  outerCell=buildZone.createUnit(System,*mainTube[0],-1);
   
-  frontDome->addInsertCell(outerCell);
   frontDome->setCutSurf("plate",*mainTube[0],"front");
   frontDome->createAll(System,*mainTube[0],1);
-
+  frontDome->insertInCell(System,outerCell);
+  
   outerCell=buildZone.createUnit(System,*mainTube[0],2);
   mainTube[0]->insertAllInCell(System,outerCell);
 
@@ -194,7 +196,12 @@ formaxDetectorTube::createObjects(Simulation& System)
 	(System,buildZone,*mainTube[i-1],"back",*mainTube[i]);
     }  
 
-
+  backDome->setCutSurf("plate",*mainTube[7],"back");
+  backDome->createAll(System,*mainTube[7],2);
+  const constructSystem::portItem& BPI=backDome->getPort(1);
+  outerCell=buildZone.createUnit(System,BPI,0);  
+    
+  backDome->insertInCell(System,outerCell);
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
