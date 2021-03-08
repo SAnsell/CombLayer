@@ -253,6 +253,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   wallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"WallIronMat");
+  bdRoofIronMat=ModelSupport::EvalMat<int>(Control,keyName+"BDRoofIronMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -1156,7 +1157,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
   makeCell("HatchNew",System,cellIndex++,wallMat,0.0,Out);
@@ -1165,7 +1166,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
-  makeCell("BDRoofSPF",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
   makeCell("HatchSPF",System,cellIndex++,wallMat,0.0,Out);
@@ -1174,7 +1175,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
   makeCell("HatchTDC",System,cellIndex++,wallMat,0.0,Out);

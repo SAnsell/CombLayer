@@ -3503,6 +3503,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WallMat","Concrete");
   // WallIronMat is some unknown kind of steel with Co content <50 ppm [AR: 201120]
   Control.addVariable(wallKey+"WallIronMat","Stainless304L");
+  Control.addVariable(wallKey+"BDRoofIronMat","Stainless304L");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");

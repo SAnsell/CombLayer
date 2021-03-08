@@ -182,6 +182,7 @@ class InjectionHall :
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
   int wallIronMat;              ///< Material of the iron layer before the back wall
+  int bdRoofIronMat;            ///< Material of iron in the beam dump roof
   int roofMat;                  ///< Roof material
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
