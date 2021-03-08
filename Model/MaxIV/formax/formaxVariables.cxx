@@ -977,15 +977,17 @@ detectorTubePackage(FuncDataBase& Control,
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
-  PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.setNoPlate();
+  PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setWindowPlate(CF63::flangeLength,0.8*CF63::flangeLength,
+			  CF63::innerRadius*1.1,"Stainless304","SiO2");
+  
   FDGen.generateDome(Control,tubeName+"BackDome");
   Control.addVariable(tubeName+"BackDomeNPorts",2);
   PItemGen.generatePort(Control,tubeName+"BackDomePort0",
-			Geometry::Vec3D(-4.0, 0.0, 0.0),
+			Geometry::Vec3D(-8.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
   PItemGen.generatePort(Control,tubeName+"BackDomePort1",
-			Geometry::Vec3D(4.0, 0.0, 0.0),
+			Geometry::Vec3D(8.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
   

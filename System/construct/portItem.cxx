@@ -248,6 +248,7 @@ portItem::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
   flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
   capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
+
   windowThick=Control.EvalDefTail<double>(keyName,portBase,"WindowThick",0.0);
 
   windowRadius=Control.EvalDefTail<double>(keyName,portBase,"WindowRadius",0.0);
@@ -255,6 +256,11 @@ portItem::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
 
+  /// need to write a Eval<bool> version
+  int oFlag(static_cast<int>(outerFlag));
+  oFlag=Control.EvalDefTail<int>(keyName,portBase,"OuterVoid",oFlag);
+  outerFlag=static_cast<bool>(oFlag);
+	
   outerVoidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"OuterVoidMat",portBase+"OuterVoidMat",0);
 
@@ -482,7 +488,6 @@ portItem::constructFlange(Simulation& System,
 			 windowThick+Geometry::zeroTol <capThick &&
 			 windowRadius>Geometry::zeroTol &&
 			 windowRadius+Geometry::zeroTol < flangeRadius);
-
 
   // 
   // This builds a window cap if required:

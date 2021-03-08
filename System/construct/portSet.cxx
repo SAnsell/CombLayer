@@ -105,56 +105,19 @@ portSet::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,CT,LExt,RB;
-  int WMat,CMat,VMat;
-  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
+      
       const std::string portName=portBase+std::to_string(i);
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-      
-      L=Control.EvalTail<double>(portName,portBase,"Length");
-      R=Control.EvalTail<double>(portName,portBase,"Radius");
-      W=Control.EvalTail<double>(portName,portBase,"Wall");
-      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
-
-      VMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"VoidMat",portBase+"VoidMat",0);
-      WMat=ModelSupport::EvalMat<int>
-	(Control,portName+"WallMat",portBase+"WallMat");
-      CMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",WMat);
-
-      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
-      // Key two variables to get a DoublePort:
-      LExt=Control.EvalDefTail<double>
-	(portName,portBase,"ExternPartLength",-1.0);      
-      RB=Control.EvalDefTail<double>
-	(portName,portBase,"RadiusB",-1.0);      
 
       std::shared_ptr<portItem> windowPort;
-
-      if (LExt>Geometry::zeroTol && RB>R+Geometry::zeroTol)
-	{
-	  std::shared_ptr<doublePortItem> doublePort
-	    =std::make_shared<doublePortItem>(portName);
-	  doublePort->setLarge(LExt,RB);
-	  windowPort=doublePort;
-	}
-      else
-	windowPort=std::make_shared<portItem>(portName);
-
-      if (OFlag) windowPort->setWrapVolume();
-      windowPort->setMain(L,R,W);
-      windowPort->setFlange(FR,FT);
-      windowPort->setCoverPlate(CT,CMat);
-      windowPort->setMaterial(VMat,WMat);
-
+      windowPort=std::make_shared<portItem>(portBase,portName);
+      windowPort->populate(Control);
+      
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
@@ -497,7 +460,7 @@ portSet::createPorts(Simulation& System,
   populate(System.getDataBase());
   for(size_t i=0;i<Ports.size();i++)
     {
-
+      
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
 

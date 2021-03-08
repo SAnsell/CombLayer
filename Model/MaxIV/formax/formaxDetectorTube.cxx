@@ -199,8 +199,7 @@ formaxDetectorTube::createObjects(Simulation& System)
   backDome->setCutSurf("plate",*mainTube[7],"back");
   backDome->createAll(System,*mainTube[7],2);
   const constructSystem::portItem& BPI=backDome->getPort(1);
-  outerCell=buildZone.createUnit(System,BPI,0);  
-    
+  outerCell=buildZone.createUnit(System,BPI,"OuterPlate");  
   backDome->insertInCell(System,outerCell);
   
   buildZone.createUnit(System);

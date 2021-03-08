@@ -155,7 +155,6 @@ FlangeDome::createObjects(Simulation& System)
   HeadRule HR;
 
   const HeadRule frontHR=getRule("plate");
-  ELog::EM<<"Front = "<<frontHR<<ELog::endDiag;
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -8 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
