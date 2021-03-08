@@ -110,6 +110,7 @@ LBeamStop::populate(const FuncDataBase& Control)
   midVoidLen=Control.EvalVar<double>(keyName+"MidVoidLen");
   midLength=Control.EvalVar<double>(keyName+"MidLength");
   midRadius=Control.EvalVar<double>(keyName+"MidRadius");
+  midNLayers=Control.EvalVar<size_t>(keyName+"MidNLayers");
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerNLayers=Control.EvalVar<size_t>(keyName+"OuterNLayers");
@@ -175,21 +176,26 @@ LBeamStop::createObjects(Simulation& System)
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 7 -17 ");
-  makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
+  makeCell("MidSide",System,cellIndex++,midMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 ");
-  makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
+  makeCell("MidFront",System,cellIndex++,midMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -12 17 -27 ");
-  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("OuterSide",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -27 ");
-  makeCell("OuterBack",System,cellIndex++,outerMat,0.0,Out);
+  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 ");
   addOuterSurf(Out);
 
-  layerProcess(System,"OuterBack",
+  layerProcess(System,"MidFront",
+	       SMap.realSurf(buildIndex+2),
+	       -SMap.realSurf(buildIndex+12),
+	       midNLayers);
+
+  layerProcess(System,"OuterFront",
 	       SMap.realSurf(buildIndex+12),
 	       -SMap.realSurf(buildIndex+22),
 	       outerNLayers);

@@ -48,6 +48,7 @@ class LBeamStopGenerator
   double midVoidLen;            ///< mid void lenth
   double midLength;             ///< mid length of material
   double midRadius;             ///< mid radius
+  int midNLayers;               ///< Number of layers in the mid region
 
   double outerRadius;           ///< outer radius
   int outerNLayers;             ///< Number of layers in the outer region

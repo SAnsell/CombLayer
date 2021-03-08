@@ -50,9 +50,10 @@ class LBeamStop :
   double innerLength;	       ///< inner length of material
   double innerRadius;	       ///< inner radius
 
-  double midVoidLen;          ///< mid void lenth
-  double midLength;           ///< mid length of material
-  double midRadius;            ///< mid radius
+  double midVoidLen;            ///< mid void lenth
+  double midLength;             ///< mid length of material
+  double midRadius;             ///< mid radius
+  size_t midNLayers;            ///< Number of layers in the mid region
 
   double outerRadius;           ///< Outer radius
   size_t outerNLayers;             ///< Number of layers in the outer region
