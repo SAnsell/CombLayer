@@ -73,7 +73,7 @@ namespace tdcSystem
 
 LBeamStop::LBeamStop(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -213,9 +213,36 @@ LBeamStop::createLinks()
 
   FixedComp::setConnect(0,Origin,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::nameSideIndex(0,"front");
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::nameSideIndex(1,"back");
+
+  // inner
+  FixedComp::setConnect(2,Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::nameSideIndex(2,"InnerSide");
+
+  FixedComp::setConnect(3,Origin+Y*(innerVoidLen+innerLength),Y);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::nameSideIndex(3,"InnerBack");
+
+  // mid
+  FixedComp::setConnect(4,Origin+Y*midRadius,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::nameSideIndex(4,"MidSide");
+
+  FixedComp::setConnect(5,Origin+Y*(midVoidLen+midLength),Y);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+12));
+  FixedComp::nameSideIndex(5,"MidBack");
+
+  // outer
+  FixedComp::setConnect(6,Origin+Y*outerRadius,Y);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
+  FixedComp::nameSideIndex(6,"OuterSide");
+
+  // OuterBack is the same as "back"
 
   return;
 }
