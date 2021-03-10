@@ -95,7 +95,8 @@ EBeamStopGenerator::EBeamStopGenerator() :
   shieldOuterFloorThick(1.0),
   shieldOuterSideThick(5.0),
   shieldOuterRoofThick(5.0),
-  shieldRoofPlateThick(0.5)
+  shieldRoofPlateThick(0.5),
+  shieldBackHoleActive(1)
   /*!
     Constructor and defaults
   */
@@ -186,6 +187,7 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
   Control.addVariable(keyName+"ShieldOuterSideThick",shieldOuterSideThick);
   Control.addVariable(keyName+"ShieldOuterRoofThick",shieldOuterRoofThick);
   Control.addVariable(keyName+"ShieldRoofPlateThick",shieldRoofPlateThick);
+  Control.addVariable(keyName+"ShieldBackHoleActive",shieldBackHoleActive);
 
  const size_t NS(stopLen.size());
  Control.addVariable(keyName+"StopNLen",NS);
