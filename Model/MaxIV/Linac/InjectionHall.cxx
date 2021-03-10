@@ -107,6 +107,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfMidLength=spfAngleLength/2.0;
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  spfAngleStep=0.0;
   spfMazeWidthTDC=Control.EvalVar<double>(keyName+"SPFMazeWidthTDC");
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
@@ -318,7 +319,7 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+213,LWPoint-X*wallThick,PX);
 
   // out step
-  const double spfAngleStep(spfAngleLength*tan(M_PI*spfAngle/180.0));
+  spfAngleStep = spfAngleLength*tan(M_PI*spfAngle/180.0);
   ModelSupport::buildPlane
     (SMap,buildIndex+223,Origin-X*(linearWidth/2.0+spfAngleStep),X);
   ModelSupport::buildPlane
@@ -1332,6 +1333,37 @@ void
 InjectionHall::createLinks()
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::nameSideIndex(0,"front");
+
+  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::nameSideIndex(1,"back");
+
+  const double dx = 200.0;
+  FixedComp::setConnect(2,Origin+Y*backWallYStep-X*dx,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+21));
+  FixedComp::nameSideIndex(2,"BackWallFrontConcrete");
+
+  FixedComp::setConnect(3,Origin+Y*(backWallYStep+backWallThick)-X*dx,Y);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+22));
+  FixedComp::nameSideIndex(3,"BackWallBack");
+
+  FixedComp::setConnect(4,Origin+Y*(backWallYStep-backWallIronThick)-X*dx,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+31));
+  FixedComp::nameSideIndex(4,"BackWallFront");
+
+  FixedComp::setConnect(5,Origin+Y*(backWallYStep-backWallIronThick-spfMazeWidthTDC/2.0)
+			-X*(linearWidth/2.0+spfAngleStep),-X);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+223));
+  FixedComp::nameSideIndex(5,"SPFMazeIn");
+
+  FixedComp::setConnect(6,Origin+Y*(backWallYStep+backWallThick+spfMazeWidthTDC/2.0)
+			-X*(linearWidth/2.0+spfAngleStep),X);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+223));
+  FixedComp::nameSideIndex(6,"SPFMazeOut");
 
   return;
 }

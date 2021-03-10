@@ -51,6 +51,7 @@ class InjectionHall :
   double spfMidLength;           ///< Length to  mid of angle [calculted]
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
+  double spfAngleStep;           ///< x-offset of the wall after spfAngle
 
   double spfMazeWidthTDC;       ///< SPF access maze width from the TDC side
   double spfMazeWidthSide;      ///< SPF access maze side width
