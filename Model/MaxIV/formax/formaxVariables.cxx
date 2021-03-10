@@ -482,7 +482,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1256.0);
-  Control.addVariable(hutName+"OutWidth",204.0);
+  Control.addVariable(hutName+"OutWidth",202.0);
   Control.addVariable(hutName+"RingExtra",20.0);
   Control.addVariable(hutName+"RingFlat",70.0);
 
@@ -516,6 +516,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
+  PGen.setSize(4.0,40.0,30.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   

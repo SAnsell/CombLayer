@@ -148,7 +148,7 @@ OpticsHutch::createSurfaces()
   
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
+  SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringFlat,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
@@ -176,11 +176,10 @@ OpticsHutch::createSurfaces()
   const double steelThick(innerThick+outerThick);
 
   // OuterWall
-
-  SurfMap::makePlane("outerWall",SMap,buildIndex+32,
+  SurfMap::makePlane("outerBack",SMap,buildIndex+32,
 		     Origin+Y*(length+steelThick+pbBackThick),Y);
   
-  ModelSupport::buildPlane(SMap,buildIndex+33,
+  SurfMap::makePlane("outerWall",SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
 
   SurfMap::makePlane("roof",SMap,buildIndex+36,
@@ -224,9 +223,18 @@ OpticsHutch::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  HR=ModelSupport::getSetHeadRule
-    (SMap,buildIndex,"-2 3 (-4:-104) -6");
+  if (innerOutVoid>Geometry::zeroTol)
+    {  
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -1003 -6");
+      makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 1003 (-4:-104) -6");
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 (-4:-104) -6");
+    }
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+
   // walls:
 
   
@@ -299,6 +307,11 @@ OpticsHutch::createLinks()
   setConnect(1,Origin+Y*(length+wallThick),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
+  // outer lead wall
+  const double steelThick(innerThick+outerThick);
+  setConnect(3,Origin-X*(outWidth+steelThick+pbWallThick)+Y*(length/2.0),-X);
+  setLinkSurf(3,-SMap.realSurf(buildIndex+33));
+  nameSideIndex(3,"outerWall");
 
   setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*(length+wallThick),Y);
   setLinkSurf(7,SMap.realSurf(buildIndex+32));
@@ -313,7 +326,11 @@ OpticsHutch::createLinks()
 
   setConnect(12,Origin+Y*length,-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-  
+
+  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
+  setLinkSurf(13,SMap.realSurf(buildIndex+3));
+  nameSideIndex(13,"innerLeftWall");
+
   nameSideIndex(7,"exitHole");
   nameSideIndex(8,"exitHoleRadius");
   nameSideIndex(11,"innerFront");
@@ -330,15 +347,14 @@ OpticsHutch::createChicane(Simulation& System)
   */
 {
   ELog::RegMethod Rega("OpticsHutch","createChicane");
-  return;
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const FuncDataBase& Control=System.getDataBase();
-
   const size_t NChicane=
     Control.EvalDefVar<size_t>(keyName+"NChicane",0);
-
+  
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));
@@ -347,18 +363,20 @@ OpticsHutch::createChicane(Simulation& System)
 
       OR.addObject(PItem);
       PItem->addInsertCell("Main",getCell("WallVoid"));
-      PItem->addInsertCell("Inner",getCell("InnerWall",0));
-      PItem->addInsertCell("Inner",getCell("LeadWall",0));
-      PItem->addInsertCell("Inner",getCell("OuterWall",0));
+      PItem->addInsertCell("Main",getCell("OuterVoid"));
+      PItem->addInsertCell("Inner",getCell("InnerWall"));
+      PItem->addInsertCell("Inner",getCell("LeadWall"));
+      PItem->addInsertCell("Inner",getCell("OuterWall"));
       // set surfaces:
 
-      PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");
-      PItem->createAll(System,*this,getSideIndex("leftWall"));
-      PItem->addInsertCell("Main",getCell("OuterVoid",0));
+      PItem->setCutSurf("innerWall",this->getSurfRule("innerWall"));
+      PItem->setCutSurf("outerWall",this->getSurfRule("#outerWall"));
+      PItem->createAll(System,*this,getSideIndex("outerWall"));
+
 
       PItem->insertObjects(System);
       PChicane.push_back(PItem);
+      ELog::EM<<"PChicange == "<<PItem->getCentre()<<ELog::endDiag;
       //      PItem->splitObject(System,23,getCell("WallVoid"));
       //      PItem->splitObject(System,24,getCell("SplitVoid"));
     }
