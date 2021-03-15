@@ -331,7 +331,7 @@ formaxExptLine::buildObjects(Simulation& System)
     (System,buildZone,*sixPortC,"back",*pipeD);
 
   constructSystem::constructUnit
-    (System,buildZone,*sixPortC,"back",*connectC);
+    (System,buildZone,*pipeD,"back",*connectC);
 
   constructSystem::constructUnit
     (System,buildZone,*connectC,"back",*clrTubeB);
@@ -375,8 +375,8 @@ formaxExptLine::createLinks()
 {
   ELog::RegMethod RControl("formaxExptLine","createLinks");
   
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

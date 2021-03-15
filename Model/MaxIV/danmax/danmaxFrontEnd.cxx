@@ -100,8 +100,8 @@ danmaxFrontEnd::createLinks()
 {
   ELog::RegMethod RegA("danmaxFrontEnd","createLinks");
   
-  setLinkSignedCopy(0,*undulatorTube,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*undulatorTube,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

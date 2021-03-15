@@ -257,7 +257,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 {
   ELog::RegMethod RegA("ExternalCut","setCutSurf(FC,long)");
 
-  // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+  // FixedComp::setLinkCopy(0,FC,sideIndex);
   cutUnit& A=getUnit(extName);
 
   A.main=WFC.getMainRule(sideIndex);

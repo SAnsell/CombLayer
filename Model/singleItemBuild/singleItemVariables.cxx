@@ -327,7 +327,7 @@ SingleItemVariables(FuncDataBase& Control)
   DPXGen.generatePump(Control,"DiffXIA",54.4);
 
   setVariable::CLRTubeGenerator DPGen;
-  DPGen.generatePump(Control,"CLRTube");
+  DPGen.generatePump(Control,"CLRTube",1);
 
   setVariable::ViewScreenGenerator VTGen;
   VTGen.generateView(Control,"ViewTube");

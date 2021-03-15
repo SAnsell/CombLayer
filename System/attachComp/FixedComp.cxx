@@ -1181,9 +1181,9 @@ FixedComp::setUSLinkCopy(const size_t Index,
 }
 
 void
-FixedComp::setLinkSignedCopy(const size_t Index,
-			     const FixedComp& FC,
-			     const long int sideIndex)
+FixedComp::setLinkCopy(const size_t Index,
+		       const FixedComp& FC,
+		       const std::string& sideName)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -1192,7 +1192,25 @@ FixedComp::setLinkSignedCopy(const size_t Index,
     \param sideIndex :: signed link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSignedSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkCopy("+sideName+")");
+
+  setLinkCopy(Index,FC,FC.getSideIndex(sideName));
+  return;
+}
+
+void
+FixedComp::setLinkCopy(const size_t Index,
+		       const FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param Index :: Link number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkCopy");
 
   if (sideIndex>0)
     setUSLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));

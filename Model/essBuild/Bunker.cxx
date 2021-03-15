@@ -550,7 +550,7 @@ Bunker::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Bunker","createLinks");
 
-  FixedComp::setLinkSignedCopy(2,FC,sideIndex);
+  FixedComp::setLinkCopy(2,FC,sideIndex);
   
   FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));

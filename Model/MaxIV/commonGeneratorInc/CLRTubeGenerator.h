@@ -28,11 +28,11 @@ namespace setVariable
 {
 
 /*!
-  \class HRJawGenerator
+  \class CLRTubeGenerator 
   \version 1.0
   \author S. Ansell
-  \date April 2020
-  \brief CLRTubeGenerator for variables
+  \date March 2021
+  \brief Compound refractive lens variable generator
 */
 
 class CLRTubeGenerator 
@@ -57,7 +57,14 @@ class CLRTubeGenerator
 
   double magWidth;               ///< Magnet Width
   double magHeight;              ///< Magnet Height
-  double magDepth;              ///< Magnet Depth
+  double magDepth;               ///< Magnet Depth
+
+  size_t lensNSize;              ///< Number of lenss
+  double lensLength;             ///< lens unit length
+  double lensMidGap;             ///< lens Step (void)
+  double lensRadius;             ///< lens Radius (focus)
+  double lensOuterRadius;        ///< lens Outer Radius 
+  double lensSupportRadius;      ///< lens Outer Radius support
 
   double innerRadius;            ///< inner pipe radius
   double innerThick;             ///< inner pipe thickness
@@ -71,6 +78,8 @@ class CLRTubeGenerator
 
 
   std::string voidMat;               ///< Void Material
+  std::string lensMat;               ///< Lens material
+  std::string lensOuterMat;          ///< Outer support lens Material
   std::string pipeMat;               ///< Pipe Material
   std::string mainMat;               ///< Support Material
   std::string magnetMat;             ///< Magnet material
@@ -87,7 +96,7 @@ class CLRTubeGenerator
   template<typename T> void setPortCF(const double);
   
   void generatePump(FuncDataBase&,const std::string&,
-		    const bool =1) const;
+		    const bool) const;
 
 
 };

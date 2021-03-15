@@ -34,6 +34,7 @@ namespace constructSystem
 namespace xraySystem
 {
 
+  class AreaDetector;
 
 /*!
   \class formaxDetectorTube
@@ -66,6 +67,8 @@ class formaxDetectorTube :
   std::array<std::shared_ptr<constructSystem::PipeTube>,8> mainTube;
   std::shared_ptr<constructSystem::FlangeDome> frontDome;
   std::shared_ptr<constructSystem::FlangeDome> backDome;
+
+  std::shared_ptr<xraySystem::AreaDetector> waxs;
   
   void populate(const FuncDataBase&);
   void createSurfaces();

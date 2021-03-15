@@ -344,14 +344,14 @@ Segment26::createLinks()
 {
   ELog::RegMethod RegA("Segment26","createLinks");
 
-  setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*pipeAB,2);
+  setLinkCopy(0,*pipeAA,1);
+  setLinkCopy(1,*pipeAB,2);
 
-  setLinkSignedCopy(2,*pipeBA,1);
-  setLinkSignedCopy(3,*pipeBB,2);
+  setLinkCopy(2,*pipeBA,1);
+  setLinkCopy(3,*pipeBB,2);
 
-  setLinkSignedCopy(4,*pipeCA,1);
-  setLinkSignedCopy(5,*pipeCB,2);
+  setLinkCopy(4,*pipeCA,1);
+  setLinkCopy(5,*pipeCB,2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");

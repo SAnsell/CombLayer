@@ -235,10 +235,10 @@ Segment12::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
+  setLinkCopy(0,*bellowA,1);
 
-  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
-  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
+  setLinkCopy(1,*bellowLB,2);  // straigh exit
+  setLinkCopy(2,*bellowRB,2);  // magnet exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"magnetExit");

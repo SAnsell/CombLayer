@@ -82,6 +82,7 @@
 #include "PipeShieldGenerator.h"
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "AreaDetectorGenerator.h"
 
 
 namespace setVariable
@@ -419,7 +420,7 @@ monoShutterVariables(FuncDataBase& Control,
     \param preName :: Control system
    */
 {
-  ELog::RegMethod RegA("cosaxsVariables","monoShutterVariables");
+  ELog::RegMethod RegA("formaxVariables","monoShutterVariables");
 
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
@@ -953,7 +954,8 @@ detectorTubePackage(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeDomeGenerator FDGen;
-
+  setVariable::AreaDetectorGenerator WAXSGen;
+  
   SimpleTubeGen.setCF<CF350>();
   
   const std::string tubeName(beamName+"DetectorTube");
@@ -991,7 +993,7 @@ detectorTubePackage(FuncDataBase& Control,
 			Geometry::Vec3D(8.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
-  
+  WAXSGen.generateDetector(Control,tubeName+"WAXS",100.0);
   
   return;
 }
@@ -1049,7 +1051,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectA",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeA");
+  DPGen.generatePump(Control,preName+"CLRTubeA",1);
 
   CTGen.generatePipe(Control,preName+"ConnectB",20.0);
 
@@ -1083,7 +1085,7 @@ exptVariables(FuncDataBase& Control,
 
   CTGen.generatePipe(Control,preName+"ConnectC",20.0);
 
-  DPGen.generatePump(Control,preName+"CLRTubeB");
+  DPGen.generatePump(Control,preName+"CLRTubeB",1);
 
   CTGen.generatePipe(Control,preName+"ConnectD",20.0);
 

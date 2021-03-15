@@ -339,13 +339,13 @@ MagnetBlock::createLinks()
       
   if (stopPoint=="Quadrupole")
     {
-      FixedComp::setLinkSignedCopy(1,*quadUnit,2);
-      FixedComp::setLinkSignedCopy(2,*quadUnit,2);
+      FixedComp::setLinkCopy(1,*quadUnit,2);
+      FixedComp::setLinkCopy(2,*quadUnit,2);
     }
   else
     {
-      FixedComp::setLinkSignedCopy(1,*dipoleChamber,2);
-      FixedComp::setLinkSignedCopy(2,*dipoleChamber,3);
+      FixedComp::setLinkCopy(1,*dipoleChamber,2);
+      FixedComp::setLinkCopy(2,*dipoleChamber,3);
     }
   return;
 }

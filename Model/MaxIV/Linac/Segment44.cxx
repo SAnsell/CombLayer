@@ -161,12 +161,12 @@ Segment44::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*triBend,1);
+  setLinkCopy(0,*triBend,1);
 
-  setLinkSignedCopy(1,*triBend,2);  // straight exit
-  setLinkSignedCopy(2,*triBend,3);  // mid exit
-  setLinkSignedCopy(3,*triBend,4);  // bend exit
-  setLinkSignedCopy(4,*triBend,5);  // bend exit
+  setLinkCopy(1,*triBend,2);  // straight exit
+  setLinkCopy(2,*triBend,3);  // mid exit
+  setLinkCopy(3,*triBend,4);  // bend exit
+  setLinkCopy(4,*triBend,5);  // bend exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"midExit");

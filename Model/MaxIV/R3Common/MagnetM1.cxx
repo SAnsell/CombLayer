@@ -310,11 +310,11 @@ MagnetM1::createLinks()
   ELog::RegMethod RegA("MagnetM1","createLinks");
 
   // link 0 / 1 from PreDipole / EPCombine
-  setLinkSignedCopy(0,*entryPipe,1);
+  setLinkCopy(0,*entryPipe,1);
 
-  setLinkSignedCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
-  setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
-  setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
+  setLinkCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
+  setLinkCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
+  setLinkCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
   setConnect(4,Origin+Y*blockYStep,-Y);
   setLinkSurf(4,-SMap.realSurf(buildIndex+1));

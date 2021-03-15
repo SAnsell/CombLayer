@@ -247,10 +247,10 @@ Segment28::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeAA,1);
-  setLinkSignedCopy(1,*bellowAB,2);
-  setLinkSignedCopy(2,*pipeBA,1);
-  setLinkSignedCopy(3,*bellowBB,2);
+  setLinkCopy(0,*pipeAA,1);
+  setLinkCopy(1,*bellowAB,2);
+  setLinkCopy(2,*pipeBA,1);
+  setLinkCopy(3,*bellowBB,2);
 
 
   FixedComp::nameSideIndex(0,"frontFlat");
@@ -258,7 +258,7 @@ Segment28::createLinks()
   FixedComp::nameSideIndex(2,"frontMid");
   FixedComp::nameSideIndex(3,"backMid");
 
-  //    setLinkSignedCopy(1,*triPipeA,2);
+  //    setLinkCopy(1,*triPipeA,2);
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 

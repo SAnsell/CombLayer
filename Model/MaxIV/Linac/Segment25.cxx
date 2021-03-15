@@ -202,10 +202,10 @@ Segment25::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*bellowAA,2);
-  setLinkSignedCopy(2,*bellowBA,2);
-  setLinkSignedCopy(3,*bellowCA,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*bellowAA,2);
+  setLinkCopy(2,*bellowBA,2);
+  setLinkCopy(3,*bellowCA,2);
 
   FixedComp::nameSideIndex(1,"backFlat");
   FixedComp::nameSideIndex(2,"backMid");

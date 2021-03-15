@@ -59,11 +59,15 @@ namespace setVariable
 
 
 CLRTubeGenerator::CLRTubeGenerator() :
-  zLift(-1.0),length(20.0),width(10.0),height(10.0),
+  zLift(-1.3),length(20.0),width(10.0),height(10.0),
   innerLength(19.0),
   captureWidth(2.0),captureHeight(2.0),captureDepth(1.0),
   supportWidth(5.5),supportHeight(3.0),supportDepth(3.0),
   magWidth(5.0),magHeight(2.5),magDepth(1.5),
+  lensNSize(30),lensLength(0.08),
+  lensMidGap(0.01),lensRadius(5.0),
+  lensOuterRadius(CF16::innerRadius/4.0),
+  lensSupportRadius(CF16::innerRadius/2.0),
   innerRadius(CF16::innerRadius),
   innerThick(CF16::wallThick),
   portLength(3.0),portRadius(CF40::innerRadius),
@@ -71,6 +75,8 @@ CLRTubeGenerator::CLRTubeGenerator() :
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
   voidMat("Void"),
+  lensMat("Diamond"),
+  lensOuterMat("Copper"),
   pipeMat("Stainless304L"),
   mainMat("Stainless304L"),
   magnetMat("NbFeB"),
@@ -136,7 +142,6 @@ CLRTubeGenerator::generatePump(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"InnerLength",innerLength);
 
-
   Control.addVariable(keyName+"CaptureWidth",captureWidth);
   Control.addVariable(keyName+"CaptureHeight",captureHeight);
   Control.addVariable(keyName+"CaptureDepth",captureDepth);
@@ -150,16 +155,26 @@ CLRTubeGenerator::generatePump(FuncDataBase& Control,
   Control.addVariable(keyName+"MagDepth",magDepth);
 
 
+  Control.addVariable(keyName+"LensNSize",lensNSize);
+  Control.addVariable(keyName+"LensLength",lensLength);
+  Control.addVariable(keyName+"LensMidGap",lensMidGap);
+  Control.addVariable(keyName+"LensRadius",lensRadius);
+  Control.addVariable(keyName+"LensOuterRadius",lensOuterRadius);
+  Control.addVariable(keyName+"LensSupportRadius",lensSupportRadius);
+  
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"InnerThick",innerThick);
 
   Control.addVariable(keyName+"PortLength",portLength);
   Control.addVariable(keyName+"PortRadius",portRadius);
   Control.addVariable(keyName+"PortThick",portThick);
+  
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"LensMat",lensMat);
+  Control.addVariable(keyName+"LensOuterMat",lensOuterMat);
   Control.addVariable(keyName+"PipeMat",pipeMat);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"MagnetMat",magnetMat);

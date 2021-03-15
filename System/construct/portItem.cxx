@@ -431,6 +431,7 @@ portItem::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(1,"OuterPlate");
+  
   if (capThick>Geometry::zeroTol)
     {
       FixedComp::setConnect(1,Origin+Y*(externalLength+capThick),Y);

@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsTubeWAXSDetector.h
+ * File:   Model/MaxIV/cosaxsInc/AreaDetector.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsTubeWAXSDetector_h
-#define xraySystem_cosaxsTubeWAXSDetector_h
+#ifndef xraySystem_AreaDetector_h
+#define xraySystem_AreaDetector_h
 
 class Simulation;
 
@@ -28,28 +28,31 @@ namespace xraySystem
 {
 
 /*!
-  \class cosaxsTubeWAXSDetector
+  \class AreaDetector
   \version 1.0
   \author Konstantin Batkov
   \date 25 Jun 2019
   \brief Wide-angle X-ray scattering (WAXS) detector
 */
 
-class cosaxsTubeWAXSDetector :
+class AreaDetector :
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::FixedRotate,
     public attachSystem::CellMap,
-    public attachSystem::SurfMap,
-    public attachSystem::FrontBackCut
+    public attachSystem::SurfMap
 {
  private:
 
-  double length;                ///< Total length including void
+  double length;                ///< Total length
   double width;                 ///< Width
   double height;                ///< Height
+  double screenThick;           ///< Wall thickness
+  double screenDepth;           ///< screen depth from front
   double wallThick;             ///< Wall thickness
 
-  int mainMat;                  ///< Main material
+  int voidMat;                  ///< Void (front) material
+  int detMat;                   ///< Main detector material
+  int screenMat;                ///< Screen material
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
@@ -59,10 +62,10 @@ class cosaxsTubeWAXSDetector :
 
  public:
 
-  cosaxsTubeWAXSDetector(const std::string&);
-  cosaxsTubeWAXSDetector(const cosaxsTubeWAXSDetector&);
-  cosaxsTubeWAXSDetector& operator=(const cosaxsTubeWAXSDetector&);
-  virtual ~cosaxsTubeWAXSDetector();
+  AreaDetector(const std::string&);
+  AreaDetector(const AreaDetector&);
+  AreaDetector& operator=(const AreaDetector&);
+  virtual ~AreaDetector();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

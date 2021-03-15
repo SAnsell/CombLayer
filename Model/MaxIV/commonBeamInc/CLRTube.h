@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author Stuart Ansell
   \date February 2021
-  \brief DP-differential pump by XIA
+  \brief Compound Refractive Lens system
 */
 
 class CLRTube :
@@ -64,7 +64,14 @@ class CLRTube :
   double magWidth;               ///< Magnet Width
   double magHeight;              ///< Magnet Height
   double magDepth;               ///< Magnet Depth
-  
+
+  size_t lensNSize;              ///< Number lens
+  double lensLength;             ///< lens total length [unit]
+  double lensMidGap;             ///< lens mid gap (with material)
+  double lensRadius;             ///< lens Curve radius (focus)
+  double lensOuterRadius;        ///< lens Outer radius 
+  double lensSupportRadius;       ///< lens Support radius 
+
   double innerRadius;            ///< inner pipe radius
   double innerThick;             ///< inner pipe thickness
 
@@ -75,8 +82,9 @@ class CLRTube :
   double flangeRadius;           ///< Flange radius
   double flangeLength;           ///< Flange thickness
 
-
   int voidMat;               ///< Void Material
+  int lensMat;               ///< Lens Material
+  int lensOuterMat;          ///< Lens Outer Material
   int pipeMat;               ///< Pipe Material
   int mainMat;               ///< Support Material
   int magnetMat;             ///< Magnet material

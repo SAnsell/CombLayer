@@ -192,8 +192,8 @@ Segment4::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

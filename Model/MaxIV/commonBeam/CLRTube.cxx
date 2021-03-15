@@ -133,6 +133,13 @@ CLRTube::populate(const FuncDataBase& Control)
   magHeight=Control.EvalVar<double>(keyName+"MagHeight");
   magDepth=Control.EvalVar<double>(keyName+"MagDepth");
 
+  lensNSize=Control.EvalVar<size_t>(keyName+"LensNSize");
+  lensLength=Control.EvalVar<double>(keyName+"LensLength");
+  lensMidGap=Control.EvalVar<double>(keyName+"LensMidGap");
+  lensRadius=Control.EvalVar<double>(keyName+"LensRadius");  
+  lensOuterRadius=Control.EvalVar<double>(keyName+"LensOuterRadius");
+  lensSupportRadius=Control.EvalVar<double>(keyName+"LensSupportRadius");
+
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
@@ -144,6 +151,8 @@ CLRTube::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  lensMat=ModelSupport::EvalMat<int>(Control,keyName+"LensMat");
+  lensOuterMat=ModelSupport::EvalMat<int>(Control,keyName+"LensOuterMat");
   pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   magnetMat=ModelSupport::EvalMat<int>(Control,keyName+"MagnetMat");
@@ -173,7 +182,7 @@ CLRTube::createSurfaces()
 	(SMap,buildIndex+2,Origin+Y*(portLength+length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  const Geometry::Vec3D beamOrg((!inBeam) ? Origin : Origin+Z*zLift);
+  const Geometry::Vec3D beamOrg((inBeam) ? Origin : Origin+Z*zLift);
 
   ModelSupport::buildCylinder
     (SMap,buildIndex+7,beamOrg,Y,innerRadius);
@@ -252,9 +261,29 @@ CLRTube::createSurfaces()
     (SMap,buildIndex+611,Origin-Y*(length/2.0+portLength-flangeLength),Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+612,Origin+Y*(length/2.0+portLength-flangeLength),Y);  
-    
 
-  
+  // LENS:
+
+  makeCylinder("LensOuter",SMap,buildIndex+1007,beamOrg,Y,lensOuterRadius);
+  makeCylinder("LensSupport",SMap,buildIndex+1017,beamOrg,Y,lensSupportRadius);
+
+  int SIndex(buildIndex+1000);
+
+  const double lStep(lensLength*static_cast<double>(lensNSize)/2.0);
+  Geometry::Vec3D lensOrg(beamOrg-Y*lStep);
+
+  ModelSupport::buildPlane(SMap,SIndex+1,lensOrg-Y*(lensLength/2.0),Y);
+  for(size_t i=0;i<lensNSize;i++)
+    {
+      makePlane("LensDivider",SMap,SIndex+11,lensOrg+Y*(lensLength/2.0),Y);
+      ModelSupport::buildSphere
+	(SMap,SIndex+8,lensOrg-Y*(lensRadius+lensMidGap/2.0),lensRadius);
+      ModelSupport::buildSphere
+      	(SMap,SIndex+9,lensOrg+Y*(lensRadius+lensMidGap/2.0),lensRadius);
+      lensOrg+=Y*lensLength;
+      
+      SIndex+=10;
+    }    
   return;
 }
 
@@ -270,10 +299,19 @@ CLRTube::createObjects(Simulation& System)
   HeadRule HR;
   const HeadRule frontHR(getRule("front"));
   const HeadRule backHR(getRule("back"));
+  const int lSize(buildIndex+static_cast<int>(lensNSize)*10);
+  
+  // Main pipe [exclude lens]
+  if (lensNSize)
+    {
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,lSize,"301 -302 -7 (-1001:1001M:1017)");
+    }
+  else
+    {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,lSize,"301 -302 -7 ");
+    }    
 
-  // Main pipe
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -7");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 7 -17");
@@ -345,6 +383,31 @@ CLRTube::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"-527 617 502 -612");
   makeCell("PortVoid",System,cellIndex++,voidMat,0.0,HR);
+
+
+  // make lens:
+  if (lensNSize) 
+    {
+      // support
+      HR=ModelSupport::getHeadRule
+	(SMap,buildIndex,lSize,"1001 -1001M -1017 1007");
+      makeCell("LensSupport",System,cellIndex++,lensOuterMat,0.0,HR);
+
+      int SIndex(buildIndex+1000);
+      
+      
+      for(size_t i=0;i<lensNSize;i++)
+	{
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"1M -8M -1007");
+	  makeCell("LensVoid",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SIndex,"-11M -9M -1007");
+	  makeCell("LensVoid",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule
+	    (SMap,buildIndex,SIndex,"1M -11M 8M 9M -1007");
+	  makeCell("Lens",System,cellIndex++,lensMat,0.0,HR);
+	  SIndex+=10;
+	}    
+    }
   
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"501 -502 103 -104 105 -106");

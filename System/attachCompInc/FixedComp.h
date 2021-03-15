@@ -166,7 +166,8 @@ class FixedComp
   void addBridgeSurf(const size_t,const int);
   void addBridgeSurf(const size_t,const std::string&);
 
-  void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
+  void setLinkCopy(const size_t,const FixedComp&,const std::string&);
+  void setLinkCopy(const size_t,const FixedComp&,const long int);
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }

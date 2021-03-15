@@ -70,6 +70,7 @@
 #include "portSet.h"
 #include "FlangeDome.h"
 #include "GateValveCylinder.h"
+#include "AreaDetector.h"
 
 #include "formaxDetectorTube.h"
 
@@ -97,7 +98,8 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment7")
   }),
   frontDome(new constructSystem::FlangeDome(keyName+"FrontDome")),
-  backDome(new constructSystem::FlangeDome(keyName+"BackDome"))
+  backDome(new constructSystem::FlangeDome(keyName+"BackDome")),
+  waxs(new xraySystem::AreaDetector(keyName+"WAXS"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -110,6 +112,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
     OR.addObject(mainTube[i]);
   OR.addObject(frontDome);
   OR.addObject(backDome);
+  OR.addObject(waxs);
 }
 
 formaxDetectorTube::~formaxDetectorTube()
@@ -201,6 +204,17 @@ formaxDetectorTube::createObjects(Simulation& System)
   const constructSystem::portItem& BPI=backDome->getPort(1);
   outerCell=buildZone.createUnit(System,BPI,"OuterPlate");  
   backDome->insertInCell(System,outerCell);
+
+  // Construct inner stuff
+  waxs->createAll(System,*this,0);
+  const Geometry::Vec3D CPoint(waxs->getLinkPt(0));
+  for(size_t i=0;i<8;i++)
+    {
+      if (mainTube[i]->getCellHR(System,"Void").isValid(CPoint))
+	{
+	  waxs->insertInCell(*mainTube[i]->getCellObject(System,"Void"));
+	}
+    }
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
@@ -217,8 +231,10 @@ formaxDetectorTube::createLinks()
 {
   ELog::RegMethod RegA("formaxDetectorTube","createLinks");
 
-  //  FrontBackCut::createLinks(*this,Origin,Y);
+  const constructSystem::portItem& API=frontDome->getPort(0);
+  setLinkCopy(0,API,"OuterPlate");
 
+  setLinkCopy(1,*backDome,2);
   return;
 }
 

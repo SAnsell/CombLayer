@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeWAXSDetector.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,16 +117,6 @@ cosaxsTubeWAXSDetector::operator=(const cosaxsTubeWAXSDetector& A)
   return *this;
 }
 
-cosaxsTubeWAXSDetector*
-cosaxsTubeWAXSDetector::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new cosaxsTubeWAXSDetector(*this);
-}
-
 cosaxsTubeWAXSDetector::~cosaxsTubeWAXSDetector()
   /*!
     Destructor
@@ -156,23 +146,6 @@ cosaxsTubeWAXSDetector::populate(const FuncDataBase& Control)
 }
 
 void
-cosaxsTubeWAXSDetector::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 cosaxsTubeWAXSDetector::createSurfaces()
   /*!
     Create All the surfaces
@@ -183,28 +156,17 @@ cosaxsTubeWAXSDetector::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+11));
     }
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+1,Y,wallThick);
 
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
     }
+
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+2,Y,-wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);

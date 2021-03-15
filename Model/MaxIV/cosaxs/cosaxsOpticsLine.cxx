@@ -625,8 +625,8 @@ cosaxsOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("cosaxsOpticsLine","createLinks");
 
-  setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 
