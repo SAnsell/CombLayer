@@ -993,7 +993,13 @@ detectorTubePackage(FuncDataBase& Control,
 			Geometry::Vec3D(8.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
 
-  WAXSGen.generateDetector(Control,tubeName+"WAXS",100.0);
+  Control.addVariable(tubeName+"BeamStopYStep", 500.0); // [2]
+  Control.addVariable(tubeName+"BeamStop", 0.6); // [2]
+  Control.addVariable(tubeName+"BeamStopLength", 0.6); // [2]
+  Control.addVariable(tubeName+"BeamStopRadius", 0.15); // [2]
+  Control.addVariable(tubeName+"BeamStopMat", "Tantalum");
+
+  WAXSGen.generateDetector(Control,tubeName+"WAXS",600.0);
   
   return;
 }

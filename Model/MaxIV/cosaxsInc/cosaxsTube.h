@@ -42,10 +42,10 @@ namespace xraySystem
 
   class cosaxsTubeNoseCone;
   class cosaxsTubeStartPlate;
-  class cosaxsTubeBeamDump;
   class cosaxsTubeWAXSDetector;
   class cosaxsTubeAirBox;
   class cosaxsTubeCable;
+  class MonoBeamStop;
 
 class cosaxsTube :
     public attachSystem::ContainedComp,
@@ -67,7 +67,7 @@ class cosaxsTube :
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;
   std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
   std::array<std::shared_ptr<constructSystem::PipeTube>, 8> seg;
-  std::shared_ptr<xraySystem::cosaxsTubeBeamDump> beamDump;
+  std::shared_ptr<xraySystem::MonoBeamStop> beamDump;
   std::shared_ptr<xraySystem::cosaxsTubeWAXSDetector> waxs;
   std::shared_ptr<xraySystem::cosaxsTubeAirBox> airBox;
   std::shared_ptr<xraySystem::cosaxsTubeCable>  cable;

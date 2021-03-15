@@ -35,6 +35,7 @@ namespace xraySystem
 {
 
   class AreaDetector;
+  class MonoBeamStop;
 
 /*!
   \class formaxDetectorTube
@@ -68,6 +69,7 @@ class formaxDetectorTube :
   std::shared_ptr<constructSystem::FlangeDome> frontDome;
   std::shared_ptr<constructSystem::FlangeDome> backDome;
 
+  std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
   
   void populate(const FuncDataBase&);

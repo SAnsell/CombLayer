@@ -70,6 +70,7 @@
 #include "portSet.h"
 #include "FlangeDome.h"
 #include "GateValveCylinder.h"
+#include "MonoBeamStop.h"
 #include "AreaDetector.h"
 
 #include "formaxDetectorTube.h"
@@ -99,6 +100,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
   }),
   frontDome(new constructSystem::FlangeDome(keyName+"FrontDome")),
   backDome(new constructSystem::FlangeDome(keyName+"BackDome")),
+  monoBeamStop(new xraySystem::MonoBeamStop(keyName+"BeamStop")),
   waxs(new xraySystem::AreaDetector(keyName+"WAXS"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -113,6 +115,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
   OR.addObject(frontDome);
   OR.addObject(backDome);
   OR.addObject(waxs);
+  OR.addObject(monoBeamStop);
 }
 
 formaxDetectorTube::~formaxDetectorTube()
@@ -206,10 +209,16 @@ formaxDetectorTube::createObjects(Simulation& System)
   backDome->insertInCell(System,outerCell);
 
   // Construct inner stuff
+  monoBeamStop->createAll(System,*this,0);
   waxs->createAll(System,*this,0);
+  const Geometry::Vec3D BPoint(monoBeamStop->getLinkPt(0));
   const Geometry::Vec3D CPoint(waxs->getLinkPt(0));
   for(size_t i=0;i<8;i++)
     {
+      if (mainTube[i]->getCellHR(System,"Void").isValid(BPoint))
+	{
+	  monoBeamStop->insertInCell(*mainTube[i]->getCellObject(System,"Void"));
+	}
       if (mainTube[i]->getCellHR(System,"Void").isValid(CPoint))
 	{
 	  waxs->insertInCell(*mainTube[i]->getCellObject(System,"Void"));

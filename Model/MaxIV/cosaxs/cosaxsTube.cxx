@@ -65,7 +65,7 @@
 #include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTubeStartPlate.h"
-#include "cosaxsTubeBeamDump.h"
+#include "MonoBeamStop.h"
 #include "cosaxsTubeWAXSDetector.h"
 #include "cosaxsTubeAirBox.h"
 #include "cosaxsTubeCable.h"
@@ -91,7 +91,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
-  beamDump(new xraySystem::cosaxsTubeBeamDump(keyName+"BeamDump")),
+  beamDump(new xraySystem::MonoBeamStop(keyName+"BeamDump")),
   waxs(new xraySystem::cosaxsTubeWAXSDetector(keyName+"WAXS")),
   airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox")),
   cable(new xraySystem::cosaxsTubeCable(keyName+"Cable"))
@@ -367,7 +367,6 @@ cosaxsTube::createObjects(Simulation& System)
 
   masterCell=buildZoneTube.constructMasterCell(System);
 
-  beamDump->setFront(*seg[0],-1);
   beamDump->createAll(System,*seg[0],-1);
   outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*beamDump,2);
   beamDump->insertInCell(System,outerCell);
