@@ -50,6 +50,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -136,7 +137,9 @@ formaxDetectorTube::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-
+  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
+  
   return;
 }
 
@@ -168,7 +171,7 @@ formaxDetectorTube::createSurfaces()
   buildZone.setSurround(HR);
   buildZone.setFront(getRule("front"));
   buildZone.setMaxExtent(getRule("back"));
-
+  buildZone.setInnerMat(outerMat);
   return;
 }
 
@@ -184,7 +187,6 @@ formaxDetectorTube::createObjects(Simulation& System)
   int outerCell;
   
   buildZone.addInsertCells(this->getInsertCells());
-
 
   mainTube[0]->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*mainTube[0],-1);
@@ -227,6 +229,7 @@ formaxDetectorTube::createObjects(Simulation& System)
   
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+  setCell("FirstVoid",buildZone.getCell("Unit"));
   setCell("LastVoid",buildZone.getLastCell("Unit"));
   lastComp=mainTube[7];
   return;

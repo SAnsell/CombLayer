@@ -51,7 +51,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 #include "phitsWriteSupport.h"
 #include "flukaGenParticle.h"
 
@@ -62,7 +63,7 @@ namespace SDef
 {
 
 BeamSource::BeamSource(const std::string& keyName) : 
-  FixedOffsetUnit(keyName,0),SourceBase(),
+  FixedRotateUnit(keyName,0),SourceBase(),
   radius(1.0),angleSpread(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -71,7 +72,7 @@ BeamSource::BeamSource(const std::string& keyName) :
 {}
 
 BeamSource::BeamSource(const BeamSource& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotateUnit(A),SourceBase(A),
   radius(A.radius),angleSpread(A.angleSpread)
   /*!
     Copy constructor
@@ -89,7 +90,7 @@ BeamSource::operator=(const BeamSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       radius=A.radius;
       angleSpread=A.angleSpread;
@@ -124,7 +125,7 @@ BeamSource::populate(const ITYPE& inputMap)
 {
   ELog::RegMethod RegA("BeamSource","populate");
 
-  attachSystem::FixedOffset::populate(inputMap);
+  attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
   // default neutron
   
@@ -310,6 +311,9 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
 
   //Y Axis is Z in fluka, X is X
+  ELog::EM<<"Beam Direction[X] == "<<X<<ELog::endDiag;
+  ELog::EM<<"Beam Direction[Y] == "<<Y<<ELog::endDiag;
+  ELog::EM<<"Beam Direction[X*Y] == "<<X*Y<<ELog::endDiag;
   cx<<"BEAMAXES "<<MW.Num(X)<<" "<<MW.Num(Y);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");

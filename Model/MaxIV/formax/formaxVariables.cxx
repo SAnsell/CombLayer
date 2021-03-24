@@ -961,7 +961,7 @@ detectorTubePackage(FuncDataBase& Control,
   const std::string tubeName(beamName+"DetectorTube");
   Control.addVariable(tubeName+"YStep", 800.748); // dummy
   Control.addVariable(tubeName+"OuterRadius",60.0);
-
+  Control.addVariable(tubeName+"OuterMat","Void"); 
   // MAIN PIPE:
 
   for(size_t i=0;i<8;i++)
@@ -1034,6 +1034,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
+  Control.addVariable(preName+"OuterMat","Void");
 
   BellowGen.setCF<setVariable::CF40>();
 
@@ -1116,6 +1117,9 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setBFlange(1.1,0.1);
   PipeGen.generatePipe(Control,preName+"EndPipe",61.0);
 
+  Control.addVariable(preName+"SampleYStep", 25.0); // [2]
+  Control.addVariable(preName+"SampleRadius", 5.0); // [2]
+  Control.addVariable(preName+"SampleDefMat", "Stainless304");
 
   
   return;
@@ -1165,7 +1169,10 @@ FORMAXvariables(FuncDataBase& Control)
   
   formaxVar::exptHutVariables(Control,"Formax",0.0);
   formaxVar::exptVariables(Control,"Formax");
-  formaxVar::detectorTubePackage(Control,"Formax");  
+  formaxVar::detectorTubePackage(Control,"Formax");
+
+
+
   return;
 }
 

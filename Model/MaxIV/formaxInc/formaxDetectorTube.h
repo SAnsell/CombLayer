@@ -63,7 +63,8 @@ class formaxDetectorTube :
   
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
-
+  int outerMat;       ///< Surround matieral
+  
   /// main tube vacuum segments 
   std::array<std::shared_ptr<constructSystem::PipeTube>,8> mainTube;
   std::shared_ptr<constructSystem::FlangeDome> frontDome;
@@ -71,6 +72,7 @@ class formaxDetectorTube :
 
   std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
+
   
   void populate(const FuncDataBase&);
   void createSurfaces();

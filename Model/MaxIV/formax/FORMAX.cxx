@@ -217,7 +217,8 @@ FORMAX::build(Simulation& System,
 			   exptHut->getSideIndex("innerBack"));
   detectorTube->createAll(System,*joinPipeB,2);
 
-
+  exptBeam->insertSample(System,detectorTube->getCell("FirstVoid"));
+  
   return;
 }
 

@@ -63,8 +63,11 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "generalConstruct.h"
+#include "insertObject.h"
+#include "insertSphere.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -128,7 +131,8 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   jawBoxB(new xraySystem::BoxJaws(newName+"JawBoxB")),
   connectE(new xraySystem::ConnectorTube(newName+"ConnectE")),
-  endPipe(new constructSystem::VacuumPipe(newName+"EndPipe"))
+  endPipe(new constructSystem::VacuumPipe(newName+"EndPipe")),
+  sample(new insertSystem::insertSphere(newName+"Sample"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -167,6 +171,7 @@ formaxExptLine::formaxExptLine(const std::string& Key) :
   OR.addObject(jawBoxB);
   OR.addObject(connectE);
   OR.addObject(endPipe);
+  OR.addObject(sample);
 }
   
 formaxExptLine::~formaxExptLine()
@@ -189,6 +194,8 @@ formaxExptLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+
+  outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
   
   return;
 }
@@ -215,6 +222,7 @@ formaxExptLine::createSurfaces()
      buildZone.setSurround(HR*getRule("floor"));
      buildZone.setFront(getRule("front"));
      buildZone.setMaxExtent(getRule("back"));
+     buildZone.setInnerMat(outerMat);
     }
   return;
 }
@@ -361,6 +369,10 @@ formaxExptLine::buildObjects(Simulation& System)
   
   //  buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+
+  sample->setNoInsert();
+  sample->createAll(System,*endPipe,"back");
+  
   setCell("LastVoid",buildZone.getLastCell("Unit"));
   lastComp=endPipe;
 
@@ -379,7 +391,21 @@ formaxExptLine::createLinks()
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
+
+void
+formaxExptLine::insertSample(Simulation& System,
+			     const int cellNumber) const
+  /*!
+    PRocess the insertion of the sample [UGLY]
+    \param Ssytem :: Simulation
+   */
+{
+  ELog::RegMethod RegA("formaxExptLine","insertSample");
+
+  sample->insertInCell(System,cellNumber);
+  return;
+}
+
   
 void 
 formaxExptLine::createAll(Simulation& System,

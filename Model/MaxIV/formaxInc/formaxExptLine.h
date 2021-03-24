@@ -25,6 +25,7 @@
 namespace insertSystem
 {
   class insertPlate;
+  class insertSphere;
 }
 
 namespace tdcSystem
@@ -77,7 +78,7 @@ class formaxExptLine :
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
-  int innerMat;                         ///< inner material if used
+  int outerMat;                         ///< outermaterial if used
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -143,6 +144,8 @@ class formaxExptLine :
   std::shared_ptr<xraySystem::ConnectorTube> connectE;
   /// Narrow end pipe
   std::shared_ptr<constructSystem::VacuumPipe> endPipe;
+  /// Narrow end pipe
+  std::shared_ptr<insertSystem::insertSphere> sample;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -164,12 +167,14 @@ class formaxExptLine :
   formaxExptLine& operator=(const formaxExptLine&);
   ~formaxExptLine();
 
-  /// Assignment to inner void
-  void setInnerMat(const int M) { innerMat=M; }
+  /// Assignment to outer void
+  void setOuterMat(const int M) { outerMat=M; }
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
+  void insertSample(Simulation&,const int) const;
+  
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
