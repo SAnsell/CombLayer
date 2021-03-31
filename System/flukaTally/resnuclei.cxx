@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnuclei.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,9 @@
 namespace flukaSystem
 {
 
-resnuclei::resnuclei(const int outID) :
-  flukaTally("resn"+std::to_string(outID),outID),
+
+resnuclei::resnuclei(const int ID,const int outIndex) :
+  flukaTally("resn"+resnuclei::idForm(ID),outIndex),
   cellA(0)
   /*!
     Constructor
@@ -53,8 +54,10 @@ resnuclei::resnuclei(const int outID) :
   */
 {}
 
-resnuclei::resnuclei(const std::string& KN,const int outID) :
-  flukaTally(KN,outID),cellA(0)
+resnuclei::resnuclei(const std::string& KN,const int outID,
+		     const int tapeID) :
+  flukaTally(KN,outID,tapeID),
+  cellA(0)
   /*!
     Constructor
     \param KN :: KeyName

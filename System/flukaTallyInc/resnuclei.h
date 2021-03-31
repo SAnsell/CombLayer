@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/resnuclei.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,12 +39,11 @@ class resnuclei : public flukaTally
  private:
 
   int cellA;           ///< Cell number
-
-  
+    
  public:
 
-  explicit resnuclei(const int);
-  resnuclei(const std::string&,const int);
+  resnuclei(const int,const int);
+  resnuclei(const std::string&,const int,const int);
   resnuclei(const resnuclei&);
   virtual resnuclei* clone() const; 
   resnuclei& operator=(const resnuclei&);

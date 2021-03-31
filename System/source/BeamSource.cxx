@@ -311,9 +311,9 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
 
   //Y Axis is Z in fluka, X is X
-  ELog::EM<<"Beam Direction[X] == "<<X<<ELog::endDiag;
-  ELog::EM<<"Beam Direction[Y] == "<<Y<<ELog::endDiag;
-  ELog::EM<<"Beam Direction[X*Y] == "<<X*Y<<ELog::endDiag;
+  // ELog::EM<<"Beam Direction[X] == "<<X<<ELog::endDiag;
+  // ELog::EM<<"Beam Direction[Y] == "<<Y<<ELog::endDiag;
+  // ELog::EM<<"Beam Direction[X*Y] == "<<X*Y<<ELog::endDiag;
   cx<<"BEAMAXES "<<MW.Num(X)<<" "<<MW.Num(Y);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");

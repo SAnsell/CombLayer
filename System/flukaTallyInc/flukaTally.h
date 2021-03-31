@@ -40,7 +40,10 @@ class flukaTally
 {
  protected:
 
+  static std::string idForm(const int);  // get ID 2 digit character
+  
   std::string keyName;              ///< tally name
+  int ID;                           ///< ID number
   int outputUnit;                   ///< Fortran output number
   std::string comments;             ///< comment line
 
@@ -48,11 +51,13 @@ class flukaTally
   std::string doseType;             ///< Auxillary dose type if used
 
   std::string userName;             ///< Selected for fluscw treatment
-  
+
  public:
   
   explicit flukaTally(const int);
+  flukaTally(const int,const int);
   flukaTally(const std::string&,const int);
+  flukaTally(const std::string&,const int,const int);
   flukaTally(const flukaTally&);
   flukaTally& operator=(const flukaTally&);
   virtual flukaTally* clone() const; 
@@ -74,6 +79,8 @@ class flukaTally
 
   const std::string& getKeyName() const;
   const std::string& getUserName() const { return userName; }
+  /// access out unit
+  int getID() const { return ID; }
   /// access out unit
   int getOutUnit() const { return outputUnit; }
 

@@ -888,11 +888,13 @@ objectGroups::writeRange(std::ostream& OX,
   
 void
 objectGroups::write(const std::string& OFile,
-		    const bool fullFlag) const
+		    const int fullFlag) const
   /*!
     Write out to a file 
     \param OFile :: output file
-    \param fullFlag :: write out all the info					  */
+    \param fullFlag :: [1] : write out all the info
+                       [2] : write out all the cell info
+  */
 {
   ELog::RegMethod RegA("objectGroups","write");
   if (!OFile.empty())
@@ -918,11 +920,27 @@ objectGroups::write(const std::string& OFile,
 	    OX<<(FMTVec % "X:" % FPTR->getX())
 	      <<(FMTVec % "Y:" % FPTR->getY())
 	      <<(FMTVec % "Z:" % FPTR->getZ());
-
-
 	  OX<<" :: "<<mc->second;
-	  
 	  OX<<std::endl;
+	  
+	  if (fullFlag && FPTR)
+	    {
+	      const attachSystem::CellMap* CPtr=
+		dynamic_cast<const attachSystem::CellMap*>(FPTR);
+	      if (CPtr)
+		{
+		  OX<<"Cell Map["<<FPTR->getKeyName()<<"] == ";
+		  const std::vector<std::string> names=CPtr->getNames();
+		  for(const std::string& N : names)
+		    {
+		      const std::vector<int> Items=CPtr->getCells(N);
+		      for(const int I : Items)
+			OX<<" "<<I;
+		    }
+		  OX<<std::endl;
+		}
+	    }
+
 	}
     }
   return;

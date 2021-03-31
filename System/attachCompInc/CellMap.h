@@ -177,7 +177,7 @@ class CellMap  : public BaseMap
 
   std::pair<int,double>
     deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-  
+
 };
 
 }

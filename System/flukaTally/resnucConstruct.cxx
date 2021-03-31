@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnucConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "flukaTally.h"
 
 #include "resnuclei.h"
+#include "flukaTallyModification.h"
 #include "resnucConstruct.h" 
 
 
@@ -59,6 +60,7 @@ namespace flukaSystem
 
 void 
 resnucConstruct::createTally(SimFLUKA& System,
+			     const int ID,
 			     const int fortranTape,
 			     const int cellA)
 
@@ -72,7 +74,7 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-  resnuclei UD(fortranTape);
+  resnuclei UD(ID,fortranTape);
   UD.setCell(cellA);
   System.addTally(UD);
 
@@ -105,11 +107,27 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   const std::vector<int> cellVec=
     System.getObjectRange(objectName);
 
+  // This junk gets a good ID + fortranTape number
+  int fortranTape(0),ID(0);
+  const std::set<resnuclei*> RSet=
+    getTallyType<resnuclei>(System);
+  for(const flukaTally* TPtr: RSet)
+    {
+      if (ID<TPtr->getID())
+	ID=TPtr->getID();
+      if (fortranTape<TPtr->getOutUnit())
+	fortranTape=TPtr->getOutUnit();
+    }
+  if (!fortranTape || !ID)
+    {
+      fortranTape=System.getNextFTape();
+      ID=fortranTape+99;
+    }
+  
   for(const int CN : cellVec)
     {
-      // This needs to be more sophisticated
-      const int nextId=System.getNextFTape();
-      resnucConstruct::createTally(System,nextId,CN);
+      ID++;    // fresh id number [or 100+fortranTape]
+      resnucConstruct::createTally(System,ID,fortranTape,CN);
     }
   
   return;      

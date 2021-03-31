@@ -3,7 +3,7 @@
  
  * File:   flukaTally/flukaTally.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "writeSupport.h"
 #include "flukaGenParticle.h"
 #include "flukaTally.h"
@@ -60,25 +61,61 @@ operator<<(std::ostream& OX,const flukaTally& TX)
   return OX;
 }
 
-flukaTally::flukaTally(const std::string& MK,const int ID)  :
-  keyName(MK),outputUnit(ID)
+std::string
+flukaTally::idForm(const int A)
+  /*!
+    Calculate the id form based on making a unique two digit char
+    \param A :: index to used
+   */
+{
+  if (A<100) return std::to_string(A);
+  const size_t index=static_cast<size_t>(A-100);
+  std::string out(1,StrFunc::indexToAlpha((index/52)));
+  out.push_back(StrFunc::indexToAlpha((index % 52)));
+  return out;
+}
+
+  
+flukaTally::flukaTally(const std::string& MK,const int indexID)  :
+  keyName(MK),ID(indexID),outputUnit(indexID)
   /*!
     Constructor 
     \param MK :: Keyname
-    \param ID :: flukaTally ID number
+    \param indexID :: flukaTally ID number + fortranTape
   */
 {}
 
-flukaTally::flukaTally(const int ID)  :
-  outputUnit(ID)
+flukaTally::flukaTally(const std::string& MK,
+		       const int indexID,const int outID)  :
+  keyName(MK),ID(indexID),outputUnit(outID)
   /*!
     Constructor 
-    \param ID :: flukaTally ID number
+    \param MK :: Keyname
+    \param indexID :: flukaTally ID number
+    \param outID :: flukaTally fortran tape number
+  */
+{}
+
+flukaTally::flukaTally(const int indexID)  :
+  ID(indexID),outputUnit(indexID)
+  /*!
+    Constructor 
+    \param indexID :: flukaTally ID number
+  */
+{}
+
+flukaTally::flukaTally(const int indexID,const int outID)  :
+  ID(indexID),outputUnit(outID)
+  /*!
+    Constructor 
+    \param indexID :: flukaTally ID number
+    \param outID :: fortran tape number
   */
 {}
 
 flukaTally::flukaTally(const flukaTally& A)  :
-  keyName(A.keyName),outputUnit(A.outputUnit),
+  keyName(A.keyName),
+  ID(A.ID),outputUnit(A.outputUnit),
   comments(A.comments),auxParticle(A.auxParticle),
   doseType(A.doseType),userName(A.userName)
   /*!
@@ -108,6 +145,7 @@ flukaTally::operator=(const flukaTally& A)
   if (this!=&A)
     {
       keyName=A.keyName;
+      ID=A.ID;
       outputUnit=A.outputUnit;
       comments=A.comments;
       auxParticle=A.auxParticle;

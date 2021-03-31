@@ -133,7 +133,7 @@ class objectGroups
 
   void removeObject(const std::string&);
   
-  void write(const std::string&,const bool =0) const;
+  void write(const std::string&,const int =0) const;
 
   std::ostream& writeRange(std::ostream&,const std::string&) const;
   

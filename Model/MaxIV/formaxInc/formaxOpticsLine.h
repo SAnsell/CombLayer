@@ -212,7 +212,6 @@ class formaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> gateTubeG;
   /// last pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;
-
   
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -249,7 +248,7 @@ class formaxOpticsLine :
   ~formaxOpticsLine();
 
   /// Assignment to inner void
-  void setInnerMat(const int M) { innerMat=M; }
+  void setInnerMat(const int M) {  innerMat=M; }
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }

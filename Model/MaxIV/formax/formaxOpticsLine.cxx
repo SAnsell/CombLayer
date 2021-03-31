@@ -316,6 +316,7 @@ formaxOpticsLine::createSurfaces()
      buildZone.setSurround(HR*getRule("floor"));
      buildZone.setFront(getRule("front"));
      buildZone.setMaxExtent(getRule("back"));
+     buildZone.setInnerMat(innerMat);
     }
   return;
 }
@@ -652,6 +653,8 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+
+  setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
   lastComp=pipeF;
 

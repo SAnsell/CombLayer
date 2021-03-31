@@ -130,7 +130,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
       sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
-	FTItem.emplace(TM.first,TM.second->clone());
+	FTItem.emplace(TM->clone());
       *PhysPtr= *A.PhysPtr;
       *RadDecayPtr = *A.RadDecayPtr;
     }
@@ -187,8 +187,8 @@ SimFLUKA::clearTally()
     Remove all the tallies
   */
 {
-  for(FTallyTYPE::value_type& mc : FTItem)
-    delete mc.second;
+  for(flukaSystem::flukaTally* FPtr : FTItem)
+    delete FPtr;
   FTItem.erase(FTItem.begin(),FTItem.end());
   return;
 }
@@ -204,13 +204,16 @@ SimFLUKA::getNextFTape() const
   ELog::RegMethod RegA("SimFLUKA","getNextFTape");
   
   // max for fortran output stream 98 ??
-  for(int i=25;i<98;i++)
-    {
-      if (FTItem.find(i)==FTItem.end())
-	return i;
-    }
-  throw ColErr::InContainerError<int>
-    (98,"Tallies have exhaused available ftapes [25-98]");
+  int nextFTape(24);
+  for(const flukaSystem::flukaTally* FPtr : FTItem)
+    if (FPtr->getOutUnit()>nextFTape)
+      nextFTape=FPtr->getOutUnit();
+
+  nextFTape++;
+  if (nextFTape>98)
+    throw ColErr::InContainerError<int>
+      (98,"Tallies have exhaused available ftapes [25-98]");
+  return nextFTape;
 }
   
 void
@@ -223,10 +226,16 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   ELog::RegMethod RegA("SimFluka","addTally");
 
   // Fluka cannot share output [and fOutput > 25 ]
-  const int fOutput=std::abs(TI.getOutUnit());
-  if (FTItem.find(fOutput)!=FTItem.end())
-    throw ColErr::InContainerError<int>(fOutput,"Foutput for tally");
-  FTItem.emplace(fOutput,TI.clone());
+  const int fID=std::abs(TI.getID());
+  
+  if (std::find_if(FTItem.begin(),FTItem.end(),
+		   [&fID](const flukaSystem::flukaTally* FPtr)
+		   {
+		     return FPtr->getID()==fID;
+		   }) != FTItem.end())
+    throw ColErr::InContainerError<int>(fID,"fID for tally");
+
+  FTItem.emplace(TI.clone());
   return;
 }
 
@@ -240,10 +249,11 @@ SimFLUKA::getTally(const int TI) const
 {
   ELog::RegMethod RegA("SimFluka","getTally");
 
-  FTallyTYPE::const_iterator mc=FTItem.find(TI);
-  if (mc==FTItem.end())
-    throw ColErr::InContainerError<int>(TI,"Fluka Tally");
-  return mc->second;
+  for(flukaSystem::flukaTally* FPtr : FTItem)
+    if (FPtr->getID()==TI)
+      return FPtr;
+  
+  throw ColErr::InContainerError<int>(TI,"Fluka Tally");
 }
 
 void
@@ -281,7 +291,7 @@ SimFLUKA::writeTally(std::ostream& OX) const
   OX<<"* ------------------------------------------------------"<<std::endl;
 
   for(const FTallyTYPE::value_type& TI : FTItem)
-    TI.second->write(OX);
+    TI->write(OX);
 
   return;
 }

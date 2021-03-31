@@ -547,13 +547,11 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
   Control.addVariable(hutName+"InnerThick",0.1);
-  Control.addVariable(hutName+"PbBackThick",0.5);
-  Control.addVariable(hutName+"PbRoofThick",0.6);
+  Control.addVariable(hutName+"PbBackThick",0.6);
+  Control.addVariable(hutName+"PbRoofThick",0.4);
   Control.addVariable(hutName+"PbWallThick",0.4);
   Control.addVariable(hutName+"OuterThick",0.1);
 
-  Control.addVariable(hutName+"PbThick",0.4);
-  Control.addVariable(hutName+"OuterThick",0.1);
   Control.addVariable(hutName+"CornerLength",1719.4-120.0);  //
   Control.addVariable(hutName+"CornerAngle",45.0);
   
