@@ -118,12 +118,13 @@ resnucConstruct::processResNuc(SimFLUKA& System,
       if (fortranTape<TPtr->getOutUnit())
 	fortranTape=TPtr->getOutUnit();
     }
+  
   if (!fortranTape || !ID)
     {
       fortranTape=System.getNextFTape();
       ID=fortranTape+99;
     }
-  
+
   for(const int CN : cellVec)
     {
       ID++;    // fresh id number [or 100+fortranTape]

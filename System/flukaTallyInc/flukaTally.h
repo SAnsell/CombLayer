@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/flukaTally.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,13 @@ namespace flukaSystem
 
 class flukaTally
 {
+ private:
+
+  static std::string idForm(const std::string&,const int);  
+  
  protected:
 
-  static std::string idForm(const int);  // get ID 2 digit character
+
   
   std::string keyName;              ///< tally name
   int ID;                           ///< ID number
@@ -54,9 +58,6 @@ class flukaTally
 
  public:
   
-  explicit flukaTally(const int);
-  flukaTally(const int,const int);
-  flukaTally(const std::string&,const int);
   flukaTally(const std::string&,const int,const int);
   flukaTally(const flukaTally&);
   flukaTally& operator=(const flukaTally&);
@@ -69,7 +70,8 @@ class flukaTally
   void setKeyName(const std::string&);
   /// Simple assignment to userName
   void setUserName(const std::string& A)
-    { userName=A;} 
+    { userName=A;}
+
   void setBinary();
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
@@ -83,7 +85,6 @@ class flukaTally
   int getID() const { return ID; }
   /// access out unit
   int getOutUnit() const { return outputUnit; }
-
   
   virtual void write(std::ostream&) const;
   virtual void writeAuxScore(std::ostream&) const;

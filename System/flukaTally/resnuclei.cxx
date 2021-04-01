@@ -46,7 +46,7 @@ namespace flukaSystem
 
 
 resnuclei::resnuclei(const int ID,const int outIndex) :
-  flukaTally("resn"+resnuclei::idForm(ID),outIndex),
+  flukaTally("resn",ID,outIndex),
   cellA(0)
   /*!
     Constructor
@@ -119,7 +119,7 @@ resnuclei::write(std::ostream& OX) const
   
   cx<<"RESNUCLEI  3.0 "<<outputUnit<<" - - "
     <<" R"<<cellA<<" 1.0 ";
-  cx<<" resn"<<std::to_string(std::abs(outputUnit));
+  cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }

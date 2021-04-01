@@ -62,54 +62,29 @@ operator<<(std::ostream& OX,const flukaTally& TX)
 }
 
 std::string
-flukaTally::idForm(const int A)
+flukaTally::idForm(const std::string& baseName,const int A)
   /*!
     Calculate the id form based on making a unique two digit char
+    \param baseName :: Prename
     \param A :: index to used
    */
 {
-  if (A<100) return std::to_string(A);
-  const size_t index=static_cast<size_t>(A-100);
-  std::string out(1,StrFunc::indexToAlpha((index/52)));
-  out.push_back(StrFunc::indexToAlpha((index % 52)));
-  return out;
+  if (A<100) return baseName.substr(0,4)+std::to_string(A);
+
+  return baseName.substr(0,3)+std::to_string(A);
+
 }
 
   
-flukaTally::flukaTally(const std::string& MK,const int indexID)  :
-  keyName(MK),ID(indexID),outputUnit(indexID)
-  /*!
-    Constructor 
-    \param MK :: Keyname
-    \param indexID :: flukaTally ID number + fortranTape
-  */
-{}
-
 flukaTally::flukaTally(const std::string& MK,
-		       const int indexID,const int outID)  :
-  keyName(MK),ID(indexID),outputUnit(outID)
+		       const int indexID,
+		       const int outID)  :
+  keyName(idForm(MK,indexID)),ID(indexID),outputUnit(outID)
   /*!
     Constructor 
     \param MK :: Keyname
     \param indexID :: flukaTally ID number
     \param outID :: flukaTally fortran tape number
-  */
-{}
-
-flukaTally::flukaTally(const int indexID)  :
-  ID(indexID),outputUnit(indexID)
-  /*!
-    Constructor 
-    \param indexID :: flukaTally ID number
-  */
-{}
-
-flukaTally::flukaTally(const int indexID,const int outID)  :
-  ID(indexID),outputUnit(outID)
-  /*!
-    Constructor 
-    \param indexID :: flukaTally ID number
-    \param outID :: fortran tape number
   */
 {}
 

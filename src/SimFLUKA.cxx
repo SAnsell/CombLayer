@@ -227,13 +227,16 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
 
   // Fluka cannot share output [and fOutput > 25 ]
   const int fID=std::abs(TI.getID());
-  
+
+  // is id already present
   if (std::find_if(FTItem.begin(),FTItem.end(),
 		   [&fID](const flukaSystem::flukaTally* FPtr)
 		   {
 		     return FPtr->getID()==fID;
 		   }) != FTItem.end())
-    throw ColErr::InContainerError<int>(fID,"fID for tally");
+    {
+      throw ColErr::InContainerError<int>(fID,"fID for tally");
+    }
 
   FTItem.emplace(TI.clone());
   return;
@@ -284,7 +287,7 @@ SimFLUKA::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  ELog::RegMethod RegA("SimFluka","addTally");
+  ELog::RegMethod RegA("SimFluka","writeTally");
   
   OX<<"* ------------------------------------------------------"<<std::endl;
   OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;

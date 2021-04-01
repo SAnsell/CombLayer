@@ -63,7 +63,8 @@ namespace flukaSystem
 
 void 
 userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& PType,const int fortranTape,
+			      const std::string& PType,
+			      const int fortranTape,
 			      const int cellA,const int cellB,
 			      const bool eLog,const double Emin,
 			      const double Emax,const size_t nE,
@@ -91,7 +92,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
     
-  userBdx UD(fortranTape);
+  userBdx UD("surf",fortranTape,fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
 
   UD.setCell(cellA,cellB);
