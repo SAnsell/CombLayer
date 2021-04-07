@@ -38,7 +38,9 @@ class resnuclei : public flukaTally
 {
  private:
 
-  int cellA;           ///< Cell number
+  int AMax;            ///< Max Z of material
+  int ZMax;            ///< Max A of material
+  size_t cellA;           ///< Cell number
     
  public:
 
@@ -50,6 +52,7 @@ class resnuclei : public flukaTally
   virtual ~resnuclei();
 
   void setCell(const int CN) { cellA=CN; }
+  void setZaid(const int,const int);
   virtual void write(std::ostream&) const;  
 };
 

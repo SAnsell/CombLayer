@@ -105,6 +105,19 @@ resnuclei::~resnuclei()
   */
 {}
 
+void
+resnuclei::setZaid(const int Z,const int A)
+/*! 
+  Set the max number for range
+  \param Z :: Z (charge) max
+  \param A :: Atomic number
+*/
+{
+  AMax=A;
+  ZMax=Z;
+  return;
+}
+
   
 void
 resnuclei::write(std::ostream& OX) const
@@ -116,9 +129,9 @@ resnuclei::write(std::ostream& OX) const
 {
 
   std::ostringstream cx;
-  
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" - - "
-    <<" R"<<cellA<<" 1.0 ";
+  const int M=AMax-ZMax+5;
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<ZMax<<" "<<M<<
+    " R"<<cellA<<" 1.0 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
   return;
