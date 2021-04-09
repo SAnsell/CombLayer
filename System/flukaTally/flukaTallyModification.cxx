@@ -126,6 +126,7 @@ setBinaryOutput(SimFLUKA& Sim,const std::string& tName)
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
 
+  ELog::EM<<"TNAME == "<<tName<<ELog::endDiag;
   const std::set<flukaTally*> ATallySet=
     getActiveTally(Sim,tName);
   

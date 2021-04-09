@@ -98,6 +98,7 @@ resnucConstruct::createTally(SimFLUKA& System,
       if (Z>ZMax) ZMax=Z;
       if (Iso>AMax) AMax=Iso;
     }
+  
   UD.setZaid(ZMax,AMax);
   System.addTally(UD);
 	

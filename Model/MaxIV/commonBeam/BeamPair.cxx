@@ -115,6 +115,9 @@ BeamPair::populate(const FuncDataBase& Control)
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
 
+  waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+
   
   return;
 }
@@ -198,7 +201,6 @@ BeamPair::createSurfaces()
   // BLOCK B : [LOWER]
   // action in Y direction:
   const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*gapB);
-
   
   ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+12,bB+bY*(length/2.0),bY);
@@ -207,7 +209,22 @@ BeamPair::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,bB,Y);
   ModelSupport::buildPlane(SMap,buildIndex+16,bB+Y*(height),Y);
 
+  // water if present
+  ModelSupport::buildCylinder(SMap,buildIndex+107,bA,bZ,waterRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,bA-wAxis*(width/4.0),bZ,waterRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+127,bA+wAxis*(width/4.0),bZ,waterRadius);
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+207,bB,bZ,waterRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,bB-wAxis*(width/4.0),bZ,waterRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+227,bB+wAxis*(width/4.0),bZ,waterRadius);
+  
+  
   // Support tube
+  
   const Geometry::Vec3D cylA(bA+wAxis*(width/2.0-supportRadius));
   const Geometry::Vec3D cylB(bB-wAxis*(width/2.0-supportRadius));
   ModelSupport::buildCylinder(SMap,buildIndex+7,cylA,Y,supportRadius);
@@ -224,30 +241,51 @@ BeamPair::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamPair","createObjects");
 
-  const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
+  const HeadRule mountSurfHR(ExternalCut::getRule("mountSurf"));
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-  makeCell("BlockA",System,cellIndex++,blockMat,0.0,Out);
-  addOuterSurf("BlockA",Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 107 117 127" );
+  makeCell("BlockA",System,cellIndex++,blockMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 " );
-  makeCell("BlockB",System,cellIndex++,blockMat,0.0,Out);
-  addOuterSurf("BlockB",Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"11 -12 13 -14 15 -16 207 217 227" );
+  makeCell("BlockB",System,cellIndex++,blockMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  makeCell("SupportA",System,cellIndex++,supportMat,0.0,Out+mountSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -107" );
+  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -117" );
+  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -127" );
+  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -15 " );
-  makeCell("SupportB",System,cellIndex++,supportMat,0.0,Out+mountSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -207" );
+  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -217" );
+  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -227" );
+  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
+
+  // outer surfaces
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6" );
+  addOuterSurf("BlockA",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16" );
+  addOuterSurf("BlockB",HR);
+
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -5" );
+  makeCell("SupportA",System,cellIndex++,supportMat,0.0,HR*mountSurfHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -15 " );
+  makeCell("SupportB",System,cellIndex++,supportMat,0.0,HR*mountSurfHR);
    
   // final exclude:
-  //  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  addOuterSurf("SupportA",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -15" );
-  addOuterSurf("SupportB",Out);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 -5 " );
+  addOuterSurf("SupportA",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -15" );
+  addOuterSurf("SupportB",HR);
   
   return; 
 }

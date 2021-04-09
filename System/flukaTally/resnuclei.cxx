@@ -66,7 +66,7 @@ resnuclei::resnuclei(const std::string& KN,const int outID,
 {}
 
 resnuclei::resnuclei(const resnuclei& A) :
-  flukaTally(A),cellA(A.cellA)
+  flukaTally(A),AMax(A.AMax),ZMax(A.ZMax),cellA(A.cellA)
   /*!
     Copy constructor
     \param A :: resnuclei to copy
@@ -84,6 +84,8 @@ resnuclei::operator=(const resnuclei& A)
   if (this!=&A)
     {
       flukaTally::operator=(A);
+      AMax=A.AMax;
+      ZMax=A.ZMax;
       cellA=A.cellA;
     }
   return *this;
@@ -129,8 +131,9 @@ resnuclei::write(std::ostream& OX) const
 {
 
   std::ostringstream cx;
-  const int M=AMax-ZMax+5;
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<ZMax<<" "<<M<<
+  //  const int M=AMax-ZMax+5;
+  const int M=AMax+5;
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<ZMax+5<<" "<<M<<
     " R"<<cellA<<" 1.0 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
