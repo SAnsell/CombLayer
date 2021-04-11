@@ -315,6 +315,40 @@ objectGroups::inRange(const int Index) const
   return std::string("");
 }
 
+
+groupRange
+objectGroups::getZoneGroup(const std::string& gName)  const
+  /*!
+    Determine in the cells that match the initial
+    part of gName, e.g. gName=="fred" will match
+    "fredBig" and "fredSmall". It makes a combined
+    groupRange.
+
+    This can throw if no object matches
+
+    \param gName :: Group name [first letters]
+    \return groupRange 
+   */
+{
+  ELog::RegMethod RegA("objectGroups","getZoneGroup[const]");
+
+  groupRange OutGR;
+
+  const size_t gSize=gName.size();
+  for(const auto& [fullName,GR] : regionMap)
+    {
+      if (fullName.substr(0,gSize)==gName)
+	OutGR.combine(GR);
+    }
+  if (OutGR.empty())
+    throw ColErr::InContainerError<std::string>
+      (gName,"gName[front] not in groupRange");
+
+  return OutGR;
+}
+
+
+
 std::string
 objectGroups::addActiveCell(const int cellN)
   /*!
@@ -760,7 +794,12 @@ objectGroups::getObjectRange(const std::string& objName) const
   /*!
     Calculate the object cells range based on the name
     Processes down to cellMap items if objName is of the 
-    form objecName:cellMapName
+    form ::
+
+    - objecName:cellMapName  :: cells in cellmap object
+    - objectName             :: cells in FixedComp
+    - frontName:ZONE        :: Cells matching front part of the object name  
+
     \param objName :: Object name
     \return vector of items
   */
@@ -777,10 +816,16 @@ objectGroups::getObjectRange(const std::string& objName) const
     {
       const std::string& itemName=Units[0];
       const std::string& cellName=Units[1];
-
       
       const attachSystem::CellMap* CPtr=
 	getObject<attachSystem::CellMap>(itemName);
+
+      // SPECIAL:
+      if (cellName=="ZONE")
+	{
+	  const groupRange zoneGroup=getZoneGroup(itemName);
+	  return zoneGroup.getAllCells();
+	}
 
       if (CPtr)
 	{
@@ -799,10 +844,13 @@ objectGroups::getObjectRange(const std::string& objName) const
 	    return Out;
 	}
 
+      
+    ELog::EM<<"DDDDDD == "<<cellName<<ELog::endCrit;
+
+      
       // FIXED COMP [index :: cell index offset]
       if (Units.size()==2) 
 	{
-	  const std::string& itemName=Units[0];
 	  size_t index;
 	  if (StrFunc::convert(Units[1],index) &&
 	      hasObject(itemName))

@@ -82,8 +82,6 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-  resnuclei UD(ID,fortranTape);
-  UD.setCell(cellA);
 
   // get MaxZ/MaxA
   int ZMax(0),AMax(0);
@@ -98,9 +96,13 @@ resnucConstruct::createTally(SimFLUKA& System,
       if (Z>ZMax) ZMax=Z;
       if (Iso>AMax) AMax=Iso;
     }
-  
-  UD.setZaid(ZMax,AMax);
-  System.addTally(UD);
+  if (ZMax>0)
+    {
+      resnuclei UD(ID,fortranTape);
+      UD.setCell(cellA);
+      UD.setZaid(ZMax,AMax);
+      System.addTally(UD);
+    }
 	
   return;
 }
