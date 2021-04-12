@@ -209,28 +209,9 @@ namespace pikSystem
     ELog::RegMethod RegA("PIKPool","createSurfaces");
 
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
-    ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerShieldRadius+innerShieldWallThick);
-    ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,outerShieldRadius);
-
-    ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerShieldWidth/2.0),X);
-    ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerShieldWidth/2.0),X);
 
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
-
-    // iron-water protection tank
-    ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(tankDepth),Z);
-    ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(tankHeight),Z);
-
-    ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*(tankDepth+baseHeight),Z);
-
-    int SI(buildIndex+100);
-    for (size_t i=0; i<tankNLayers; ++i)
-      {
-	ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,tankRadius[i]);
-	ModelSupport::buildCylinder(SMap,SI+17,Origin,Z,tankRadius[i]+tankThick[i]);
-	SI += 20;
-      }
 
     return;
   }
@@ -246,54 +227,9 @@ namespace pikSystem
 
     std::string Out;
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -115 ");
-    makeCell("InnerShieldBottom",System,cellIndex++,innerShieldMat,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
+    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," 107 -7 115 -105 ");
-    makeCell("Base",System,cellIndex++,innerShieldMat,0.0,Out);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 106 -6 ");
-    makeCell("InnerShieldTop",System,cellIndex++,innerShieldMat,0.0,Out);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
-    makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -27 17 5 -6 3 -4 ");
-    makeCell("OuterShield",System,cellIndex++,outerShieldMat,0.0,Out);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 -3 ");
-    makeCell("OuterShieldVoidLeft",System,cellIndex++,0,0.0,Out);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 4 ");
-    makeCell("OuterShieldVoidRight",System,cellIndex++,0,0.0,Out);
-
-    // iron-water protection tank
-    // Out=ModelSupport::getComposite(SMap,buildIndex," -7 105 -106 ");
-    // makeCell("InnerShieldTank",System,cellIndex++,innerShieldMat,0.0,Out);
-    const std::string tb=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ");
-
-    int SI(buildIndex+100);
-    Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7M 115 -106 ");
-    makeCell("InnerShieldCentral",System,cellIndex++,innerShieldMat,0.0,Out);
-
-    for (size_t i=0; i<tankNLayers; ++i)
-      {
-    	Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
-    	makeCell("InnerShieldTank"+std::to_string(i),
-		 System,cellIndex++,tankMat,0.0,Out+tb);
-
-	if (i!=tankNLayers-1) {
-	  Out=ModelSupport::getComposite(SMap,SI," 17 -27 ");
-	  makeCell("InnerShield"+std::to_string(i),
-		   System,cellIndex++,innerShieldMat,0.0,Out+tb);
-	  SI += 20;
-	}
-      }
-
-    Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 17M ");
-    makeCell("InnerShieldOuter",System,cellIndex++,innerShieldMat,0.0,Out+tb);
-
-    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
     addOuterSurf(Out);
 
     return;
