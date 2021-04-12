@@ -209,6 +209,7 @@ namespace pikSystem
     ELog::RegMethod RegA("PIKPool","createSurfaces");
 
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerShieldRadius+innerShieldWallThick);
 
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
@@ -227,9 +228,13 @@ namespace pikSystem
 
     std::string Out;
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6");
     makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
 
+    Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
+    makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 ");
     addOuterSurf(Out);
 
     return;
