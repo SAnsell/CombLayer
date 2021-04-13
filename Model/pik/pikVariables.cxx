@@ -60,7 +60,7 @@ PIKVariables(FuncDataBase& Control)
   Control.addVariable("PoolInnerShieldWallThick",5.0);
   Control.addVariable("PoolOuterShieldRadius",320.0);
   Control.addVariable("PoolOuterShieldWidth",508.0);
-  Control.addVariable("PoolInnerShieldMat","H2O");
+  Control.addVariable("PoolInnerShieldMat","D2O");
   Control.addVariable("PoolInnerShieldWallMat","Stainless316L"); // guess
   Control.addVariable("PoolOuterShieldMat","Concrete");
 
