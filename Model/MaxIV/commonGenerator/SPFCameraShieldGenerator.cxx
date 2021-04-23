@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/LBeamStopGenerator.cxx
+ * File:   commonBeam/SPFCameraShieldGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,62 +44,54 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "LBeamStopGenerator.h"
+#include "SPFCameraShieldGenerator.h"
 
 namespace setVariable
 {
 
-LBeamStopGenerator::LBeamStopGenerator() :
-  length(50.0),innerVoidLen(15.0),
-  innerLength(5.0),innerRadius(4.0),
-  midVoidLen(7.5),midLength(22.5),
-  midRadius(7.0),outerRadius(20.0),
-  midNLayers(1),
-  outerNLayers(1),
-  voidMat("Void"),innerMat("Graphite"),
-  midMat("Poly"),outerMat("Stainless304L")
+SPFCameraShieldGenerator::SPFCameraShieldGenerator() :
+  length(40.0),width(20.0),height(25.0),
+  wallThick(5.0),
+  roofLength(10.0),
+  roofAngle(30.0),
+  roofXShift(7.0),
+  roofYShift(10.0),
+  mat("Lead")
   /*!
     Constructor and defaults
   */
 {}
 
-LBeamStopGenerator::~LBeamStopGenerator()
+SPFCameraShieldGenerator::~SPFCameraShieldGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-LBeamStopGenerator::generateBStop(FuncDataBase& Control,
-				  const std::string& keyName) const
+SPFCameraShieldGenerator::generate(FuncDataBase& Control,
+			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("LBeamStopGenerator","generate");
-
+  ELog::RegMethod RegA("SPFCameraShieldGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"InnerVoidLen",innerVoidLen);
-  Control.addVariable(keyName+"InnerLength",innerLength);
-  Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"MidVoidLen",midVoidLen);
-  Control.addVariable(keyName+"MidLength",midLength);
-  Control.addVariable(keyName+"MidRadius",midRadius);
-  Control.addVariable(keyName+"MidNLayers",midNLayers);
-  Control.addVariable(keyName+"OuterRadius",outerRadius);
-  Control.addVariable(keyName+"OuterNLayers",outerNLayers);
-
-  Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"InnerMat",innerMat);
-  Control.addVariable(keyName+"MidMat",midMat);
-  Control.addVariable(keyName+"OuterMat",outerMat);
-
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"RoofLength",roofLength);
+  Control.addVariable(keyName+"RoofAngle",roofAngle);
+  Control.addVariable(keyName+"RoofXShift",roofXShift);
+  Control.addVariable(keyName+"RoofYShift",roofYShift);
+  Control.addVariable(keyName+"Mat",mat);
 
   return;
 
 }
+
 
 }  // namespace setVariable

@@ -35,12 +35,13 @@ namespace xraySystem
 namespace tdcSystem
 {
   class LocalShielding;
-  class LocalShieldingCell;
+  class SPFCameraShield;
+
   /*!
     \class Segment47
-    \version 1.1
+    \version 1.2
     \author K. Batkov
-    \date Feb 2020
+    \date Feb 2021
     \brief SPF segment 47
   */
 
@@ -52,28 +53,21 @@ class Segment47 :
   std::unique_ptr<attachSystem::BlockZone> IZThin;       ///< Extra limited zone
   const InjectionHall* IHall;      ///< Storage for injection hall if used.
 
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA; // #1
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA; ///< #1
   std::shared_ptr<tdcSystem::PrismaChamber> prismaChamberA; ///< #2 and #3
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberA; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // #5
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; ///< #5
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberB; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC; // #5
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC; ///< #5
   std::shared_ptr<xraySystem::CrossWayTube> mirrorChamberC; ///< #4
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD; // #6
-  std::shared_ptr<xraySystem::CylGateValve> gateA;    // #7
-  std::shared_ptr<constructSystem::Bellows> bellowA;  // #8
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE; // #6
-  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to beam line
-  std::shared_ptr<attachSystem::WrapperCell> shieldCell;
-  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldC; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldD; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldE; // leg
-  
-  std::shared_ptr<tdcSystem::LocalShielding> shieldF1; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldF2; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldF3; // leg
-  std::shared_ptr<tdcSystem::LocalShielding> shieldF4; // leg
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD; ///< #6
+  std::shared_ptr<xraySystem::CylGateValve> gateA;    ///< #7
+  std::shared_ptr<constructSystem::Bellows> bellowA;  ///< #8
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE; ///< #6
+
+  /// local shielding perp to beam line
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; 
+  std::shared_ptr<tdcSystem::SPFCameraShield> shieldB; ///< Mirror camera shield
 
   int back45; ///< back surface of segment 45
   int roof46; ///< roof surface of segment 46

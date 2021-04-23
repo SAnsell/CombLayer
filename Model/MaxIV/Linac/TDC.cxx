@@ -606,7 +606,7 @@ TDC::createAll(Simulation& System,
 		}
 	    }
 
-	  segPtr->setInnerZone(buildZone.get());
+	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
 
 	  segPtr->createAll

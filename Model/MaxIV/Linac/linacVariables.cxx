@@ -87,6 +87,7 @@
 #include "GaugeGenerator.h"
 #include "LBeamStopGenerator.h"
 #include "LocalShieldingGenerator.h"
+#include "SPFCameraShieldGenerator.h"
 
 namespace setVariable
 {
@@ -3180,49 +3181,16 @@ Segment47(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAZStep",-10.0);
   Control.addVariable(lKey+"ShieldAYStep",1.1);
 
-  // Walls near pipeC
+  // Mirror camera shield
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5384.jpg/view
-  LSGen.setSize(45.0,5,20.0);
-  LSGen.generate(Control,lKey+"ShieldB");
-  Control.addVariable(lKey+"ShieldBXStep",-25.0);
-  Control.addVariable(lKey+"ShieldBYStep",-27.0);
-  Control.addVariable(lKey+"ShieldBZStep",5.0);
-  // floor
-  LSGen.setSize(5.0,20,40.0);
-  LSGen.generate(Control,lKey+"ShieldC");
-  Control.addVariable(lKey+"ShieldCZStep",-2.5);
-  Control.addVariable(lKey+"ShieldCXStep",-7.5);
-  Control.addVariable(lKey+"ShieldCYStep",2.5);
-  // vertical wall
-  LSGen.setSize(5.0,15,20.0);
-  LSGen.generate(Control,lKey+"ShieldD");
-  Control.addVariable(lKey+"ShieldDXStep",10.0);
-  Control.addVariable(lKey+"ShieldDYStep",-2.5);
-  // roof
-  LSGen.setSize(5.0,10,20);
-  LSGen.generate(Control,lKey+"ShieldE");
-  Control.addVariable(lKey+"ShieldEYStep",2.5); // Z
-  Control.addVariable(lKey+"ShieldEXStep",4); // X
-  Control.addVariable(lKey+"ShieldEZStep",-11); // Y
-  Control.addVariable(lKey+"ShieldEYAngle",-10);
-
-  // legs
-  LSGen.setSize(20.0,10,5);
-  LSGen.generate(Control,lKey+"ShieldF1");
-  Control.addVariable(lKey+"ShieldF1YStep",10);
-  Control.addVariable(lKey+"ShieldF1ZStep",-20);
-
-  LSGen.setSize(5,10,20);
-  LSGen.generate(Control,lKey+"ShieldF2");
-  Control.addVariable(lKey+"ShieldF2YStep",7.5);
-
-  LSGen.generate(Control,lKey+"ShieldF3");
-  Control.addVariable(lKey+"ShieldF3YStep",7.5);
-
-  LSGen.setSize(10,10,20);
-  LSGen.generate(Control,lKey+"ShieldF4");
-  Control.addVariable(lKey+"ShieldF4YStep",11.5);
+  setVariable::SPFCameraShieldGenerator CSGen;
+    //  CSGen.setSize(45.0,5,20.0);
+  CSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBZStep",30.0);
+  Control.addVariable(lKey+"ShieldBYAngle",90.0);
+  Control.addVariable(lKey+"ShieldBYStep",-7.0);
+  Control.addVariable(lKey+"ShieldBXStep",-7.5);
   return;
 }
 
@@ -3444,7 +3412,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
   /////////////////////////////////////////////// DUCTS ///////////////
-  const size_t nDucts = 19;
+  const size_t nDucts = 20;
   Control.addVariable(wallKey+"MidTNDucts",nDucts);
   // Duct D1 is the TDC modulator klystron duct
   // This is the leftmost duct in K_20-2_354 [email from AR 2021-01-15].
@@ -3483,11 +3451,14 @@ wallVariables(FuncDataBase& Control,
   // Ducts above the BTG blocks
   // Photo of these ducts from the SPF hall:
   // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view
+  // Video from the FKG:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/fkg/img_5353.mov/view
 
   // Lower tier - AR: 210119: I would
   // assume there is also a concrete plug in each duct, but for now
   // start with void.
-  const double BTGductY = 9839.035; // K_20-2_355
+  const double dx = 60; // artificial offset based on img_5374
+  const double BTGductY = 9839.035 - dx; // K_20-2_355
   for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
@@ -3495,10 +3466,10 @@ wallVariables(FuncDataBase& Control,
       Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
       Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
     }
-  // Upper tier
+  // Upper tier: G1-G5
   // Electric cables, but now we put void to be conservative
-  const double BTGductYup = BTGductY + 105.0; // K_20-2_355: 105 = 241.6-136.6
-  for (size_t i=0; i<=4; ++i)
+  const double BTGductYup = BTGductY + 105.0 - dx; // K_20-2_355: 105 = 241.6-136.6
+  for (size_t i=0; i<=5; ++i)
     {
       const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
       Control.addVariable(name+"Radius",5.0); // K_20-2_355
@@ -3532,6 +3503,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WallMat","Concrete");
   // WallIronMat is some unknown kind of steel with Co content <50 ppm [AR: 201120]
   Control.addVariable(wallKey+"WallIronMat","Stainless304L");
+  Control.addVariable(wallKey+"BDRoofIronMat","Stainless304L");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");

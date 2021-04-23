@@ -57,7 +57,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "surfDBase.h"
+#include "surfDivide.h"
+#include "mergeTemplate.h"
 #include "ExternalCut.h"
+#include "Exception.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "LBeamStop.h"
 
@@ -66,11 +73,11 @@ namespace tdcSystem
 
 LBeamStop::LBeamStop(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
-  
+
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -103,8 +110,10 @@ LBeamStop::populate(const FuncDataBase& Control)
   midVoidLen=Control.EvalVar<double>(keyName+"MidVoidLen");
   midLength=Control.EvalVar<double>(keyName+"MidLength");
   midRadius=Control.EvalVar<double>(keyName+"MidRadius");
+  midNLayers=Control.EvalVar<size_t>(keyName+"MidNLayers");
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  outerNLayers=Control.EvalVar<size_t>(keyName+"OuterNLayers");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
@@ -131,7 +140,7 @@ LBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*length,Y);
 
-  
+
   // mid
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*midVoidLen,Y);
   ModelSupport::buildPlane
@@ -141,7 +150,7 @@ LBeamStop::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*innerVoidLen,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+2,Origin+Y*(innerVoidLen+innerLength),Y);
-  
+
   return;
 }
 
@@ -166,18 +175,33 @@ LBeamStop::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -11 -17 7");
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 (7:2)");
-  makeCell("MidLayer",System,cellIndex++,midMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 7 -17 ");
+  makeCell("MidSide",System,cellIndex++,midMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 (17:12)");
-  makeCell("Outer",System,cellIndex++,outerMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 ");
+  makeCell("MidFront",System,cellIndex++,midMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -12 17 -27 ");
+  makeCell("OuterSide",System,cellIndex++,outerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -27 ");
+  makeCell("OuterFront",System,cellIndex++,outerMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 ");
   addOuterSurf(Out);
 
+  layerProcess(System,"MidFront",
+	       SMap.realSurf(buildIndex+2),
+	       -SMap.realSurf(buildIndex+12),
+	       midNLayers);
+
+  layerProcess(System,"OuterFront",
+	       SMap.realSurf(buildIndex+12),
+	       -SMap.realSurf(buildIndex+22),
+	       outerNLayers);
+
   return;
 }
-
 
 void
 LBeamStop::createLinks()
@@ -189,9 +213,94 @@ LBeamStop::createLinks()
 
   FixedComp::setConnect(0,Origin,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::nameSideIndex(0,"front");
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::nameSideIndex(1,"back");
+
+  // inner
+  FixedComp::setConnect(2,Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::nameSideIndex(2,"InnerSide");
+
+  FixedComp::setConnect(3,Origin+Y*(innerVoidLen+innerLength),Y);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::nameSideIndex(3,"InnerBack");
+
+  // mid
+  FixedComp::setConnect(4,Origin+Y*midRadius,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::nameSideIndex(4,"MidSide");
+
+  FixedComp::setConnect(5,Origin+Y*(midVoidLen+midLength),Y);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+12));
+  FixedComp::nameSideIndex(5,"MidBack");
+
+  // outer
+  FixedComp::setConnect(6,Origin+Y*outerRadius,Y);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
+  FixedComp::nameSideIndex(6,"OuterSide");
+
+  // OuterBack is the same as "back"
+
+  return;
+}
+
+void
+LBeamStop::layerProcess(Simulation& System,
+			const std::string& cellName,
+			const int primSurf,
+			const int sndSurf,
+			const size_t NLayers)
+/*!
+  Processes the splitting of the surfaces into a multilayer system
+  \param System :: Simulation to work on
+  \param cellName :: cell name
+  \param primSurf :: primary surface
+  \param sndSurf  :: secondary surface
+  \param NLayers :: number of layers to divide to
+*/
+{
+  ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+  if (NLayers<=1) return;
+
+  // cellmap -> material
+  const int wallCell=this->getCell(cellName);
+  const MonteCarlo::Object* wallObj=System.findObject(wallCell);
+  if (!wallObj)
+    throw ColErr::InContainerError<int>
+      (wallCell,"Cell '" + cellName + "' not found");
+
+  const int mat=wallObj->getMatID();
+  double baseFrac = 1.0/static_cast<double>(NLayers);
+  ModelSupport::surfDivide DA;
+  for(size_t i=1;i<NLayers;i++)
+    {
+      DA.addFrac(baseFrac);
+      DA.addMaterial(mat);
+      baseFrac += 1.0/static_cast<double>(NLayers);
+    }
+  DA.addMaterial(mat);
+
+  DA.setCellN(wallCell);
+  // CARE here :: buildIndex + X should be so that X+NLayer does not
+  // interfer.
+  DA.setOutNum(cellIndex, buildIndex+8000);
+
+  ModelSupport::mergeTemplate<Geometry::Plane,
+			      Geometry::Plane> surroundRule;
+
+  surroundRule.setSurfPair(primSurf,sndSurf);
+
+  surroundRule.setInnerRule(primSurf);
+  surroundRule.setOuterRule(sndSurf);
+
+  DA.addRule(&surroundRule);
+  DA.activeDivideTemplate(System,this);
+
+  cellIndex=DA.getCellNum();
 
   return;
 }

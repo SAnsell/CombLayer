@@ -68,6 +68,7 @@
 #include "PrismaChamber.h"
 #include "CrossWayTube.h"
 #include "LocalShielding.h"
+#include "SPFCameraShield.h"
 #include "FixedOffset.h"
 #include "InjectionHall.h"
 
@@ -107,15 +108,7 @@ Segment47::Segment47(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
-  shieldCell(new attachSystem::WrapperCell(keyName,"ShieldCell")),
-  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
-  shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
-  shieldD(new tdcSystem::LocalShielding(keyName+"ShieldD")),
-  shieldE(new tdcSystem::LocalShielding(keyName+"ShieldE")),
-  shieldF1(new tdcSystem::LocalShielding(keyName+"ShieldF1")),
-  shieldF2(new tdcSystem::LocalShielding(keyName+"ShieldF2")),
-  shieldF3(new tdcSystem::LocalShielding(keyName+"ShieldF3")),
-  shieldF4(new tdcSystem::LocalShielding(keyName+"ShieldF4"))
+  shieldB(new tdcSystem::SPFCameraShield(keyName+"ShieldB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -136,24 +129,7 @@ Segment47::Segment47(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeE);
   OR.addObject(shieldA);
-
-  OR.addObject(shieldCell);
   OR.addObject(shieldB);
-  OR.addObject(shieldC);
-  OR.addObject(shieldD);
-  OR.addObject(shieldE);
-  
-  OR.addObject(shieldF1);
-  OR.addObject(shieldF2);
-  OR.addObject(shieldF3);
-  OR.addObject(shieldF4);
-
-
-  // Create Shield
-  shieldCell->addUnit(shieldB);
-  shieldCell->addUnit(shieldC);
-  shieldCell->addUnit(shieldD);
-  shieldCell->addUnit(shieldE);
 	
   setFirstItems(pipeA);
 }
@@ -207,8 +183,7 @@ Segment47::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment47","buildObjects");
 
   HeadRule HR;
-  int outerCell,cellB,cellD;
-  MonteCarlo::Object *obj(nullptr), *objB(nullptr);
+  int outerCell;
   const int IHFloor(IHall->getSurf("Floor"));
 
   if (isActive("front"))
@@ -217,99 +192,121 @@ Segment47::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
-
-  obj = System.findObject(outerCell);
+  MonteCarlo::Object *obj = System.findObject(outerCell);
   obj->removeSurface(IHFloor);
   obj->removeSurface(back45);
 
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*prismaChamberA);
-
   obj = System.findObject(outerCell);
   obj->removeSurface(IHFloor);
   obj->removeSurface(back45);
 
   outerCell = constructSystem::constructUnit
     (System,*IZThin,*prismaChamberA,"back",*mirrorChamberA);
-
   obj = System.findObject(outerCell);
   obj->removeSurface(IHFloor);
   obj->removeSurface(back45);
 
-  cellB = constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberA,"back",*pipeB);
+  MonteCarlo::Object *objB = System.findObject(outerCell);
 
-  objB = System.findObject(cellB);
-  ELog::EM << objB->getHeadRule() << ELog::endDiag;
-  // obj->removeSurface(IHFloor);
-  // obj->removeSurface(back45);
-
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*pipeB,"back",*mirrorChamberB);
+  MonteCarlo::Object *objB1 = System.findObject(outerCell);
 
-  constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberB,"back",*pipeC);
+  MonteCarlo::Object *objC = System.findObject(outerCell);
+  objC->removeSurface(roof46);
+  objC->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*pipeC,"back",*mirrorChamberC);
+  MonteCarlo::Object *objC1 = System.findObject(outerCell);
+  objC1->removeSurface(roof46);
+  objC1->removeSurface(back45);
 
-  cellD = constructSystem::constructUnit
+  outerCell = constructSystem::constructUnit
     (System,*IZThin,*mirrorChamberC,"back",*pipeD);
-  outerCell = cellD;
+  MonteCarlo::Object *objD = System.findObject(outerCell);
+  objD->removeSurface(roof46);
+  objD->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*pipeD,"back",*gateA);
+  MonteCarlo::Object *objD1 = System.findObject(outerCell);
+  objD1->removeSurface(roof46);
+  objD1->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*gateA,"back",*bellowA);
+  obj = System.findObject(outerCell);
+  obj->removeSurface(roof46);
+  obj->removeSurface(back45);
 
-  constructSystem::constructUnit
+  outerCell=constructSystem::constructUnit
     (System,*IZThin,*bellowA,"back",*pipeE);
+  obj = System.findObject(outerCell);
+  obj->removeSurface(roof46);
+  obj->removeSurface(back45);
 
  
   // GIVE UNITS better names:
   shieldA->createAll(System,*pipeD, 2);
+  HR.reset();
+  HR.addIntersection(shieldA->getLinkSurf("#front"));
+  HR.addIntersection(shieldA->getLinkSurf("#left"));
+  HR.addIntersection(shieldA->getLinkSurf("#right"));
+  HR.addIntersection(shieldA->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldA->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objD->addIntersection(HR);
 
-  shieldA->insertInCell(System,IZThin->getCell("Unit",8));
-  shieldA->insertInCell(System,IZThin->getCell("Unit",9));
+  HR.reset();
+  HR.addIntersection(shieldA->getLinkSurf("#back"));
+  HR.addIntersection(shieldA->getLinkSurf("#left"));
+  HR.addIntersection(shieldA->getLinkSurf("#right"));
+  HR.addIntersection(shieldA->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldA->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objD1->addIntersection(HR);
 
+  shieldB->createAll(System,*pipeC, 0);
 
-  shieldCell->setSurfaces({
-    	    {"front",{"ShieldE","#back"}},      // -1050002
-	    {"back",{"ShieldB","#back"}},       // -1020002
-	    {"left",{"ShieldC","left"}},        // 1030003
-	    {"right",{"ShieldB","#right"}},     // -102004
-	    {"base",{"ShieldE","base"}},        // 1050005 
-	    {"top",{"ShieldB","#top"}}          // -1020006 
-    });
+  HR.reset();
+  HR.addIntersection(shieldB->getLinkSurf("#left"));
+  HR.addIntersection(shieldB->getLinkSurf("#right"));
+  HR.addIntersection(shieldB->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldB->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objC->addIntersection(HR);
+  objB1->addIntersection(HR);
 
-  shieldCell->setConnections
-    ({
-      {keyName+"ShieldB",{"THIS",""}},
-      {keyName+"ShieldC",{keyName+"ShieldB","bottom"}},
-      {keyName+"ShieldD",{keyName+"ShieldB","front"}},
-      {keyName+"ShieldE",{keyName+"ShieldB","front"}}
-    });
+  HR.reset();
+  HR.addIntersection(shieldB->getLinkSurf("#front"));
+  HR.addIntersection(shieldB->getLinkSurf("#left"));
+  HR.addIntersection(shieldB->getLinkSurf("#right"));
+  HR.addIntersection(shieldB->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldB->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objB->addIntersection(HR);
 
+  HR.reset();
+  HR.addIntersection(shieldB->getLinkSurf("#back"));
+  HR.addIntersection(shieldB->getLinkSurf("#left"));
+  HR.addIntersection(shieldB->getLinkSurf("#right"));
+  HR.addIntersection(shieldB->getLinkSurf("#bottom"));
+  HR.addIntersection(shieldB->getLinkSurf("#top"));
+  HR.makeComplement();
+  HR.populateSurf();
+  objC1->addIntersection(HR);
 
-  shieldCell->createAll(System,*pipeD,2);
-  for(size_t i=3;i<9;i++)
-    shieldCell->insertInCell(System,IZThin->getCell("Unit",i));
-
-
-  /*
-  shieldF1->createAll(System,*shieldC, "back");
-  shieldF1->insertInCell(System,outerCell-4);
-
-  shieldF2->createAll(System,*shieldF1, "top");
-  shieldF2->insertInCell(System,outerCell-3);
-
-  shieldF3->createAll(System,*shieldF2, "back");
-  shieldF3->insertInCell(System,outerCell-2);
-
-  shieldF4->createAll(System,*shieldF3, "back");
-  shieldF4->insertInCell(System,outerCell-1);
-  */  
   return;
 }
 

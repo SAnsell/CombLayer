@@ -445,6 +445,12 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 70;
   #break
+  #case(strcmp(ITEM,"SPF31Quad"))
+    #declare cameraLocation = <-600, 5514, 12>;
+    #declare cameraLookAt   = <-570, 5495, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
   #case(strcmp(ITEM,"SPF32DipoleA"))
     #declare cameraLocation = <-690, 5920, 20>;
     #declare cameraLookAt   = <-655, 5883, 0>;
@@ -505,6 +511,24 @@ global_settings {
     #declare projection = 0;
     #declare cameraAngle = 40;
   #break
+    #case(strcmp(ITEM,"L2SPF2YagScreenInBeam"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagScreen"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagUnit"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
     #case(strcmp(ITEM,"L2SPF2ShieldA"))
     #declare cameraLocation = <140, 1270, 20>;
     #declare cameraLookAt   = <240, 1350, 0>;
@@ -541,6 +565,29 @@ global_settings {
     #declare cameraLookAt   = <-55, 3185, 0>;
     #declare projection = 0;
     #declare cameraAngle = 20;
+  #break
+    #case(strcmp(ITEM,"TDC1")) // TDC beamline view backwards from the BSP01 storage area
+    #declare cameraLocation = <200, 25000, 300>;
+    #declare cameraLookAt   = <-170, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"TDC2")) // TDC beamline view forward from the klystron gallery in BC2
+    #declare cameraLocation = <0, -12000, 500>;
+    #declare cameraLookAt   = <10, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"SpectrometerDipole"))
+    #declare cameraLocation = <200, 7100, 100>;
+    #declare cameraLookAt   = <-300, 8150, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"L2SPF"))
+    #declare cameraLocation = <500, 1700, 100>;
+    #declare cameraLookAt   = <300, 1700, 0>;
+    #declare projection = 1;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

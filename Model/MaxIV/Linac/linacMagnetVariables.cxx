@@ -311,17 +311,18 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateCorMag(Control,23,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,23,"CMagVA",0.0);
 
-
       // SEGMENT 24
       MUdipole.generateCorMag(Control,24,"CMagHA",0.0);
       MUdipole.generateCorMag(Control,24,"CMagVA",0.0);
       MUdipole.generateQuad(Control,24,"Quad",0.0,0.0);
 
-
       // SEGMENT 25
-      if (magField=="TDCline" || magField=="TDClineB")
+      // The beam normally is not deflected by this magnet [email from EM]
+      if (magField=="TDCline" || magField=="TDClineA")
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.0);
+      else if (magField=="TDClineB")
 	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.81);
-      if (magField=="TDClineC")
+      else if (magField=="TDClineC")
 	MUdipole.generateDipole(Control,25,"DipoleA",90.0,1.59);
 
       // SEGMENT 26
@@ -385,9 +386,9 @@ LINACmagnetVariables(FuncDataBase& Control,
       // We shift and rotate it so that the magnetic field
       // is present in the curved pipe of SPF44TriBend only
       MUdipole.setOffset(0.0,147.0,-41.0);
-      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.65);
+      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.635);
       Control.addVariable("MagUnitSeg44CMagLength",100.0);
-      Control.addVariable("MagUnitSeg44CMagHeight",25.0);
+      Control.addVariable("MagUnitSeg44CMagHeight",24.9);
       Control.addVariable("MagUnitSeg44CMagXAngle",-16.5);
 
 

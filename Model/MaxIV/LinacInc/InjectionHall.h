@@ -51,6 +51,7 @@ class InjectionHall :
   double spfMidLength;           ///< Length to  mid of angle [calculted]
   double spfLongLength;          ///< Extra length in spf (for InnerZone)
   double spfAngle;               ///< SPF hall diagonal wall
+  double spfAngleStep;           ///< x-offset of the wall after spfAngle
 
   double spfMazeWidthTDC;       ///< SPF access maze width from the TDC side
   double spfMazeWidthSide;      ///< SPF access maze side width
@@ -182,6 +183,7 @@ class InjectionHall :
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
   int wallIronMat;              ///< Material of the iron layer before the back wall
+  int bdRoofIronMat;            ///< Material of iron in the beam dump roof
   int roofMat;                  ///< Roof material
   int floorMat;                 ///< Floor material
   int soilMat;                  ///< Earth material
