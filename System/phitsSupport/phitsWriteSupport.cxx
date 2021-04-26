@@ -164,9 +164,8 @@ writePHITSCellSet(std::ostream& OX,
   int BI(mc->first);
   double AVal(mc->second);
 
-
   std::ostringstream cx;
-  for( ;mc!=cellValues.end();mc++)
+  for(mc++ ;mc!=cellValues.end();mc++)
     {
       const int& iVal=mc->first;
       const double& cVal=mc->second;
@@ -176,12 +175,14 @@ writePHITSCellSet(std::ostream& OX,
 	{
 
 	  if (BI == AI )  // single point
-	      StrFunc::writePHITSItems(OX,depth,AI,AVal);
+	    {
+	      StrFunc::writePHITSTable(OX,depth,AI,AVal);
+	    }
 	  else
 	    {
 	      cx.str("");
-	      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
-	      StrFunc::writePHITSOpen(OX,depth,cx.str());
+	      cx<<"( "<<AI<<" - "<<BI<<" )";
+	      StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
 	    }
 	  AI=iVal;
 	  BI=iVal;
@@ -199,8 +200,8 @@ writePHITSCellSet(std::ostream& OX,
   else 
     {
       cx.str("");
-      cx<<"( "<<AI<<" - "<<BI<<" )"<<AVal;
-      StrFunc::writePHITSOpen(OX,depth,cx.str());
+      cx<<"( "<<AI<<" - "<<BI<<" )";
+      StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
     }
   return;
 }
@@ -213,9 +214,9 @@ writePHITSOpen(std::ostream& OX,
 	       const std::string& unit)
  /*!
    Write out an open line as <spces>unit = 
-  \param OX :: ostream to write to
-  \param depth :: step depth
-  \param unit :: unit name
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param unit :: unit name
 */
 {
   constexpr size_t equalPt(20);     // distance to name
@@ -247,9 +248,8 @@ writePHITSTableHead(std::ostream& OX,
   OX<<spc;
   
   for(const std::string& item : units)
-    {
-      OX<<std::left<<std::setw(equalPt)<<item;
-    }
+    OX<<std::left<<std::setw(equalPt)<<item;
+
   OX<<std::endl;
   return;
 }

@@ -611,6 +611,7 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
+	  ELog::EM<<"Seg == "<<segPtr->getCentre()<<ELog::endDiag;
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
 	  segPtr->createBeamLink(System.getDataBase());

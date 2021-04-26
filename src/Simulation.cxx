@@ -1480,7 +1480,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   const std::map<int,int> RMap=
     calcCellRenumber(cOffset,cRange);
-
   
   OTYPE newMap;           // New map with correct numbering
   for(const std::map<int,int>::value_type& RMItem : RMap)
@@ -1498,8 +1497,16 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
 		  <<" Object:"<<oPtr->getFCUnit()<<ELog::endBasic;
 	}
-
-    }    
+    }
+  // cellOrder:
+  for(int& CN : cellOutOrder)
+    {
+      std::map<int,int>::const_iterator mc=
+	RMap.find(CN);
+      if (mc!=RMap.end())
+	CN=mc->second;
+    }
+  
   OList=newMap;
   return RMap;
 }

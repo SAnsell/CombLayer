@@ -299,9 +299,11 @@ Segment29Magnet(FuncDataBase& Control,
   const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
   const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 

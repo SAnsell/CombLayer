@@ -1974,10 +1974,12 @@ Segment26(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
   const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
 
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -2072,10 +2074,12 @@ Segment27(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8458.379,-52.649);
   const Geometry::Vec3D endPtC(-637.608,8442.393,-101.956);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
 
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -2161,13 +2165,14 @@ Segment28(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
   const Geometry::Vec3D startPtB(-637.608,8458.379,-52.649);
 
-
   const Geometry::Vec3D endPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D endPtB(-637.608,9073.535,-84.888);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
+  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 

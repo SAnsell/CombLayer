@@ -1469,7 +1469,7 @@ Object::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
 
   cx.precision(10);
-  if (ObjName==1 && !imp.isZero())
+  if (ObjName==1 && imp.isZero())
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);
