@@ -210,6 +210,10 @@ namespace pikSystem
 
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerShieldRadius);
     ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerShieldRadius+innerShieldWallThick);
+    ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,outerShieldRadius);
+
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerShieldWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerShieldWidth/2.0),X);
 
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
@@ -234,7 +238,16 @@ namespace pikSystem
     Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
     makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 17 5 -6 3 -4 ");
+    makeCell("OuterShield",System,cellIndex++,outerShieldMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 -3 ");
+    makeCell("OuterShieldVoidLeft",System,cellIndex++,0,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 4 ");
+    makeCell("OuterShieldVoidRight",System,cellIndex++,0,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
     addOuterSurf(Out);
 
     return;
