@@ -218,6 +218,18 @@ namespace pikSystem
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
+    // iron-water shielding tank
+    ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(tankDepth),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(tankHeight),Z);
+
+    int SI(buildIndex+100);
+    for (size_t i=0; i<tankNLayers; ++i)
+      {
+	ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,tankRadius[i]);
+	ModelSupport::buildCylinder(SMap,SI+17,Origin,Z,tankRadius[i]+tankThick[i]);
+	SI += 20;
+      }
+
     return;
   }
 
@@ -232,8 +244,14 @@ namespace pikSystem
 
     std::string Out;
 
-    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6");
-    makeCell("InnerShield",System,cellIndex++,innerShieldMat,0.0,Out);
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105");
+    makeCell("InnerShieldBottom",System,cellIndex++,innerShieldMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -107 105 -106 ");
+    makeCell("InnerShieldBase",System,cellIndex++,innerShieldMat,0.0,Out);
+
+    Out=ModelSupport::getComposite(SMap,buildIndex," -7 106 -6 ");
+    makeCell("InnerShieldTop",System,cellIndex++,innerShieldMat,0.0,Out);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 5 -6 ");
     makeCell("InnerShieldWall",System,cellIndex++,innerShieldWallMat,0.0,Out);
@@ -246,6 +264,24 @@ namespace pikSystem
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 4 ");
     makeCell("OuterShieldVoidRight",System,cellIndex++,0,0.0,Out);
+
+    // iron-water shielding tank
+    const std::string tb=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ");
+    int SI(buildIndex+100);
+    for (size_t i=0; i<tankNLayers; ++i)
+      {
+	Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
+	makeCell("InnerShieldTank",System,cellIndex++,innerShieldMat,0.0,Out+tb);
+
+	if (i!=tankNLayers-1)
+	  {
+	    Out=ModelSupport::getComposite(SMap,SI," 17 -27 ");
+	    makeCell("InnerShield",System,cellIndex++,tankMat,0.0,Out+tb);
+	    SI += 20;
+	  }
+      }
+    Out=ModelSupport::getComposite(SMap,buildIndex,SI," -7 17M ");
+    makeCell("InnerShieldOuter",System,cellIndex++,innerShieldMat,0.0,Out+tb);
 
     Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 ");
     addOuterSurf(Out);
