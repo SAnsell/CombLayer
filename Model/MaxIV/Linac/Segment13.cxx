@@ -176,7 +176,7 @@ Segment13::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeC);
 
-  CellMap::addCells("Uxnit",buildZone->getCells("Unit"));
+  CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
 

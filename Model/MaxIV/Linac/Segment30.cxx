@@ -3,7 +3,7 @@
 
  * File: Linac/Segment30.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ Segment30::createSplitInnerZone(Simulation& System)
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
-
+      
       const Geometry::Vec3D sideOrg(sideSegment->getCentre());
       const Geometry::Vec3D sideY((sideSegment->getY()+Y*axisFrac).unit());
 
@@ -148,6 +148,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 	  int SNremoved(0);
 	  for(const TDCsegment* sidePtr : sideVec)
 	    {
+	      ELog::EM<<"SidePtr = "<<sidePtr->getKeyName()<<ELog::endDiag;
 	      if (sidePtr->getKeyName()!="TDC15")
 		{
 		  for(const int CN : sidePtr->getCells("Unit"))
