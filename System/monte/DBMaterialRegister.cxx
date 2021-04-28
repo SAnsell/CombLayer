@@ -1028,7 +1028,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-1.06);
   setMaterial(MObj);
 
-  // Material #127 Invar [from K.B]
+  // Material #127 Invar at room temperature [from K.B]
   MObj.setMaterial(127, "Invar36",
 		   " 6000.70c  0.001000000 "
 		   " 14028.70c 0.003227805 "
@@ -1054,7 +1054,8 @@ DBMaterial::initMaterial()
 		   " 26054.70c 0.035654500 "
 		   " 26056.70c 0.559699400 "
 		   " 26057.70c 0.012925900 "
-		   " 26058.70c  0.001720200 ", "", MLib);
+		   " 26058.70c  0.001720200 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-8.11);
   setMaterial(MObj);
 
