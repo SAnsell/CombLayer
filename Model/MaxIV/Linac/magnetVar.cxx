@@ -299,11 +299,11 @@ Segment29Magnet(FuncDataBase& Control,
   const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
   const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
 
+  // to allow main object to have an offset
   Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 
@@ -321,8 +321,7 @@ Segment29Magnet(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);

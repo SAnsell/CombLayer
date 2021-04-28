@@ -51,6 +51,7 @@ namespace phitsSystem
 phitsPhysics::phitsPhysics() :
   particleECut
   ({
+    {"proton",1.0},  // nod default
     {"neutron",1e-11},
     {"electron",1.0},
     {"positron",1.0},
@@ -75,7 +76,8 @@ phitsPhysics::phitsPhysics() :
     { "ipnint",  {1,  "Photo-nuclear reaction [D=0]"}},
     { "iprofr",  {1,  "Droppler broadening for comptorn[D=1]"}},
     { "incohr",  {1,  "Incoherrent data [D=1 ?]"}}
-  })
+  }),
+  eRange(-1,-1),eTrack(-1,-1)
   /*!
     Constructor
   */
@@ -114,7 +116,8 @@ void
 phitsPhysics::setECut(const std::string& particle,const double V)
   /*!
     Set the energy cut of a particle
-    \param V :: Value
+    \param particle :: standard MCPL name for particle
+    \param V :: Value    
    */
 {
   ELog::RegMethod RegA("phitsPhysics","setECut");
@@ -126,6 +129,38 @@ phitsPhysics::setECut(const std::string& particle,const double V)
 	throw ColErr::InContainerError<std::string>(particle,"particleECut");
       mc->second=V;
     }
+  return;
+}
+
+void
+phitsPhysics::setERange(const double Vlow,const double Vhigh)
+  /*!
+    Set the energy range limits
+    \param particle :: standard MCPL name for particle
+    \param Vlow :: low values
+    \param Vhigh :: high value
+   */
+{
+  ELog::RegMethod RegA("phitsPhysics","setERange");
+
+  eRange.first=Vlow;
+  eRange.second=Vhigh;
+  return;
+}
+
+void
+phitsPhysics::setETrack(const double Vlow,const double Vhigh)
+  /*!
+    Set the energy track limits
+    \param particle :: standard MCPL name for particle
+    \param Vlow :: low values
+    \param Vhigh :: high value
+   */
+{
+  ELog::RegMethod RegA("phitsPhysics","setETrack");
+
+  eTrack.first=Vlow;
+  eTrack.second=Vhigh;
   return;
 }
   
@@ -144,6 +179,8 @@ phitsPhysics::writePHITS(std::ostream& OX) const
     {
       const int n=PC.phitsITYP(particle);
       StrFunc::writePHITSIndex(OX,1,"emin",n,value,particle);
+      ELog::EM<<"Particle == "<<particle<<" "<<n<<"=="<<value<<ELog::endDiag;
+	    
     }
 
   for(const auto& [ flag , IVal ] :   flags)
@@ -155,6 +192,14 @@ phitsPhysics::writePHITS(std::ostream& OX) const
       StrFunc::writePHITSIndex(OX,1,"dmax",n,value,particle);
     }
 
+  if (eRange.first>1e-12)
+    StrFunc::writePHITS(OX,1,"esmin",eRange.first);
+  if (eRange.first>1e-12)
+    StrFunc::writePHITS(OX,1,"esmax",eRange.second);
+  if (eTrack.first>1e-12)
+    StrFunc::writePHITS(OX,1,"etsmin",eTrack.first);
+  if (eTrack.first>1e-12)
+    StrFunc::writePHITS(OX,1,"etsmax",eTrack.second);
       
       
   return;

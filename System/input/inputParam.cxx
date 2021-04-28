@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,7 +311,7 @@ inputParam::flag(const std::string& K) const
   /*!
     Get Flag state
     \param K :: Key to seach
-    \return Value
+    \return true if flag / item set
    */
 {
   ELog::RegMethod RegA("inputParam","flag");

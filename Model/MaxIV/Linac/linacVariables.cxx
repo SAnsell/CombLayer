@@ -1979,7 +1979,6 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -2000,9 +1999,8 @@ Segment26(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeBA",322.098);
   PGen.generatePipe(Control,lKey+"PipeCA",326.897);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"PipeCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2079,7 +2077,6 @@ Segment27(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetC",endPtC+linacVar::zeroOffset);
@@ -2101,9 +2098,9 @@ Segment27(FuncDataBase& Control,
   setBellow37(Control,lKey+"BellowBA",16.0);
   setBellow37(Control,lKey+"BellowCA",16.0);
 
-  Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"BellowAAOffset");
+  Control.addVariable(lKey+"BellowBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"BellowCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"BellowAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2172,7 +2169,6 @@ Segment28(FuncDataBase& Control,
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
-  Control.addVariable(lKey+"EndOffset",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetA",endPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"EndOffsetB",endPtB+linacVar::zeroOffset);
 
@@ -2190,8 +2186,7 @@ Segment28(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);

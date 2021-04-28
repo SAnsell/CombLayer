@@ -378,6 +378,7 @@ TDC::reconstructInjectionHall(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TDC","reconstructInjectionHall");
+      
   // Make list of unique insert cells:
   std::set<int> CInsert;
   for(const auto& [name,bzPtr] : bZone)
@@ -409,6 +410,7 @@ TDC::reconstructInjectionHall(Simulation& System)
 		}
 	    }
 	}
+
       std::map<int,HeadRule>::iterator mc=
 	originalSpaces.find(CN);
 
@@ -422,9 +424,6 @@ TDC::reconstructInjectionHall(Simulation& System)
       MonteCarlo::Object* OPtr=System.findObject(CN);
       OPtr->procHeadRule(HROut);
     }
-
-
-
   return;
 }
 
@@ -611,7 +610,6 @@ TDC::createAll(Simulation& System,
 
 	  segPtr->createAll
 	    (System,*injectionHall,injectionHall->getSideIndex("Origin"));
-	  ELog::EM<<"Seg == "<<segPtr->getCentre()<<ELog::endDiag;
 	  segPtr->insertPrevSegment(System,prevSegPtr);
 
 	  segPtr->createBeamLink(System.getDataBase());
@@ -641,6 +639,7 @@ TDC::createAll(Simulation& System,
 	    }
 	}
     }
+
   reconstructInjectionHall(System);
 
 

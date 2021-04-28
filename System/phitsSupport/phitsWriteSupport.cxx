@@ -148,10 +148,17 @@ writePHITSCellSet(std::ostream& OX,
 		    const size_t depth,
 		    const std::map<int,double>& cellValues)
 /*!
+  Write out a group of cells (with value) using 
+  the PHITS system of grouping. This means
+  that cells with identical value are grouped as
+  - ( [x-y] ) value 
+  were x-y are inclusive cell numbers and value
+  is the value to assign.
+
   \param OX :: ostream to write to
   \param depth :: step depth
   \param unit :: unit name
-  \param cellValues :: 
+  \param cellValues :: ordered map of cell/indexes and values
  */
 {
   // ugly double loop
@@ -181,7 +188,7 @@ writePHITSCellSet(std::ostream& OX,
 	  else
 	    {
 	      cx.str("");
-	      cx<<"( "<<AI<<" - "<<BI<<" )";
+	      cx<<"( {"<<AI<<" - "<<BI<<"} )";
 	      StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
 	    }
 	  AI=iVal;
@@ -200,7 +207,7 @@ writePHITSCellSet(std::ostream& OX,
   else 
     {
       cx.str("");
-      cx<<"( "<<AI<<" - "<<BI<<" )";
+      cx<<"( {"<<AI<<" - "<<BI<<"} )";
       StrFunc::writePHITSTable(OX,depth,cx.str(),AVal);
     }
   return;

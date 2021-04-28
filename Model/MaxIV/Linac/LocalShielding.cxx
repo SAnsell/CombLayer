@@ -183,7 +183,7 @@ LocalShielding::createSurfaces()
 
   makePlane("base",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-  ELog::EM<<"Top["<<keyName<<"] == "<<getSurfRule("top")<<ELog::endDiag;
+
   // penetration for the beam pipe
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(midHoleWidth/2.0+xStep),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(midHoleWidth/2.0-xStep),X);
@@ -360,8 +360,6 @@ LocalShielding::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-
-  ELog::EM<<"["<<keyName<<"] == Centre = "<<Origin<<"::"<<Y<<ELog::endDiag;
   
   return;
 }

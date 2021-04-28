@@ -224,7 +224,14 @@ createInputs(inputParam& IParam)
   IParam.regMulti("energyCut","energyCut",1000);
   IParam.setDesc("energyCut","PHITS: { particle minEnergy }");
 
-  
+  IParam.regItem("eRange","eRange",1,2);
+  IParam.setDesc("eRange",
+		 "PHITS: { charged particle track energy limits [low:high] }");
+
+  IParam.regItem("eTrack","eTrack",1,2);
+  IParam.setDesc("eTrack",
+		 "PHITS: { electron track energy limits [low:high] }");
+    
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("basicGeom","Use basic fluka geometry system");
