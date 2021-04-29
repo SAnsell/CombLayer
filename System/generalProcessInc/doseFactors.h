@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/tmeshConstruct.h
+ * File:   generalProcessInc/doseFactors.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tmeshConstruct_h
-#define tallySystem_tmeshConstruct_h
+#ifndef tallySystem_doseFactors_h
+#define tallySystem_doseFactors_h
 
 namespace attachSystem
 {
@@ -32,41 +32,25 @@ namespace mainSystem
   class inputParam;
 }
 
+class objectGroups;
 class Simulation;
-class SimMCNP;
 
-namespace tallySystem
+namespace mainSystem
 {
 
 /*!
-  \class tmeshConstruct
+  \namespace doseFactors
   \version 1.0
   \author S. Ansell
   \date July 2012
-  \brief Constructs a tmesh tally from inputParam
+  \brief Constructs a mesh from inputParam
 */
 
-class tmeshConstruct 
+namespace doseFactors 
 {
- private:
 
-  /// private constructor
-  tmeshConstruct() {}
-	         
- public:
-
-  static void processMesh(SimMCNP&,
-			  const mainSystem::inputParam&,
-			  const size_t);  
-  
-  
-  static void rectangleMesh(SimMCNP&,const int,
-			     const std::string&,
-			     const Geometry::Vec3D&,
-			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&);
-
-  static void writeHelp(std::ostream&);
+   const std::string& getDoseConversion();
+   const std::string& getPhotonDoseConversion();
 };
 
 }

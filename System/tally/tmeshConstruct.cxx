@@ -56,6 +56,8 @@
 #include "Tally.h"
 #include "tmeshTally.h"
 
+
+#include "doseFactors.h"
 #include "meshConstruct.h"
 #include "tmeshConstruct.h" 
 
@@ -63,6 +65,9 @@
 
 namespace tallySystem
 {
+
+namespace meshC = mainSystem::meshConstruct;
+namespace doseF = mainSystem::doseFactors;
 
 
 void 
@@ -105,12 +110,12 @@ tmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
     }
   else if (KeyWords=="DOSE")
     {
-      MT.setResponse(getDoseConversion());
+      MT.setResponse(doseF::getDoseConversion());
     }
   else if (KeyWords=="DOSEPHOTON")
     {
       MT.setParticles("p");
-      MT.setResponse(getPhotonDoseConversion());
+      MT.setResponse(doseF::getPhotonDoseConversion());
     }
   else if (KeyWords=="InternalDOSE")
     {
@@ -170,9 +175,9 @@ tmeshConstruct::processMesh(SimMCNP& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object" || PType=="heatObject")
-    getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free" || PType=="heat")
-    getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   if (PType=="heatObject" || PType=="heat")
     rectangleMesh(System,3,"void",APt,BPt,Nxyz);

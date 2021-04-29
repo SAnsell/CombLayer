@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/meshConstruct.cxx
+ * File:   generalProcess/meshConstruct.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -54,11 +54,13 @@
 
 
 
-namespace tallySystem
+namespace mainSystem
 {
 
+namespace meshConstruct
+{
 void
-meshConstruct::calcXYZ(const objectGroups& OGrp,
+calcXYZ(const objectGroups& OGrp,
 		       const std::string& object,const std::string& linkPos,
 		       Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
   /*!
@@ -67,8 +69,8 @@ meshConstruct::calcXYZ(const objectGroups& OGrp,
     \param OGrp :: Object group
     \param object :: object name
     \param linkPos :: link position
-    \param APos :: Lower corner
-    \param BPos :: Upper corner
+    \param APos :: Lower corner [output]
+    \param BPos :: Upper corner [output]
    */
 {
   ELog::RegMethod RegA("meshConstruct","calcXYZ");
@@ -123,7 +125,7 @@ meshConstruct::calcXYZ(const objectGroups& OGrp,
 
 
 void
-meshConstruct::getObjectMesh(const objectGroups& OGrp,
+getObjectMesh(const objectGroups& OGrp,
 			     const mainSystem::inputParam& IParam,
 			     const std::string& itemName,
 			     const size_t Index,
@@ -164,7 +166,7 @@ meshConstruct::getObjectMesh(const objectGroups& OGrp,
 }
 
 void
-meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
+getFreeMesh(const mainSystem::inputParam& IParam,
 			   const std::string& itemName,
 			   const size_t Index,
 			   const size_t Offset,
@@ -208,7 +210,7 @@ meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
 }
   
 const std::string& 
-meshConstruct::getDoseConversion()
+getDoseConversion()
   /*!
     Return the dose string  for a mshtr
     Uses the FTD files values [Flux to Dose conversion].
@@ -239,7 +241,7 @@ meshConstruct::getDoseConversion()
 }
 
 const std::string& 
-meshConstruct::getPhotonDoseConversion()
+getPhotonDoseConversion()
   /*!
     Return the dose string  for a mshtr
     Uses the FtD files values. This is the H*(10) values which are higher
@@ -267,13 +269,9 @@ meshConstruct::getPhotonDoseConversion()
 
   return fcdString;
 }
-
-
-
-
   
 void
-meshConstruct::writeHelp(std::ostream& OX) 
+writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream
@@ -288,4 +286,6 @@ meshConstruct::writeHelp(std::ostream& OX)
   return;
 }
 
-}  // NAMESPACE tallySystem
+} // NAMESPACE meshConstruct
+
+}  // NAMESPACE mainSystem

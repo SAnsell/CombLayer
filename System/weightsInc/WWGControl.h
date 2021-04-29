@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWGControl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class WWGControl : public WeightControl
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
   void wwgSetParticles(const std::set<std::string>&);
-  void wwgMesh(const mainSystem::inputParam&);
+  void wwgMesh(const Simulation&,const mainSystem::inputParam&);
   void wwgVTK(const mainSystem::inputParam&);
   void wwgInitWeight();
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);

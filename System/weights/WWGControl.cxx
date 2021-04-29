@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "SimMCNP.h"
 #include "inputParam.h"
 #include "ImportControl.h"
+#include "meshConstruct.h"
 
 #include "Mesh3D.h"
 #include "WWGWeight.h"
@@ -134,10 +135,12 @@ WWGControl::wwgSetParticles(const std::set<std::string>& actPart)
 
   
 void
-WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
+WWGControl::wwgMesh(const Simulation& System,
+		    const mainSystem::inputParam& IParam)
   /*!
-    Process wwg Mesh - constructs the 3D mesh boundary
-    \todo Modify to remove ability to create complex boundaries
+    Process wwg Mesh - constructs the 3D mesh boundary.
+    This uses
+      -wwgMesh : object/free Vec3D(low) Vec3D(high) NPTS
     \param IParam :: Input parameters
   */
 {
@@ -145,38 +148,35 @@ WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
+
   WWG& wwg=WM.getWWG();
 
-  const std::string XYZ[3]={"X","Y","Z"};
-  std::vector<std::vector<double>> boundaryVal(3);
-  std::vector<std::vector<size_t>> bCnt(3);
+  Geometry::Vec3D APt,BPt;
+  std::array<size_t,3> Nxyz;
+
+  const std::string PType=
+    IParam.getValueError<std::string>("tally",0,0,"object/free/values"); 
   
-  for(size_t index=0;index<3;index++)
+  if (PType=="object")
     {
-      const std::string itemName("wwg"+XYZ[index]+"Mesh");
-      const size_t NXM=IParam.itemCnt(itemName,0);
-
-      if (NXM!=3)
-	throw ColErr::IndexError<size_t>
-	  (NXM,3,"Insufficient items for "+itemName+
-	   ": X_0 : N_0 : X1 ");
-
-      for(size_t i=0;i<NXM;i++)
-	{
-	  if (i % 2)   // Odd : Integer
-	    bCnt[index].push_back
-	      (IParam.getValue<size_t>(itemName,i));
-	  else
-            boundaryVal[index].push_back
-	      (IParam.getValue<double>(itemName,i));
-	}
+      mainSystem::meshConstruct::getObjectMesh
+	(System,IParam,"wwgMesh",0,1,APt,BPt,Nxyz);
     }
+  else if (PType=="free")
+    {
+      mainSystem::meshConstruct::getFreeMesh
+	(IParam,"wwgMesh",0,1,APt,BPt,Nxyz);
+    }
+  else // assume just free
+    {
+      mainSystem::meshConstruct::getFreeMesh
+	(IParam,"wwgMesh",0,0,APt,BPt,Nxyz);
+    }
+
   const Geometry::Vec3D RefPt=
     IParam.getDefValue(Geometry::Vec3D(0.1,0.1,0.1),"wwgRPtMesh",0);
 
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
+  wwg.getGrid().setMesh(APt,BPt,Nxyz);
   wwg.calcGridMidPoints();
   wwg.setRefPoint(RefPt);
   
@@ -471,7 +471,7 @@ WWGControl::processWeights(Simulation& System,
       wwgSetParticles(activeParticles);
       
       procParam(IParam,"wWWG",0,0);
-      wwgMesh(IParam);               // create mesh [wwgXMesh etc]
+      wwgMesh(System,IParam);               // create mesh [wwgXMesh etc]
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
       sourceFlux->writeCHECK(100);

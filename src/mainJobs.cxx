@@ -133,15 +133,15 @@ createVTK(const mainSystem::inputParam& IParam,
 	  const std::string PType=
 	    IParam.getValueError<std::string>("vtkMesh",0,0,"object/free");
 	  if (PType=="object")
-	      tallySystem::meshConstruct::getObjectMesh
+	    mainSystem::meshConstruct::getObjectMesh
 		(*SimMCPtr,IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	  else if (PType=="free")
-	      tallySystem::meshConstruct::getFreeMesh
+	      mainSystem::meshConstruct::getFreeMesh
 		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	  else
 	    {
-	      tallySystem::meshConstruct::getFreeMesh
-	      (IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
+	      mainSystem::meshConstruct::getFreeMesh
+		(IParam,"vtkMesh",0,0,MeshA,MeshB,MPts);
 	    }
 	}
       else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
