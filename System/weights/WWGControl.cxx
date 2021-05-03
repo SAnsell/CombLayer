@@ -58,7 +58,7 @@
 #include "ImportControl.h"
 #include "meshConstruct.h"
 
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "MarkovProcess.h"
 #include "WeightControl.h"
@@ -176,9 +176,13 @@ WWGControl::wwgMesh(const Simulation& System,
   const Geometry::Vec3D RefPt=
     IParam.getDefValue(Geometry::Vec3D(0.1,0.1,0.1),"wwgRPtMesh",0);
 
+
   wwg.getGrid().setMesh(APt,BPt,Nxyz);
+  ELog::EM<<"REF mesh"<<RefPt<<ELog::endDiag;
   wwg.calcGridMidPoints();
+  ELog::EM<<"REF mesh"<<RefPt<<ELog::endDiag;
   wwg.setRefPoint(RefPt);
+  ELog::EM<<"REF mesh"<<RefPt<<ELog::endDiag;
   
   return;
 }
@@ -467,13 +471,15 @@ WWGControl::processWeights(Simulation& System,
 
   if (IParam.flag("wWWG"))
     {
+      ELog::EM<<"SDAFASDF "<<ELog::endDiag;
       WeightControl::processWeights(System,IParam);
       wwgSetParticles(activeParticles);
-      
+
       procParam(IParam,"wWWG",0,0);
       wwgMesh(System,IParam);               // create mesh [wwgXMesh etc]
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
+      ELog::EM<<"SDAFASDF "<<ELog::endDiag;
       sourceFlux->writeCHECK(100);
       wwgMarkov(System,IParam);
       wwgCombine(System,IParam);

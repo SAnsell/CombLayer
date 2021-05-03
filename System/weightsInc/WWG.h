@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWG.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,15 +45,15 @@ class WWG
  private:
 
   std::set<std::string> pType;   ///< Particle type
-  double wupn;         ///< Max weight before upsplitting
-  double wsurv;        ///< survival possiblitiy
-  int maxsp;           ///< max split
-  int mwhere;          ///< Check weight -1:col 0:all 1:surf
-  int mtime;           ///< Flag to inditace energy(0)/time(1)
-  int switchn;         ///< read from wwinp file
+  double wupn;                   ///< Max weight before upsplitting
+  double wsurv;                  ///< survival possiblitiy
+  int maxsp;                     ///< max split
+  int mwhere;                    ///< Check weight -1:col 0:all 1:surf
+  int mtime;                     ///< Flag to inditace energy(0)/time(1)
+  int switchn;                   ///< read from wwinp file
   
-  std::vector<double> EBin;      ///< Energy bins
-  Geometry::Mesh3D Grid;         ///< Mesh Grid
+  std::vector<double> EBin;           ///< Energy bins
+  Geometry::BasicMesh3D Grid;         ///< Mesh Grid
 
   /// linearized centre point [x,y,z order]
   std::vector<Geometry::Vec3D> GridMidPt;
@@ -71,9 +71,9 @@ class WWG
   ~WWG() {}
   
   /// access to grid
-  Geometry::Mesh3D& getGrid() { return Grid; }
+  Geometry::BasicMesh3D& getGrid() { return Grid; }
   /// access to grid
-  const Geometry::Mesh3D& getGrid() const { return Grid; }
+  const Geometry::BasicMesh3D& getGrid() const { return Grid; }
   /// get grid mid point
   const std::vector<Geometry::Vec3D>& getMidPoints() const
     { return GridMidPt; }

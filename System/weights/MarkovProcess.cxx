@@ -3,7 +3,7 @@
  
  * File:   weight/MarkovProcess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "BaseMap.h"
 
 
@@ -106,7 +106,7 @@ MarkovProcess::initializeData(const WWG& wSet)
 {
   ELog::RegMethod RegA("MarkovProcess","initialize");
 
-  const Geometry::Mesh3D& grid=wSet.getGrid();
+  const Geometry::BasicMesh3D& grid=wSet.getGrid();
   
   WX=static_cast<long int>(grid.getXSize());
   WY=static_cast<long int>(grid.getYSize());
@@ -136,7 +136,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
 {
   ELog::RegMethod RegA("MarkovProcess","computeMatrix");
 
-  const Geometry::Mesh3D& grid=wSet.getGrid();
+  const Geometry::BasicMesh3D& grid=wSet.getGrid();
   const std::vector<Geometry::Vec3D> midPts=wSet.getMidPoints();
 
   if (static_cast<long int>(midPts.size())!=FSize)

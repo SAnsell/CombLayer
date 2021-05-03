@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,9 +213,8 @@ createInputs(inputParam& IParam)
   IParam.regItem("wwgCADIS","wwgCADIS",0,30);
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
-  IParam.regItem("wwgXMesh","wwgXMesh",3,125);
-  IParam.regItem("wwgYMesh","wwgYMesh",3,125);
-  IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
+  IParam.regMulti("wwgMesh","wwgMesh",25,0);
+
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);

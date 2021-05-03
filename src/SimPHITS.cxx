@@ -374,7 +374,8 @@ SimPHITS::writeWeights(std::ostream& OX) const
 {
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
-  
+
+  ELog::EM<<"WRITE WEIGHT"<<ELog::endDiag;
   WM.writePHITS(OX);
   return;
 }

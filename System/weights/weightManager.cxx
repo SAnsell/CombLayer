@@ -45,7 +45,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
 #include "weightManager.h"
@@ -256,6 +256,7 @@ weightManager::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("weightManager","writePHITS");
 
   const particleConv& PConv=particleConv::Instance();
+  
   if (!WMap.empty())
     {
       OX<<"[weight window]\n";

@@ -308,7 +308,6 @@ Segment29::createAll(Simulation& System,
   FixedRotate::populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
-  ELog::EM<<"Center = ="<<Origin<<ELog::endDiag;
   buildObjects(System);
   createLinks();
   return;

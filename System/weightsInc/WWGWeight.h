@@ -3,7 +3,7 @@
  
  * File:   weightInc/WWGWeight.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class WWGWeight
   
  public:
 
-  WWGWeight(const size_t,const Geometry::Mesh3D&);
+  WWGWeight(const size_t,const Geometry::BasicMesh3D&);
   WWGWeight(const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
   ~WWGWeight() {}          ///< Destructor

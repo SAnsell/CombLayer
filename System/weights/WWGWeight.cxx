@@ -43,7 +43,7 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "Vec3D.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -59,7 +59,7 @@ namespace WeightSystem
 {
   
 WWGWeight::WWGWeight(const size_t EB,
-		     const Geometry::Mesh3D& Grid)  :
+		     const Geometry::BasicMesh3D& Grid)  :
   WX(static_cast<long int>(Grid.getXSize())),
   WY(static_cast<long int>(Grid.getYSize())),
   WZ(static_cast<long int>(Grid.getZSize())),

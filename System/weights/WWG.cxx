@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
 
@@ -115,7 +115,8 @@ WWG::calcGridMidPoints()
 
   GridMidPt=Grid.midPoints();
   if (GridMidPt.empty())
-    ELog::EM<<"Failed to populate GridMidPt"<<ELog::endErr;
+    throw ColErr::EmptyContainer("GridMidPt");
+
   return;
 }
   
@@ -319,7 +320,7 @@ WWG::writeWWINP(const std::string& FName) const
   // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
   OX<<(TopFMT % 1 % 1  % nParticle % 10 % date);
 
-
+  // particles:
   for(size_t i=0;i<nParticle;i++)
     {
       OX<<(neFMT % EBin.size());
