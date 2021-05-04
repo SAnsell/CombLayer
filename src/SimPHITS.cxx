@@ -375,7 +375,7 @@ SimPHITS::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
 
-  ELog::EM<<"WRITE WEIGHT"<<ELog::endDiag;
+  ELog::EM<<"WRITE WEIGHT"<<ELog::endCrit;
   WM.writePHITS(OX);
   return;
 }
@@ -416,7 +416,6 @@ SimPHITS::writePhysics(std::ostream& OX) const
   
   if (WM.hasParticle("n"))
     {
-      ELog::EM<<"WEIGHT"<<ELog::endErr;
       const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }

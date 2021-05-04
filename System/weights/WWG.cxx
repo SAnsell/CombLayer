@@ -43,6 +43,7 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "phitsWriteSupport.h"
 #include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
@@ -390,11 +391,26 @@ WWG::writeVTK(const std::string& FName,
 
   WMesh.writeVTK(OX,EIndex);
   
-  
   OX.close();
 
   return;
 }
 
+void
+WWG::writePHITS(std::ostream& OX) const
+  /*!
+    Write out a WWG mesh as a PHITS system
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writePHITS");
+
+  Grid.writePHITS(OX);
+  StrFunc::writePHITS(OX,1,"eng",EBin.size());
+  StrFunc::writePHITSList(OX,2,EBin);
+  WMesh.writePHITS(OX);
+  
+  return;
+}
   
 }  // NAMESPACE WeightSystem

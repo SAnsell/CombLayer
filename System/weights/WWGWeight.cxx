@@ -53,6 +53,7 @@
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
+#include "phitsWriteSupport.h"
 #include "WWGWeight.h"
 
 namespace WeightSystem
@@ -608,7 +609,6 @@ WWGWeight::CADISnorm(const Simulation& System,
   return;
 }
 
-
 void
 WWGWeight::writeWWINP(std::ostream& OX) const
   /*!
@@ -681,14 +681,46 @@ WWGWeight::write(std::ostream& OX) const
   return;
 }
 
+void
+WWGWeight::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the PHITS format
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("WWGWeight","writePHITS");
+
+  std::ostringstream cx;
+  OX<<"    xyz";
+  for(size_t i=0;i<WE;i++)
+    OX<<"         ww"<<i+1;
+  OX<<std::endl;
+
+  for(long int I=0;I<WX;I++)
+    for(long int J=0;J<WY;J++)
+      for(long int K=0;K<WZ;K++)
+	{
+	  cx.str("");
+	  cx<<"( "<<I+1<<" "<<J+1<<" "<<K+1<<" )";
+	  for(long int EI=0;EI<WE;EI++)
+	    cx<<" "<<std::exp(WGrid[I][J][K][EI]);
+	  StrFunc::writePHITSTable<std::string>(OX,1,cx.str());
+	}
+  return;
+}
 
 void
 WWGWeight::writeCHECK(const size_t index) const
+  /*!
+    Write out the data for debug
+    \param index :: Data group to output 
+   */
 {
   const double* SData=WGrid.data();
   const size_t EnergyStride(static_cast<size_t>(WE));
 
-  ELog::EM<<"WRITE CHECK:: S["<<index<<"] == "<<SData[index]<<" "<<SData[index+1]<<ELog::endDiag;
+  ELog::EM<<"WRITE CHECK:: S["<<index<<"] == "
+	  <<SData[index]<<" "<<SData[index+1]<<ELog::endDiag;
   return;
 }
 

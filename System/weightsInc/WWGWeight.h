@@ -121,6 +121,7 @@ class WWGWeight
   void writeCHECK(const size_t) const;
   
   void writeWWINP(std::ostream&) const;
+  void writePHITS(std::ostream&) const;
   void writeVTK(std::ostream&,const long int) const;
   void write(std::ostream&) const;
 };

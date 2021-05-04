@@ -3,7 +3,7 @@
  
  * File:   support/phitsWriteSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,7 +213,42 @@ writePHITSCellSet(std::ostream& OX,
   return;
 }
 
+template<>
+void
+writePHITSList(std::ostream& OX,const size_t depth,
+	       const std::vector<Geometry::Vec3D>& values)
+ /*!
+   Write out the line neatly for PHITS
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param values :: values  
+ */
+{
+  OX<<std::string((depth+1)*2,' ');
+  for(const Geometry::Vec3D& V : values)
+    OX<<"Vec3D("<<V<<") ";
+  OX<<std::endl;
+  return;
+}
 
+template<typename T>
+void
+writePHITSList(std::ostream& OX,const size_t depth,
+	       const std::vector<T>& values)
+ /*!
+   Write out the line neatly for PHITS
+   \param OX :: ostream to write to
+   \param depth :: step depth
+   \param values :: values
+ */
+{
+  OX<<std::string((depth+1)*2,' ');
+  for(const T& V : values)
+    writePHITSItems(OX,V);
+  OX<<std::endl;
+  
+  return;
+}
   
 void
 writePHITSOpen(std::ostream& OX,
@@ -224,7 +259,7 @@ writePHITSOpen(std::ostream& OX,
    \param OX :: ostream to write to
    \param depth :: step depth
    \param unit :: unit name
-*/
+  */
 {
   constexpr size_t equalPt(20);     // distance to name
   const std::string spc((depth+1)*2,' ');
@@ -284,7 +319,6 @@ template void
 writePHITS(std::ostream&,const size_t,const std::string&,
 	   const std::string,const std::string&);
 
-
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const double&);
 template void
@@ -293,6 +327,10 @@ template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const int&);
 template void
 writePHITSCont(std::ostream&,const size_t,const size_t,const size_t&);
+
+template void
+writePHITSList(std::ostream&,const size_t,
+	       const std::vector<double>&);
 
 
 }  // NAMESPACE StrFunc

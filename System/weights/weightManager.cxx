@@ -256,8 +256,13 @@ weightManager::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("weightManager","writePHITS");
 
   const particleConv& PConv=particleConv::Instance();
-  
-  if (!WMap.empty())
+
+  if (WWGPtr)
+    {
+      OX<<"[weight window]\n";
+      WWGPtr->writePHITS(OX);
+    }
+  else if (!WMap.empty())
     {
       OX<<"[weight window]\n";
       for(const CtrlTYPE::value_type& wf : WMap)

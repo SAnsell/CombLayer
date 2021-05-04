@@ -94,9 +94,11 @@ class WWG
   void scaleRange(const size_t,const double,const double,const double);
   void powerRange(const double);
 
-  void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
   void writeVTK(const std::string&,const long int =0) const;
+
+  void write(std::ostream&) const;
+  void writePHITS(std::ostream&) const;
 
 
   
