@@ -174,6 +174,7 @@ getActiveCell(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("Process[F]","getActiveCell");
 
+  ELog::EM<<"XCell == "<<cell<<ELog::endDiag;
   const std::vector<int> Cells=OGrp.getObjectRange(cell);
   std::set<int> activeCell(Cells.begin(),Cells.end());
 

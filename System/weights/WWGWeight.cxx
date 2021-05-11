@@ -48,6 +48,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "BaseMap.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -61,6 +62,7 @@ namespace WeightSystem
   
 WWGWeight::WWGWeight(const size_t EB,
 		     const Geometry::BasicMesh3D& Grid)  :
+  ID(Grid.getID()),
   WX(static_cast<long int>(Grid.getXSize())),
   WY(static_cast<long int>(Grid.getYSize())),
   WZ(static_cast<long int>(Grid.getZSize())),
@@ -76,8 +78,10 @@ WWGWeight::WWGWeight(const size_t EB,
 }
 
 
+
 WWGWeight::WWGWeight(const WWGWeight& A) : 
-  zeroFlag(A.zeroFlag),WX(A.WX),WY(A.WY),WZ(A.WZ),WE(A.WE),
+  ID(A.ID),zeroFlag(A.zeroFlag),
+  WX(A.WX),WY(A.WY),WZ(A.WZ),WE(A.WE),
   WGrid(A.WGrid)
   /*!
     Copy constructor
@@ -95,6 +99,7 @@ WWGWeight::operator=(const WWGWeight& A)
 {
   if (this!=&A)
     {
+      ID=A.ID;
       zeroFlag=A.zeroFlag;
       WX=A.WX;
       WY=A.WY;
@@ -706,6 +711,30 @@ WWGWeight::writePHITS(std::ostream& OX) const
 	    cx<<" "<<std::exp(WGrid[I][J][K][EI]);
 	  StrFunc::writePHITSTable<std::string>(OX,1,cx.str());
 	}
+  return;
+}
+
+void
+WWGWeight::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out the FLUKA format
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("WWGWeight","writeFLUKA");
+
+  std::ostringstream cx;
+
+  for(long int EI=0;EI<WE;EI++)
+    for(long int I=0;I<WX;I++)
+      for(long int J=0;J<WY;J++)
+	for(long int K=0;K<WZ;K++)
+	  {
+	    cx.str("");
+	    cx<<"USRICALL "<<ID<<" "<<EI+1<<" "<<I+1<<" "<<J+1<<" "<<K+1;
+	    cx<<" "<<std::exp(WGrid[I][J][K][EI]);
+	    StrFunc::writeFLUKA(cx.str(),OX);
+	  }
   return;
 }
 

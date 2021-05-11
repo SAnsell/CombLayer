@@ -412,5 +412,46 @@ WWG::writePHITS(std::ostream& OX) const
   
   return;
 }
+
+void
+WWG::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out a WWG mesh as a FLUKA system
+    This uses the usrini table. This is a S. Ansell
+    extension to FLUKA.
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writeFLUKA");
+
+  std::ostringstream cx;
+  
+  cx<<"USRICALL";
+  for(const double E : EBin)
+    cx<<" "<<E;
+  for (size_t i=EBin.size();i<6;i++)
+    cx<<" -";
+  cx<<" wwgEng";
+  StrFunc::writeFLUKA(cx.str(),OX);
+  
+  // This should be extended to allow multiple wwg meshes:
+  // size : Must be infront of Low/High/wwg
+  cx.str("");
+  cx<<"USRICALL ";
+  cx<<0<<" "                  // INDEX not energy bins
+    <<Grid.getXSize()<<" "
+    <<Grid.getYSize()<<" "
+    <<Grid.getZSize()<<" - - "
+    <<"wwgSize";
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  Grid.writeFLUKA(OX);
+  WMesh.writeFLUKA(OX);
+  
+
+  
+  
+  return;
+}
   
 }  // NAMESPACE WeightSystem

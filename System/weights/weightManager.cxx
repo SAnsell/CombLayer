@@ -218,6 +218,10 @@ weightManager::writeFLUKA(std::ostream& OX) const
 
   const flukaGenParticle& PConv=flukaGenParticle::Instance();
 
+  if (WWGPtr)
+    {
+      WWGPtr->writeFLUKA(OX);
+    }
   bool firstCell(1);
   if (!WMap.empty())
     {

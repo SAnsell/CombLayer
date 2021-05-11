@@ -39,6 +39,7 @@ class WWGWeight
 {
  private:
 
+  size_t ID;               ///< Index
   int zeroFlag;            ///<  set value [0] / zero Value [1]
   
   long int WX;             ///< Weight XIndex size
@@ -122,6 +123,7 @@ class WWGWeight
   
   void writeWWINP(std::ostream&) const;
   void writePHITS(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;
   void writeVTK(std::ostream&,const long int) const;
   void write(std::ostream&) const;
 };

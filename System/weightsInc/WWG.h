@@ -99,6 +99,7 @@ class WWG
 
   void write(std::ostream&) const;
   void writePHITS(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;
 
 
   

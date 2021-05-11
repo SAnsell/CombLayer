@@ -305,6 +305,9 @@ SimFLUKA::writeFlags(std::ostream& OX) const
     Writes out the flags using a look-up stack.
     Bascially an ultra primative method to get something
     into the fluka file, if nothing else fits.
+    
+    This set user weight : Allows call to FLUSCW in the 
+    modified fortran code
     \param OX :: Output stream
   */
 {
