@@ -40,6 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -47,11 +48,76 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "BaseMap.h"
+#include "PointMap.h"
 
 
 namespace mainSystem
 {
 
+Geometry::Vec3D
+getNamedPoint(const Simulation& System,
+	      const inputParam& IParam,
+	      const std::string& keyItem,
+	      const long int setIndex,
+	      const long int index,
+	      const std::string& errStr)
+  /*!
+    Generate a named point : One of
+    - Vec3D(x,y,z)
+    - FixedComp:Index
+    - PointMap:Index
+  */
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedPoint");  
+
+  const std::string objName=
+    IParam.getValueError<std::string>
+    (keyItem,setIndex,index,errStr+"[Object Name/Point]");
+
+  Geometry::Vec3D point;
+  if (StrFunc::convert(objName,point))
+    return point;
+
+  const std::string::size_type pos=objName.find(':');
+  if (pos!=std::string::npos)
+    {
+      const std::string unitFC=objName.substr(0,pos);
+      std::string indexName=objName.substr(pos+1);
+
+      
+      // unitFC MUST work and indexName can be number/name
+      const attachSystem::FixedComp* FCptr=
+	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
+      // PointMap
+      const attachSystem::PointMap* PMptr=
+	dynamic_cast<const attachSystem::PointMap*>(FCptr);
+      if (PMptr)
+	{
+	  const std::string::size_type posB=indexName.find(':');
+	  size_t index(0);
+	  if (posB!=std::string::npos &&
+	      StrFunc::convert(indexName.substr(posB+1),index))
+	    {
+	      indexName.erase(posB,std::string::npos);
+	    }
+	  if (PMptr->hasPoint(indexName,index))
+	    return PMptr->getPoint(indexName,index);
+	}
+      // FixedComp
+      if (FCptr->hasLinkPt(indexName))
+	return FCptr->getLinkPt(indexName);
+    }
+  
+  // Everything failed
+  
+  throw ColErr::InContainerError<std::string>(objName,errStr);
+}
+  
 std::vector<int>
 getNamedCells(const Simulation& System,
 	      const inputParam& IParam,

@@ -178,9 +178,10 @@ WeightControl::procSourcePoint(const Simulation& System,
     }  
   return;
 }
-  
+   
 void
-WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
+WeightControl::procPlanePoint(const Simulation& System,
+			      const mainSystem::inputParam& IParam)
   /*!
     Determine inf the next component cat be a plane
     Given as two Vec3D from inputParam

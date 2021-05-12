@@ -683,7 +683,7 @@ objectGroups::getObject(const std::string& Name)
 template<typename T>
 const T*
 objectGroups::getObjectThrow(const std::string& Name,
-                               const std::string& Err) const
+			     const std::string& Err) const
   /*!
     Find a FixedComp [if it exists] 
     Throws InContainerError if not 

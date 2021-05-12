@@ -3,7 +3,7 @@
  
  * File:   inputInc/inputParam.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,15 +38,20 @@ namespace mainSystem
   class IItem;
   class inputParam;
   
+Geometry::Vec3D
+getNamedPoint(const Simulation&,const inputParam&,
+	      const std::string&,const long int,
+	      const long int,const std::string&);
+
 std::vector<int>
-  getNamedCells(const Simulation&,const inputParam&,
+getNamedCells(const Simulation&,const inputParam&,
+		const std::string&,const long int,
+	      const long int,const std::string&);
+
+std::set<MonteCarlo::Object*>
+getNamedObjects(const Simulation&,const inputParam&,
 		const std::string&,const long int,
 		const long int,const std::string&);
-
- std::set<MonteCarlo::Object*>
-  getNamedObjects(const Simulation&,const inputParam&,
-		 const std::string&,const long int,
-		 const long int,const std::string&);
 /*!
   \class inputParam
   \version 1.0
