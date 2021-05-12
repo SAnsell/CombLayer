@@ -733,6 +733,7 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 	    cx.str("");
 	    cx<<"USRICALL "<<ID<<" "<<EI+1<<" "<<I+1<<" "<<J+1<<" "<<K+1;
 	    cx<<" "<<std::exp(WGrid[I][J][K][EI]);
+	    cx<<" wwg";
 	    StrFunc::writeFLUKA(cx.str(),OX);
 	  }
   return;

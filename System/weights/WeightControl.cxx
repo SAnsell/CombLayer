@@ -150,7 +150,8 @@ WeightControl::setLowEBand()
 }
 
 void
-WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
+WeightControl::procSourcePoint(const Simulation& System,
+			       const mainSystem::inputParam& IParam)
   /*!
     Process the source weight point
     \param IParam :: Input param
@@ -162,7 +163,6 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
   
   sourcePt.clear();
   const size_t NSource=IParam.setCnt(wKey);
-  ELog::EM<<"NSource == "<<NSource<<ELog::endDiag;
   for(size_t index=0;index<NSource;index++)
     {
       const size_t NItem=IParam.itemCnt(wKey,index);
@@ -407,9 +407,9 @@ WeightControl::processWeights(Simulation& System,
 
 
   if (IParam.flag("weightSource"))
-    procSourcePoint(IParam);
+    procSourcePoint(System,IParam);
   if (IParam.flag("weightPlane"))
-    procPlanePoint(IParam);
+    procPlanePoint(System,IParam);
 
   return;
 }

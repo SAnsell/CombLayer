@@ -85,8 +85,8 @@ class WeightControl
   
   void procParticles(const mainSystem::inputParam&);
   void procEnergyType(const mainSystem::inputParam&);
-  void procSourcePoint(const mainSystem::inputParam&);
-  void procPlanePoint(const mainSystem::inputParam&);
+  void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
+  void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
 
   void procParam(const mainSystem::inputParam&,const std::string&,
 		const size_t,const size_t);  
