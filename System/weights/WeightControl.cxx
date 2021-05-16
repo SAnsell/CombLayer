@@ -170,7 +170,8 @@ WeightControl::procSourcePoint(const Simulation& System,
       while(NItem>itemCnt)
         {
           const Geometry::Vec3D TPoint=
-	    IParam.getCntVec3D(wKey,index,itemCnt,"Source Point");
+	    mainSystem::getNamedPoint
+	    (System,IParam,wKey,index,itemCnt,"Source Point");
           ELog::EM<<"Source Point["<<sourcePt.size()
                   <<"] == "<<TPoint<<ELog::endDiag;
           sourcePt.push_back(TPoint);
@@ -201,12 +202,11 @@ WeightControl::procPlanePoint(const Simulation& System,
       while(NItem>itemCnt)
         {
 	  const Geometry::Vec3D PPoint=
-	    IParam.getCntVec3D(wKey,index,itemCnt,wKey+":PlanePoint");
-
-          //          IParam.getCntVec3D(wKey,index,itemCnt,
-          //			       wKey+" Vec3D");
+	    mainSystem::getNamedPoint
+	    (System,IParam,wKey,index,itemCnt,wKey+"Plane Point");
 	  const Geometry::Vec3D Norm=
-	    IParam.getCntVec3D(wKey,index,itemCnt,wKey+"PlaneNorm");
+	    mainSystem::getNamedAxis
+	    (System,IParam,wKey,index,itemCnt,wKey+"Plane:Norm");
           planePt.push_back(Geometry::Plane(0,0,PPoint,Norm));
         }
     }

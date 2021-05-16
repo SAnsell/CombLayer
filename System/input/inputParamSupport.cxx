@@ -39,6 +39,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "support.h"
 #include "Code.h"
@@ -54,6 +56,12 @@
 #include "FixedComp.h"
 #include "BaseMap.h"
 #include "PointMap.h"
+#include "SurfMap.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Cone.h"
+#include "Cylinder.h"
+#include "Plane.h"
 
 
 namespace mainSystem
@@ -63,8 +71,8 @@ Geometry::Vec3D
 getNamedPoint(const Simulation& System,
 	      const inputParam& IParam,
 	      const std::string& keyItem,
-	      const long int setIndex,
-	      const long int index,
+	      const size_t setIndex,
+	      const size_t index,
 	      const std::string& errStr)
   /*!
     Generate a named point : One of
@@ -88,7 +96,6 @@ getNamedPoint(const Simulation& System,
     {
       const std::string unitFC=objName.substr(0,pos);
       std::string indexName=objName.substr(pos+1);
-
       
       // unitFC MUST work and indexName can be number/name
       const attachSystem::FixedComp* FCptr=
@@ -111,6 +118,80 @@ getNamedPoint(const Simulation& System,
       // FixedComp
       if (FCptr->hasLinkPt(indexName))
 	return FCptr->getLinkPt(indexName);
+    }
+  
+  // Everything failed
+  
+  throw ColErr::InContainerError<std::string>(objName,errStr);
+}
+
+Geometry::Vec3D
+getNamedAxis(const Simulation& System,
+	     const inputParam& IParam,
+	     const std::string& keyItem,
+	     const size_t setIndex,
+	     const size_t index,
+	     const std::string& errStr)
+  /*!
+    Generate a named Axis : One of:
+    - Vec3D(x,y,z).norm()
+    - FixedComp:Index
+    - SurfMap:Index. plane.normal/cyclinder.axis/cone.axis
+  */
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getNamedAxis");  
+
+  const std::string objName=
+    IParam.getValueError<std::string>
+    (keyItem,setIndex,index,errStr+"[Object Name/Point]");
+
+  Geometry::Vec3D point;
+  if (StrFunc::convert(objName,point))
+    return point.unit();
+
+  const std::string::size_type pos=objName.find(':');
+  if (pos!=std::string::npos)
+    {
+      const std::string unitFC=objName.substr(0,pos);
+      std::string indexName=objName.substr(pos+1);
+      
+      // unitFC MUST work and indexName can be number/name
+      const attachSystem::FixedComp* FCptr=
+	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
+      // SurfMap
+      const attachSystem::SurfMap* SMptr=
+	dynamic_cast<const attachSystem::SurfMap*>(FCptr);
+      if (SMptr)
+	{
+	  const std::string::size_type posB=indexName.find(':');
+	  size_t index(0);
+	  if (posB!=std::string::npos &&
+	      StrFunc::convert(indexName.substr(posB+1),index))
+	    {
+	      indexName.erase(posB,std::string::npos);
+	    }
+	  if (SMptr->hasSurf(indexName,index))
+	    {
+	      const Geometry::Surface* SPtr=
+		SMptr->getSurfPtr(indexName,index);
+	      if (const Geometry::Plane* PPtr=
+		  dynamic_cast<const Geometry::Plane*>(SPtr))
+		return PPtr->getNormal();
+	      // cylinder
+	      const Geometry::Cylinder* CPtr=
+		dynamic_cast<const Geometry::Cylinder*>(SPtr);
+	      if (CPtr)
+		return CPtr->getNormal();
+	      // cone
+	      const Geometry::Cone* CnPtr=
+		dynamic_cast<const Geometry::Cone*>(SPtr);
+	      if (CnPtr)
+		return CnPtr->getNormal();
+	    }
+	}
+      // FixedComp:Axis
+      if (FCptr->hasLinkPt(indexName))
+	return FCptr->getLinkAxis(indexName);
     }
   
   // Everything failed

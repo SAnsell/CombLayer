@@ -40,8 +40,12 @@ namespace mainSystem
   
 Geometry::Vec3D
 getNamedPoint(const Simulation&,const inputParam&,
-	      const std::string&,const long int,
-	      const long int,const std::string&);
+	      const std::string&,const size_t,
+	      const size_t,const std::string&);
+Geometry::Vec3D
+getNamedAxis(const Simulation&,const inputParam&,
+	      const std::string&,const size_t,
+	      const size_t,const std::string&);
 
 std::vector<int>
 getNamedCells(const Simulation&,const inputParam&,
