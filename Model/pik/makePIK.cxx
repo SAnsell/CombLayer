@@ -144,11 +144,11 @@ namespace pikSystem
     pool->addInsertCell(voidCell);
     pool->createAll(System,World,0);
 
-    // refl->setSide(*pool,1);
-    // refl->setBottom(*pool,2);
-    // refl->setTop(*pool,3);
-    // refl->addInsertCell(pool->getCell("InnerShieldCentral"));
-    // refl->createAll(System,*pool,0);
+    refl->setSide(*pool,1);
+    refl->setBottom(*pool,2);
+    refl->setTop(*pool,3);
+    refl->addInsertCell(pool->getCell("InnerShieldCentral"));
+    refl->createAll(System,*pool,0);
 
     // core->addInsertCell(pool->getCell("InnerShieldCentral"));
     // core->addInsertCell(refl->getCell("MainCell"));
