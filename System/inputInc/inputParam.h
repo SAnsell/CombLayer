@@ -41,12 +41,21 @@ namespace mainSystem
 Geometry::Vec3D
 getNamedPoint(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,
-	      const size_t,const std::string&);
+	      size_t&,const std::string&);
 Geometry::Vec3D
 getNamedAxis(const Simulation&,const inputParam&,
 	      const std::string&,const size_t,
-	      const size_t,const std::string&);
+	      size_t&,const std::string&);
 
+Geometry::Vec3D
+getDefNamedPoint(const Simulation&,const inputParam&,
+	      const std::string&,const size_t,
+	      size_t&,const Geometry::Vec3D&);
+Geometry::Vec3D
+getDefNamedAxis(const Simulation&,const inputParam&,
+		const std::string&,const size_t,
+		size_t&,const Geometry::Vec3D&);
+  
 std::vector<int>
 getNamedCells(const Simulation&,const inputParam&,
 		const std::string&,const long int,
@@ -147,6 +156,9 @@ class inputParam
   const std::vector<std::string>&
     getObjectItems(const std::string&,const size_t) const;
 
+  Geometry::Vec3D getDefCntVec3D(const std::string&,
+				 const size_t,size_t&,
+				 const Geometry::Vec3D&) const;
   Geometry::Vec3D getCntVec3D(const std::string&,
 			      const size_t,size_t&) const;
   Geometry::Vec3D getCntVec3D(const std::string&,

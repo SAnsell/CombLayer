@@ -57,6 +57,8 @@ class BasicMesh3D
   
   BasicMesh3D();
   BasicMesh3D(const size_t);
+  BasicMesh3D(const size_t,const Geometry::Vec3D&,
+	      const Geometry::Vec3D&,const std::array<size_t,3>&);
   BasicMesh3D(const BasicMesh3D&);
   BasicMesh3D& operator=(const BasicMesh3D&);
   virtual ~BasicMesh3D() {}   ///< Destructor
@@ -70,10 +72,14 @@ class BasicMesh3D
   size_t getZSize() const { return NZ; }    ///< number of Z-cells
   
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
+  Geometry::Vec3D point(const long int,const long int,const long int) const;
 
   void setMesh(const Geometry::Vec3D&,
 	       const Geometry::Vec3D&,
 	       const std::array<size_t,3>&); 
+  void setMesh(const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       const size_t,const size_t,const size_t); 
     
   std::vector<Geometry::Vec3D> midPoints() const;
   /// Set reference point 

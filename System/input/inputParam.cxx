@@ -542,6 +542,28 @@ inputParam::getCntVec3D(const std::string& K,
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
+Geometry::Vec3D
+inputParam::getDefCntVec3D(const std::string& K,
+			   const size_t setIndex,
+			   size_t& itemIndex,
+			   const Geometry::Vec3D& defVec) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 1]
+    \param defVec :: Value to return if not possible to translate
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getDefCntVec3D");
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    return defVec;
+
+  return IPtr->getCntVec3D(setIndex,itemIndex);
+}
+
 std::map<std::string,std::vector<std::string>>
 inputParam::getMapItems(const std::string& K) const
   /*!

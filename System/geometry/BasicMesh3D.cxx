@@ -69,6 +69,22 @@ BasicMesh3D::BasicMesh3D(const size_t I) :
   ID=I;
 }
 
+BasicMesh3D::BasicMesh3D(const size_t I,
+			 const Geometry::Vec3D& APt,
+			 const Geometry::Vec3D& BPt, 
+			 const std::array<size_t,3>& Nxyz) :
+  ID(I),
+  RefPoint((APt+BPt)/2.0)
+  /*!
+    Constructor based on simple grid
+    \param I :: ID number
+    \param APt :: Low Point
+    \param BPt :: High Point
+    \param Nxyz :: Number of bins in each orthogonal direction.
+   */
+{
+  setMesh(APt,BPt,Nxyz);
+}
   
 BasicMesh3D::BasicMesh3D(const BasicMesh3D& A) : 
   ID(A.ID),writeFlag(A.writeFlag),
@@ -224,6 +240,23 @@ BasicMesh3D::midPoints() const
       }
 
   return midPt;
+}
+
+Geometry::Vec3D
+BasicMesh3D::point(const long int a,
+		   const long int b,
+		   const long int c) const
+  /*!
+    Determine the 3d Vector corresponding the mesh point (a,b,c)
+    \param a :: x index
+    \param b :: y index
+    \param c :: z index
+    \return Vec3D point 
+  */
+{
+  return point(static_cast<size_t>(a),
+	       static_cast<size_t>(b),
+	       static_cast<size_t>(c));
 }
 
 Geometry::Vec3D

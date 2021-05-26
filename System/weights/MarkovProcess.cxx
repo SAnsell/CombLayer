@@ -98,15 +98,18 @@ MarkovProcess::~MarkovProcess()
 {}
   
 void
-MarkovProcess::initializeData(const WWG& wSet)
+MarkovProcess::initializeData(const WWG& wSet,
+			      const std::string& meshIndex)
   /*!
     Initialize all the values before execusion
     \param wSet :: wwg
+    \param meshIndex to process
   */
 {
   ELog::RegMethod RegA("MarkovProcess","initialize");
 
-  const Geometry::BasicMesh3D& grid=wSet.getGrid();
+  const WWGWeight& wMesh=wSet.getMesh(meshIndex);
+  const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
   
   WX=static_cast<long int>(grid.getXSize());
   WY=static_cast<long int>(grid.getYSize());
@@ -122,6 +125,7 @@ MarkovProcess::initializeData(const WWG& wSet)
 void
 MarkovProcess::computeMatrix(const Simulation& System,
 			     const WWG& wSet,
+			     const std::string& meshIndex,
 			     const double densityFactor,
 			     const double r2Length,
 			     const double r2Power)
@@ -129,6 +133,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
     Calculate the Markov chain process
     \param System :: Simualation
     \param wSet :: WWG set for grid
+    \param meshIdnex :: mesh to use  	
     \param densityFactor :: Scaling factor for density
     \param r2Length :: scale factor for length
     \param r2Power :: power of 1/r^2 factor
@@ -136,8 +141,9 @@ MarkovProcess::computeMatrix(const Simulation& System,
 {
   ELog::RegMethod RegA("MarkovProcess","computeMatrix");
 
-  const Geometry::BasicMesh3D& grid=wSet.getGrid();
-  const std::vector<Geometry::Vec3D> midPts=wSet.getMidPoints();
+  const WWGWeight& wMesh=wSet.getMesh(meshIndex);
+  const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
+  const std::vector<Geometry::Vec3D> midPts=grid.midPoints();
 
   if (static_cast<long int>(midPts.size())!=FSize)
     throw ColErr::MisMatch<long int>

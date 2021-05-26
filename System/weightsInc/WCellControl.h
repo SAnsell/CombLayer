@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WCellControl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,13 @@ class WCellControl : public WeightControl
   void scaleAllObjects(const Simulation&,const double,const double);
   double findMax(const Simulation&,const std::string&,
 		 const size_t,const double) const;
+
   
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
+
+  void processPtString(std::string ptStr,std::string& pType,
+		       size_t&,bool&) const;
 
   void procTrackLine(const mainSystem::inputParam&);
   void procObject(const Simulation&,

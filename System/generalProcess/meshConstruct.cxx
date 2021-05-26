@@ -205,7 +205,7 @@ getFreeMesh(const mainSystem::inputParam& IParam,
   Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
   Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
   Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
-  ELog::EM<<"End mesh"<<ELog::endDiag;
+
   return;
 }
   

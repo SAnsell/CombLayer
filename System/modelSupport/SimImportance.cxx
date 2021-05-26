@@ -52,6 +52,7 @@
 #include "flukaDefPhysics.h"
 #include "phitsDefPhysics.h"
 #include "SetMagnets.h"
+#include "BasicMesh3D.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"

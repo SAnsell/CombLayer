@@ -32,8 +32,6 @@ namespace Geometry
 
 namespace WeightSystem
 {
-  class ItemWeight;
-  class CellWeight;
   class WWGWeight;
   
   /*!
@@ -44,32 +42,59 @@ namespace WeightSystem
     \brief Controls WWG mesh maps
   */
   
-class WWGControl : public WeightControl
+class WWGControl 
 {
  private:
 
+  std::set<std::string> activeParticles;    ///< active particles
+  std::vector<double> EBin;                 ///< energy bin default
+  
   // exta factors for MARKOV:
-  size_t nMarkov;                ///< Markov count  
+  size_t nMarkov;                ///< Markov count
 
-  WWGWeight* sourceFlux;            ///< Source flux
-  WWGWeight* adjointFlux;           ///< Adjoint flux
+
+  double energyCut;              ///< Energy cut [MeV]
+  double scaleFactor;            ///< Scale factor
+  double weightPower;            ///< makes weight W^power
+  double density;                ///< scales the material density
+  double r2Length;               ///< scale factor of r2 Length 
+  double r2Power;                ///< makes weight 1/r^power
+
+  std::map<std::string,Geometry::Plane> planePt;       ///< Plane points
+  std::map<std::string,Geometry::Vec3D> sourcePt;      ///< Source Points
+  std::map<std::string,Geometry::BasicMesh3D> meshUnit;     ///< mesh volumes
   
   //  void help() const
   
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
-  void wwgSetParticles(const std::set<std::string>&);
-  void wwgMesh(const Simulation&,const mainSystem::inputParam&);
+  void procParam(const mainSystem::inputParam&,const std::string&,
+		 const size_t,const size_t);
+  void procEnergyType(const mainSystem::inputParam&);
+  void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
+  void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
+  void procMeshPoint(const Simulation&,const mainSystem::inputParam&);
+
+
+  
   void wwgVTK(const mainSystem::inputParam&);
-  void wwgInitWeight();
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
   void wwgCombine(const Simulation&,const mainSystem::inputParam&);
 
   
   void wwgMarkov(const Simulation&,const mainSystem::inputParam&);
   void wwgNormalize(const mainSystem::inputParam&);
-    
- public:
+  void processPtString(std::string ptStr,std::string& pType,
+		       size_t&,bool&) const;
+
+  const Geometry::BasicMesh3D& getGrid(const std::string&) const;
+  bool hasSourcePoint(const std::string&) const;
+  bool hasPlanePoint(const std::string&) const;
+  const Geometry::Vec3D& getSourcePoint(const std::string&) const;
+  const Geometry::Plane& getPlanePoint(const std::string&) const;
+
+  
+public:
 
   WWGControl();
   WWGControl(const WWGControl&);

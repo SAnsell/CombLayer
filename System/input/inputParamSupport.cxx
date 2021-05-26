@@ -3,7 +3,7 @@
  
  * File:   input/inputParamSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ getNamedPoint(const Simulation& System,
 	      const inputParam& IParam,
 	      const std::string& keyItem,
 	      const size_t setIndex,
-	      const size_t index,
+	      size_t& index,
 	      const std::string& errStr)
   /*!
     Generate a named point : One of
@@ -87,6 +87,7 @@ getNamedPoint(const Simulation& System,
     IParam.getValueError<std::string>
     (keyItem,setIndex,index,errStr+"[Object Name/Point]");
 
+  index++;
   Geometry::Vec3D point;
   if (StrFunc::convert(objName,point))
     return point;
@@ -106,14 +107,14 @@ getNamedPoint(const Simulation& System,
       if (PMptr)
 	{
 	  const std::string::size_type posB=indexName.find(':');
-	  size_t index(0);
+	  size_t itemIndex(0);
 	  if (posB!=std::string::npos &&
-	      StrFunc::convert(indexName.substr(posB+1),index))
+	      StrFunc::convert(indexName.substr(posB+1),itemIndex))
 	    {
 	      indexName.erase(posB,std::string::npos);
 	    }
-	  if (PMptr->hasPoint(indexName,index))
-	    return PMptr->getPoint(indexName,index);
+	  if (PMptr->hasPoint(indexName,itemIndex))
+	    return PMptr->getPoint(indexName,itemIndex);
 	}
       // FixedComp
       if (FCptr->hasLinkPt(indexName))
@@ -121,84 +122,140 @@ getNamedPoint(const Simulation& System,
     }
   
   // Everything failed
-  
+  index--;
   throw ColErr::InContainerError<std::string>(objName,errStr);
 }
 
 Geometry::Vec3D
-getNamedAxis(const Simulation& System,
-	     const inputParam& IParam,
-	     const std::string& keyItem,
-	     const size_t setIndex,
-	     const size_t index,
-	     const std::string& errStr)
+getDefNamedPoint(const Simulation& System,
+		 const inputParam& IParam,
+		 const std::string& keyItem,
+		 const size_t setIndex,
+		 size_t& index,
+		 const Geometry::Vec3D& defValue)
+  /*!
+    Generate a named point : One of
+    - Vec3D(x,y,z)
+    - FixedComp:Index
+    - PointMap:Index
+    \param defValue :: Returned value
+  */
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getDefNamedPoint");  
+
+  try
+    {
+      return getNamedPoint(System,IParam,keyItem,setIndex,index,"");
+    }
+  catch (const ColErr::ExBase&)
+    {
+      return defValue;
+    }
+}
+
+  Geometry::Vec3D
+  getNamedAxis(const Simulation& System,
+	       const inputParam& IParam,
+	       const std::string& keyItem,
+	       const size_t setIndex,
+	       size_t& index,
+	       const std::string& errStr)
   /*!
     Generate a named Axis : One of:
     - Vec3D(x,y,z).norm()
     - FixedComp:Index
     - SurfMap:Index. plane.normal/cyclinder.axis/cone.axis
   */
-{
-  ELog::RegMethod RegA("inputParamSupport[F]","getNamedAxis");  
+  {
+    ELog::RegMethod RegA("inputParamSupport[F]","getNamedAxis");  
 
-  const std::string objName=
-    IParam.getValueError<std::string>
-    (keyItem,setIndex,index,errStr+"[Object Name/Point]");
+    const std::string objName=
+      IParam.getValueError<std::string>
+      (keyItem,setIndex,index,errStr+"[Object Name/Point]");
 
-  Geometry::Vec3D point;
-  if (StrFunc::convert(objName,point))
-    return point.unit();
+    index++;      // add one -- subtract if faile
 
-  const std::string::size_type pos=objName.find(':');
-  if (pos!=std::string::npos)
-    {
-      const std::string unitFC=objName.substr(0,pos);
-      std::string indexName=objName.substr(pos+1);
+    Geometry::Vec3D point;
+    if (StrFunc::convert(objName,point))
+      return point.unit();
+
+    const std::string::size_type pos=objName.find(':');
+    if (pos!=std::string::npos)
+      {
+	const std::string unitFC=objName.substr(0,pos);
+	std::string indexName=objName.substr(pos+1);
       
-      // unitFC MUST work and indexName can be number/name
-      const attachSystem::FixedComp* FCptr=
-	System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
-      // SurfMap
-      const attachSystem::SurfMap* SMptr=
-	dynamic_cast<const attachSystem::SurfMap*>(FCptr);
-      if (SMptr)
-	{
-	  const std::string::size_type posB=indexName.find(':');
-	  size_t index(0);
-	  if (posB!=std::string::npos &&
-	      StrFunc::convert(indexName.substr(posB+1),index))
-	    {
-	      indexName.erase(posB,std::string::npos);
-	    }
-	  if (SMptr->hasSurf(indexName,index))
-	    {
-	      const Geometry::Surface* SPtr=
-		SMptr->getSurfPtr(indexName,index);
-	      if (const Geometry::Plane* PPtr=
-		  dynamic_cast<const Geometry::Plane*>(SPtr))
-		return PPtr->getNormal();
-	      // cylinder
-	      const Geometry::Cylinder* CPtr=
-		dynamic_cast<const Geometry::Cylinder*>(SPtr);
-	      if (CPtr)
-		return CPtr->getNormal();
-	      // cone
-	      const Geometry::Cone* CnPtr=
-		dynamic_cast<const Geometry::Cone*>(SPtr);
-	      if (CnPtr)
-		return CnPtr->getNormal();
-	    }
-	}
-      // FixedComp:Axis
-      if (FCptr->hasLinkPt(indexName))
-	return FCptr->getLinkAxis(indexName);
+	// unitFC MUST work and indexName can be number/name
+	const attachSystem::FixedComp* FCptr=
+	  System.getObjectThrow<attachSystem::FixedComp>(unitFC,errStr);
+	// SurfMap
+	const attachSystem::SurfMap* SMptr=
+	  dynamic_cast<const attachSystem::SurfMap*>(FCptr);
+	if (SMptr)
+	  {
+	    const std::string::size_type posB=indexName.find(':');
+	    size_t itemIndex(0);
+	    if (posB!=std::string::npos &&
+		StrFunc::convert(indexName.substr(posB+1),itemIndex))
+	      {
+		indexName.erase(posB,std::string::npos);
+	      }
+	    if (SMptr->hasSurf(indexName,itemIndex))
+	      {
+		const Geometry::Surface* SPtr=
+		  SMptr->getSurfPtr(indexName,itemIndex);
+		if (const Geometry::Plane* PPtr=
+		    dynamic_cast<const Geometry::Plane*>(SPtr))
+		  return PPtr->getNormal();
+		// cylinder
+		const Geometry::Cylinder* CPtr=
+		  dynamic_cast<const Geometry::Cylinder*>(SPtr);
+		if (CPtr)
+		  return CPtr->getNormal();
+		// cone
+		const Geometry::Cone* CnPtr=
+		  dynamic_cast<const Geometry::Cone*>(SPtr);
+		if (CnPtr)
+		  return CnPtr->getNormal();
+	      }
+	  }
+	// FixedComp:Axis
+	if (FCptr->hasLinkPt(indexName))
+	  return FCptr->getLinkAxis(indexName);
+      }
+  
+    // Everything failed: BUT need to reset index
+    index--;
+    throw ColErr::InContainerError<std::string>(objName,errStr);
+  }
+
+Geometry::Vec3D
+getDefNamedAxis(const Simulation& System,
+		const inputParam& IParam,
+		const std::string& keyItem,
+		const size_t setIndex,
+		size_t& index,
+		const Geometry::Vec3D& defValue)
+/*!
+  Generate a named point : One of
+  - Vec3D(x,y,z)
+  - FixedComp:Index
+  - PointMap:Index
+  \param defValue :: Returned value
+*/
+{
+  ELog::RegMethod RegA("inputParamSupport[F]","getDefNamedPoint");  
+
+  try
+    {
+      return getNamedAxis(System,IParam,keyItem,setIndex,index,"");
     }
-  
-  // Everything failed
-  
-  throw ColErr::InContainerError<std::string>(objName,errStr);
+  catch (const ColErr::ExBase&)
+    {
+      return defValue;
+    }
 }
-  
+
 std::vector<int>
 getNamedCells(const Simulation& System,
 	      const inputParam& IParam,

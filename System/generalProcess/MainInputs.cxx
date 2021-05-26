@@ -214,6 +214,8 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regMulti("wwgMesh","wwgMesh",25,0);
+  IParam.regMulti("wwgSource","wwgSource",30,1);
+  IParam.regMulti("wwgPlane","wwgPlane",30,1);
 
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");

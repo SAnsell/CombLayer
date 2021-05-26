@@ -63,6 +63,7 @@
 #include "vertexCalc.h"
 #include "inputParam.h"
 #include "ImportControl.h"
+#include "support.h"
 
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -144,6 +145,67 @@ WCellControl::procRebase(const Simulation& System,
   return;
 }
 
+void
+WCellControl::processPtString(std::string ptStr,
+			      std::string& ptType,
+			      size_t& ptIndex,
+			      bool& adjointFlag) const
+/*!
+    Process a point with PtStr 
+    -- Note that this is a check of the string.
+    \todo Note that this is currently a copy of WWGControl. BOTH
+    should diverge
+
+    The input string is of the form
+    [TS]{P}Index
+    - T/S designated source / tally
+    - P [optional] indicates that a plane is used not a point
+    - [index] : number of source/plane/tally point
+
+    Example TS2 --> Adjoint type : Source 2 
+    \param ptStr :: String to process
+    \param ptType :: Source/Plane/Cone
+    \param ptIndex :: Index to SPC vector unit
+    \param adjointFlag :: use Adjoint source
+  */
+{
+  ELog::RegMethod RegA("WCellControl","processPtString");
+
+  const static std::map<char,std::string> TypeMap
+    ({ { 'S',"Source" }, {'P',"Plane"}, {'C',"Cone"} });
+
+  if (ptStr.size()<2)
+    throw ColErr::InvalidLine
+      (ptStr,"PtStr[0] expected:: [ST] [SPC] number");  
+  
+  const std::string Input(ptStr);
+  const char SP=static_cast<char>(std::toupper(ptStr[0]));
+  const char TP=static_cast<char>(std::toupper(ptStr[1]));
+  if (SP!='T' && SP!='S')  // fail
+    throw ColErr::InvalidLine(Input,"PtStr[0] expected:: [ST] [SPC] number");
+  
+  std::map<char,std::string>::const_iterator mc=TypeMap.find(TP);
+  if (mc==TypeMap.end())
+    throw ColErr::InvalidLine
+      (Input,"PtStr[1] expected:: [ST] [SPC] number");
+  
+  adjointFlag= (SP=='T') ? 1 : 0;  
+  ptType=mc->second;
+  
+  ptStr[0]=' ';
+  ptStr[1]=' ';
+  if (!StrFunc::sectPartNum(ptStr,ptIndex))
+    throw ColErr::InvalidLine(Input,"PtStr Index not found");
+
+  if (ptType=="Plane" && ptIndex>=planePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
+				     "planePt.size() < ptIndex");
+  else if (ptType=="Source" && ptIndex>=sourcePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
+				     "sourcePt.size() < ptIndex");
+
+  return;
+}
 
 void
 WCellControl::procObject(const Simulation& System,

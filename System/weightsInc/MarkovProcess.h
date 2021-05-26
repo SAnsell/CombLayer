@@ -64,9 +64,10 @@ class MarkovProcess
   ~MarkovProcess();
 
 
-  void initializeData(const WWG&);
-  void computeMatrix(const Simulation&,const WWG&,const double,
-		     const double,const double);
+  void initializeData(const WWG&,const std::string&);
+  void computeMatrix(const Simulation&,const WWG&,
+		     const std::string&,
+		     const double,const double,const double);
   void multiplyOut(const size_t);
   void rePopulateWWG();
   
