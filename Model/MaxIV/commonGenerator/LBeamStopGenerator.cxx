@@ -63,6 +63,20 @@ LBeamStopGenerator::LBeamStopGenerator() :
   */
 {}
 
+LBeamStopGenerator::LBeamStopGenerator(const std::string&) :
+  length(50.0),innerVoidLen(15.0),
+  innerLength(5.0),innerRadius(4.0),
+  midVoidLen(7.5),midLength(22.5),
+  midRadius(7.0),outerRadius(20.0),
+  midNLayers(1),
+  outerNLayers(1),
+  voidMat("Void"),innerMat("Graphite"),
+  midMat("Poly"),outerMat("Stainless304L")
+  /*!
+    Constructor and defaults
+  */
+{}
+
 LBeamStopGenerator::~LBeamStopGenerator()
  /*!
    Destructor

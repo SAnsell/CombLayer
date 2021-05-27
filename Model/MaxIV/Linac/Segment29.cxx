@@ -249,6 +249,10 @@ Segment29::buildObjects(Simulation& System)
   outerCellA=IZTop->createUnit(System,*beamStopB,"back");
   CellMap::addCell("SpaceFiller",outerCellA);
 
+  // end space filler
+  outerCellA=IZMid->createUnit(System,*beamStopA,"back");
+  CellMap::addCell("SpaceFiller",outerCellB);
+
   // inital cell if needed
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {
@@ -286,7 +290,7 @@ Segment29::createLinks()
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));
 
-  buildZone->setBack(FixedComp::getFullRule("backMid"));
+  buildZone->setBack(FixedComp::getFullRule("backFlat"));
   
   return;
 }

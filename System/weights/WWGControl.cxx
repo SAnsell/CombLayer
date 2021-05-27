@@ -492,41 +492,39 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
 
   wwg.scaleMesh("sourceFlux",1.0);
   
-  if (IParam.flag("wwgNorm"))
+  const size_t NNorm=IParam.setCnt("wwgNorm");
+  for(size_t setIndex=0;setIndex<NNorm;setIndex++)
     {
-      const std::string info=
-        IParam.getDefValue<std::string>("","wwgNorm",0,0);
-      if (info=="help" || info=="Help")
+      const std::string meshIndex=
+	IParam.getValueError<std::string>
+	("wwgNorm",setIndex,0,"Mesh Index");
+      
+      if (meshIndex=="help" || meshIndex=="Help")
 	{
 	  ELog::EM<<"wwgNorm ==> \n"
 	    "       meshIndex :: Name of mesh to process \n"
 	    "       log(weightRange) [Manditory] (typical 20) \n"
 	    "       lowRange (+ve takes data range) [default 1.0]\n"
 	    "       highRange (+ve takes data range) [default 1.0]\n"
-	    <<ELog::endCrit;
+		  <<ELog::endCrit;
 	  return;
 	}
-
-      const std::string meshIndex=
-        IParam.getValueError<std::string>("wwgNorm",0,0,"Mesh Index range not given");
       const double weightRange=
-        IParam.getValueError<double>("wwgNorm",0,1,"Weight range not given");
-      const double lowRange=
-        IParam.getDefValue<double>(1.0,"wwgNorm",0,2);    // +ve means default
-      const double highRange=
-        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
-      //      const double powerRange=
-      //        IParam.getDefValue<double>(1.0,"wwgNorm",0,4);
+	IParam.getValueError<double>("wwgNorm",setIndex,1,"weightRange");
 
+      // +ve means default
+      const double lowRange=
+	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,2);
+
+      const double highRange=
+	IParam.getDefValue<double>(1.0,"wwgNorm",setIndex,3);
+      
       const WWGWeight& WMesh=wwg.getMesh(meshIndex);
       const size_t NE=WMesh.getESize();
-      
       for(size_t i=0;i<NE;i++)
 	wwg.scaleRange(meshIndex,i,lowRange,highRange,weightRange);
       //      wwg.powerRange(powerWeight);
     }
-  else
-    ELog::EM<<"Warning : No WWG normalization step"<<ELog::endWarn;
   return;
 }
   

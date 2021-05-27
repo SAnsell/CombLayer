@@ -455,6 +455,7 @@ WWG::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("WWG","writeFLUKA");
 
+  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
   std::ostringstream cx;
 
   for(const auto& [Name,WMeshPtr] : WMeshMap)
