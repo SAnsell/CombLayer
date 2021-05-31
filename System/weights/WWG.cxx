@@ -455,13 +455,16 @@ WWG::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("WWG","writeFLUKA");
 
-  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
+
   std::ostringstream cx;
 
   for(const auto& [Name,WMeshPtr] : WMeshMap)
     {
       if (WMeshPtr->getID()>0)
-	WMeshPtr->writePHITS(OX);
+	{
+	  ELog::EM<<"WRITE FLUKA "<<ELog::endDiag;
+	  WMeshPtr->writeFLUKA(OX);
+	}
     }
   return;
 }

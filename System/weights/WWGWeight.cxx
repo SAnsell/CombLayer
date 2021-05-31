@@ -480,13 +480,13 @@ WWGWeight::scaleRange(const size_t eIndex,
   
   TData+=eIndex*static_cast<size_t>(WE);
 
-  if (AValue > 1e-10)
+  if (AValue > 0)
     AValue= *std::min_element(TData,TData+NData-1);
-  if (BValue > 1e-10)
+  if (BValue > 0)
     BValue= *std::max_element(TData,TData+NData-1);
 
-  double maxValue(-1e30);
-  double minValue(1e30);
+  double maxValue(-100);
+  double minValue(100);
   if (AValue<BValue)
     {
       const double ABRange(BValue-AValue);
@@ -499,6 +499,7 @@ WWGWeight::scaleRange(const size_t eIndex,
 	    TData[i] = 0.0;
 	  else
 	    {
+	      ELog::EM<<"AValue == "<<TData[i]<<ELog::endDiag;
 	      if (TData[i]>maxValue)
 		maxValue=TData[i];
 	      
@@ -667,15 +668,13 @@ WWGWeight::CADISnorm(const Simulation& System,
 		distTrack(System,sourcePt,EVal,gridPt,
 			  densityFactor,r2Length,r2Power);
 	      
-	      // w is negavtive
-	      if (Source.WGrid[e][i][j][k]>0.0) 
-		mathFunc::logAdd(sumR[e],W);
-	      else
-		mathFunc::logAdd(sumR[e],Source.WGrid[e][i][j][k]+W);
-	      
+	      sumR[e]=(i*j*k != 0) ?
+		mathFunc::logAdd(sumR[e],Source.WGrid[e][i][j][k]+W) :
+		Source.WGrid[e][i][j][k]+W;
 	      sumRA[e]=(i*j*k != 0) ?
 		mathFunc::logAdd(sumRA[e],Adjoint.WGrid[e][i][j][k]+W) :
 		Adjoint.WGrid[e][i][j][k]+W;
+	      
 	    }
 	}
   
@@ -825,7 +824,10 @@ WWGWeight::writeFLUKA(std::ostream& OX) const
 	  {
 	    cx.str("");
 	    cx<<"USRICALL "<<ID<<" "<<EI+1<<" "<<I+1<<" "<<J+1<<" "<<K+1;
-	    cx<<" "<<std::exp(WGrid[EI][I][J][K]);
+	    if (logFlag)
+	      cx<<" "<<WGrid[EI][I][J][K];
+	    else
+	      cx<<" "<<std::exp(WGrid[EI][I][J][K]);
 	    cx<<" wwg";
 	    StrFunc::writeFLUKA(cx.str(),OX);
 	  }

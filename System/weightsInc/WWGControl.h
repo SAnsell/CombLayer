@@ -52,14 +52,6 @@ class WWGControl
   // exta factors for MARKOV:
   size_t nMarkov;                ///< Markov count
 
-
-  double energyCut;              ///< Energy cut [MeV]
-  double scaleFactor;            ///< Scale factor
-  double weightPower;            ///< makes weight W^power
-  double density;                ///< scales the material density
-  double r2Length;               ///< scale factor of r2 Length 
-  double r2Power;                ///< makes weight 1/r^power
-
   std::map<std::string,Geometry::Plane> planePt;       ///< Plane points
   std::map<std::string,Geometry::Vec3D> sourcePt;      ///< Source Points
   std::map<std::string,Geometry::BasicMesh3D> meshUnit;     ///< mesh volumes
@@ -68,22 +60,19 @@ class WWGControl
   
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
-  void procParam(const mainSystem::inputParam&,const std::string&,
-		 const size_t,const size_t);
   void procEnergyType(const mainSystem::inputParam&);
   void procSourcePoint(const Simulation&,const mainSystem::inputParam&);
   void procPlanePoint(const Simulation&,const mainSystem::inputParam&);
   void procMeshPoint(const Simulation&,const mainSystem::inputParam&);
 
-
-  
   void wwgVTK(const mainSystem::inputParam&);
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
   void wwgCombine(const Simulation&,const mainSystem::inputParam&);
-
   
   void wwgMarkov(const Simulation&,const mainSystem::inputParam&);
   void wwgNormalize(const mainSystem::inputParam&);
+  void wwgActivate(const Simulation&,const mainSystem::inputParam&);
+  
   void processPtString(std::string ptStr,std::string& pType,
 		       size_t&,bool&) const;
 

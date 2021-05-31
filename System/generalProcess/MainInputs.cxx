@@ -207,12 +207,13 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wMAT","wMAT",1000,0);
   
   IParam.regMulti("wwgE","wwgE",25,0);
-  IParam.regItem("wwgVTK","wwgVTK",1,10);
-  IParam.regItem("wwgNorm","wwgNorm",0,30);
+  IParam.regMulti("wwgVTK","wwgVTK",30);
+  IParam.regMulti("wwgActive","wwgActive",100,1);
+  IParam.regMulti("wwgCADIS","wwgCADIS",30,1);
+  IParam.regMulti("wwgNorm","wwgNorm",30,0);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
-  IParam.regItem("wwgCADIS","wwgCADIS",0,30);
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
-  IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
+  IParam.regMulti("wwgRPtMesh","wwgRPtMesh",100,0);
   IParam.regMulti("wwgMesh","wwgMesh",25,0);
   IParam.regMulti("wwgSource","wwgSource",30,1);
   IParam.regMulti("wwgPlane","wwgPlane",30,1);

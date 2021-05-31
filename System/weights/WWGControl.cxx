@@ -70,9 +70,7 @@ namespace WeightSystem
 {
 
 WWGControl::WWGControl() :
-  nMarkov(0),energyCut(0.0),
-  scaleFactor(1.0),weightPower(0.5),
-  density(1.0),r2Length(1.0),r2Power(2.0)
+  nMarkov(0)
   /*!
     Constructor
   */
@@ -82,9 +80,6 @@ WWGControl::WWGControl() :
 WWGControl::WWGControl(const WWGControl& A) :
   activeParticles(A.activeParticles),
   nMarkov(A.nMarkov),
-  energyCut(A.energyCut),scaleFactor(A.scaleFactor),
-  weightPower(A.weightPower),
-  density(A.density),r2Length(A.r2Length),r2Power(A.r2Power),
   planePt(A.planePt),sourcePt(A.sourcePt),
   meshUnit(A.meshUnit)  
   /*!
@@ -105,12 +100,6 @@ WWGControl::operator=(const WWGControl& A)
     {
       nMarkov=A.nMarkov;
       activeParticles=A.activeParticles;
-      energyCut=A.energyCut;
-      scaleFactor=A.scaleFactor;
-      weightPower=A.weightPower;
-      density=A.density;
-      r2Length=A.r2Length;
-      r2Power=A.r2Power;
       planePt=A.planePt;
       sourcePt=A.sourcePt;
       meshUnit=A.meshUnit;
@@ -194,50 +183,6 @@ WWGControl::hasSourcePoint(const std::string& sName) const
 {
   return (sourcePt.find(sName)!=sourcePt.end());
 }
-
-  
-void
-WWGControl::procParam(const mainSystem::inputParam& IParam,
-		      const std::string& unitName,
-		      const size_t iSet,
-		      const size_t iOffset)
-/*!
-    Set the global constants based on a unit and the offset numbers
-    Numbers are in log space [nat log]
-    \param IParam :: Input parameters
-    \param unitName :: unit string
-    \param iSet :: group number [normally 0]
-    \param iOffset :: offset number 
-   */
-{
-  ELog::RegMethod RegA("WeightControl","procParam");
-
-  const size_t nItem=IParam.setCnt(unitName);
-
-
-  if (iSet>nItem)
-    throw ColErr::IndexError<size_t>(iSet,nItem,"iSet/nItem:"+unitName);
-    
-  size_t index(iOffset);  
-
-  energyCut=IParam.getDefValue<double>(0.0,unitName,iSet,index++);
-  scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
-  density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
-  r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
-  r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
-
-  ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
-	  <<" sF:"<<scaleFactor
-    	  <<" rho:"<<density
-    	  <<" r2Len:"<<r2Length
-	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
-  if (r2Power>0.1)
-    weightPower=1.0/r2Power;
-  if (scaleFactor>1.0)
-    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
-  return;
-}
-    
 
 void
 WWGControl::procSourcePoint(const Simulation& System,
@@ -377,13 +322,14 @@ WWGControl::wwgCreate(const Simulation& System,
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
 
-  const size_t NSetCnt=IParam.setCnt("wwgCalc");
+  const std::string wKey("wwgCalc");
+  const size_t NSetCnt=IParam.setCnt(wKey);
   
   for(size_t iSet=0;iSet<NSetCnt;iSet++)
     {
       const std::string meshName=
         IParam.getValueError<std::string>
-        ("wwgCalc",iSet,0,"wwgCalc without mesh name");
+        (wKey,iSet,0,"wwgCalc without mesh name");
 
       if (meshName=="help" || meshName=="Help")
 	{
@@ -392,6 +338,7 @@ WWGControl::wwgCreate(const Simulation& System,
 	    "       particleList : list of particles\n"
 	    "       gridName : Name of grid to use\n"
 	    "       SourceName [Plane/Point name]\n"
+	    "       Energy Cut [default: 0.0] \n"
 	    "       ScaleFactor [default: 1.0] \n"
 	    "       densityFactor [default: 1.0] \n"
 	    "       r2Length factor [default: 1.0] \n"
@@ -401,18 +348,25 @@ WWGControl::wwgCreate(const Simulation& System,
 
       std::string particleList=
         IParam.getValueError<std::string>
-        ("wwgCalc",iSet,1,"wwgCalc without particle naem");
+        (wKey,iSet,1,"wwgCalc without particle naem");
       
       const std::string meshGrid=
         IParam.getValueError<std::string>
-	("wwgCalc",iSet,2,"wwgCalc without mesh grid name");
+	(wKey,iSet,2,"wwgCalc without mesh grid name");
       
       const std::string sourceName=
         IParam.getValueError<std::string>
-        ("wwgCalc",iSet,3,"wwgCalc without source/plane name");
-     
-      // get values [ecut / density / r2Length / r2Power ]
-      procParam(IParam,"wwgCalc",iSet,4);
+        (wKey,iSet,3,"wwgCalc without source/plane name");
+
+      size_t index(4);
+      const double energyCut=
+	IParam.getDefValue<double>(0.0,wKey,iSet,index++);
+      const double density=
+	IParam.getDefValue<double>(1.0,wKey,iSet,index++);
+      const double r2Length=
+	IParam.getDefValue<double>(1.0,wKey,iSet,index++);
+      const double r2Power=
+	IParam.getDefValue<double>(2.0,wKey,iSet,index++);
 
       const Geometry::BasicMesh3D& mUnit=getGrid(meshGrid);
       if (hasPlanePoint(sourceName))
@@ -457,11 +411,20 @@ WWGControl::wwgMarkov(const Simulation& System,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
-  
-  for(size_t index=0;index<NSetCnt;index++)
+
+  const std::string wKey("wwgMarkov");
+  for(size_t iSet=0;iSet<NSetCnt;iSet++)
     {
+      size_t index(0);
       const size_t nMult=IParam.getValueError<size_t>
-	("wwgMarkov",index,0,"Mult count not set");
+	(wKey,iSet,index++,"Mult count not set");
+      const double density=
+	IParam.getDefValue<double>(1.0,wKey,iSet,index++);
+      const double r2Length=
+	IParam.getDefValue<double>(1.0,wKey,iSet,index++);
+      const double r2Power=
+	IParam.getDefValue<double>(2.0,wKey,iSet,index++);
+      
       if (nMarkov)
 	{
 	  MarkovProcess MCalc;
@@ -489,8 +452,6 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
-
-  wwg.scaleMesh("sourceFlux",1.0);
   
   const size_t NNorm=IParam.setCnt("wwgNorm");
   for(size_t setIndex=0;setIndex<NNorm;setIndex++)
@@ -569,26 +530,35 @@ WWGControl::wwgCombine(const Simulation& System,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
+
+  const std::string wKey("wwgCADIS");
   
-  const size_t cadisCNT=IParam.setCnt("wwgCADIS");
-  for(size_t index=0;index<cadisCNT;index++)
+  const size_t cadisCNT=IParam.setCnt(wKey);
+  for(size_t iSet=0;iSet<cadisCNT;iSet++)
     {
       size_t itemCnt(0);
       const std::string meshIndex=IParam.getValueError<std::string>
-	("wwgCADIS",index,itemCnt++,"CADIS MeshIndex");
+	(wKey,iSet,itemCnt++,"CADIS MeshISet");
       
       const std::string SUnit=IParam.getValueError<std::string>
-	("wwgCADIS",index,itemCnt++,"CADIS SUnit");
+	(wKey,iSet,itemCnt++,"CADIS SUnit");
       
       const std::string TUnit=IParam.getValueError<std::string>
-	("wwgCADIS",index,itemCnt++,"CADIS TUnit");
+	(wKey,iSet,itemCnt++,"CADIS TUnit");
       
       const std::string SPt=IParam.getValueError<std::string>
-	("wwgCADIS",index,itemCnt++,"CADIS Source Point");
+	(wKey,iSet,itemCnt++,"CADIS Source Point");
       
       const std::string TPt=IParam.getValueError<std::string>
-	("wwgCADIS",index,itemCnt++,"CADIS Adjoint Point");
-      
+	(wKey,iSet,itemCnt++,"CADIS Adjoint Point");
+
+      const double density=
+	IParam.getDefValue<double>(1.0,wKey,iSet,itemCnt++);
+      const double r2Length=
+	IParam.getDefValue<double>(1.0,wKey,iSet,itemCnt++);
+      const double r2Power=
+	IParam.getDefValue<double>(2.0,wKey,iSet,itemCnt++);
+
       WWGWeight& MeshGrid=wwg.getMesh(meshIndex);
       const WWGWeight& sourceFlux=wwg.getMesh(SUnit);
       const WWGWeight& adjointFlux=wwg.getMesh(TUnit);
@@ -622,6 +592,42 @@ WWGControl::wwgCombine(const Simulation& System,
   
   return;
 }
+
+void
+WWGControl::wwgActivate(const Simulation& System,
+			const mainSystem::inputParam& IParam)
+  /*!
+    Co-joint the adjoint/source terms
+    \param System :: Model simulation
+    \param IParam :: input data
+   */
+{
+  ELog::RegMethod RegA("WWGControl","wwgActivate");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  size_t idCount(1);
+  const size_t CNT=IParam.setCnt("wwgActive");
+  for(size_t index=0;index<CNT;index++)
+    {
+      const std::string meshIndex=IParam.getValueError<std::string>
+	("wwgActive",index,0,"wwgActive: MeshIndex");
+
+      const std::string outType=
+	StrFunc::toUpperString(IParam.getDefValue<std::string>
+			       ("LOG","wwgActive",index,1));
+
+      WWGWeight& MeshGrid=wwg.getMesh(meshIndex);
+      MeshGrid.setID(idCount);
+      if (outType=="LOG")
+	MeshGrid.setOutLog();
+      idCount++;
+    }      
+    
+  return;
+}
   
 void
 WWGControl::processWeights(Simulation& System,
@@ -643,7 +649,6 @@ WWGControl::processWeights(Simulation& System,
       System.populateCells();
       System.createObjSurfMap();
 
-      procParam(IParam,"wWWG",0,0);         // get r2/power/density factors
       procSourcePoint(System,IParam);
       procPlanePoint(System,IParam);
       procMeshPoint(System,IParam);
@@ -651,8 +656,9 @@ WWGControl::processWeights(Simulation& System,
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);
       wwgCombine(System,IParam);
-      //      wwgNormalize(IParam);
-      
+      wwgNormalize(IParam);
+
+      wwgActivate(System,IParam);
       //      wwgVTK(IParam);	    
       for(const std::string& P : activeParticles)
 	{

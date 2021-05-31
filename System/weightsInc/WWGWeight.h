@@ -50,6 +50,7 @@ class WWGWeight
   std::vector<double> EBin;           ///< Energy bins
   Geometry::BasicMesh3D Grid;         ///< Mesh Grid 
 
+  bool logFlag;                       ///< Write output as log
   /// local storage for data [Energy,i,j,k]  in logspace [-ve to zero]
   boost::multi_array<double,4> WGrid; 
 
@@ -92,6 +93,9 @@ class WWGWeight
 
   //@}
 
+  /// setter for ID
+  void setID(const size_t A) { ID=A; }
+  void setOutLog() { logFlag=1; }
   void setEnergy(const std::vector<double>&);
   void setDefault(const std::vector<double>&);
   void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
