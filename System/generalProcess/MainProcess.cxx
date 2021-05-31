@@ -681,6 +681,8 @@ buildFullSimulation(Simulation* SimPtr,
 
 
   SimPtr->minimizeObject("All");
+
+  // Extra
   if (createVTK(IParam,SimPtr,OName))
     return;
 

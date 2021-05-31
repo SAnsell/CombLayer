@@ -158,18 +158,25 @@ LineTrack::calculate(const Simulation& ASim)
   
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
-  MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
-					 (EndPt-InitPt).unit()*1e-5,0);
-
+  MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
   if (!OPtr)
     ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
+
+  //  const std::set<int> surfSet=OPtr->surfValid(InitPt);
+  
+  // ELog::EM<<"Initial cell == "<<*OPtr<<ELog::endDiag;
+  // ELog::EM<<"Point == "<<InitPt<<ELog::endDiag;
+
+  // ELog::EM<<"Initial test point == "<<
+  //   OPtr->pointStr(InitPt)<<ELog::endDiag;
   int SN=OPtr->isOnSide(InitPt);
+
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
-      // Update Track : returns 1 on excess of distance
+        // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);

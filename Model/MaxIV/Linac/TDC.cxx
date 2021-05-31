@@ -388,6 +388,7 @@ TDC::reconstructInjectionHall(Simulation& System)
 	CInsert.insert(CN);
     }
 
+  ELog::EM<<"Outer = "<<*(System.findObject(1040022))<<ELog::endDiag;
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
@@ -410,7 +411,10 @@ TDC::reconstructInjectionHall(Simulation& System)
 		}
 	    }
 	}
-
+      
+      ELog::EM<<"OuterX = "<<*(System.findObject(1040022))<<ELog::endDiag;
+      ELog::EM<<"XXX = "<<BZvol<<ELog::endDiag;
+	
       std::map<int,HeadRule>::iterator mc=
 	originalSpaces.find(CN);
 
@@ -641,7 +645,7 @@ TDC::createAll(Simulation& System,
     }
 
   reconstructInjectionHall(System);
-
+  ELog::EM<<"Outer = "<<*(System.findObject(1040022))<<ELog::endDiag;
 
 
   return;

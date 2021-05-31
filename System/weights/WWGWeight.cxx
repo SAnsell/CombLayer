@@ -589,8 +589,7 @@ WWGWeight::distTrack(const Simulation& System,
     std::is_same<T,Geometry::Plane>::value,
     ModelSupport::ObjectTrackPlane,
     ModelSupport::ObjectTrackPoint>::type TrackType;
-  
-  
+    
   TrackType OTrack(aimPt);
   
   OTrack.addUnit(System,1,gridPt);

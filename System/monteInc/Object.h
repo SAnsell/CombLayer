@@ -180,12 +180,16 @@ class Object
     { return std::pair<double,double>(magMinStep,magMaxStep); }  
   int isValid(const Geometry::Vec3D&) const;            
   int isValid(const Geometry::Vec3D&,const int) const;            
-  int isDirectionValid(const Geometry::Vec3D&,const int) const;            
+  int isDirectionValid(const Geometry::Vec3D&,const int) const;
+  int isDirectionValid(const Geometry::Vec3D&,const std::set<int>&,
+		       const int) const;            
   int isValid(const Geometry::Vec3D&,const std::set<int>&) const;            
   int pairValid(const int,const Geometry::Vec3D&) const;   
   int isValid(const std::map<int,int>&) const; 
+  std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::map<int,int> mapValid(const Geometry::Vec3D&) const;
 
+  
   int isOnSurface(const Geometry::Vec3D&) const;
   int isOnSide(const Geometry::Vec3D&) const;
 

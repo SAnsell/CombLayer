@@ -754,6 +754,55 @@ HeadRule::isValid(const std::map<int,int>& M)const
   return (HeadNode) ? HeadNode->isValid(M) : 0;
 }
 
+std::set<int>
+HeadRule::surfValid(const Geometry::Vec3D& Pt) const
+  /*!
+    Given a point determine those surfaces the point is on
+    and are REALLY the object surface [e.g. moving a little
+    out/in of the surface exits/enters the object or vis-versa]
+    \param Pt :: Point to test
+    \return set of surfaces that the point is on AND are external
+   */
+{
+  std::set<int> sideSurf;
+  if (!isValid(Pt)) return sideSurf;
+  
+  const std::vector<const Geometry::Surface*> SVec=getSurfaces();
+  for(const Geometry::Surface* SPtr : SVec)
+    {
+      ELog::EM<<"SPtr = "<<*SPtr;
+      
+      if (!SPtr->side(Pt))
+	sideSurf.emplace(SPtr->getName());
+    }
+  ELog::EM<<"Side Surf == "<<sideSurf.size()<<ELog::endDiag;
+  if (sideSurf.size()<2) return sideSurf;
+
+  std::set<int> Out;
+  for(const int SN : sideSurf)
+    {
+      const bool aPlus=isDirectionValid(Pt,SN);
+      const bool aMinus=isDirectionValid(Pt,-SN);
+      if (aPlus!=aMinus)
+	Out.emplace(SN);
+    }
+  return Out;
+}
+
+bool
+HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,
+			   const std::set<int>& ExSN,
+			   const int surfNum) const
+  /*!
+    Given the point find is with signed surface surfNum, (and 
+    assuming PT is ont surfaces ExSN.
+    \param Pt :: Point to test
+    \param ExSN :: Excluded surfaces
+   */
+{
+  return (HeadNode) ? HeadNode->isDirectionValid(Pt,ExSN,surfNum) : 0;
+}
+  
 bool
 HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S) const
   /*!
@@ -2182,13 +2231,6 @@ HeadRule::procString(const std::string& Line)
 	      RuleList[Ridx]=TmpO;
 	      hold=' ';
 	    }
-	  else if (hold=='%')          // container rule
-	    {
-	      ContObj* TmpC=new ContObj();
-	      TmpC->setObjN(SN);
-	      RuleList[Ridx]=TmpC;
-	      hold=' ';
-	    }
 	  else       // Normal rule
 	    {
 	      TmpR=new SurfPoint();
@@ -2231,13 +2273,6 @@ HeadRule::procString(const std::string& Line)
 	      hCnt--;
 	      RuleList[compUnit]=procComp(RuleList[compUnit]);
 	      Ln.erase(hCnt,lbrack-hCnt);
-	    }
-	  else if (hCnt && Ln[hCnt-1]=='%')
-   	    {
-	      hCnt--;
-	      // Contained within code: NOT FINISHED:
-	      ELog::EM<<"In % "<<Ln.substr(hCnt,lbrack-hCnt)<<ELog::endErr;
-	      throw ColErr::ExitAbort("% handler");
 	    }
 	}
       else

@@ -97,7 +97,10 @@ class HeadRule
   int pairValid(const int,const Geometry::Vec3D&) const;           
   bool isValid(const std::map<int,int>&) const; 
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  bool isDirectionValid(const Geometry::Vec3D&,
+			const std::set<int>&,const int) const;
 
+  std::set<int> surfValid(const Geometry::Vec3D&) const;
   std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
     const;

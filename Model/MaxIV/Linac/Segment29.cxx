@@ -76,6 +76,9 @@
 #include "TDCsegment.h"
 #include "Segment29.h"
 
+#include "Importance.h"
+#include "Object.h"
+
 namespace tdcSystem
 {
 
@@ -246,13 +249,13 @@ Segment29::buildObjects(Simulation& System)
     (System,*IZMid,*yagUnitB,"back",*beamStopB);
 
   // end space filler
-  outerCellA=IZTop->createUnit(System,*beamStopB,"back");
-  CellMap::addCell("SpaceFiller",outerCellA);
+  //  outerCellA=IZTop->createUnit(System,*beamStopB,"back");
+  //  CellMap::addCell("SpaceFiller",outerCellA);
 
-  // end space filler
-  outerCellA=IZMid->createUnit(System,*beamStopA,"back");
+  // end space filler [lower unit / top surface]
+  outerCellB=IZMid->createUnit(System,*beamStopA,"back");
   CellMap::addCell("SpaceFiller",outerCellB);
-
+  
   // inital cell if needed
   if (!prevSegPtr || !prevSegPtr->isBuilt())
     {

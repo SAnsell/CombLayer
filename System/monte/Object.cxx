@@ -719,6 +719,19 @@ Object::isValid(const Geometry::Vec3D& Pt,
   return HRule.isValid(Pt,ExSN);
 }
 
+std::set<int>
+Object::surfValid(const Geometry::Vec3D& Pt) const
+  /*! 
+    Determines the surface set the point is on
+    or on the surface
+    \param Pt :: Point to be tested
+    \param ExSN :: Excluded surf Number [unsigned]
+    \returns 1 if true and 0 if false
+  */
+{
+  return HRule.surfValid(Pt);
+}
+
 int
 Object::isDirectionValid(const Geometry::Vec3D& Pt,
 			 const int ExSN) const
@@ -731,6 +744,21 @@ Object::isDirectionValid(const Geometry::Vec3D& Pt,
 */
 {
   return HRule.isDirectionValid(Pt,ExSN);
+}
+
+int
+Object::isDirectionValid(const Geometry::Vec3D& Pt,
+			 const std::set<int>& surfSet,
+			 const int ExSN) const
+/*! 
+  Determines is Pt is within the object 
+  or on the surface
+  \param Pt :: Point to be tested 
+  \param ExSN :: Excluded surf Number [signed]
+  \returns 1 if true and 0 if false
+*/
+{
+  return HRule.isDirectionValid(Pt,surfSet,ExSN);
 }
 
 

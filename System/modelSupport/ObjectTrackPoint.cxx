@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectTrackPoint.cxx
+ * File:   modelSupport/ObjectTrackPoint.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -103,6 +103,7 @@ ObjectTrackPoint::addUnit(const Simulation& System,
   LineTrack A(IPt,TargetPt);
   A.calculate(System);
   Items.insert(std::map<long int,LineTrack>::value_type(objN,A));
+  
   return;
 }  
 
