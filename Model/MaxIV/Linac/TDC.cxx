@@ -3,7 +3,7 @@
 
  * File: Linac/TDC.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "BlockZone.h"
-#include "InnerZone.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 
@@ -319,12 +318,12 @@ TDC::buildInnerZone(Simulation& System,
       {"l2spf",{"Front","#KlystronWall","LinearVoid","LWideVoid"}},
       {"l2spfTurn",{"KlystronWall","#MidWall","LWideVoid",""}},
       {"l2spfAngle",{"KlystronCorner","MidAngleWall","LWideVoid","LTVoid"}},
-      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
-      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
+      //      {"tdcFront"  ,{"DoorEndWall","#TDCMid","SPFVoid","TVoidB"}},
+      //      {"tdcMain"  ,{"TDCStart","#TDCMid","SPFVoid",""}},
       {"tdc"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"tdcShort", {"TDCAngleMid","#TDCMid","SPFVoid","LongVoid"}},
       {"spfLong"  ,{"TDCMid","#Back","LongVoid",""}},
-      {"spfAngle"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
+      {"spfAngle"  ,{"DoorEndWall","#TDCMid","TVoidB","SPFVoid"}},
       {"spf"  ,{"TDCCorner","#TDCMid","SPFVoid","LongVoid"}},
       {"spfFar"  ,{"TDCMid","#BackWallFront","LongVoid",""}}, // last cell with columns
       {"spfBehindBackWall"  ,{"BackWallBack","#FemtoMAXBack","C080016",""}} // cell behind back wall
@@ -379,6 +378,7 @@ TDC::reconstructInjectionHall(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TDC","reconstructInjectionHall");
+      
   // Make list of unique insert cells:
   std::set<int> CInsert;
   for(const auto& [name,bzPtr] : bZone)
@@ -388,6 +388,7 @@ TDC::reconstructInjectionHall(Simulation& System)
 	CInsert.insert(CN);
     }
 
+  ELog::EM<<"Outer = "<<*(System.findObject(1040022))<<ELog::endDiag;
   attachSystem::BlockZone BZvol;
   for(const int CN : CInsert)
     {
@@ -410,6 +411,10 @@ TDC::reconstructInjectionHall(Simulation& System)
 		}
 	    }
 	}
+      
+      ELog::EM<<"OuterX = "<<*(System.findObject(1040022))<<ELog::endDiag;
+      ELog::EM<<"XXX = "<<BZvol<<ELog::endDiag;
+	
       std::map<int,HeadRule>::iterator mc=
 	originalSpaces.find(CN);
 
@@ -423,9 +428,6 @@ TDC::reconstructInjectionHall(Simulation& System)
       MonteCarlo::Object* OPtr=System.findObject(CN);
       OPtr->procHeadRule(HROut);
     }
-
-
-
   return;
 }
 
@@ -480,9 +482,9 @@ TDC::createAll(Simulation& System,
       {"Segment8",{"l2spfAngle","Segment7",1}},
       {"Segment9",{"l2spfAngle","Segment8",1}},
       {"Segment10",{"l2spfAngle","Segment9",1}},
-      {"Segment11",{"tdcFront","Segment10",1}},
-      {"Segment12",{"tdcFront","Segment11",1}},
-      {"Segment13",{"tdcMain","Segment12",1}},
+      {"Segment11",{"spfAngle","Segment10",1}},
+      {"Segment12",{"spfAngle","Segment11",1}},
+      {"Segment13",{"spfAngle","Segment12",1}},
       {"Segment14",{"tdc","Segment13",1}},
       {"Segment15",{"tdc","Segment14",1}},
       {"Segment16",{"tdc","Segment15",1}},
@@ -499,7 +501,7 @@ TDC::createAll(Simulation& System,
       {"Segment27",{"spfLong","Segment26",2}},
       {"Segment28",{"spfLong","Segment27",2}},
       {"Segment29",{"spfLong","Segment28",2}},
-      {"Segment30",{"tdcMain","Segment12",1}},
+      {"Segment30",{"spfAngle","Segment12",1}},
       {"Segment31",{"spfAngle","Segment30",1}},
       {"Segment32",{"spfAngle","Segment31",1}},
       {"Segment33",{"spfAngle","Segment32",1}},
@@ -556,10 +558,17 @@ TDC::createAll(Simulation& System,
 	  segPtr->registerPrevSeg(prevSegPtr,prevIndex);
 
 	  std::vector<std::string> sideSegNames;
+
+	  if (BL=="Segment7")
+	    sideSegNames={"Segment6"};
+
+	  if (BL=="Segment8")
+	    sideSegNames={"Segment7"};
+
 	  if (BL=="Segment10")
 	    {
 	      std::shared_ptr<attachSystem::BlockZone> secondZone=
-		buildInnerZone(System,"Segment10B","tdcFront");
+		buildInnerZone(System,"Segment10B","spfAngle");
 	      segPtr->setNextZone(secondZone.get());
 	    }
 	  if (BL=="Segment30")
@@ -570,6 +579,9 @@ TDC::createAll(Simulation& System,
 
 	  if (BL=="Segment47")
 	    sideSegNames={"Segment45","Segment46"};
+
+	  if (BL=="Segment48")
+	    sideSegNames={"Segment47"};
 
 	  if (BL=="Segment49") // same treatment as Segment10
 	    {
@@ -597,7 +609,7 @@ TDC::createAll(Simulation& System,
 		}
 	    }
 
-	  segPtr->setInnerZone(buildZone.get());
+	  //	  segPtr->setInnerZone(buildZone.get());
 	  segPtr->removeSpaceFillers(System);
 
 	  segPtr->createAll
@@ -633,7 +645,7 @@ TDC::createAll(Simulation& System,
     }
 
   reconstructInjectionHall(System);
-
+  ELog::EM<<"Outer = "<<*(System.findObject(1040022))<<ELog::endDiag;
 
 
   return;

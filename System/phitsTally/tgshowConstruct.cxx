@@ -3,7 +3,7 @@
  
  * File:   phitsTally/tgshowConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,33 +38,17 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
 
 #include "SimPHITS.h"
-#include "particleConv.h"
-#include "TallySelector.h"
 #include "meshConstruct.h"
 #include "MeshXYZ.h"
 #include "phitsTally.h"
@@ -127,10 +111,10 @@ tgshowConstruct::processMesh(SimPHITS& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh
+    mainSystem::meshConstruct::getObjectMesh
       (System,IParam,"tally",Index,2,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh
+    mainSystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,2,APt,BPt,Nxyz);
   else if (PType=="help")
     {

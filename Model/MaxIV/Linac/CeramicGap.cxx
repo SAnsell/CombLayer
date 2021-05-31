@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 CeramicGap::CeramicGap(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,3),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -314,6 +314,9 @@ CeramicGap::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+107));
+  FixedComp::setConnect(2,Origin+Z*(flangeARadius),Z);
+
   return;
 }
 
@@ -331,7 +334,7 @@ CeramicGap::createAll(Simulation& System,
   ELog::RegMethod RegA("CeramicGap","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
   const std::string frontStr=getRuleStr("front");
 
   createSurfaces();

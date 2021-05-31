@@ -3,7 +3,7 @@
  
  * File:   R1Common/R1RingVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,21 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
-#include "maxivVariables.h"
 
 #include "CylGateValveGenerator.h"
 #include "QuadUnitGenerator.h"
@@ -286,7 +279,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
-  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
@@ -335,7 +328,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -368,7 +361,7 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube

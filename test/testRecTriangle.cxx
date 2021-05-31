@@ -32,15 +32,10 @@
 #include <algorithm>
 #include <boost/multi_array.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Triangle.h"
 #include "Quadrilateral.h"

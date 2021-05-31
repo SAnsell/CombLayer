@@ -35,40 +35,23 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
 #include "SurInter.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "inputParam.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -78,9 +61,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
-#include "Bunker.h"
 #include "BunkerInsert.h"
 
 namespace essSystem
@@ -275,8 +256,8 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,*bunkerObj,1);
-  FixedComp::setLinkSignedCopy(1,*bunkerObj,2);
+  FixedComp::setLinkCopy(0,*bunkerObj,1);
+  FixedComp::setLinkCopy(1,*bunkerObj,2);
 
 
   // Calc bunker edge intersectoin

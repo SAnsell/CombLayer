@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   support/stringCombine.cxx
+
+ * File:   System/support/stringCombine.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -33,14 +33,11 @@
 #include <iterator>
 
 
-#include "Exception.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
 #include "stringCombine.h"
-/*! 
-  \file stringCombine.cxx 
+
+/*!
+  \file stringCombine.cxx
 */
 
 namespace StrFunc
@@ -49,7 +46,7 @@ namespace StrFunc
 char
 indexToAlpha(const size_t index)
   /*!
-    Convert an index to A-Z / a-z 
+    Convert an index to A-Z / a-z
     \param index :: index value
     \return [A-z] based on index '?' on error
   */
@@ -65,7 +62,7 @@ indexToRevAlpha(const size_t index)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[] =
@@ -80,7 +77,7 @@ alphaToIndex(const char C)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[]=
@@ -95,7 +92,7 @@ revAlphaToIndex(const char C)
   /*!
     Convert an index to  a-z / A-Z
     \param index :: index value
-    \return [a-Z] based on index 
+    \return [a-Z] based on index
   */
 {
   static const char cmap[]=
@@ -104,8 +101,8 @@ revAlphaToIndex(const char C)
   size_t pos=(strchr(cmap,C)-cmap);
   return pos;
 }
-    
-  
+
+
 template<typename T>
 std::string
 makeString(const T& V)
@@ -132,7 +129,7 @@ makeString(const std::string& V)
   return V;
 }
 
-template<template<typename T,typename A> class V,typename T,typename A> 
+template<template<typename T,typename A> class V,typename T,typename A>
 std::string
 makeString(const V<T,A>& Vec)
   /*!
@@ -207,7 +204,7 @@ template std::string makeString(const std::string&,const long int&);
 
 template std::string makeString(const std::vector<int>&);
 
-  
+
 template std::string makeString(const char*,const int&);
 template std::string makeString(const char*,const size_t&);
 

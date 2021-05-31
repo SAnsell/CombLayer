@@ -36,7 +36,6 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -44,15 +43,7 @@
 #include "objectRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
-#include "Rules.h"
-#include "Plane.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -63,15 +54,10 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
 #include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -312,8 +298,8 @@ ButterflyModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
   
-  FixedComp::setLinkSignedCopy(4,*LeftUnit,5);
-  FixedComp::setLinkSignedCopy(5,*LeftUnit,6);
+  FixedComp::setLinkCopy(4,*LeftUnit,5);
+  FixedComp::setLinkCopy(5,*LeftUnit,6);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -321,7 +307,7 @@ ButterflyModerator::createLinks()
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
-  FixedComp::setLinkSignedCopy(6,*MidWater,13);  
+  FixedComp::setLinkCopy(6,*MidWater,13);  
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   monte/SurfPoint.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,27 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Vec3D.h"
-#include "Transform.h"
-#include "Track.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "Token.h"
-#include "objectRegister.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 
 
 // -------------------------------------------------------------
@@ -225,6 +213,28 @@ SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
   if (!key) return 0;
   if (abs(ExSN)==keyN)
       return ((sign*ExSN>0) ? 1 : 0);
+  return (key->side(Pt)*sign)>=0 ? 1 : 0;
+}
+
+bool
+SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
+			    const std::set<int>& sideSet,
+			    const int ExSN) const
+  /*! 
+    Determines if a point  is valid. IF ExSN is +ve then 
+    it is assumed that we are on the +ve side of the surf
+    \param Pt :: Point to test
+    \param sideSet : surface which we consider Pt to be on 
+     so their sign is to help validity
+    \param ExSN :: Exclude surf number [signed]
+    \retval 1 :: Pt in the object (with ExSN as signed)
+    \retval 0 :: Pt outside on the (with ExSN as signed)
+  */
+{
+  if (!key) return 0;
+  if (abs(ExSN)==keyN)
+      return ((sign*ExSN>0) ? 1 : 0);
+  if (sideSet.find(keyN)!=sideSet.end()) return 1;
   return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
 

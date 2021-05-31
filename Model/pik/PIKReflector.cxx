@@ -3,7 +3,7 @@
 
  * File:   Model/pik/PIKReflector.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,9 +85,8 @@ PIKReflector::PIKReflector(const PIKReflector& A) :
   roofPitch(A.roofPitch),floorPitch(A.floorPitch),height(A.height),
   radius(A.radius),
   wallThick(A.wallThick),
-  mat(A.mat),bottom(A.bottom),top(A.top),side(A.side),
-  shieldMat(A.shieldMat),
-  wallMat(A.wallMat)
+  mat(A.mat),shieldMat(A.shieldMat),wallMat(A.wallMat),
+  bottom(A.bottom),top(A.top),side(A.side)
   /*!
     Copy constructor
     \param A :: PIKReflector to copy
@@ -267,42 +266,42 @@ PIKReflector::createLinks()
 
 void
 PIKReflector::setBottom(const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+			const std::string& sideName)
 /*!
   Set reflector bottom surface
  */
 {
   ELog::RegMethod RegA("PIKReflector","setBottom");
 
-  bottom = FC.getLinkString(sideIndex);
+  bottom = FC.getLinkString(FC.getSideIndex(sideName));
 
   return;
 }
 
 void
 PIKReflector::setTop(const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		     const std::string& sideName)
 /*!
   Set reflector top surface
  */
 {
   ELog::RegMethod RegA("PIKReflector","setTop");
 
-  top = FC.getLinkString(sideIndex);
+  top = FC.getLinkString(FC.getSideIndex(sideName));
 
   return;
 }
 
 void
 PIKReflector::setSide(const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		      const std::string& sideName)
 /*!
   Set reflector side surface
  */
 {
   ELog::RegMethod RegA("PIKReflector","setSide");
 
-  side = FC.getLinkString(sideIndex);
+  side = FC.getLinkString(FC.getSideIndex(sideName));
 
   return;
 }

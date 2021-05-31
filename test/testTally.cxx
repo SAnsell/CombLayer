@@ -33,24 +33,16 @@
 #include <iterator>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
-#include "MatrixBase.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
 #include "Tally.h"
 #include "pointTally.h"
 

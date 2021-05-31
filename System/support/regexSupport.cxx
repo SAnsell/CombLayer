@@ -35,7 +35,6 @@
 #include <regex>
 
 #include "support.h"
-#include "regexSupport.h"
 
 namespace StrFunc
 {

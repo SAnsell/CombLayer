@@ -3,7 +3,7 @@
 
  * File:   monte/DBMaterialRegister.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"

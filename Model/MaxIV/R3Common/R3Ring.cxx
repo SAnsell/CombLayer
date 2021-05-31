@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R3Ring.cxx
+ * File:   5fR3Common/R3Ring.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,34 +34,23 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -70,7 +59,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -248,12 +236,12 @@ R3Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3Ring","createObjects");
 
-  const std::string fullLayer=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
-  const std::string roofLayer=
-    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
-  const std::string innerLayer=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
+  const HeadRule fullLayerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex," 5 -16 ");
+  const HeadRule roofLayerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex," 6 -16 ");
+  const HeadRule innerLayerHR=
+    ModelSupport::getHeadRule(SMap,buildIndex," 5 -6 ");
 
   // horrible code to build a list of 20 values
   std::ostringstream cx;
@@ -262,25 +250,24 @@ R3Ring::createObjects(Simulation& System)
     cx<<-(10*i+3)<<" ";
   const std::string lineBuild(cx.str());
 
-  
-  std::string Out;
+  HeadRule HR;
 
   //  createRoof(System);
   createFloor(System);
 
   // INNER VOID:
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,lineBuild);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,lineBuild);
   
-  HeadRule IV(Out);
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullLayer);
+  const HeadRule IV(HR.complement());
+  
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*fullLayerHR);
 
-  IV.makeComplement();
-  Out=ModelSupport::getComposite(SMap,buildIndex+1000,lineBuild);
-  HeadRule XV(Out);
-  XV.makeComplement();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,lineBuild);
+
+  HeadRule XV(HR.complement());
   makeCell("InnerWall",System,cellIndex++,wallMat,0.0,
-	   Out+fullLayer+IV.display());
+	   HR*fullLayerHR*IV);
 
   // Now build each individial segment
 
@@ -292,25 +279,22 @@ R3Ring::createObjects(Simulation& System)
     {
 
       // outer
-      Out=ModelSupport::getComposite
-	(SMap,BNext,BPrev," 1M -3M  -1 ");
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1M -3M  -1 ");
       // inner
-      Out+=ModelSupport::getComposite(SMap,IPrev,INext," (3:3M) ");
-      //      Out+=XV.display();
-      makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+innerLayer);
-      makeCell("Roof",System,cellIndex++,roofMat,0.0,Out+roofLayer);
+      HR*=ModelSupport::getHeadRule(SMap,IPrev,INext," (3:3M) ");
 
-      Out=ModelSupport::getComposite
-	(SMap,BNext,BPrev," 1001M -1003M  -1 3M");
-      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,Out+fullLayer);
+      makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*innerLayerHR);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofLayerHR);
 
-      Out=ModelSupport::getComposite
-	(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
-      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+fullLayer);
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1001M -1003M  -1 3M");
+      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
-      Out=ModelSupport::getComposite
+      HR=ModelSupport::getHeadRule(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+
+      HR=ModelSupport::getHeadRule
 	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  1003 -9007N ");
-      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullLayer);
+      makeCell("OuterSegment",System,cellIndex++,0,0.0,HR*fullLayerHR);
       
       IPrev=INext;
       BPrev=BNext;
@@ -319,8 +303,8 @@ R3Ring::createObjects(Simulation& System)
     }
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");  
-  addOuterSurf(Out);    
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 15 -16");  
+  addOuterSurf(HR);    
 
   return;
 }

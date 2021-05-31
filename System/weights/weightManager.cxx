@@ -3,7 +3,7 @@
  
  * File:   weights/weightManager.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,28 +38,16 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"
-#include "Transform.h"
-#include "Rules.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "Mesh3D.h"
+#include "BasicMesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
-#include "cellValueSet.h"
 #include "weightManager.h"
 
 
@@ -230,6 +218,10 @@ weightManager::writeFLUKA(std::ostream& OX) const
 
   const flukaGenParticle& PConv=flukaGenParticle::Instance();
 
+  if (WWGPtr)
+    {
+      WWGPtr->writeFLUKA(OX);
+    }
   bool firstCell(1);
   if (!WMap.empty())
     {
@@ -268,7 +260,13 @@ weightManager::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("weightManager","writePHITS");
 
   const particleConv& PConv=particleConv::Instance();
-  if (!WMap.empty())
+
+  if (WWGPtr)
+    {
+      OX<<"[weight window]\n";
+      WWGPtr->writePHITS(OX);
+    }
+  else if (!WMap.empty())
     {
       OX<<"[weight window]\n";
       for(const CtrlTYPE::value_type& wf : WMap)

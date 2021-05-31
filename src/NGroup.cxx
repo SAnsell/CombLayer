@@ -37,11 +37,9 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 
 #include "support.h"
-#include "mathSupport.h"
 
 #include "NGroup.h"
 

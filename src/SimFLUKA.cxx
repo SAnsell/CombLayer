@@ -38,32 +38,22 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "mathSupport.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "version.h"
-#include "Element.h"
 #include "MXcards.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "Material.h"
-#include "DBMaterial.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -71,22 +61,18 @@
 #include "Importance.h"
 #include "Object.h"
 #include "weightManager.h"
-#include "Source.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "radDecay.h"
-#include "flukaProcess.h"
 #include "flukaPhysics.h"
 #include "magnetUnit.h"
 #include "groupRange.h"
@@ -144,7 +130,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
       sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
-	FTItem.emplace(TM.first,TM.second->clone());
+	FTItem.emplace(TM->clone());
       *PhysPtr= *A.PhysPtr;
       *RadDecayPtr = *A.RadDecayPtr;
     }
@@ -201,8 +187,8 @@ SimFLUKA::clearTally()
     Remove all the tallies
   */
 {
-  for(FTallyTYPE::value_type& mc : FTItem)
-    delete mc.second;
+  for(flukaSystem::flukaTally* FPtr : FTItem)
+    delete FPtr;
   FTItem.erase(FTItem.begin(),FTItem.end());
   return;
 }
@@ -218,13 +204,16 @@ SimFLUKA::getNextFTape() const
   ELog::RegMethod RegA("SimFLUKA","getNextFTape");
   
   // max for fortran output stream 98 ??
-  for(int i=25;i<98;i++)
-    {
-      if (FTItem.find(i)==FTItem.end())
-	return i;
-    }
-  throw ColErr::InContainerError<int>
-    (98,"Tallies have exhaused available ftapes [25-98]");
+  int nextFTape(24);
+  for(const flukaSystem::flukaTally* FPtr : FTItem)
+    if (FPtr->getOutUnit()>nextFTape)
+      nextFTape=FPtr->getOutUnit();
+
+  nextFTape++;
+  if (nextFTape>98)
+    throw ColErr::InContainerError<int>
+      (98,"Tallies have exhaused available ftapes [25-98]");
+  return nextFTape;
 }
   
 void
@@ -237,10 +226,19 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   ELog::RegMethod RegA("SimFluka","addTally");
 
   // Fluka cannot share output [and fOutput > 25 ]
-  const int fOutput=std::abs(TI.getOutUnit());
-  if (FTItem.find(fOutput)!=FTItem.end())
-    throw ColErr::InContainerError<int>(fOutput,"Foutput for tally");
-  FTItem.emplace(fOutput,TI.clone());
+  const int fID=std::abs(TI.getID());
+
+  // is id already present
+  if (std::find_if(FTItem.begin(),FTItem.end(),
+		   [&fID](const flukaSystem::flukaTally* FPtr)
+		   {
+		     return FPtr->getID()==fID;
+		   }) != FTItem.end())
+    {
+      throw ColErr::InContainerError<int>(fID,"fID for tally");
+    }
+
+  FTItem.emplace(TI.clone());
   return;
 }
 
@@ -254,10 +252,11 @@ SimFLUKA::getTally(const int TI) const
 {
   ELog::RegMethod RegA("SimFluka","getTally");
 
-  FTallyTYPE::const_iterator mc=FTItem.find(TI);
-  if (mc==FTItem.end())
-    throw ColErr::InContainerError<int>(TI,"Fluka Tally");
-  return mc->second;
+  for(flukaSystem::flukaTally* FPtr : FTItem)
+    if (FPtr->getID()==TI)
+      return FPtr;
+  
+  throw ColErr::InContainerError<int>(TI,"Fluka Tally");
 }
 
 void
@@ -288,14 +287,14 @@ SimFLUKA::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  ELog::RegMethod RegA("SimFluka","addTally");
+  ELog::RegMethod RegA("SimFluka","writeTally");
   
   OX<<"* ------------------------------------------------------"<<std::endl;
   OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
   OX<<"* ------------------------------------------------------"<<std::endl;
 
   for(const FTallyTYPE::value_type& TI : FTItem)
-    TI.second->write(OX);
+    TI->write(OX);
 
   return;
 }
@@ -306,6 +305,9 @@ SimFLUKA::writeFlags(std::ostream& OX) const
     Writes out the flags using a look-up stack.
     Bascially an ultra primative method to get something
     into the fluka file, if nothing else fits.
+    
+    This set user weight : Allows call to FLUSCW in the 
+    modified fortran code
     \param OX :: Output stream
   */
 {

@@ -34,27 +34,14 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -70,7 +57,6 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -373,9 +359,9 @@ ChopperPit::createFrontLinks(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
-  innerFC.setLinkSignedCopy(0,FC,sideIndex);
-  midFC.setLinkSignedCopy(0,FC,sideIndex);
-  outerFC.setLinkSignedCopy(0,FC,sideIndex);
+  innerFC.setLinkCopy(0,FC,sideIndex);
+  midFC.setLinkCopy(0,FC,sideIndex);
+  outerFC.setLinkCopy(0,FC,sideIndex);
 
   return;
 }

@@ -34,27 +34,14 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -69,7 +56,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -84,7 +71,8 @@ namespace constructSystem
 {
 
 Jaws::Jaws(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -93,7 +81,7 @@ Jaws::Jaws(const std::string& Key) :
 {}
 
 Jaws::Jaws(const Jaws& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   zOpen(A.zOpen),
   zThick(A.zThick),zCross(A.zCross),zLen(A.zLen),
@@ -117,7 +105,7 @@ Jaws::operator=(const Jaws& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       zOpen=A.zOpen;
@@ -159,7 +147,7 @@ Jaws::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Jaws","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
@@ -198,23 +186,6 @@ Jaws::populate(const FuncDataBase& Control)
 				      zLen,jawZFrac);
     }
   
-  return;
-}
-
-void
-Jaws::createUnitVector(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("Jaws","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
   return;
 }
 

@@ -89,6 +89,7 @@ sub findSubSrcDir
 {
   my $self=shift;
   my $tName=shift;  ## Top directory name
+
   my @EXCL;
   push(@EXCL,@_) if (@_);
   
@@ -318,6 +319,7 @@ sub writeHeader
   my $self=shift;
   my $DX=shift;   ## FILEGLOB
 
+  print $DX "project(CombLayer)\n";
   print $DX "cmake_minimum_required(VERSION 2.8)\n\n";
 
 
@@ -354,12 +356,6 @@ sub writeHeader
   print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
   print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
   print $DX "-undefined dynamic_lookup\")\n";
-  print $DX "endif()\n";
-
-  print $DX "if(\"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"GNU\")\n";
-  print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
-  print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
-  print $DX "-Wl,--start-group\")\n";
   print $DX "endif()\n";
   
   return;
@@ -424,11 +420,29 @@ sub writeExcutables
   foreach my $item (@{$self->{masterProg}})
     {
       print $DX "add_executable(",$item," \${PROJECT_SOURCE_DIR}/Main/",
-      $item,")\n";
-      foreach my $dItem (@{$self->{depLists}{$item}})
+	  $item,")\n";
+
+      ## Special first and last item
+      my $firstUnit=undef;
+      my $lastUnit=undef;
+      if (@{$self->{depLists}{$item}}>2)
         {
+	    $firstUnit=shift @{$self->{depLists}{$item}};
+	    $lastUnit=pop @{$self->{depLists}{$item}};
+	    print $DX "target_link_libraries(",
+		$item," -Wl,--start-group lib",$firstUnit,")\n";
+	}
+      foreach my $dItem (@{$self->{depLists}{$item}})
+      {
 	  print $DX "target_link_libraries(",$item,"  lib",$dItem,")\n";
-        }
+      }
+      if (defined($lastUnit))
+        {
+	    print $DX "target_link_libraries(",
+		$item," lib",$lastUnit," -Wl,--end-group)\n";
+	    
+	}
+
       if (!$self->{noregex})
         {
 #          print $DX "target_link_libraries(",$item," boost_regex)\n";
@@ -497,9 +511,10 @@ sub writeTail
     {
       print $DX "     \./",$item,"/*.h \n";
     }
-  print $DX "     \./Main/*.cxx \n";
-  print $DX "     \./CMake.pl  \n";
-  print $DX "     .//CMakeList.pm \n";
+  print $DX "     ./Main/*.cxx \n";
+  print $DX "     ./CMake.pl  \n";
+  print $DX "     ./CMakeList.pm \n";
+  print $DX "     ./CMakeSupport.pm \n";
   print $DX " | wc )\n";
   print $DX "\n";
 
@@ -519,9 +534,10 @@ sub writeTail
       print $DX "     \./",$item,"/*.h \n";
     }
 
-  print $DX "     \./Main/*.cxx \n";
-  print $DX "     \./CMake.pl  \n";
-  print $DX "     .//CMakeList.pm \n";
+  print $DX "     ./Main/*.cxx \n";
+  print $DX "     ./CMake.pl  \n";
+  print $DX "     ./CMakeList.pm \n";
+  print $DX "     ./CMakeSupport.pm \n";
   print $DX " )\n";
   print $DX "\n";
   ## TAGS:

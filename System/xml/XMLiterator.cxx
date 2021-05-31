@@ -31,13 +31,7 @@
 #include "Exception.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
-#include "XMLvector.h"
-#include "XMLgrid.h"
 #include "XMLgroup.h"
-#include "XMLcomp.h"
-#include "XMLload.h"
-#include "XMLcollect.h"
-#include "XMLnamespace.h" 
 #include "XMLiterator.h"
 
 namespace XML

@@ -80,11 +80,12 @@
 #include "DipoleExtract.h"
 #include "DipoleSndBend.h"
 #include "R3ChokeChamber.h"
-#include "PreDipole.h"
+#include "HalfElectronPipe.h"
 #include "MagnetM1.h"
 #include "MagnetBlock.h"
 #include "CylGateValve.h"
 #include "GateValveCube.h"
+#include "GateValveCylinder.h"
 #include "StriplineBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
@@ -92,6 +93,7 @@
 #include "EArrivalMon.h"
 #include "EBeamStop.h"
 #include "SixPortTube.h"
+#include "FourPortTube.h"
 #include "CrossWayTube.h"
 #include "CrossWayBlank.h"
 #include "GaugeTube.h"
@@ -121,11 +123,23 @@
 #include "FixedOffsetGroup.h"
 #include "JawFlange.h"
 #include "portItem.h"
+#include "portSet.h"
 #include "SquareFMask.h"
 #include "IonPumpTube.h"
 #include "IonGauge.h"
 #include "TriggerTube.h"
 #include "LBeamStop.h"
+#include "BremTube.h"
+#include "HPJaws.h"
+#include "BoxJaws.h"
+#include "DiffPumpXIADP03.h"
+#include "CLRTube.h"
+#include "ViewScreenTube.h"
+#include "ExperimentalHutch.h"
+#include "ConnectorTube.h"
+#include "LocalShielding.h"
+#include "WrapperCell.h"
+#include "FlangeDome.h"
 
 #include "makeSingleItem.h"
 
@@ -160,20 +174,22 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-      "CylGateValve","GateValveCube","CleaningMagnet",
+      "CylGateValve","GateValveCube","GateValveCylinder","CleaningMagnet",
       "CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
       "MagnetBlock","Sexupole","MagnetM1","Octupole","CeramicGap",
       "EBeamStop","EPSeparator","FMask","R3ChokeChamber","QuadUnit",
       "DipoleChamber","DipoleExtract","DipoleSndBend",
-      "EPSeparator","Quadrupole","TargetShield",
+      "EPSeparator","Quadrupole","TargetShield","FourPort",
       "FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
       "GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen","YAG",
       "YagUnit","YagUnitBig","StriplineBPM","BeamDivider",
-      "Scrapper","TWCavity","Bellow", "VacuumPipe",
+      "Scrapper","TWCavity","Bellow", "VacuumPipe","HalfElectronPipe",
       "MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
       "PrismaChamber","uVac", "UndVac","UndulatorVacuum",
       "IonPTube","IonGauge","LBeamStop","MagTube","TriggerTube",
-      "Help","help"
+      "BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
+      "DiffPumpXIADP03","CLRTube","ExperimentalHutch",
+      "ConnectorTube","LocalShield","FlangeDome","Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -221,6 +237,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::GateValveCube>
 	GV(new constructSystem::GateValveCube("GVCube"));
+
+      OR.addObject(GV);
+
+      GV->addInsertCell(voidCell);
+      GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "GateValveCylinder" )
+    {
+      std::shared_ptr<constructSystem::GateValveCylinder>
+	GV(new constructSystem::GateValveCylinder("GVCylinder"));
 
       OR.addObject(GV);
 
@@ -288,6 +316,25 @@ makeSingleItem::build(Simulation& System,
       yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
       yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
+
+      return;
+    }
+  if (item == "FlangeDome")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	ft(new constructSystem::PipeTube("FlangeTube"));
+      std::shared_ptr<constructSystem::FlangeDome>
+	fd(new constructSystem::FlangeDome("FlangeDome"));
+      OR.addObject(ft);
+      OR.addObject(fd);
+
+      ft->addAllInsertCell(voidCell);
+      ft->setOuterVoid();
+      ft->createAll(System,World::masterOrigin(),0);
+
+      fd->addInsertCell(voidCell);
+      fd->setCutSurf("plate",*ft,"front");
+      fd->createAll(System,*ft,1);
 
       return;
     }
@@ -439,6 +486,52 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "LocalShield")
+    {
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sb(new tdcSystem::LocalShielding("ShieldB"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sc(new tdcSystem::LocalShielding("ShieldC"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	sd(new tdcSystem::LocalShielding("ShieldD"));
+      std::shared_ptr<tdcSystem::LocalShielding>
+	se(new tdcSystem::LocalShielding("ShieldE"));
+      std::shared_ptr<attachSystem::WrapperCell>
+	ls(new attachSystem::WrapperCell("","Cell"));
+
+      OR.addObject(sb);
+      OR.addObject(sc);
+      OR.addObject(sd);
+      OR.addObject(se);
+      OR.addObject(ls);
+
+      ls->addUnit(sb);
+      ls->addUnit(sc);
+      ls->addUnit(sd);
+      ls->addUnit(se);
+      
+      ls->setSurfaces({
+    	    {"front",{"ShieldE","#back"}},      // -1050002
+	    {"back",{"ShieldB","#back"}},       // -1020002
+	    {"left",{"ShieldC","left"}},        // 1030003
+	    {"right",{"ShieldB","#right"}},     // -102004
+	    {"base",{"ShieldE","base"}},        // 1050005 
+	    {"top",{"ShieldB","#top"}}          // -1020006 
+	});
+
+      ls->setConnections
+	({
+	  {"ShieldB",{"THIS",""}},
+	  {"ShieldC",{"ShieldB","bottom"}},
+	  {"ShieldD",{"ShieldB","front"}},
+	  {"ShieldE",{"ShieldB","front"}}
+	});
+      
+      ls->addInsertCell(voidCell);
+      ls->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
 
   if (item=="LQuadF")
     {
@@ -505,7 +598,7 @@ makeSingleItem::build(Simulation& System,
     {
 
       std::shared_ptr<xraySystem::MagnetBlock>
-	MB(new xraySystem::MagnetBlock("M1"));
+	MB(new xraySystem::MagnetBlock("MB1"));
 
       OR.addObject(MB);
       MB->addAllInsertCell(voidCell);
@@ -542,7 +635,6 @@ makeSingleItem::build(Simulation& System,
 
   if (item=="Octupole")
     {
-
       std::shared_ptr<xraySystem::Octupole>
 	OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
       OR.addObject(OXX);
@@ -605,7 +697,16 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item=="HalfElectronPipe")
+    {
+      std::shared_ptr<xraySystem::HalfElectronPipe>
+	HE(new xraySystem::HalfElectronPipe("N1BlockHalfElectron"));
+      OR.addObject(HE);
+      HE->addAllInsertCell(voidCell);
+      HE->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
   if (item=="QuadUnit" || item=="DipoleChamber" || item=="EPSeparator")
     {
       std::shared_ptr<xraySystem::QuadUnit>
@@ -694,6 +795,18 @@ makeSingleItem::build(Simulation& System,
 
       SP->addInsertCell(voidCell);
       SP->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="FourPort")
+    {
+      std::shared_ptr<xraySystem::FourPortTube>
+	FP(new xraySystem::FourPortTube("FourPort"));
+
+      OR.addObject(FP);
+
+      FP->addInsertCell(voidCell);
+      FP->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -792,6 +905,18 @@ makeSingleItem::build(Simulation& System,
       BS->addInsertCell(voidCell);
       BS->createAll(System,World::masterOrigin(),0);
 
+      return;
+    }
+
+  if (item == "ConnectorTube")
+    {
+      std::shared_ptr<xraySystem::ConnectorTube>
+	cp(new xraySystem::ConnectorTube("ConnectorTube"));
+      OR.addObject(cp);
+
+      cp->addInsertCell(voidCell);
+      cp->createAll(System,World::masterOrigin(),0);
+      
       return;
     }
 
@@ -986,7 +1111,121 @@ makeSingleItem::build(Simulation& System,
 	
 	return;
       }
+    if (item == "BremTube" )
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	
+	OR.addObject(bremTube);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPJaws" )
+      {
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(hp);
+	
+	hp->addInsertCell(voidCell);
+	hp->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "BoxJaws")
+      {
+	std::shared_ptr<xraySystem::BoxJaws>
+	  bj(new xraySystem::BoxJaws("BoxJaws"));
+	
+	OR.addObject(bj);
+	
+	bj->addInsertCell(voidCell);
+	bj->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "DiffPumpXIADP03")
+      {
+	std::shared_ptr<xraySystem::DiffPumpXIADP03>
+	  dp(new xraySystem::DiffPumpXIADP03("DiffXIA"));
+	
+	OR.addObject(dp);
+	
+	dp->addInsertCell(voidCell);
+	dp->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+
+    if (item == "CLRTube")
+      {
+	std::shared_ptr<xraySystem::CLRTube>
+	  clr(new xraySystem::CLRTube("CLRTube"));
+	
+	OR.addObject(clr);
+	
+	clr->addAllInsertCell(voidCell);
+	clr->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
+    if (item == "HPCombine")
+      {
+	std::shared_ptr<xraySystem::BremTube>
+	  bremTube(new xraySystem::BremTube("BremTube"));
+	std::shared_ptr<xraySystem::HPJaws>
+	  hp(new xraySystem::HPJaws("HPJaws"));
+	
+	OR.addObject(bremTube);
+	OR.addObject(hp);
+	
+	bremTube->addInsertCell(voidCell);
+	bremTube->createAll(System,World::masterOrigin(),0);
+	
+	hp->addInsertCell(voidCell);
+	hp->setFront(*bremTube,2);
+	hp->setFlangeJoin();
+	hp->createAll(System,*bremTube,"back");
+	
+	return;
+      }
+    if (item == "ViewTube" )
+      {
+	std::shared_ptr<xraySystem::ViewScreenTube>
+	  vt(new xraySystem::ViewScreenTube("ViewTube"));
+	std::shared_ptr<tdcSystem::YagScreen>
+	  yagScreen(new tdcSystem::YagScreen("YAG"));
+
+	OR.addObject(vt);
+	
+	vt->addInsertCell(voidCell);
+	vt->createAll(System,World::masterOrigin(),0);
+
+	yagScreen->setBeamAxis(*vt,1);
+	yagScreen->createAll(System,*vt,4);
+	yagScreen->insertInCell("Outer",System,voidCell);
+	yagScreen->insertInCell("Connect",System,vt->getCell("Plate"));
+	yagScreen->insertInCell("Connect",System,vt->getCell("Void"));
+	yagScreen->insertInCell("Payload",System,vt->getCell("Void"));
+	
+	return;
+      }
     
+    if (item == "ExperimentalHutch")
+      {
+	std::shared_ptr<xraySystem::ExperimentalHutch>
+	  eh(new xraySystem::ExperimentalHutch("ExptHutch"));
+	
+	OR.addObject(eh);
+	
+	eh->addInsertCell(voidCell);
+	eh->createAll(System,World::masterOrigin(),0);
+	
+	return;
+      }
     
     if (item=="Help" || item=="help")
       {

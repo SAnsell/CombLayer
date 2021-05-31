@@ -33,14 +33,10 @@
 #include <tuple>
 
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "mathSupport.h"
-#include "support.h"
 #include "writeSupport.h"
 #include "phitsWriteSupport.h"
 

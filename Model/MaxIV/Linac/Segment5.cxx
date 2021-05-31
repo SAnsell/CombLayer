@@ -58,7 +58,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
@@ -152,8 +151,8 @@ Segment5::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*flatA,1);
-  setLinkSignedCopy(1,*bellowA,2);
+  setLinkCopy(0,*flatA,1);
+  setLinkCopy(1,*bellowA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

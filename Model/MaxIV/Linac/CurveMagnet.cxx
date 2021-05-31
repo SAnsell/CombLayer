@@ -38,10 +38,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -61,7 +59,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "ExternalCut.h"
 #include "ExternalCut.h"
 
 #include "CurveMagnet.h"

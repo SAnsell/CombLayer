@@ -3,7 +3,7 @@
  
  * File:   monte/particle.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,15 +30,11 @@
 #include <map>
 #include <string>
 
-#include "Exception.h"
 #include "RefCon.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "particleConv.h"
 #include "particle.h"
@@ -294,7 +290,7 @@ particle::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<particleConv::Instance().mcplToFLUKA(typeID)<<":"
+  OX<<std::setprecision(12)<<particleConv::Instance().mcplToFLUKA(typeID)<<":"
     <<Pos<<" u: "<<uVec<<" ("<<wavelength<<":"<<1000*energy
     <<") W="<<weight<<" T="<<travel<<"("<<time<<")"<<" nCol="
     <<nCollision<<" (ID="<<ID<<")";

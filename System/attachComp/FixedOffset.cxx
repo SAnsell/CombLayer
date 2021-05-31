@@ -33,24 +33,12 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfEqual.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -269,7 +257,7 @@ FixedOffset::createCentredUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
-  Origin+=Y*(length/2.0);
+  Origin+=Y*length;
   return;
 }
 

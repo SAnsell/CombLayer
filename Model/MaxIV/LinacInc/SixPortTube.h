@@ -3,7 +3,7 @@
  
  * File:   LinacInc/SixPortTube.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@ class SixPortTube :
   double linkRadius;           ///< void radius on 4 cross way
   double wallThick;            ///< pipe thickness
 
-  double frontLength;            ///< full to flange length
-  double backLength;             ///< full to flange length
-  double sideLength;              ///< full to flange length
+  double frontLength;          ///< full to flange length
+  double backLength;           ///< full to flange length
+  double sideLength;           ///< full to flange length
 
   double flangeARadius;         ///< Joining Flange radius
   double flangeBRadius;         ///< Joining Flange radius
@@ -62,7 +62,7 @@ class SixPortTube :
   double flangeBLength;         ///< Joining Flange radius
   double flangeSLength;         ///< Joining Flange radius
   
-  double plateThick;         ///< Joining Flange radius
+  double plateThick;           ///< Joining Flange radius
 
   int voidMat;                 ///< void material
   int mainMat;                 ///< main material

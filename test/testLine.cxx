@@ -33,18 +33,12 @@
 #include <memory>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "mathSupport.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -52,11 +46,8 @@
 #include "Cylinder.h"
 #include "Cone.h"
 #include "EllipticCyl.h"
-#include "Sphere.h"
-#include "General.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "SurInter.h"
 
 #include "testFunc.h"
 #include "testLine.h"

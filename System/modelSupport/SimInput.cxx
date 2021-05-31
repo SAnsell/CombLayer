@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/SimInput.cxx
+ * File:   modelSupport/SimInput.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,58 +34,34 @@
 #include <array>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Rules.h"
 #include "Code.h"
-#include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
 #include "ModeCard.h"
-#include "PhysImp.h"
 #include "PhysCard.h"
-#include "PStandard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
 #include "LineTrack.h"
-#include "ImportControl.h"
 #include "SimValid.h"
 #include "LinkUnit.h"
 #include "surfRegister.h"
 #include "FixedComp.h"
-#include "MainProcess.h"
-#include "WeightControl.h"
-#include "WCellControl.h"
-#include "WWGControl.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "SimInput.h"
-
-
 
 namespace SimProcess
 {
@@ -191,7 +167,8 @@ processExitChecks(Simulation& System,
       ModelSupport::LineTrack LT(C,D,10000.0);
       ModelSupport::LineTrack LTR(C,-D,10000.0);
       LT.calculate(System);
-      LTR.calculate(System);
+      //      LTR.calculate(System);
+      ELog::EM<<std::setprecision(12)<<"Line == "<<LT<<ELog::endDiag;
     }
   
   if (IParam.flag("cinder")) System.writeCinder();

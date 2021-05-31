@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,32 +34,18 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedGroup.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "LinkSupport.h"
 
 namespace attachSystem
 {
@@ -198,12 +184,13 @@ calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
 {
   ELog::RegMethod RegA("LinkSupport[F]","calcBoundaryLink");
 
-  double D;
-  const int SN=boundary.trackSurf(Origin,Axis,D);
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=boundary.trackSurfIntersect(Origin,Axis);
+  const int SN=std::get<0>(result);
   if (SN)
     {
       FC.setLinkSurf(linkIndex,SN);
-      FC.setConnect(linkIndex,Origin+Axis*D,Axis);
+      FC.setConnect(linkIndex,std::get<2>(result),Axis);
     }
   return;
 }

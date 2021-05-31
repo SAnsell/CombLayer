@@ -3,7 +3,7 @@
 
  * File:   LinacInc/Segment8.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@ namespace tdcSystem
 
   /*!
     \class Segment8
-    \version 1.0
-    \author S. Ansell
-    \date May 2020
+    \version 1.1
+    \author S. Ansell / K. Batkov
+    \date Feb 2021
     \brief 8th segment
   */
 
@@ -41,7 +41,7 @@ class Segment8 :
   /// first bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Beam stop
-  std::shared_ptr<tdcSystem::EBeamStop> eBeamStop;
+  std::shared_ptr<tdcSystem::EBeamStop> beamStop;
   /// second bellow
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// first pipe

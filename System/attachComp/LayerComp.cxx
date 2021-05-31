@@ -34,27 +34,13 @@
 #include <limits>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
 #include "MatrixBase.h"
 
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfRegister.h"
-#include "surfEqual.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "LinkUnit.h"
 #include "LayerComp.h"
 
 
@@ -111,14 +97,12 @@ LayerComp::intersectDist(const size_t layerIndex,
 {
   ELog::RegMethod RegA("LayerComp","intersectDist");
   
-  // HEAD RULE doesn't compute surface intersection !!!!!!
   HeadRule A;
   if (!A.procString(this->getLayerString(layerIndex,sideIndex)))
     return -std::numeric_limits<double>::max();
 
-  double D;
   A.populateSurf();
-  const int SN=A.trackSurf(Origin,Unit,D);
+  const auto [SN,D] =A.trackSurfDistance(Origin,Unit);
   
   return (SN) ? D : -std::numeric_limits<double>::max();
 }

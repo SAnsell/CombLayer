@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/Segment3.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_Segment3_h
@@ -38,26 +38,18 @@ namespace xraySystem
   class CorrectorMag;
 }
 
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace tdcSystem
 {
   class DipoleDIBMag;
   class FlatPipe;
-  
+  class LocalShielding;
+
   /*!
     \class Segment3
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date April 2020
-    \brief Second segment in the TDC from the linac
+    \date Feb 2021
+    \brief 3rd L2SPF segment
   */
 
 class Segment3 :
@@ -69,30 +61,33 @@ class Segment3 :
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
   /// first pipe in dipole
-  std::shared_ptr<tdcSystem::FlatPipe> flatA;   
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;
 
   /// first  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;   
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;
 
   /// first pipe in dipole
-  std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;   
+  std::shared_ptr<constructSystem::OffsetFlangePipe> pipeA;
 
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;    ///< corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagVA;   ///< corrector mag
 
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding perp to the beam
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB; // local shielding parallel to the beam
+
   /// second pipe in dipole
-  std::shared_ptr<tdcSystem::FlatPipe> flatB;   
+  std::shared_ptr<tdcSystem::FlatPipe> flatB;
   /// second  dipole
-  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   
+  std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;
 
   /// Final bellow [including bend]
   std::shared_ptr<constructSystem::Bellows> bellowB;
 
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   Segment3(const std::string&);
   Segment3(const Segment3&);
   Segment3& operator=(const Segment3&);

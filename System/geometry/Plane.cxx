@@ -32,19 +32,14 @@
 #include <algorithm>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "RegMethod.h"
-#include "MemStack.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "masterWrite.h"
 #include "Quaternion.h"
@@ -544,8 +539,8 @@ Plane::side(const Geometry::Vec3D& A) const
 {
   double Dp=NormV.dotProd(A);
   Dp-=Dist;
-  if (Geometry::zeroTol<std::abs(Dp))
-    return (Dp>0) ? 1 : -1;
+  if (Dp > Geometry::zeroTol) return 1;
+  if (Dp < -Geometry::zeroTol) return -1;
   return 0;
 }
 

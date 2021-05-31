@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnucConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,44 +34,32 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "surfRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "BaseMap.h"
-#include "SurfMap.h"
-#include "CellMap.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
-
+#include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
+#include "MXcards.h"
+#include "Zaid.h"
+#include "Material.h"
+
 #include "SimFLUKA.h"
-#include "particleConv.h"
-#include "flukaGenParticle.h"
-#include "TallySelector.h"
 #include "flukaTally.h"
 
 #include "resnuclei.h"
+#include "flukaTallyModification.h"
 #include "resnucConstruct.h" 
 
 
@@ -80,6 +68,7 @@ namespace flukaSystem
 
 void 
 resnucConstruct::createTally(SimFLUKA& System,
+			     const int ID,
 			     const int fortranTape,
 			     const int cellA)
 
@@ -93,10 +82,28 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-  resnuclei UD(fortranTape);
-  UD.setCell(cellA);
-  System.addTally(UD);
 
+  // get MaxZ/MaxA
+  int ZMax(0),AMax(0);
+  const MonteCarlo::Object* OPtr=System.findObjectThrow(cellA);
+
+  const std::vector<MonteCarlo::Zaid> ZVec=
+    OPtr->getMatPtr()->getZaidVec();
+  for(const MonteCarlo::Zaid& zaid : ZVec)
+    {
+      const int Z=static_cast<int>(zaid.getZ());
+      const int Iso=static_cast<int>(zaid.getIso());
+      if (Z>ZMax) ZMax=Z;
+      if (Iso>AMax) AMax=Iso;
+    }
+  if (ZMax>0)
+    {
+      resnuclei UD(ID,fortranTape);
+      UD.setCell(cellA);
+      UD.setZaid(ZMax,AMax);
+      System.addTally(UD);
+    }
+	
   return;
 }
 
@@ -125,12 +132,29 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   
   const std::vector<int> cellVec=
     System.getObjectRange(objectName);
+  
+  // This junk gets a good ID + fortranTape number
+  int fortranTape(0),ID(0);
+  const std::set<resnuclei*> RSet=
+    getTallyType<resnuclei>(System);
+  for(const flukaTally* TPtr: RSet)
+    {
+      if (ID<TPtr->getID())
+	ID=TPtr->getID();
+      if (fortranTape<TPtr->getOutUnit())
+	fortranTape=TPtr->getOutUnit();
+    }
+  
+  if (!fortranTape || !ID)
+    {
+      fortranTape=System.getNextFTape();
+      ID=fortranTape+99;
+    }
 
   for(const int CN : cellVec)
     {
-      // This needs to be more sophisticated
-      const int nextId=System.getNextFTape();
-      resnucConstruct::createTally(System,nextId,CN);
+      ID++;    // fresh id number [or 100+fortranTape]
+      resnucConstruct::createTally(System,ID,fortranTape,CN);
     }
   
   return;      

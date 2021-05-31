@@ -25,13 +25,14 @@
 namespace tdcSystem
 {
   class LSexupole;
+  class LocalShielding;
 
   /*!
     \class Segment4
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date April 2020
-    \brief Second segment in the TDC from the linac
+    \date Feb 2021
+    \brief 4th L2SPF segment
   */
 
 class Segment4 :
@@ -62,6 +63,8 @@ class Segment4 :
 
   /// yag screen
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+  /// shielding of the YAG screen camera (the camera is not built)
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA;
 
   /// exit pipe for corrector mags
   std::shared_ptr<constructSystem::Bellows> bellowA;

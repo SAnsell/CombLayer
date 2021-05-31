@@ -3,7 +3,7 @@
 
  * File:   Model/pikInc/PIKReflector.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,9 +70,9 @@ class PIKReflector : public attachSystem::ContainedComp,
   virtual PIKReflector* clone() const;
   virtual ~PIKReflector();
 
-  void setBottom(const attachSystem::FixedComp&,const long int);
-  void setTop(const attachSystem::FixedComp&,const long int);
-  void setSide(const attachSystem::FixedComp&,const long int);
+  void setBottom(const attachSystem::FixedComp&,const std::string&);
+  void setTop(const attachSystem::FixedComp&,const std::string&);
+  void setSide(const attachSystem::FixedComp&,const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

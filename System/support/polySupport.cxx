@@ -28,7 +28,6 @@
 #include <numeric>
 #include <functional>
 
-#include "Exception.h"
 #include "polySupport.h"
 
 /*!

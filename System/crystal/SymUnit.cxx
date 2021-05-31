@@ -35,8 +35,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "SymUnit.h"
 

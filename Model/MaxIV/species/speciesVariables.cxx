@@ -3,7 +3,7 @@
  
  * File:   species/speciesVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -53,12 +47,9 @@
 #include "BeamMountGenerator.h"
 #include "CollGenerator.h"
 #include "CrossGenerator.h"
-#include "FlangeMountGenerator.h"
 #include "GateValveGenerator.h"
 #include "GratingMonoGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
-#include "LeadBoxGenerator.h"
 
 #include "MirrorGenerator.h"
 #include "PipeGenerator.h"
@@ -70,15 +61,12 @@
 #include "SimpleChicaneGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
-#include "LeadPipeGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "TankMonoVesselGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "WallLeadGenerator.h"
-#include "QuadUnitGenerator.h"
-#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -204,8 +192,8 @@ splitterVariables(FuncDataBase& Control,
   const std::string gateNameB=splitKey+"PumpTubeBA";
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateNameA,0.0,79.4);
-  SimpleTubeGen.generateTube(Control,gateNameB,0.0,107.5);
+  SimpleTubeGen.generateTube(Control,gateNameA,79.4);
+  SimpleTubeGen.generateTube(Control,gateNameB,107.5);
   Control.addVariable(gateNameA+"NPorts",1);   // beam ports
   Control.addVariable(gateNameB+"NPorts",1);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -284,7 +272,7 @@ preOpticsVariables(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateName,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(4.45);
@@ -324,7 +312,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,36.0);
 
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -401,7 +389,7 @@ slitPackageVariables(FuncDataBase& Control,
   const std::string sName=slitKey+"SlitTube";
   const double tLen(50.2);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
+  SimpleTubeGen.generateTube(Control,sName,tLen);  
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.1);
@@ -467,13 +455,15 @@ monoVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,monoKey+"OffPipeA",3.0);
   Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
   
-  // ystep/width/height/depth/length
-  // 
+
+  //
+  const double  outerRadius(54.91+1.2);
   MBoxGen.setCF<CF63>();   // set ports
   MBoxGen.setAFlange(17.8,1.0);
   MBoxGen.setBFlange(17.8,1.0);
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,42.2,36.45,36.45);
+  // ystep/width/height/depth/length
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",42.2,36.45,36.45);
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
@@ -482,7 +472,7 @@ monoVariables(FuncDataBase& Control,
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF120>(5.0);
+  PItemGen.setCF<setVariable::CF120>(outerRadius+5.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,portName+"Port0",
 			Geometry::Vec3D(0,5.0,10.0),
@@ -546,7 +536,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string mName=preKey+"M3Tube";
   SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,mName,00.0,36.0);
+  SimpleTubeGen.generateTube(Control,mName,36.0);
 
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);

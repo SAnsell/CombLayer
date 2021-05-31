@@ -3,7 +3,7 @@
  
  * File:   R3Common/PreDipole.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,36 +33,18 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -72,7 +54,6 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h" 
@@ -80,7 +61,6 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "InnerZone.h"
-#include "BlockZone.h" 
 
 #include "PreDipole.h"
 
@@ -146,22 +126,6 @@ PreDipole::populate(const FuncDataBase& Control)
 }
 
 void
-PreDipole::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("PreDipole","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-void
 PreDipole::createSurfaces()
   /*!
     Create All the surfaces
@@ -185,7 +149,8 @@ PreDipole::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   
   // mid layer divider
-  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,X);
+  makePlane("midDivider",SMap,buildIndex+10,Origin,X);
+
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*radius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*radius,Z);
 
@@ -218,6 +183,7 @@ PreDipole::createSurfaces()
   // END plane
   const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
   const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
+  strEnd=Origin+Y*straightLength;
   cylEnd=strEnd+X*xDisp+Y*yDisp;
   elecAxis=YElec;
   
@@ -289,7 +255,7 @@ PreDipole::createObjects(Simulation& System)
   exitZone.setInnerMat(voidMat);
   exitZone.constructMasterCell(System);
 
-  // cylinder half
+  // cylinder 
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -7  ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
@@ -409,6 +375,20 @@ PreDipole::createLinks()
   setConnect(6,cylEnd,elecAxis);
   setLinkSurf(6,Out);
 
+  // Mid Half straight (half) [ divider is +10]
+  HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
+  setConnect(7,Origin+Y*straightLength,Z);
+  setLinkSurf(7,HR.complement());
+
+  // Mid Half straight (half)  [ divider is -10 ]
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"117 115 -116");
+  setConnect(8,Origin+Y*straightLength,Z);
+  setLinkSurf(8,HR.complement());
+
+  // Mid Half straight (half) [ divider is +10]
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"115 -116 (-217:-210)");
+  setConnect(9,cylEnd,elecAxis);
+  setLinkSurf(9,HR.complement());
 
   return;
 }

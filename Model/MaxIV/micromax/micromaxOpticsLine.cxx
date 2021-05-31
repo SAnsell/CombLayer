@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -75,11 +67,9 @@
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 
-#include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
@@ -93,10 +83,8 @@
 #include "BremColl.h"
 
 #include "GateValveCube.h"
-#include "JawUnit.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
-#include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoCrystals.h"
 #include "MonoShutter.h"
@@ -530,8 +518,8 @@ micromaxOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("micromaxOpticsLine","createLinks");
   
-  setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*pipeInit,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

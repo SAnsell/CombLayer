@@ -29,17 +29,12 @@
 #include <map>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
 #include "doubleErr.h"
-#include "mathSupport.h"
 #include "BUnit.h"
-#include "Boundary.h"
 #include "BinData.h"
 
 #include "testFunc.h"

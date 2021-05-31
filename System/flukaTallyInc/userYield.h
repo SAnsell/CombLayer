@@ -3,7 +3,7 @@
  
  * File:   flukaTallyInc/userYield.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,8 +64,8 @@ class userYield : public flukaTally
   
  public:
 
-  explicit userYield(const int);
-  userYield(const std::string&,const int);
+  userYield(const int,const int);
+  userYield(const std::string&,const int,const int);
   userYield(const userYield&);
   virtual userYield* clone() const; 
   userYield& operator=(const userYield&);

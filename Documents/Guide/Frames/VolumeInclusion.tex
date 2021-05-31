@@ -27,7 +27,7 @@ problem that the model may not be correctly constructed at this point, so that t
 This can be checked by adding a
 \prog{SimProcess::writeIndexSim(System,"OutputFilename.txt",0);}
 in the code just before the call to insertForced. If there are undefined volumes then the model is not in a state that
-any of the \prog{addToInsert} algorithms except \prog{addToInsertForced} can be used. 
+any of the \prog{addToInsert} algorithms except \prog{addToInsertForced} can be used.
 
 \begin{figure}
   \centering
@@ -43,8 +43,8 @@ any of the \prog{addToInsert} algorithms except \prog{addToInsertForced} can be 
 
 \subsubsection{addToInsertSurfCtrl}
 
-The objective of this function is to use the surface intersections between Mug and spoon to determine which 
-cells within Mug intersect the ContainedComp of spoon. The process is done on a cell - ContainedComp level. 
+The objective of this function is to use the surface intersections between Mug and spoon to determine which
+cells within Mug intersect the ContainedComp of spoon. The process is done on a cell - ContainedComp level.
 
 The process is as follows:
 \begin{enumerate}
@@ -58,7 +58,7 @@ The process is as follows:
     MCell}
   \end{enumerate}
 \end{enumerate}
-   
+
 Thus the spoon is inserted only into those cells of Mug which it intersects~(\figref{fig:surfctrl}).
 
 It is not always better to call {\tt addToInsertSurfCtrl} instead of
@@ -94,7 +94,7 @@ slower than addToInsertForced, but the geometry will be faster.
       \node[legend,blue,fill=white] at (5.25,3) {4};
     \end{tikzpicture}
   }
-  \caption{addToInsertSurfCtrl: only needed cells are excluded}
+  \caption{addToInsertSurfCtrl: only the needed cells are excluded}
   \label{fig:surfctrl}
 \end{figure}
 
@@ -105,7 +105,7 @@ cause them to fail.
 
 \subsubsection{addToInsertControl}
 
-It's a very simple method. The link points from Spoon are uses as a test for each of the cells within Mug. 
+It's a very simple method. The link points from Spoon are uses as a test for each of the cells within Mug.
 The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell~(\figref{fig:control}).
 It is possible to add a vector of link points to check as a parameter to limit the search.
 
@@ -151,10 +151,10 @@ It is possible to add a vector of link points to check as a parameter to limit t
 \subsubsection{addToInsertLineCtrl}
 
 If  we have a (big) contained component~(Mug) and some (small)
-object which clips it~(Spoon) and we are not certain that the link points 
+object which clips it~(Spoon) and we are not certain that the link points
 are contained within each Mug cell, then  {\bf addToInsertControl} can not be reliably used.
-However, addToInsertLineCtrl adds an additional check to addToInsertControl, because it 
-constructs all the connecting lines between the link points, and if the line 
+However, addToInsertLineCtrl adds an additional check to addToInsertControl, because it
+constructs all the connecting lines between the link points, and if the line
 intersects the other cell, an intersection is made~(\figref{fig:linectrl}).
 
 \begin{figure}
@@ -177,7 +177,7 @@ intersects the other cell, an intersection is made~(\figref{fig:linectrl}).
     \end{tikzpicture}
   } \quad
   \subfloat[Cell 4 is excluded from cell 2 since at least one line connecting two
-link points intersects the Mug handle at a point which is valid within the spoon 
+link points intersects the Mug handle at a point which is valid within the spoon
 (shown by red filled circles)]{
     \begin{tikzpicture}
       \drawMug{0}{0}{}
@@ -194,7 +194,7 @@ link points intersects the Mug handle at a point which is valid within the spoon
       \draw[blue] (-0.6,0.5) circle (2pt);
 
      \draw[olive] (-0.6,0.5) -- (-0.6,4);
-     \draw[olive] (-1.53,2) -- (0,2.5); 
+     \draw[olive] (-1.53,2) -- (0,2.5);
 
      \draw[olive] (-1.53,2) -- (-0.6,4);
 

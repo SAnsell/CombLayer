@@ -45,19 +45,13 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "ArbPoly.h"
 #include "Cylinder.h"
@@ -72,7 +66,6 @@
 #include "Plane.h"
 #include "surfaceFactory.h"
 #include "surfVector.h"
-#include "surfEqual.h"
 
 namespace ModelSupport
 {

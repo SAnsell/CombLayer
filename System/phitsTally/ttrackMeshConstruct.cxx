@@ -3,7 +3,7 @@
  
  * File:   phitsTally/ttrackMeshConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,41 +34,24 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
 
 #include "SimPHITS.h"
-#include "particleConv.h"
 #include "meshConstruct.h"
 #include "phitsTallySelector.h"
 #include "MeshXYZ.h"
 #include "eType.h"
-#include "aType.h"
 #include "phitsTally.h"
 #include "TMesh.h"
 #include "ttrackMeshConstruct.h" 
@@ -138,11 +121,11 @@ ttrackMeshConstruct::processMesh(SimPHITS& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh
+    mainSystem::meshConstruct::getObjectMesh
       (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh
+    mainSystem::meshConstruct::getFreeMesh
       (IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   ttrackMeshConstruct::createTally(System,tallyParticle,nextID,APt,BPt,Nxyz);
@@ -165,7 +148,7 @@ ttrackMeshConstruct::writeHelp()
     "  Option B : \n"
     "      object objectName LinkPt  Vec3D Vec3D Nx Ny Nz \n"
     "  -- Object-link point is used to construct basis set \n"
-    "     Then the Vec3D are used as the offset points \n\n";
+    "     Then the Vec3D are used as the offset points \n\n"
     "  Energy is set by TMod (otherwize single group)";
 }
 

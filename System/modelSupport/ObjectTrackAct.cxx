@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,30 +35,22 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "BnId.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "ObjSurfMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
-#include "DBMaterial.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 
@@ -149,9 +141,10 @@ ObjectTrackAct::getMatSum(const long int objN) const
 }
   
 double
-ObjectTrackAct::getAttnSum(const long int objN,const double Epsilon) const
+ObjectTrackAct::getAttnSum(const long int objN,
+			   const double energy) const
   /*!
-    Calculate the sum in the material
+    Calculate the attenuatio of a beam traveling in teh object
     \param objN :: Cell number to use
     \return sum of distance in non-void
   */
@@ -183,6 +176,7 @@ ObjectTrackAct::getAttnSum(const long int objN,const double Epsilon) const
   // currently no use for epsilon
   return sum;
 }
+
 
 
 double

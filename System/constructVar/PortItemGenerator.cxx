@@ -3,7 +3,7 @@
 
  * File:   constructVar/PortItemGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -176,6 +169,7 @@ PortItemGenerator::setPlate(const double T,const std::string& PM)
   capMat=PM;
   return;
 }
+
 
 void
 PortItemGenerator::setWindowPlate(const double capT,

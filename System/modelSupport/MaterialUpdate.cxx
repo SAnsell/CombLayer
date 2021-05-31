@@ -34,38 +34,24 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "surfRegister.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "MainProcess.h"
 #include "inputParam.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "BaseMap.h"
-#include "CellMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "objectRegister.h"
 #include "Importance.h"
 #include "Object.h"
 
-#include "MaterialUpdate.h"
 
 namespace ModelSupport
 {

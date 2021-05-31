@@ -3,7 +3,7 @@
  
  * File: danmax/DANMAX.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,26 +34,19 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -64,7 +57,6 @@
 #include "CopiedComp.h"
 #include "InnerZone.h"
 #include "BlockZone.h"
-#include "AttachSupport.h"
 
 #include "VacuumPipe.h"
 
@@ -76,7 +68,6 @@
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
-#include "SqrShield.h"
 #include "balderExptBeamline.h"
 
 #include "R3Ring.h"
@@ -172,6 +163,7 @@ DANMAX::build(Simulation& System,
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
+
   // Ugly HACK to get the two objects to merge
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
@@ -191,20 +183,19 @@ DANMAX::build(Simulation& System,
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertAllInCell(System,opticsBeam->getCell("OuterVoid",0));
+  joinPipe->insertAllInCell(System,opticsBeam->getCell("LastVoid"));
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
-
+  
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -215,14 +206,14 @@ DANMAX::build(Simulation& System,
   connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectUnit->setFront(*opticsHut,2);
   connectUnit->setBack(*exptHut,1);
-  connectUnit->construct(System,*opticsHut,"back",*joinPipeB,"back");
+  connectUnit->createAll(System,*joinPipeB,"back");
 
-  joinPipeB->insertAllInCell(System,connectUnit->getCell("OuterVoid",0));
+  joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
   
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
   
-  // pipe shield goes around joinPipeB:
+  // pipe shield goes around joinPipeC:
   pShield->addAllInsertCell(exptHut->getCell("Void"));
   pShield->setCutSurf("inner",*joinPipeC,"outerPipe");
   //  pShield->setCutSurf("front",*opticsHut,"innerBack");

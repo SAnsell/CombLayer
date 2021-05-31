@@ -3,7 +3,7 @@
  
  * File:   constructInc/Jaws.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ namespace constructSystem
   \brief Jaws unit  
 */
 
-class Jaws : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+class Jaws :
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
-  
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness
@@ -75,7 +75,6 @@ class Jaws : public attachSystem::FixedOffset,
   std::vector<int> jawZMatVec;    ///<  Layer materials
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -88,9 +87,9 @@ class Jaws : public attachSystem::FixedOffset,
   Jaws& operator=(const Jaws&);
   virtual ~Jaws();
 
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

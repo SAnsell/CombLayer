@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,17 +37,11 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
-#include "mathSupport.h"
-#include "MapSupport.h"
-#include "InputControl.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "IItemBase.h"
 #include "Code.h"
@@ -317,7 +311,7 @@ inputParam::flag(const std::string& K) const
   /*!
     Get Flag state
     \param K :: Key to seach
-    \return Value
+    \return true if flag / item set
    */
 {
   ELog::RegMethod RegA("inputParam","flag");
@@ -544,6 +538,28 @@ inputParam::getCntVec3D(const std::string& K,
   const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
+
+  return IPtr->getCntVec3D(setIndex,itemIndex);
+}
+
+Geometry::Vec3D
+inputParam::getDefCntVec3D(const std::string& K,
+			   const size_t setIndex,
+			   size_t& itemIndex,
+			   const Geometry::Vec3D& defVec) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 1]
+    \param defVec :: Value to return if not possible to translate
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getDefCntVec3D");
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    return defVec;
 
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }

@@ -53,7 +53,7 @@ class MonoBoxGenerator : public VacBoxGenerator
   void setLids(const double,const double,const double);
   
   virtual void generateBox(FuncDataBase&,const std::string&,
-			   const double,const double,const double,
+			   const double,const double,
 			   const double,const double) const;
 
 };

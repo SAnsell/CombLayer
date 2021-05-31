@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/JawFlange.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_JawFlange_h
@@ -26,13 +26,13 @@ class Simulation;
 
 namespace constructSystem
 {
-  
+
 /*!
   \class JawFlange
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief JawFlange unit  
+  \brief JawFlange unit
 */
 
 class JawFlange :
@@ -58,9 +58,9 @@ class JawFlange :
 
   HeadRule cylRule;             ///< Cylinder/Surround rule
   int cutCell;                  ///< Cell to cut
-  
+
   void calcBeamCentre();
-  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
@@ -89,4 +89,3 @@ class JawFlange :
 }
 
 #endif
- 

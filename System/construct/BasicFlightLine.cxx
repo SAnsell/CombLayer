@@ -37,28 +37,15 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
 #include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -350,8 +337,8 @@ BasicFlightLine::createObjects(Simulation& System,
   const std::string innerCut=innerFC.getLinkString(innerIndex);
   const std::string outerCut=outerFC.getLinkString(outerIndex);
   
-  setLinkSignedCopy(0,innerFC,innerIndex);
-  setLinkSignedCopy(1,outerFC,outerIndex);
+  setLinkCopy(0,innerFC,innerIndex);
+  setLinkCopy(1,outerFC,outerIndex);
   
   const int layerIndex=buildIndex+static_cast<int>(nLayer)*10;  
   std::string Out;

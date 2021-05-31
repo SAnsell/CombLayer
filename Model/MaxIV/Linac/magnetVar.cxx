@@ -3,7 +3,7 @@
 
  * File:   linac/magVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,40 +45,17 @@
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
-#include "GateValveGenerator.h"
 #include "CorrectorMagGenerator.h"
 #include "LinacQuadGenerator.h"
-#include "LinacSexuGenerator.h"
-#include "PortTubeGenerator.h"
-#include "JawFlangeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "StriplineBPMGenerator.h"
-#include "CylGateValveGenerator.h"
-#include "GateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
-#include "EArrivalMonGenerator.h"
 #include "YagScreenGenerator.h"
 #include "YagUnitGenerator.h"
-#include "YagUnitBigGenerator.h"
 #include "FlatPipeGenerator.h"
-#include "TriPipeGenerator.h"
-#include "TriGroupGenerator.h"
 #include "BeamDividerGenerator.h"
-#include "ScrapperGenerator.h"
-#include "SixPortGenerator.h"
-#include "CeramicGapGenerator.h"
-#include "EBeamStopGenerator.h"
-#include "TWCavityGenerator.h"
-#include "UndVacGenerator.h"
-#include "FMUndulatorGenerator.h"
-#include "subPipeUnit.h"
-#include "MultiPipeGenerator.h"
-#include "ButtonBPMGenerator.h"
-#include "CurveMagGenerator.h"
-#include "CleaningMagnetGenerator.h"
 #include "IonPTubeGenerator.h"
-#include "GaugeGenerator.h"
 #include "LBeamStopGenerator.h"
 
 #include "magnetVar.h"
@@ -119,22 +96,26 @@ Segment1Magnet(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeA",16.5); // No_1_00.pdf
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
   //  corrector mag and pie
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeB",57.23); // No_1_00.pdf
   CMGen.generateMag(Control,lKey+"CMagHA",31.85,0); // No_1_00.pdf
   CMGen.generateMag(Control,lKey+"CMagVA",46.85,1); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid(1);
   PGen.generatePipe(Control,lKey+"PipeC",34.27); // No_1_00.pdf
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeD",113.7);
 
   CMGen.generateMag(Control,lKey+"CMagHB",51.86,0);
@@ -311,6 +292,7 @@ Segment29Magnet(FuncDataBase& Control,
   setVariable::YagScreenGenerator YagScreenGen;
   setVariable::YagUnitGenerator YagUnitGen;
   setVariable::LBeamStopGenerator BSGen;
+  setVariable::LBeamStopGenerator BSGenB("new");
 
   const Geometry::Vec3D startPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D startPtB(-637.608,9073.535,-84.888);
@@ -318,6 +300,8 @@ Segment29Magnet(FuncDataBase& Control,
   const Geometry::Vec3D endPtA(-637.608,9401.161,0.0);
   const Geometry::Vec3D endPtB(-637.608,9401.151,-102.058);
 
+  // to allow main object to have an offset
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
@@ -333,12 +317,12 @@ Segment29Magnet(FuncDataBase& Control,
   PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -361,7 +345,7 @@ Segment29Magnet(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
 
-  BSGen.generateBStop(Control,lKey+"BeamStopA");
+  BSGenB.generateBStop(Control,lKey+"BeamStopA");
   BSGen.generateBStop(Control,lKey+"BeamStopB");
   Control.addVariable(lKey+"BeamStopAYStep",30.0);
   Control.addVariable(lKey+"BeamStopBYStep",30.0);
@@ -395,6 +379,7 @@ Segment32Magnet(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.setCF<CF18_TDC>();
+  PGen.setOuterVoid(1);
 
   PGen.generatePipe(Control,lKey+"PipeA",94.401); // No_32_34_00
   Control.addVariable(lKey+"PipeAXYAngle",-1.6); // No_32_34_00

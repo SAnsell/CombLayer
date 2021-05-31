@@ -17,7 +17,7 @@
 // 1=panoramic - good to display whole beam line
 // 2=omnimax
 // 3=cylindrical
-#declare projection = 0;
+#declare projection = 1;
 #declare cameraAngle = 150;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
@@ -333,10 +333,10 @@ global_settings {
     #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment43")) // SPF segment 43
-    #declare cameraLocation = <-815, 9150, 40>;
-    #declare cameraLookAt   = <-860, 9110, 0>;
+    #declare cameraLocation = <-500, 9150, 50>;
+    #declare cameraLookAt   = <-733, 9163, 0>;
     #declare projection = 0;
-    #declare cameraAngle = 90;
+    #declare cameraAngle = 60;
   #break
   #case(strcmp(ITEM,"Segment44")) // SPF segment 44
     #declare cameraLocation = <-700, 9600, 100>;
@@ -369,8 +369,8 @@ global_settings {
     #declare cameraAngle = 50;
   #break
   #case(strcmp(ITEM,"Segment49")) // SPF segment 49
-    #declare cameraLocation = <-700, 10000, 30>;
-    #declare cameraLookAt   = <-860, 10070, 0>;
+    #declare cameraLocation = <-700, 9790, 30>;
+    #declare cameraLookAt   = <-730, 9930, 0>;
     #declare projection = 0;
     #declare cameraAngle = 90;
   #break
@@ -408,6 +408,186 @@ global_settings {
     #declare cameraLookAt   = <-650, 6800, -250>;
     #declare cameraAngle = 50;
     #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"D1Duct")) // D1-D4 ducts in FKG
+    #declare cameraLocation = <550, 6640, 100>;
+    #declare cameraLookAt   = <65, 7450, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"BTG")) // BTG wall
+    #declare cameraLocation = <430, 10429, 100>;
+    #declare cameraLookAt   = <240, 10100, 150>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"BDRoom")) // Main beam dump room (view from SPF hall)
+    #declare cameraLocation = <-80, 9500, 50>;
+    #declare cameraLookAt   = <-740, 9870, -300>;
+    #declare cameraAngle = 90;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"MidTFrontLShield")) //
+    #declare cameraLocation = <450, 2800, 30>;
+    #declare cameraLookAt   = <230, 3200, 0>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
+  #case(strcmp(ITEM,"L2SPF11ShieldA"))
+    #declare cameraLocation = <-190, 4030, 20>;
+    #declare cameraLookAt   = <-250, 4070, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
+  #case(strcmp(ITEM,"L2SPF12ShieldA"))
+    #declare cameraLocation = <-220, 4240, 20>;
+    #declare cameraLookAt   = <-300, 4300, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
+  #case(strcmp(ITEM,"SPF31Quad"))
+    #declare cameraLocation = <-600, 5514, 12>;
+    #declare cameraLookAt   = <-570, 5495, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
+  #case(strcmp(ITEM,"SPF32DipoleA"))
+    #declare cameraLocation = <-690, 5920, 20>;
+    #declare cameraLookAt   = <-655, 5883, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 65;
+  #break
+  #case(strcmp(ITEM,"SPF33ShieldA")) // local shielding at SPF33 - img_5389.mp4
+    #declare cameraLocation = <-750, 6200, 20>;
+    #declare cameraLookAt   = <-690, 6100, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"SPF46ShieldA")) // local shielding at SPF46 - img_5375.jpg
+    #declare cameraLocation = <-850, 9450, 20>;
+    #declare cameraLookAt   = <-730, 9385, -20>;
+    #declare projection = 0;
+    #declare cameraAngle = 65;
+  #break
+  #case(strcmp(ITEM,"SPF47ShieldB")) // img_5384.jpg
+    #declare cameraLocation = <-860, 9850, 40>;
+    #declare cameraLookAt   = <-760, 9760, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+  #case(strcmp(ITEM,"SPF48ShieldA")) // local shielding at SPF48 - img_5378.mp4
+    #declare cameraLocation = <-850, 9830, 20>;
+    #declare cameraLookAt   = <-730, 9900, -10>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+  #case(strcmp(ITEM,"SPF48ShieldC")) // img_5457.jpg
+    #declare cameraLocation = <-600, 9900, 70>;
+    #declare cameraLookAt   = <-735, 9830, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
+  #case(strcmp(ITEM,"SPF49ShieldA")) // local shielding at SPF49 - img_5378.mp4
+    #declare cameraLocation = <-900, 9850, 20>;
+    #declare cameraLookAt   = <-730, 10025, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+    #case(strcmp(ITEM,"TDC16CMagH"))
+    #declare cameraLocation = <-335, 5280, 20>;
+    #declare cameraLookAt   = <-363, 5287, 7>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
+    #case(strcmp(ITEM,"SPF33ShieldB"))
+    #declare cameraLocation = <-633, 6235, 20>;
+    #declare cameraLookAt   = <-705, 6320, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 60;
+  #break
+    #case(strcmp(ITEM,"TDC26ShieldA"))
+    #declare cameraLocation = <-243, 7850, 20>;
+    #declare cameraLookAt   = <-352, 8115, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagScreenInBeam"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagScreen"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2YagUnit"))
+    #declare cameraLocation = <230, 1370, 70>;
+    #declare cameraLookAt   = <280, 1345, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF2ShieldA"))
+    #declare cameraLocation = <140, 1270, 20>;
+    #declare cameraLookAt   = <240, 1350, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"L2SPF3ShieldA"))
+    #declare cameraLocation = <370, 1500, 50>;
+    #declare cameraLookAt   = <240, 1500, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 80;
+  #break
+    #case(strcmp(ITEM,"L2SPF4ShieldA"))
+//    #declare cameraLocation = <160, 1650, 20>;
+    #declare cameraLocation = <130, 1850, 20>;
+    #declare cameraLookAt   = <207, 1810, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 40;
+  #break
+    #case(strcmp(ITEM,"L2SPF6ShieldA"))
+    #declare cameraLocation = <180, 2300, 50>;
+    #declare cameraLookAt   = <150, 2315, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+    #case(strcmp(ITEM,"L2SPF6EBeam"))
+    #declare cameraLocation = <260, 2310, 40>;
+    #declare cameraLookAt   = <132, 2385, -5>;
+    #declare projection = 0;
+    #declare cameraAngle = 50;
+  #break
+    #case(strcmp(ITEM,"L2SPF10ShieldA"))
+    #declare cameraLocation = <120, 3170, 30>;
+    #declare cameraLookAt   = <-55, 3185, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 20;
+  #break
+    #case(strcmp(ITEM,"TDC1")) // TDC beamline view backwards from the BSP01 storage area
+    #declare cameraLocation = <200, 25000, 300>;
+    #declare cameraLookAt   = <-170, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"TDC2")) // TDC beamline view forward from the klystron gallery in BC2
+    #declare cameraLocation = <0, -12000, 500>;
+    #declare cameraLookAt   = <10, 4000, -50>;
+    #declare projection = 0;
+    #declare cameraAngle = 2.7;
+  #break
+    #case(strcmp(ITEM,"SpectrometerDipole"))
+    #declare cameraLocation = <200, 7100, 100>;
+    #declare cameraLookAt   = <-300, 8150, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 30;
+  #break
+    #case(strcmp(ITEM,"L2SPF"))
+    #declare cameraLocation = <500, 1700, 100>;
+    #declare cameraLookAt   = <300, 1700, 0>;
+    #declare projection = 1;
   #break
   #else // whole beamline view (like All)
     #declare cameraLocation = <-500, 5200, 1000>;

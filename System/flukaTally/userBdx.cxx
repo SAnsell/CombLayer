@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBdx.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,16 +38,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Quaternion.h"
-#include "Mesh3D.h"
 
 #include "flukaTally.h"
 #include "userBdx.h"
@@ -55,19 +47,8 @@
 namespace flukaSystem
 {
 
-userBdx::userBdx(const int outID) :
-  flukaTally("surf"+std::to_string(outID),outID),
-  particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
-  angleA(0),angleB(4.0*M_PI)
-  /*!
-    Constructor
-    \param outID :: Identity number of tally [fortranOut]
-  */
-{}
-
-userBdx::userBdx(const std::string& KN,const int outID) :
-  flukaTally(KN,outID),
+userBdx::userBdx(const std::string& KN,const int ID,const int outID) :
+  flukaTally(KN,ID,outID),
   particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
   angleA(0),angleB(4.0*M_PI)

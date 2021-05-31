@@ -38,10 +38,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -53,21 +50,14 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
 #include "BlockZone.h"
-#include "generalConstruct.h"
 
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "VacuumPipe.h"
 #include "UndulatorVacuum.h"
 
 #include "TDCsegment.h"
@@ -125,8 +115,8 @@ Segment40::createLinks()
 {
   ELog::RegMethod RegA("Segment40","createLinks");
 
-  setLinkSignedCopy(0,*uVac,1);
-  setLinkSignedCopy(1,*uVac,2);
+  setLinkCopy(0,*uVac,1);
+  setLinkCopy(1,*uVac,2);
 
   joinItems.push_back(FixedComp::getFullRule("back"));
 

@@ -34,36 +34,22 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Line.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -153,6 +139,7 @@ Segment44::buildObjects(Simulation& System)
   triBend->insertInCell("BendStr",System,outerCellD);
   triBend->insertInCell("BFlange",System,outerCellD);
 
+  //  triBend->insertInCell("Main",System,cMag->getCell("VoidFront"));
   triBend->insertInCell("Main",System,cMag->getCell("Void"));
   triBend->insertInCell("Mid",System,cMag->getCell("Void"));
   triBend->insertInCell("Bend",System,cMag->getCell("Void"));
@@ -174,12 +161,12 @@ Segment44::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*triBend,1);
+  setLinkCopy(0,*triBend,1);
 
-  setLinkSignedCopy(1,*triBend,2);  // straight exit
-  setLinkSignedCopy(2,*triBend,3);  // mid exit
-  setLinkSignedCopy(3,*triBend,4);  // bend exit
-  setLinkSignedCopy(4,*triBend,5);  // bend exit
+  setLinkCopy(1,*triBend,2);  // straight exit
+  setLinkCopy(2,*triBend,3);  // mid exit
+  setLinkCopy(3,*triBend,4);  // bend exit
+  setLinkCopy(4,*triBend,5);  // bend exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"midExit");

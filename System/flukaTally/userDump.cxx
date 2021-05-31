@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userDump.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,19 +34,9 @@
 #include <memory>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
 #include "writeSupport.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
 
 #include "flukaTally.h"
 #include "userDump.h"
@@ -54,8 +44,16 @@
 namespace flukaSystem
 {
 
-userDump::userDump(const int outID) :
-  flukaTally(outID),dumpType(1),
+userDump::userDump(const int ID,const int outID) :
+  userDump("dump",ID,outID)
+  /*!
+    Constructor
+    \param outID :: Identity number of tally [fortranOut]
+  */
+{}
+userDump::userDump(const std::string& tallyName,
+		   const int ID,const int outID) :
+  flukaTally(tallyName,ID,outID),dumpType(1),
   outName("dump")
   /*!
     Constructor

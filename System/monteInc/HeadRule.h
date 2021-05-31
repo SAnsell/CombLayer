@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,11 +97,22 @@ class HeadRule
   int pairValid(const int,const Geometry::Vec3D&) const;           
   bool isValid(const std::map<int,int>&) const; 
   bool isDirectionValid(const Geometry::Vec3D&,const int) const;
+  bool isDirectionValid(const Geometry::Vec3D&,
+			const std::set<int>&,const int) const;
+
+  std::set<int> surfValid(const Geometry::Vec3D&) const;
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
+    const;
   
+  std::pair<int,double> trackSurfDistance
+    (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  std::pair<int,double> trackSurfDistance
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,const std::set<int>&) const;
+
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		double&) const;
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		double&,const std::set<int>&) const;
+		const std::set<int>&) const;
 
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
@@ -109,10 +120,10 @@ class HeadRule
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      const Geometry::Vec3D&) const;
 
-
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::Vec3D>&,std::vector<int>&) const;
+
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;

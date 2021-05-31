@@ -3,7 +3,7 @@
  
  * File: species/speciesOpticsBeamline.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,23 +34,15 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -75,8 +67,6 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
-#include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -91,7 +81,6 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-#include "PortTube.h"
 #include "PipeShield.h"
 
 #include "CrossPipe.h"
@@ -101,7 +90,6 @@
 #include "JawValveCube.h"
 #include "BeamMount.h"
 #include "TankMonoVessel.h"
-#include "GratingMono.h"
 #include "GratingUnit.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
@@ -770,8 +758,8 @@ speciesOpticsBeamline::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
   

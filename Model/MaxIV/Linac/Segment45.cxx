@@ -72,7 +72,14 @@
 #include "YagScreen.h"
 #include "CeramicGap.h"
 #include "FlangePlate.h"
+#include "EBeamStop.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Importance.h"
+#include "Object.h"
+
+#include "AttachSupport.h"
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"
@@ -91,7 +98,9 @@ Segment45::Segment45(const std::string& Key) :
   yagUnit(new tdcSystem::YagUnitBig(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   adaptor(new constructSystem::FlangePlate(keyName+"Adaptor")),
-  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
+  pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
+  beamStop(new tdcSystem::EBeamStop(keyName+"EBeam"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,6 +115,8 @@ Segment45::Segment45(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(adaptor);
   OR.addObject(pipeB);
+  OR.addObject(pipeC);
+  OR.addObject(beamStop);
 
   setFirstItems(ceramic);
 }
@@ -205,6 +216,18 @@ Segment45::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*adaptor,"back",*pipeB);
 
+  pipeC->setCutSurf("front",*pipeB,"back");
+  pipeC->createAll(System,*pipeB, "back");
+
+  beamStop->setCutSurf("front",*pipeC,"back");
+  beamStop->createAll(System,*pipeC, "back");
+
+  if (beamStop->isShieldActive())
+    {
+      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"FlangeB");
+      attachSystem::addToInsertControl(System,*beamStop,*pipeC,"Main");
+    }
+
   CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;
 }
@@ -221,14 +244,26 @@ Segment45::constructHole(Simulation& System)
   if (IHall)
     {
       std::string Out;
-      const HeadRule fbHR=IHall->combine("#Floor SubFloor");
+      const HeadRule fbHR=IHall->combine("#Floor BDRoomRoof");
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 " );
       makeCell("FloorVoid",System,cellIndex++,0,0.0,Out+fbHR.display());
       pipeB->insertAllInCell(System,this->getCell("FloorVoid"));
+      // tip of pipeB enters the main beam dump room
+      pipeB->insertInCell("Main",System,IHall->getCell("BDSPF"));
+      pipeB->insertInCell("FlangeB",System,IHall->getCell("BDSPF"));
+
+      MonteCarlo::Object *obj = System.findObject(IHall->getCell("BD"));
+      obj->addIntersection(HeadRule(pipeB->getLinkString(10)));
+      // same but less efficient (side surfaces also added into BD):
+      //  pipeB->insertInCell("Main",System,IHall->getCell("BD"));
+
+      pipeC->insertAllInCell(System,IHall->getCell("BDSPF"));
+      beamStop->insertAllInCell(System,IHall->getCell("BDSPF"));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 7 " );
-      IHall->insertComponent(System,"Floor",Out);
+      IHall->insertComponent(System,"HatchSPF",Out); // concrete roof
+      IHall->insertComponent(System,"BDRoofSPF",Out); // steel roof
     }
   return;
 }
@@ -241,12 +276,12 @@ Segment45::createLinks()
 {
   ELog::RegMethod RegA("Segment45","createLinks");
 
-  setLinkSignedCopy(0,*ceramic,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkCopy(0,*ceramic,1);
+  setLinkCopy(1,*pipeB,2);
   nameSideIndex(1,"buildZoneCut");
   joinItems.push_back(FixedComp::getFullRule("back"));
 
-    
+
   return;
 }
 

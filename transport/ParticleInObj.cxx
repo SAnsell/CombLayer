@@ -32,29 +32,17 @@
 #include <stdexcept> 
 
 #include "MersenneTwister.h"
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
 #include "mathSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Track.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Surface.h"
-#include "surfIndex.h"
-#include "Rules.h"
 #include "particle.h"
 #include "neutron.h"
-#include "photon.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
@@ -62,7 +50,6 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "neutMaterial.h"
-#include "DBNeutMaterial.h"
 #include "ParticleInObj.h"
 
 extern MTRand RNG;
@@ -233,7 +220,7 @@ ParticleInObj<PTYPE>::trackOutCell
     \return true/false if neutron intersects object    
   */
 {
-  return ObjPtr->trackOutCell(N,aDist,surfPtr);
+  return ObjPtr->trackCell(N,aDist,surfPtr,0);
 }
 
 template<typename PTYPE>
@@ -250,7 +237,7 @@ ParticleInObj<PTYPE>::trackIntoCell
     \return true/false if particle intersects/misses the object    
   */
 {
-  return ObjPtr->trackIntoCell(N,aDist,surfPtr);
+  return ObjPtr->trackCell(N,aDist,surfPtr,0);
 }
 
 template<>
@@ -271,7 +258,7 @@ ParticleInObj<MonteCarlo::neutron>::trackWeight
 
   double aDist(0.0);
       
-  const int SN=ObjPtr->trackOutCell(N,aDist,surfPtr);
+  const int SN=ObjPtr->trackCell(N,aDist,surfPtr,0);
   //  ELog::EM<<"Neutron Track"<<N.weight<<ELog::endDiag;
   const scatterSystem::neutMaterial* matPtr=
     dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
@@ -317,7 +304,7 @@ ParticleInObj<MonteCarlo::neutron>::trackAttn(MonteCarlo::neutron& N,
   double aDist(0);
       
   // Signed number
-  const int SN=ObjPtr->trackOutCell(N,aDist,SPtr);
+  const int SN=ObjPtr->trackCell(N,aDist,SPtr,0);
   const scatterSystem::neutMaterial* matPtr=
     dynamic_cast<const scatterSystem::neutMaterial*>(ObjPtr->getMatPtr());
   

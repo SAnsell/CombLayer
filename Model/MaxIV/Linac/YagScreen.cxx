@@ -60,7 +60,6 @@
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "Exception.h"
 #include "Quaternion.h"
 
 #include "YagScreen.h"

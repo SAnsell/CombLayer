@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,39 +34,20 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "surfRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "BaseMap.h"
-#include "SurfMap.h"
-#include "CellMap.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
 
-#include "Importance.h"
-#include "Object.h"
 #include "SimFLUKA.h"
-#include "TallySelector.h"
 #include "flukaTally.h"
 #include "userTrack.h"
 #include "userTrackConstruct.h" 
@@ -97,7 +78,7 @@ userTrackConstruct::createTally(SimFLUKA& System,
   ELog::RegMethod RegA("userTrackConstruct","createTally");
 
     
-  userTrack UD(fortranTape);
+  userTrack UD(fortranTape,fortranTape);
   UD.setParticle(PType);
 
   UD.setCell(cellA);

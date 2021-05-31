@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,7 @@
 #include <algorithm>
 #include <boost/format.hpp>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -43,11 +41,8 @@
 #include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Line.h"
 #include "Surface.h"
 #include "masterWrite.h"
 #include "Quadratic.h"
@@ -171,9 +166,11 @@ Cylinder::operator==(const Cylinder& A) const
 {
   ELog::RegMethod RegA("Cylinder","operator==");
 
+    
   if (&A==this) return 1;
   if (std::abs(Radius-A.Radius)>Geometry::zeroTol)
     return 0;
+
 
   // Ok Normal can only be + -
   if (A.Normal!=Normal && A.Normal!= -Normal)
@@ -181,12 +178,13 @@ Cylinder::operator==(const Cylinder& A) const
 
   // Now centre 
   if (Centre==A.Centre) return 1;
+
   // Centres can be displaced along the normal
   const Geometry::Vec3D cutACentre=Centre.cutComponent(Normal);
   const Geometry::Vec3D cutBCentre=A.Centre.cutComponent(Normal);
-
+    
   const double D=cutACentre.Distance(cutBCentre);
-  return (std::abs<double>(D-1.0)<Geometry::zeroTol) ? 1 : 0;
+  return (std::abs<double>(D)<Geometry::zeroTol) ? 1 : 0;
 }
 
 int

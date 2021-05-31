@@ -37,13 +37,13 @@ namespace tdcSystem
   class DipoleDIBMag;
   class YagUnit;
   class YagScreen;
-  
+  class LocalShielding;
 
   /*!
     \class Segment26
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date June 2020
+    \date Feb 2021
     \brief Dividing segment in the TDC from the linac
   */
 
@@ -55,11 +55,13 @@ class Segment26 :
   std::unique_ptr<attachSystem::BlockZone> IZTop;        ///< Flat inner zone
   std::unique_ptr<attachSystem::BlockZone> IZMid;        ///< Mid inner zone
   std::unique_ptr<attachSystem::BlockZone> IZLower;      ///< Lower inner zone
-    
-  /// Join pipe 
+
+  /// Join pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeAA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCA;
+
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
 
   /// Connect bellows
   std::shared_ptr<constructSystem::Bellows> bellowAA;
@@ -74,7 +76,7 @@ class Segment26 :
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
-  /// Exit pipe 
+  /// Exit pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeAB;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBB;
   std::shared_ptr<constructSystem::VacuumPipe> pipeCB;
@@ -85,7 +87,7 @@ class Segment26 :
   void createLinks();
 
   void createSplitInnerZone();
-  
+
  public:
 
   Segment26(const std::string&);
@@ -94,7 +96,7 @@ class Segment26 :
   ~Segment26();
 
   virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
-  
+
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

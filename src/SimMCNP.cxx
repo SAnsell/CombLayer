@@ -3,7 +3,7 @@
  
  * File:   src/SimMCNP.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,77 +36,47 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "mathSupport.h"
-#include "support.h"
 #include "writeSupport.h"
 #include "particleConv.h"
-#include "version.h"
-#include "Element.h"
 #include "Zaid.h"
-#include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
 #include "NGroup.h"
 #include "pairRange.h"
 #include "Tally.h"
-#include "cellFluxTally.h"
 #include "pointTally.h"
-#include "heatTally.h"
 #include "tmeshTally.h"
 #include "sswTally.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "surfaceFactory.h"
-#include "objectRegister.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
-#include "BnId.h"
-#include "AcompTools.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "WForm.h"
 #include "weightManager.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "Source.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "ObjSurfMap.h"
 #include "PhysicsCards.h"
-#include "ReadFunctions.h"
-#include "BaseMap.h"
-#include "CellMap.h"
 #include "SimTrack.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -664,10 +634,9 @@ SimMCNP::writeImportance(std::ostream& OX) const
     pList.emplace(pConv.mcplITYP(P));
 		  
   
-  std::map<int,std::vector<int>> ImpMap;
-  ImpMap.emplace(0,std::vector<int>());
+  std::map<int,std::vector<double>> ImpMap;
+  ImpMap.emplace(0,std::vector<double>());
     
-  RangeUnit::NGroup<int> IRange;
   bool flag;
   double Imp;
   for(const int CN : cellOutOrder)
@@ -679,7 +648,7 @@ SimMCNP::writeImportance(std::ostream& OX) const
       if (!flag)
 	{
 	  const std::set<int>& PSet=OPtr->getImportance().getParticles();
-	  std::map<int,std::vector<int>>::iterator mc;
+	  std::map<int,std::vector<double>>::iterator mc;
 	  for(const int P : PSet)
 	    {
 	      const double ImpVal=OPtr->getImp(P);
@@ -689,13 +658,14 @@ SimMCNP::writeImportance(std::ostream& OX) const
 		  pList.erase(P);
 		  ImpMap.emplace(P,ImpMap[0]);   // copy existing list in
 		}
-	      ImpMap[P].push_back(static_cast<int>(ImpVal));
+	      ImpMap[P].push_back(ImpVal);
 	    }
 	}
-
     }
   cx.str("");
   cx<<"imp:"<<pConv.mcnpParticleList(pList);
+
+  RangeUnit::NGroup<double> IRange;    
   IRange.condense(1e-6,ImpMap[0]);
 
   cx<<IRange;

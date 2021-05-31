@@ -35,39 +35,19 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "stringCombine.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "surfEqual.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "SurInter.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "BaseMap.h"
@@ -116,6 +96,36 @@ FixedComp::splitObject(Simulation& System,
   OutCell.push_back(cellExtra);
     
   return OutCell;  
+}
+
+std::vector<int>
+FixedComp::splitObjectAbsolute(Simulation& System,
+			       const int SNoffset,
+			       const std::string& cellName,
+			       const Geometry::Vec3D& Org,
+			       const Geometry::Vec3D& XYZ)
+  /*!
+    Carries out a splitObject function -- not 100% sure
+    is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
+    \param System :: Simuation for the model
+    \param SNoffset :: Number for new surface [relative to build index]
+    \param cellN :: Cell number to split
+    \param Org :: Origin 
+    \param XYZ :: XYZ plane 
+    \return cellList 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","splitObjectAbsolute(cellName,org,axis,)");
+
+  const CellMap* CMapPtr=
+    dynamic_cast<const attachSystem::CellMap*>(this);
+  const int cellN=(CMapPtr) ? CMapPtr->getLastCell(cellName) : 0;
+  if (!cellN)
+    throw ColErr::InContainerError<std::string>
+      (cellName,"FC:"+keyName+" cell: "+cellName+" has no cell");
+
+  return splitObjectAbsolute(System,SNoffset,cellN,Org,XYZ);
 }
 
 std::vector<int>

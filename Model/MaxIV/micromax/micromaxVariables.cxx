@@ -3,7 +3,7 @@
  
  * File:   micromax/micromaxVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
@@ -64,7 +58,6 @@
 #include "MonoShutterGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
-#include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
@@ -173,7 +166,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -195,7 +188,7 @@ shutterTable(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeB";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
   PItemGen.setCF<setVariable::CF40>(0.45);
@@ -214,7 +207,7 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube
@@ -376,7 +369,7 @@ heatDumpTable(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",20.0);
 
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
@@ -413,7 +406,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
-  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
@@ -531,7 +524,7 @@ frontEndVariables(FuncDataBase& Control,
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",36.0);
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
   // collimator block
 
@@ -559,7 +552,7 @@ frontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
 
   SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",36.0);
   Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
 
   CollGen.setFrontGap(2.13,2.146);
@@ -570,7 +563,7 @@ frontEndVariables(FuncDataBase& Control,
   // linked pipe tube
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setAFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",22.0);
   Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
 
   CollGen.setMain(1.20,"Copper","Void");
@@ -674,7 +667,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setBPortOffset(2.5,0); // X/Z
 
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
+  VBoxGen.generateBox(Control,Name,53.1,23.6,29.5,124.0);
 
 
   return;
@@ -830,7 +823,7 @@ monoVariables(FuncDataBase& Control,
 
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,Name+"MonoBox",0.0,77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,Name+"MonoBox",77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(Name+"MonoXtalYAngle",90.0);
@@ -949,7 +942,7 @@ opticsVariables(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setBFlangeCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",12.5);
   Control.addVariable(preName+"ScreenPipeANPorts",1);
   PItemGen.setCF<setVariable::CF40>(4.0);
   PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
@@ -957,7 +950,7 @@ opticsVariables(FuncDataBase& Control,
 
   
   SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",14.0);
   Control.addVariable(preName+"ScreenPipeBNPorts",2);
   PItemGen.setCF<setVariable::CF63>(4.0);
   PItemGen.setOuterVoid(0);
@@ -971,9 +964,8 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
-  // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,preName+"PrimeJawBox",
-		      0.0,30.0,15.0,15.0,53.15);
+  // width/height/depth/length
+  VBoxGen.generateBox(Control,preName+"PrimeJawBox",30.0,15.0,15.0,53.15);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();

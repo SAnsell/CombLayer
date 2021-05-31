@@ -34,40 +34,19 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "FixedOffset.h"
-#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -76,13 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
-#include "World.h"
-#include "AttachSupport.h"
-#include "ModelSupport.h"
-#include "generateSurf.h"
 
-#include "VacuumPipe.h"
-#include "OffsetFlangePipe.h"
 #include "UTubePipe.h"
 #include "Undulator.h"
 
@@ -173,8 +146,8 @@ maxpeemFrontEnd::createLinks()
     Create a front/back link
   */
 {
-  setLinkSignedCopy(0,*undulatorPipe,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*undulatorPipe,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 

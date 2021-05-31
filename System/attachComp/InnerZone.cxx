@@ -39,42 +39,25 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Sphere.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "SurInter.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "generateSurf.h"
@@ -812,16 +795,14 @@ InnerZone::constructMasterCell(Simulation& System)
 
   CellPtr->makeCell("MasterVoid",System,
 		    cellIndex++,voidMat,0.0,MCell.display());  
-  masterCell= System.findObject(cellIndex-1);
+  masterCell= System.findObjectThrow(cellIndex-1);
   MCell.makeComplement();
   
   // get and RECORD external cells:
   insertCells.clear();
   for(const int CN : insertCN)
     {
-      MonteCarlo::Object* cellObj=System.findObject(CN);
-      if (!cellObj)
-	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
+      MonteCarlo::Object* cellObj=System.findObjectThrow(CN);
       cellObj->getHeadRule();
       insertCells.emplace(CN,cellObj->getHeadRule());
       cellObj->addIntersection(MCell);
@@ -845,10 +826,7 @@ InnerZone::removeLastMaster(Simulation& System)
 
   for(auto& [CN, HR] : insertCells)
     {
-      MonteCarlo::Object* cellObj=System.findObject(CN);
-      if (!cellObj)
-	throw ColErr::InContainerError<int>(CN,"Cell not in Simulation");
-
+      MonteCarlo::Object* cellObj=System.findObjectThrow(CN);
       HR.addIntersection(masterHR);
       cellObj->procHeadRule(HR);
     }

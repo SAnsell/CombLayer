@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment13.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -72,6 +72,7 @@
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -82,13 +83,14 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment13::Segment13(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
-  bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),  
+  bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   QuadA(new tdcSystem::LQuadF(keyName+"QuadA")),
   SexuA(new tdcSystem::LSexupole(keyName+"SexuA")),
@@ -106,6 +108,7 @@ Segment13::Segment13(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(cMagHA);
   OR.addObject(bpm);
   OR.addObject(pipeB);
@@ -120,7 +123,7 @@ Segment13::Segment13(const std::string& Key) :
   setFirstItems(nullptr);          /// skip straight joing
   setFirstItems(pipeA);
 }
-  
+
 Segment13::~Segment13()
   /*!
     Destructor
@@ -144,18 +147,19 @@ Segment13::buildObjects(Simulation& System)
 
   //  ELog::EM<<"This -- "<<getRule("front")<<ELog::endDiag;
   pipeA->createAll(System,*this,0);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
 
-    
+
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-  
+
   pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
@@ -167,7 +171,7 @@ Segment13::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("PlateA"));
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
-    
+
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
   pipeTerminate(System,*buildZone,pipeC);
@@ -182,8 +186,8 @@ Segment13::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
@@ -205,7 +209,7 @@ Segment13::insertPrevSegment(Simulation& System,
 
 
 
-void 
+void
 Segment13::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -223,10 +227,9 @@ Segment13::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-    
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

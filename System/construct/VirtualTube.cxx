@@ -36,42 +36,30 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Line.h"
-#include "Plane.h"
 #include "Cylinder.h"
 #include "SurInter.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -135,9 +123,6 @@ VirtualTube::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,CT,LExt,RB;
-  int CMat;
-  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -146,39 +131,9 @@ VirtualTube::populate(const FuncDataBase& Control)
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
 
-      L=Control.EvalTail<double>(portName,portBase,"Length");
-      R=Control.EvalTail<double>(portName,portBase,"Radius");
-      W=Control.EvalTail<double>(portName,portBase,"Wall");
-      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
-      CMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",capMat);
-
-      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
-      // Key two variables to get a DoublePort:
-      LExt=Control.EvalDefTail<double>
-	(portName,portBase,"ExternPartLength",-1.0);
-      RB=Control.EvalDefTail<double>
-	(portName,portBase,"RadiusB",-1.0);
-
       std::shared_ptr<portItem> windowPort;
-
-      if (LExt>Geometry::zeroTol && RB>R+Geometry::zeroTol)
-	{
-	  std::shared_ptr<doublePortItem> doublePort
-	    =std::make_shared<doublePortItem>(portName);
-	  doublePort->setLarge(LExt,RB);
-	  windowPort=doublePort;
-	}
-      else
-	windowPort=std::make_shared<portItem>(portName);
-
-      if (OFlag) windowPort->setWrapVolume();
-      windowPort->setMain(L,R,W);
-      windowPort->setFlange(FR,FT);
-      windowPort->setCoverPlate(CT,CMat);
-      windowPort->setMaterial(voidMat,wallMat);
+      windowPort=std::make_shared<portItem>(portBase,portName);
+      windowPort->populate(Control);
 
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
@@ -225,10 +180,7 @@ VirtualTube::createPorts(Simulation& System,
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
       for(const int CN : CC.getInsertCells())
-	{
-	  ELog::EM<<"C == "<<CN<<ELog::endDiag;
-	  Ports[i]->addInsertCell(CN);
-	}
+	Ports[i]->addInsertCell(CN);
 
       for(const int CN : portCells)
 	Ports[i]->addInsertCell(CN);
@@ -236,41 +188,14 @@ VirtualTube::createPorts(Simulation& System,
       Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
       if (outerVoid && CellMap::hasCell("OuterVoid"))
-	Ports[i]->constructTrack(System,
-				 CellMap::getCellObject(System,"OuterVoid"),
-				 innerSurf,outerSurf);
-	
+       	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
       Ports[i]->insertObjects(System);
     }
 
   return;
 }
 
-void
-VirtualTube::createPorts(Simulation& System)
-  /*!
-    Simple function to create ports
-    \param System :: Simulation to use
-   */
-{
-  ELog::RegMethod RegA("VirtualTube","createPorts");
-	
-  for(size_t i=0;i<Ports.size();i++)
-    {
-      const attachSystem::ContainedComp& CC=getCC("Main");
-      for(const int CN : CC.getInsertCells())
-	  Ports[i]->addOuterCell(CN);
 
-      for(const int CN : portCells)
-	Ports[i]->addOuterCell(CN);
-
-
-      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
-    }
-
-  return;
-}
 
 const portItem&
 VirtualTube::getPort(const size_t index) const
@@ -526,8 +451,10 @@ VirtualTube::splitVoidPorts(Simulation& System,
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
-    for(const int CN : cells)
-      CellMap::addCell(splitName,CN);
+    {
+      for(const int CN : cells)
+	CellMap::addCell(splitName,CN);
+    }
 
   return (cells.empty()) ? CN : cells.back()+1;
 }
@@ -749,7 +676,6 @@ VirtualTube::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
-  createPorts(System);
   insertObjects(System);
     
   return;

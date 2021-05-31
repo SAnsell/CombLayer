@@ -32,8 +32,6 @@
 #include <iterator>
 #include <tuple>
 
-#include "Exception.h"
-#include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "OutputLog.h"

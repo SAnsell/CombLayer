@@ -3,7 +3,7 @@
 
  * File: Linac/Segment27.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,8 +64,6 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 #include "generateSurf.h"
-#include "Importance.h"
-#include "Object.h"
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -350,14 +348,14 @@ Segment27::createLinks()
 {
   ELog::RegMethod RegA("Segment27","createLinks");
 
-  setLinkSignedCopy(0,*bellowAA,1);
-  setLinkSignedCopy(1,*bellowAC,2);
+  setLinkCopy(0,*bellowAA,1);
+  setLinkCopy(1,*bellowAC,2);
 
-  setLinkSignedCopy(2,*bellowBA,1);
-  setLinkSignedCopy(3,*bellowBC,2);
+  setLinkCopy(2,*bellowBA,1);
+  setLinkCopy(3,*bellowBC,2);
 
-  setLinkSignedCopy(4,*bellowCA,1);
-  setLinkSignedCopy(5,*beamStopC,2);
+  setLinkCopy(4,*bellowCA,1);
+  setLinkCopy(5,*beamStopC,2);
 
   FixedComp::nameSideIndex(0,"frontFlat");
   FixedComp::nameSideIndex(1,"backFlat");

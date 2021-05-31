@@ -40,17 +40,13 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "writeSupport.h"
 #include "mcnpStringSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Track.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Surface.h"
@@ -60,9 +56,7 @@
 #include "HeadRule.h"
 #include "Token.h"
 #include "particle.h"
-#include "objectRegister.h"
 #include "masterWrite.h"
-#include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -70,7 +64,6 @@
 #include "Importance.h"
 #include "Object.h"
 
-#include "Debug.h"
 
 namespace MonteCarlo
 {
@@ -578,6 +571,28 @@ Object::addSurfString(const std::string& XE)
 }
 
 int
+Object::isOnSurface(const Geometry::Vec3D& Pt) const
+  /*!
+    Determine if the point is on a surface in the object
+    THIS SHOULD NOT be used if you want if the point is 
+    at an exiting boundary (use Object::isOnSide). But 
+    it is for determining if a boundary check is needed.
+    \param Pt :: Point to check
+    \returns SurfNumber if the point is on the surface [signed]
+  */
+{
+  ELog::RegMethod RegA("Object","isOnSurface");
+
+  std::map<int,int> surMap=mapValid(Pt);
+  for(const auto& [sn , sideFlag] : surMap)
+    {
+      if (!sideFlag)
+	return sn;
+    }
+  return 0;
+}
+
+int
 Object::isOnSide(const Geometry::Vec3D& Pt) const
   /*!
     Determine if the point is in/out on the object
@@ -591,10 +606,10 @@ Object::isOnSide(const Geometry::Vec3D& Pt) const
   std::map<int,int>::iterator mc;
 
   std::set<int> onSurf;
-  for(mc=surMap.begin();mc!=surMap.end();mc++)
+  for(const auto& [sn , sideFlag] : surMap)
     {
-      if (!mc->second)
-	onSurf.insert(mc->first);
+      if (!sideFlag)
+	onSurf.insert(sn);
     }
   // Definately not on the surface
   if (onSurf.empty()) return 0;
@@ -680,7 +695,7 @@ Object::trackDirection(const Geometry::Vec3D& C,
 
 int
 Object::isValid(const Geometry::Vec3D& Pt) const
-/*! 
+/*!
   Determines is Pt is within the object 
   or on the surface
   \param Pt :: Point to be tested
@@ -704,6 +719,19 @@ Object::isValid(const Geometry::Vec3D& Pt,
   return HRule.isValid(Pt,ExSN);
 }
 
+std::set<int>
+Object::surfValid(const Geometry::Vec3D& Pt) const
+  /*! 
+    Determines the surface set the point is on
+    or on the surface
+    \param Pt :: Point to be tested
+    \param ExSN :: Excluded surf Number [unsigned]
+    \returns 1 if true and 0 if false
+  */
+{
+  return HRule.surfValid(Pt);
+}
+
 int
 Object::isDirectionValid(const Geometry::Vec3D& Pt,
 			 const int ExSN) const
@@ -716,6 +744,21 @@ Object::isDirectionValid(const Geometry::Vec3D& Pt,
 */
 {
   return HRule.isDirectionValid(Pt,ExSN);
+}
+
+int
+Object::isDirectionValid(const Geometry::Vec3D& Pt,
+			 const std::set<int>& surfSet,
+			 const int ExSN) const
+/*! 
+  Determines is Pt is within the object 
+  or on the surface
+  \param Pt :: Point to be tested 
+  \param ExSN :: Excluded surf Number [signed]
+  \returns 1 if true and 0 if false
+*/
+{
+  return HRule.isDirectionValid(Pt,surfSet,ExSN);
 }
 
 
@@ -836,12 +879,12 @@ Object::isValid(const std::map<int,int>& SMap) const
 
 std::map<int,int>
 Object::mapValid(const Geometry::Vec3D& Pt) const
-/*! 
-  Populates the validity map
-  the surface 
-  \param Pt :: Point to testsd
-  \returns Map [ surfNumber: -1/1 ]
-*/
+  /*! 
+    Populates the validity map
+    the surface 
+    \param Pt :: Point to testsd
+    \returns Map [ surfNumber: -1/1 ]
+  */
 {
   ELog::RegMethod RegA("Object","mapValid");
 
@@ -1082,83 +1125,33 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
   return 0;
 }
 
-std::pair<const Geometry::Surface*,double>
-Object::forwardIntercept(const Geometry::Vec3D& IP,
-			 const Geometry::Vec3D& UV) const
-  /*!
-    Given a line IP + lambda(UV) does it intercept
-    this object: (used for virtual objects).
-    This does descriminate between ingoing and outgoing
-    tracks.
 
-    \param IP :: Initial point
-    \param UV :: Forward going vector
-    \return surface + distance forward : -ve on failure
+std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+Object::trackSurfIntersect(const Geometry::Vec3D& Org,
+			   const Geometry::Vec3D& unitAxis) const
+  /*!
+    Transfer function to move Object into headrule
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Tuple of SurfNumber[signed]/surfacePointer/ImpactPoint/distance
   */
 {
-  ELog::RegMethod RegA("Object","forwardIntercept");
-  
-  MonteCarlo::LineIntersectVisit LI(IP,UV);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  double minDist(1e38);
-  const Geometry::Surface* surfPtr(0);
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>Geometry::shiftTol && dPts[i]<minDist)
-	{
-	  const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	  if (pAB==1 || pAB==2)            // Going either way
-	    {
-	      minDist=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  // surface + distance
-  return std::pair<const Geometry::Surface*,double>(surfPtr,minDist);
-}
-
-
-int
-Object::trackOutCell(const MonteCarlo::particle& N,double& D,
-		     const Geometry::Surface*& SPtr,
-		     const int startSurf) const
-  /*!
-    Track the distance to exit the cell 
-    - if already out of the cell, distance is to the cell+to the exit
-    \param N :: particle
-    \param D :: Distance to exit
-    \param SPtr :: Surface at exit
-    \param startSurf :: Start surface (not to be used) [0 to ignore]
-    \return surface number on exit
-  */
-{
-  return trackCell(N,D,-1,SPtr,startSurf);
+  return HRule.trackSurfIntersect(Org,unitAxis);
 }
 
 int
-Object::trackIntoCell(const MonteCarlo::particle& N,double& D,
-		      const Geometry::Surface*& SPtr,
-		      const int startSurf) const
+Object::trackSurf(const Geometry::Vec3D& Org,
+		  const Geometry::Vec3D& unitAxis) const
   /*!
-    Track the distance to a cell
-    \param N :: Particle
-    \param D :: Distance to entrance
-    \param SPtr :: Surface at exit
-    \param startSurf :: Start surface 
-    \return surface number on exit
+    Transfer function to move Object into headrule
+    \param Org :: Origin of line
+    \param unitAxis :: track of line
+    \return Signed surf number
   */
 {
-  return trackCell(N,D,1,SPtr,startSurf);
+  return HRule.trackSurf(Org,unitAxis);
 }
+
 
 int
 Object::calcInOut(const int pAB,const int N) const
@@ -1183,13 +1176,12 @@ Object::calcInOut(const int pAB,const int N) const
 
 int
 Object::trackCell(const MonteCarlo::particle& N,double& D,
-		  const int direction,const Geometry::Surface*& surfPtr,
+		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
     Track to a particle into/out of a cell. 
     \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
-    \param direction :: direction to track [+1/-1 : into cell /out of cell ] 
     \param surfPtr :: Surface at exit
     \param startSurf :: Start surface [to be ignored]
     \return surface number of intercept
@@ -1205,28 +1197,31 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
+  const int absSN(std::abs(startSurf));
+  const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
   D=1e38;
   surfPtr=0;
   int touchUnit(0);
   // NOTE: we only check for and exiting surface by going
   // along the line.
   int bestPairValid(0);
+  size_t bestIndex(-1);
   for(size_t i=0;i<dPts.size();i++)
     {
+
       // Is point possible closer
-      if ( ( surfIndex[i]->getName()!=startSurf || 
-	     dPts[i]>10.0*Geometry::zeroTol) &&
-	   (dPts[i]>0.0 && dPts[i]<D) )
+      if ( dPts[i]>10.0*Geometry::zeroTol &&
+	   dPts[i]>0.0 && dPts[i]<D )
 	{
 	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
 	  const int pAB=isDirectionValid(IPts[i],NS);
 	  const int mAB=isDirectionValid(IPts[i],-NS);
-	  const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
-          
-	  if (direction<0)
+	  if (pAB!=mAB)           // out going positive surface
 	    {
-	      if (pAB!=mAB)  // out going positive surface
+	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
+	      if (NS!=absSN || (normD!=signSN))  // discard current surface
 		{
+		  bestIndex=i;
 		  bestPairValid=normD;
 		  if (dPts[i]>Geometry::zeroTol)
 		    D=dPts[i];
@@ -1240,78 +1235,24 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
   if (touchUnit && D>1e37)
     D=Geometry::zeroTol;
 
-  if (!surfPtr) return 0;
   const int NSsurf=surfPtr->getName();
   const bool pSurfFound(SurSet.find(NSsurf)!=SurSet.end());
   const bool mSurfFound(SurSet.find(-NSsurf)!=SurSet.end());
   
-  if (pSurfFound && mSurfFound)
-    return bestPairValid*NSsurf;
+  const int pAB=isDirectionValid(IPts[bestIndex],NSsurf);
+  const int mAB=isDirectionValid(IPts[bestIndex],-NSsurf);
 
-  return (pSurfFound) ? -NSsurf : NSsurf;
+  int retNum;
+  if (pSurfFound && mSurfFound)
+    retNum=bestPairValid*NSsurf;
+  else
+    retNum=(pSurfFound) ? -NSsurf : NSsurf;
+  // Exit surface is OUTGOING sense
+  const int normD=surfIndex[bestIndex]->sideDirection(IPts[bestIndex],N.uVec);
+  return retNum;
 }
 
 		  
-std::pair<const Geometry::Surface*,double>
-Object::forwardInterceptInit(const Geometry::Vec3D& IP,
-			     const Geometry::Vec3D& UV) const
-  /*!
-    Given a line IP + lambda(UV) does it intercept
-    this object: (used for virtual objects).
-    Has special test for the case that the particle 
-    starts on a surface and we need to effectively move it inside.
-
-    \param IP :: Initial point
-    \param UV :: Forward going vector
-    \return distance forward : -ve on failure
-  */
-{
-  ELog::RegMethod RegA("Object","forwardInterceptInit");
-  
-  MonteCarlo::LineIntersectVisit LI(IP,UV);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  double minDist(1e38);
-  const Geometry::Surface* surfPtr(0);
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>Geometry::shiftTol && dPts[i]<minDist)
-	{
-	  const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	  if (pAB==1 || pAB==2)            // Going either way
-	    {
-	      minDist=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  
-  if (!surfPtr)
-    {
-      for(size_t i=0;i<dPts.size();i++)
-	{
-	  if (dPts[i]>-Geometry::shiftTol && dPts[i]<Geometry::shiftTol && 
-	      dPts[i]<minDist)
-	    {
-	      const int pAB=pairValid(surfIndex[i]->getName(),IPts[i]);
-	      if (pAB==1 || pAB==2)            // Going either way
-		{
-		  minDist=dPts[i];
-		  surfPtr=surfIndex[i];
-		}
-	    }
-	}
-    }
-  
-  return std::pair<const Geometry::Surface*,double>(surfPtr,minDist);
-}
 
 void
 Object::makeComplement()
@@ -1556,7 +1497,7 @@ Object::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
 
   cx.precision(10);
-  if (ObjName==1 && !imp.isZero())
+  if (ObjName==1 && imp.isZero())
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);

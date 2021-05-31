@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/GrateMonoBoxGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,23 +35,15 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
 #include "VacBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 
@@ -93,25 +85,25 @@ GrateMonoBoxGenerator::setLid(const double OE,
   
 
 void
-GrateMonoBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
-			      const double yStep,const double width,
-			      const double height,const double depth,
-			      const double length) const
+GrateMonoBoxGenerator::generateBox(FuncDataBase& Control,
+				   const std::string& keyName,
+				   const double width,const double height,
+				   const double depth,const double length)
+  const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param width :: width of box (full)
     \param height :: height of box
     \param depth :: depth of box
-    \param width :: width of box (full)
     \param length :: length of box - ports
   */
 {
   ELog::RegMethod RegA("GrateMonoBoxGenerator","generateBox");
   
 
-  VacBoxGenerator::generateBox(Control,keyName,yStep,width,
+  VacBoxGenerator::generateBox(Control,keyName,width,
 			       height,depth,length);
 
   Control.addVariable(keyName+"VoidRadius",width/2.0);

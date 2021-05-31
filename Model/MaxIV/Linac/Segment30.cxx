@@ -3,7 +3,7 @@
 
  * File: Linac/Segment30.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -69,16 +68,13 @@
 
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 #include "VacuumPipe.h"
-#include "portItem.h"
-#include "BlankTube.h"
 #include "CorrectorMag.h"
 #include "GaugeTube.h"
 #include "IonPumpTube.h"
-#include "LObjectSupportB.h"
+#include "LocalShielding.h"
 
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment30.h"
 
@@ -92,6 +88,7 @@ Segment30::Segment30(const std::string& Key) :
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
   gauge(new xraySystem::GaugeTube(keyName+"Gauge")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   bellow(new constructSystem::Bellows(keyName+"Bellow")),
   ionPump(new xraySystem::IonPumpTube(keyName+"IonPump")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -106,6 +103,7 @@ Segment30::Segment30(const std::string& Key) :
 
   OR.addObject(gauge);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(bellow);
   OR.addObject(ionPump);
   OR.addObject(pipeB);
@@ -136,7 +134,7 @@ Segment30::createSplitInnerZone(Simulation& System)
   if (!sideVec.empty())
     {
       const TDCsegment* sideSegment=sideVec.front();
-
+      
       const Geometry::Vec3D sideOrg(sideSegment->getCentre());
       const Geometry::Vec3D sideY((sideSegment->getY()+Y*axisFrac).unit());
 
@@ -150,6 +148,7 @@ Segment30::createSplitInnerZone(Simulation& System)
 	  int SNremoved(0);
 	  for(const TDCsegment* sidePtr : sideVec)
 	    {
+	      ELog::EM<<"SidePtr = "<<sidePtr->getKeyName()<<ELog::endDiag;
 	      if (sidePtr->getKeyName()!="TDC15")
 		{
 		  for(const int CN : sidePtr->getCells("Unit"))
@@ -183,15 +182,16 @@ Segment30::buildObjects(Simulation& System)
 
   int outerCell;
 
-  
+
   if (isActive("front"))
     gauge->copyCutSurf("front", *this, "front");
   gauge->createAll(System,*this,0);
   outerCell=IZThin->createUnit(System,*gauge,2);
   gauge->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,*IZThin,*gauge,"back",*pipeA);
+  pipeA->createAll(System,*gauge,"back");
+  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*bellow);
@@ -216,7 +216,7 @@ Segment30::postBuild(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Segment46","postBuild");
-  
+
   typedef std::map<std::string,const TDCsegment*> mapTYPE;
   if (!sideVec.empty())
     {
@@ -230,7 +230,7 @@ Segment30::postBuild(Simulation& System)
       HeadRule surHR=buildZone->getSurround();
       surHR.removeOuterPlane(Origin+Y*10.0,-X,0.9);
       surHR.addIntersection(SMap.realSurf(buildIndex+5005));
-      
+
       if (segNames.find("L2SPF13")!=segNames.end() &&
 	  segNames.find("TDC14")==segNames.end())
 	{
@@ -258,10 +258,10 @@ Segment30::postBuild(Simulation& System)
 	  surHR.addIntersection(-SMap.realSurf(SN));
 	}
 
-      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());      
+      makeCell("ExtraVoid",System,cellIndex++,0,0.0,surHR.display());
     }
   return;
- 
+
 }
 
 void
@@ -272,8 +272,8 @@ Segment30::createLinks()
 {
   ELog::RegMethod RegA("Segment30","createLinks");
 
-  setLinkSignedCopy(0,*gauge,1);
-  setLinkSignedCopy(1,*pipeB,2);
+  setLinkCopy(0,*gauge,1);
+  setLinkCopy(1,*pipeB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

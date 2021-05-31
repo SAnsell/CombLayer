@@ -3,7 +3,7 @@
  
  * File:   R3CommonInc/ExperimentalHutch.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,7 @@ class ExperimentalHutch :
 {
  private:
   
-  double depth;                 ///< void height 
-  double height;                ///< void depth
+  double height;                ///< void height to roof (from origin)
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double outWidth;              ///< out side width
@@ -57,29 +56,29 @@ class ExperimentalHutch :
   double cornerLength;          ///< length to corner
 
   double innerThick;            ///< Inner wall/roof skin
-  double pbThick;               ///< Thickness of lead in walls
+  double pbWallThick;           ///< Thickness of lead in walls
+  double pbFrontThick;          ///< Thickness of lead in front plate(if used)
+  double pbBackThick;           ///< Thickness of lead in back plate
+  double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
-  double floorThick;            ///< Floor thickness
 
+  double holeRadius;            ///< Radius of front hole (if used)
+  double holeXStep;             ///< X step offset
+  double holeZStep;             ///< Z step offset
+  
+  
   double innerOutVoid;          ///< Extension for inner void space
   double outerOutVoid;          ///< Extension for outer void space 
-
-  double holeXStep;            ///< Hole XStep [front wall]
-  double holeZStep;            ///< Hole ZStep  
-  double holeRadius;           ///< Hole radius
-
+  double extension;
   
   int voidMat;                ///< Void material [air]
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls
-  int holeMat;                ///< Hole material [void/lead]
-  int floorMat;               ///< Floor layer
 
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,9 +92,10 @@ class ExperimentalHutch :
   ExperimentalHutch& operator=(const ExperimentalHutch&);
   virtual ~ExperimentalHutch();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

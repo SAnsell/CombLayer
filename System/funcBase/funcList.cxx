@@ -29,18 +29,10 @@
 #include <iterator>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
-#include "FItem.h"
 #include "funcList.h"
 
 FuncDefinition::FuncDefinition(const std::string& Str,

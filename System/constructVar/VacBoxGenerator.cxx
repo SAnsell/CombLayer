@@ -3,7 +3,7 @@
  
  * File:   constructVar/VacBoxGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -323,14 +316,12 @@ VacBoxGenerator::setAllThick(const double WH,const double WD,
 
 void
 VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
-			     const double yStep,const double width,
-			     const double height,const double depth,
-			     const double length) const
+			     const double width,const double height,
+			     const double depth,const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
     \param height :: height of box
     \param depth :: depth of box
     \param width :: width of box (full)
@@ -339,8 +330,6 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("VacBoxGenerator","generatorBox");
   
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
-
   Control.addVariable(keyName+"VoidHeight",height);
   Control.addVariable(keyName+"VoidDepth",depth);
   Control.addVariable(keyName+"VoidWidth",width);

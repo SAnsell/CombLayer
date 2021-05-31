@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/LBeamStopGenerator.h
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2021 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,15 +41,17 @@ class LBeamStopGenerator
 
   double length;                ///< Total length including void
 
-  double innerVoidLen;          ///< inner void lenth	   
-  double innerLength;	        ///< inner length of material 
-  double innerRadius;	        ///< inner radius             
- 
-  double midVoidLen;            ///< mid void lenth	  
-  double midLength;             ///< mid length of material 
-  double midRadius;             ///< mid radius             
+  double innerVoidLen;          ///< inner void lenth
+  double innerLength;	        ///< inner length of material
+  double innerRadius;	        ///< inner radius
 
-  double outerRadius;           ///< outer radius             
+  double midVoidLen;            ///< mid void lenth
+  double midLength;             ///< mid length of material
+  double midRadius;             ///< mid radius
+  int midNLayers;               ///< Number of layers in the mid region
+
+  double outerRadius;           ///< outer radius
+  int outerNLayers;             ///< Number of layers in the outer region
 
   std::string voidMat;                  ///< Void material
   std::string innerMat;                 ///< Inner material
@@ -59,6 +61,7 @@ class LBeamStopGenerator
  public:
 
   LBeamStopGenerator();
+  LBeamStopGenerator(const std::string&);
   LBeamStopGenerator(const LBeamStopGenerator&);
   LBeamStopGenerator& operator=(const LBeamStopGenerator&);
   virtual ~LBeamStopGenerator();

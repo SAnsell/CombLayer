@@ -3,7 +3,7 @@
  
  * File:   weight/MarkovProcess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,32 +35,13 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "mathSupport.h"
-#include "support.h"
-#include "MapSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Mesh3D.h"
-#include "Rules.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "HeadRule.h"
+#include "BasicMesh3D.h"
 #include "BaseMap.h"
-#include "CellMap.h"
-#include "Importance.h"
-#include "Object.h"
 
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -117,15 +98,18 @@ MarkovProcess::~MarkovProcess()
 {}
   
 void
-MarkovProcess::initializeData(const WWG& wSet)
+MarkovProcess::initializeData(const WWG& wSet,
+			      const std::string& meshIndex)
   /*!
     Initialize all the values before execusion
     \param wSet :: wwg
+    \param meshIndex to process
   */
 {
   ELog::RegMethod RegA("MarkovProcess","initialize");
 
-  const Geometry::Mesh3D& grid=wSet.getGrid();
+  const WWGWeight& wMesh=wSet.getMesh(meshIndex);
+  const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
   
   WX=static_cast<long int>(grid.getXSize());
   WY=static_cast<long int>(grid.getYSize());
@@ -141,6 +125,7 @@ MarkovProcess::initializeData(const WWG& wSet)
 void
 MarkovProcess::computeMatrix(const Simulation& System,
 			     const WWG& wSet,
+			     const std::string& meshIndex,
 			     const double densityFactor,
 			     const double r2Length,
 			     const double r2Power)
@@ -148,6 +133,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
     Calculate the Markov chain process
     \param System :: Simualation
     \param wSet :: WWG set for grid
+    \param meshIdnex :: mesh to use  	
     \param densityFactor :: Scaling factor for density
     \param r2Length :: scale factor for length
     \param r2Power :: power of 1/r^2 factor
@@ -155,8 +141,9 @@ MarkovProcess::computeMatrix(const Simulation& System,
 {
   ELog::RegMethod RegA("MarkovProcess","computeMatrix");
 
-  const Geometry::Mesh3D& grid=wSet.getGrid();
-  const std::vector<Geometry::Vec3D> midPts=wSet.getMidPoints();
+  const WWGWeight& wMesh=wSet.getMesh(meshIndex);
+  const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
+  const std::vector<Geometry::Vec3D> midPts=grid.midPoints();
 
   if (static_cast<long int>(midPts.size())!=FSize)
     throw ColErr::MisMatch<long int>

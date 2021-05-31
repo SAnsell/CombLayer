@@ -25,6 +25,8 @@
 namespace tdcSystem
 {
   class StriplineBPM;
+  class LocalShielding;
+
   /*!
     \class Segment33
     \version 1.0
@@ -40,6 +42,7 @@ class Segment33 :
 
   // first pipe
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA; // local shielding
 
   /// corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagHA;
@@ -70,6 +73,9 @@ class Segment33 :
 
   /// corrector mag
   std::shared_ptr<xraySystem::CorrectorMag> cMagVA;
+
+  // local shielding
+  std::shared_ptr<tdcSystem::LocalShielding> shieldB;
 
   /// bellow
   std::shared_ptr<constructSystem::Bellows> bellow;

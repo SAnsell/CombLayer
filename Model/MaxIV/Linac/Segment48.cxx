@@ -40,10 +40,6 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Importance.h"
-#include "Object.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -77,6 +73,8 @@
 #include "EBeamStop.h"
 #include "JawFlange.h"
 #include "CrossWayTube.h"
+#include "LocalShielding.h"
+#include "LObjectSupportB.h"
 
 #include "TDCsegment.h"
 #include "Segment48.h"
@@ -92,6 +90,9 @@ Segment48::Segment48(const std::string& Key) :
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   beamStopB(new tdcSystem::EBeamStop(keyName+"BeamStopB")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
+  shieldC(new tdcSystem::LocalShielding(keyName+"ShieldC")),
   slitTube(new constructSystem::PortTube(keyName+"SlitTube")),
   jaws({
 	std::make_shared<constructSystem::JawFlange>(keyName+"SlitTubeJawUnit0"),
@@ -112,6 +113,9 @@ Segment48::Segment48(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(beamStopB);
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
+  OR.addObject(shieldB);
+  OR.addObject(shieldC);
   OR.addObject(slitTube);
   OR.addObject(bellowB);
   OR.addObject(mirrorChamberA);
@@ -137,11 +141,11 @@ Segment48::buildObjects(Simulation& System)
   ELog::RegMethod RegA("Segment48","buildObjects");
 
   int outerCell;
-  
+
   if (isActive("front"))
     beamStopA->copyCutSurf("front",*this,"front");
   beamStopA->createAll(System,*this,0);
-  
+
   outerCell=buildZone->createUnit(System,*beamStopA,2);
   beamStopA->insertAllInCell(System,outerCell);
 
@@ -151,8 +155,27 @@ Segment48::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*beamStopB);
 
-  constructSystem::constructUnit
-    (System,*buildZone,*beamStopB,"back",*pipeA);
+  pipeA->createAll(System,*beamStopB,"back");
+
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*buildZone,pipeA);
+
+  shieldB->createAll(System,*shieldA,"right");
+  for (int i=2; i<=4; ++i)
+    shieldB->insertInCell(System,outerCell+i);
+
+  shieldC->createAll(System,*shieldB,"right");
+  for (int i=0; i<=3; ++i)
+    shieldC->insertInCell(System,outerCell+i);
+
+  for (const TDCsegment* sideSegment : sideVec)
+    {
+      const std::vector<int> cellVec= sideSegment->getCells("BlockVoid");
+      for (int i=0; i<4; ++i)
+	shieldC->insertInCell(System,cellVec.rbegin()[i]);
+      // for(const int cn : cellVec)
+      // 	ELog::EM<<"BPtr= "<<cn<<ELog::endDiag;
+    }
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*slitTube);
@@ -174,7 +197,7 @@ Segment48::buildObjects(Simulation& System)
   slitTube->splitVoidPorts(System,"SplitOuter",2001,
   			  slitTube->getCell("Void"),{0,2});
   //////////////////////////////////////////////////////////////////////
-  
+
   constructSystem::constructUnit
     (System,*buildZone,*slitTube,"back",*bellowB);
 
@@ -195,8 +218,8 @@ Segment48::createLinks()
 {
   ELog::RegMethod RegA("Segment48","createLinks");
 
-  setLinkSignedCopy(0,*beamStopA,1);
-  setLinkSignedCopy(1,*bellowC,2);
+  setLinkCopy(0,*beamStopA,1);
+  setLinkCopy(1,*bellowC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

@@ -35,24 +35,13 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "debugMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -83,7 +72,6 @@
 #include "insertObject.h"
 #include "insertPlate.h"
 
-#include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
@@ -95,12 +83,7 @@
 #include "HoleShape.h"
 #include "PipeCollimator.h"
 
-#include "BunkerInsert.h"
 #include "CompBInsert.h"
-#include "Hut.h"
-#include "RotaryCollimator.h"
-#include "PinHole.h"
-#include "RentrantBS.h"
 #include "LokiHut.h"
 #include "VacTank.h"
 

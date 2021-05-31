@@ -30,8 +30,6 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
-#include "GTKreport.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "NameStack.h"
@@ -44,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Transform.h"
-#include "Line.h"
 #include "Surface.h"
 
 namespace Geometry

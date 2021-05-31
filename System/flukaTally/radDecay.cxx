@@ -34,20 +34,11 @@
 #include <memory>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Quaternion.h"
-#include "Mesh3D.h"
 
 #include "flukaTally.h"
 #include "flukaTallyModification.h"

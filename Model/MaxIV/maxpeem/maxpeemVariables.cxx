@@ -32,20 +32,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -53,12 +47,9 @@
 #include "BeamMountGenerator.h"
 #include "CollGenerator.h"
 #include "CrossGenerator.h"
-#include "FlangeMountGenerator.h"
 #include "GateValveGenerator.h"
 #include "GratingMonoGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
-#include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
 #include "CrossWayGenerator.h"
 
@@ -72,13 +63,10 @@
 #include "SimpleChicaneGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
-#include "LeadPipeGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
-#include "QuadUnitGenerator.h"
-#include "DipoleChamberGenerator.h"
 
 
 namespace setVariable
@@ -255,15 +243,13 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string viewName=mirrorKey+"ViewTube";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setBFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,viewName,0.0,15.0);
+  SimpleTubeGen.generateTube(Control,viewName,15.0);
   Control.addVariable(viewName+"NPorts",1);   // beam ports
 
-  const double wallThick=setVariable::CF63::innerRadius+
-    setVariable::CF63::wallThick;
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+5.95);
   PItemGen.setPlate(0.0,"Void");  
   const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
-  const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
+  const double DLen=14.0-CF63::outerRadius/sin(M_PI*37.0/180.0);
 
   PItemGen.setCF<setVariable::CF40>(CF63::outerRadius+DLen);
   PItemGen.setOuterVoid(0);
@@ -280,7 +266,7 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,pumpName,40.0);
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
@@ -307,7 +293,7 @@ m3MirrorVariables(FuncDataBase& Control,
 
   const std::string mName=mirrorKey+"M3Tube";
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,32.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,mName,32.0);  // centre 13.5cm
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
   // mirror in M3Tube 
@@ -348,9 +334,9 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
 
-  // ystep/width/height/depth/length
+  // width/height/depth/length
   // 
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",41.2,12.8,12.8,117.1);
   Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
   
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
@@ -410,7 +396,7 @@ slitPackageVariables(FuncDataBase& Control,
   const std::string sName=slitKey+"SlitTube";
   const double tLen(50.2);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
+  SimpleTubeGen.generateTube(Control,sName,tLen);  
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(CF150::outerRadius+6.1);
@@ -487,7 +473,7 @@ m1MirrorVariables(FuncDataBase& Control,
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,mName,36.0);  // centre 13.5cm
   Control.addVariable(mName+"XStep",centreOffset);   
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
@@ -573,7 +559,7 @@ opticsBeamVariables(FuncDataBase& Control,
   const std::string florName=opticKey+"FlorTubeA";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
+  SimpleTubeGen.generateTube(Control,florName,27.0);  // centre 13.5cm
 
   Control.addVariable(florName+"NPorts",2);   // beam ports
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+2.25);
@@ -595,7 +581,7 @@ opticsBeamVariables(FuncDataBase& Control,
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
+  SimpleTubeGen.generateTube(Control,collName,40.0);
   Control.addVariable(collName+"NPorts",3);   // beam ports
   
   PItemGen.setCF<setVariable::CF40>(CF150::outerRadius+5.95);
@@ -705,7 +691,7 @@ shutterTable(FuncDataBase& Control,
   
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -727,7 +713,7 @@ shutterTable(FuncDataBase& Control,
   const std::string gateName=frontKey+"GateTubeB";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
   PItemGen.setCF<setVariable::CF40>(4.45);
@@ -746,7 +732,7 @@ shutterTable(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,shutterName,0.0,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
   
   // 20cm above port tube

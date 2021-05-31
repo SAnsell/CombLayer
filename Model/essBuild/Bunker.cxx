@@ -35,67 +35,39 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "inputParam.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedUnit.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "ExternalCut.h"
-#include "FrontBackCut.h"
-#include "MXcards.h"
-#include "Zaid.h"
-#include "Material.h"
-#include "DBMaterial.h"
 
-#include "surfDBase.h"
 #include "surfDIter.h"
-#include "surfDivide.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 
-#include "World.h"
 #include "BunkerRoof.h"
 #include "BunkerWall.h"
-#include "LayerDivide3D.h"
-#include "Chicane.h"
 #include "Bunker.h"
 
 
@@ -578,7 +550,7 @@ Bunker::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Bunker","createLinks");
 
-  FixedComp::setLinkSignedCopy(2,FC,sideIndex);
+  FixedComp::setLinkCopy(2,FC,sideIndex);
   
   FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));

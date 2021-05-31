@@ -59,6 +59,7 @@
 #include "LQuadH.h"
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
+#include "LocalShielding.h"
 #include "LObjectSupportB.h"
 
 namespace tdcSystem
@@ -113,7 +114,7 @@ correctorMagnetPair(Simulation& System,
 
   outerCell=buildZone.createUnit(System,*CMB,2);
   CMB->insertInCell(System,outerCell);
-  
+
   return outerCell;
 }
 
@@ -337,6 +338,13 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::CleaningMagnet>&);
+template
+int pipeMagUnit(Simulation&,
+		attachSystem::BlockZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<tdcSystem::LocalShielding>&);
 template
 int pipeMagGroup(Simulation&,
 		 attachSystem::BlockZone&,

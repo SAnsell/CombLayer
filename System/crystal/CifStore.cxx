@@ -47,7 +47,6 @@
 #include "Triple.h"
 #include "Quaternion.h"
 #include "support.h"
-#include "mathSupport.h"
 #include "Element.h"
 #include "SymUnit.h"
 #include "AtomPos.h"

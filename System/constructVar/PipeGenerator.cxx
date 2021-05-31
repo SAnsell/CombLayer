@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,18 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -65,7 +57,8 @@ PipeGenerator::PipeGenerator() :
   windowRadius(-2.0),windowThick(0.1),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
-  voidMat("Void"),claddingMat("B4C"),flangeMat("Aluminium")
+  voidMat("Void"),claddingMat("B4C"),flangeMat("Aluminium"),
+  outerVoid(0)
   /*!
     Constructor and defaults
   */
@@ -80,7 +73,8 @@ PipeGenerator::PipeGenerator(const PipeGenerator& A) :
   windowRadius(A.windowRadius),windowThick(A.windowThick),
   pipeMat(A.pipeMat),frontWindowMat(A.frontWindowMat),
   backWindowMat(A.backWindowMat),voidMat(A.voidMat),
-  claddingMat(A.claddingMat),flangeMat(A.flangeMat)
+  claddingMat(A.claddingMat),flangeMat(A.flangeMat),
+  outerVoid(A.outerVoid)
   /*!
     Copy constructor
     \param A :: PipeGenerator to copy
@@ -115,6 +109,7 @@ PipeGenerator::operator=(const PipeGenerator& A)
       voidMat=A.voidMat;
       claddingMat=A.claddingMat;
       flangeMat=A.flangeMat;
+      outerVoid=A.outerVoid;
     }
   return *this;
 }
@@ -377,6 +372,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"CladdingMat",claddingMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
 
+  Control.addVariable(keyName+"OuterVoid",outerVoid);
+
   return;
 
 }
@@ -398,15 +395,18 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setCF<CF100>();
   template void PipeGenerator::setCF<CF120>();
   template void PipeGenerator::setCF<CF150>();
+  template void PipeGenerator::setCF<CF350>();
   template void PipeGenerator::setAFlangeCF<CF25>();
   template void PipeGenerator::setAFlangeCF<CF34_TDC>();
   template void PipeGenerator::setAFlangeCF<CF37_TDC>();
   template void PipeGenerator::setAFlangeCF<CF40_22>();
+  template void PipeGenerator::setAFlangeCF<CF40>();
   template void PipeGenerator::setAFlangeCF<CF63>();
   template void PipeGenerator::setAFlangeCF<CF66_TDC>();
   template void PipeGenerator::setAFlangeCF<CF100>();
   template void PipeGenerator::setAFlangeCF<CF120>();
   template void PipeGenerator::setAFlangeCF<CF150>();
+  template void PipeGenerator::setAFlangeCF<CF350>();
   template void PipeGenerator::setBFlangeCF<CF25>();
   template void PipeGenerator::setBFlangeCF<CF34_TDC>();
   template void PipeGenerator::setBFlangeCF<CF37_TDC>();
@@ -417,6 +417,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setBFlangeCF<CF100>();
   template void PipeGenerator::setBFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF150>();
+  template void PipeGenerator::setBFlangeCF<CF350>();
 
 ///\endcond TEMPLATE
 

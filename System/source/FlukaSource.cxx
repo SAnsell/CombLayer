@@ -35,33 +35,20 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
-#include "varList.h"
 #include "inputSupport.h"
 #include "Source.h"
-#include "SrcItem.h"
-#include "SrcData.h"
 #include "surfRegister.h"
-#include "ModelSupport.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
-#include "WorkData.h"
-#include "World.h"
-#include "particleConv.h"
+#include "FixedRotate.h"
+#include "FixedRotateUnit.h"
 
 #include "SourceBase.h"
 #include "FlukaSource.h"
@@ -86,7 +73,7 @@ operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
   
   
 FlukaSource::FlukaSource(const std::string& keyName) : 
-  FixedOffsetUnit(keyName,0),SourceBase()
+  FixedRotateUnit(keyName,0),SourceBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -97,7 +84,7 @@ FlukaSource::FlukaSource(const std::string& keyName) :
 }
 
 FlukaSource::FlukaSource(const FlukaSource& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotateUnit(A),SourceBase(A),
   sourceName(A.sourceName),sValues(A.sValues)
   /*!
     Copy constructor
@@ -115,7 +102,7 @@ FlukaSource::operator=(const FlukaSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       sourceName=A.sourceName;
       sValues=A.sValues;
@@ -149,7 +136,7 @@ FlukaSource::populate(const ITYPE& inputMap)
 {
   ELog::RegMethod RegA("FlukaSource","populate");
 
-  attachSystem::FixedOffset::populate(inputMap);
+  attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
 
   std::string unitName("source");

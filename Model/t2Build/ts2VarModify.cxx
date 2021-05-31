@@ -32,24 +32,18 @@
 #include <string>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "support.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "InputControl.h"
-#include "objectRegister.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
 #include "variableSetup.h"
 #include "MainProcess.h"
 

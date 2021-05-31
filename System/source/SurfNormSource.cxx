@@ -33,23 +33,14 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Source.h"
-#include "SrcItem.h"
 #include "SrcData.h"
 #include "surfRegister.h"
-#include "ModelSupport.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

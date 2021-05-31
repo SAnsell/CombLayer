@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -63,8 +61,6 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
-#include "Importance.h"
-#include "Object.h"
 
 #include "VacuumPipe.h"
 #include "LQuadF.h"
@@ -191,8 +187,8 @@ Segment36::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*gauge,1);
-  setLinkSignedCopy(1,*pipeE,2);
+  setLinkCopy(0,*gauge,1);
+  setLinkCopy(1,*pipeE,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

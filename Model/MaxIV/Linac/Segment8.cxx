@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment8.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,7 +67,9 @@
 #include "Bellows.h"
 #include "EBeamStop.h"
 
+#include "AttachSupport.h"
 #include "TDCsegment.h"
+#include "Segment7.h"
 #include "Segment8.h"
 
 namespace tdcSystem
@@ -75,12 +77,12 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment8::Segment8(const std::string& Key) :
   TDCsegment(Key,2),
 
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
-  eBeamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
+  beamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA"))
   /*!
@@ -92,13 +94,13 @@ Segment8::Segment8(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bellowA);
-  OR.addObject(eBeamStop);
+  OR.addObject(beamStop);
   OR.addObject(bellowB);
   OR.addObject(pipeA);
 
   setFirstItems(bellowA);
 }
-  
+
 Segment8::~Segment8()
   /*!
     Destructor
@@ -124,13 +126,35 @@ Segment8::buildObjects(Simulation& System)
   bellowA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,*buildZone,*bellowA,"back",*eBeamStop);
+    (System,*buildZone,*bellowA,"back",*beamStop);
 
   constructSystem::constructUnit
-    (System,*buildZone,*eBeamStop,"back",*bellowB);  
+    (System,*buildZone,*beamStop,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,*buildZone,*bellowB,"back",*pipeA);  
+    (System,*buildZone,*bellowB,"back",*pipeA);
+
+  if (beamStop->isShieldActive())
+    {
+      beamStop->insertAllInCell(System,outerCell);
+      beamStop->insertAllInCell(System,outerCell+2);
+      beamStop->insertAllInCell(System,outerCell+3);
+
+      attachSystem::addToInsertControl(System,*beamStop,*bellowA);
+      attachSystem::addToInsertControl(System,*beamStop,*bellowB);
+      attachSystem::addToInsertControl(System,*beamStop,*pipeA,"FlangeA");
+      attachSystem::addToInsertControl(System,*beamStop,*pipeA,"Main");
+
+      for (const TDCsegment* sideSegment : sideVec)
+	{
+	  const std::vector<int> cellVec= sideSegment->getCells("BlockVoid");
+	  beamStop->insertAllInCell(System,cellVec.end()[-1]);
+	  const Segment7 *seg7 = dynamic_cast<const Segment7*>(sideSegment);
+
+	  attachSystem::addToInsertControl(System,*beamStop,*seg7->getPipeB(),"FlangeB");
+	  attachSystem::addToInsertControl(System,*beamStop,*seg7->getPipeB(),"Main");
+	}
+    }
 
   return;
 }
@@ -141,14 +165,14 @@ Segment8::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeA,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*pipeA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
-void 
+void
 Segment8::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -166,10 +190,9 @@ Segment8::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

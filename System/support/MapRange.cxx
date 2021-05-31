@@ -3,7 +3,6 @@
 #include <complex>
 #include <vector>
 
-#include "Exception.h"
 #include "MapRange.h"
 
 namespace MapSupport

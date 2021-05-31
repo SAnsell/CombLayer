@@ -35,17 +35,8 @@
 #include <functional>
 #include <iterator>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "mathSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "AcompTools.h"
 
 namespace MonteCarlo 
 {

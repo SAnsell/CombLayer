@@ -38,40 +38,24 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Quaternion.h"
 #include "Triple.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "SimProcess.h"
-#include "SurInter.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
-#include "TallyCreate.h"
 #include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
 #include "meshConstruct.h"
 #include "tmeshTally.h"
-#include "MatMD5.h"
-#include "MD5sum.h"
 #include "Visit.h"
 
-#include "mainJobs.h"
 
 
 bool
@@ -149,15 +133,15 @@ createVTK(const mainSystem::inputParam& IParam,
 	  const std::string PType=
 	    IParam.getValueError<std::string>("vtkMesh",0,0,"object/free");
 	  if (PType=="object")
-	      tallySystem::meshConstruct::getObjectMesh
+	    mainSystem::meshConstruct::getObjectMesh
 		(*SimMCPtr,IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	  else if (PType=="free")
-	      tallySystem::meshConstruct::getFreeMesh
+	      mainSystem::meshConstruct::getFreeMesh
 		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	  else
 	    {
-	      tallySystem::meshConstruct::getFreeMesh
-	      (IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
+	      mainSystem::meshConstruct::getFreeMesh
+		(IParam,"vtkMesh",0,0,MeshA,MeshB,MPts);
 	    }
 	}
       else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))

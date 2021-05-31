@@ -3,7 +3,7 @@
  
  * File:   flukaTally/resnuclei.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,30 +34,19 @@
 #include <memory>
 #include <algorithm>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Quaternion.h"
-#include "Mesh3D.h"
 
 #include "flukaTally.h"
-#include "flukaTallyModification.h"
 #include "resnuclei.h"
 
 namespace flukaSystem
 {
 
-resnuclei::resnuclei(const int outID) :
-  flukaTally("resn"+std::to_string(outID),outID),
+
+resnuclei::resnuclei(const int ID,const int outIndex) :
+  flukaTally("resn",ID,outIndex),
   cellA(0)
   /*!
     Constructor
@@ -65,8 +54,10 @@ resnuclei::resnuclei(const int outID) :
   */
 {}
 
-resnuclei::resnuclei(const std::string& KN,const int outID) :
-  flukaTally(KN,outID),cellA(0)
+resnuclei::resnuclei(const std::string& KN,const int outID,
+		     const int tapeID) :
+  flukaTally(KN,outID,tapeID),
+  cellA(0)
   /*!
     Constructor
     \param KN :: KeyName
@@ -75,7 +66,7 @@ resnuclei::resnuclei(const std::string& KN,const int outID) :
 {}
 
 resnuclei::resnuclei(const resnuclei& A) :
-  flukaTally(A),cellA(A.cellA)
+  flukaTally(A),AMax(A.AMax),ZMax(A.ZMax),cellA(A.cellA)
   /*!
     Copy constructor
     \param A :: resnuclei to copy
@@ -93,6 +84,8 @@ resnuclei::operator=(const resnuclei& A)
   if (this!=&A)
     {
       flukaTally::operator=(A);
+      AMax=A.AMax;
+      ZMax=A.ZMax;
       cellA=A.cellA;
     }
   return *this;
@@ -114,6 +107,19 @@ resnuclei::~resnuclei()
   */
 {}
 
+void
+resnuclei::setZaid(const int Z,const int A)
+/*! 
+  Set the max number for range
+  \param Z :: Z (charge) max
+  \param A :: Atomic number
+*/
+{
+  AMax=A;
+  ZMax=Z;
+  return;
+}
+
   
 void
 resnuclei::write(std::ostream& OX) const
@@ -125,10 +131,11 @@ resnuclei::write(std::ostream& OX) const
 {
 
   std::ostringstream cx;
-  
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" - - "
-    <<" R"<<cellA<<" 1.0 ";
-  cx<<" resn"<<std::to_string(std::abs(outputUnit));
+  //  const int M=AMax-ZMax+5;
+  const int M=AMax+5;
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<ZMax+5<<" "<<M<<
+    " R"<<cellA<<" 1.0 ";
+  cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }

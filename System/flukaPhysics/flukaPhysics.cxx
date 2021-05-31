@@ -37,18 +37,11 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "writeSupport.h"
-#include "MapRange.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 
-#include "particleConv.h"
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "flukaPhysics.h"

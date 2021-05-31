@@ -62,7 +62,7 @@ $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
 
-$gM->findSubSrcDir("","Aunit");
+$gM->findSubSrcDir("","Aunit");  ## Aunit to be excluded
 
 
 foreach my $mainProg (@masterProg)
@@ -187,7 +187,7 @@ foreach my $mainProg (@masterProg)
 	$gM->addDepUnit("singleItem",
 			[@singleItem,
 			 qw( commonVar commonGenerator R1Common R3Common
-			     commonBeam  Linac )]);
+			     commonBeam Linac )]);
       }
 
 

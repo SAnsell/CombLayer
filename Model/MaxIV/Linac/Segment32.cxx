@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -121,7 +120,6 @@ Segment32::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment32","buildObjects");
 
-  int outerCell;
   if (isActive("front"))
     flatA->copyCutSurf("front",*this,"front");
 
@@ -154,8 +152,8 @@ Segment32::createLinks()
 {
   ELog::RegMethod RegA("Segment32","createLinks");
 
-  setLinkSignedCopy(0,*flatA,1);
-  setLinkSignedCopy(1,*bellow,2);
+  setLinkCopy(0,*flatA,1);
+  setLinkCopy(1,*bellow,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
 

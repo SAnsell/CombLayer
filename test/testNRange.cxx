@@ -34,15 +34,11 @@
 #include <functional>
 #include <iterator>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "Triple.h"
-#include "NRange.h"
 #include "NGroup.h"
 
 #include "testFunc.h"

@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,25 +38,17 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "mathSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "solveValues.h"
-#include "vecOrder.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Cylinder.h"
-#include "Cone.h"
-#include "General.h"
 #include "Line.h"
 #include "Intersect.h"
 #include "Pnt.h"
@@ -68,7 +60,6 @@
 #include "LineIntersectVisit.h"
 #include "SurInter.h"
 
-#include "Debug.h"
 
 namespace SurInter
 {
@@ -105,7 +96,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     out=Pts;
   
   if (out.size()!=1)
-    throw ColErr::SizeError<size_t>(out.size(),1,"Out points not singular");
+    throw ColErr::MisMatch<size_t>(out.size(),1,"Out points not singular");
 
   return out.front();
 }

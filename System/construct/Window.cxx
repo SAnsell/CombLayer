@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,29 +34,15 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -72,7 +58,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "pairBase.h"
-#include "pairItem.h"
 #include "pairFactory.h"
 #include "particle.h"
 #include "eTrack.h"
@@ -159,26 +144,28 @@ Window::createCentre(Simulation& System)
     }
   // QHptr->populate();
   QHptr->createSurfaceList();
-  std::pair<const Geometry::Surface*,double> IPt=
-    QHptr->forwardInterceptInit(Centre,WAxis);
-  
-  if (!IPt.first)
+
+  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    result=QHptr->trackSurfIntersect(Centre,WAxis);
+			    
+  if (!std::get<0>(result))
     {
       ELog::EM<<"Unable to find intercept track with line:"
 	      <<baseCell<<ELog::endErr;
       return;
     }
-  FSurf=IPt.first;
-  const MonteCarlo::eTrack N(Origin,WAxis);
-  fSign=-FSurf->side(Centre);
+
+  FSurf=std::get<1>(result);
+  fSign=-FSurf->side(Centre);  // could use result(00
    
-  Origin=Centre+WAxis*IPt.second;
+  Origin=std::get<2>(result);
   Y=WAxis;
   X=Y*Z;
   
-  IPt=QHptr->forwardIntercept(Origin,WAxis);
+
+  result=QHptr->trackSurfIntersect(Origin,WAxis);
   
-  if (!IPt.first)
+  if (!std::get<0>(result))
     {
       ELog::EM<<"Unable to find second intercept track with line:"
 	      <<baseCell<<ELog::endDiag;
@@ -187,8 +174,8 @@ Window::createCentre(Simulation& System)
       ELog::EM<<ELog::endErr;
       return;
     }
-  BSurf=IPt.first;
-  bSign=-BSurf->side(Centre);
+  BSurf=std::get<1>(result);
+  bSign=-FSurf->side(Centre);  // could use result(00
   
   return;
 }

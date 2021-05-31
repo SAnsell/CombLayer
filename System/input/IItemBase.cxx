@@ -3,7 +3,7 @@
  
  * File:   input/IItem.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,19 +35,12 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
-#include "mathSupport.h"
-#include "MapSupport.h"
-#include "InputControl.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Binary.h"
 #include "IItemBase.h"
 
 
@@ -442,6 +435,44 @@ IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
       !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
     throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
 				  "Geomtery::Vec3D",Key+":convert error");
+
+  itemIndex+=3;
+  return Value;
+}
+
+Geometry::Vec3D
+IItem::getDefCntVec3D(const size_t setIndex,size_t& itemIndex,
+		      const Geometry::Vec3D& defVec) const
+  /*!
+    Get a simple Vec3D [cannot be a link component]
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \param defVec :: default value
+    \return Vec3D if valid 
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getDefCntVec3D");
+
+  if (setIndex >= DItems.size())
+    return defVec;
+
+
+  const size_t NItems=DItems[setIndex].size();
+  if (itemIndex>=NItems)
+    return defVec;
+
+  Geometry::Vec3D Value;
+  if (StrFunc::convert(DItems[setIndex][itemIndex],Value))
+    {
+      itemIndex++;
+      return Value;
+    }
+
+  if (itemIndex+3>NItems ||
+      !StrFunc::convert(DItems[setIndex][itemIndex],Value[0]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
+    return defVec;
 
   itemIndex+=3;
   return Value;

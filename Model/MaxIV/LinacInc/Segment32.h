@@ -38,11 +38,11 @@ class Segment32 :
 {
  private:
 
-  std::shared_ptr<tdcSystem::FlatPipe> flatA;      ///< Pipe through dmA  
+  std::shared_ptr<tdcSystem::FlatPipe> flatA;      ///< Pipe through dmA
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleA;  ///< First dipole magnet
 
   /// Pipe between first two dipole magnets
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;  
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
   std::shared_ptr<tdcSystem::FlatPipe> flatB;     ///< Pipe through dmB
   std::shared_ptr<tdcSystem::DipoleDIBMag> dipoleB;   ///< Second dipole magnet
@@ -60,10 +60,10 @@ class Segment32 :
   ~Segment32();
 
   virtual void writePoints() const override;
-  
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

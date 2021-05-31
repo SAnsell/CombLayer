@@ -35,19 +35,13 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -125,6 +119,27 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
     {
       const int sn=(Key[0]=='-' || Key[0]=='#' || Key[0]=='*') ?
 	-getItem(Key.substr(1),Index) : getItem(Key,Index);
+      
+      Out.addIntersection(sn);
+    }
+  return Out;
+}
+
+HeadRule
+SurfMap::getLastSurfRule(const std::string& Key) const
+  /*!
+    Get the last rule based on a surface
+    \param Key :: Keyname
+    \return HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getLastSurfRule(Key)"); 
+
+  HeadRule Out;  
+  if (!Key.empty())
+    {
+      const int sn=(Key[0]=='-' || Key[0]=='#' || Key[0]=='*') ?
+	-getLastItem(Key.substr(1)) : getLastItem(Key);
       
       Out.addIntersection(sn);
     }

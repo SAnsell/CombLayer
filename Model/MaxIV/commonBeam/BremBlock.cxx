@@ -36,30 +36,16 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -68,7 +54,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -81,7 +67,7 @@ namespace xraySystem
 {
 
 BremBlock::BremBlock(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()
@@ -106,7 +92,7 @@ BremBlock::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BremBlock","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Void + Fe special:
   centreFlag=Control.EvalDefVar<int>(keyName+"CentreFlag",0);
@@ -135,25 +121,6 @@ BremBlock::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-BremBlock::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("BremBlock","createUnitVector");
-
-  FixedOffset::createUnitVector(FC,sideIndex);
-  if (centreFlag)
-    Origin-=Y*(length/2.0);
-
-  return;
-}
-
 
 void
 BremBlock::createSurfaces()
@@ -344,7 +311,11 @@ BremBlock::createAll(Simulation& System,
   ELog::RegMethod RegA("BremBlock","createAll(FC)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FIndex);
+  if (centreFlag)
+    createCentredUnitVector(FC,FIndex,-length/2.0);
+  else
+    createUnitVector(FC,FIndex);
+  
   createSurfaces();    
   createObjects(System);
   

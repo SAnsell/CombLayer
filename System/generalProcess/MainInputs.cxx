@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,18 +33,12 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "InputControl.h"
 #include "inputParam.h"
-#include "MainInputs.h"
 
 namespace mainSystem
 {
@@ -125,9 +119,9 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
-  IParam.regFlag("p","PHITS");
+  IParam.regFlag("phits","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regItem("povray","PovRay");
+  IParam.regItem("povray","POVRAY");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regFlag("noThermal","noThermal");
@@ -213,15 +207,17 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wMAT","wMAT",1000,0);
   
   IParam.regMulti("wwgE","wwgE",25,0);
-  IParam.regItem("wwgVTK","wwgVTK",1,10);
-  IParam.regItem("wwgNorm","wwgNorm",0,30);
+  IParam.regMulti("wwgVTK","wwgVTK",30);
+  IParam.regMulti("wwgActive","wwgActive",100,1);
+  IParam.regMulti("wwgCADIS","wwgCADIS",30,1);
+  IParam.regMulti("wwgNorm","wwgNorm",30,0);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
-  IParam.regItem("wwgCADIS","wwgCADIS",0,30);
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
-  IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
-  IParam.regItem("wwgXMesh","wwgXMesh",3,125);
-  IParam.regItem("wwgYMesh","wwgYMesh",3,125);
-  IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
+  IParam.regMulti("wwgRPtMesh","wwgRPtMesh",100,0);
+  IParam.regMulti("wwgMesh","wwgMesh",25,0);
+  IParam.regMulti("wwgSource","wwgSource",30,1);
+  IParam.regMulti("wwgPlane","wwgPlane",30,1);
+
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
@@ -230,7 +226,14 @@ createInputs(inputParam& IParam)
   IParam.regMulti("energyCut","energyCut",1000);
   IParam.setDesc("energyCut","PHITS: { particle minEnergy }");
 
-  
+  IParam.regItem("eRange","eRange",1,2);
+  IParam.setDesc("eRange",
+		 "PHITS: { charged particle track energy limits [low:high] }");
+
+  IParam.regItem("eTrack","eTrack",1,2);
+  IParam.setDesc("eTrack",
+		 "PHITS: { electron track energy limits [low:high] }");
+    
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("basicGeom","Use basic fluka geometry system");
@@ -269,7 +272,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
-  IParam.setDesc("PovRay","PovRay output");
+  IParam.setDesc("POVRAY","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("MagStep","Set the min/max step size for magnetics");

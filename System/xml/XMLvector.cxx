@@ -27,13 +27,8 @@
 #include <string>
 #include <sstream>
 
-#include "Exception.h"
-#include "support.h"
-#include "XMLload.h"
-#include "XMLnamespace.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
-#include "XMLgroup.h"
 #include "XMLvector.h"
 
 namespace XML

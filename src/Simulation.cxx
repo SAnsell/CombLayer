@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,44 +38,29 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "mathSupport.h"
-#include "support.h"
-#include "writeSupport.h"
 #include "version.h"
-#include "Element.h"
 #include "Zaid.h"
-#include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "surfaceFactory.h"
-#include "objectRegister.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
 #include "BnId.h"
 #include "AcompTools.h"
 #include "Acomp.h"
@@ -83,16 +68,11 @@
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "WForm.h"
 #include "weightManager.h"
-#include "ModeCard.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "ObjSurfMap.h"
-#include "ReadFunctions.h"
-#include "BaseMap.h"
-#include "CellMap.h"
 #include "SimTrack.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
@@ -834,6 +814,22 @@ Simulation::findObject(const int CellN)
   return (mp==OList.end()) ? nullptr : mp->second;
 }
 
+MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN)
+  /*!
+    Helper function to determine the hull object 
+    given a particular cell number
+    \param CellN : Number of the Object to find
+    \returns Object pointer to the object
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject");
+  OTYPE::iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
+}
+
 const MonteCarlo::Object*
 Simulation::findObject(const int CellN) const
   /*! 
@@ -846,7 +842,24 @@ Simulation::findObject(const int CellN) const
   ELog::RegMethod RegA("Simulation","findObject const");
 
   OTYPE::const_iterator mp=OList.find(CellN);
-  return (mp==OList.end()) ? 0 : mp->second;
+  return (mp==OList.end()) ? nullptr : mp->second;
+}
+
+const MonteCarlo::Object*
+Simulation::findObjectThrow(const int CellN) const
+  /*! 
+    Helper function to determine the hull object 
+    given a particulat cell number (const varient)
+    \param CellN :: Cell number 
+    \return Object pointer 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findObject const");
+
+  OTYPE::const_iterator mp=OList.find(CellN);
+  if (mp==OList.end())
+    throw ColErr::InContainerError<int>(CellN,"Cell Number in Simulation");
+  return mp->second;
 }
 
 
@@ -1196,10 +1209,9 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   */
 {
   ELog::RegMethod RegA("Simulation","findCell");
+
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-
-
-  // First test users guess:
+      
   if (testCell && testCell->isValid(Pt))
     {
       ST.setCell(this,testCell);
@@ -1468,7 +1480,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   const std::map<int,int> RMap=
     calcCellRenumber(cOffset,cRange);
-
   
   OTYPE newMap;           // New map with correct numbering
   for(const std::map<int,int>::value_type& RMItem : RMap)
@@ -1486,8 +1497,16 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
 		  <<" Object:"<<oPtr->getFCUnit()<<ELog::endBasic;
 	}
-
-    }    
+    }
+  // cellOrder:
+  for(int& CN : cellOutOrder)
+    {
+      std::map<int,int>::const_iterator mc=
+	RMap.find(CN);
+      if (mc!=RMap.end())
+	CN=mc->second;
+    }
+  
   OList=newMap;
   return RMap;
 }

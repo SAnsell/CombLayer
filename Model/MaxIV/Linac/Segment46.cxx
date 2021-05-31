@@ -72,7 +72,6 @@
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-#include "BlankTube.h"
 #include "CleaningMagnet.h"
 #include "PortTube.h"
 #include "JawFlange.h"
@@ -82,6 +81,7 @@
 #include "CylGateValve.h"
 #include "CrossWayTube.h"
 #include "PrismaChamber.h"
+#include "LocalShielding.h"
 
 #include "TDCsegment.h"
 #include "Segment46.h"
@@ -96,6 +96,7 @@ Segment46::Segment46(const std::string& Key) :
   IZThin(new attachSystem::BlockZone(keyName+"IZThin")),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   gateA(new xraySystem::CylGateValve(keyName+"GateA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   prismaChamber(new tdcSystem::PrismaChamber(keyName+"PrismaChamber")),
@@ -121,6 +122,7 @@ Segment46::Segment46(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(gateA);
   OR.addObject(bellowA);
   OR.addObject(prismaChamber);
@@ -224,13 +226,13 @@ Segment46::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment46","buildObjects");
 
-  int outerCell;
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  outerCell=IZThin->createUnit(System,*pipeA,2);
-  pipeA->insertAllInCell(System,outerCell);
+
+  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*gateA);
@@ -298,8 +300,8 @@ Segment46::createLinks()
 {
   ELog::RegMethod RegA("Segment46","createLinks");
 
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*bellowD,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*bellowD,2);
 
   FixedComp::setConnect(2,Origin,Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));
@@ -365,7 +367,7 @@ Segment46::postBuild(Simulation& System)
       if (segNames.find("SPF44")!=segNames.end() &&
 	  segNames.find("SPF45")!=segNames.end())
 	{
-	  
+
 	  mapTYPE::const_iterator mc=segNames.find("SPF45");
 	  const TDCsegment* sideSegment=mc->second;
 	  const HeadRule frontHR=IZThin->getBack();

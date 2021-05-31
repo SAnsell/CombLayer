@@ -42,7 +42,6 @@
 #include "FuncDataBase.h"
 #include "MagnetGenerator.h"
 
-#include "maxivVariables.h"
 
 namespace setVariable
 {
@@ -62,7 +61,7 @@ LINACmagnetVariables(FuncDataBase& Control,
 
   if (magField=="NONE" || magField=="None")
     return;
-  
+
   // active units : Void space for field
   const std::vector<std::string> MUname
     ({
@@ -114,8 +113,8 @@ LINACmagnetVariables(FuncDataBase& Control,
 
   for(const std::string& Item : MUname)
     Control.pushVariable<std::string>("MagUnitList",Item);
-      
-  
+
+
   if (magField=="TDCline" ||
       magField=="TDClineA" ||
       magField=="TDClineB" ||
@@ -158,7 +157,7 @@ LINACmagnetVariables(FuncDataBase& Control,
       for(const std::string& Item : TDCname)
 	Control.pushVariable<std::string>("MagUnitList",Item);
     }
-  
+
   // SPF LINE
   if (magField=="SPFline")
     {
@@ -191,7 +190,12 @@ LINACmagnetVariables(FuncDataBase& Control,
 	  "Seg36CMagVA SPF35PipeA:Void",
 	  "Seg36QuadB SPF36PipeA:Void",
 
-	  "Seg43CMagHA SPF43Pipe:Void"
+	  "Seg43CMagHA SPF43Pipe:Void",
+	  // Artificial magnet to kick the beam towards the main beam
+	  // dump
+	  "Seg43BellowB SPF43BellowB:Void SPF44TriBend:Void",
+
+	  "Seg44CMag SPF44TriBend:BendVoid"
 	});
       for(const std::string& Item : SPFname)
 	Control.pushVariable<std::string>("MagUnitList",Item);
@@ -206,7 +210,7 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateQuad(Control,1,"QuadA",0.0,0.0);
   MUdipole.generateCorMag(Control,1,"CMagHC",90.0);
   MUdipole.generateCorMag(Control,1,"CMagVC",0.0);
-      
+
   // SEGMENT 2
 
   MUdipole.generateCorMag(Control,2,"QuadA",0.0);
@@ -220,7 +224,7 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generateCorMag(Control,3,"CMagHA",90.0);
   MUdipole.generateCorMag(Control,3,"CMagVA",0.0);
   MUdipole.generateDipole(Control,3,"DipoleB",-90.0,0.8625);   // 0.865
-      
+
   // SEGMENT 4
   MUdipole.generateQuad(Control,4,"QuadA",0.0,0.0);
   MUdipole.generateSexupole(Control,4,"SexuA",0.0,0.0);
@@ -234,34 +238,34 @@ LINACmagnetVariables(FuncDataBase& Control,
   MUdipole.generate(Control,"Seg5DipoleA","L2SPF5DipoleA","0",-90.0);
   MUdipole.setField(0.859,0,0,0);  // 0.66 : 0.8
   MUdipole.generate(Control,"Seg5DipoleB","L2SPF5DipoleB","0",-90.0);
-      
+
   // SEGMENT 6
-      
+
   // // SEGMENT 7
   MUdipole.generateCorMag(Control,7,"CMagHA",90.0);
   MUdipole.generateQuad(Control,7,"QuadA",0.0,0.0);
   MUdipole.generateCorMag(Control,7,"CMagVA",0.0);
-      
+
   // // SEGMENT 9
   MUdipole.generateCorMag(Control,9,"CMagVA",0.0);
   MUdipole.generateCorMag(Control,9,"CMagHA",90.0,0.00);
   MUdipole.generateQuad(Control,9,"QuadA",0.0,0.0);
-      
+
   // SEGMENT 10
   MUdipole.generateQuad(Control,10,"QuadA",0.0,0.0);
   MUdipole.generateCorMag(Control,10,"CMagVA",90.0,0.0);
-      
+
   // SEGMENT 11
   MUdipole.generateQuad(Control,11,"QuadA",0.0,0.0);
   MUdipole.generateCorMag(Control,11,"CMagHA",90.0,0.0);
-  
+
   if (magField=="SPFline")
     {
       // SEGMENT 12 [SPF]
       MUdipole.generateDipole(Control,12,"DipoleA",0.0,0.0);
       MUdipole.generateDipole(Control,12,"DipoleB",0.0,0.0);
     }
-  else 
+  else
     {
       // SEGMENT 12 [TDC]
       MUdipole.generateDipole(Control,12,"DipoleA",90.0,0.78);
@@ -279,7 +283,7 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.setPreName("TDC");
       MUdipole.generateDipole(Control,14,"DipoleA",90.0,0.855);
       MUdipole.generateDipole(Control,14,"DipoleB",90.0,0.855);
-	  
+
       // SEGMENT 15
 
       // SEGMENT 16
@@ -293,7 +297,7 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateQuad(Control,18,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,18,"CMagHA",0.0);
       MUdipole.generateCorMag(Control,18,"CMagVA",0.0);
-	  
+
       // SEGMENT 19
       // SEGMENT 20
 
@@ -307,17 +311,18 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateCorMag(Control,23,"CMagHA",90.0);
       MUdipole.generateCorMag(Control,23,"CMagVA",0.0);
 
-
       // SEGMENT 24
       MUdipole.generateCorMag(Control,24,"CMagHA",0.0);
       MUdipole.generateCorMag(Control,24,"CMagVA",0.0);
       MUdipole.generateQuad(Control,24,"Quad",0.0,0.0);
 
-
       // SEGMENT 25
-      if (magField=="TDCline" || magField=="TDClineB")
+      // The beam normally is not deflected by this magnet [email from EM]
+      if (magField=="TDCline" || magField=="TDClineA")
+	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.0);
+      else if (magField=="TDClineB")
 	MUdipole.generateDipole(Control,25,"DipoleA",90.0,0.81);
-      if (magField=="TDClineC")
+      else if (magField=="TDClineC")
 	MUdipole.generateDipole(Control,25,"DipoleA",90.0,1.59);
 
       // SEGMENT 26
@@ -325,22 +330,22 @@ LINACmagnetVariables(FuncDataBase& Control,
       // SEGMENT 28
       // SEGMENT 29
     }
-      
+
   // SPFLINE
   // SEGMENT 30
   if (magField=="SPFline")
     {
       MUdipole.setPreName("SPF");
       MUdipole.generateCorMag(Control,30,"CMagVA",0.0);
-	  
+
       // SEGMENT 31
       MUdipole.generateQuad(Control,31,"Quad",0.0,0.0);
       MUdipole.generateCorMag(Control,31,"CMagHA",90.0);
-	  
+
       // SEGMENT 32
       MUdipole.generateDipole(Control,32,"DipoleA",90.0,0.860);
       MUdipole.generateDipole(Control,32,"DipoleB",90.0,0.860);
-	  
+
       // SEGMENT 33
       MUdipole.generateCorMag(Control,33,"CMagHA",90.0);
       MUdipole.generateQuad(Control,33,"QuadA",0.0,0.0);
@@ -348,11 +353,11 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateQuad(Control,33,"QuadB",0.0,0.0);
       MUdipole.generateCorMag(Control,33,"CMagVA",0.0);
 
-	  
+
       // SEGMENT 34
       MUdipole.generateDipole(Control,34,"DipoleA",90.0,0.858);
       MUdipole.generateDipole(Control,34,"DipoleB",90.0,0.858);
-	  
+
       // SEGMENT 35
       MUdipole.generateQuad(Control,35,"QuadA",0.0,0.0);
       MUdipole.generateQuad(Control,35,"QuadB",0.0,0.0);
@@ -365,19 +370,27 @@ LINACmagnetVariables(FuncDataBase& Control,
       MUdipole.generateCorMag(Control,36,"CMagVA",0.0);
       MUdipole.generateQuad(Control,36,"QuadB",0.0,0.0);
 
-	  
+
       // SEGMENT 37/38/39/40/41/42
-	  
-	  
+
+
       // SEGMENT 43
       MUdipole.generateCorMag(Control,43,"CMagHA",90.0);
-	  
-      // SEGMENT 44 [THIS IS a curved dipole -- check sized]
-      MUdipole.generateDipole(Control,44,"CMag",0.0,0.0);
-	  
+      // Artificial magnet to kick the beam towards the main beam dump
+      MUdipole.generateDipole(Control,43,"BellowB",0.0,8.5);
+      // We resize it in order to deflect the beam towards
+      // the entrance to the curved pipe of SPF44TriBend
+      Control.addVariable("MagUnitSeg43BellowBLength",10.0);
 
-      // SEGMENT 44 [THIS IS a curved dipole -- check sized]
-      MUdipole.generateDipole(Control,44,"CMag",0.0,0.0);
+      // SEGMENT 44 (curved dipole magnet)
+      // We shift and rotate it so that the magnetic field
+      // is present in the curved pipe of SPF44TriBend only
+      MUdipole.setOffset(0.0,147.0,-41.0);
+      MUdipole.generateDipole(Control,44,"CMag",0.0,-3.635);
+      Control.addVariable("MagUnitSeg44CMagLength",100.0);
+      Control.addVariable("MagUnitSeg44CMagHeight",24.9);
+      Control.addVariable("MagUnitSeg44CMagXAngle",-16.5);
+
 
       // SEGMENT 45
       // SEGMENT 46
@@ -385,7 +398,7 @@ LINACmagnetVariables(FuncDataBase& Control,
       // SEGMENT 48
       // SEGMENT 49
     }
-    
+
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,16 +38,12 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "SurInter.h"
@@ -63,9 +59,11 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "AttachSupport.h"
 #include "ContainedComp.h"
-
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "ContainedGroup.h"
 
 namespace attachSystem
 {
@@ -511,21 +509,13 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
   */
 {
   ELog::RegMethod RegA("ContainedComp","surfOuterIntersect");
-  // Create object:
+
   if (outerSurf.hasRule())
     {
-      MonteCarlo::Object TObj(1,0,0.0,outerSurf.display());
-      TObj.createSurfaceList();
-      std::pair<const Geometry::Surface*,double> Res=
-	TObj.forwardIntercept(LA.getOrigin(),LA.getDirect());
-      
-      if (Res.first && Res.second>0.0)
-	{
-	  // Get point :
-	  Geometry::Vec3D Pt=LA.getPoint(Res.second);
-	  return Res.first->sideDirection(Pt,LA.getDirect())*
-	    Res.first->getName();
-	}
+      const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+	result=outerSurf.trackSurfIntersect(LA.getOrigin(),LA.getDirect());
+
+      return std::get<0>(result);
     }
   return 0;
 }
@@ -729,7 +719,7 @@ ContainedComp::insertExternalObject(Simulation& System,
       if (outerObj)
 	outerObj->addSurfString(excludeStr);
       else
-	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(CN,"OuterObject");
     }
   return;
 }
@@ -748,9 +738,9 @@ ContainedComp::insertObjects(Simulation& System)
     {
       MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
-	  outerObj->addSurfString(getExclude());
+	outerObj->addSurfString(getExclude());
       else
-	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
+	throw ColErr::InContainerError<int>(CN,"Cell in Simulation");
     }
   insertCells.clear();
   return;
@@ -816,11 +806,8 @@ ContainedComp::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertInCell");
   
-  MonteCarlo::Object* outerObj=System.findObject(cellN);
-  if (outerObj)
-    ContainedComp::insertInCell(*outerObj);
-  else
-    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+  MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+  this->insertInCell(*outerObj);
   return;
 }
 
@@ -838,11 +825,8 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
   for(const int cellN : cellVec)
     {
-      MonteCarlo::Object* outerObj=System.findObject(cellN);
-      if (outerObj)
-	outerObj->addSurfString(getExclude());
-      else
-	throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+      MonteCarlo::Object* outerObj=System.findObjectThrow(cellN);
+      outerObj->addSurfString(getExclude());
     }
   return;
 }

@@ -3,7 +3,7 @@
 
  * File:   Linac/Scrapper.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,38 +33,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -138,11 +117,11 @@ Scrapper::populate(const FuncDataBase& Control)
   driveRadius=Control.EvalVar<double>(keyName+"DriveRadius");
   driveFlangeRadius=Control.EvalVar<double>(keyName+"DriveFlangeRadius");
   driveFlangeLength=Control.EvalVar<double>(keyName+"DriveFlangeLength");
-  
+
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportThick=Control.EvalVar<double>(keyName+"SupportThick");
   supportHeight=Control.EvalVar<double>(keyName+"SupportHeight");
-    
+
   topBoxWidth=Control.EvalVar<double>(keyName+"TopBoxWidth");
   topBoxHeight=Control.EvalVar<double>(keyName+"TopBoxHeight");
 
@@ -178,7 +157,7 @@ Scrapper::createSurfaces()
 
   // mid divider
   ModelSupport::buildPlane(SMap,buildIndex+10,Origin,Z);
-  
+
   // main pipe and thickness
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
@@ -218,7 +197,7 @@ Scrapper::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+527,
 			      aOrg,Z,supportRadius+supportThick);
   ModelSupport::buildCylinder(SMap,buildIndex+537,aOrg,Z,driveFlangeRadius);
-  
+
   // Top box
   aOrg -= Z*(tubeLength+tubeFlangeLength);
   ModelSupport::buildPlane
@@ -241,7 +220,7 @@ Scrapper::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+1307,bOrg,Z,tubeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+1317,bOrg,Z,tubeRadius+tubeThick);
   ModelSupport::buildCylinder(SMap,buildIndex+1327,bOrg,Z,tubeFlangeRadius);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1305,bOrg+Z*tubeLength,Z);
   ModelSupport::buildPlane(SMap,buildIndex+1315,
 			   bOrg+Z*(tubeLength-tubeFlangeLength),Z);
@@ -259,7 +238,7 @@ Scrapper::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+1527,
 			      bOrg,Z,supportRadius+supportThick);
   ModelSupport::buildCylinder(SMap,buildIndex+1537,bOrg,Z,driveFlangeRadius);
-  
+
   bOrg += Z*(tubeLength+tubeFlangeLength);
   ModelSupport::buildPlane
     (SMap,buildIndex+1505,bOrg+Z*driveFlangeLength,Z);
@@ -321,7 +300,7 @@ Scrapper::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -10 17 307 -317 305 ");
   makeCell("TubeAWall",System,cellIndex++,tubeMat,0.0,Out);
- 
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 317 -305 315 -327 ");
   makeCell("TubeFlangeA",System,cellIndex++,flangeMat,0.0,Out);
 
@@ -337,7 +316,7 @@ Scrapper::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 10 17 1307 -1317 -1305 ");
   makeCell("TubeBWall",System,cellIndex++,tubeMat,0.0,Out);
- 
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 1317 -1305 1315 -1327 ");
   makeCell("TubeFlangeB",System,cellIndex++,flangeMat,0.0,Out);
 
@@ -403,7 +382,7 @@ Scrapper::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -1327 (-1601 : 1602 : -1603 : 1604) -1605 1515 ");
   makeCell("PlateBOut",System,cellIndex++,0,0.0,Out);
-  
+
   Out=ModelSupport::getComposite
     (SMap,buildIndex," (-107 : (-10 -327 605) : (10 -1327 -1605)) ");
   addOuterSurf(Out+frontStr+backStr);
@@ -422,6 +401,16 @@ Scrapper::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
 
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+107));
+  FixedComp::nameSideIndex(3,"Outer");
+
+  FixedComp::setLinkSurf(4,ModelSupport::getComposite(SMap,buildIndex,0," 1327 : -60000M "));
+  FixedComp::nameSideIndex(4,"OuterTop");
+
+  FixedComp::setLinkSurf(5,ModelSupport::getComposite(SMap,buildIndex,0," 327 : 60000M "));
+  FixedComp::nameSideIndex(5,"OuterBottom");
+
+
   return;
 }
 
@@ -439,7 +428,7 @@ Scrapper::createAll(Simulation& System,
   ELog::RegMethod RegA("Scrapper","createAll");
 
   populate(System.getDataBase());
-  createCentredUnitVector(FC,sideIndex,length);
+  createCentredUnitVector(FC,sideIndex,length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -32,16 +32,12 @@
 #include <algorithm>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
-#include "ENDF.h"
 
 namespace ENDF
 {

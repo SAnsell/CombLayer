@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment6.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,9 @@
 #include "CeramicGap.h"
 #include "Scrapper.h"
 #include "EBeamStop.h"
+#include "LocalShielding.h"
 
+#include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment6.h"
 
@@ -74,7 +76,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 Segment6::Segment6(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -82,7 +84,9 @@ Segment6::Segment6(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   scrapper(new tdcSystem::Scrapper(keyName+"Scrapper")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   pipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   ceramicA(new tdcSystem::CeramicGap(keyName+"CeramicA")),
   beamStop(new tdcSystem::EBeamStop(keyName+"EBeam")),
   ceramicB(new tdcSystem::CeramicGap(keyName+"CeramicB"))
@@ -98,14 +102,16 @@ Segment6::Segment6(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(pipeC);
   OR.addObject(scrapper);
+  OR.addObject(shieldA);
   OR.addObject(pipeD);
+  OR.addObject(shieldB);
   OR.addObject(ceramicA);
   OR.addObject(beamStop);
   OR.addObject(ceramicB);
 
   setFirstItems(pipeA);
 }
-  
+
 Segment6::~Segment6()
   /*!
     Destructor
@@ -137,14 +143,41 @@ Segment6::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,*buildZone,*pipeC,"back",*scrapper);
 
-  constructSystem::constructUnit
-    (System,*buildZone,*scrapper,"back",*pipeD);
-  constructSystem::constructUnit
+  shieldA->setCutSurf("Inner", scrapper->getFullRule("Outer") *
+		      scrapper->getFullRule("OuterTop") *
+		      scrapper->getFullRule("OuterBottom"));
+  shieldA->createAll(System, *scrapper, 0);
+  shieldA->insertInCell(System,outerCell+3);
+
+  pipeD->setFront(*scrapper, "back");
+  pipeD->createAll(System,*scrapper,"back");
+  pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",shieldB);
+  pipeTerminate(System,*buildZone,pipeD);
+
+  outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*ceramicA);
+
+  beamStop->setCutSurf("Front", ceramicA->getExclude() +
+		       pipeD->getExclude("FlangeB") +
+		       pipeD->getExclude("Main"));
+
   constructSystem::constructUnit
     (System,*buildZone,*ceramicA,"back",*beamStop);
+
   constructSystem::constructUnit
     (System,*buildZone,*beamStop,"back",*ceramicB);
+
+  if (beamStop->isShieldActive()) // optimise \todo
+    {
+      beamStop->insertAllInCell(System,outerCell);
+      beamStop->insertAllInCell(System,outerCell-1);
+
+      beamStop->insertAllInCell(System,outerCell+2);
+
+      //      attachSystem::addToInsertControl(System,*beamStop,*ceramicB);
+      beamStop->insertComponent(System,"ShieldSideBackHole",*ceramicB);
+    }
+
 
   return;
 }
@@ -155,14 +188,14 @@ Segment6::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*ceramicB,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*ceramicB,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
-void 
+void
 Segment6::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -180,10 +213,12 @@ Segment6::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
+  if (beamStop->isShieldActive())
+      CellMap::setCells("ShieldSideBackHole",beamStop->getCells("ShieldSideBackHole"));
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

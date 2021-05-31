@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MagnetM1Generator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,27 @@ class MagnetM1Generator
   double baseThick;              ///< base thickness
   double wallThick;              ///< side wall thickness
 
+  // entry pipe
+  double entryLength;
+  double entryFlangeRadius;
+  double entryFlangeLength;
+  
+  // HalfPipe:
+  double photonRadius;            ///< round on photon side
+  double electronRadius;          ///< large curve for electron 
+  double pipeWallThick;           ///< pipe thickness
+  double electronAngle;           ///< Electron bend angle
+
+  // full Pipe
+  double fullLength;             ///< full length
+
+
   std::string voidMat;           ///< void material
   std::string wallMat;           ///< wall material
 
+  void generateEntryPipe(FuncDataBase&,const std::string&) const;
+  void generateHalfPipe(FuncDataBase&,const std::string&) const;
+  
  public:
 
   MagnetM1Generator();

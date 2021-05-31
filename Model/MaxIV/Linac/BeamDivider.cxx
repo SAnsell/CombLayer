@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/BeamDivider.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -33,54 +33,33 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "BeamDivider.h"
 
@@ -101,7 +80,7 @@ BeamDivider::BeamDivider(const std::string& Key) :
 {}
 
 
-BeamDivider::~BeamDivider() 
+BeamDivider::~BeamDivider()
   /*!
     Destructor
   */
@@ -127,7 +106,7 @@ BeamDivider::populate(const FuncDataBase& Control)
   mainXStep=Control.EvalVar<double>(keyName+"MainXStep");
   exitXStep=Control.EvalVar<double>(keyName+"ExitXStep");
   exitAngle=Control.EvalVar<double>(keyName+"ExitAngle");
-  
+
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   mainRadius=Control.EvalVar<double>(keyName+"MainRadius");
   mainThick=Control.EvalVar<double>(keyName+"MainThick");
@@ -171,13 +150,13 @@ BeamDivider::createSurfaces()
 			       Origin+Y*(boxLength+mainLength),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  
+
   const double ang(M_PI*exitAngle/180.0);
   const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
   const Geometry::Vec3D RNorm(X*cos(ang)-Y*sin(ang));
   const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
 
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*boxLength,Y);
   ModelSupport::buildPlane
     (SMap,buildIndex+112,Origin+Y*(wallThick+boxLength),Y);
@@ -190,7 +169,7 @@ BeamDivider::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+13,Origin-X*(mainWidth+wallThick),X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+14,exitOrg+X*exitWidth+RNorm*wallThick,RNorm);  
+    (SMap,buildIndex+14,exitOrg+X*exitWidth+RNorm*wallThick,RNorm);
   ModelSupport::buildPlane
     (SMap,buildIndex+15,Origin-Z*(wallThick+height/2.0),Z);
   ModelSupport::buildPlane
@@ -208,7 +187,7 @@ BeamDivider::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+427,mainOrg,Y,flangeBRadius);
   ModelSupport::buildPlane(SMap,buildIndex+422,
 			   mainOrg+Y*(boxLength+mainLength-flangeBLength),Y);
-			   
+
   // Exit [500]
   ModelSupport::buildPlane(SMap,buildIndex+502,
 			   exitOrg+RAxis*(boxLength+exitLength),RAxis);
@@ -224,7 +203,7 @@ BeamDivider::createSurfaces()
     (SMap,buildIndex+522,
      exitOrg+RAxis*(boxLength+exitLength-flangeELength),
      RAxis);
-  
+
   return;
 }
 
@@ -239,7 +218,7 @@ BeamDivider::createObjects(Simulation& System)
 
   std::string Out;
 
-  
+
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
 
@@ -251,7 +230,7 @@ BeamDivider::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 13 -14 15 -16  (-3 : 4 : -5 : 6) -102 ");
   makeCell("BoxWall",System,cellIndex++,wallMat,0.0,Out+frontStr);
-  
+
   // front flange
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -207  (-13 : 14 : -15 : 16) -201 ");
@@ -311,11 +290,11 @@ BeamDivider::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-427  422");
   addOuterSurf("FlangeB",Out+backStr);
-  
+
   return;
 }
 
-void 
+void
 BeamDivider::createLinks()
   /*!
     Create the linked units
@@ -326,13 +305,17 @@ BeamDivider::createLinks()
   const Geometry::Vec3D exitOrg(Origin+X*exitXStep);
   const double ang(M_PI*exitAngle/180.0);
   const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
-  
+
   //front and back
-  ExternalCut::createLink("front",*this,0,Origin,Y);  
+  ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,mainOrg,Y);
 
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
   FixedComp::setLineConnect(2,exitOrg,RAxis);
+
+  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -13:14:-15:16 ");
+  FixedComp::setLinkSurf(3,Out);
+  FixedComp::nameSideIndex(3,"outerBox");
 
   FixedComp::nameSideIndex(2,"exit");
   return;
@@ -345,7 +328,7 @@ BeamDivider::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
@@ -358,9 +341,9 @@ BeamDivider::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

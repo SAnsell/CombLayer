@@ -3,7 +3,7 @@
  
  * File:   weights/WeightControl.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,46 +38,23 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cone.h"
 #include "support.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "Importance.h"
-#include "Object.h"
-#include "weightManager.h"
-#include "WForm.h"
-#include "WItem.h"
-#include "WCells.h"
-#include "CellWeight.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "inputParam.h"
-#include "PositionSupport.h"
-#include "TallyCreate.h"
-#include "TempWeights.h"
-#include "ImportControl.h"
 
-#include "LineTrack.h"
-#include "ObjectTrackAct.h"
-#include "ObjectTrackPoint.h"
-#include "ObjectTrackPlane.h"
-#include "Mesh3D.h"
 #include "WeightControl.h"
 
 namespace WeightSystem
@@ -173,7 +150,8 @@ WeightControl::setLowEBand()
 }
 
 void
-WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
+WeightControl::procSourcePoint(const Simulation& System,
+			       const mainSystem::inputParam& IParam)
   /*!
     Process the source weight point
     \param IParam :: Input param
@@ -185,7 +163,6 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
   
   sourcePt.clear();
   const size_t NSource=IParam.setCnt(wKey);
-  ELog::EM<<"NSource == "<<NSource<<ELog::endDiag;
   for(size_t index=0;index<NSource;index++)
     {
       const size_t NItem=IParam.itemCnt(wKey,index);
@@ -193,17 +170,23 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
       while(NItem>itemCnt)
         {
           const Geometry::Vec3D TPoint=
-	    IParam.getCntVec3D(wKey,index,itemCnt,"Source Point");
+	    mainSystem::getNamedPoint
+	    (System,IParam,wKey,index,itemCnt,"Source Point");
+          const Geometry::Vec3D offsetPoint=
+	    mainSystem::getDefNamedPoint
+	    (System,IParam,wKey,index,itemCnt,Geometry::Vec3D(0,0,0));	  
           ELog::EM<<"Source Point["<<sourcePt.size()
-                  <<"] == "<<TPoint<<ELog::endDiag;
+                  <<"] == "<<TPoint<<" "<<itemCnt<<ELog::endDiag;
+	  
           sourcePt.push_back(TPoint);
         }
     }  
   return;
 }
-  
+   
 void
-WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
+WeightControl::procPlanePoint(const Simulation& System,
+			      const mainSystem::inputParam& IParam)
   /*!
     Determine inf the next component cat be a plane
     Given as two Vec3D from inputParam
@@ -223,79 +206,17 @@ WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
       while(NItem>itemCnt)
         {
 	  const Geometry::Vec3D PPoint=
-	    IParam.getCntVec3D(wKey,index,itemCnt,wKey+":PlanePoint");
-
-          //          IParam.getCntVec3D(wKey,index,itemCnt,
-          //			       wKey+" Vec3D");
+	    mainSystem::getNamedPoint
+	    (System,IParam,wKey,index,itemCnt,wKey+"Plane Point");
 	  const Geometry::Vec3D Norm=
-	    IParam.getCntVec3D(wKey,index,itemCnt,wKey+"PlaneNorm");
+	    mainSystem::getNamedAxis
+	    (System,IParam,wKey,index,itemCnt,wKey+"Plane:Norm");
           planePt.push_back(Geometry::Plane(0,0,PPoint,Norm));
         }
     }
 
   return;
 }
-  
-void
-WeightControl::processPtString(std::string ptStr,
-			       std::string& ptType,
-			       size_t& ptIndex,
-			       bool& adjointFlag)
-  /*!
-    Process a point with PtStr 
-    -- Note that this is a check of the string.
-
-    The input string is of the form
-    [TS]{P}Index
-    - T/S designated source / tally
-    - P [optional] indicates that a plane is used not a point
-    - [index] : number of source/plane/tally point
-
-    Example TS2 --> Adjoint type : Source 2 
-    \param ptStr :: String to process
-    \param ptType :: Source/Plane/Cone
-    \param ptIndex :: Index to SPC vector unit
-    \param adjointFlag :: use Adjoint source
-  */
-{
-  ELog::RegMethod RegA("WeightControl","processPtString");
-
-  const static std::map<char,std::string> TypeMap
-    ({ { 'S',"Source" }, {'P',"Plane"}, {'C',"Cone"} });
-
-  if (ptStr.size()<2)
-    throw ColErr::InvalidLine
-      (ptStr,"PtStr[0] expected:: [ST] [SPC] number");  
-  
-  const std::string Input(ptStr);
-  const char SP=static_cast<char>(std::toupper(ptStr[0]));
-  const char TP=static_cast<char>(std::toupper(ptStr[1]));
-  if (SP!='T' && SP!='S')  // fail
-    throw ColErr::InvalidLine(Input,"PtStr[0] expected:: [ST] [SPC] number");
-  
-  std::map<char,std::string>::const_iterator mc=TypeMap.find(TP);
-  if (mc==TypeMap.end())
-    throw ColErr::InvalidLine
-      (Input,"PtStr[1] expected:: [ST] [SPC] number");
-  
-  adjointFlag= (SP=='T') ? 1 : 0;  
-  ptType=mc->second;
-  
-  ptStr[0]=' ';
-  ptStr[1]=' ';
-  if (!StrFunc::sectPartNum(ptStr,ptIndex))
-    throw ColErr::InvalidLine(Input,"PtStr Index not found");
-
-  if (ptType=="Plane" && ptIndex>=planePt.size())
-    throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
-				     "planePt.size() < ptIndex");
-  else if (ptType=="Source" && ptIndex>=sourcePt.size())
-    throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
-				     "sourcePt.size() < ptIndex");
-
-  return;
-}
-
   
 void
 WeightControl::procParticles(const mainSystem::inputParam& IParam)
@@ -430,9 +351,9 @@ WeightControl::processWeights(Simulation& System,
 
 
   if (IParam.flag("weightSource"))
-    procSourcePoint(IParam);
+    procSourcePoint(System,IParam);
   if (IParam.flag("weightPlane"))
-    procPlanePoint(IParam);
+    procPlanePoint(System,IParam);
 
   return;
 }

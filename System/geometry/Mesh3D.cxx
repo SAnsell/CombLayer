@@ -38,16 +38,11 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h" 
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Mesh3D.h"
 
@@ -143,6 +138,23 @@ Mesh3D::setMesh(const std::vector<double>& XV,
   NZ=std::accumulate(ZFine.begin(),ZFine.end(),0UL);
   
   Origin=Geometry::Vec3D(X.front(),Y.front(),Z.front());
+  return;
+}
+
+void 
+Mesh3D::setMesh(const Geometry::Vec3D& LowPt,
+		const Geometry::Vec3D& HighPt,
+		const std::array<size_t,3>& NPts)
+  /*!
+    Ugly way to set the mesh from the WWG constructor
+    \ap
+  */
+{
+  NX=NPts[0];
+  NY=NPts[1];
+  NZ=NPts[2];
+  Origin=LowPt;
+  
   return;
 }
 

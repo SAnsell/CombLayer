@@ -3,7 +3,7 @@
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,15 +39,9 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "mathSupport.h"
-#include "support.h"
 #include "Triple.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -61,11 +55,9 @@
 #include "MBrect.h"
 #include "Sphere.h"
 #include "General.h"
-#include "Torus.h"
 #include "Line.h"
 #include "SurInter.h"
 #include "particle.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "LineIntersectVisit.h"
 

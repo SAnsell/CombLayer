@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment4.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -62,7 +62,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
@@ -75,6 +74,7 @@
 #include "CorrectorMag.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -84,7 +84,7 @@ namespace tdcSystem
 {
 
 // Note currently uncopied:
-  
+
 Segment4::Segment4(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -96,11 +96,12 @@ Segment4::Segment4(const std::string& Key) :
   QuadB(new tdcSystem::LQuadF(keyName+"QuadB")),
   yagUnit(new tdcSystem::YagUnit(keyName+"YagUnit")),
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA"))
-  
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -117,6 +118,7 @@ Segment4::Segment4(const std::string& Key) :
   OR.addObject(QuadB);
   OR.addObject(yagUnit);
   OR.addObject(yagScreen);
+  OR.addObject(shieldA);
   OR.addObject(bellowA);
   OR.addObject(pipeC);
   OR.addObject(cMagHA);
@@ -124,7 +126,7 @@ Segment4::Segment4(const std::string& Key) :
 
   setFirstItems(pipeA);
 }
-  
+
 Segment4::~Segment4()
   /*!
     Destructor
@@ -151,7 +153,7 @@ Segment4::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*pipeA,2);
   pipeA->insertAllInCell(System,outerCell);
-  
+
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpmA);
 
@@ -171,13 +173,16 @@ Segment4::buildObjects(Simulation& System)
   yagScreen->insertInCell("Connect",System,yagUnit->getCell("Void"));
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
+  shieldA->createAll(System, *yagScreen, 0);
+  shieldA->insertInCell(System,outerCell);
+
   constructSystem::constructUnit
     (System,*buildZone,*yagUnit,"back",*bellowA);
 
   pipeC->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeC,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeC);  
-  
+  pipeTerminate(System,*buildZone,pipeC);
+
   return;
 }
 
@@ -187,14 +192,14 @@ Segment4::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pipeC,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;
 }
 
-void 
+void
 Segment4::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -218,4 +223,3 @@ Segment4::createAll(Simulation& System,
 
 
 }   // NAMESPACE tdcSystem
-

@@ -3,7 +3,7 @@
  
  * File:   test/testObject.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,22 +34,15 @@
 #include <algorithm>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
-#include "Surface.h"
 #include "Rules.h"
-#include "Debug.h"
 #include "BnId.h"
 #include "AcompTools.h"
 #include "Acomp.h"
@@ -61,7 +54,6 @@
 #include "particle.h"
 #include "eTrack.h"
 
-#include "Debug.h"
 
 #include "testFunc.h"
 #include "testObject.h"
@@ -114,6 +106,8 @@ testObject::createSurfaces()
   SurI.createSurface(22,"px 15");
 
   // Sphere :
+  SurI.createSurface(101,"so 5");
+  // Sphere :
   SurI.createSurface(100,"so 25");
   
   return;
@@ -151,7 +145,8 @@ testObject::populateMObj()
   MString.insert(MTYPE::value_type(10,"10 3 0.062 "
 				   "80001 ((-80002 80003) : -80004 ) "
 				   "80005 -80006"));
-  MString.insert(MTYPE::value_type(12,"12 0 63 64 (-61 : -62)")); 
+  MString.insert(MTYPE::value_type(12,"12 0 63 64 (-61 : -62)"));
+  MString.insert(MTYPE::value_type(15,"15 0 -101")); 
 
   // Clear map
   deleteObject();
@@ -563,7 +558,11 @@ testObject::testTrackCell()
   typedef std::tuple<std::string,int,Geometry::Vec3D,
 		       Geometry::Vec3D,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
-  
+
+  Tests.push_back(TTYPE("4 0 -101",-101,
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1),
+			Geometry::Vec3D(0,0,5)));
+    
   // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
   //  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
   //  			Geometry::Vec3D(1,0,0)));
@@ -597,7 +596,7 @@ testObject::testTrackCell()
       eTrack TNeut(std::get<2>(tc),std::get<3>(tc));
 
       const int outFaceSurf(std::get<1>(tc));
-      const int SN= -A.trackOutCell(TNeut,aDist,SPtr,0);
+      const int SN= -A.trackCell(TNeut,aDist,SPtr,0);
       TNeut.moveForward(aDist);
       if (TNeut.Pos!=std::get<4>(tc) || SN!=outFaceSurf)
 	{

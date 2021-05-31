@@ -58,7 +58,6 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
@@ -383,8 +382,8 @@ OffsetFlangePipe::createLinks()
   FixedComp::nameSideIndex(8,"pipeOuterTop");
 
   // flange mid point
-  FixedComp::setLinkSignedCopy(9,*this,1);
-  FixedComp::setLinkSignedCopy(10,*this,2);
+  FixedComp::setLinkCopy(9,*this,1);
+  FixedComp::setLinkCopy(10,*this,2);
   FixedComp::setConnect
     (9,FixedComp::getLinkPt(1)+X*flangeAXStep+Z*flangeAZStep,flangeAYAxis);
   FixedComp::setConnect

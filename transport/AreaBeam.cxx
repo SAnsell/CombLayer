@@ -27,9 +27,6 @@
 #include <vector>
 
 #include "MersenneTwister.h"
-#include "mathSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"

@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBin.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,16 +38,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
 #include "writeSupport.h"
 #include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Mesh3D.h"
 
 #include "flukaTally.h"
 #include "userBin.h"
@@ -55,9 +48,18 @@
 namespace flukaSystem
 {
 
-userBin::userBin(const int outID) :
-  flukaTally("mesh"+std::to_string(outID),outID),
-  binaryOut(1),
+
+userBin::userBin(const int ID,const int outID) :
+  userBin("mesh",ID,outID)
+  /*!
+    Constructor
+    \param outID :: Identity number of tally [fortranOut]
+  */
+{}
+
+userBin::userBin(const std::string& tallyName,
+		   const int ID,const int outID) :
+  flukaTally(tallyName,ID,outID),
   meshType(10),particle("208"),
   Pts({0,0,0})
   /*!
@@ -67,7 +69,7 @@ userBin::userBin(const int outID) :
 {}
 
 userBin::userBin(const userBin& A) : 
-  flukaTally(A),binaryOut(A.binaryOut),
+  flukaTally(A),
   meshType(A.meshType),particle(A.particle),
   Pts(A.Pts),minCoord(A.minCoord),
   maxCoord(A.maxCoord)

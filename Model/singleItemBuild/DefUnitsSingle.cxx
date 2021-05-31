@@ -31,23 +31,13 @@
 #include <map>
 #include <string>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "InputControl.h"
 #include "inputParam.h"
-#include "support.h"
 #include "defaultConfig.h"
-#include "DefUnitsSingleItem.h"
 
 namespace mainSystem
 {

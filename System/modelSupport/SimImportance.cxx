@@ -3,7 +3,7 @@
  
  * File:   process/SimImportance.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,35 +34,14 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Rules.h"
 #include "Code.h"
-#include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -70,16 +49,15 @@
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
 #include "MainProcess.h"
-#include "flukaProcess.h"
 #include "flukaDefPhysics.h"
 #include "phitsDefPhysics.h"
 #include "SetMagnets.h"
+#include "BasicMesh3D.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
 #include "WWGControl.h"
 
-#include "SimImportance.h"
 
 namespace SimProcess
 {
@@ -124,8 +102,10 @@ importanceSim(SimPHITS& System,
   System.createObjSurfMap();
 
   WeightSystem::WCellControl WCell;
+  WeightSystem::WWGControl WWGC;
   WCell.processWeights(System,IParam);
-
+  WWGC.processWeights(System,IParam);
+  ELog::EM<<"Pass Process"<<ELog::endDiag;
   phitsSystem::setModelPhysics(System,IParam);
   magnetSystem::setMagneticPhysics(System,IParam);
 

@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaProcess.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,50 +35,20 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "Zaid.h"
-#include "MXcards.h"
-#include "Material.h"
-#include "DBMaterial.h"
 #include "Process.h"
 
 #include "flukaGenParticle.h"
-#include "SimFLUKA.h"
-#include "cellValueSet.h"
-#include "pairValueSet.h"
-#include "flukaPhysics.h"
-#include "flukaDefPhysics.h"
-#include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 
 namespace flukaSystem
@@ -97,7 +67,6 @@ getActiveUnit(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveUnit");
-
 
   switch (typeFlag)
     {

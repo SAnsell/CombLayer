@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/meshConstruct.cxx
+ * File:   generalProcess/meshConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,52 +34,33 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "support.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
-#include "NList.h"
-#include "NRange.h"
-#include "pairRange.h"
-#include "Tally.h"
-#include "TallyCreate.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 
-#include "TallySelector.h" 
 #include "meshConstruct.h" 
 
 
 
-namespace tallySystem
+namespace mainSystem
 {
 
+namespace meshConstruct
+{
 void
-meshConstruct::calcXYZ(const objectGroups& OGrp,
+calcXYZ(const objectGroups& OGrp,
 		       const std::string& object,const std::string& linkPos,
 		       Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
   /*!
@@ -88,8 +69,8 @@ meshConstruct::calcXYZ(const objectGroups& OGrp,
     \param OGrp :: Object group
     \param object :: object name
     \param linkPos :: link position
-    \param APos :: Lower corner
-    \param BPos :: Upper corner
+    \param APos :: Lower corner [output]
+    \param BPos :: Upper corner [output]
    */
 {
   ELog::RegMethod RegA("meshConstruct","calcXYZ");
@@ -144,7 +125,7 @@ meshConstruct::calcXYZ(const objectGroups& OGrp,
 
 
 void
-meshConstruct::getObjectMesh(const objectGroups& OGrp,
+getObjectMesh(const objectGroups& OGrp,
 			     const mainSystem::inputParam& IParam,
 			     const std::string& itemName,
 			     const size_t Index,
@@ -185,7 +166,7 @@ meshConstruct::getObjectMesh(const objectGroups& OGrp,
 }
 
 void
-meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
+getFreeMesh(const mainSystem::inputParam& IParam,
 			   const std::string& itemName,
 			   const size_t Index,
 			   const size_t Offset,
@@ -224,12 +205,12 @@ meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
   Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
   Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
   Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
-  
+
   return;
 }
   
 const std::string& 
-meshConstruct::getDoseConversion()
+getDoseConversion()
   /*!
     Return the dose string  for a mshtr
     Uses the FTD files values [Flux to Dose conversion].
@@ -260,7 +241,7 @@ meshConstruct::getDoseConversion()
 }
 
 const std::string& 
-meshConstruct::getPhotonDoseConversion()
+getPhotonDoseConversion()
   /*!
     Return the dose string  for a mshtr
     Uses the FtD files values. This is the H*(10) values which are higher
@@ -288,13 +269,9 @@ meshConstruct::getPhotonDoseConversion()
 
   return fcdString;
 }
-
-
-
-
   
 void
-meshConstruct::writeHelp(std::ostream& OX) 
+writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream
@@ -309,4 +286,6 @@ meshConstruct::writeHelp(std::ostream& OX)
   return;
 }
 
-}  // NAMESPACE tallySystem
+} // NAMESPACE meshConstruct
+
+}  // NAMESPACE mainSystem

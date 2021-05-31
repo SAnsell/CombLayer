@@ -3,7 +3,7 @@
  
  * File:   tally/tmeshConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,20 +38,9 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -59,21 +48,16 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
 #include "particleConv.h"
 #include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
-#include "TallyCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "tmeshTally.h"
 
-#include "TallySelector.h"
+
+#include "doseFactors.h"
 #include "meshConstruct.h"
 #include "tmeshConstruct.h" 
 
@@ -81,6 +65,9 @@
 
 namespace tallySystem
 {
+
+namespace meshC = mainSystem::meshConstruct;
+namespace doseF = mainSystem::doseFactors;
 
 
 void 
@@ -123,12 +110,12 @@ tmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
     }
   else if (KeyWords=="DOSE")
     {
-      MT.setResponse(getDoseConversion());
+      MT.setResponse(doseF::getDoseConversion());
     }
   else if (KeyWords=="DOSEPHOTON")
     {
       MT.setParticles("p");
-      MT.setResponse(getPhotonDoseConversion());
+      MT.setResponse(doseF::getPhotonDoseConversion());
     }
   else if (KeyWords=="InternalDOSE")
     {
@@ -188,9 +175,9 @@ tmeshConstruct::processMesh(SimMCNP& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object" || PType=="heatObject")
-    getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free" || PType=="heat")
-    getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    meshC::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   if (PType=="heatObject" || PType=="heat")
     rectangleMesh(System,3,"void",APt,BPt,Nxyz);

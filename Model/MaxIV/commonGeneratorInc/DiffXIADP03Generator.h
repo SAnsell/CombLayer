@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/DiffPumpGenerator.h
+ * File:   constructVarInc/DiffXIADP03Generator.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_DiffPumpGenerator_h
-#define setVariable_DiffPumpGenerator_h
+#ifndef setVariable_DiffXIADP03Generator_h
+#define setVariable_DiffXIADP03Generator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class DiffPumpGenerator
+  \class DiffXIADP03Generator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief DiffPumpGenerator for variables
+  \brief DiffXIADP03Generator for variables
 */
 
-class DiffPumpGenerator
+class DiffXIADP03Generator
 {
  private:
     
@@ -61,10 +61,11 @@ class DiffPumpGenerator
 
  public:
 
-  DiffPumpGenerator();
-  DiffPumpGenerator(const DiffPumpGenerator&);
-  DiffPumpGenerator& operator=(const DiffPumpGenerator&);
-  ~DiffPumpGenerator();
+  DiffXIADP03Generator();
+  DiffXIADP03Generator(const CF40&);
+  DiffXIADP03Generator(const DiffXIADP03Generator&);
+  DiffXIADP03Generator& operator=(const DiffXIADP03Generator&);
+  ~DiffXIADP03Generator();
 
   template<typename CF> void setCF();
     

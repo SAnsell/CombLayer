@@ -38,18 +38,11 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "MeshXYZ.h"
 #include "phitsWriteSupport.h"
 
 #include "eType.h"
-#include "aType.h"
 #include "phitsTally.h"
 #include "TMesh.h"
 

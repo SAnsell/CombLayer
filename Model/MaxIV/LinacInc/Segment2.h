@@ -33,12 +33,13 @@ namespace tdcSystem
   class EArrivalMon;
   class YagUnit;
   class YagScreen;
+  class LocalShielding;
 
   /*!
     \class Segment2
-    \version 1.0
+    \version 1.1
     \author S. Ansell
-    \date April 2020
+    \date Feb 2021
     \brief Second segment in the TDC from the linac
   */
 
@@ -90,6 +91,8 @@ class Segment2 :
   std::shared_ptr<tdcSystem::YagUnit> yagUnit;
   /// yag screen
   std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+  /// shielding of the YAG screen camera (the camera is not built)
+  std::shared_ptr<tdcSystem::LocalShielding> shieldA;
 
   void buildObjects(Simulation&);
   void createLinks();

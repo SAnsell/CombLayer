@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,8 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -74,8 +70,6 @@
 #include "LQuadH.h"
 #include "LObjectSupportB.h"
 #include "CorrectorMag.h"
-#include "portItem.h"
-#include "VirtualTube.h"
 #include "IonPumpTube.h"
 
 #include "TDCsegment.h"
@@ -178,10 +172,10 @@ Segment16::createLinks()
 {
   ELog::RegMethod RegA("Segment16","createLinks");
 
-  setLinkSignedCopy(0,*bellowA,1);
-  setLinkSignedCopy(1,*pipeC,2);
+  setLinkCopy(0,*bellowA,1);
+  setLinkCopy(1,*pipeC,2);
 
-  //  setLinkSignedCopy(1,*bellowA,2);
+  //  setLinkCopy(1,*bellowA,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

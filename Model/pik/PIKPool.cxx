@@ -312,12 +312,16 @@ namespace pikSystem
     int SI(buildIndex+100);
     FixedComp::setConnect(0,Origin-Y*(tankRadius[0]),Y);
     FixedComp::setLinkSurf(0,-SMap.realSurf(SI+7));
+    FixedComp::nameSideIndex(0,"side");
 
     FixedComp::setConnect(1,Origin-Z*(tankDepth+baseHeight),Z);
     FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+115));
+    FixedComp::nameSideIndex(1,"floor");
 
     FixedComp::setConnect(2,Origin+Z*(tankHeight),-Z);
     FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+106));
+    FixedComp::nameSideIndex(2,"roof");
+
     return;
   }
 

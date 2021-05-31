@@ -39,8 +39,6 @@
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Exception.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
@@ -48,8 +46,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "LinkUnit.h"
@@ -57,13 +53,10 @@
 #include "FixedRotate.h"
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h"
-#include "InnerZone.h"
 #include "BlockZone.h"
 #include "Simulation.h"
 
@@ -224,7 +217,7 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   const size_t NLink=std::max<size_t>(8,this->NConnect());
   FixedComp::setNConnect(NLink);
   FixedComp::nameSideIndex(6,"Beam");
-  setLinkSignedCopy(6,*this,-1);    // copy surface and correct direction
+  setLinkCopy(6,*this,-1);    // copy surface and correct direction
 
   attachSystem::FixedRotateUnit BPoint(0,"BeamPoint");
   Geometry::Vec3D BeamOrg=this->getLinkPt(1);

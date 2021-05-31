@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 
-#include "Exception.h"
-#include "MapSupport.h"
 
 namespace MapSupport
 {

@@ -74,6 +74,7 @@
 #include "YagUnit.h"
 #include "YagScreen.h"
 #include "Bellows.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -89,6 +90,7 @@ Segment33::Segment33(const std::string& Key) :
   TDCsegment(Key,2),
 
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   cMagHA(new xraySystem::CorrectorMag(keyName+"CMagHA")),
   bpm(new tdcSystem::StriplineBPM(keyName+"BPMA")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
@@ -99,6 +101,7 @@ Segment33::Segment33(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(keyName+"YagScreen")),
   pipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
   cMagVA(new xraySystem::CorrectorMag(keyName+"CMagVA")),
+  shieldB(new tdcSystem::LocalShielding(keyName+"ShieldB")),
   bellow(new constructSystem::Bellows(keyName+"Bellow"))
   /*!
     Constructor
@@ -109,6 +112,7 @@ Segment33::Segment33(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(pipeA);
+  OR.addObject(shieldA);
   OR.addObject(cMagHA);
   OR.addObject(bpm);
   OR.addObject(pipeB);
@@ -119,6 +123,7 @@ Segment33::Segment33(const std::string& Key) :
   OR.addObject(yagScreen);
   OR.addObject(pipeC);
   OR.addObject(cMagVA);
+  OR.addObject(shieldB);
   OR.addObject(bellow);
 
   setFirstItems(pipeA);
@@ -145,6 +150,7 @@ Segment33::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
+  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeTerminate(System,*buildZone,pipeA);
 
@@ -170,6 +176,7 @@ Segment33::buildObjects(Simulation& System)
 
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
+  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",shieldB);
   pipeTerminate(System,*buildZone,pipeC);
 
   outerCell=constructSystem::constructUnit
@@ -184,8 +191,8 @@ Segment33::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*bellow,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*bellow,2);
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

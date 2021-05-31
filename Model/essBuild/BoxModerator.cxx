@@ -36,7 +36,6 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -44,15 +43,7 @@
 #include "objectRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
-#include "Rules.h"
-#include "Plane.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -65,7 +56,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -341,8 +331,8 @@ BoxModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Orign from center
   
-  FixedComp::setLinkSignedCopy(4,*MidH2,5);
-  FixedComp::setLinkSignedCopy(5,*MidH2,6);
+  FixedComp::setLinkCopy(4,*MidH2,5);
+  FixedComp::setLinkCopy(5,*MidH2,6);
   const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
   const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);

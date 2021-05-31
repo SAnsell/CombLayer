@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectTrackPoint.cxx
+ * File:   modelSupport/ObjectTrackPoint.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -31,25 +31,14 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "Rules.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -114,6 +103,7 @@ ObjectTrackPoint::addUnit(const Simulation& System,
   LineTrack A(IPt,TargetPt);
   A.calculate(System);
   Items.insert(std::map<long int,LineTrack>::value_type(objN,A));
+  
   return;
 }  
 

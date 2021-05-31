@@ -35,23 +35,10 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Track.h"
-#include "Surface.h"
 #include "Rules.h"
 #include "Token.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 
 Union::Union() : 
   Rule(),A(0),B(0)
@@ -318,20 +305,42 @@ Union::isValid(const Geometry::Vec3D& Vec,const int ExSN) const
 }
 
 bool
-Union::isDirectionValid(const Geometry::Vec3D& Vec,
+Union::isDirectionValid(const Geometry::Vec3D& Pt,
 			const int ExSN) const
   /*!
     Calculates if Vec is within the object
-    \param Vec :: Point to test
+    \param Pt :: Point to test
     \param ExSN :: Excluded surface number [signed]
     \retval 1 ::  Vec is within object 
     \retval 0 :: Vec is outside object.
   */
 {
-  if (!A || !B)
-    return 0;
-  return (A->isDirectionValid(Vec,ExSN) || 
-	  B->isDirectionValid(Vec,ExSN)) ? 1 : 0;
+  if (!A && !B)  return 0;
+  if (!A)  return B->isDirectionValid(Pt,ExSN);
+  if (!B)  return A->isDirectionValid(Pt,ExSN);
+  return (A->isDirectionValid(Pt,ExSN) || 
+	  B->isDirectionValid(Pt,ExSN)) ? 1 : 0;
+}
+
+bool
+Union::isDirectionValid(const Geometry::Vec3D& Pt,
+			const std::set<int>& sideSet,
+			const int ExSN) const
+  /*!
+    Calculates if Vec is within the object
+    \param Pt :: Point to test
+    \param sideSet : surface which we consider Pt to be on 
+     so their sign is to help validity
+    \param ExSN :: Excluded surface number [signed]
+    \retval 1 ::  Vec is within object 
+    \retval 0 :: Vec is outside object.
+  */
+{
+  if (!A && !B)  return 0;
+  if (!A)  return B->isDirectionValid(Pt,sideSet,ExSN);
+  if (!B)  return A->isDirectionValid(Pt,sideSet,ExSN);
+  return (A->isDirectionValid(Pt,ExSN) || 
+	  B->isDirectionValid(Pt,ExSN)) ? 1 : 0;
 }
 
 bool

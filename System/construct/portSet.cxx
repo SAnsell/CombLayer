@@ -3,7 +3,7 @@
  
  * File:   construct/portSet.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,49 +36,34 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Line.h"
-#include "Plane.h"
 #include "Cylinder.h"
 #include "SurInter.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SurfMap.h"
-#include "ExternalCut.h"
-#include "FrontBackCut.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "portItem.h"
 #include "doublePortItem.h"
@@ -88,7 +73,9 @@ namespace constructSystem
 {
 
 portSet::portSet(attachSystem::FixedComp& FC)  :
-  FUnit(FC)
+  FUnit(FC),
+  cellPtr(dynamic_cast<attachSystem::CellMap*>(&FC)),
+  outerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -118,56 +105,19 @@ portSet::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,CT,LExt,RB;
-  int WMat,CMat,VMat;
-  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
+      
       const std::string portName=portBase+std::to_string(i);
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-      
-      L=Control.EvalTail<double>(portName,portBase,"Length");
-      R=Control.EvalTail<double>(portName,portBase,"Radius");
-      W=Control.EvalTail<double>(portName,portBase,"Wall");
-      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
-
-      VMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"VoidMat",portBase+"VoidMat",0);
-      WMat=ModelSupport::EvalMat<int>
-	(Control,portName+"WallMat",portBase+"WallMat");
-      CMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",WMat);
-
-      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
-      // Key two variables to get a DoublePort:
-      LExt=Control.EvalDefTail<double>
-	(portName,portBase,"ExternPartLength",-1.0);      
-      RB=Control.EvalDefTail<double>
-	(portName,portBase,"RadiusB",-1.0);      
 
       std::shared_ptr<portItem> windowPort;
-
-      if (LExt>Geometry::zeroTol && RB>R+Geometry::zeroTol)
-	{
-	  std::shared_ptr<doublePortItem> doublePort
-	    =std::make_shared<doublePortItem>(portName);
-	  doublePort->setLarge(LExt,RB);
-	  windowPort=doublePort;
-	}
-      else
-	windowPort=std::make_shared<portItem>(portName);
-
-      if (OFlag) windowPort->setWrapVolume();
-      windowPort->setMain(L,R,W);
-      windowPort->setFlange(FR,FT);
-      windowPort->setCoverPlate(CT,CMat);
-      windowPort->setMaterial(VMat,WMat);
-
+      windowPort=std::make_shared<portItem>(portBase,portName);
+      windowPort->populate(Control);
+      
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
@@ -260,49 +210,6 @@ portSet::intersectVoidPorts(Simulation& System,
 
 
 
-Geometry::Vec3D
-portSet::calcCylinderDistance(const size_t pIndex,const double R) const
-  /*!
-    Calculate the shift vector
-    \param pIndex :: Port index [0-NPorts]
-    \param pIndex :: Port index [0-NPorts]
-    \return the directional vector from the port origin
-    to the pipetube surface
-
-   */
-{
-  ELog::RegMethod RegA("portSet","calcCylinderDistance");
-  
-  if (pIndex>Ports.size())
-    throw ColErr::IndexError<size_t>
-      (pIndex,Ports.size(),"PI exceeds number of Ports");
-
-  const Geometry::Vec3D& X=FUnit.getX();
-  const Geometry::Vec3D& Y=FUnit.getY();
-  const Geometry::Vec3D& Z=FUnit.getZ();
-  
-  // No Y point so no displacement
-  const Geometry::Vec3D PC=
-    X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
-  const Geometry::Vec3D PA=
-    X*PAxis[pIndex].X()+Y*PAxis[pIndex].Y()+Z*PAxis[pIndex].Z();
-
-  const Geometry::Line CylLine(Geometry::Vec3D(0,0,0),Y);
-  const Geometry::Line PortLine(PC,PA);
-
-  Geometry::Vec3D CPoint;
-  std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
-  // calc external impact point:
-  
-  //  const double R=radius+wallThick;
-  const double ELen=Ports[pIndex]->getExternalLength();
-  const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
-  
-  const Geometry::Vec3D RPoint=
-    SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
-
-  return RPoint-PA*ELen - PC*2.0;
-}
 
 template<typename T>
 int
@@ -468,8 +375,22 @@ portSet::splitVoidPorts(Simulation& System,
 }
 
 void
+portSet::insertAllInCell(MonteCarlo::Object& outerObj) const
+  /*!
+    Overload of containdGroup so that the ports can also 
+    be inserted if needed
+    \param outerObj :: Cell for insertion
+  */
+{
+  //  ContainedGroup::insertAllInCell(System,cellN);
+  for(const std::shared_ptr<portItem>& PC : Ports)
+    PC->insertInCell(outerObj);
+  return;
+}
+
+void
 portSet::insertAllInCell(Simulation& System,
-			 const int cellN)
+			 const int cellN) const
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -485,7 +406,7 @@ portSet::insertAllInCell(Simulation& System,
 
 void
 portSet::insertAllInCell(Simulation& System,
-			 const std::vector<int>& cellVec)
+			 const std::vector<int>& cellVec) const
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
@@ -502,7 +423,7 @@ portSet::insertAllInCell(Simulation& System,
 
 void
 portSet::insertPortInCell(Simulation& System,
-			  const std::vector<std::set<int>>& cellVec)
+			  const std::vector<std::set<int>>& cellVec) const
   /*!
     Allow ports to be intersected into arbitary cell list
     \param System :: Simulation to use    
@@ -523,11 +444,15 @@ portSet::insertPortInCell(Simulation& System,
 
 void
 portSet::createPorts(Simulation& System,
-		     const std::vector<int>& CCVec)
+		     MonteCarlo::Object* insertObj,
+		     const HeadRule& innerSurf,
+		     const HeadRule& outerSurf)
   /*!
     Simple function to create ports
     \param System :: Simulation to use
     \param CC :: Insert cells [from CC.getInsertCell()]			
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
    */
 {
   ELog::RegMethod RegA("portSet","createPorts");
@@ -535,14 +460,55 @@ portSet::createPorts(Simulation& System,
   populate(System.getDataBase());
   for(size_t i=0;i<Ports.size();i++)
     {
-      for(const int CN : CCVec)
-	  Ports[i]->addOuterCell(CN);
-
+      
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
 
       Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System);
+      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+
+      Ports[i]->insertObjects(System);
+    }
+  return;
+}
+
+void
+portSet::createPorts(Simulation& System,
+		     const std::string& cellName)
+
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param cellName :: Main cell nabe
+  */
+{
+  ELog::RegMethod RegA("portSet","createPorts");
+
+  ELog::EM<<"CAlling very inefficient code"<<ELog::endDiag;
+  ELog::EM<<"Fix objectHR.complement() nb"<<ELog::endCrit;
+  populate(System.getDataBase());
+  MonteCarlo::Object* insertObj= (cellPtr) ? 
+    cellPtr->getCellObject(System,cellName) : nullptr;
+
+  if (!insertObj)
+    throw ColErr::InContainerError<std::string>
+      (cellName,"Cell not present in "+FUnit.getKeyName());
+  
+  const HeadRule& objectHR= insertObj->getHeadRule();
+
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      Ports[i]->setWrapVolume();
+      Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
+      Ports[i]->constructTrack(System,insertObj,objectHR,objectHR.complement());
+      
+      for(const int CN : portCells)
+	Ports[i]->addInsertCell(CN);
+      //      Ports[i]->addInsertCell(insertObj->getName());
+      
+      Ports[i]->insertObjects(System);
     }
   return;
 }

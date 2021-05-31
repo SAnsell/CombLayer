@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -96,8 +95,8 @@ softimaxFrontEnd::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*undulator,1);
-  setLinkSignedCopy(1,*lastComp,2);
+  setLinkCopy(0,*undulator,1);
+  setLinkCopy(1,*lastComp,2);
   return;
 }
 

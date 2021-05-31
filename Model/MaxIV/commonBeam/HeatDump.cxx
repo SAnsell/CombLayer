@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HeatDump.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,45 +33,29 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "HeatDump.h"
@@ -271,7 +255,6 @@ HeatDump::createSurfaces()
   // bellows flange
   const double BL((upFlag) ? bellowLength+lift : bellowLength);
 
-    
   ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin+Y*(topFlangeLength+BL),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,

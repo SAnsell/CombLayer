@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -65,7 +58,7 @@ EBeamStopGenerator::EBeamStopGenerator() :
   portWallThick(CF40_22::innerRadius),
   portFlangeRadius(CF40_22::flangeRadius),
   portFlangeLength(CF40_22::flangeLength),
-  stopRadius(5.4),stopLength(35.7),stopZLift(6.1),    
+  stopRadius(5.4),stopLength(35.7),stopZLift(6.1),
   stopLen({32.0}),
   supportConeLen(5.6),supportConeRadius(2.7),
   supportHoleRadius(0.5),supportRadius(2.0),
@@ -85,7 +78,24 @@ EBeamStopGenerator::EBeamStopGenerator() :
   flangeMat("Stainless304L"),
   supportMat("Stainless304L"),
   plateMat("Stainless304L"),
-  outerMat("Void")
+  outerMat("Void"),
+  shieldActive(false),
+  shieldInnerMat("Lead"),
+  shieldOuterMat("Poly"),
+  shieldRoofPlateMat("Stainless316L"),
+  shieldLength(80.0), // floor is 81
+  shieldWidth(50.0),
+  shieldHeight(29.25),
+  shieldDepth(28.25),
+  shieldInnerFloorThick(5.0),
+  shieldInnerRoofThick(10.0),
+  shieldInnerSideThick(10.0),
+  shieldSideHoleWidth(10.0),
+  shieldSideHoleHeight(10.0),
+  shieldOuterFloorThick(1.0),
+  shieldOuterSideThick(5.0),
+  shieldOuterRoofThick(5.0),
+  shieldRoofPlateThick(0.5)
   /*!
     Constructor and defaults
   */
@@ -112,7 +122,7 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
   ELog::RegMethod RegA("EBeamStopGenerator","generateEBeamStop");
 
   Control.addVariable(keyName+"Closed",static_cast<size_t>(closedFlag));
-  
+
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Height",height);
@@ -144,20 +154,38 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
   Control.addVariable(keyName+"StopPortFlangeLength",stopPortFlangeLength);
   Control.addVariable(keyName+"StopPortPlateThick",stopPortPlateThick);
 
- Control.addVariable(keyName+"IonPortYStep",ionPortYStep);
- Control.addVariable(keyName+"IonPortRadius",ionPortRadius);
- Control.addVariable(keyName+"IonPortLength",ionPortLength);
- Control.addVariable(keyName+"IonPortWallThick",ionPortWallThick);
- Control.addVariable(keyName+"IonPortFlangeRadius",ionPortFlangeRadius);
- Control.addVariable(keyName+"IonPortFlangeLength",ionPortFlangeLength);
- Control.addVariable(keyName+"IonPortPlateThick",ionPortPlateThick);
+  Control.addVariable(keyName+"IonPortYStep",ionPortYStep);
+  Control.addVariable(keyName+"IonPortRadius",ionPortRadius);
+  Control.addVariable(keyName+"IonPortLength",ionPortLength);
+  Control.addVariable(keyName+"IonPortWallThick",ionPortWallThick);
+  Control.addVariable(keyName+"IonPortFlangeRadius",ionPortFlangeRadius);
+  Control.addVariable(keyName+"IonPortFlangeLength",ionPortFlangeLength);
+  Control.addVariable(keyName+"IonPortPlateThick",ionPortPlateThick);
 
- Control.addVariable(keyName+"VoidMat",voidMat);
- Control.addVariable(keyName+"WallMat",wallMat);
- Control.addVariable(keyName+"SupportMat",supportMat);
- Control.addVariable(keyName+"FlangeMat",flangeMat);
- Control.addVariable(keyName+"PlateMat",plateMat);
- Control.addVariable(keyName+"OuterMat",outerMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
+  Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"OuterMat",outerMat);
+
+  Control.addVariable(keyName+"ShieldActive",static_cast<int>(shieldActive));
+  Control.addVariable(keyName+"ShieldInnerMat",shieldInnerMat);
+  Control.addVariable(keyName+"ShieldOuterMat",shieldOuterMat);
+  Control.addVariable(keyName+"ShieldRoofPlateMat",shieldRoofPlateMat);
+  Control.addVariable(keyName+"ShieldLength",shieldLength);
+  Control.addVariable(keyName+"ShieldWidth",shieldWidth);
+  Control.addVariable(keyName+"ShieldHeight",shieldHeight);
+  Control.addVariable(keyName+"ShieldDepth",shieldDepth);
+  Control.addVariable(keyName+"ShieldInnerFloorThick",shieldInnerFloorThick);
+  Control.addVariable(keyName+"ShieldInnerRoofThick",shieldInnerRoofThick);
+  Control.addVariable(keyName+"ShieldInnerSideThick",shieldInnerSideThick);
+  Control.addVariable(keyName+"ShieldSideHoleWidth",shieldSideHoleWidth);
+  Control.addVariable(keyName+"ShieldSideHoleHeight",shieldSideHoleHeight);
+  Control.addVariable(keyName+"ShieldOuterFloorThick",shieldOuterFloorThick);
+  Control.addVariable(keyName+"ShieldOuterSideThick",shieldOuterSideThick);
+  Control.addVariable(keyName+"ShieldOuterRoofThick",shieldOuterRoofThick);
+  Control.addVariable(keyName+"ShieldRoofPlateThick",shieldRoofPlateThick);
 
  const size_t NS(stopLen.size());
  Control.addVariable(keyName+"StopNLen",NS);
@@ -168,7 +196,7 @@ EBeamStopGenerator::generateEBeamStop(FuncDataBase& Control,
      Control.addVariable(keyName+"StopMat"+nStr,stopMat[i]);
    }
  Control.addVariable(keyName+"StopMat"+std::to_string(NS),stopMat[NS]);
- 
+
  return;
 
 }

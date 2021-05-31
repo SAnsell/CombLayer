@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userDumpConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,37 +38,20 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "Rules.h"
-#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinkSupport.h"
 #include "inputParam.h"
 
 #include "SimFLUKA.h"
-#include "particleConv.h"
-#include "TallySelector.h"
-#include "meshConstruct.h"
 #include "flukaTally.h"
 #include "userDump.h"
 #include "userDumpConstruct.h" 
-
 
 namespace flukaSystem
 {
@@ -88,7 +71,7 @@ userDumpConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userDumpConstruct","createTally");
 
-  userDump UD(fortranTape);
+  userDump UD(fortranTape,fortranTape);
   UD.setDumpType(dType);
   UD.setOutName(outFile);
   System.addTally(UD);

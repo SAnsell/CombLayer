@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,8 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -70,14 +66,10 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "StriplineBPM.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 #include "IonPumpTube.h"
 
-#include "LObjectSupport.h"
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
 #include "Segment1.h"
@@ -198,12 +190,12 @@ Segment1::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*pipeA,1);
-  setLinkSignedCopy(1,*pumpA,2);
+  setLinkCopy(0,*pipeA,1);
+  setLinkCopy(1,*pumpA,2);
 
     //  const constructSystem::portItem& VPB=pumpA->getPort(1);
 
-  // setLinkSignedCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
+  // setLinkCopy(1,VPB,VPB.getSideIndex("OuterPlate"));
 
   joinItems.push_back(FixedComp::getFullRule(2));
   return;

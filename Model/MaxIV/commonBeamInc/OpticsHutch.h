@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   balderInc/bladerOpticsHutch.h
+ * File:   commonBeamInc/bladerOpticsHutch.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -61,6 +61,11 @@ class OpticsHutch :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
+  double innerOutVoid;          ///< Extension for inner left void space
+  double outerOutVoid;          ///< Extension for outer left void space
+  double extension;             ///< Extension for void behind back wall
+
+  
   double inletXStep;            ///< Inlet XStep
   double inletZStep;            ///< Inlet ZStep
   double inletRadius;           ///< Inlet radius
@@ -71,6 +76,7 @@ class OpticsHutch :
 
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls
+  int concreteMat;            ///< side wall (concrete filler)
   int voidMat;                ///< Void material
 
   double beamTubeRadius;      ///< Void to construct components in

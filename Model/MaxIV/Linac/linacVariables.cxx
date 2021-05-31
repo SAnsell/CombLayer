@@ -3,7 +3,7 @@
 
  * File:   linac/linacVariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2021 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,8 @@
 #include "IonPTubeGenerator.h"
 #include "GaugeGenerator.h"
 #include "LBeamStopGenerator.h"
+#include "LocalShieldingGenerator.h"
+#include "SPFCameraShieldGenerator.h"
 
 namespace setVariable
 {
@@ -234,7 +236,7 @@ setIonPump3OffsetPort(FuncDataBase& Control,const std::string& name)
 
   SimpleTubeGen.setCapMat("Stainless304L");
   SimpleTubeGen.setCap(1,1);
-  SimpleTubeGen.generateTube(Control,name,0.0,fullLen);
+  SimpleTubeGen.generateTube(Control,name,fullLen);
 
   Control.addVariable(name+"NPorts",3);
   Control.addVariable(name+"YAngle",180.0);
@@ -285,7 +287,7 @@ setPrismaChamber(FuncDataBase& Control,
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   SimpleTubeGen.setMat("Stainless304L");
-  SimpleTubeGen.generateBlank(Control,name,0.0,33.2); // measured
+  SimpleTubeGen.generateBlank(Control,name,33.2); // measured
   Control.addVariable(name+"Radius",15.0); // measured
   Control.addVariable(name+"WallThick",0.2); // measured
   Control.addVariable(name+"BlankThick",0.8);  // measured
@@ -665,6 +667,7 @@ Segment2(FuncDataBase& Control,
 
   setCylGateValve(Control,lKey+"Gate", 180.0, false);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeC",31.5); // No_2_00.pdf
 
   EArrGen.generateMon(Control,lKey+"BeamArrivalMon",0.0);
@@ -675,6 +678,7 @@ Segment2(FuncDataBase& Control,
 
   BPMGen.generateBPM(Control,lKey+"BPMB",0.0);
 
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeE",133.4); // No_2_00.pdf
   Control.addVariable(lKey+"PipeEYAngle",90.0);
 
@@ -685,6 +689,11 @@ Segment2(FuncDataBase& Control,
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
+
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(40.0,10.0,15.0); // 62.jpg
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",-50.0); // approx
 
   return;
 }
@@ -742,6 +751,29 @@ Segment3(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowB",7.5);
   Control.addVariable(lKey+"BellowBXYAngle",1.6);
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/bc2/pictures-from-josefine/63.jpg/view
+  // There are 7x4-8=28-8=20 bricks of 10 cm length
+  // and 8 bricks of 15 cm length
+  // in total there are 20+8 = 28 bricks
+  // averge length is 10.0*20.0/28.0+15.0*8.0/28.0 = 11.428571 cm
+  const double shieldALength(11.428571);
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(shieldALength,80,35.0);
+  LSGen.setMidHole(3.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAZStep",10.0); // center of the 2nd tier bricks
+  Control.addVariable(lKey+"ShieldAYStep",80.0); // approx
+
+  const double shieldBLength(10.0);
+  const double shieldBWidth(140.0);
+  LSGen.setSize(shieldBLength,shieldBWidth,35.0); // email from JR 210120
+  LSGen.setMidHole(0.0, 0.0);
+  LSGen.setCorner(120, 5.0, "right");
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",shieldBLength/2.0);
+  Control.addVariable(lKey+"ShieldBXStep",(shieldALength-shieldBWidth)/2.0);
+
   return;
 }
 
@@ -774,10 +806,12 @@ Segment4(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",67.0); // No_4_00.pdf
 
   BPMGen.generateBPM(Control,lKey+"BPMA",0.0);
 
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeB",80.2); // No_4_00.pdf
 
   LQGen.generateQuad(Control,lKey+"QuadA",19.7); // No_4_00.pdf
@@ -785,7 +819,7 @@ Segment4(FuncDataBase& Control,
   LQGen.generateQuad(Control,lKey+"QuadB",61.7); // No_4_00.pdf
 
   YagUnitGen.generateYagUnit(Control,lKey+"YagUnit");
-  Control.addVariable(lKey+"YagUnitYAngle",90.0);
+  Control.addVariable(lKey+"YagUnitYAngle",-90.0);
 
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0);   // closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
@@ -796,6 +830,11 @@ Segment4(FuncDataBase& Control,
 
   CMGen.generateMag(Control,lKey+"CMagHA",14,1);
   CMGen.generateMag(Control,lKey+"CMagVA",34,0);
+
+  setVariable::LocalShieldingGenerator LocalShieldingGen;
+  LocalShieldingGen.setSize(40.0,10.0,15.0); // 64.jpg
+  LocalShieldingGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",-50.0); // approx
 
   return;
 }
@@ -848,6 +887,7 @@ Segment6(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setMat("Stainless316L");
   PGen.setNoWindow();
+  PGen.setOuterVoid();
 
   PGen.generatePipe(Control,lKey+"PipeA",61.7);
 
@@ -861,14 +901,27 @@ Segment6(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setAFlangeCF<setVariable::CF66_TDC>();
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeD",20.0);
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicA");
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
 
   CSGen.generateCeramicGap(Control,lKey+"CeramicB");
 
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(20.0,25,20.0);
+  LSGen.setMidHole(15.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAOption","SideOnly");
+
+  LSGen.setSize(5.0,25,20.0);
+  LSGen.setMidHole(5.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",5.0); // approx
+  Control.addVariable(lKey+"ShieldBOption","SideOnly");
 
   return;
 }
@@ -939,9 +992,11 @@ Segment8(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowA",7.5);
 
   EBGen.generateEBeamStop(Control,lKey+"EBeam",0);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
 
   setBellow26(Control,lKey+"BellowB",7.5);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",308.5);
 
 
@@ -1046,14 +1101,28 @@ Segment10(FuncDataBase& Control,
   const double yAngle(-90.0);
   setIonPump2Port(Control, lKey+"PumpA",yAngle);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeB",152.1);
   Control.addVariable(lKey+"PipeBYAngle", -yAngle);
   setBellow26(Control,lKey+"BellowB",7.5);
 
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeC",126.03);
 
   LQGen.generateQuad(Control,lKey+"QuadA",33.8);
   CMGen.generateMag(Control,lKey+"CMagVA",115.23,1);
+
+  // Local shielding
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(10.0,40.0,30.0);
+  LSGen.setMidHole(5.0, 5.0); // guess
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",7.0);
+
+  LSGen.setSize(5.0,20.0,10.0);
+  LSGen.setMidHole(0.0, 0.0);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",2.5);
 
   return;
 }
@@ -1102,8 +1171,19 @@ Segment11(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeB",154.47);
+  Control.addVariable(lKey+"PipeBYAngle",-90.0);
 
-  CMGen.generateMag(Control,lKey+"CMagHA",10.0,1);
+  CMGen.generateMag(Control,lKey+"CMagHA",10.0,0);
+
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5404.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  ShieldGen.setSize(10,60,25);
+  ShieldGen.setMidHole(2.5,5.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",47.0);
+  Control.addVariable(lKey+"ShieldAZStep",5.0);
+
   return;
 }
 
@@ -1147,6 +1227,18 @@ Segment12(FuncDataBase& Control,
   Control.addVariable(lKey+"XYAngle",XYAngle);
 
   Segment12Magnet(Control,lKey);
+
+  // Placeholder for the local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5409.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // max length is 22 cm [img_5422]
+  // max width is 86 cm [img_5428]
+  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHole(10.0,4.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",17.0); // IMG_5423.JPG
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
 
   return;
 }
@@ -1199,6 +1291,21 @@ Segment13(FuncDataBase& Control,
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
   CMGen.generateMag(Control,lKey+"CMagVA",11,1);
+
+  // Placeholder for the local shielding wall
+  // Part of SPF30ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/tdc/img_5421.jpg/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // max length is 14 cm [img_5420]
+  // max width is 105 cm [img_5429]
+  ShieldGen.setSize(10,40,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHole(4.0,4.0); // dummy
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",25.0); // IMG_5421.JPG
+  Control.addVariable(lKey+"ShieldAXStep",7.5); // to avoid cutting SPF30
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+
   return;
 }
 
@@ -1238,6 +1345,7 @@ Segment14(FuncDataBase& Control,
   DIBGen.generate(Control,lKey+"DipoleA");
 
   PGen.setMat("Stainless316L","Stainless304L");
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeB",94.4); // No_14_00.pdf
   Control.addVariable(lKey+"PipeBXYAngle",-1.6); // No_14_00.pdf
 
@@ -1294,7 +1402,21 @@ Segment15(FuncDataBase& Control,
   YagScreenGen.generateScreen(Control,lKey+"YagScreen",0); // 1=closed
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeB",167.0);
+
+  // Placeholder for the local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_????.mp4/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // max length is 14 cm [img_5426.jpg]
+  // max width is 91 cm [img_5430.jpg]
+  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHole(10.0,4.0); // dummy
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",11.0); // img_5427.jpg
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+
 
   return;
 }
@@ -1353,6 +1475,7 @@ Segment16(FuncDataBase& Control,
 
   setIonPump2Port(Control,lKey+"IonPump",0.0);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeC",126.03); // measured
 
   return;
@@ -1380,6 +1503,7 @@ Segment17(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",391.23); // No_17_00.pdf
 
   setBellow26(Control,lKey+"BellowA",7.5);
@@ -1702,12 +1826,14 @@ Segment24(FuncDataBase& Control,
   Control.addVariable(lKey+"EndOffset",endPt+linacVar::zeroOffset);
   Control.addVariable(lKey+"XYAngle",0.0);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",325.8);
 
   setIonPump2Port(Control,lKey+"IonPump",0.0);
 
   setBellow26(Control,lKey+"Bellow",7.5);
 
+  PGen.setOuterVoid(0);
   PGen.generatePipe(Control,lKey+"PipeB",40.0);
 
   CMGen.generateMag(Control,lKey+"CMagHA",10.0,0);
@@ -1790,6 +1916,8 @@ Segment25(FuncDataBase& Control,
   PGen.setBFlangeCF<CF150>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid();
+
   PGen.generatePipe(Control,lKey+"PipeB",23.499); // No_25_00
   Control.addVariable(lKey+"PipeBRadius",5.0); // No_25_00
   Control.addVariable(lKey+"PipeBFeThick",0.2); // No_25_00
@@ -1846,6 +1974,7 @@ Segment26(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8180.263,-37.887);
   const Geometry::Vec3D endPtC(-637.608,8169.632,-73.976);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
@@ -1870,14 +1999,13 @@ Segment26(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeBA",322.098);
   PGen.generatePipe(Control,lKey+"PipeCA",326.897);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"PipeCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
-  Control.addVariable(lKey+"PipeBAXAngle",
-		      std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI);
+  const double pipeBAXAngle = std::asin((endPtB-startPtB).unit()[2])*180.0/M_PI;
+  Control.addVariable(lKey+"PipeBAXAngle", pipeBAXAngle);
   Control.addVariable(lKey+"PipeCAXAngle",
 		      std::asin((endPtC-startPtC).unit()[2])*180.0/M_PI);
 
@@ -1898,9 +2026,24 @@ Segment26(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenBYAngle",-90.0);
 
   PGen.setCF<CF40>();
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeAB",217.2);
   PGen.generatePipe(Control,lKey+"PipeBB",210.473);
   PGen.generatePipe(Control,lKey+"PipeCB",222.207);
+
+  // Local shielding walls
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // SPF26ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/tdc/img_5443.jpg/view
+  // max length is 14 cm [img_5444.jpg]
+  // max width is 99 cm [img_5445.jpg]
+  // max height is 58 cm [img_5448.jpg]
+  ShieldGen.setSize(14,99.0,58); // max dimensions
+  ShieldGen.setMidHole(5.0,29.0); // approx
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",20.0); // approx
+  Control.addVariable(lKey+"ShieldAZStep",5.0); // approx
+  Control.addVariable(lKey+"ShieldAXAngle",-pipeBAXAngle);
 
   return;
 }
@@ -1929,6 +2072,7 @@ Segment27(FuncDataBase& Control,
   const Geometry::Vec3D endPtB(-637.608,8458.379,-52.649);
   const Geometry::Vec3D endPtC(-637.608,8442.393,-101.956);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetC",startPtC+linacVar::zeroOffset);
@@ -1948,14 +2092,15 @@ Segment27(FuncDataBase& Control,
   PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid();
 
   setBellow37(Control,lKey+"BellowAA",16.0);
   setBellow37(Control,lKey+"BellowBA",16.0);
   setBellow37(Control,lKey+"BellowCA",16.0);
 
-  Control.addVariable(lKey+"BellowAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowBAOffset",startPtB+linacVar::zeroOffset);
-  Control.addVariable(lKey+"BellowCAOffset",startPtC+linacVar::zeroOffset);
+  Control.addVariable(lKey+"BellowAAOffset");
+  Control.addVariable(lKey+"BellowBAOffset",startPtB-startPtA);
+  Control.addVariable(lKey+"BellowCAOffset",startPtC-startPtA);
 
   Control.addVariable(lKey+"BellowAAXAngle",
 		      std::asin((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2017,10 +2162,10 @@ Segment28(FuncDataBase& Control,
   const Geometry::Vec3D startPtA(-637.608,8458.411,0.0);
   const Geometry::Vec3D startPtB(-637.608,8458.379,-52.649);
 
-
   const Geometry::Vec3D endPtA(-637.608,9073.611,0.0);
   const Geometry::Vec3D endPtB(-637.608,9073.535,-84.888);
 
+  Control.addVariable(lKey+"Offset",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetA",startPtA+linacVar::zeroOffset);
   Control.addVariable(lKey+"OffsetB",startPtB+linacVar::zeroOffset);
 
@@ -2036,12 +2181,12 @@ Segment28(FuncDataBase& Control,
   PGen.setCF<CF35_TDC>();
   PGen.setNoWindow();
   PGen.setMat("Stainless304L");
+  PGen.setOuterVoid();
 
   PGen.generatePipe(Control,lKey+"PipeAA",291.6);
   PGen.generatePipe(Control,lKey+"PipeBA",292.0);
 
-  Control.addVariable(lKey+"PipeAAOffset",startPtA+linacVar::zeroOffset);
-  Control.addVariable(lKey+"PipeBAOffset",startPtB+linacVar::zeroOffset);
+  Control.addVariable(lKey+"PipeBAOffset",startPtB-startPtA);
 
   Control.addVariable(lKey+"PipeAAXAngle",
 		      std::atan((endPtA-startPtA).unit()[2])*180.0/M_PI);
@@ -2121,6 +2266,20 @@ Segment30(FuncDataBase& Control,
   PGen.generatePipe(Control,lKey+"PipeB",511.23);
   CMGen.generateMag(Control,lKey+"CMagVA",500.13,0);
 
+  // Placeholder for the local shielding wall
+  // Part of L2SPF13ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/tdc/img_5421.jpg/view
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // max length is 14 cm [img_5420]
+  ShieldGen.setSize(10,30,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setMidHole(4.0,4.0); // dummy
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",9.2); // IMG_5421.JPG
+  Control.addVariable(lKey+"ShieldAXStep",-10.0); // to avoid cutting SPF30
+  Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
+  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+
+
   return;
 }
 
@@ -2190,6 +2349,7 @@ Segment31(FuncDataBase& Control,
   IonTGen.generateTube(Control,lKey+"IonPumpB");
   Control.addVariable(lKey+"IonPumpBYAngle",-90.0);
 
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeC",55.7);
 
   setBellow26(Control,lKey+"BellowD",7.5);
@@ -2268,9 +2428,26 @@ Segment33(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenYAngle",-90.0);
 
   PGen.generatePipe(Control,lKey+"PipeC",68.7);
-  CMGen.generateMag(Control,lKey+"CMagVA",11.0,0);
+  Control.addVariable(lKey+"PipeCYAngle",90.0);
+  CMGen.generateMag(Control,lKey+"CMagVA",11.0,1);
 
   setBellow26(Control,lKey+"Bellow",7.5);
+
+  // Local shielding walls
+  setVariable::LocalShieldingGenerator ShieldGen;
+  // SPF33ShieldA
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5388.mp4/view
+  ShieldGen.setSize(10,80,35);
+  ShieldGen.setMidHole(3.0,5.0);
+  ShieldGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",14.0);
+
+  // SPF33ShieldB
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5433.jpg/view
+  ShieldGen.setSize(10,60,20);
+  ShieldGen.setMidHole(3.0,5.0);
+  ShieldGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBYStep",40.0);
 
   return;
 }
@@ -2350,6 +2527,7 @@ Segment35(FuncDataBase& Control,
   setMirrorChamberBlank(Control, lKey+"MirrorChamber",-90.0);
 
   PGen.setCF<setVariable::CF37_TDC>();
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeC",12.6);
   Control.addVariable(lKey+"PipeCFeMat", "Stainless304L");
 
@@ -2390,6 +2568,7 @@ Segment36(FuncDataBase& Control,
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",146.84);
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeB",98.69);
   PGen.generatePipe(Control,lKey+"PipeC",30.0);
   PGen.generatePipe(Control,lKey+"PipeD",33.3);
@@ -2458,6 +2637,7 @@ Segment37(FuncDataBase& Control,
   PGen.setCF<setVariable::CF18_TDC>();
   PGen.setNoWindow();
 
+  PGen.setOuterVoid();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.generatePipe(Control,lKey+"Pipe",20.26);
 
@@ -2486,6 +2666,7 @@ Segment38(FuncDataBase& Control,
   PGen.setCF<setVariable::CF16_TDC>();
   PGen.setMat("Aluminium","Aluminium");
   PGen.setNoWindow();
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeA",285.0); // No_38_00
   Control.addVariable(lKey+"PipeAFeThick",0.2);
   PGen.setCF<setVariable::CF34_TDC>();
@@ -2539,6 +2720,7 @@ Segment39(FuncDataBase& Control,
   // Pipe
   setVariable::PipeGenerator PGen;
   PGen.setCF<setVariable::CF40_22>();
+  PGen.setOuterVoid();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"Pipe",37.05);
@@ -2613,6 +2795,7 @@ Segment41(FuncDataBase& Control,
   // Pipe
   setVariable::PipeGenerator PGen;
   PGen.setCF<setVariable::CF18_TDC>();
+  PGen.setOuterVoid();
   PGen.setMat("Stainless316L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"Pipe",38.05);
@@ -2754,13 +2937,13 @@ Segment44(FuncDataBase& Control,const std::string& lKey)
   // 267.75 / 168.0
   TGGen.setBend(313.40,110.4,58.46);
   TGGen.generateTri(Control,lKey+"TriBend");
-  Control.addVariable(lKey+"TriBendMidFlangeRadius",4.0); // \todo: UGLY FIX to avoid clipping with the bended pipe
+  // \todo: UGLY FIX to avoid clipping with the bended pipe:
+  Control.addVariable(lKey+"TriBendMidFlangeRadius",4.0);
 
   CMagGen.generateMag(Control,lKey+"CMag");
   Control.addVariable(lKey+"CMagYStep",9.0);
   Control.addVariable(lKey+"CMagZStep",-22.8);
   Control.addVariable(lKey+"CMagXAngle",16.0);
-
 
   return;
 }
@@ -2800,6 +2983,7 @@ Segment45(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
+  PGen.setOuterVoid();
 
   CSGen.generateCeramicGap(Control,lKey+"Ceramic");
 
@@ -2814,11 +2998,22 @@ Segment45(FuncDataBase& Control,
   Control.addVariable(lKey+"YagScreenZStep",-3.3);
 
   PGen.setCF<setVariable::CF66_TDC>();
-  PGen.generatePipe(Control,lKey+"PipeB",145.0); // orig: 160.0 but goes out from InjectionHall
+  PGen.generatePipe(Control,lKey+"PipeB",160.0);
 
   FPGen.setCF<setVariable::CF63>(YagUnitGen.getPortRadius());
   FPGen.setFlangeLen(1.75);
   FPGen.generateFlangePlate(Control,lKey+"Adaptor");
+
+  // additional stuff for beam dump - not present in the original
+  // drawings
+  PGen.generatePipe(Control,lKey+"PipeC",100.0); // approx
+  Control.addVariable(lKey+"PipeCYAngle",-90);
+  Control.addVariable(lKey+"PipeCFlangeFrontRadius",4.5); // to avoid cutting EBeam
+  Control.addVariable(lKey+"PipeCFlangeBackRadius",4.5); // to avoid cutting EBeam
+  setVariable::EBeamStopGenerator EBGen;
+  EBGen.generateEBeamStop(Control,lKey+"EBeam",1);
+  Control.addVariable(lKey+"EBeamShieldActive",1);
+  Control.addVariable(lKey+"EBeamShieldInnerMat","Stainless304L"); // email from JR, 210120: "Iron"
 
   return;
 }
@@ -2856,6 +3051,15 @@ Segment46(FuncDataBase& Control,
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.generatePipe(Control,lKey+"PipeA",96.8);
+
+  setVariable::LocalShieldingGenerator LSGen;
+  const double tmp = 4.0; // cut height to avoid overlap with SPF44
+  LSGen.setSize(10,60,40-tmp);
+  LSGen.setMidHole(10, 5);
+  LSGen.setCorner(10, 5);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",89.0);
+  Control.addVariable(lKey+"ShieldAZStep",-7.5+tmp/2.0);
 
   const double pipeBLength(40.0);
   PGen.setCF<setVariable::CF16_TDC>();
@@ -2935,7 +3139,7 @@ Segment47(FuncDataBase& Control,
   setVariable::PipeGenerator PGen;
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
-
+  PGen.setOuterVoid();
 
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeA",87.4); // measured
@@ -2958,17 +3162,35 @@ Segment47(FuncDataBase& Control,
 
   PGen.setCF<setVariable::CF35_TDC>();
   PGen.generatePipe(Control,lKey+"PipeD",8.4); // measured
+  Control.addVariable(lKey+"PipeDYAngle",90);
 
     // Gate valves
-  setCylGateValve(Control,lKey+"GateA",-90.0,false);
+  setCylGateValve(Control,lKey+"GateA",180.0,false);
 
 
   setBellow26(Control,lKey+"BellowA",7.5);
 
   PGen.generatePipe(Control,lKey+"PipeE",8.4); // measured
 
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(10.0,60,30.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAXStep",62.5);
+  Control.addVariable(lKey+"ShieldAZStep",-10.0);
+  Control.addVariable(lKey+"ShieldAYStep",1.1);
 
-
+  // Mirror camera shield
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5457.jpg/view
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5384.jpg/view
+  setVariable::SPFCameraShieldGenerator CSGen;
+    //  CSGen.setSize(45.0,5,20.0);
+  CSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBZStep",30.0);
+  Control.addVariable(lKey+"ShieldBYAngle",90.0);
+  Control.addVariable(lKey+"ShieldBYStep",-7.0);
+  Control.addVariable(lKey+"ShieldBXStep",-7.5);
   return;
 }
 
@@ -3000,9 +3222,7 @@ Segment48(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
 
-
   EBGen.generateEBeamStop(Control,lKey+"BeamStopA",0);
-
   setBellow26(Control,lKey+"BellowA",7.5);
 
   EBGen.generateEBeamStop(Control,lKey+"BeamStopB",0);
@@ -3015,10 +3235,39 @@ Segment48(FuncDataBase& Control,
   setBellow26(Control,lKey+"BellowB",10.0); // measured
   setBellow26(Control,lKey+"BellowC",10.0); // measured
 
-  // Pipe
-
   // Mirror Chamber
   setMirrorChamber(Control, lKey+"MirrorChamberA",90.0);
+
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
+  // time: 12:00
+  setVariable::LocalShieldingGenerator LSGen;
+  const double shieldAHeight = 35.0;
+  // Average length estimate (dimension along the beam line):
+  //   total height is made of:
+  //    3 bricks of 5 cm height (10 cm length): 5*3=15
+  //    2 bricks of 10 cm height (5 cm length): 10*2=20
+  const double shieldALength = (15*10+20*5)/shieldAHeight;
+  const double shieldAZStep = -2.5;
+  LSGen.setSize(shieldALength,40,shieldAHeight);
+  LSGen.setMidHole(4.1,4.1);
+  LSGen.setCorner(10.0,5.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  Control.addVariable(lKey+"ShieldAYStep",6.0);
+  Control.addVariable(lKey+"ShieldAZStep",shieldAZStep);
+
+  LSGen.setSize(20.0,10.0,15.0);
+  LSGen.setMidHole(0.0,0.0);
+  LSGen.setCorner(0.0,0.0);
+  LSGen.generate(Control,lKey+"ShieldB");
+  Control.addVariable(lKey+"ShieldBXStep",1.5);
+  Control.addVariable(lKey+"ShieldBYStep",10.0);
+
+  const double shieldCWidth = 130;
+  LSGen.setSize(shieldCWidth,5,20);
+  LSGen.generate(Control,lKey+"ShieldC");
+  Control.addVariable(lKey+"ShieldCYStep",shieldCWidth/2.0);
+  Control.addVariable(lKey+"ShieldCZStep",-2.5);
 
   return;
 }
@@ -3053,7 +3302,20 @@ Segment49(FuncDataBase& Control,
   PGen.setMat("Stainless304L","Stainless304L");
   PGen.setNoWindow();
   PGen.generatePipe(Control,lKey+"PipeA",51.29-15); // TODO -15 is artificial to avoid clipping with BackWall
+  PGen.setOuterVoid();
   PGen.generatePipe(Control,lKey+"PipeB",230.0);
+
+  // Local shielding wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5378.mp4/view
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(20,40,40);
+  LSGen.setMidHole(4.0,5.0);
+  LSGen.generate(Control,lKey+"ShieldA");
+  // YStep is wrong: distance to the back wall is 20 cm, but
+  // can't do it since gateA is too close to the wall
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/spf/img_5462.jpg/view
+  Control.addVariable(lKey+"ShieldAYStep",20.0); // wrong, but reasonable
+  Control.addVariable(lKey+"ShieldAZStep",-2.5);
 
   return;
 }
@@ -3149,6 +3411,73 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"MidTBackAngleStep",301.0);  // out flat
   Control.addVariable(wallKey+"MidTRight",285.0);  // from mid line
 
+  /////////////////////////////////////////////// DUCTS ///////////////
+  const size_t nDucts = 20;
+  Control.addVariable(wallKey+"MidTNDucts",nDucts);
+  // Duct D1 is the TDC modulator klystron duct
+  // This is the leftmost duct in K_20-2_354 [email from AR 2021-01-15].
+  const double D1YStep = 7172.435; // calculated based on K_20-2_354 and K_20-1_08F6c1
+  const double D1ZStep =  158.0; // measured on K_20-2_354
+
+  // TDC modulator klystron duct
+  Control.addVariable(wallKey+"MidTDuct1Radius",7.5); // measured with ruler
+  Control.addVariable(wallKey+"MidTDuct1YStep",D1YStep-210.0); // measured with ruler
+  Control.addVariable(wallKey+"MidTDuct1ZStep",D1ZStep);
+
+  // D1 - D4
+  // K_20-2_354, A-A view, leftmost ducts
+  for (size_t i=0; i<=4; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+2);
+      Control.addVariable(name+"Radius",5.0); // K_20-2_354
+      Control.addVariable(name+"YStep",D1YStep+30*i); // K_20-2_354
+      Control.addVariable(name+"ZStep",D1ZStep); // K_20-2_354
+    }
+
+  // Ducts near the floor
+  // They are not in the drawings, but should be approx. 2 meters to the right side after
+  // D4 (last duct in the previous serie)
+  // Water pipes go through them, but to be conservative we leave them empty
+  // [email from AR 2021-01-19]
+  const double floorDuctY = D1YStep+200.0; // approx
+  for (size_t i=0; i<=4; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+6);
+      Control.addVariable(name+"Radius",5.0); // dummy
+      Control.addVariable(name+"YStep",floorDuctY+35*i); // dummy
+      Control.addVariable(name+"ZStep",-115); // dummy
+    }
+
+  // Ducts above the BTG blocks
+  // Photo of these ducts from the SPF hall:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/spf-hall/img_5374.jpg/view
+  // Video from the FKG:
+  // http://localhost:8080/maxiv/work-log/tdc/pictures/fkg/img_5353.mov/view
+
+  // Lower tier - AR: 210119: I would
+  // assume there is also a concrete plug in each duct, but for now
+  // start with void.
+  const double dx = 60; // artificial offset based on img_5374
+  const double BTGductY = 9839.035 - dx; // K_20-2_355
+  for (size_t i=0; i<=5; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+10);
+      Control.addVariable(name+"Radius",7.5); // K_20-2_355
+      Control.addVariable(name+"YStep",BTGductY+35*i); // distance: K_20-2_355
+      Control.addVariable(name+"ZStep",86.0); // measured in K_20-2_355
+    }
+  // Upper tier: G1-G5
+  // Electric cables, but now we put void to be conservative
+  const double BTGductYup = BTGductY + 105.0 - dx; // K_20-2_355: 105 = 241.6-136.6
+  for (size_t i=0; i<=5; ++i)
+    {
+      const std::string name = wallKey+"MidTDuct" + std::to_string(i+16);
+      Control.addVariable(name+"Radius",5.0); // K_20-2_355
+      Control.addVariable(name+"YStep",BTGductYup+30*i); // distance: K_20-2_355
+      Control.addVariable(name+"ZStep",158.0); // measured in K_20-2_355
+    }
+  ///////////////////////////////////////////////
+
   Control.addVariable(wallKey+"KlysDivThick",100.0);
 
   Control.addVariable(wallKey+"MidGateOut",202.7); // K_20-1_08F6c1, 380-177.3
@@ -3174,6 +3503,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"WallMat","Concrete");
   // WallIronMat is some unknown kind of steel with Co content <50 ppm [AR: 201120]
   Control.addVariable(wallKey+"WallIronMat","Stainless304L");
+  Control.addVariable(wallKey+"BDRoofIronMat","Stainless304L");
   Control.addVariable(wallKey+"RoofMat","Concrete");
   Control.addVariable(wallKey+"FloorMat","Concrete");
   Control.addVariable(wallKey+"SoilMat","Earth");
@@ -3215,6 +3545,7 @@ wallVariables(FuncDataBase& Control,
       Control.addVariable(wallKey+"Pillar"+n+"Y",y[i]);
     }
 
+  // THz penetration
   Control.addVariable(wallKey+"THzHeight",5.0); // K_20-2_348
   Control.addVariable(wallKey+"THzWidth",30.0); // K_20-2_348
   Control.addVariable(wallKey+"THzXStep",127.0); // K_20-2_348
@@ -3224,21 +3555,38 @@ wallVariables(FuncDataBase& Control,
   // Update 210112: there is Lead (see photo)
   Control.addVariable(wallKey+"THzMat","Lead");
 
-  Control.addVariable(wallKey+"BDRoomHeight",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomWidth",100.0); // dummy
-  Control.addVariable(wallKey+"BDRoomLength",570); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFloorThick",200.0); // K_15-6_012 B-B
-  Control.addVariable(wallKey+"BDRoomRoofThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomFrontWallThick",150.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomSideWallThick",70.0); // dummy
-  Control.addVariable(wallKey+"BDRoomBackSteelThick",50.0); // K_15-6_011
-  Control.addVariable(wallKey+"BDRoomHatchLength",200.0); // measured on K_15-6_011
-  Control.addVariable(wallKey+"BDRoomXStep",-735); // SPF line center
+  // Main beam dump room
+  // Top view: K_15-6_010
+  const std::string bdRoom=wallKey+"BDRoom";
+  Control.addVariable(bdRoom+"XStep",-735); // SPF line center
+  Control.addVariable(bdRoom+"Height",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"Length",540); // K_15-6_011
+  Control.addVariable(bdRoom+"FloorThick",200.0); // K_15-6_012 B-B
+  Control.addVariable(bdRoom+"RoofThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"RoofSteelWidth",140.0); // measured with ruler
+  Control.addVariable(bdRoom+"FrontWallThick",100.0); // K_15-6_011
+  Control.addVariable(bdRoom+"SideWallThick",200.0); // K_15-6_010
+  Control.addVariable(bdRoom+"BackSteelThick",50.0); // K_15-6_011
+  Control.addVariable(bdRoom+"HatchLength",200.0); // measured on K_15-6_011
+  Control.addVariable(bdRoom+"InnerWallThick",40.0); // K_15-6_010
+  Control.addVariable(bdRoom+"InnerWallLength",365.0+2.0); // K_15-6_010, +2 just to avoid cutting SPF45PipeB
+  Control.addVariable(bdRoom+"TDCWidth",380.0); // K_15-6_010
+  Control.addVariable(bdRoom+"SPFWidth",460.0); // K_15-6_010
+  Control.addVariable(bdRoom+"NewWidth",280.0); // K_15-6_010
 
   Control.addVariable(wallKey+"WasteRoomWidth",200.0); // derived from K_20-1_08G6b1:  2700-300-40
   Control.addVariable(wallKey+"WasteRoomLength",600.0); // derived from K_20-1_08G6b1: 10316-3516-40*2
   Control.addVariable(wallKey+"WasteRoomWallThick",40.0); // K_20-1_08G6b1
   Control.addVariable(wallKey+"WasteRoomYStep",7534.0); // derived from K_20-1_08G6b1
+
+  // Local shielding at the MidT wall
+  // Email from AR 2021-01-19 and 2021-01-20
+  // K_20-1_08F6c1.pdf
+  // K_20-2_348 - this wall marked as "STRÅLSKYDD ENL. SENARE BESKED"
+  Control.addVariable(wallKey+"MidTFrontLShieldThick",10.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldHeight",100.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldWidth",100.0); // AR 2021-01-20
+  Control.addVariable(wallKey+"MidTFrontLShieldMat","Lead"); // AR 2021-01-20
 
   return;
 }
@@ -3262,7 +3610,7 @@ LINACvariables(FuncDataBase& Control)
   // Segment 1-14
   Control.addVariable("l2spfXStep",linacVar::zeroX);
   Control.addVariable("l2spfYStep",linacVar::zeroY);
-  Control.addVariable("l2spfOuterLeft",80.0);
+  Control.addVariable("l2spfOuterLeft",100.0);
   Control.addVariable("l2spfOuterRight",140.0);
   Control.addVariable("l2spfOuterTop",100.0);
 
@@ -3285,13 +3633,6 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("tdcFrontOuterRight",50.0);
   Control.addVariable("tdcFrontOuterTop",100.0);
   Control.addVariable("tdcFrontXYAngle",12.0);
-
-  Control.addVariable("tdcMainXStep",-419.0+linacVar::zeroX);
-  Control.addVariable("tdcMainYStep",3152.0+linacVar::zeroY);
-  Control.addVariable("tdcMainOuterLeft",50.0);
-  Control.addVariable("tdcMainOuterRight",50.0);
-  Control.addVariable("tdcMainOuterTop",100.0);
-  Control.addVariable("tdcMainXYAngle",12.0);
 
   Control.addVariable("tdcXStep",-622.286+linacVar::zeroX);
   Control.addVariable("tdcYStep",4226.013+linacVar::zeroY);
@@ -3317,21 +3658,21 @@ LINACvariables(FuncDataBase& Control)
   Control.addVariable("spfAngleXStep",-609.286+linacVar::zeroX);
   Control.addVariable("spfAngleYStep",3969.122+linacVar::zeroY);
   Control.addVariable("spfAngleOuterLeft",50.0);
-  Control.addVariable("spfAngleOuterRight",100.0);
+  Control.addVariable("spfAngleOuterRight",90.0);
   Control.addVariable("spfAngleOuterTop",100.0);
   Control.addVariable("spfAngleXYAngle",12.8);
 
   // start/endPt of Segment34
   Control.addVariable("spfXStep",-995.514+linacVar::zeroX);
   Control.addVariable("spfYStep",5872.556+linacVar::zeroY);
-  Control.addVariable("spfOuterLeft",50.0);
-  Control.addVariable("spfOuterRight",50.0);
+  Control.addVariable("spfOuterLeft",60.0);
+  Control.addVariable("spfOuterRight",80.0);
   Control.addVariable("spfOuterTop",100.0);
 
 
   Control.addVariable("spfLongXStep",-622.286+linacVar::zeroX);
   Control.addVariable("spfLongYStep",4226.013+linacVar::zeroY);
-  Control.addVariable("spfLongOuterLeft",60.0);
+  Control.addVariable("spfLongOuterLeft",70.0);
   Control.addVariable("spfLongOuterRight",50.0);
   Control.addVariable("spfLongOuterTop",100.0);
 
@@ -3339,8 +3680,8 @@ LINACvariables(FuncDataBase& Control)
   // start/endPt of Segment40
   Control.addVariable("spfFarXStep",-995.514+linacVar::zeroX);
   Control.addVariable("spfFarYStep",7900.0+linacVar::zeroY);
-  Control.addVariable("spfFarOuterLeft",50.0);
-  Control.addVariable("spfFarOuterRight",50.0);
+  Control.addVariable("spfFarOuterLeft",60.0);
+  Control.addVariable("spfFarOuterRight",80.0);
   Control.addVariable("spfFarOuterTop",100.0);
 
   // segment 49

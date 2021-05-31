@@ -107,6 +107,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   spfAngleLength=Control.EvalVar<double>(keyName+"SPFAngleLength");
   spfMidLength=spfAngleLength/2.0;
   spfAngle=Control.EvalVar<double>(keyName+"SPFAngle");
+  spfAngleStep=0.0;
   spfMazeWidthTDC=Control.EvalVar<double>(keyName+"SPFMazeWidthTDC");
   spfMazeWidthSide=Control.EvalVar<double>(keyName+"SPFMazeWidthSide");
   spfMazeWidthSPF=Control.EvalVar<double>(keyName+"SPFMazeWidthSPF");
@@ -164,6 +165,26 @@ InjectionHall::populate(const FuncDataBase& Control)
   midTBackAngleStep=Control.EvalVar<double>(keyName+"MidTBackAngleStep");
   midTNLayers=Control.EvalDefVar<size_t>(keyName+"MidTNLayers", 1);
 
+  midTFrontLShieldThick=Control.EvalVar<double>(keyName+"MidTFrontLShieldThick");
+  midTFrontLShieldHeight=Control.EvalVar<double>(keyName+"MidTFrontLShieldHeight");
+  midTFrontLShieldWidth=Control.EvalVar<double>(keyName+"MidTFrontLShieldWidth");
+  midTFrontLShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"MidTFrontLShieldMat");
+
+  midTNDucts=Control.EvalVar<size_t>(keyName+"MidTNDucts");
+
+  for (size_t i=1; i<=midTNDucts; ++i)
+    {
+      const std::string stri = std::to_string(i);
+      const double R=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"Radius");
+      const double y=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"YStep");
+      const double z=Control.EvalVar<double>(keyName+"MidTDuct"+stri+"ZStep");
+      const int mat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidTDuct"+stri+"Mat",0);
+      midTDuctRadius.push_back(R);
+      midTDuctYStep.push_back(y);
+      midTDuctZStep.push_back(z);
+      midTDuctMat.push_back(mat);
+    }
+
   klysDivThick=Control.EvalVar<double>(keyName+"KlysDivThick");
 
   midGateOut=Control.EvalVar<double>(keyName+"MidGateOut");
@@ -182,15 +203,20 @@ InjectionHall::populate(const FuncDataBase& Control)
 
   boundaryWidth=Control.EvalVar<double>(keyName+"BoundaryWidth");
   bdRoomHeight=Control.EvalVar<double>(keyName+"BDRoomHeight");
-  bdRoomWidth=Control.EvalVar<double>(keyName+"BDRoomWidth");
   bdRoomLength=Control.EvalVar<double>(keyName+"BDRoomLength");
   bdRoomFloorThick=Control.EvalVar<double>(keyName+"BDRoomFloorThick");
   bdRoomRoofThick=Control.EvalVar<double>(keyName+"BDRoomRoofThick");
+  bdRoomRoofSteelWidth=Control.EvalVar<double>(keyName+"BDRoomRoofSteelWidth");
   bdRoomFrontWallThick=Control.EvalVar<double>(keyName+"BDRoomFrontWallThick");
   bdRoomSideWallThick=Control.EvalVar<double>(keyName+"BDRoomSideWallThick");
   bdRoomBackSteelThick=Control.EvalVar<double>(keyName+"BDRoomBackSteelThick");
   bdRoomHatchLength=Control.EvalVar<double>(keyName+"BDRoomHatchLength");
   bdRoomXStep=Control.EvalVar<double>(keyName+"BDRoomXStep");
+  bdRoomInnerWallThick=Control.EvalVar<double>(keyName+"BDRoomInnerWallThick");
+  bdRoomInnerWallLength=Control.EvalVar<double>(keyName+"BDRoomInnerWallLength");
+  bdRoomTDCWidth=Control.EvalVar<double>(keyName+"BDRoomTDCWidth");
+  bdRoomSPFWidth=Control.EvalVar<double>(keyName+"BDRoomSPFWidth");
+  bdRoomNewWidth=Control.EvalVar<double>(keyName+"BDRoomNewWidth");
   wasteRoomLength=Control.EvalVar<double>(keyName+"WasteRoomLength");
   wasteRoomWidth=Control.EvalVar<double>(keyName+"WasteRoomWidth");
   wasteRoomWallThick=Control.EvalVar<double>(keyName+"WasteRoomWallThick");
@@ -228,6 +254,7 @@ InjectionHall::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   wallIronMat=ModelSupport::EvalMat<int>(Control,keyName+"WallIronMat");
+  bdRoofIronMat=ModelSupport::EvalMat<int>(Control,keyName+"BDRoofIronMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
@@ -292,7 +319,7 @@ InjectionHall::createSurfaces()
     (SMap,buildIndex+213,LWPoint-X*wallThick,PX);
 
   // out step
-  const double spfAngleStep(spfAngleLength*tan(M_PI*spfAngle/180.0));
+  spfAngleStep = spfAngleLength*tan(M_PI*spfAngle/180.0);
   ModelSupport::buildPlane
     (SMap,buildIndex+223,Origin-X*(linearWidth/2.0+spfAngleStep),X);
   ModelSupport::buildPlane
@@ -489,7 +516,7 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7403,buildIndex+1004,X,btgThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7406,buildIndex+5,X,btgHeight);
 
-  // Under-the-floor beam dump and its room
+  // Under-the-floor - main beam dump room
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7501,buildIndex+21,Y,
 				  -(bdRoomLength+bdRoomFrontWallThick));
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7505,buildIndex+5,Z,
@@ -500,11 +527,33 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7512,buildIndex+7511,Y,bdRoomHatchLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7522,buildIndex+7511,Y,
 				  bdRoomLength-bdRoomBackSteelThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7521,buildIndex+21,Y,
+				  -bdRoomInnerWallLength);
 
-  ModelSupport::buildPlane(SMap,buildIndex+7503,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7504,Origin+X*(bdRoomXStep+bdRoomWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7513,Origin-X*(-bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+7514,Origin+X*(bdRoomXStep+bdRoomWidth/2.0+bdRoomSideWallThick),X);
+  // planes for the inner walls of Main beam dump room
+  ModelSupport::buildPlane(SMap,buildIndex+7524,Origin+X*(bdRoomXStep-bdRoomSPFWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7525,Origin+X*(bdRoomXStep+bdRoomSPFWidth/2.0),X);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7534,buildIndex+7524,X,-bdRoomInnerWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7535,buildIndex+7525,X,bdRoomInnerWallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7503,buildIndex+7534,X,-bdRoomNewWidth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7504,buildIndex+7535,X,bdRoomTDCWidth);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7513,buildIndex+7503,X,-bdRoomSideWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7514,buildIndex+7504,X,bdRoomSideWallThick);
+
+  // center of the steel plate above the Future beam line beam dump
+  double xstep=bdRoomXStep-bdRoomSPFWidth/2.0-bdRoomInnerWallThick-bdRoomNewWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+7543,Origin+X*(xstep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7544,Origin+X*(xstep+bdRoomRoofSteelWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+7553,Origin+X*(bdRoomXStep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7554,Origin+X*(bdRoomXStep+bdRoomRoofSteelWidth/2.0),X);
+
+  xstep=bdRoomXStep+bdRoomSPFWidth/2.0+bdRoomInnerWallThick+bdRoomTDCWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+7563,Origin+X*(xstep-bdRoomRoofSteelWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+7564,Origin+X*(xstep+bdRoomRoofSteelWidth/2.0),X);
 
   // Radioactive waste room (in Future Klystron Gallery)
   ModelSupport::buildPlane(SMap,buildIndex+7601,Origin+Y*(wasteRoomYStep+wasteRoomWallThick),Y);
@@ -514,11 +563,38 @@ InjectionHall::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7604,buildIndex+1004,Y,wasteRoomWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+7614,buildIndex+7604,Y,wasteRoomWallThick);
 
+  // MidT ducts
+  int SJ = buildIndex+7700;
+
+  // separators to split the midT wall into cells with ducts
+  ModelSupport::buildPlane(SMap,SJ+1,Origin+Y*(midTDuctYStep[0]-midTDuctRadius[4]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+2,Origin+Y*(midTDuctYStep[4]+midTDuctRadius[4]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+11,Origin+Y*(midTDuctYStep[5]-midTDuctRadius[5]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+12,Origin+Y*(midTDuctYStep[8]+midTDuctRadius[8]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+21,Origin+Y*(midTDuctYStep[9]-midTDuctRadius[9]*2),Y);
+  ModelSupport::buildPlane(SMap,SJ+22,Origin+Y*(midTDuctYStep[14]+midTDuctRadius[14]*2),Y);
+
+  for (size_t i=0; i<midTNDucts; ++i)
+    {
+      ModelSupport::buildCylinder(SMap,SJ+7,
+				  Origin+Y*midTDuctYStep[i]+Z*midTDuctZStep[i],
+				  X,midTDuctRadius[i]);
+      SJ += 10;
+    }
+
+  // MidT front wall local shielding
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7801,buildIndex+1001,Y,-midTFrontLShieldThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+7803,buildIndex+1104,X,-midTFrontLShieldWidth);
+  ModelSupport::buildPlane(SMap,buildIndex+7805,Origin-Z*(midTFrontLShieldHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+7806,Origin+Z*(midTFrontLShieldHeight/2.0),Z);
+
+
   // transfer for later
   SurfMap::setSurf("Front",SMap.realSurf(buildIndex+1));
   SurfMap::setSurf("Back",SMap.realSurf(buildIndex+2));
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   SurfMap::setSurf("SubFloor",SMap.realSurf(buildIndex+15));
+  SurfMap::setSurf("BDRoomRoof",SMap.realSurf(buildIndex+7516));
   SurfMap::setSurf("MidWall",SMap.realSurf(buildIndex+1001));
   SurfMap::setSurf("MidAngleWall",-SMap.realSurf(buildIndex+1111));
   SurfMap::addSurf("MidAngleWall",-SMap.realSurf(buildIndex+1001));
@@ -563,15 +639,35 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("LWideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1511 -1001 -1111 1503 -4 5 -6 2007 ");
+    (SMap,buildIndex," 1511 -1001 -1111 1503 -7803 5 -6 2007 ");
   makeCell("LTVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  ///////////////////////         MidTFront local shielding wall
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1511 -7801 7803 -1104 5 -6 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 5 -7805 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 7806 -6 ");
+  makeCell("MidTFrontLShieldVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 7801 -1001 7803 -1104 7805 -7806 ");
+  makeCell("MidTFrontLShield",System,cellIndex++,midTFrontLShieldMat,0.0,Out);
+
+  ///////////////////////
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1112 -1003 5 -6 -1522  1503 ");
   makeCell("TVoidA",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -201  3 -1003 5 -6 1522 ");
+    (SMap,buildIndex," 1522  -201  3 -1003 5 -6 ");
   makeCell("TVoidB",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
@@ -667,7 +763,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211  -6212 6004 -6014 5 -6 ");
-  makeCell("C080016MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080016MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6004 -6014 5 -6 ");
@@ -745,7 +841,7 @@ InjectionHall::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6211 -6212 6113 -1003 5 -6 ");
-  makeCell("C080017MazeIron",System,cellIndex++,wallIronMat,0.0,Out);
+  makeCell("C080017MazeIronBack",System,cellIndex++,wallIronMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
   				 "6212 -6112 6113 -1003 5 -6 ");
@@ -909,11 +1005,65 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 14 -114 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
+  // MidT wall ducts
+  int SJ = buildIndex+7700;
+
+  // middle wall (part with THz penetration)
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
+				 "1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006) ");
+  makeCell("MidT0",System,cellIndex++,wallMat,0.0,Out);
+
+  HeadRule MidTDucts1; // TDC modulator klystron duct and D1-D4
+  HeadRule MidTDucts2; // 4 ducts near floor level
+  HeadRule MidTDucts3; // ducts near the BTG wall
+
+  for (size_t i=0; i<midTNDucts; ++i)
+    {
+      Out = ModelSupport::getComposite(SMap,buildIndex,SJ, " 1003 -1004 -7M ");
+      makeCell("MidTDuct",System,cellIndex++,midTDuctMat[i],0.0,Out);
+      if (i<=4)
+	MidTDucts1.addIntersection(SJ+7);
+      else if (i<=8)
+	MidTDucts2.addIntersection(SJ+7);
+      else
+	MidTDucts3.addIntersection(SJ+7);
+
+      SJ += 10;
+    }
+
   // MID T
-  // middle wall with THz penetration
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1011 -6112 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
-  makeCell("MidT",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "1M -2M 1003 -1004 5 -6 ");
+  Out += MidTDucts1.display();
+  makeCell("MidT1",System,cellIndex++,wallMat,0.0,Out);
+
+  // between ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "2M -11M 1003 -1004 5 -6 ");
+  makeCell("MidT2",System,cellIndex++,wallMat,0.0,Out);
+
+  // floor ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "11M -12M 1003 -1004 5 -6 ");
+  Out += MidTDucts2.display();
+  makeCell("MidT3",System,cellIndex++,wallMat,0.0,Out);
+
+  // between ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "12M -21M 1003 -1004 5 -6 ");
+  makeCell("MidT4",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+				 "21M -22M 1003 -1004 5 -6 ");
+  Out += MidTDucts3.display();
+  makeCell("MidT5",System,cellIndex++,wallMat,0.0,Out);
+
+  // after ducts
+  Out=ModelSupport::getComposite(SMap,buildIndex, buildIndex+7700,
+  				 "22M -6112 1003 -1004 5 -6 ");
+  makeCell("MidT6",System,cellIndex++,wallMat,0.0,Out);
+
+
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
@@ -923,7 +1073,7 @@ InjectionHall::createObjects(Simulation& System)
 				 "1001 -1011 1004 -1104 5 -6 ");
   makeCell("FKGMazeFrontWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1001 -1011 1104 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1011 1104 -4 5 -6 ");
   makeCell("MidTVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1111 -1112 -1003 1153 5 -6 2007 ");
@@ -937,18 +1087,23 @@ InjectionHall::createObjects(Simulation& System)
     (SMap,buildIndex," 5 -6 -2007 ");
   makeCell("MidTAuxCyl",System,cellIndex++,wallMat,0.0,Out);
 
-
-  // GATE:
+  // Maze between the Linac and SPF halls
   Out=ModelSupport::getComposite(SMap,buildIndex,"1511 -1512 3 -1503 5 -6  ");
   makeCell("GateA",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1521 -1522 3 -1503 5 -6  ");
   makeCell("GateB",System,cellIndex++,wallMat,0.0,Out);
-  // void in middle
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1512 -1521 3 -1503 5 -6 "
-          "(-1201 : 1202 : 1153 : -1103)  "
-          "( -1153 : -1111 : 1112)");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1512 -1201 3 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1111 -1503 5 -6");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1201 -1202 3 -1103 5 -6 ");
+  makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1202 -1521 3 -1503 1112 5 -6 ");
   makeCell("GateVoid",System,cellIndex++,0,0.0,Out);
 
   // KLYSTRONG WALLS
@@ -974,13 +1129,13 @@ InjectionHall::createObjects(Simulation& System)
 
   // Under-the-floor beam dump and its room
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7501 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 53 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 7514 -54 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -22 53 -7513 7505 -15 ");
-  makeCell("Soil",System,cellIndex++,soilMat*0,0.0,Out);
+  makeCell("Soil",System,cellIndex++,soilMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 7501 -7511 7513 -7514 7505 -15 ");
   makeCell("BDFrontWall",System,cellIndex++,wallMat,0.0,Out);
@@ -996,14 +1151,66 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -21 7513 -7503 7506 -15 ");
   makeCell("BDSideWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
-  makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
+  // Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7503 -7504 -5 7516 ");
+  // makeCell("BDHatch",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7503 -7504 -5 7516 ");
-  makeCell("BDRoof",System,cellIndex++,wallIronMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7503 -7543 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7522 7503 -7504 7506 -7516 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7543 -7544 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7543 -7544 -5 7516 ");
+  makeCell("HatchNew",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7544 -7553 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7553 -7554 -5 7516 ");
+  makeCell("BDRoofSPF",System,cellIndex++,bdRoofIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7553 -7554 -5 7516 ");
+  makeCell("HatchSPF",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -21 7554 -7563 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7563 -7564 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,bdRoofIronMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7563 -7564 -5 7516 ");
+  makeCell("HatchTDC",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7512 -21 7564 -7504 -5 7516 ");
+  makeCell("BDRoof",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7511 -7512 7564 -7504 -5 7516 ");
+  makeCell("BDEntrance",System,cellIndex++,0,0.0,Out);
+
+
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7511 -7521 7503 -7504 7506 -7516 ");
   makeCell("BD",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7503 -7534 7506 -7516 ");
+  makeCell("BDNew",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7534 -7524 7506 -7516 ");
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7524 -7525 7506 -7516 ");
+  makeCell("BDSPF",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7525 -7535 7506 -7516 ");
+  makeCell("BDInnerWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7521 -7522 7535 -7504 7506 -7516 ");
+  makeCell("BDTDC",System,cellIndex++,0,0.0,Out);
+
+
+
+
 
   // Radioactive waste room
   Out=ModelSupport::getComposite(SMap,buildIndex," 7601 -7602 1004 -7604 5 -6 ");
@@ -1021,10 +1228,13 @@ InjectionHall::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 53 -54 7505 -16 ");
   addOuterSurf(Out);
 
-  layerProcess(System,"MidT",
-	       SMap.realSurf(buildIndex+1003),
-	       -SMap.realSurf(buildIndex+1004),
-	       midTNLayers);
+  for (size_t i=0; i<6; ++i)
+    {
+      layerProcess(System,"MidT"+std::to_string(i),
+		   SMap.realSurf(buildIndex+1003),
+		   -SMap.realSurf(buildIndex+1004),
+		   midTNLayers);
+    }
 
   layerProcess(System,"BackWallConcrete",
 	       SMap.realSurf(buildIndex+21),
@@ -1107,6 +1317,14 @@ InjectionHall::createObjects(Simulation& System)
   	       SMap.realSurf(buildIndex+2111),
   	       -SMap.realSurf(buildIndex+111),
   	       btgNLayers);
+  layerProcess(System,"ParkingExitWall",
+  	       SMap.realSurf(buildIndex+7102),
+  	       -SMap.realSurf(buildIndex+7201),
+  	       btgNLayers);
+  layerProcess(System,"SPFEmergencyExitDoorWall",
+  	       -SMap.realSurf(buildIndex+223),
+  	       SMap.realSurf(buildIndex+233),
+  	       btgNLayers);
 
   return;
 }
@@ -1115,6 +1333,37 @@ void
 InjectionHall::createLinks()
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::nameSideIndex(0,"front");
+
+  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::nameSideIndex(1,"back");
+
+  const double dx = 200.0;
+  FixedComp::setConnect(2,Origin+Y*backWallYStep-X*dx,Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+21));
+  FixedComp::nameSideIndex(2,"BackWallFrontConcrete");
+
+  FixedComp::setConnect(3,Origin+Y*(backWallYStep+backWallThick)-X*dx,Y);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+22));
+  FixedComp::nameSideIndex(3,"BackWallBack");
+
+  FixedComp::setConnect(4,Origin+Y*(backWallYStep-backWallIronThick)-X*dx,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+31));
+  FixedComp::nameSideIndex(4,"BackWallFront");
+
+  FixedComp::setConnect(5,Origin+Y*(backWallYStep-backWallIronThick-spfMazeWidthTDC/2.0)
+			-X*(linearWidth/2.0+spfAngleStep),-X);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+223));
+  FixedComp::nameSideIndex(5,"SPFMazeIn");
+
+  FixedComp::setConnect(6,Origin+Y*(backWallYStep+backWallThick+spfMazeWidthTDC/2.0)
+			-X*(linearWidth/2.0+spfAngleStep),X);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+223));
+  FixedComp::nameSideIndex(6,"SPFMazeOut");
 
   return;
 }
@@ -1142,6 +1391,7 @@ InjectionHall::createAll(Simulation& System,
 
   return;
 }
+
 void
 InjectionHall::layerProcess(Simulation& System,
 			    const std::string& cellName,

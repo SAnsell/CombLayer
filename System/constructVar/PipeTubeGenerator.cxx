@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeTubeGenerator.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,10 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -158,7 +151,9 @@ PipeTubeGenerator::setAFlangeCF()
 {
   flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
-  ACap=0.0;
+  if (ACap>Geometry::zeroTol)
+    ACap=flangeALen;
+
   return;
 }
 
@@ -171,7 +166,9 @@ PipeTubeGenerator::setBFlangeCF()
 {
   flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
-  BCap=0.0;
+  if (BCap>Geometry::zeroTol)
+    BCap=flangeBLen;
+
   return;
 }
 
@@ -231,7 +228,6 @@ PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
 void
 PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,
 				const double length) const
  /*!
     Primary funciton for setting the variables
@@ -242,9 +238,6 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("PipeTubeGenerator","generatorTube");
-
-
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
@@ -270,7 +263,6 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
 void
 PipeTubeGenerator::generateBlank(FuncDataBase& Control,
 				 const std::string& keyName,
-				 const double yStep,
 				 const double length) const
  /*!
     Primary funciton for setting the variables
@@ -281,8 +273,6 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("PipeTubeGenerator","generatorBlank");
-
-  Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);

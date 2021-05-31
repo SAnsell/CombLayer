@@ -34,16 +34,11 @@
 #include <memory>
 
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "InputControl.h"
 #include "inputParam.h"
 #include "MainInputs.h"
 

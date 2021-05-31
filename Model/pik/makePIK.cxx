@@ -3,7 +3,7 @@
 
   * File:   pik/makePIK.cxx
   *
-  * Copyright (c) 2004-2020 by Konstantin Batkov
+  * Copyright (c) 2004-2021 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -144,9 +144,9 @@ namespace pikSystem
     pool->addInsertCell(voidCell);
     pool->createAll(System,World,0);
 
-    refl->setSide(*pool,1);
-    refl->setBottom(*pool,2);
-    refl->setTop(*pool,3);
+    refl->setSide(*pool,"side");
+    refl->setBottom(*pool,"floor");
+    refl->setTop(*pool,"roof");
     refl->addInsertCell(pool->getCell("InnerShieldCentral"));
     refl->createAll(System,*pool,0);
 

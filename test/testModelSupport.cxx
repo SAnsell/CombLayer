@@ -34,25 +34,14 @@
 #include <algorithm>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Rules.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
 

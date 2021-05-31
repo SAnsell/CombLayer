@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/MonoBoxGenerator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,23 +35,15 @@
 #include <numeric>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 
@@ -92,7 +84,7 @@ MonoBoxGenerator::setLids(const double OH,
 
 void
 MonoBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
-			     const double yStep,const double width,const
+			     const double width,const
 			     double height,const double depth,
 			     const double length) const
   /*!
@@ -108,8 +100,7 @@ MonoBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("MonoBoxGenerator","generateBox");
   
-
-  VacBoxGenerator::generateBox(Control,keyName,yStep,width,
+  VacBoxGenerator::generateBox(Control,keyName,width,
 			       height,depth,length);
 
   Control.addVariable(keyName+"OverHang",overHang);

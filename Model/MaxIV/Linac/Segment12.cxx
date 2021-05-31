@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: Linac/Segment12.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -38,8 +38,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -47,8 +45,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -67,15 +63,12 @@
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "BlankTube.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "BeamDivider.h"
 #include "DipoleDIBMag.h"
 #include "IonPumpTube.h"
-
+#include "LocalShielding.h"
 
 #include "LObjectSupportB.h"
 #include "TDCsegment.h"
@@ -86,7 +79,7 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-  
+
 Segment12::Segment12(const std::string& Key) :
   TDCsegment(Key,6),
 
@@ -94,6 +87,7 @@ Segment12::Segment12(const std::string& Key) :
   flatA(new tdcSystem::FlatPipe(keyName+"FlatA")),
   dipoleA(new tdcSystem::DipoleDIBMag(keyName+"DipoleA")),
   beamA(new tdcSystem::BeamDivider(keyName+"BeamA")),
+  shieldA(new tdcSystem::LocalShielding(keyName+"ShieldA")),
   bellowLA(new constructSystem::Bellows(keyName+"BellowLA")),
   ionPumpLA(new xraySystem::IonPumpTube(keyName+"IonPumpLA")),
   pipeLA(new constructSystem::VacuumPipe(keyName+"PipeLA")),
@@ -114,6 +108,7 @@ Segment12::Segment12(const std::string& Key) :
   OR.addObject(flatA);
   OR.addObject(dipoleA);
   OR.addObject(beamA);
+  OR.addObject(shieldA);
   OR.addObject(bellowLA);
   OR.addObject(ionPumpLA);
   OR.addObject(pipeLA);
@@ -124,7 +119,7 @@ Segment12::Segment12(const std::string& Key) :
 
   setFirstItems(bellowA);
 }
-  
+
 Segment12::~Segment12()
   /*!
     Destructor
@@ -149,7 +144,7 @@ Segment12::buildObjects(Simulation& System)
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
-  
+
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
@@ -160,11 +155,21 @@ Segment12::buildObjects(Simulation& System)
   beamA->setCutSurf("front",*flatA,"back");
   beamA->createAll(System,*flatA,"back");
 
-  pipeTerminateGroup(System,*buildZone,beamA,"exit",
-		     {"Exit","Box","FlangeE","FlangeA","Main"});
+  /////////// Local shielding
+  shieldA->setCutSurf("Inner",*beamA,"outerBox");
+  shieldA->createAll(System,*beamA,"front");
+  outerCell=buildZone->createUnit(System,*shieldA,-1);
+
+  beamA->insertInCell("Box",System,outerCell);
+  beamA->insertInCell("FlangeA",System,outerCell);
+
+  outerCell=buildZone->createUnit(System,*shieldA,2);
+  shieldA->insertInCell(System,outerCell);
 
   pipeTerminateGroup(System,*buildZone,beamA,"exit",
-		     {"Exit","Box","FlangeE","FlangeA","Main"});
+   		     {"Box","Main","Exit","FlangeE"});
+  outerCell = buildZone->createUnit(System,*beamA,"exit");
+  /////////////
 
   bellowLA->setCutSurf("front",*beamA,"exit");
   bellowLA->createAll(System,*beamA,"exit");
@@ -173,40 +178,51 @@ Segment12::buildObjects(Simulation& System)
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*bellowLA,"back",*ionPumpLA);
-  ionPumpLA->insertInCell(System,outerCell);
-  // note this is a double insert 
-  beamA->insertInCell("Main",System,outerCell);
-  
 
-  int cellA,cellB,cellC;
-  cellA=pipeTerminateGroup(System,*buildZone,beamA,"back",
-					{"Main","FlangeB"});
+
+
+  ionPumpLA->insertInCell(System,outerCell);
+  // note this is a double insert
+  beamA->insertInCell("Main",System,outerCell);
+
+  int cellB,cellC;
 
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
 
-  // this creates two buildZone cells:
-  cellB=pipeMagGroup(System,*buildZone,flatB,
-     {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
+  dipoleB->setCutSurf("Inner",*flatB,"outerPipe");
+  dipoleB->createAll(System,*flatB,"Origin");
+
+  cellB=buildZone->createUnit(System,*dipoleB,2); // cellB = cellA+1
+  dipoleB->insertInCell(System,cellB);
+
+  beamA->insertInCell("Main",System,cellB);
+  beamA->insertInCell("FlangeB",System,cellB);
+
+
   cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
+  flatB->insertInCell("FlangeA",System,cellB);
+  flatB->insertInCell("Pipe",System,cellB);
 
-  pipeLA->addAllInsertCell(cellA);
-  pipeLA->addAllInsertCell(cellB-1);
+  pipeLA->addInsertCell("Main",cellB);
+  pipeLA->addInsertCell("FlangeA",cellB);
   pipeLA->addAllInsertCell(cellC);
   pipeLA->addAllInsertCell(dipoleB->getCell("VoidMiddle"));
-  outerCell=constructSystem::constructUnit
-    (System,*buildZone,*ionPumpLA,"back",*pipeLA);
-  bellowRB->addInsertCell(outerCell);
-  
+
+  pipeLA->setCutSurf("font",*ionPumpLA,"back");
+  pipeLA->createAll(System,*ionPumpLA,"back");
+
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeLA,"back",*bellowLB);
 
+  pipeLA->insertInCell("Main",System,outerCell);
+  pipeLA->insertInCell("FlangeB",System,outerCell);
 
   bellowRB->setFront(*flatB,"back");
   bellowRB->createAll(System,*flatB,"back");
   bellowRB->insertInCell(System,outerCell);
-  
+
   // transfer to segment 13
   CellMap::addCell("LastCell",outerCell);
 
@@ -219,20 +235,20 @@ Segment12::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*bellowA,1);
+  setLinkCopy(0,*bellowA,1);
 
-  setLinkSignedCopy(1,*bellowLB,2);  // straigh exit
-  setLinkSignedCopy(2,*bellowRB,2);  // magnet exit
+  setLinkCopy(1,*bellowLB,2);  // straigh exit
+  setLinkCopy(2,*bellowRB,2);  // magnet exit
 
   FixedComp::nameSideIndex(1,"straightExit");
   FixedComp::nameSideIndex(2,"magnetExit");
-  
+
   joinItems.push_back(FixedComp::getFullRule(2));
   joinItems.push_back(FixedComp::getFullRule(3));
   return;
 }
 
-void 
+void
 Segment12::createAll(Simulation& System,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex)
@@ -250,10 +266,9 @@ Segment12::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   buildObjects(System);
   createLinks();
-  
+
   return;
 }
 
 
 }   // NAMESPACE tdcSystem
-

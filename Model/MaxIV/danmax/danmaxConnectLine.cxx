@@ -3,7 +3,7 @@
  
  * File: danmax/danmaxConnectLine.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,36 +34,21 @@
 #include <iterator>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,17 +57,18 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
-#include "InnerZone.h"
-#include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
+#include "BlockZone.h"
 #include "generalConstruct.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "Simulation.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "SqrShield.h"
@@ -95,11 +81,11 @@ namespace xraySystem
 // Note currently uncopied:
   
 danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
-  attachSystem::FixedOffsetUnit(Key,2),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex),
+  buildZone(Key+"BuildZone"),
   connectShield(new xraySystem::SqrShield(keyName+"ConnectShield")),
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
@@ -131,105 +117,84 @@ danmaxConnectLine::~danmaxConnectLine()
     Destructor
    */
 {}
+
+
   
 void
 danmaxConnectLine::buildObjects(Simulation& System,
-				const attachSystem::FixedComp& FC,
-				const std::string& sideName,
 				const attachSystem::FixedComp& beamFC,
-				const std::string& beamName)
+				const long int sideIndex)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \parma FC :: Connection point
-    \param sideIndex :: link point
+    \param beamFC :: Connection point that is the beam axis
+    \param sideIndex :: link point for beam axis
   */
 {
   ELog::RegMethod RegA("danmaxConnectLine","buildObjects");
   // First build construction zone
   int outerCell;
-  buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));  
 
+  // Outer volume with shielding
   connectShield->setInsertCell(getInsertCells());
-  connectShield->setFront(*this);
-  connectShield->setBack(*this);
-  connectShield->createAll(System,beamFC,beamName);
+  connectShield->setFront(FrontBackCut::getFrontRule());
+  connectShield->setBack(FrontBackCut::getBackRule());
+  connectShield->createAll(System,beamFC,sideIndex);
+  
+  buildZone.setFront(FrontBackCut::getFrontRule());
+  buildZone.setMaxExtent(FrontBackCut::getBackRule());
 
   buildZone.setSurround(connectShield->getInnerVoid());
   buildZone.setInnerMat(connectShield->getInnerMat());
-  
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System);
 
-  buildZone.createOuterVoidUnit(System,masterCell,beamFC,beamName);
-  
+      
   // insert first tube:
   constructSystem::constructUnit
-    (System,buildZone,masterCell,beamFC,beamName,*pipeA);
+    (System,buildZone,beamFC,beamFC.getSideName(sideIndex),*pipeA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*pipeA,"back",*bellowA);
+    (System,buildZone,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowA,"back",*flangeA);
-
-  
-  ionPumpA->addAllInsertCell(masterCell->getName());
-  ionPumpA->setFront(*flangeA,2);
-  ionPumpA->createAll(System,*flangeA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPumpA,2);
-  ionPumpA->insertAllInCell(System,outerCell);
-
+    (System,buildZone,*bellowA,"back",*flangeA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*ionPumpA,"back",*flangeB);
+    (System,buildZone,*flangeA,"back",*ionPumpA);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*flangeB,"back",*bellowB);
+    (System,buildZone,*ionPumpA,"back",*flangeB);
 
   constructSystem::constructUnit
-    (System,buildZone,masterCell,*bellowB,"back",*pipeB);
+    (System,buildZone,*flangeB,"back",*bellowB);
 
-  outerCell=buildZone.createFinalVoidUnit(System,masterCell,*pipeB,2);
+  constructSystem::constructUnit
+    (System,buildZone,*bellowB,"back",*pipeB);
+
+
+  outerCell=buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+
+  setCell("FirstVoid",buildZone.getCells("Unit").front());
+  setCell("LastVoid",buildZone.getCells("Unit").back());
 
   JPipe->addAllInsertCell(outerCell);
   JPipe->setFront(*pipeB,2);
   JPipe->createAll(System,*pipeB,2);
     
-
-
-  // JPipe->createAll(System,*pipeB,2);
-  // JPipe->insertInCell(System,masterCell->getName());
-
   return;
 }
 
-// void
-// danmaxConnectLine::createLinks()
-//   /*!
-//     Create a front/back link
-//   */
-// {
-//   setLinkSignedCopy(0,*bellowA,1);
-//   setLinkSignedCopy(1,*bellowC,2);
-//   return;
-// }
   
   
 void 
-danmaxConnectLine::construct(Simulation& System,
-			     const attachSystem::FixedComp& FC,
-			     const std::string& sideName,
+danmaxConnectLine::createAll(Simulation& System,
 			     const attachSystem::FixedComp& beamFC,
-			     const std::string& beamName)
+			     const long int sideIndex)
   
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param FC :: Fixed component (hutch wall)
-    \param sideName :: link point (hutch wall)
     \param beamFC :: Fixed component for pipe/beam
     \param beamName :: link point for beam
    */
@@ -237,7 +202,9 @@ danmaxConnectLine::construct(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("danmaxConnectLine","createAll");
 
-  buildObjects(System,FC,sideName,beamFC,beamName);    
+  FixedRotate::populate(System.getDataBase());
+  createUnitVector(beamFC,sideIndex);
+  buildObjects(System,beamFC,sideIndex);    
   insertObjects(System);
   return;
 }

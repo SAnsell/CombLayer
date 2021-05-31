@@ -76,24 +76,27 @@ class CellMap  : public BaseMap
   void setCells(const std::string& K,const int CNA,const int CNB)
    { BaseMap::setItems(K,CNA,CNB); }
 
+  void setCells(const std::string& K,const std::vector<int>& CVec)
+    { BaseMap::setItems(K,CVec); }
+
   /// Rename function
   void addCell(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
   /// Rename function
-  void addCells(const std::string& K,const std::vector<int>& CN)
-    { BaseMap::addItems(K,CN); }
+  void addCells(const std::string& K,const std::vector<int>& CVec)
+    { BaseMap::addItems(K,CVec); }
 
   /// Rename function
   int getCell(const std::string& K) const
     { return BaseMap::getItem(K); }
-  
-  /// Rename function
-  int getCell(const std::string& K,const size_t Index) const
-    { return BaseMap::getItem(K,Index); }
 
   /// Rename function
   int getLastCell(const std::string& K) const
     { return BaseMap::getLastItem(K); }
+  
+  /// Rename function
+  int getCell(const std::string& K,const size_t Index) const
+    { return BaseMap::getItem(K,Index); }
 
   /// return all cells found
   size_t getNCells(const std::string& K) const
@@ -174,7 +177,7 @@ class CellMap  : public BaseMap
 
   std::pair<int,double>
     deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-  
+
 };
 
 }

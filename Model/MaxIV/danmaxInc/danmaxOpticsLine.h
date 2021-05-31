@@ -67,6 +67,7 @@ namespace xraySystem
   class MLMono;
   class MLMVessel;
   class MonoBox;
+  class TriggerTube;
 
   
   /*!
@@ -89,7 +90,7 @@ class danmaxOpticsLine :
   /// string for pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::InnerZone buildZone;
+  attachSystem::BlockZone buildZone;
   int innerMat;                         ///< inner material if used
 
   /// Shared point to use for last component:
@@ -98,22 +99,13 @@ class danmaxOpticsLine :
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
-  std::shared_ptr<constructSystem::PipeTube> triggerPipe;
+  std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
-  /// Gate block [item]
-  std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
-
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Mid trigger -> collimator
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  /// bellows to collimator
-  std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// Collimator zone
-  std::shared_ptr<constructSystem::PipeTube> collTubeA;
-  /// Brem Collimator
-  std::shared_ptr<xraySystem::BremBlock> bremColl;
+  /// Brem for collimator
+  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
   /// Filter unit pipe
   std::shared_ptr<constructSystem::VacuumPipe> filterPipe;
   /// First gate valve
@@ -205,29 +197,29 @@ class danmaxOpticsLine :
   double outerTop;     ///< Top lift for cut rectangle
 
 
-  void constructSlitTube(Simulation&,MonteCarlo::Object*,
+  void constructSlitTube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
 
-  void constructMono(Simulation&,MonteCarlo::Object*,
+  void constructMono(Simulation&,
 		     const attachSystem::FixedComp&,const std::string&);
 
-  void constructMirrorMono(Simulation&,MonteCarlo::Object*,
+  void constructMirrorMono(Simulation&,
 			   const attachSystem::FixedComp&,const std::string&);
 
-  void constructViewScreen(Simulation&,MonteCarlo::Object*,
+  void constructViewScreen(Simulation&,
 			const attachSystem::FixedComp&,const std::string&);
 
-  void constructViewScreenB(Simulation&,MonteCarlo::Object*,
+  void constructViewScreenB(Simulation&,
 			const attachSystem::FixedComp&,const std::string&);
 
-  void constructBeamStopTube(Simulation&,MonteCarlo::Object*,
+  void constructBeamStopTube(Simulation&,
 			     const attachSystem::FixedComp&,const std::string&);
 
-  void constructRevBeamStopTube(Simulation&,MonteCarlo::Object*,
+  void constructRevBeamStopTube(Simulation&,
 				const attachSystem::FixedComp&,
 				const std::string&);
 
-  void constructMonoShutter(Simulation&,MonteCarlo::Object*,
+  void constructMonoShutter(Simulation&,
 			    const attachSystem::FixedComp&,
 			    const std::string&);
 

@@ -3,7 +3,7 @@
  
  * File:   R3Common/EPSeparator.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,37 +33,18 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
-#include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -73,11 +54,9 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
-#include "SurfMap.h"
 #include "CellMap.h" 
 
 #include "EPSeparator.h"
@@ -210,6 +189,7 @@ EPSeparator::createSurfaces()
   // photon inner :
   ModelSupport::buildCylinder
     (SMap,buildIndex+207,photOrg+X*photonXStep,Y,photonRadius);
+  
   ModelSupport::buildPlane(SMap,buildIndex+203,photOrg+X*photonXStep,X);
   ModelSupport::buildPlane(SMap,buildIndex+205,photOrg-Z*photonRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,photOrg+Z*photonRadius,Z);
@@ -227,32 +207,32 @@ EPSeparator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("EPSeparator","createObjects");
 
-  const std::string frontSurf(ExternalCut::getRuleStr("front"));
+  const HeadRule frontSurf(ExternalCut::getRule("front"));
   
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 (-107 : -207 : (-103 205 -206 203) )");
-  makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-2 (-107 : -207 : (-103 205 -206 203) )");
+  makeCell("void",System,cellIndex++,voidMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 3 -4 5 -6 (107  207 (-205 : 206 : 103 : -203)");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-2 3 -4 5 -6 (107  207 (-205 : 206 : 103 : -203)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 -11  (-3:4:-5:6) ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 -11  (-3:4:-5:6)");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 (-3:4:-5:6) 12 -2 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 (-3:4:-5:6) 12 -2");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 (-3:4:-5:6) 11 -12 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-7 (-3:4:-5:6) 11 -12");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
-  addOuterSurf(Out+frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -7");
+  addOuterSurf(HR*frontSurf);
 
   return;
 }

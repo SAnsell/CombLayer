@@ -3,7 +3,7 @@
  
  * File:   attachComp/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,29 +34,15 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Rules.h"
 #include "HeadRule.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "SurInter.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
@@ -123,6 +109,32 @@ FrontBackCut::setBack(const ExternalCut& BSurf)
   ELog::RegMethod RegA("FrontBackCut","setBack(FrontBackCut)");
 
   ExternalCut::copyCutSurf("back",BSurf,"back");
+  return;
+}
+
+void
+FrontBackCut::setFront(const HeadRule& FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(HeadRule)");
+
+  ExternalCut::setCutSurf("front",FSurf);
+  return;
+}
+
+void
+FrontBackCut::setBack(const HeadRule& BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack(HeadRule)");
+
+  ExternalCut::setCutSurf("back",BSurf);
   return;
 }
 

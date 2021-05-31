@@ -30,16 +30,11 @@
 #include <algorithm>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MapSupport.h"
 #include "MapRange.h"
-#include "mapIterator.h"
 #include "permSort.h"
 
 #include "testFunc.h"

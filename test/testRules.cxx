@@ -34,9 +34,7 @@
 #include <memory>
 #include <tuple>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "MemStack.h"
@@ -44,10 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "BnId.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "Rules.h"
 #include "RuleBinary.h"
 #include "HeadRule.h"

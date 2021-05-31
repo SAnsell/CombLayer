@@ -35,31 +35,17 @@
 
 #include "Exception.h"
 #include "FileReport.h"
-#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "support.h"
 #include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfEqual.h"
 #include "generateSurf.h"
 #include "objectRegister.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -367,8 +353,8 @@ RotaryCollimator::createLinks()
       size_t index(0);
       for(size_t i=0;i<nHole;i++)
         {
-          holeFC.setLinkSignedCopy(index,*Holes[i],1);
-          holeFC.setLinkSignedCopy(index+1,*Holes[i],2);
+          holeFC.setLinkCopy(index,*Holes[i],1);
+          holeFC.setLinkCopy(index+1,*Holes[i],2);
           const Geometry::Vec3D midPt((Holes[i]->getLinkPt(1)+
                                       Holes[i]->getLinkPt(2))/2.0);
           holeFC.setConnect(index+2,midPt,Holes[i]->getLinkAxis(1));

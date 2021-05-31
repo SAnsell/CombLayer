@@ -34,14 +34,10 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfIndex.h"
 #include "surfEqual.h"
 #include "surfRegister.h"
@@ -229,9 +225,8 @@ surfRegister::registerSurf(const int origN,Geometry::Surface* SPtr)
     ModelSupport::surfIndex::Instance();
   if (origN<0)
     ELog::EM<<"Missing "<<SPtr->getName()<<ELog::endErr;
-  
-  const int N=ModelSupport::equalSurfNum(SPtr);
 
+  const int N=ModelSupport::equalSurfNum(SPtr);
   // Check
   const int negSurf((origN<0) ? -1 : 1);
 
