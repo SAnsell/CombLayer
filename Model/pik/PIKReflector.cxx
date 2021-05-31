@@ -190,14 +190,18 @@ PIKReflector::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius);
 
   double h = radius*tan(floorPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+18,Origin-Z*(height/2.0+h),Z,90-floorPitch,1);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+h),Z); // aux plane
+  ModelSupport::buildCone(SMap,buildIndex+18,Origin-Z*(height/2.0+h),Z,90-floorPitch);
   h -= wallThick/cos(floorPitch*M_PI/180.0);
-  ModelSupport::buildCone(SMap,buildIndex+8,Origin-Z*(height/2.0+h),Z,90-floorPitch,1);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0+h),Z);
+  ModelSupport::buildCone(SMap,buildIndex+8,Origin-Z*(height/2.0+h),Z,90-floorPitch);
 
   h = radius*tan(roofPitch*M_PI/180.0);
   ModelSupport::buildCone(SMap,buildIndex+19,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
   h -= wallThick/cos(roofPitch*M_PI/180.0);
   ModelSupport::buildCone(SMap,buildIndex+9,Origin+Z*(height/2.0+h),Z,90-roofPitch,-1);
+
+  // aux planes
 
   return;
 }
@@ -216,17 +220,27 @@ PIKReflector::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 18 -17 ") + side+bottom;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 18 -17 ");
+  makeCell("Bottom",System,cellIndex++,shieldMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -15 -17 ")+bottom;
   makeCell("Bottom",System,cellIndex++,shieldMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 19 -17 ") + side+top;
   makeCell("Top",System,cellIndex++,shieldMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -8 -9 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -8 -9 -7 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -18 -19 -17 (8:9:7) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -18 8 -7 ");
+  makeCell("WallBottomUpper",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -5 15 -18 ");
+  makeCell("WallBottomLower",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -19 9 -7 ");
+  makeCell("WallTop",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 -19 -18 15 ");
+  makeCell("WallSide",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 ") + top + bottom;
   addOuterSurf(Out);
